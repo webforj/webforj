@@ -24,4 +24,5 @@ hs_err_pid*
 /dwcj.iml
 /.idea
 /.gitignore
-/target
+/target/*
+!/target/mvn-artifact
