@@ -1,0 +1,79 @@
+use org.dwcj.Environment
+
+BBjAPI().getAdmin("admin","admin123",err=*next).getEnvironment().reloadClasspath(BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName())
+
+if INFO(3,6)<>"6" then goto deploy
+
+class$=""
+
+class$=clientenv("class",err=*next)
+
+if class$="" then
+    class$=argv(1,err=*next)
+fi
+
+if class$="" then
+    class$=STBL("DWCJCLASSNAME",err=*next)
+fi
+
+if class$="" then
+    class$="dwcjsample.SampleApp"
+fi
+
+h! = new ::DwcjHelper.bbj::DwcjHelper() 
+Environment.init(BBjAPI(), h!)
+
+app! = eval("new "+class$+"()")
+
+process_events
+
+terminate:
+    release
+    
+    
+deploy:
+source$=pgm(-1)
+appname$ = source$(1,pos("."=source$,1,pos("."=source$,1,0))-1)
+while pos("/"=appname$)>0
+    path$=path$+appname$(1,pos("/"=appname$)-1)+"/"
+    appname$=appname$(pos("/"=appname$)+1)
+wend
+while pos("\"=appname$)>0
+    path$=path$+appname$(1,pos("\"=appname$)-1)+"/"
+    appname$=appname$(pos("\"=appname$)+1)
+wend
+REM do not push 
+path$= DSK("") + DIR("")
+bbjHome! = System.getProperty("basis.BBjHome")
+
+config$ = BBjAPI().getConfig().getCurrentCommandLineObject().getConfigFile()
+classpath! = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
+
+appServer! = bbjapi().getAdmin("admin","admin123").getWebAppServer()
+
+appConfig! = appServer!.makeEmptyAppConfig()
+appConfig!.setProgramName(source$)
+
+if favicon$>"" then
+   favicon$=BBjAPI().getFileSystem().resolvePath(favicon$,err=*endif) 
+   icon! = appServer!.addApplicationIcon(favicon$)
+   appConfig!.setApplicationIcon(icon!)
+fi
+
+appConfig!.setConfigFile(config$)
+if classpath! <> null() then
+    appConfig!.setClasspathName(classpath!)
+fi
+appConfig!.setWorkingDirectory(path$)
+
+appConfig!.setDwcEnabled(1)
+appConfig!.setBuiEnabled(0)
+
+app! = appConfig!.buildApplication(appname$)
+published = appServer!.isPublished(app!)
+if (published) then
+    appServer!.unpublish(appname$)
+fi
+appServer!.publish(app!)
+BBjAPI().getThinClient().browse("http://localhost:8888/webapp/"+appname$)
+release

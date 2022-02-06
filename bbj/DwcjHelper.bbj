@@ -1,0 +1,34 @@
+use org.dwcj.events.IEventProxy
+use org.dwcj.IDwcjHelper
+
+class public EventProxy implements IEventProxy
+
+    field private Object obj!
+    field private String method!
+
+    method public EventProxy(Object obj!, String method!)
+        #obj! = obj!
+        #method! = method!
+    methodend
+
+    method public void onEvent(BBjEvent ev!)
+            o! = #obj!
+            eval("o!."+#method!+"(ev!)")
+    methodend
+
+classend
+
+
+class public DwcjHelper implements IDwcjHelper
+
+    method public CustomObject getEventProxy(Object obj!, String method!)
+        methodret new EventProxy(obj!, method!)
+    methodend
+    
+    
+    method public int msgbox(String msg!, int options!, String title!)
+        methodret msgbox(msg!,options!,title!)
+    methodend 
+    
+
+classend
