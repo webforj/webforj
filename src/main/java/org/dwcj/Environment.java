@@ -1,6 +1,5 @@
 package org.dwcj;
 
-import java.net.URL;
 import java.util.HashMap;
 
 import com.basis.bbj.proxies.BBjAPI;

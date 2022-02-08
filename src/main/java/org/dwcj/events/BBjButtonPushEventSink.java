@@ -2,19 +2,17 @@ package org.dwcj.events;
 
 import java.util.function.Consumer;
 
-import org.dwcj.App;
 import org.dwcj.Environment;
 
 import com.basis.bbj.proxies.event.BBjButtonPushEvent;
-import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 
 public class BBjButtonPushEventSink {
 	
-	private int eventType;
 	private Consumer<ButtonPushEvent> target;
 
+	@SuppressWarnings({ "static-access" })
 	public BBjButtonPushEventSink(BBjControl ctrl, Consumer<ButtonPushEvent> target) {
 		this.target = target;
 

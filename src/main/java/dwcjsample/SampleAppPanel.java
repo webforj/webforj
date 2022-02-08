@@ -12,8 +12,6 @@ import org.dwcj.events.ButtonPushEvent;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.panels.AppPanel;
 
-import com.basis.startup.type.BBjException;
-
 public class SampleAppPanel extends AppPanel {
 
 	private TextBox ed_firstname;

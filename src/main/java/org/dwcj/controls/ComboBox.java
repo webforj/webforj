@@ -42,6 +42,7 @@ public class ComboBox extends AbstractDwclistControl {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private void populate() {
 		if (values != null && ctrl != null)
 

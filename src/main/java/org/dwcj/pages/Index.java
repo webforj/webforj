@@ -4,7 +4,6 @@ import org.dwcj.App;
 import org.dwcj.controls.Label;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.panels.AppPanel;
-import org.dwcj.annotations.AppIndex;
 
 
 public class Index extends App{

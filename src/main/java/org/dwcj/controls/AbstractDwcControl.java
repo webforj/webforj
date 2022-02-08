@@ -1,11 +1,9 @@
 package org.dwcj.controls;
 
-import org.dwcj.exceptions.DwcInvalidStyleError;
 import org.dwcj.panels.IPanel;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
-import com.basis.util.common.BasisNumber;
 import com.basis.util.common.BasisNumber;
 
 public abstract class AbstractDwcControl implements IThemable, IStyleable{
