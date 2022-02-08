@@ -3,7 +3,16 @@ package org.dwcj.controls;
 
 public interface IThemable {
 
-	public void setTheme(int theme);
-	public void setExpanse(int expanse);
-	
+    void setTheme(Theme theme);
+
+    enum Theme {
+        DEFAULT,
+        DANGER,
+        GRAY,
+        INFO,
+        PRIMARY,
+        SUCCESS,
+        WARNING
+    }
+
 }

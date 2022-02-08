@@ -4,7 +4,7 @@
 
   <groupId>org</groupId>
   <artifactId>dwcj</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.002</version>
   <packaging>jar</packaging>
   <name>dwcj</name>
   <url>http://dwcj.org</url>
