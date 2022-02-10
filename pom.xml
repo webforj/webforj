@@ -341,7 +341,7 @@
 	</dependencies>
 	
 	<build>
-		<finalName>dwcj</finalName>
+		<finalName>dwcj-${version}</finalName>
 		<pluginManagement>
 		<plugins>
 
