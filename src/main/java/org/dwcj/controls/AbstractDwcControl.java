@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.panels.IPanel;
 
-public abstract class AbstractDwcControl implements IThemable, IExpansible, IStyleable {
+public abstract class AbstractDwcControl {
 
 
     protected final static BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
@@ -25,9 +25,7 @@ public abstract class AbstractDwcControl implements IThemable, IExpansible, ISty
         return "";
     }
 
-
-    @Override
-    public void setExpanse(Expanse expanse) {
+    protected void setControlExpanse(IExpansible.Expanse expanse) {
         try {
             switch (expanse) {
                 case LARGE:
@@ -54,8 +52,7 @@ public abstract class AbstractDwcControl implements IThemable, IExpansible, ISty
     }
 
 
-    @Override
-    public void setTheme(Theme theme) {
+    protected void setControlTheme(IThemable.Theme theme) {
         try {
             switch (theme) {
                 case DEFAULT:
@@ -88,8 +85,7 @@ public abstract class AbstractDwcControl implements IThemable, IExpansible, ISty
     }
 
 
-    @Override
-    public void setStyle(String property, String value) {
+    protected void setControlStyle(String property, String value) {
         try {
             ctrl.setStyle(property, value);
         } catch (BBjException e) {
@@ -97,8 +93,8 @@ public abstract class AbstractDwcControl implements IThemable, IExpansible, ISty
         }
     }
 
-    @Override
-    public void addClass(String selector) {
+
+    protected void addControlCssClass(String selector) {
         try {
             ctrl.addStyle(selector);
         } catch (BBjException e) {
@@ -106,8 +102,8 @@ public abstract class AbstractDwcControl implements IThemable, IExpansible, ISty
         }
     }
 
-    @Override
-    public void removeClass(String selector) {
+
+    protected void removeControlCssClass(String selector) {
         try {
             ctrl.removeStyle(selector);
         } catch (BBjException e) {

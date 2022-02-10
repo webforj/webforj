@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.panels.IPanel;
 
-public class Label extends AbstractDwcControl {
+public class Label extends AbstractDwcControl implements IStyleable {
 
     private String sText = "";
 
@@ -27,5 +27,19 @@ public class Label extends AbstractDwcControl {
 
     }
 
+    @Override
+    public void setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+    }
+
+    @Override
+    public void addClass(String selector) {
+        super.addControlCssClass(selector);
+    }
+
+    @Override
+    public void removeClass(String selector) {
+        super.removeControlCssClass(selector);
+    }
 
 }

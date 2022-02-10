@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 
-public class ComboBox extends AbstractDwclistControl {
+public class ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
 
     public ComboBox() {
@@ -61,4 +61,28 @@ public class ComboBox extends AbstractDwclistControl {
     }
 
 
+    @Override
+    public void setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+    }
+
+    @Override
+    public void setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+    }
+
+    @Override
+    public void addClass(String selector) {
+        super.addControlCssClass(selector);
+    }
+
+    @Override
+    public void removeClass(String selector) {
+        super.removeControlCssClass(selector);
+    }
+
+    @Override
+    public void setTheme(Theme theme) {
+        super.setControlTheme(theme);
+    }
 }

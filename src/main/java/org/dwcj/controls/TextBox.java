@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.panels.IPanel;
 
 
-public class TextBox extends AbstractDwcControl {
+public class TextBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     private String sText = "";
 
@@ -29,4 +29,28 @@ public class TextBox extends AbstractDwcControl {
     }
 
 
+    @Override
+    public void setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+    }
+
+    @Override
+    public void setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+    }
+
+    @Override
+    public void addClass(String selector) {
+        super.addControlCssClass(selector);
+    }
+
+    @Override
+    public void removeClass(String selector) {
+        super.removeControlCssClass(selector);
+    }
+
+    @Override
+    public void setTheme(Theme theme) {
+        super.setControlTheme(theme);
+    }
 }

@@ -8,7 +8,7 @@ import org.dwcj.panels.IPanel;
 
 import java.util.function.Consumer;
 
-public class Button extends AbstractDwcControl {
+public class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     private String sText = "";
 
@@ -35,5 +35,28 @@ public class Button extends AbstractDwcControl {
         BBjEventPump.setBBjButtonPushCallback(ctrl, callback);
     }
 
+    @Override
+    public void setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+    }
 
+    @Override
+    public void setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+    }
+
+    @Override
+    public void addClass(String selector) {
+        super.addControlCssClass(selector);
+    }
+
+    @Override
+    public void removeClass(String selector) {
+        super.removeControlCssClass(selector);
+    }
+
+    @Override
+    public void setTheme(Theme theme) {
+        super.setControlTheme(theme);
+    }
 }
