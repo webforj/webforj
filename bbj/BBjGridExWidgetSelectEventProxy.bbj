@@ -1,0 +1,33 @@
+use org.dwcj.events.IEventProxy
+use org.dwcj.IDwcjHelper
+use ::BBjGridExWidget/GxClientModels.bbj::GxClientRowModel
+
+
+class public BBjGridExWidgetSelectEventProxy implements IEventProxy
+
+    field private Object obj!
+    field private String method!
+
+    method public BBjGridExWidgetSelectEventProxy(Object obj!, String method!)
+        #obj! = obj!
+        #method! = method!
+    methodend
+
+    method public void onEvent(BBjEvent ev!)
+        o! = #obj!
+        ev_obj! = CAST(BBjCustomEvent,ev!).getObject()
+        rows! =  ev_obj!.getSelectedRows()
+    
+        selectedAsText$ = "["
+        it! = rows!.iterator()
+        while it!.hasNext()
+            row! = it!.next()
+            selectedAsText$ = selectedAsText$ + str(row!.getAsJsonObject().toString()) + " , "
+        wend
+        selectedAsText$ = selectedAsText$(1,len(selectedAsText$)-2)+"]"
+        
+        dwc_event! = selectedAsText$
+        eval("o!."+#method!+"(dwc_event!)")
+    methodend
+
+classend

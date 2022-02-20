@@ -53,7 +53,7 @@ public class SampleAppPanel extends AppPanel {
         Button btn = new Button("Say Hello");
         add(btn);
 
-        btn.setTheme(Theme.SUCCESS);
+        btn.setTheme(Theme.WARNING);
 
         btn.setExpanse(Expanse.XLARGE);
 

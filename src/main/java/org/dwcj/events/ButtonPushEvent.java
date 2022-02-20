@@ -1,5 +1,17 @@
 package org.dwcj.events;
 
-public class ButtonPushEvent implements IDwcEvent {
+import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.controls.Button;
 
+public class ButtonPushEvent implements IDwcEvent {
+    private final Button control;
+
+    public ButtonPushEvent(Button cButton) {
+        this.control = cButton;
+    }
+
+    @Override
+    public AbstractDwcControl getControl() {
+        return control;
+    }
 }

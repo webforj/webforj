@@ -80,6 +80,13 @@
 			<systemPath>${jar-directory}/BBjJDBC.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>com.basiscomponents</groupId>
+			<artifactId>basiscomponents.jar</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${jar-directory}/basiscomponents.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>com.basis.lib</groupId>
 			<artifactId>BBjThinClient.jar</artifactId>
 			<scope>system</scope>

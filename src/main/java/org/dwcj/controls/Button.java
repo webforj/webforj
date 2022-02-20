@@ -2,8 +2,8 @@ package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import org.dwcj.events.BBjEventPump;
 import org.dwcj.events.ButtonPushEvent;
+import org.dwcj.events.sinks.BBjButtonPushEventSink;
 import org.dwcj.panels.IPanel;
 
 import java.util.function.Consumer;
@@ -32,7 +32,7 @@ public class Button extends AbstractDwcControl implements IStyleable, IThemable,
     }
 
     public void onClick(Consumer<ButtonPushEvent> callback) {
-        BBjEventPump.setBBjButtonPushCallback(ctrl, callback);
+        new BBjButtonPushEventSink(this, callback);
     }
 
     @Override

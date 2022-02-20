@@ -25,10 +25,30 @@ class public DwcjHelper implements IDwcjHelper
         methodret new EventProxy(obj!, method!)
     methodend
     
+    method public CustomObject getEventProxy(Object obj!, String method!, String eventClass!)
+        ep! = eval("new "+eventClass!+"(obj!, method!)")
+        methodret ep!
+    methodend
     
     method public int msgbox(String msg!, int options!, String title!)
         methodret msgbox(msg!,options!,title!)
     methodend 
-    
+
+    method public BBjControl createWidget(String class!, BBjWindow w!)
+        wnd! = w!
+        widget! = eval("new "+class!+"(wnd!)")
+        methodret widget!
+    methodend
+
+    method public java.lang.Object invokeMethod(java.lang.Object e!, java.lang.String method!, java.util.ArrayList args!)
+        cmd! = "e!."+method!+"("
+        for i=0 to args!.size()-1
+            cmd! = cmd! + "args!.get("+str(i)+"),"
+        next
+        cmd! = cmd!.substring(0,cmd!.length()-1)
+        cmd! = cmd! + ")"
+        result!=eval(cmd!)
+        methodret result!
+    methodend
 
 classend

@@ -1,5 +1,7 @@
 package org.dwcj.events;
 
-public interface IDwcEvent {
+import org.dwcj.controls.AbstractDwcControl;
 
+public interface IDwcEvent {
+    AbstractDwcControl getControl();
 }

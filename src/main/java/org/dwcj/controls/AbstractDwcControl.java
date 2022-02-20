@@ -112,4 +112,7 @@ public abstract class AbstractDwcControl {
     }
 
 
+    public BBjControl getControl() {
+        return this.ctrl;
+    }
 }
