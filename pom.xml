@@ -1,394 +1,394 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org</groupId>
-  <artifactId>dwcj</artifactId>
-  <version>0.004</version>
-  <packaging>jar</packaging>
-  <name>dwcj</name>
-  <url>http://dwcj.org</url>
+    <groupId>org</groupId>
+    <artifactId>dwcj</artifactId>
+    <version>0.004</version>
+    <packaging>jar</packaging>
+    <name>dwcj</name>
+    <url>http://dwcj.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 
-	<profiles>
+    <profiles>
 
-		<!-- default build profile, active by default -->
-		<profile>
-			<id>winbbxlib</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+        <!-- default build profile, active by default -->
+        <profile>
+            <id>winbbxlib</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
-			<properties>
-				<jar-directory>C:/bbx/lib</jar-directory>
-			</properties>
-		</profile>
-		
-		<profile>
-			<id>winbbjlib</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			
-			<properties>
-				<jar-directory>C:/bbj/lib</jar-directory>
-			</properties>
-		</profile>
-		
-		<profile>
-			<id>unixbbjlib</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<jar-directory>/opt/bbj/lib</jar-directory>
-			</properties>
-		</profile>
-	</profiles>
+            <properties>
+                <jar-directory>C:/bbx/lib</jar-directory>
+            </properties>
+        </profile>
 
-	<dependencies>
-		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-		<dependency>
-		    <groupId>javax.xml.bind</groupId>
-		    <artifactId>jaxb-api</artifactId>
-		    <version>2.3.0</version>
-		</dependency>
+        <profile>
+            <id>winbbjlib</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
 
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>BBjStartup.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/BBjStartup.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>BBj.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/BBj.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>BBjJDBC.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/BBjJDBC.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basiscomponents</groupId>
-			<artifactId>basiscomponents.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/basiscomponents.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>BBjThinClient.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/BBjThinClient.jar</systemPath>
-		</dependency>
+            <properties>
+                <jar-directory>C:/bbj/lib</jar-directory>
+            </properties>
+        </profile>
 
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>BBjUtil.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/BBjUtil.jar</systemPath>
-		</dependency>
+        <profile>
+            <id>unixbbjlib</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <jar-directory>/opt/bbj/lib</jar-directory>
+            </properties>
+        </profile>
+    </profiles>
 
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>lucene-core.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/lucene-core-5.2.1.jar</systemPath>
-		</dependency>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>lucene-queryparser.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/lucene-queryparser-5.2.1.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>lucene-facet.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/lucene-facet-5.2.1.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>lucene-analyzers-common.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/lucene-analyzers-common-5.2.1.jar</systemPath>
-		</dependency>
-		
-		<dependency>             
-			<groupId>org.apache.pdfbox</groupId>             
-			<artifactId>pdfbox</artifactId>             
-			<version>2.0.8</version>         
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>jackson-annotations.jar</artifactId>
-			<scope>system</scope>
-			<version>2.12.2</version>
-			<systemPath>${jar-directory}/jackson-annotations-2.12.2.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>jackson-core.jar</artifactId>
-			<scope>system</scope>
-			<version>2.12.2</version>
-			<systemPath>${jar-directory}/jackson-core-2.12.2.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>jackson-databind.jar</artifactId>
-			<scope>system</scope>
-			<version>2.12.2</version>
-			<systemPath>${jar-directory}/jackson-databind-2.12.2.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>gson.jar</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${jar-directory}/gson-2.8.5.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache</groupId>
-			<artifactId>commons-lang3-3.12.0.jar</artifactId>
-			<version>3.12.0</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/commons-lang3-3.12.0.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>BBjFilesystem.jar</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/BBjFilesystem.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>poi.jar</artifactId>
-			<version>4.1.2</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/poi-4.1.2.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>poi-excelant.jar</artifactId>
-			<version>4.1.2</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/poi-excelant-4.1.2.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>poi-ooxml.jar</artifactId>
-			<version>4.1.2</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/poi-ooxml-4.1.2.jar</systemPath>
-		</dependency>
-      
- 		<dependency>
-			<groupId>com.basis.lib</groupId>
-			<artifactId>poi-ooxml-schemas.jar</artifactId>
-			<version>4.1.2</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/poi-ooxml-schemas-4.1.2.jar</systemPath>
-		</dependency>
-     
         <dependency>
             <groupId>com.basis.lib</groupId>
-            <artifactId>j2html.jar</artifactId> 
+            <artifactId>BBjStartup.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/BBjStartup.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>BBj.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/BBj.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>BBjJDBC.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/BBjJDBC.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basiscomponents</groupId>
+            <artifactId>basiscomponents.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/basiscomponents.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>BBjThinClient.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/BBjThinClient.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>BBjUtil.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/BBjUtil.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>lucene-core.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/lucene-core-5.2.1.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>lucene-queryparser.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/lucene-queryparser-5.2.1.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>lucene-facet.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/lucene-facet-5.2.1.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>lucene-analyzers-common.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/lucene-analyzers-common-5.2.1.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>jackson-annotations.jar</artifactId>
+            <scope>system</scope>
+            <version>2.12.2</version>
+            <systemPath>${jar-directory}/jackson-annotations-2.12.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>jackson-core.jar</artifactId>
+            <scope>system</scope>
+            <version>2.12.2</version>
+            <systemPath>${jar-directory}/jackson-core-2.12.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>jackson-databind.jar</artifactId>
+            <scope>system</scope>
+            <version>2.12.2</version>
+            <systemPath>${jar-directory}/jackson-databind-2.12.2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>gson.jar</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${jar-directory}/gson-2.8.5.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache</groupId>
+            <artifactId>commons-lang3-3.12.0.jar</artifactId>
+            <version>3.12.0</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/commons-lang3-3.12.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>BBjFilesystem.jar</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/BBjFilesystem.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>poi.jar</artifactId>
+            <version>4.1.2</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/poi-4.1.2.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>poi-excelant.jar</artifactId>
+            <version>4.1.2</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/poi-excelant-4.1.2.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>poi-ooxml.jar</artifactId>
+            <version>4.1.2</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/poi-ooxml-4.1.2.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>poi-ooxml-schemas.jar</artifactId>
+            <version>4.1.2</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/poi-ooxml-schemas-4.1.2.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basis.lib</groupId>
+            <artifactId>j2html.jar</artifactId>
             <version>1.4.0</version>
             <scope>system</scope>
             <systemPath>${jar-directory}/j2html-1.4.0.jar</systemPath>
         </dependency>
-      
-		<dependency>
-			<groupId>com.basis</groupId>
-			<artifactId>netty</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/netty-all-4.1.59.Final.jar</systemPath>
-		</dependency>
-		
-		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports</artifactId>
-			<version>6.17.0</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/jasperreports-javaflow-6.17.0.jar</systemPath>
-		</dependency>
 
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.3.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-    		<groupId>com.h2database</groupId>
-    		<artifactId>h2</artifactId>
-    		<version>1.4.199</version>
-    		<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.3.2</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-  			<groupId>org.mockito</groupId>
-  			<artifactId>mockito-core</artifactId>
-  			<version>2.28.2</version>
-		</dependency>
-		
-		<dependency>
-		    <groupId>com.google.guava</groupId>
-		    <artifactId>guava</artifactId>
-		    <version>28.0-jre</version>
-		</dependency>	
-		<dependency>
-		    <groupId>com.google.protobuf</groupId>
-		    <artifactId>protobuf-java</artifactId>
-			<scope>test</scope>
-		    <version>3.12.2</version>
-		</dependency>
-		<dependency>
-		    <groupId>io.prometheus</groupId>
-		    <artifactId>simpleclient</artifactId>
-		    <version>0.8.1</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>com.typesafe</groupId>
-		    <artifactId>config</artifactId>
-		    <version>1.4.0</version>
-		    <scope>test</scope>
-		</dependency>	
-		<dependency>
-		    <groupId>com.google.inject</groupId>
-		    <artifactId>guice</artifactId>
-		    <version>4.0-beta5</version>
-		    <scope>test</scope>
-		</dependency>
         <dependency>
-			<groupId>com.basis.api</groupId>
-			<artifactId>BBjAdminAPI.jar</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/BBjAdminAPI.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.basis.api</groupId>
-			<artifactId>BBjAdminAPIMin.jar</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${jar-directory}/BBjAdminAPIMin.jar</systemPath>
-		</dependency>
-		<dependency>
+            <groupId>com.basis</groupId>
+            <artifactId>netty</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/netty-all-4.1.59.Final.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.17.0</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/jasperreports-javaflow-6.17.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.28.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <scope>test</scope>
+            <version>3.12.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>0.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>4.0-beta5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.api</groupId>
+            <artifactId>BBjAdminAPI.jar</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/BBjAdminAPI.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.basis.api</groupId>
+            <artifactId>BBjAdminAPIMin.jar</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${jar-directory}/BBjAdminAPIMin.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>
             <version>2.0.8</version>
-        </dependency>	
-        
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-	<dependency>
-	    <groupId>org.apache.maven.plugins</groupId>
-	    <artifactId>maven-surefire-plugin</artifactId>
-	    <version>3.0.0-M5</version>
-	</dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0-M5</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
-	<dependency>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>3.8.1</version>
-	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
-	<dependency>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-javadoc-plugin</artifactId>
-	<version>3.2.0</version>
-	</dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+        </dependency>
 
-	<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
-	<dependency>
-	    <groupId>org.codehaus.mojo</groupId>
-	    <artifactId>exec-maven-plugin</artifactId>
-	    <version>1.6.0</version>
-	</dependency>
-	
+        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.2.0</version>
+        </dependency>
 
-	</dependencies>
-	
-	<build>
-		<finalName>dwcj-${version}</finalName>
-		<pluginManagement>
-		<plugins>
+        <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+        </dependency>
 
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-				<configuration>
-					<altDeploymentRepository>
-						internal.repo::default::file://${project.build.directory}/mvn-artifact
-					</altDeploymentRepository>
-				</configuration>
-			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
-			</plugin>
-			
-			<!-- Set a JDK compiler level -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
+    </dependencies>
 
-			<!-- Set the jar output Directory -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<outputDirectory>target/lib/</outputDirectory>
-				</configuration>
-			</plugin>
-		</plugins>
-		</pluginManagement>
-	</build>	
+    <build>
+        <finalName>dwcj-${version}</finalName>
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                    <configuration>
+                        <altDeploymentRepository>
+                            internal.repo::default::file://${project.build.directory}/mvn-artifact
+                        </altDeploymentRepository>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+
+                <!-- Set a JDK compiler level -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>11</source>
+                        <target>11</target>
+                    </configuration>
+                </plugin>
+
+                <!-- Set the jar output Directory -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <outputDirectory>target/lib/</outputDirectory>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

@@ -8,8 +8,11 @@ import org.dwcj.controls.IThemable.Theme;
 import org.dwcj.controls.Label;
 import org.dwcj.controls.TextBox;
 import org.dwcj.events.ButtonPushEvent;
+import org.dwcj.events.PageLoadedEvent;
+import org.dwcj.events.ValueChangedEvent;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.panels.AppPanel;
+import org.dwcj.shoelacecontrols.Rating;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +22,8 @@ public class SampleAppPanel extends AppPanel {
     private final TextBox ed_firstname;
     private final TextBox ed_lastname;
     private final ComboBox cb_gender;
+    private final Label ratingText;
+    private final Rating ratingctrl;
 
     public SampleAppPanel() throws DwcAppInitializeException {
 
@@ -50,6 +55,15 @@ public class SampleAppPanel extends AppPanel {
         add(cb_gender);
         cb_gender.setStyle("width", "100%");
 
+        add(new Label("Rating:"));
+
+        ratingctrl = new Rating();
+        add(ratingctrl);
+        ratingctrl.onValueChanged(this::onRatingChanged);
+
+        add(new Label(""));
+        ratingText = new Label("");
+        add(ratingText);
         Button btn = new Button("Say Hello");
         add(btn);
 
@@ -64,10 +78,32 @@ public class SampleAppPanel extends AppPanel {
 
     }
 
+    private void onRatingChanged(ValueChangedEvent valueChangedEvent) {
+
+        Double v = valueChangedEvent.getValue();
+        String txt = "Poor";
+        if (v > 0.0) txt = "Naja";
+        if (v > 1.0) txt = "Hmm";
+        if (v > 2.0) txt = "Just about";
+        if (v > 3.0) txt = "Acceptable";
+        if (v > 4.0) txt = "Supergeil";
+
+        ratingText.setText(txt);
+    }
+
+    private void onPageLoaded(PageLoadedEvent pageLoadedEvent) {
+        App.msgbox("loaded");
+    }
+
     private void onSampleButtonPush(ButtonPushEvent ev) {
         String text = ed_firstname.getText() + " " + ed_lastname.getText() + " (" + cb_gender.getText() + ")";
-
         App.msgbox(text, 0, "Hello World");
+
+        ratingctrl.setMaxValue(ratingctrl.getMaxValue() + 1);
+        ratingctrl.setValue(ratingctrl.getValue() + 1);
+        ratingctrl.setPrecision(ratingctrl.getPrecision() / 2);
+
+
     }
 
 

@@ -14,20 +14,20 @@ class public BBjGridExWidgetSelectEventProxy implements IEventProxy
     methodend
 
     method public void onEvent(BBjEvent ev!)
-        o! = #obj!
-        ev_obj! = CAST(BBjCustomEvent,ev!).getObject()
-        rows! =  ev_obj!.getSelectedRows()
-    
-        selectedAsText$ = "["
-        it! = rows!.iterator()
-        while it!.hasNext()
-            row! = it!.next()
-            selectedAsText$ = selectedAsText$ + str(row!.getAsJsonObject().toString()) + " , "
-        wend
-        selectedAsText$ = selectedAsText$(1,len(selectedAsText$)-2)+"]"
-        
-        dwc_event! = selectedAsText$
-        eval("o!."+#method!+"(dwc_event!)")
+          o! = #obj!
+          ev_obj! = CAST(BBjCustomEvent,ev!).getObject()
+          rows! =  ev_obj!.getSelectedRows()
+      
+          selectedAsText$ = "["
+          it! = rows!.iterator()
+          while it!.hasNext()
+              row! = it!.next()
+              selectedAsText$ = selectedAsText$ + str(row!.getAsJsonObject().toString()) + " , "
+          wend
+          selectedAsText$ = selectedAsText$(1,len(selectedAsText$)-2)+"]"
+          
+          dwc_event! = selectedAsText$
+          eval("o!."+#method!+"(dwc_event!)")
     methodend
 
 classend

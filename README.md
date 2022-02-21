@@ -1,4 +1,5 @@
 # dwcj
+
 Java API for BBj DWC Dynamic Web Client
 
 ## Setup Instructions
@@ -6,15 +7,19 @@ Java API for BBj DWC Dynamic Web Client
 1. Download and Install BBj 21.14 or higher, on OpenJDK11
 2. Clone this project
 3. Add a custom classpath with
+
 * if you're developing inside the framework: the compiled class files in the target/classes folder
 * if you're developing with the framework: the dwcj.jar (it builds with Maven)
 * also add (bbj-internal) to this classpath
 * My entry looks like this in BBj.properties (sorry, it's Windows):
-basis.classpath.dwcj=C\:\\DWC4JavaWorkspace\\dwcj\\target\\classes\\;(bbj_internal)
+  basis.classpath.dwcj=C\:\\DWC4JavaWorkspace\\dwcj\\target\\classes\\;(bbj_internal)
+
 4. create a webapp deployment in EM for dwcj.bbj
+
 * make sure to set the working directory or PREFIX so that DWCjHelper.bbj is found at runtime
 * you can also simply run the program with the correct classpath in GUI, it tries to self-deploy
-5. navigate to 
+
+5. navigate to
 
 http://localhost:8888/webapp/dwcj
 
@@ -31,7 +36,7 @@ http://localhost:8888/webapp/dwcj?class=your.class.name.Here
 
 OR
 
-in config.bbj: SET DWCJCLASSNAME=your.class.name.Here 
+in config.bbj: SET DWCJCLASSNAME=your.class.name.Here
 
 OR
 

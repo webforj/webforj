@@ -42,4 +42,11 @@ public class Label extends AbstractDwcControl implements IStyleable {
         super.removeControlCssClass(selector);
     }
 
+    public void setText(String string) {
+        try {
+            ctrl.setText(string);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
 }
