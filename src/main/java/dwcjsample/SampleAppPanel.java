@@ -12,6 +12,7 @@ import org.dwcj.events.PageLoadedEvent;
 import org.dwcj.events.ValueChangedEvent;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.panels.AppPanel;
+import org.dwcj.panels.Div;
 import org.dwcj.shoelacecontrols.Rating;
 
 import java.util.HashMap;
@@ -66,6 +67,12 @@ public class SampleAppPanel extends AppPanel {
         add(ratingText);
         Button btn = new Button("Say Hello");
         add(btn);
+
+        Div d = new Div();
+        add(d);
+        d.setStyle("height","100px");
+        d.setStyle("width","100px");
+        d.setStyle("background","yellow");
 
         btn.setTheme(Theme.WARNING);
 

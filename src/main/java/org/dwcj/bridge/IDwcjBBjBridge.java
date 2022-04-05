@@ -1,10 +1,10 @@
-package org.dwcj;
+package org.dwcj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 
-public interface IDwcjHelper {
+public interface IDwcjBBjBridge {
 
     CustomObject getEventProxy(Object obj, String method);
 

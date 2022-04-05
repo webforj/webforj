@@ -1,5 +1,5 @@
 use org.dwcj.events.IEventProxy
-use org.dwcj.IDwcjHelper
+use org.dwcj.bridge.IDwcjBBjBridge
 
 class public EventProxy implements IEventProxy
 
@@ -19,7 +19,7 @@ class public EventProxy implements IEventProxy
 classend
 
 
-class public DwcjHelper implements IDwcjHelper
+class public DwcjHelper implements IDwcjBBjBridge
 
     method public CustomObject getEventProxy(Object obj!, String method!)
         methodret new EventProxy(obj!, method!)

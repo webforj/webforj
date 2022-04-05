@@ -1,16 +1,16 @@
 package org.dwcj.bbjplugins;
 
 import com.basis.bbj.proxies.sysgui.BBjChildWindow;
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basiscomponents.db.ResultSet;
 import org.dwcj.Environment;
+import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.IStyleable;
 import org.dwcj.events.BBjGridExWidgetSelectEvent;
 import org.dwcj.events.sinks.BBjGridExWidgetSelectEventSink;
-import org.dwcj.panels.IPanel;
+import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 public class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
 
     private String sText = "";
-    private BBjControl the_grid;
 
     public BBjGridExWidget() {
     }
@@ -28,8 +27,8 @@ public class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
     }
 
     @Override
-    public void create(IPanel p) {
-        BBjWindow w = p.getBBjWindow();
+    public void create(AbstractDwcjPanel p) {
+
 
         byte[] b = new byte[4];
         //$
@@ -40,10 +39,10 @@ public class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
         //$
 
         try {
+            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             BBjChildWindow cw = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", b, Environment.getInstance().getSysGui().getAvailableContext());
-            the_grid = Environment.getInstance().getDwcjHelper().createWidget("::BBjGridExWidget/BBjGridExWidget.bbj::BBjGridExWidget", cw);
-            super.ctrl = cw;
-        } catch (BBjException e) {
+            super.ctrl = Environment.getInstance().getDwcjHelper().createWidget("::BBjGridExWidget/BBjGridExWidget.bbj::BBjGridExWidget", cw);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -51,17 +50,11 @@ public class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
     public void setData(ResultSet rs) {
         ArrayList args = new ArrayList();
         args.add(rs);
-        Environment.getInstance().getDwcjHelper().invokeMethod(the_grid, "setData", args);
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setData", args);
     }
 
     public void onSelect(Consumer<BBjGridExWidgetSelectEvent> callback) {
         new BBjGridExWidgetSelectEventSink(this, callback);
-    }
-
-    @Override
-    public BBjControl getControl() {
-        //return instance of BBjControl instead of the ChildWindow
-        return the_grid;
     }
 
     @Override

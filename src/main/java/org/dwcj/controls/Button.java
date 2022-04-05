@@ -2,9 +2,10 @@ package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ButtonPushEvent;
 import org.dwcj.events.sinks.BBjButtonPushEventSink;
-import org.dwcj.panels.IPanel;
+import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
@@ -20,12 +21,13 @@ public class Button extends AbstractDwcControl implements IStyleable, IThemable,
     }
 
     @Override
-    public void create(IPanel p) {
-        BBjWindow w = p.getBBjWindow();
+    public void create(AbstractDwcjPanel p) {
+
 
         try {
+            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, sText);
-        } catch (BBjException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bbjplugins.BBjGridExWidget;
+import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.events.BBjGridExWidgetSelectEvent;
 
 import java.util.function.Consumer;
@@ -18,13 +19,16 @@ public class BBjGridExWidgetSelectEventSink {
     public BBjGridExWidgetSelectEventSink(BBjGridExWidget grid, Consumer<BBjGridExWidgetSelectEvent> target) {
         this.target = target;
         this.grid = grid;
-        this.ctrl = grid.getControl();
 
+        BBjControl bbjctrl = null;
         try {
-            ctrl.setCallback(Environment.getInstance().getBBjAPI().ON_GRID_SELECT_ROW, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent", "::BBjGridExWidgetSelectEventProxy.bbj::BBjGridExWidgetSelectEventProxy"), "onEvent");
-        } catch (BBjException e) {
+            bbjctrl=ControlAccessor.getDefault().getBBjControl(grid);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_GRID_SELECT_ROW, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent", "::BBjGridExWidgetSelectEventProxy.bbj::BBjGridExWidgetSelectEventProxy"), "onEvent");
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        this.ctrl = bbjctrl;
     }
 
     public void onEvent(String eventString) {

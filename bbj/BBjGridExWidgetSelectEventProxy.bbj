@@ -1,5 +1,5 @@
 use org.dwcj.events.IEventProxy
-use org.dwcj.IDwcjHelper
+use org.dwcj.bridge.IDwcjBBjBridge
 use ::BBjGridExWidget/GxClientModels.bbj::GxClientRowModel
 
 

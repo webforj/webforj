@@ -2,7 +2,8 @@ package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import org.dwcj.panels.IPanel;
+import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.panels.AbstractDwcjPanel;
 
 public class Label extends AbstractDwcControl implements IStyleable {
 
@@ -16,12 +17,12 @@ public class Label extends AbstractDwcControl implements IStyleable {
     }
 
     @Override
-    public void create(IPanel p) {
-        BBjWindow w = p.getBBjWindow();
+    public void create(AbstractDwcjPanel p) {
 
         try {
+            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, sText);
-        } catch (BBjException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

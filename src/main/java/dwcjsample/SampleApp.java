@@ -9,7 +9,7 @@ public class SampleApp extends App {
     public void run() throws DwcAppInitializeException {
 
         new SampleAppPanel();
-    }
 
+    }
 
 }

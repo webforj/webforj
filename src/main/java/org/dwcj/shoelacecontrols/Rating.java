@@ -6,8 +6,9 @@ import com.basis.bbj.proxies.sysgui.BBjHtmlView;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ValueChangedEvent;
-import org.dwcj.panels.IPanel;
+import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
@@ -26,16 +27,18 @@ public class Rating extends AbstractShoelaceControl {
     }
 
     @Override
-    public void create(IPanel p) {
-        BBjWindow w = p.getBBjWindow();
+    public void create(AbstractDwcjPanel p) {
+
         try {
+            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             htmlv = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
             htmlv.setCallback(Environment.getInstance().getBBjAPI().ON_PAGE_LOADED, Environment.getInstance().getDwcjHelper().getEventProxy(this, "_cbPageLoaded"), "onEvent");
             htmlv.setCallback(Environment.getInstance().getBBjAPI().ON_NATIVE_JAVASCRIPT, Environment.getInstance().getDwcjHelper().getEventProxy(this, "_cbJS"), "onEvent");
             htmlv.setText("<sl-rating precision='" + precision + "' value='" + value + "' max='" + max + "' id='" + uuid + "'></sl-rating>");
             ctrl = htmlv;
+            htmlv.setNoEdge(true);
 
-        } catch (BBjException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         loadShoelaceLib();

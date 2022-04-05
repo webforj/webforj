@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
+import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.HtmlContainer;
 import org.dwcj.events.PageLoadedEvent;
 
@@ -18,17 +19,19 @@ public class BBjPageLoadedEventSink {
 
     @SuppressWarnings({"static-access"})
     public BBjPageLoadedEventSink(HtmlContainer htmlv, Consumer<PageLoadedEvent> target) {
-        App.msgbox(htmlv.toString());
         this.target = target;
-        App.msgbox(htmlv.getControl().toString());
-        this.ctrl = htmlv.getControl();
-        this.container = htmlv;
+
+        BBjControl bbjctrl = null;
+
         try {
-            ctrl.setCallback(Environment.getInstance().getBBjAPI().ON_PAGE_LOADED, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
-        } catch (BBjException e) {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(htmlv);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_PAGE_LOADED, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
+        this.ctrl = bbjctrl;
+        this.container = htmlv;
 
     }
 

@@ -3,7 +3,8 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import org.dwcj.panels.IPanel;
+import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.panels.AbstractDwcjPanel;
 
 public abstract class AbstractDwcControl {
 
@@ -14,7 +15,11 @@ public abstract class AbstractDwcControl {
 
     protected BBjControl ctrl;
 
-    public abstract void create(IPanel p);
+    static {
+        ControlAccessor.setDefault(new CtrlAccessorImpl());
+    }
+
+    public abstract void create(AbstractDwcjPanel p);
 
     public String getText() {
         try {
@@ -51,6 +56,22 @@ public abstract class AbstractDwcControl {
         }
     }
 
+    public void setAttribute(String attribute, String value){
+        try {
+            ctrl.setAttribute(attribute, value);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getAttribute(String attribute){
+        try {
+            return ctrl.getAttribute(attribute);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     protected void setControlTheme(IThemable.Theme theme) {
         try {
@@ -112,7 +133,15 @@ public abstract class AbstractDwcControl {
     }
 
 
-    public BBjControl getControl() {
+    BBjControl getControl() {
         return this.ctrl;
+    }
+
+    public void setVisible(boolean b) {
+        try {
+            ctrl.setVisible(b);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
     }
 }

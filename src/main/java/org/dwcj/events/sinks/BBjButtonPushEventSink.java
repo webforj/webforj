@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.Button;
 import org.dwcj.events.ButtonPushEvent;
 
@@ -19,13 +20,17 @@ public class BBjButtonPushEventSink {
     public BBjButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> target) {
         this.target = target;
         this.button = btn;
-        this.ctrl = btn.getControl();
 
+        BBjControl bbjctrl = null;
         try {
-            ctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
-        } catch (BBjException e) {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        this.ctrl = bbjctrl;
     }
 
     public void onEvent(BBjButtonPushEvent ev) {
