@@ -6,6 +6,11 @@ import com.google.common.primitives.Ints;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcAppInitializeException;
 
+/**
+ * AppPanel is the core main application panel.
+ * It typically occupied the full browser real estate and holds your app
+ * that consists of div container panels
+ */
 public class AppPanel extends AbstractDwcjPanel {
 
     public AppPanel() throws DwcAppInitializeException {
@@ -22,14 +27,13 @@ public class AppPanel extends AbstractDwcjPanel {
 
     }
 
-
     @Override
-    public void setStyle(String property, String value) {
+    public AppPanel setStyle(String property, String value) {
         wnd.setPanelStyle(property, value);
+        return null;
     }
 
-    @Override
-    public void create(AbstractDwcjPanel p) {
+    void create(AbstractDwcjPanel p) {
 
     }
 }

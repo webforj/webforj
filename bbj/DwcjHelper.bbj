@@ -12,8 +12,29 @@ class public EventProxy implements IEventProxy
     methodend
 
     method public void onEvent(BBjEvent ev!)
+
+            rem DWCJ declares certain event callbacks as private to prevent them from
+            rem being accessible by users of the API
+            rem hence this bridge has to use reflection in order to invoke the event callbacks
+            rem after making them accessible
+            rem potential improvement: clarify the proxy tpyes to get the method directly and
+            rem avoid iterating the whole method list
+
             o! = #obj!
-            eval("o!."+#method!+"(ev!)")
+
+
+            l!=  java.util.Arrays.asList(o!.getClass().getDeclaredMethods())
+            it! = l!.iterator()
+            while it!.hasNext()
+                m! = it!.next()
+                if m!.getName() = #method! then break
+            wend
+
+            m!.setAccessible(BBjAPI.TRUE)
+            m!.invoke(o!,ev!)
+
+            rem this was the original invocation (keeping for reference):
+            rem eval("o!."+#method!+"(ev!)")
     methodend
 
 classend

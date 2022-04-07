@@ -8,11 +8,9 @@ import org.dwcj.controls.IThemable.Theme;
 import org.dwcj.controls.Label;
 import org.dwcj.controls.TextBox;
 import org.dwcj.events.ButtonPushEvent;
-import org.dwcj.events.PageLoadedEvent;
-import org.dwcj.events.ValueChangedEvent;
+import org.dwcj.events.RatingValueChangedEvent;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.panels.AppPanel;
-import org.dwcj.panels.Div;
 import org.dwcj.shoelacecontrols.Rating;
 
 import java.util.HashMap;
@@ -30,6 +28,7 @@ public class SampleAppPanel extends AppPanel {
 
         super();
 
+        //setting some styles of the app panel itself
         setStyle("display", "inline-grid");
         setStyle("grid-template-columns", "1fr 2fr");
         setStyle("gap", "20px");
@@ -37,6 +36,8 @@ public class SampleAppPanel extends AppPanel {
         setStyle("top", "20px");
         setStyle("border", "1px dotted");
         setStyle("padding", "10px");
+
+        // add a few labels and data fields
 
         add(new Label("Firstname:"));
         ed_firstname = new TextBox();
@@ -58,6 +59,8 @@ public class SampleAppPanel extends AppPanel {
 
         add(new Label("Rating:"));
 
+        //the rating control from shoelace
+
         ratingctrl = new Rating();
         add(ratingctrl);
         ratingctrl.onValueChanged(this::onRatingChanged);
@@ -65,29 +68,21 @@ public class SampleAppPanel extends AppPanel {
         add(new Label(""));
         ratingText = new Label("");
         add(ratingText);
+
+        //the submit button
         Button btn = new Button("Say Hello");
         add(btn);
-
-        Div d = new Div();
-        add(d);
-        d.setStyle("height","100px");
-        d.setStyle("width","100px");
-        d.setStyle("background","yellow");
-
         btn.setTheme(Theme.WARNING);
-
         btn.setExpanse(Expanse.XLARGE);
-
         btn.setStyle("grid-column", "1 / span 2");
         btn.setStyle("width", "100%");
-
         btn.onClick(this::onSampleButtonPush);
 
     }
 
-    private void onRatingChanged(ValueChangedEvent valueChangedEvent) {
+    private void onRatingChanged(RatingValueChangedEvent ratingValueChangedEvent) {
 
-        Double v = valueChangedEvent.getValue();
+        Double v = ratingValueChangedEvent.getValue();
         String txt = "Poor";
         if (v > 0.0) txt = "Naja";
         if (v > 1.0) txt = "Hmm";
@@ -98,20 +93,9 @@ public class SampleAppPanel extends AppPanel {
         ratingText.setText(txt);
     }
 
-    private void onPageLoaded(PageLoadedEvent pageLoadedEvent) {
-        App.msgbox("loaded");
-    }
-
     private void onSampleButtonPush(ButtonPushEvent ev) {
         String text = ed_firstname.getText() + " " + ed_lastname.getText() + " (" + cb_gender.getText() + ")";
         App.msgbox(text, 0, "Hello World");
-
-        ratingctrl.setMaxValue(ratingctrl.getMaxValue() + 1);
-        ratingctrl.setValue(ratingctrl.getValue() + 1);
-        ratingctrl.setPrecision(ratingctrl.getPrecision() / 2);
-
-
     }
-
 
 }

@@ -10,7 +10,9 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.Iterator;
 import java.util.Map;
 
-
+/**
+ * Combobox Control
+ */
 public class ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
 
@@ -19,15 +21,17 @@ public class ComboBox extends AbstractDwclistControl implements IStyleable, IThe
 
 
     @Override
-    public void create(AbstractDwcjPanel p) {
+    void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addListButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "");
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
-            ctrl.setAttribute("button-height","auto");
+            ctrl.setAttribute("button-height", "auto");
             populate();
+            catchUp();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,54 +40,64 @@ public class ComboBox extends AbstractDwclistControl implements IStyleable, IThe
     }
 
 
-    public void setItems(Map<Object, String> values) {
+    /**
+     * set the list of items into the comboboc
+     *
+     * @param values A Map object containing the key-value pairs for the list
+     * @return the control itself
+     */
+    public ComboBox setItems(Map<Object, String> values) {
         this.values = values;
         populate();
+        return this;
     }
 
 
     @SuppressWarnings("unchecked")
     private void populate() {
-        if (values != null && ctrl != null)
-
-            try {
-                BBjListButton cb = (BBjListButton) ctrl;
-                cb.removeAllItems();
-                BBjVector v = new BBjVector();
-                Iterator<Object> it = values.keySet().iterator();
-                while (it.hasNext()) {
-                    v.add(values.get(it.next()));
-                }
-                cb.insertItems(0, v);
-            } catch (BBjException e) {
-                e.printStackTrace();
+        if (values != null && ctrl != null) try {
+            BBjListButton cb = (BBjListButton) ctrl;
+            cb.removeAllItems();
+            BBjVector v = new BBjVector();
+            Iterator<Object> it = values.keySet().iterator();
+            while (it.hasNext()) {
+                v.add(values.get(it.next()));
             }
+            cb.insertItems(0, v);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
 
     }
 
 
     @Override
-    public void setExpanse(Expanse expanse) {
+    public ComboBox setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
+        return this;
     }
 
     @Override
-    public void setStyle(String property, String value) {
+    public ComboBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
+        return this;
     }
 
     @Override
-    public void addClass(String selector) {
+    public ComboBox addClass(String selector) {
         super.addControlCssClass(selector);
+        return this;
     }
 
     @Override
-    public void removeClass(String selector) {
+    public ComboBox removeClass(String selector) {
         super.removeControlCssClass(selector);
+        return this;
     }
 
     @Override
-    public void setTheme(Theme theme) {
+    public ComboBox setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
     }
 }

@@ -10,8 +10,6 @@ import java.text.ParseException;
 public class BBjGridExWidgetSelectEvent implements IDwcEvent {
 
     private final BBjGridExWidget control;
-
-
     private final ResultSet selection;
 
     public BBjGridExWidgetSelectEvent(BBjGridExWidget theGrid, String eventString) {
@@ -32,6 +30,11 @@ public class BBjGridExWidgetSelectEvent implements IDwcEvent {
         return control;
     }
 
+    /**
+     * return the selection that is made effective by the user action that triggered the event
+     *
+     * @return the selected row(s) / records
+     */
     public ResultSet getSelection() {
         return selection;
     }

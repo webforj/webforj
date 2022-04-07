@@ -26,8 +26,17 @@ public class GridExWidgetSample extends App {
         grid.setStyle("height", "calc( 100vh - 100px )");
         grid.setStyle("width", "100%");
 
-        ResultSet rs = new ResultSet();
+        ResultSet rs = getData();
+        grid.setData(rs);
 
+        Label headline2 = new Label("Some Footer");
+        p.add(headline2);
+
+        grid.onSelect(this::onGridSelect);
+    }
+
+    private ResultSet getData() {
+        ResultSet rs = new ResultSet();
 
         try {
             DataRow dr = new DataRow();
@@ -48,17 +57,11 @@ public class GridExWidgetSample extends App {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        grid.setData(rs);
-
-        Label headline2 = new Label("Footer");
-        p.add(headline2);
-
-        grid.onSelect(this::onGridSelect);
+        return rs;
     }
 
-    private void onGridSelect(BBjGridExWidgetSelectEvent bBjGridExWidgetSelectEvent) {
-        ResultSet sel = bBjGridExWidgetSelectEvent.getSelection();
+    private void onGridSelect(BBjGridExWidgetSelectEvent BBjGridExWidgetSelectEvent) {
+        ResultSet sel = BBjGridExWidgetSelectEvent.getSelection();
         Iterator<DataRow> it = sel.iterator();
         while (it.hasNext()) {
             DataRow rec = it.next();

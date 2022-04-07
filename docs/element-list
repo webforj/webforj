@@ -2,7 +2,6 @@ org.dwcj
 org.dwcj.bbjplugins
 org.dwcj.controls
 org.dwcj.events
-org.dwcj.events.sinks
 org.dwcj.exceptions
 org.dwcj.panels
 org.dwcj.shoelacecontrols

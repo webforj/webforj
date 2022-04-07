@@ -1,27 +1,26 @@
 package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 public class Label extends AbstractDwcControl implements IStyleable {
 
-    private String sText = "";
-
     public Label() {
     }
 
     public Label(String text) {
-        this.sText = text;
+        setText(text);
     }
 
     @Override
-    public void create(AbstractDwcjPanel p) {
+    void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, sText);
+            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
+            ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText());
+            catchUp();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -29,25 +28,20 @@ public class Label extends AbstractDwcControl implements IStyleable {
     }
 
     @Override
-    public void setStyle(String property, String value) {
+    public Label setStyle(String property, String value) {
         super.setControlStyle(property, value);
+        return this;
     }
 
     @Override
-    public void addClass(String selector) {
+    public Label addClass(String selector) {
         super.addControlCssClass(selector);
+        return this;
     }
 
     @Override
-    public void removeClass(String selector) {
+    public Label removeClass(String selector) {
         super.removeControlCssClass(selector);
-    }
-
-    public void setText(String string) {
-        try {
-            ctrl.setText(string);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
+        return this;
     }
 }

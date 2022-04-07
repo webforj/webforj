@@ -3,16 +3,31 @@ package org.dwcj.panels;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.controls.IControl;
 import org.dwcj.controls.IStyleable;
 
+/**
+ * the base class for all panel implementations
+ */
 public abstract class AbstractDwcjPanel extends AbstractDwcControl implements IStyleable {
 
     protected BBjWindow wnd;
 
-    public void add(AbstractDwcControl ctrl) {
-        ctrl.create(this);
+    /**
+     * add a control to the panel
+     * @param ctrl the control to be added
+     * @return the panel itself
+     */
+    public AbstractDwcjPanel add(AbstractDwcControl ctrl) {
+        try {
+            ControlAccessor.getDefault().create(ctrl,this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
     static {
@@ -29,30 +44,33 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl implements IS
     }
 
     @Override
-    public void setStyle(String property, String value) {
+    public AbstractDwcjPanel setStyle(String property, String value) {
         try {
             wnd.setStyle(property, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override
-    public void addClass(String selector) {
+    public AbstractDwcjPanel addClass(String selector) {
         try {
             wnd.addStyle(selector);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override
-    public void removeClass(String selector) {
+    public AbstractDwcjPanel removeClass(String selector) {
         try {
             wnd.removeStyle(selector);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
 

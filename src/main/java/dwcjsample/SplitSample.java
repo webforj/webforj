@@ -17,18 +17,19 @@ public class SplitSample extends App {
         Label headline = new Label("<html><h2>Split Panel Demo</h2>");
         p.add(headline);
 
-        SplitPanel sp = new SplitPanel(true);
+        SplitPanel sp = new SplitPanel(false);
         sp.setPosition(20);
         p.add(sp);
 
+        sp.setStyle("height", "400px");
+        sp.setStyle("height", "500px");
+        sp.setStyle("width", "100%");
+        sp.getStartPanel().setStyle("background-color", "red");
 
-        sp.setStyle("height","400px");
+        sp.getStartPanel().add(new Button("getStartPanel"));
+        sp.getStartPanel().add(new Button("getStartPanel1"));
 
-
-        sp.setStyle("height","500px");
-        sp.setStyle("width","100%");
-        sp.getStartPanel().setStyle("background-color","red");
-        sp.getEndPanel().setStyle("background-color","blue");
+        sp.getEndPanel().setStyle("background-color", "blue");
 
 
         sp.getEndPanel().add(new Button("TEST"));

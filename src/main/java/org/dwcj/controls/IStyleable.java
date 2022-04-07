@@ -2,10 +2,31 @@ package org.dwcj.controls;
 
 public interface IStyleable {
 
-    void setStyle(String property, String value);
+    /**
+     * set an HTML style property
+     *
+     * @param property the property, e.g. "color"
+     * @param value    the property value, e.g. "red"
+     * @return the control itself
+     */
+    IStyleable setStyle(String property, String value);
 
-    void addClass(String selector);
+    //todo: add methods for removing and getting styles
 
-    void removeClass(String selector);
+    /**
+     * set a CSS class name to a control
+     *
+     * @param selector the class name
+     * @return the control itself
+     */
+    IStyleable addClass(String selector);
+
+    /**
+     * remove a class selector from the control
+     *
+     * @param selector the class selector to be removed
+     * @return the control itself
+     */
+    IStyleable removeClass(String selector);
 
 }

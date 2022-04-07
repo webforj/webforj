@@ -1,7 +1,6 @@
 package org.dwcj.events.sinks;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bbjplugins.BBjGridExWidget;
 import org.dwcj.bridge.ControlAccessor;

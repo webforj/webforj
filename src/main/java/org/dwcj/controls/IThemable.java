@@ -1,9 +1,14 @@
 package org.dwcj.controls;
 
-
 public interface IThemable {
 
-    void setTheme(Theme theme);
+    /**
+     * set the theme to the control
+     *
+     * @param theme the theme to apply
+     * @return the control itself
+     */
+    IThemable setTheme(Theme theme);
 
     enum Theme {
         DEFAULT,
@@ -14,5 +19,6 @@ public interface IThemable {
         SUCCESS,
         WARNING
     }
+
 
 }

@@ -11,7 +11,7 @@ public class ButtonPushEvent implements IDwcEvent {
     }
 
     @Override
-    public AbstractDwcControl getControl() {
+    public Button getControl() {
         return control;
     }
 }

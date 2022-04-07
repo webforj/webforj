@@ -12,7 +12,7 @@ public class JavascriptEvent implements IDwcEvent {
     }
 
     @Override
-    public AbstractDwcControl getControl() {
+    public HtmlContainer getControl() {
         return control;
     }
 }
