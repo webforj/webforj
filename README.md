@@ -41,3 +41,10 @@ in config.bbj: SET DWCJCLASSNAME=your.class.name.Here
 OR
 
 as first program arg in EM (just the classname)
+
+## Javadoc
+
+The Javadoc of the engine can be found here:
+
+https://dwcjava.github.io/engine/
+
