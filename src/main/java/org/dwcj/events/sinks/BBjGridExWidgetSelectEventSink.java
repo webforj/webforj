@@ -8,7 +8,7 @@ import org.dwcj.events.BBjGridExWidgetSelectEvent;
 
 import java.util.function.Consumer;
 
-public class BBjGridExWidgetSelectEventSink {
+public final class BBjGridExWidgetSelectEventSink {
 
     private final Consumer<BBjGridExWidgetSelectEvent> target;
     private final BBjControl ctrl;

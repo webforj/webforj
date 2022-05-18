@@ -9,7 +9,7 @@ import org.dwcj.Environment;
  * This class represents a div container, which behaves as a panel and
  * can be styled and hold other divs (panels) and controls
  */
-public class Div extends AbstractDwcjPanel {
+public final class Div extends AbstractDwcjPanel {
 
     public Div() {
     }

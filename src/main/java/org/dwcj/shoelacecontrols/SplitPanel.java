@@ -11,7 +11,7 @@ import org.dwcj.controls.IStyleable;
 import org.dwcj.panels.AbstractDwcjPanel;
 import org.dwcj.panels.Div;
 
-public class SplitPanel extends AbstractShoelaceControl implements IStyleable {
+public final class SplitPanel extends AbstractShoelaceControl implements IStyleable {
 
     final private String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 

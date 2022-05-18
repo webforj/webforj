@@ -2,7 +2,7 @@ package org.dwcj.events;
 
 import org.dwcj.controls.AbstractDwcControl;
 
-public class RatingValueChangedEvent implements IDwcEvent {
+public final class RatingValueChangedEvent implements IDwcEvent {
 
     private final AbstractDwcControl control;
     private final Double value;

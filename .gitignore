@@ -30,3 +30,7 @@ hs_err_pid*
 /.settings/org.eclipse.core.resources.prefs
 /.settings/org.eclipse.jdt.core.prefs
 /.settings/org.eclipse.m2e.core.prefs
+bbj/.bdtPath
+bbj/.buildpath
+bbj/.project
+.DS_Store

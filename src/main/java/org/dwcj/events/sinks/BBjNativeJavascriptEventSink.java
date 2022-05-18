@@ -10,7 +10,7 @@ import org.dwcj.events.JavascriptEvent;
 
 import java.util.function.Consumer;
 
-public class BBjNativeJavascriptEventSink {
+public final class BBjNativeJavascriptEventSink {
 
 
     private final Consumer<JavascriptEvent> target;

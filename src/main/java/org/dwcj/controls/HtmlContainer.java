@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public class HtmlContainer extends AbstractDwcControl implements IStyleable {
+public final class HtmlContainer extends AbstractDwcControl implements IStyleable {
 
     public HtmlContainer() {
     }

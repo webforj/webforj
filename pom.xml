@@ -44,6 +44,15 @@
                 <jar-directory>/opt/bbj/lib</jar-directory>
             </properties>
         </profile>
+        <profile>
+            <id>macbbjlib</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <jar-directory>/Users/beff/bbx/lib</jar-directory>
+            </properties>
+        </profile>
     </profiles>
 
     <dependencies>

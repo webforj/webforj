@@ -7,7 +7,7 @@ import org.dwcj.controls.AbstractDwcControl;
 import java.io.IOException;
 import java.text.ParseException;
 
-public class BBjGridExWidgetSelectEvent implements IDwcEvent {
+public final class BBjGridExWidgetSelectEvent implements IDwcEvent {
 
     private final BBjGridExWidget control;
     private final ResultSet selection;

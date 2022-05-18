@@ -12,7 +12,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public class Rating extends AbstractShoelaceControl {
+public final class Rating extends AbstractShoelaceControl {
 
     final private String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 

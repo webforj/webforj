@@ -11,7 +11,7 @@ import org.dwcj.events.PageLoadedEvent;
 
 import java.util.function.Consumer;
 
-public class BBjPageLoadedEventSink {
+public final class BBjPageLoadedEventSink {
 
     private final Consumer<PageLoadedEvent> target;
     private final BBjControl ctrl;

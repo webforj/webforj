@@ -1,6 +1,6 @@
 package org.dwcj.exceptions;
 
-public class DwcAppInitializeException extends Exception {
+public final class DwcAppInitializeException extends Exception {
 
     /**
      *

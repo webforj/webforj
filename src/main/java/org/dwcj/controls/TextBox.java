@@ -5,8 +5,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
-public class TextBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
-
+public final class    TextBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     public TextBox() {
     }

@@ -8,7 +8,7 @@ import org.dwcj.bridge.IDwcjBBjBridge;
 
 import java.util.HashMap;
 
-public class Environment {
+public final class Environment {
 
     private static final HashMap<Object, Environment> instanceMap = new HashMap<>();
     private final BBjAPI api;

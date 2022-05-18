@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Combobox Control
  */
-public class ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
+public final class    ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
 
     public ComboBox() {

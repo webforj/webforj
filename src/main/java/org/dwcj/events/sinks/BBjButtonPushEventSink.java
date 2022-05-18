@@ -10,7 +10,7 @@ import org.dwcj.events.ButtonPushEvent;
 
 import java.util.function.Consumer;
 
-public class BBjButtonPushEventSink {
+public final class BBjButtonPushEventSink {
 
     private final Consumer<ButtonPushEvent> target;
     private final Button button;

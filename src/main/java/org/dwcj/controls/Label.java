@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public class Label extends AbstractDwcControl implements IStyleable {
+public final class Label extends AbstractDwcControl implements IStyleable {
 
     public Label() {
     }

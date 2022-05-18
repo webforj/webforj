@@ -3,7 +3,7 @@ package org.dwcj.events;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.HtmlContainer;
 
-public class JavascriptEvent implements IDwcEvent {
+public final class JavascriptEvent implements IDwcEvent {
 
     private final HtmlContainer control;
 
