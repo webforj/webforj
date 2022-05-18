@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
 
     /**
@@ -23,7 +23,8 @@ public class Button extends AbstractDwcControl implements IStyleable, IThemable,
     /**
      * Create the button with a text
      *
-     * @param text
+     * @param text The caption of the button
+     *
      */
     public Button(String text) {
         super.setText(text);
