@@ -24,7 +24,7 @@ public abstract class PanelAccessor {
             return a;
         }
         try {
-            Class.forName(org.dwcj.panels.AbstractDwcjPanel.class.getName(), true, AbstractDwcjPanel.class.getClassLoader());
+            Class.forName(AbstractDwcjPanel.class.getName(), true, AbstractDwcjPanel.class.getClassLoader());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

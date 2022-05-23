@@ -1,6 +1,8 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ButtonPushEvent;
 import org.dwcj.events.sinks.BBjButtonPushEventSink;
@@ -13,6 +15,7 @@ import java.util.function.Consumer;
  */
 public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
+    private Consumer<ButtonPushEvent> callback;
 
     /**
      * create a Button
@@ -49,8 +52,37 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
      * @return the control itself
      */
     public Button onClick(Consumer<ButtonPushEvent> callback) {
+        this.callback = callback;
         new BBjButtonPushEventSink(this, callback);
         return this;
+    }
+
+    /**
+     * Clicks the button, for testing purposes
+     */
+    public void doClick() {
+        ButtonPushEvent dwc_ev = new ButtonPushEvent(this);
+        callback.accept(dwc_ev);
+    }
+
+    public boolean getDisableOnClick() {
+        //todo: why could an exception be thrown?
+        BBjButton btn = (BBjButton) this.ctrl;
+        try {
+            return btn.getDisableOnClick();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void setDisableOnClick(boolean disable) {
+        BBjButton btn = (BBjButton) this.ctrl;
+        try {
+            btn.setDisableOnClick(disable);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

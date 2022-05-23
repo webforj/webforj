@@ -50,5 +50,5 @@ public interface IDwcjBBjBridge {
      * @param args the arguments as a List
      * @return
      */
-    java.lang.Object invokeMethod(java.lang.Object object, java.lang.String method, java.util.ArrayList args);
+    Object invokeMethod(Object object, String method, java.util.ArrayList args);
 }

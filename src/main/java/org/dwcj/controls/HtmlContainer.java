@@ -1,5 +1,6 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.proxies.sysgui.BBjHtmlView;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.JavascriptEvent;

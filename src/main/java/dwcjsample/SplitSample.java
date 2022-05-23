@@ -7,7 +7,7 @@ import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.panels.AppPanel;
 import org.dwcj.shoelacecontrols.SplitPanel;
 
-public class SplitSample extends App {
+public final class SplitSample extends App {
 
     @Override
     public void run() throws DwcAppInitializeException {
