@@ -56,8 +56,10 @@ public abstract class AbstractDwcControl implements IControl {
         } catch (BBjException e) {
             e.printStackTrace();
         }
-
-        this.text = text;
+        if (text != null)
+            this.text = new String(text.getBytes());
+        else
+            this.text = "<null>";
         return this;
     }
 
