@@ -115,7 +115,7 @@ class public DwcjHelper implements IDwcjBBjBridge
             for argnum=0 to args!.size()-1
                 arg! = args!.get(argnum)
                 if arg!.getType()=org.dwcj.bbj.BBjVar.BBjGenericType.NUMERIC then
-                    ret!.add(new org.dwcj.bbj.BBjVar(new java.math.BigDecimal(neval("A"+str(argnum)))))
+                    ret!.add(new org.dwcj.bbj.BBjVar(new java.math.BigDecimal(str(neval("A"+str(argnum))))))
                 fi
                 if arg!.getType() = org.dwcj.bbj.BBjVar.BBjGenericType.INTEGER then
                         ret!.add(new org.dwcj.bbj.BBjVar(new Integer(neval("A"+str(argnum)+"%"))))
