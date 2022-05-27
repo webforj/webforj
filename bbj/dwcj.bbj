@@ -1,5 +1,10 @@
 use org.dwcj.Environment
 
+SETESC EscTrap
+SETERR ErrTrap
+
+BBJAPI().getConfig().releaseOnLostConnection(0)
+
 BBjAPI().getAdmin("admin","admin123",err=*next).getEnvironment().reloadClasspath(BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName())
 
 if INFO(3,6)<>"6" then goto deploy
@@ -25,7 +30,7 @@ Environment.init(BBjAPI(), h!)
 
 app! = eval("new "+class$+"()")
 
-process_events
+process_events,err=ErrTrap
 
 terminate:
     release
@@ -77,3 +82,21 @@ fi
 appServer!.publish(app!)
 BBjAPI().getThinClient().browse("http://localhost:8888/webapp/"+appname$)
 release
+
+EscTrap:
+    IF AND(CHR(TCB(19)),$08$)=$08$ THEN
+        System.out.println("Client Died")
+    ELSE
+        System.out.println("ESCAPE")
+    FI
+    if app! <> null() then
+        app!.cleanup()
+    fi
+RELEASE
+
+ErrTrap:
+    System.out.println("Error Caught")
+    if app! <> null() then
+        app!.cleanup()
+    fi
+RELEASE
