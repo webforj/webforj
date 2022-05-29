@@ -9,17 +9,17 @@ import java.util.zip.ZipFile;
 public class AppFinder {
 
     private final Class appBaseClass;
-    private final Set appImplmentations = new HashSet(10);
+    private final TreeSet<String> appImplmentations = new TreeSet<>();
 
     final private List<String> cpEntriesToCheck;
 
     public AppFinder(List<String>cpEntriesToCheck) throws ClassNotFoundException {
         this.cpEntriesToCheck = cpEntriesToCheck;
         appBaseClass = Class.forName("org.dwcj.App");
-
     }
 
-    protected void checkClass(String className) {
+
+    private void checkClass(String className) {
 
 
         Class tmpClass = null;
@@ -29,12 +29,12 @@ public class AppFinder {
             throw new RuntimeException(e);
         }
 
-        if (tmpClass != null && this.appBaseClass.isAssignableFrom(tmpClass)) {
+        if (tmpClass != null && this.appBaseClass.isAssignableFrom(tmpClass) && !className.equals("org.dwcj.App") && !className.equals("org.dwcj.util.WelcomeApp")) {
             this.appImplmentations.add(className);
         }
     }
 
-    public Set getAppImplmentations() {
+    public Set<String> getAppImplmentations() {
 
         if (this.cpEntriesToCheck != null) {
             Iterator<String> it = cpEntriesToCheck.iterator();

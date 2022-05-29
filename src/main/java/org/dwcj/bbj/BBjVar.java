@@ -11,7 +11,7 @@ public class BBjVar {
     private final Object objVal;
     private final BBjGenericType type;
 
-    public static enum BBjGenericType {
+    public enum BBjGenericType {
         NUMERIC,
         STRING,
         INTEGER,

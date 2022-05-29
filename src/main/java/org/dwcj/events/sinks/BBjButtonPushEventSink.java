@@ -34,7 +34,7 @@ public final class BBjButtonPushEventSink {
     }
 
     public void onEvent(BBjButtonPushEvent ev) {
-        ButtonPushEvent dwc_ev = new ButtonPushEvent(null);
+        ButtonPushEvent dwc_ev = new ButtonPushEvent(button);
         target.accept(dwc_ev);
     }
 

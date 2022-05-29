@@ -1,13 +1,12 @@
 use org.dwcj.Environment
 
+use ::admin.bbj::Admin
+use ::admin.bbj::UserCredentials
+
 SETESC EscTrap
 SETERR ErrTrap
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
-
-BBjAPI().getAdmin("admin","admin123",err=*next).getEnvironment().reloadClasspath(BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName())
-
-if INFO(3,6)<>"6" then goto deploy
 
 class$=""
 
@@ -22,7 +21,8 @@ if class$="" then
 fi
 
 if class$="" then
-    class$="dwcjsample.SampleApp"
+    class$="org.dwcj.util.WelcomeApp"
+    gosub determineClasspathEntries
 fi
 
 h! = new ::DwcjHelper.bbj::DwcjHelper() 
@@ -35,53 +35,34 @@ process_events,err=ErrTrap
 terminate:
     release
     
-    
-deploy:
-source$=pgm(-1)
-appname$ = source$(1,pos("."=source$,1,pos("."=source$,1,0))-1)
-while pos("/"=appname$)>0
-    path$=path$+appname$(1,pos("/"=appname$)-1)+"/"
-    appname$=appname$(pos("/"=appname$)+1)
-wend
-while pos("\"=appname$)>0
-    path$=path$+appname$(1,pos("\"=appname$)-1)+"/"
-    appname$=appname$(pos("\"=appname$)+1)
-wend
-REM do not push 
-path$= DSK("") + DIR("")
-bbjHome! = System.getProperty("basis.BBjHome")
 
-config$ = BBjAPI().getConfig().getCurrentCommandLineObject().getConfigFile()
-classpath! = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
 
-appServer! = bbjapi().getAdmin("admin","admin123").getWebAppServer()
+determineClasspathEntries:
+        admin! = new Admin()
+        userCredentials! = admin!.getUserCredentials()
+        if (userCredentials! <> null()) then
+            Api! = BBjAdminFactory.getBBjAdmin(userCredentials!.getUser(),userCredentials!.getPassword())
+        endif
+        if (Api! = null()) then
+            a=msgbox( "Could not access application server")
+            release
+        endif
+        cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
+        cp! = Api!.getClasspath(cp$)
+        
+        al! = new java.util.ArrayList()
+        it!=cp!.iterator()
+        while it!.hasNext()
+            c$ = it!.next()
+            if c$(1,1)="(" or pos("lib/dwcj-" =c$)>0 then
+                continue
+            fi
+            al!.add(c$)
+        wend
+        
+        BBjAPI().getObjectTable().put("dwcjcp",al!)
+return
 
-appConfig! = appServer!.makeEmptyAppConfig()
-appConfig!.setProgramName(source$)
-
-if favicon$>"" then
-   favicon$=BBjAPI().getFileSystem().resolvePath(favicon$,err=*endif) 
-   icon! = appServer!.addApplicationIcon(favicon$)
-   appConfig!.setApplicationIcon(icon!)
-fi
-
-appConfig!.setConfigFile(config$)
-if classpath! <> null() then
-    appConfig!.setClasspathName(classpath!)
-fi
-appConfig!.setWorkingDirectory(path$)
-
-appConfig!.setDwcEnabled(1)
-appConfig!.setBuiEnabled(0)
-
-app! = appConfig!.buildApplication(appname$)
-published = appServer!.isPublished(app!)
-if (published) then
-    appServer!.unpublish(appname$)
-fi
-appServer!.publish(app!)
-BBjAPI().getThinClient().browse("http://localhost:8888/webapp/"+appname$)
-release
 
 EscTrap:
     IF AND(CHR(TCB(19)),$08$)=$08$ THEN
@@ -95,7 +76,7 @@ EscTrap:
 RELEASE
 
 ErrTrap:
-    System.out.println("Error Caught")
+    System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
     if app! <> null() then
         app!.cleanup()
     fi

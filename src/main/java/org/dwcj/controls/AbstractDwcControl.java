@@ -26,9 +26,11 @@ public abstract class AbstractDwcControl implements IControl {
     private String text = "";
     private IThemable.Theme theme;
     private IExpansible.Expanse expanse;
-    private Map<String, String> attributes = new HashMap<String, String>();
-    private Map<String, String> styles = new HashMap<String, String>();
-    private List<String> cssClasses = new ArrayList<>();
+    private final Map<String, String> attributes = new HashMap<String, String>();
+    private final Map<String, String> styles = new HashMap<String, String>();
+    private final List<String> cssClasses = new ArrayList<>();
+
+    private final Map<String, Object> userData = new HashMap<String, Object>();
     private boolean caughtUp = false;
     private Boolean visible = null;
 
@@ -37,7 +39,7 @@ public abstract class AbstractDwcControl implements IControl {
      * Panel::add(Control) method, instead of this
      * @param p
      */
-    void create(AbstractDwcjPanel p) {};
+    void create(AbstractDwcjPanel p) {}
 
     @Override
     public String getText() {
@@ -269,5 +271,13 @@ public abstract class AbstractDwcControl implements IControl {
 
         this.caughtUp = true;
 
+    }
+
+    public void setUserData(String key, Object data){
+        userData.put(key, data);
+    }
+
+    public Object getUserData(String key){
+        return userData.get(key);
     }
 }
