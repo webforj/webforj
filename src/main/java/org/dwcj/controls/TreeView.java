@@ -5,21 +5,34 @@ import com.basis.bbj.proxies.sysgui.BBjTree;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.basis.startup.type.sysgui.BBjColor;
-import com.basis.util.common.BasisNumber;
-import org.checkerframework.checker.units.qual.C;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.sinks.treeview.*;
+import org.dwcj.events.treeview.*;
 import org.dwcj.models.Icon;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-import java.awt.*;
-import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public final class TreeView extends AbstractDwcControl implements IExpansible {
 
-    private BBjTree tree = (BBjTree) this.ctrl;
+    private BBjTree tree;
+
+    private Consumer<TreeGainedFocusEvent> gainedFocusCallback;
+
+    private Consumer<TreeLostFocusEvent> lostFocusCallback;
+
+    private Consumer<TreeSelectedEvent> selectCallback;
+
+    private Consumer<TreeDeselectEvent> deselectCallback;
+
+    private Consumer<TreeExpandedEvent> expandCallback;
+
+    private Consumer<TreeCollapseEvent> collapseCallback;
+
+    private Consumer<TreeEditStoppedEvent> editStopCallback;
+
+    private Consumer<TreeDoubleClickedEvent> doubleClickCallback;
 
     public TreeView() {
     }
@@ -31,6 +44,7 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             catchUp();
+            tree = (BBjTree) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,7 +121,7 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
     public void insertNode(int childID, int parentID, String text, int index) {
         try {
             tree.insertNode(childID, parentID, text, index);
-        } catch (Exception e) {
+        } catch (BBjException e) {
             e.printStackTrace();
         }
     }
@@ -501,6 +515,54 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
         } catch (BBjException e) {
             e.printStackTrace();
         }
+    }
+
+    public TreeView onGainedFocus(Consumer<TreeGainedFocusEvent> callback) {
+        this.gainedFocusCallback = callback;
+        new BBjTreeGainedFocusEventSink(this,callback);
+        return this;
+    }
+
+    public TreeView onLostFocus(Consumer<TreeLostFocusEvent> callback) {
+        this.lostFocusCallback = callback;
+        new BBjTreeLostFocusEventSink(this,callback);
+        return this;
+    }
+
+    public TreeView onSelect(Consumer<TreeSelectedEvent> callback) {
+        this.selectCallback = callback;
+        new BBjTreeSelectEventSink(this,callback);
+        return this;
+    }
+
+    public TreeView onDeselect(Consumer<TreeDeselectEvent> callback) {
+        this.deselectCallback = callback;
+        new BBjTreeDeselectEventSink(this, callback);
+        return this;
+    }
+
+    public TreeView onExpand(Consumer<TreeExpandedEvent> callback) {
+        this.expandCallback = callback;
+        new BBjTreeExpandEventSink(this, callback);
+        return this;
+    }
+
+    public TreeView onCollapse(Consumer<TreeCollapseEvent> callback) {
+        this.collapseCallback = callback;
+        new BBjTreeCollapseEventSink(this,callback);
+        return this;
+    }
+
+    public TreeView onEditStopped(Consumer<TreeEditStoppedEvent> callback) {
+        this.editStopCallback = callback;
+        new BBjTreeEditStopEventSink(this,callback);
+        return this;
+    }
+
+    public TreeView onDoubleClick(Consumer<TreeDoubleClickedEvent> callback) {
+        this.doubleClickCallback = callback;
+        new BBjTreeDoubleClickEventSink(this, callback);
+        return this;
     }
 
     @Override

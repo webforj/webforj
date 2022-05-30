@@ -1,6 +1,8 @@
 package org.dwcj.models;
 
-import java.io.File;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -23,17 +25,35 @@ public class Icon {
 
   */
 
-    /*
-    public static Icon loadFromFile(File file) {
 
-
+    public Icon loadFromFile(File file) {
+        this.file = file;
+        return this;
     }
 
-    public static Icon loadFromURL(String url) {
-
+    public Icon loadFromURL(String url) {
+        try {
+            this.file = new File(new URL(url).toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
-     */
+    public Icon loadFromResources(String resource) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(resource);
+        try (OutputStream outputStream = new FileOutputStream(this.file)) {
+            IOUtils.copy(inputStream, outputStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
 
     public File getFile() { return file; }
 }
