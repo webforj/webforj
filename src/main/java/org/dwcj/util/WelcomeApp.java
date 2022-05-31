@@ -100,6 +100,7 @@ public class WelcomeApp extends App {
             panel.add(new Label("<html><p>In production systems, you may want to set the classname as an argument " +
                     "to the deployed app to avoid the loading time by scanning the classpath!</p>"));
         }
+        panel.add(new Label("<html><p>If you do not see an App that you have created recently, please remember that you may have to compile / build it first in your IDE.</p>"));
     }
 
     private void onLaunchClick(ButtonPushEvent buttonPushEvent) {
