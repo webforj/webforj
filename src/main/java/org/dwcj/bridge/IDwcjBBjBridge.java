@@ -3,9 +3,6 @@ package org.dwcj.bridge;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
-import org.dwcj.bbj.BBjVar;
-
-import java.util.ArrayList;
 
 public interface IDwcjBBjBridge {
 
@@ -53,7 +50,7 @@ public interface IDwcjBBjBridge {
      * @param args the arguments as a List
      * @return
      */
-    Object invokeMethod(Object object, String method, ArrayList args);
+    Object invokeMethod(Object object, String method, java.util.ArrayList args);
 
     ArrayList<BBjVar> call(String pgm, ArrayList<BBjVar> args);
 }
