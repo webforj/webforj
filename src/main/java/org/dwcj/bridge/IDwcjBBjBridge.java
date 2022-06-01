@@ -51,4 +51,6 @@ public interface IDwcjBBjBridge {
      * @return
      */
     Object invokeMethod(Object object, String method, java.util.ArrayList args);
+
+    ArrayList<BBjVar> call(String pgm, ArrayList<BBjVar> args);
 }
