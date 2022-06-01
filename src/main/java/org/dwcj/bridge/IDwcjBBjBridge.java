@@ -3,6 +3,9 @@ package org.dwcj.bridge;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
+import org.dwcj.bbj.BBjVar;
+
+import java.util.ArrayList;
 
 public interface IDwcjBBjBridge {
 

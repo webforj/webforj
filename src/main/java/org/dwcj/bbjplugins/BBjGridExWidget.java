@@ -15,7 +15,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
+public final class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
 
     private String sText = "";
 

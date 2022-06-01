@@ -5,16 +5,20 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.ComboBoxSelectEvent;
+import org.dwcj.events.sinks.BBjComboBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Combobox Control
  */
 public final class    ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
+    private Consumer<ComboBoxSelectEvent> callback;
 
     public ComboBox() {
     }
@@ -39,9 +43,21 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
 
     }
 
+    /**
+     * Add an item into the combobox
+     *
+     * @param key the item key
+     * @param value the item's value
+     * @return the control itself
+     */
+    public ComboBox addItem(Object key, String value) {
+        this.values.put(key, value);
+        populate();
+        return this;
+    }
 
     /**
-     * set the list of items into the comboboc
+     * set the list of items into the combobox
      *
      * @param values A Map object containing the key-value pairs for the list
      * @return the control itself
@@ -50,6 +66,40 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         this.values = values;
         populate();
         return this;
+    }
+
+    /**
+     *
+     * @return all values in the comboBox
+     */
+    public Map<Object, String> getAllItems() {
+        return this.values;
+    }
+
+    /**
+     * Returns an item from the comboBox
+     *
+     * @param index the index of the requested item
+     * @return the item itself
+     */
+    public String getItemAt(int index) {
+        try {
+            return ((BBjListButton) this.ctrl).getItemAt(index);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * opens the ComboBox dropdown list
+     */
+    public void open() {
+        try {
+            ((BBjListButton) this.ctrl).openList();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -70,6 +120,18 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
 
     }
 
+    public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
+        new BBjComboBoxSelectEventSink(this, callback);
+        return this;
+    }
+
+    /**
+     * Selects an element, for testing purposes
+     */
+    public void doSelect() {
+        ComboBoxSelectEvent dwc_ev = new ComboBoxSelectEvent(this);
+        callback.accept(dwc_ev);
+    }
 
     @Override
     public ComboBox setExpanse(Expanse expanse) {
