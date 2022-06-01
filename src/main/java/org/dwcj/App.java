@@ -71,9 +71,16 @@ public abstract class App {
      */
     public void terminate() {
         Environment.getInstance().getBBjAPI().postPriorityCustomEvent("doTerminate", null);
+        cleanup();
         Environment.cleanup();
     }
 
+    /**
+     * Override this method to implement custom cleanup
+     * e.g. kill all background threads that may still run
+     */
+    public void cleanup() {
+    }
     /**
      * Override this method to implement your app behavior
      * @throws DwcAppInitializeException

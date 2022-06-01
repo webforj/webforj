@@ -1,5 +1,6 @@
 use org.dwcj.events.IEventProxy
 use org.dwcj.bridge.IDwcjBBjBridge
+use java.util.ArrayList
 
 class public EventProxy implements IEventProxy
 
@@ -70,6 +71,65 @@ class public DwcjHelper implements IDwcjBBjBridge
         cmd! = cmd! + ")"
         result!=eval(cmd!)
         methodret result!
+    methodend
+
+    method public ArrayList call(String pgm!, ArrayList args!)
+        stmt$="CALL """+pgm!+""""
+        prep$="ENTER"+$0a$
+        for argnum=0 to args!.size()-1
+            arg! = args!.get(argnum)
+            if arg!.getType()=org.dwcj.bbj.BBjVar.BBjGenericType.NUMERIC then
+                stmt$=stmt$+",A"+str(argnum)+""
+                x$ = "A"+str(argnum)+" = args!.get("+str(argnum)+").getNumVal()"
+            fi
+            if arg!.getType() = org.dwcj.bbj.BBjVar.BBjGenericType.INTEGER then
+                    stmt$=stmt$+",A"+str(argnum)+"%"
+                    x$ = "A"+str(argnum)+"% = args!.get("+str(argnum)+").getIntVal()"
+            fi
+            if arg!.getType()= org.dwcj.bbj.BBjVar.BBjGenericType.STRING then
+                    stmt$=stmt$+",A"+str(argnum)+"$"
+                    x$ = "A"+str(argnum)+"$ = args!.get("+str(argnum)+").getStrVal()"
+            fi
+            if arg!.getType()=org.dwcj.bbj.BBjVar.BBjGenericType.OBJECT then
+                    stmt$=stmt$+",A"+str(argnum)+"!"
+                    x$ = "A"+str(argnum)+"! = args!.get("+str(argnum)+").getObjVal()"
+            fi
+            prep$=prep$+x$+$0a$
+        next
+
+        prep$=prep$+stmt$+$0a$
+
+        rem create prep call program
+
+            f! = java.io.File.createTempFile("pgm_",".bbj")
+            f!.deleteOnExit()
+
+            ch=unt
+            open (ch,mode="O_CREATE,O_TRUNC")f!.getAbsolutePath()
+            print (ch)prep$
+            close (ch)
+            call f!.getAbsolutePath()
+            erase f!.getAbsolutePath()
+
+            ret! = new java.util.ArrayList()
+            for argnum=0 to args!.size()-1
+                arg! = args!.get(argnum)
+                if arg!.getType()=org.dwcj.bbj.BBjVar.BBjGenericType.NUMERIC then
+                    ret!.add(new org.dwcj.bbj.BBjVar(new java.math.BigDecimal(str(neval("A"+str(argnum))))))
+                fi
+                if arg!.getType() = org.dwcj.bbj.BBjVar.BBjGenericType.INTEGER then
+                        ret!.add(new org.dwcj.bbj.BBjVar(new Integer(neval("A"+str(argnum)+"%"))))
+                fi
+                if arg!.getType()= org.dwcj.bbj.BBjVar.BBjGenericType.STRING then
+                        ret!.add(new org.dwcj.bbj.BBjVar(seval("A"+str(argnum)+"$")))
+                fi
+                if arg!.getType()=org.dwcj.bbj.BBjVar.BBjGenericType.OBJECT then
+                        ret!.add(new org.dwcj.bbj.BBjVar(eval("A"+str(argnum)+"!")))
+                fi
+            next
+
+
+        methodret ret!
     methodend
 
 classend
