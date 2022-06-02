@@ -62,6 +62,31 @@ public abstract class App {
         return Environment.getInstance().getDwcjHelper().msgbox(alert, options, title);
     }
 
+    /**
+     * Show or hide a busy indicator overlay
+     * @param busy A boolean value true=show false=hide
+     */
+    public static void busy(Boolean busy){
+        try {
+            if (busy)
+                Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setText("");
+            Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(busy);
+        } catch (BBjException e) {
+        }
+    }
+
+    /**
+     * show the busy indicator with the text passed to this method
+     * @param busyText the text to show
+     */
+    public static void busy(String busyText){
+        try {
+            Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setText(busyText);
+            Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(true);
+        } catch (BBjException e) {
+        }
+    }
+
     private void preRun() {
         Environment.getInstance().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
     }
