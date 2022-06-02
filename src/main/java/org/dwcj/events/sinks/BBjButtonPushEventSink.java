@@ -2,24 +2,26 @@ package org.dwcj.events.sinks;
 
 import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.startup.type.BBjException;
-import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.Button;
 import org.dwcj.events.ButtonPushEvent;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 public final class BBjButtonPushEventSink {
 
-    private final Consumer<ButtonPushEvent> target;
+    private ArrayList<Consumer<ButtonPushEvent>> targets;
     private final Button button;
     private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
-    public BBjButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> target) {
-        this.target = target;
+    public BBjButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> callback) {
+
+        this.targets = new ArrayList<>();
+        this.targets.add(callback);
         this.button = btn;
 
         BBjControl bbjctrl = null;
@@ -38,8 +40,22 @@ public final class BBjButtonPushEventSink {
 
     public void pushEvent(BBjButtonPushEvent ev) {
         ButtonPushEvent dwc_ev = new ButtonPushEvent(this.button);
-        target.accept(dwc_ev);
+        Iterator<Consumer<ButtonPushEvent>> it = targets.iterator();
+        while (it.hasNext())
+            it.next().accept(dwc_ev);
     }
 
+    /**
+     * Clicks the button, for testing purposes
+     */
+    public void doClick() {
+        ButtonPushEvent dwc_ev = new ButtonPushEvent(button);
+        Iterator<Consumer<ButtonPushEvent>> it = targets.iterator();
+        while (it.hasNext())
+            it.next().accept(dwc_ev);
+    }
 
+    public void addCallback(Consumer<ButtonPushEvent> callback) {
+        targets.add(callback);
+    }
 }

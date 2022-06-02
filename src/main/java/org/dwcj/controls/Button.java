@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     private Consumer<ButtonPushEvent> callback;
+    private BBjButtonPushEventSink buttonPushEventSink;
 
     /**
      * create a Button
@@ -53,17 +54,20 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
      */
     public Button onClick(Consumer<ButtonPushEvent> callback) {
         this.callback = callback;
-        new BBjButtonPushEventSink(this, callback);
+        if (this.buttonPushEventSink==null)
+            this.buttonPushEventSink = new BBjButtonPushEventSink(this, callback);
+        else this.buttonPushEventSink.addCallback(callback);
         return this;
     }
+
 
     /**
      * Clicks the button, for testing purposes
      */
     public void doClick() {
-        ButtonPushEvent dwc_ev = new ButtonPushEvent(this);
-        callback.accept(dwc_ev);
+        this.buttonPushEventSink.doClick();
     }
+
 
     public boolean getDisableOnClick() {
         //todo: why could an exception be thrown?
