@@ -7,12 +7,13 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.controls.IStyleable;
 import org.dwcj.events.RatingValueChangedEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class Rating extends AbstractShoelaceControl {
+public final class Rating extends AbstractShoelaceControl implements IStyleable {
 
     final private String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 
@@ -153,4 +154,21 @@ public final class Rating extends AbstractShoelaceControl {
         return this;
     }
 
+    @Override
+    public Rating setStyle(String property, String value) {
+        setControlStyle(property,value);
+        return this;
+    }
+
+    @Override
+    public Rating addClass(String selector) {
+        addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public Rating removeClass(String selector) {
+        removeControlCssClass(selector);
+        return this;
+    }
 }
