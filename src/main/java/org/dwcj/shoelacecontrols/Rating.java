@@ -11,6 +11,8 @@ import org.dwcj.controls.IStyleable;
 import org.dwcj.events.RatingValueChangedEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 public final class Rating extends AbstractShoelaceControl implements IStyleable {
@@ -21,7 +23,7 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
     private Double value = 0.0;
     private Double precision = 1.0;
     private BBjHtmlView htmlv;
-    private Consumer<RatingValueChangedEvent> onValueChangedCallback;
+    private ArrayList<Consumer<RatingValueChangedEvent>> onValueChangedCallbacks;
 
     public Rating() {
     }
@@ -60,10 +62,11 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
      */
     private void _cbJS(BBjNativeJavaScriptEvent ev) throws BBjException {
         value = Double.valueOf(ev.getEventMap().get("value"));
-        if (this.onValueChangedCallback != null) {
-            RatingValueChangedEvent vev = new RatingValueChangedEvent(this, value);
-            onValueChangedCallback.accept(vev);
-        }
+        RatingValueChangedEvent vev = new RatingValueChangedEvent(this, value);
+        Iterator<Consumer<RatingValueChangedEvent>> it = onValueChangedCallbacks.iterator();
+        while (it.hasNext())
+            it.next().accept(vev);
+
     }
 
     /**
@@ -73,7 +76,9 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
      * @return
      */
     public Rating onValueChanged(Consumer<RatingValueChangedEvent> callback) {
-        this.onValueChangedCallback = callback;
+        if (this.onValueChangedCallbacks == null)
+            this.onValueChangedCallbacks = new ArrayList<>();
+        this.onValueChangedCallbacks.add(callback);
         return this;
     }
 
