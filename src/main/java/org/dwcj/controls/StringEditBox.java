@@ -1,11 +1,15 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
+import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class StringEditBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
+    String mask;
     public StringEditBox() {}
 
     public StringEditBox(String text) {
@@ -21,6 +25,20 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public StringEditBox setMask(String mask){
+        if (ctrl != null){
+        try {
+            ((BBjInputE)ctrl).setMask(mask);
+        } catch (BBjException e) {
+            App.consoleLog(e.getMessage());
+            throw new RuntimeException(e);
+
+        }
+        }
+        this.mask = mask;
+        return this;
     }
 
     @Override
@@ -57,5 +75,12 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
     public StringEditBox setText(String text) {
         super.setText(text);
         return this;
+    }
+
+    @Override
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+        if (this.mask != null)
+            setMask(this.mask);
     }
 }
