@@ -40,23 +40,29 @@ public class TreeDemo extends App {
             setStyle("border", "1px dotted");
             setStyle("padding", "10px");
 
+            //collapse all nodes button
             Button collapseButton = new Button("Collapse All");
             add(collapseButton);
             collapseButton.onClick(this::collapseAll);
 
+            //expand all nodes button
             Button expandButton = new Button("Expand All");
             add(expandButton);
             expandButton.onClick(this::expandAll);
 
+            //set node text button
             Button setTextButton = new Button("Set Node Text");
             add(setTextButton);
             setTextButton.onClick(this::setNodeText);
 
+
+            //set node text: ID input field
             Label idLabel = new Label("Node ID:");
             add(idLabel);
             idBox = new NumericBox();
             add(idBox);
 
+            //set node text: text input field
             Label editLabel = new Label("New Node Text:");
             add(editLabel);
             nodeTextBox = new TextBox();
