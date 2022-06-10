@@ -1,17 +1,27 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.ComboBoxSelectEvent;
+import org.dwcj.events.listBox.ListBoxSelectEvent;
+import org.dwcj.events.sinks.BBjComboBoxSelectEventSink;
+import org.dwcj.events.sinks.listBox.BBjListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public final class ListBox extends AbstractDwclistControl implements IThemable, IExpansible {
 
+    private BBjListBox listBox;
     public ListBox() {}
 
     @Override
@@ -25,10 +35,84 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
-
+            listBox = (BBjListBox) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Add an item into the listBox
+     *
+     * @param key the item key
+     * @param item the item's value
+     * @return the control itself
+     */
+    public ListBox addItem(Object key, String item) {
+        this.values.put(key, item);
+        populate();
+        return this;
+    }
+
+    /**
+     *
+     * @return all values in the listBox
+     */
+    public Map<Object, String> getAllItems() {
+        return this.values;
+    }
+
+    public String getItem(Object key) {
+        return values.get(key);
+    }
+
+    public boolean getMultipleSelection() {
+        try {
+            return listBox.getMultipleSelection();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * returns the currently selected item, implemented for one-to-one value maps
+     *
+     * @return selected entry
+     */
+    public SimpleEntry<Object, String> getSelectedItem() {
+        try {
+            String value = listBox.getSelectedItem();
+            return new SimpleEntry<>(getEntryByValue(value), value);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private SimpleEntry<Object, String> getEntryByValue(String value) {
+        Map<Object, String> map = (Map<Object, String>) this.values.entrySet();
+        for (Map.Entry<Object, String> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return new SimpleEntry<>(entry.getKey(), value);
+            }
+        }
+        return null;
+    }
+
+    public Map<Object, String> getSelectedItems() {
+        Map<Object, String> map = new HashMap<>();
+        try {
+            Object[] indices = listBox.getSelectedIndices().toArray();
+            for (Object index: indices) {
+                String value = listBox.getItemAt((Integer) index);
+                Object key = getEntryByValue(value).getKey();
+                map.put(key, value);
+            }
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     public ListBox setItems(Map<Object, String> values) {
@@ -48,6 +132,19 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
                 v.add(values.get(it.next()));
             }
             cb.insertItems(0, v);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ListBox onSelect(Consumer<ListBoxSelectEvent> callback) {
+        new BBjListBoxSelectEventSink(this, callback);
+        return this;
+    }
+
+    public void setMultipleSelection(boolean bool) {
+        try {
+            listBox.setMultipleSelection(bool);
         } catch (BBjException e) {
             e.printStackTrace();
         }

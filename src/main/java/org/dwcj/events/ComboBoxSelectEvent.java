@@ -7,9 +7,15 @@ public final class ComboBoxSelectEvent implements IDwcEvent {
 
     private final ComboBox control;
 
+    private Object key;
+
     public ComboBoxSelectEvent(ComboBox cComboBox) {
         this.control = cComboBox;
     }
+
+    public void setKey(Object key) { this.key = key; }
+
+    public Object getKey() { return key; }
 
     @Override
     public ComboBox getControl() { return control; }

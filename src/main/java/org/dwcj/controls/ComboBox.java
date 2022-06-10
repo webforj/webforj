@@ -9,14 +9,20 @@ import org.dwcj.events.ComboBoxSelectEvent;
 import org.dwcj.events.sinks.BBjComboBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
  * Combobox Control
  */
 public final class    ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
+
+    private BBjListButton comboBox;
+
+    private BBjComboBoxSelectEventSink comboBoxSelectEventSink;
 
     private Consumer<ComboBoxSelectEvent> callback;
 
@@ -36,7 +42,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
-
+            comboBox = (BBjListButton) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,17 +53,22 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      * Add an item into the combobox
      *
      * @param key the item key
-     * @param value the item's value
+     * @param item the item's value
      * @return the control itself
      */
-    public ComboBox addItem(Object key, String value) {
-        this.values.put(key, value);
+    public ComboBox addItem(Object key, String item) {
+        this.values.put(key, item);
         populate();
+        try {
+            comboBox.addItem(item);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
     /**
-     * set the list of items into the combobox
+     * set the list of items into the comboBox
      *
      * @param values A Map object containing the key-value pairs for the list
      * @return the control itself
@@ -65,6 +76,11 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     public ComboBox setItems(Map<Object, String> values) {
         this.values = values;
         populate();
+        try {
+            comboBox.insertItems(0, new BBjVector(values.values()));
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -76,19 +92,27 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         return this.values;
     }
 
+    public String getItem(Object key) {
+        return values.get(key);
+    }
+
     /**
-     * Returns an item from the comboBox
+     * returns the currently selected item, implemented for one-to-one value maps
      *
-     * @param index the index of the requested item
-     * @return the item itself
+     * @return selected entry
      */
-    public String getItemAt(int index) {
+    public SimpleEntry<Object, String> getSelectedItem() {
         try {
-            return ((BBjListButton) this.ctrl).getItemAt(index);
+            String value = comboBox.getSelectedItem();
+            for (Map.Entry<Object, String> entry: this.values.entrySet()) {
+                if (Objects.equals(value, entry.getValue())) {
+                    return new SimpleEntry<>(entry.getKey(),value);
+                }
+            }
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return "";
+        return new SimpleEntry<>(null,null);
     }
 
     /**
@@ -96,7 +120,18 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      */
     public void open() {
         try {
-            ((BBjListButton) this.ctrl).openList();
+            comboBox.openList();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * closes the ComboBox dropwdown list
+     */
+    public void close() {
+        try {
+            comboBox.closeList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -128,9 +163,8 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     /**
      * Selects an element, for testing purposes
      */
-    public void doSelect() {
-        ComboBoxSelectEvent dwc_ev = new ComboBoxSelectEvent(this);
-        callback.accept(dwc_ev);
+    public void doSelect(Object key) {
+        this.comboBoxSelectEventSink.doSelect(key);
     }
 
     @Override
