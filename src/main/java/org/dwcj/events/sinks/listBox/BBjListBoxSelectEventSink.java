@@ -7,18 +7,22 @@ import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.ListBox;
 import org.dwcj.events.listBox.ListBoxSelectEvent;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class BBjListBoxSelectEventSink {
+public final class BBjListBoxSelectEventSink {
 
-    private final Consumer<ListBoxSelectEvent> target;
+    private final ArrayList<Consumer<ListBoxSelectEvent>> targets;
 
     private final ListBox listBox;
 
     private final BBjControl ctrl;
 
-    public BBjListBoxSelectEventSink(ListBox listBox, Consumer<ListBoxSelectEvent> target) {
-        this.target = target;
+    @SuppressWarnings({"static-access"})
+    public BBjListBoxSelectEventSink(ListBox listBox, Consumer<ListBoxSelectEvent> callback) {
+        this.targets = new ArrayList<>();
+        this.targets.add(callback);
         this.listBox = listBox;
 
         BBjControl bbjctrl = null;
@@ -35,6 +39,16 @@ public class BBjListBoxSelectEventSink {
 
     public void selectEvent(BBjListClickEvent ev) {
         ListBoxSelectEvent dwc_ev = new ListBoxSelectEvent(this.listBox);
-        target.accept(dwc_ev);
+        Iterator<Consumer<ListBoxSelectEvent>> it = targets.iterator();
+        while (it.hasNext())
+            it.next().accept(dwc_ev);
+    }
+
+    public void doSelect(Object key) {
+        ListBoxSelectEvent dwc_ev = new ListBoxSelectEvent(listBox);
+        dwc_ev.addKey(key);
+        Iterator<Consumer<ListBoxSelectEvent>> it = targets.iterator();
+        while (it.hasNext())
+            it.next().accept(dwc_ev);
     }
 }

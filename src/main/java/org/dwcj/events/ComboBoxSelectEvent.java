@@ -11,6 +11,7 @@ public final class ComboBoxSelectEvent implements IDwcEvent {
 
     public ComboBoxSelectEvent(ComboBox cComboBox) {
         this.control = cComboBox;
+        this.key = control.getSelectedItem().getKey();
     }
 
     public void setKey(Object key) { this.key = key; }
