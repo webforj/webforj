@@ -5,9 +5,17 @@ import com.basis.bbj.proxies.sysgui.BBjScrollBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.ScrollbarMoveEvent;
+import org.dwcj.events.sinks.scrollBar.BBjScrollbarMoveEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.function.Consumer;
+
 public final class ScrollBar extends AbstractDwcControl {
+
+    private Consumer<ScrollbarMoveEvent> callback;
+
+    private BBjScrollbarMoveEventSink scrollbarMoveEventSink;
 
     private BBjScrollBar scrollBar;
 
@@ -109,4 +117,11 @@ public final class ScrollBar extends AbstractDwcControl {
         }
     }
 
+    public ScrollBar onScroll(Consumer<ScrollbarMoveEvent> callback) {
+        this.callback = callback;
+        if (this.scrollbarMoveEventSink==null)
+            this.scrollbarMoveEventSink = new BBjScrollbarMoveEventSink(this, callback);
+        else this.scrollbarMoveEventSink.addCallback(callback);
+        return this;
+    }
 }
