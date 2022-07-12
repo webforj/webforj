@@ -1,12 +1,11 @@
-package org.dwcj.events.sinks;
+package org.dwcj.events.sinks.comboBox;
 
 import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.ComboBox;
-import org.dwcj.events.ButtonPushEvent;
-import org.dwcj.events.ComboBoxSelectEvent;
+import org.dwcj.events.comboBox.ComboBoxSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -53,4 +52,6 @@ public final class BBjComboBoxSelectEventSink {
         while (it.hasNext())
             it.next().accept(dwc_ev);
     }
+
+    public void addCallback(Consumer<ComboBoxSelectEvent> callback) { targets.add(callback); }
 }

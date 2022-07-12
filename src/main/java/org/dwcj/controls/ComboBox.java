@@ -5,8 +5,10 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.events.ComboBoxSelectEvent;
-import org.dwcj.events.sinks.BBjComboBoxSelectEventSink;
+import org.dwcj.events.comboBox.ComboBoxChangeEvent;
+import org.dwcj.events.comboBox.ComboBoxSelectEvent;
+import org.dwcj.events.sinks.comboBox.BBjComboBoxSelectEventSink;
+import org.dwcj.events.sinks.comboBox.ComboBoxChangeEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -24,7 +26,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
 
     private BBjComboBoxSelectEventSink comboBoxSelectEventSink;
 
-    private Consumer<ComboBoxSelectEvent> callback;
+    private ComboBoxChangeEventSink comboBoxChangeEventSink;
 
     public ComboBox() {
     }
@@ -156,7 +158,16 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     }
 
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
-        new BBjComboBoxSelectEventSink(this, callback);
+        if (this.comboBoxSelectEventSink==null)
+            this.comboBoxSelectEventSink = new BBjComboBoxSelectEventSink(this, callback);
+        else this.comboBoxSelectEventSink.addCallback(callback);
+        return this;
+    }
+
+    public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
+        if (this.comboBoxChangeEventSink==null)
+            this.comboBoxChangeEventSink = new ComboBoxChangeEventSink(this, callback);
+        else this.comboBoxChangeEventSink.addCallback(callback);
         return this;
     }
 
