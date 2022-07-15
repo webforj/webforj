@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ButtonPushEvent;
-import org.dwcj.events.sinks.BBjButtonPushEventSink;
+import org.dwcj.events.sinks.ButtonPushEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     private Consumer<ButtonPushEvent> callback;
-    private BBjButtonPushEventSink buttonPushEventSink;
+    private ButtonPushEventSink buttonPushEventSink;
 
     /**
      * create a Button
@@ -55,7 +55,7 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
     public Button onClick(Consumer<ButtonPushEvent> callback) {
         this.callback = callback;
         if (this.buttonPushEventSink==null)
-            this.buttonPushEventSink = new BBjButtonPushEventSink(this, callback);
+            this.buttonPushEventSink = new ButtonPushEventSink(this, callback);
         else this.buttonPushEventSink.addCallback(callback);
         return this;
     }

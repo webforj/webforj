@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class BBjButtonPushEventSink {
+public final class ButtonPushEventSink {
 
     private ArrayList<Consumer<ButtonPushEvent>> targets;
     private final Button button;
     private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
-    public BBjButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> callback) {
+    public ButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);

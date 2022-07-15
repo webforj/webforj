@@ -21,7 +21,6 @@ public final class BBjComboBoxSelectEventSink {
 
     @SuppressWarnings({"static-access"})
     public BBjComboBoxSelectEventSink(ComboBox cb, Consumer<ComboBoxSelectEvent> callback) {
-        this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.comboBox = cb;
 
