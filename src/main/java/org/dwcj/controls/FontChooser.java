@@ -167,7 +167,7 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public FontChooser onFileChooserApprove(Consumer<FontChooserApproveEvent> callback) {
+    public FontChooser onFontChooserApprove(Consumer<FontChooserApproveEvent> callback) {
         this.approveCallback = callback;
         if (this.fontChooserApproveEventSink == null)
             this.fontChooserApproveEventSink = new FontChooserApproveEventSink(this, callback);
@@ -175,7 +175,7 @@ public final class FontChooser extends AbstractDwcControl {
         return this;
     }
 
-    public FontChooser onFileChooserCancel(Consumer<FontChooserCancelEvent> callback) {
+    public FontChooser onFontChooserCancel(Consumer<FontChooserCancelEvent> callback) {
         this.cancelCallback = callback;
         if (this.fontChooserCancelEventSink == null)
             this.fontChooserCancelEventSink = new FontChooserCancelEventSink(this, callback);
@@ -183,7 +183,7 @@ public final class FontChooser extends AbstractDwcControl {
         return this;
     }
 
-    public FontChooser onFileChooserChange(Consumer<FontChooserChangeEvent> callback) {
+    public FontChooser onFontChooserChange(Consumer<FontChooserChangeEvent> callback) {
         this.changeCallback = callback;
         if (this.fontChooserChangeEventSink == null)
             this.fontChooserChangeEventSink = new FontChooserChangeEventSink(this, callback);

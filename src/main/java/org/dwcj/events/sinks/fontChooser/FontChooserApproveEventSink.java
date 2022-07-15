@@ -27,7 +27,7 @@ public final class FontChooserApproveEventSink {
         BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(fc);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_FILECHOOSER_CHANGE,
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_FILECHOOSER_APPROVE,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
                     "onEvent");
         } catch (Exception e) {
