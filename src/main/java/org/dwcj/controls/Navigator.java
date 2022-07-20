@@ -1,10 +1,37 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.proxies.sysgui.BBjNavigator;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.resource.RecordSet;
+import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.navigator.NavigatorFirstEvent;
+import org.dwcj.events.navigator.NavigatorLastEvent;
+import org.dwcj.events.navigator.NavigatorNextEvent;
+import org.dwcj.events.navigator.NavigatorPreviousEvent;
+import org.dwcj.events.sinks.navigator.NavFirstEventSink;
+import org.dwcj.events.sinks.navigator.NavLastEventSink;
+import org.dwcj.events.sinks.navigator.NavNextEventSink;
+import org.dwcj.events.sinks.navigator.NavPreviousEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.function.Consumer;
+
 public final class Navigator extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+
+    private BBjNavigator navigator;
+
+    private Consumer<NavigatorFirstEvent> firstCallback;
+    private NavFirstEventSink navFirstEventSink;
+
+    private Consumer<NavigatorLastEvent> lastCallback;
+    private NavLastEventSink navLastEventSink;
+
+    private Consumer<NavigatorNextEvent> nextCallback;
+    private NavNextEventSink navNextEventSink;
+
+    private Consumer<NavigatorPreviousEvent> previousCallback;
+    private NavPreviousEventSink navPreviousEventSink;
 
     public Navigator() {}
 
@@ -15,9 +42,68 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addNavigator(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
             catchUp();
+            navigator = (BBjNavigator) ctrl;
         } catch (Exception e)  {
             e.printStackTrace();
         }
+    }
+
+    public RecordSet getTargetRecordSet() {
+        try {
+            return (RecordSet) navigator.getTargetRecordSet();
+        } catch (BBjException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean isEditable() {
+        try {
+            return navigator.isEditable();
+        } catch (BBjException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void setEditable(boolean editable) {
+        try {
+            navigator.setEditable(editable);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Navigator onFirst(Consumer<NavigatorFirstEvent> callback) {
+        this.firstCallback = callback;
+        if (this.navFirstEventSink==null)
+            this.navFirstEventSink = new NavFirstEventSink(this, callback);
+        else this.navFirstEventSink.addCallback(callback);
+        return this;
+    }
+
+    public Navigator onLast(Consumer<NavigatorLastEvent> callback) {
+        this.lastCallback = callback;
+        if (this.navLastEventSink==null)
+            this.navLastEventSink = new NavLastEventSink(this, callback);
+        else this.navLastEventSink.addCallback(callback);
+        return this;
+    }
+
+    public Navigator onNext(Consumer<NavigatorNextEvent> callback) {
+        this.nextCallback = callback;
+        if (this.navNextEventSink==null)
+            this.navNextEventSink = new NavNextEventSink(this, callback);
+        else this.navNextEventSink.addCallback(callback);
+        return this;
+    }
+
+    public Navigator onPrevious(Consumer<NavigatorPreviousEvent> callback) {
+        this.previousCallback = callback;
+        if (this.navPreviousEventSink==null)
+            this.navPreviousEventSink = new NavPreviousEventSink(this, callback);
+        else this.navPreviousEventSink.addCallback(callback);
+        return this;
     }
 
     @Override
