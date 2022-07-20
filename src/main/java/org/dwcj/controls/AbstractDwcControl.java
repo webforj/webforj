@@ -34,6 +34,10 @@ public abstract class AbstractDwcControl implements IControl {
     private boolean caughtUp = false;
     private Boolean visible = null;
 
+    private Boolean enabled = null;
+
+    private String tooltipText = "";
+
     /**
      * Create the object on a panel p. The preferred way of creating an object is using the
      * Panel::add(Control) method, instead of this
@@ -206,13 +210,67 @@ public abstract class AbstractDwcControl implements IControl {
         return this.ctrl;
     }
 
-    public void setVisible(boolean b) {
+    @Override
+    public IControl  setTooltipText(String text) {
+        if (this.ctrl != null) try {
+            ctrl.setToolTipText(text);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.tooltipText = text;
+        return this;
+    }
+
+    @Override
+    public String getTooltipText() {
+        if (this.ctrl != null) try {
+            return ctrl.getToolTipText();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return tooltipText;
+    }
+
+    @Override
+    public IControl setEnabled(boolean b) {
+        if (this.ctrl != null) try {
+            ctrl.setEnabled(b);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.enabled = b;
+        return this;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        if (this.ctrl != null) try {
+            return ctrl.isEnabled();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return enabled;
+    }
+
+    @Override
+    public IControl setVisible(boolean b) {
         if (this.ctrl != null) try {
             ctrl.setVisible(b);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         this.visible = b;
+        return this;
+    }
+
+    @Override
+    public boolean isVisible() {
+        if (this.ctrl != null) try {
+            return ctrl.isVisible();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return visible;
     }
 
     /**
@@ -267,6 +325,10 @@ public abstract class AbstractDwcControl implements IControl {
 
         if (this.visible != null) {
             this.setVisible(this.visible);
+        }
+
+        if (this.enabled != null) {
+            this.setEnabled(this.enabled);
         }
 
         this.caughtUp = true;

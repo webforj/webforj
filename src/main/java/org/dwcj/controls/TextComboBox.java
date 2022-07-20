@@ -207,4 +207,15 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
         return this;
     }
 
+    @Override
+    public TextComboBox setTooltipText(String text) {
+        super.setTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        return this;
+    }
 }
