@@ -26,7 +26,8 @@ public class AppFinder {
         try {
             tmpClass = Class.forName(className,false, this.getClass().getClassLoader());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            //ignore this exception; this class is obviously not for us
+            return;
         }
 
         if (tmpClass != null && this.appBaseClass.isAssignableFrom(tmpClass) && !className.equals("org.dwcj.App") && !className.equals("org.dwcj.util.WelcomeApp")) {
@@ -107,6 +108,15 @@ public class AppFinder {
                 checkClass(getClassName(child.getName()));
             }
         }
+    }
+
+
+    public static void main(String[] args) throws ClassNotFoundException {
+        List<String> cpentruied;
+        cpentruied = new ArrayList<>();
+        cpentruied.add("/Users/beff/testfish_lib/common/mysql-connector-java-8.0.19.jar");
+        AppFinder af = new AppFinder(cpentruied);
+        System.out.println(af.getAppImplmentations());
     }
 }
 
