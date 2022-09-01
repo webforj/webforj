@@ -55,5 +55,14 @@ public interface IDwcjBBjBridge {
      */
     Object invokeMethod(Object object, String method, java.util.ArrayList args);
 
+    /**
+     * create an instance of a BBj-side object instance, mostly custom objects
+     * @param classname the method name
+     * @param args the arguments to the constructor as a List
+     * @return the object instance
+     */
+    Object createInstance(String classname);
+
+
     ArrayList<BBjVar> call(String pgm, ArrayList<BBjVar> args);
 }

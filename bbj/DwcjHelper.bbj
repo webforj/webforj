@@ -62,6 +62,13 @@ class public DwcjHelper implements IDwcjBBjBridge
         methodret widget!
     methodend
 
+    method public java.lang.Object createInstance(java.lang.String classname!)
+        createString! = "new "+classname!+"()"
+        the_instance! = eval(createString!)
+
+        methodret the_instance!
+    methodend
+
     method public java.lang.Object invokeMethod(java.lang.Object e!, java.lang.String method!, java.util.ArrayList args!)
         cmd! = "e!."+method!+"("
         for i=0 to args!.size()-1
