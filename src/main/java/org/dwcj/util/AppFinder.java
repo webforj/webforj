@@ -23,12 +23,15 @@ public class AppFinder {
 
 
         Class tmpClass = null;
+
         try {
             tmpClass = Class.forName(className,false, this.getClass().getClassLoader());
+        } catch(NoClassDefFoundError e) {
+            return;
         } catch (ClassNotFoundException e) {
-            //ignore this exception; this class is obviously not for us
             return;
         }
+        //ignore class in case of exceptions, this class is apparently not for us!
 
         if (tmpClass != null && this.appBaseClass.isAssignableFrom(tmpClass) && !className.equals("org.dwcj.App") && !className.equals("org.dwcj.util.WelcomeApp")) {
             this.appImplmentations.add(className);
@@ -111,13 +114,17 @@ public class AppFinder {
     }
 
 
+    /** todo: create unit test for appfinder
     public static void main(String[] args) throws ClassNotFoundException {
         List<String> cpentruied;
         cpentruied = new ArrayList<>();
+        cpentruied.add("/Users/beff/DWCJ/HelloWorldJava/target/lib/HelloWorldJava.jar");
+        cpentruied.add("/Users/beff/DWCJ/ExtendedDemos/target/lib/ExtendedDemos.jar");
         cpentruied.add("/Users/beff/testfish_lib/common/mysql-connector-java-8.0.19.jar");
         AppFinder af = new AppFinder(cpentruied);
         System.out.println(af.getAppImplmentations());
     }
+     **/
 }
 
 
