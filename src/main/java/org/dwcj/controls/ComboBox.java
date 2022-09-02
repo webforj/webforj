@@ -78,11 +78,6 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     public ComboBox setItems(Map<Object, String> values) {
         this.values = values;
         populate();
-        try {
-            comboBox.insertItems(0, new BBjVector(values.values()));
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
         return this;
     }
 
