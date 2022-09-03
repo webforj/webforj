@@ -176,4 +176,13 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
         removeControlCssClass(selector);
         return this;
     }
+
+    /**
+     * returns the string of the numeric value representing the current rating
+     * @return the value of the selected rating, as String
+     */
+    @Override
+    public String getText() {
+        return getValue().toString();
+    }
 }

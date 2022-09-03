@@ -14,9 +14,17 @@ public abstract class AbstractShoelaceControl extends AbstractDwcControl {
         } catch (Exception e) {
         }
         if (!libLoaded) {
-            String url = "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.69/dist/shoelace.js";
-            String css = "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.69/dist/themes/light.css";
-            String script = "var link =  $doc.createElement('script');link.setAttribute('type','module');link.setAttribute('src','" + url + "');" + "document.head.appendChild(link);" + "var csslink =  $doc.createElement('link');" + "csslink.setAttribute('rel','stylesheet');" + "csslink.setAttribute('href','" + css + "');" + "document.head.appendChild(csslink);";
+            String url = "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.82/dist/shoelace.js";
+            String css = "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.82/dist/themes/light.css";
+            String script =
+                    "var link =  $doc.createElement('script');" +
+                            "link.setAttribute('type','module');" +
+                            "link.setAttribute('src','" + url + "');" +
+                            "document.head.appendChild(link);" +
+                            "var csslink =  $doc.createElement('link');" +
+                            "csslink.setAttribute('rel','stylesheet');" +
+                            "csslink.setAttribute('href','" + css + "');" +
+                            "document.head.appendChild(csslink);";
             try {
                 Environment.getInstance().getSysGui().executeScript(script);
                 Environment.getInstance().getBBjAPI().getObjectTable().put("dwcj_shoelace_laded", true);
