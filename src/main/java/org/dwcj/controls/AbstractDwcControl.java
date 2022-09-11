@@ -14,29 +14,32 @@ import java.util.*;
 public abstract class AbstractDwcControl implements IControl {
 
 
-    protected final static BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
-    protected final static BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
-    protected final static BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
+    public static final String STR_EXPANSE = "expanse";
+    public static final String STR_THEME = "theme";
 
     static {
         ControlAccessor.setDefault(new CtrlAccessorImpl());
     }
 
+
     protected BBjControl ctrl;
     private String text = "";
     private IThemable.Theme theme;
     private IExpansible.Expanse expanse;
-    private final Map<String, String> attributes = new HashMap<String, String>();
-    private final Map<String, String> styles = new HashMap<String, String>();
+    private Boolean visible = null;
+    private Boolean enabled = null;
+    private String tooltipText = "";
+
+    protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
+    protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
+    protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
+    private final Map<String, String> attributes = new HashMap<>();
+    private final Map<String, String> styles = new HashMap<>();
     private final List<String> cssClasses = new ArrayList<>();
 
-    private final Map<String, Object> userData = new HashMap<String, Object>();
+    private final Map<String, Object> userData = new HashMap<>();
     private boolean caughtUp = false;
-    private Boolean visible = null;
 
-    private Boolean enabled = null;
-
-    private String tooltipText = "";
 
     /**
      * Create the object on a panel p. The preferred way of creating an object is using the
@@ -111,19 +114,19 @@ public abstract class AbstractDwcControl implements IControl {
         if (ctrl != null) try {
             switch (expanse) {
                 case LARGE:
-                    ctrl.setAttribute("expanse", "l");
+                    ctrl.setAttribute(STR_EXPANSE, "l");
                     break;
                 case MEDIUM:
-                    ctrl.setAttribute("expanse", "m");
+                    ctrl.setAttribute(STR_EXPANSE, "m");
                     break;
                 case SMALL:
-                    ctrl.setAttribute("expanse", "s");
+                    ctrl.setAttribute(STR_EXPANSE, "s");
                     break;
                 case XLARGE:
-                    ctrl.setAttribute("expanse", "xl");
+                    ctrl.setAttribute(STR_EXPANSE, "xl");
                     break;
                 case XSMALL:
-                    ctrl.setAttribute("expanse", "xs");
+                    ctrl.setAttribute(STR_EXPANSE, "xs");
                     break;
                 default:
                     //noop
@@ -139,25 +142,25 @@ public abstract class AbstractDwcControl implements IControl {
         if (ctrl != null) try {
             switch (theme) {
                 case DEFAULT:
-                    ctrl.setAttribute("theme", "default");
+                    ctrl.setAttribute(STR_THEME, "default");
                     break;
                 case DANGER:
-                    ctrl.setAttribute("theme", "danger");
+                    ctrl.setAttribute(STR_THEME, "danger");
                     break;
                 case GRAY:
-                    ctrl.setAttribute("theme", "gray");
+                    ctrl.setAttribute(STR_THEME, "gray");
                     break;
                 case INFO:
-                    ctrl.setAttribute("theme", "info");
+                    ctrl.setAttribute(STR_THEME, "info");
                     break;
                 case PRIMARY:
-                    ctrl.setAttribute("theme", "primary");
+                    ctrl.setAttribute(STR_THEME, "primary");
                     break;
                 case SUCCESS:
-                    ctrl.setAttribute("theme", "success");
+                    ctrl.setAttribute(STR_THEME, "success");
                     break;
                 case WARNING:
-                    ctrl.setAttribute("theme", "warning");
+                    ctrl.setAttribute(STR_THEME, "warning");
                     break;
                 default:
                     //noop
@@ -283,6 +286,7 @@ public abstract class AbstractDwcControl implements IControl {
      */
     protected void catchUp() throws IllegalAccessException {
         if (caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
+
         if (!this.text.isEmpty()) {
             try {
                 ctrl.setText(this.text);
