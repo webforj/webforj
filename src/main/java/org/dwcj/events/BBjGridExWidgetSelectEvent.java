@@ -25,6 +25,11 @@ public final class BBjGridExWidgetSelectEvent implements IDwcEvent {
         selection = selection_tmp;
     }
 
+    public BBjGridExWidgetSelectEvent(BBjGridExWidget theGrid, ResultSet selection) {
+        this.control = theGrid;
+        this.selection = selection;
+    }
+
     @Override
     public AbstractDwcControl getControl() {
         return control;

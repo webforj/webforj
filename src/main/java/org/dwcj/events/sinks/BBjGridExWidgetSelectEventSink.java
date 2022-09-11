@@ -34,4 +34,5 @@ public final class BBjGridExWidgetSelectEventSink {
         BBjGridExWidgetSelectEvent dwc_ev = new BBjGridExWidgetSelectEvent(grid, eventString);
         target.accept(dwc_ev);
     }
+
 }
