@@ -60,7 +60,8 @@ public class AppFinder {
         // it's a JAR file
         if (currentDirectory.getName().endsWith(".jar")) {
             try {
-                processJar(new ZipFile(currentDirectory));
+                if (currentDirectory.exists())
+                    processJar(new ZipFile(currentDirectory));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
