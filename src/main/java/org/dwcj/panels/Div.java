@@ -2,9 +2,7 @@ package org.dwcj.panels;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.controls.Label;
 import org.dwcj.events.DivClickEvent;
 import org.dwcj.events.sinks.BBjDivClickEventSink;
 

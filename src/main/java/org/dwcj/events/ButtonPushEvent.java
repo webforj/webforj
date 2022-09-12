@@ -1,6 +1,5 @@
 package org.dwcj.events;
 
-import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.Button;
 
 public final class ButtonPushEvent implements IDwcEvent {

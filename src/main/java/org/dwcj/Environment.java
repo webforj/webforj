@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.IDwcjBBjBridge;
 
-
 import java.util.HashMap;
 
 public final class Environment {

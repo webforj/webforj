@@ -1,7 +1,6 @@
 package org.dwcj.shoelacecontrols;
 
 import com.basis.startup.type.BBjException;
-import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.controls.AbstractDwcControl;
 

@@ -6,7 +6,6 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IControl;
 import org.dwcj.controls.IStyleable;
 import org.dwcj.panels.AbstractDwcjPanel;
 import org.dwcj.panels.Div;
