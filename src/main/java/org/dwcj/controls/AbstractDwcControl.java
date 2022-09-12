@@ -284,6 +284,7 @@ public abstract class AbstractDwcControl implements IControl {
      *
      * @throws IllegalAccessException - thrown if an attempt is made to call this method more than once
      */
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
 

@@ -6,12 +6,13 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@SuppressWarnings("java:S3740") // allow raw types
 public class AppFinder {
 
     private final Class appBaseClass;
     private final TreeSet<String> appImplmentations = new TreeSet<>();
 
-    final private List<String> cpEntriesToCheck;
+    private final List<String> cpEntriesToCheck;
 
     public AppFinder(List<String>cpEntriesToCheck) throws ClassNotFoundException {
         this.cpEntriesToCheck = cpEntriesToCheck;
@@ -26,9 +27,7 @@ public class AppFinder {
 
         try {
             tmpClass = Class.forName(className,false, this.getClass().getClassLoader());
-        } catch(NoClassDefFoundError e) {
-            return;
-        } catch (ClassNotFoundException e) {
+        } catch(NoClassDefFoundError|ClassNotFoundException e) {
             return;
         }
         //ignore class in case of exceptions, this class is apparently not for us!
@@ -65,7 +64,6 @@ public class AppFinder {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return;
         }
         else {
 
@@ -83,14 +81,14 @@ public class AppFinder {
                     myDirectories.add(myFiles[i]);
                 } else {
                     if (myFile.getName().endsWith(".class")) {
-                        String className = getClassName(curFile +((curFile == "") ? "" : File.separator) + myFile.getName());
+                        String className = getClassName(curFile +((curFile.isBlank()) ? "" : File.separator) + myFile.getName());
                         checkClass(className);
                     }
                 }
             }
 
             for (Iterator i = myDirectories.iterator(); i.hasNext(); ) {
-                processFile(base, curFile + ((curFile =="")?"":File.separator) +
+                processFile(base, curFile + ((curFile.isBlank())?"":File.separator) +
                         ((File)i.next()).getName());
             }
         }

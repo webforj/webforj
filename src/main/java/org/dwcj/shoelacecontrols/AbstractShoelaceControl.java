@@ -11,7 +11,8 @@ public abstract class AbstractShoelaceControl extends AbstractDwcControl {
         boolean libLoaded = false;
         try {
             libLoaded=(Boolean)Environment.getInstance().getBBjAPI().getObjectTable().get("dwcj_shoelace_laded");
-        } catch (Exception e) {
+        } catch (Exception e) { //ignore
+            libLoaded = false;
         }
         if (!libLoaded) {
             String url = "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.82/dist/shoelace.js";
