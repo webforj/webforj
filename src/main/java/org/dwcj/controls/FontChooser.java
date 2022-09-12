@@ -28,7 +28,7 @@ public final class FontChooser extends AbstractDwcControl {
     private BBjFontChooser bbjFontChooser;
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visbility flag

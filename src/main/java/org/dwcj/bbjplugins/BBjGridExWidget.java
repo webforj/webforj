@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 @SuppressWarnings("java:S3740")
 public final class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
 
-
-    void create(AbstractDwcjPanel p) {
+    @Override
+    protected void create(AbstractDwcjPanel p) {
 
         byte[] flags = new byte[]{(byte) 0x00, (byte) 0x10, (byte) 0x88, (byte) 0x00};
 

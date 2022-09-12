@@ -18,7 +18,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
     private BBjListEdit bbjListEdit;
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

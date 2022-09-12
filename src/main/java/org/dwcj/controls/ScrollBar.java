@@ -20,7 +20,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public ScrollBar(boolean horizontal) { this.horizontal = horizontal; }
 
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

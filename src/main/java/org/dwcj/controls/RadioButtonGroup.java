@@ -19,7 +19,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
     private ArrayList<RadioButton> radioButtons;
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = (BBjControl) w.addRadioGroup();

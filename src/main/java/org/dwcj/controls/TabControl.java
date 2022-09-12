@@ -7,7 +7,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 public final class TabControl extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away

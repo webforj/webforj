@@ -26,7 +26,8 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
     private BBjHtmlView htmlv;
     private ArrayList<Consumer<RatingValueChangedEvent>> onValueChangedCallbacks;
 
-    void create(AbstractDwcjPanel p) {
+    @Override
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

@@ -16,6 +16,7 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
         this.wnd = w;
     }
 
+    @Override
     public AbstractDwcjPanel add(AbstractDwcControl ctrl) {
         try {
             ControlAccessor.getDefault().create(ctrl,this);

@@ -14,7 +14,7 @@ public final class ImageControl extends AbstractDwcControl implements IStyleable
     private BBjImageCtrl bbjImageControl;
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = w.addImageCtrl(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");

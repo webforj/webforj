@@ -14,7 +14,7 @@ public final class Label extends AbstractDwcControl implements IStyleable {
     }
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

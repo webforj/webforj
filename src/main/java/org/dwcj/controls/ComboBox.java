@@ -29,7 +29,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     private ComboBoxChangeEventSink comboBoxChangeEventSink;
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

@@ -46,7 +46,7 @@ public abstract class AbstractDwcControl implements IControl {
      * Panel::add(Control) method, instead of this
      * @param p
      */
-    void create(AbstractDwcjPanel p) {}
+    protected void create(AbstractDwcjPanel p) {}
 
     @Override
     public String getText() {

@@ -33,7 +33,8 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
         super.setText(text);
     }
 
-    void create(AbstractDwcjPanel p) {
+    @Override
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

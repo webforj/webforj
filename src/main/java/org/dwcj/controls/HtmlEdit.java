@@ -8,13 +8,15 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     private BBjHtmlEdit bbjHtmlEdit;
 
 
-    void create(AbstractDwcjPanel p) {
+    @Override
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visbility flag
@@ -26,30 +28,30 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
-    public ArrayList getAllToolbarStyles() {
+    public List<String> getAllToolbarStyles() {
         try {
             return bbjHtmlEdit.getAllToolbarStyles();
         } catch (BBjException e) {
             e.printStackTrace();
-            return new ArrayList();
+            return new ArrayList<>();
         }
     }
 
-    public ArrayList getAvailableSpellCheckLanguages() {
+    public List<String> getAvailableSpellCheckLanguages() {
         try {
             return bbjHtmlEdit.getAvailableSpellCheckLanguages();
         } catch (BBjException e) {
             e.printStackTrace();
-            return new ArrayList();
+            return new ArrayList<>();
         }
     }
 
-    public ArrayList getAvailableStates() {
+    public List<String> getAvailableStates() {
         try {
             return bbjHtmlEdit.getAvailableStates();
         } catch (BBjException e) {
             e.printStackTrace();
-            return new ArrayList();
+            return new ArrayList<>();
         }
     }
 
@@ -62,12 +64,12 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
-    public ArrayList getBasicToolbarStyles() {
+    public List<String> getBasicToolbarStyles() {
         try {
             return bbjHtmlEdit.getBasicToolbarStyles();
         } catch (BBjException e) {
             e.printStackTrace();
-            return new ArrayList();
+            return new ArrayList<>();
         }
     }
 
@@ -93,12 +95,12 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         return bbjHtmlEdit.getLocale();
     }
 
-    public ArrayList getLocales() {
+    public List<String> getLocales() {
         try {
             return bbjHtmlEdit.getLocales();
         } catch (BBjException e) {
             e.printStackTrace();
-            return new ArrayList();
+            return new ArrayList<>();
         }
     }
 
