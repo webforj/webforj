@@ -17,6 +17,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public Slider(boolean horizontal) { this.horizontal = horizontal; }
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
 
         try {

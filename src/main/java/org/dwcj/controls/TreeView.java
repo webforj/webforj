@@ -439,7 +439,7 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
         tree.setSelectionMode(mode);
     }
 
-    public String getToolTipText(int id) {
+    public String getNodeToolTipText(int id) {
         try {
             return tree.getToolTipText(id);
         } catch (Exception e) {
@@ -448,7 +448,7 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
         return "";
     }
 
-    public void setToolTipText(int id, String text) {
+    public void setNodeToolTipText(int id, String text) {
         try {
             tree.setToolTipText(id, text);
         } catch (BBjException e) {

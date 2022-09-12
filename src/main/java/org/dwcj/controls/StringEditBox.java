@@ -21,6 +21,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
         setText(text);
     }
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
