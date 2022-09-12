@@ -18,7 +18,7 @@ public final class Div extends AbstractDwcjPanel {
 
     private BBjDivClickEventSink divClickEventSink;
 
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         BBjWindow w = p.getBBjWindow();
         try {
             byte[] flags = new byte[]{(byte) 0x00, (byte) 0x10, (byte) 0x88, (byte) 0x00};

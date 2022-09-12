@@ -21,7 +21,7 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
 
     private BBjListBox bbjListBox;
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away

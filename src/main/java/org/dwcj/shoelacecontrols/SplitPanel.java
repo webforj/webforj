@@ -34,7 +34,8 @@ public final class SplitPanel extends AbstractShoelaceControl implements IStylea
         this.vertical = fVertical;
     }
 
-    void create(AbstractDwcjPanel p) {
+    @Override
+    protected void create(AbstractDwcjPanel p) {
 
         String v = vertical ? "" : "vertical";
 

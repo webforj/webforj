@@ -15,7 +15,8 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
     private BBjHtmlEdit bbjHtmlEdit;
 
 
-    void create(AbstractDwcjPanel p) {
+    @Override
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visbility flag

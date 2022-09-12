@@ -33,7 +33,7 @@ public class AppPanel extends AbstractDwcjPanel {
         return this;
     }
 
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         //empty, needs override
     }
 }

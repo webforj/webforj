@@ -12,7 +12,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     private BBjPopupMenu bbjPopupMenu;
 
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try{
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = (BBjControl) w.addPopupMenu();

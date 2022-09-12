@@ -12,7 +12,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     private BBjMenuButton bbjMenuButton;
 
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

@@ -15,7 +15,7 @@ public final class    TextBox extends AbstractDwcControl implements IStyleable, 
     }
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
 
         try {

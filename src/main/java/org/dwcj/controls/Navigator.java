@@ -27,7 +27,7 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
     private NavPreviousEventSink navPreviousEventSink;
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away

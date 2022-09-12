@@ -28,7 +28,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
     }
 
     @Override
-    void create(AbstractDwcjPanel p) {
+    protected void create(AbstractDwcjPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
@@ -95,6 +95,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
         }
     }
 
+    @Override
     public String getText() {
         try {
             return bbjHtmlView.getText();
