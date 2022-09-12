@@ -26,6 +26,10 @@ public class AppPanel extends AbstractDwcjPanel {
         }
 
     }
+    @Override
+    protected void create(AbstractDwcjPanel p) {
+        //empty, needs override
+    }
 
     @Override
     public AppPanel setStyle(String property, String value) {
@@ -33,7 +37,4 @@ public class AppPanel extends AbstractDwcjPanel {
         return this;
     }
 
-    protected void create(AbstractDwcjPanel p) {
-        //empty, needs override
-    }
 }
