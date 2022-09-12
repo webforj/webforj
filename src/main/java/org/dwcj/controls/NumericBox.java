@@ -16,6 +16,9 @@ public final class NumericBox extends AbstractDwcControl implements IStyleable, 
         setText(text);
     }
 
+    public NumericBox() {
+    }
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         try {
