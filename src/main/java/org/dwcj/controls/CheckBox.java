@@ -12,11 +12,7 @@ import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcControl implements IStyleable, IExpansible {
 
-
     private Consumer<CheckBoxCheckEvent> callback;
-
-    public CheckBox() {
-    }
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -43,10 +39,9 @@ public final class CheckBox extends AbstractDwcControl implements IStyleable, IE
     }
 
     public void doCheck() {
-        CheckBoxCheckEvent dwc_ev = new CheckBoxCheckEvent(this);
-        callback.accept(dwc_ev);
+        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this);
+        callback.accept(dwcEv);
     }
-
 
     public boolean isSelected() {
         //todo: why could an exception be thrown?

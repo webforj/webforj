@@ -30,10 +30,10 @@ public class AppPanel extends AbstractDwcjPanel {
     @Override
     public AppPanel setStyle(String property, String value) {
         wnd.setPanelStyle(property, value);
-        return null;
+        return this;
     }
 
     void create(AbstractDwcjPanel p) {
-
+        //empty, needs override
     }
 }

@@ -15,7 +15,6 @@ public class BBjTreeGainedFocusEventSink {
 
     private final TreeView tree;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjTreeGainedFocusEventSink(TreeView tree, Consumer<TreeGainedFocusEvent> target) {
@@ -31,11 +30,10 @@ public class BBjTreeGainedFocusEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void gainedFocusEvent(BBjGainedFocusEvent ev) {
-        TreeGainedFocusEvent dwc_ev = new TreeGainedFocusEvent(this.tree);
-        target.accept(dwc_ev);
+    public void gainedFocusEvent(BBjGainedFocusEvent ev) { // NOSONAR
+        TreeGainedFocusEvent dwcEv = new TreeGainedFocusEvent(this.tree);
+        target.accept(dwcEv);
     }
 }

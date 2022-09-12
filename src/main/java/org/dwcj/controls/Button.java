@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ButtonPushEvent;
-import org.dwcj.events.sinks.BBjButtonPushEventSink;
+import org.dwcj.events.sinks.ButtonPushEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  */
 public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    private Consumer<ButtonPushEvent> callback;
+    private ButtonPushEventSink buttonPushEventSink;
 
     /**
      * create a Button
@@ -52,18 +52,20 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
      * @return the control itself
      */
     public Button onClick(Consumer<ButtonPushEvent> callback) {
-        this.callback = callback;
-        new BBjButtonPushEventSink(this, callback);
+        if (this.buttonPushEventSink==null)
+            this.buttonPushEventSink = new ButtonPushEventSink(this, callback);
+        else this.buttonPushEventSink.addCallback(callback);
         return this;
     }
+
 
     /**
      * Clicks the button, for testing purposes
      */
     public void doClick() {
-        ButtonPushEvent dwc_ev = new ButtonPushEvent(this);
-        callback.accept(dwc_ev);
+        this.buttonPushEventSink.doClick();
     }
+
 
     public boolean getDisableOnClick() {
         //todo: why could an exception be thrown?

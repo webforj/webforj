@@ -6,8 +6,6 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class OpenFileDialog extends AbstractDwcControl implements IStyleable, IThemable {
     
-    public OpenFileDialog() {}
-
     @Override
     void create(AbstractDwcjPanel p) {
 

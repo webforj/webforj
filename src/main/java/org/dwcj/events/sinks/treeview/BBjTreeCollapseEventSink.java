@@ -15,8 +15,6 @@ public class BBjTreeCollapseEventSink {
 
     private final TreeView tree;
 
-    private final BBjControl ctrl;
-
     @SuppressWarnings({"static-access"})
     public BBjTreeCollapseEventSink(TreeView tree, Consumer<TreeCollapseEvent> target) {
         this.target = target;
@@ -31,11 +29,10 @@ public class BBjTreeCollapseEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void collapseEvent(BBjTreeNodeCollapsedEvent ev) {
-        TreeCollapseEvent dwc_ev = new TreeCollapseEvent(this.tree);
-        target.accept(dwc_ev);
+    public void collapseEvent(BBjTreeNodeCollapsedEvent ev) { //NOSONAR
+        TreeCollapseEvent dwcEv = new TreeCollapseEvent(this.tree);
+        target.accept(dwcEv);
     }
 }

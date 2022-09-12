@@ -10,14 +10,16 @@ BBJAPI().getConfig().releaseOnLostConnection(0)
 
 class$=""
 
-class$=clientenv("class",err=*next)
-
 if class$="" then
     class$=argv(1,err=*next)
 fi
 
 if class$="" then
     class$=STBL("DWCJCLASSNAME",err=*next)
+fi
+
+if class$="" then
+    class$=clientenv("class",err=*next)
 fi
 
 if class$="" then

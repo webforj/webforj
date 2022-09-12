@@ -15,8 +15,6 @@ public class BBjTreeEditStopEventSink {
 
     private final TreeView tree;
 
-    private final BBjControl ctrl;
-
     @SuppressWarnings({"static-access"})
     public BBjTreeEditStopEventSink(TreeView tree, Consumer<TreeEditStoppedEvent> target) {
         this.target = target;
@@ -31,11 +29,10 @@ public class BBjTreeEditStopEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void editStopEvent(BBjTreeNodeEditStoppedEvent ev) {
-        TreeEditStoppedEvent dwc_ev = new TreeEditStoppedEvent(this.tree);
-        target.accept(dwc_ev);
+    public void editStopEvent(BBjTreeNodeEditStoppedEvent ev) { //NOSONAR
+        TreeEditStoppedEvent dwcEv = new TreeEditStoppedEvent(this.tree);
+        target.accept(dwcEv);
     }
 }

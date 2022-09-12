@@ -11,10 +11,8 @@ import java.util.ArrayList;
 
 public final class MultilineEdit extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    private BBjCEdit multilineEdit;
+    private BBjCEdit bbjCEdit;
 
-    public MultilineEdit() {
-    }
 
     void create(AbstractDwcjPanel p) {
         try {
@@ -22,7 +20,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addCEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText());
             catchUp();
-            multilineEdit = (BBjCEdit) ctrl;
+            bbjCEdit = (BBjCEdit) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -30,7 +28,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void addParagraph(int index, String paragraph) {
         try {
-            multilineEdit.addParagraph(index, paragraph);
+            bbjCEdit.addParagraph(index, paragraph);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -38,7 +36,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void addParagraphs(int index, ArrayList<String> paragraphs) {
         try {
-            multilineEdit.addParagraphs(index, (BBjVector) paragraphs);
+            bbjCEdit.addParagraphs(index, (BBjVector) paragraphs);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -46,7 +44,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void appendToParagraph(int parNum, String text) {
         try {
-            multilineEdit.appendToParagraph(parNum, text);
+            bbjCEdit.appendToParagraph(parNum, text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -54,7 +52,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public ArrayList<String> getAllParagraphs() {
         try {
-            return (ArrayList<String>) multilineEdit.getAllParagraphs();
+            return bbjCEdit.getAllParagraphs();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -63,7 +61,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public int getCurrentParagraphIndex() {
         try {
-            return multilineEdit.getCurrentParagraphIndex();
+            return bbjCEdit.getCurrentParagraphIndex();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -72,7 +70,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getHorizontalScrollable() {
         try {
-            return multilineEdit.getHorizontalScrollable();
+            return bbjCEdit.getHorizontalScrollable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -81,7 +79,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getIgnoreEnters() {
         try {
-            return multilineEdit.getIgnoreEnters();
+            return bbjCEdit.getIgnoreEnters();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -90,7 +88,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getIgnoreTabs() {
         try {
-            return multilineEdit.getIgnoreTabs();
+            return bbjCEdit.getIgnoreTabs();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -99,7 +97,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getLimitToOneParagraph() {
         try {
-            return multilineEdit.getLimitToOneParagraph();
+            return bbjCEdit.getLimitToOneParagraph();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -108,7 +106,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public int getLineCountLimit() {
         try {
-            return multilineEdit.getLineCountLimit();
+            return bbjCEdit.getLineCountLimit();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -117,7 +115,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getLineWrap() {
         try {
-            return multilineEdit.getLineWrap();
+            return bbjCEdit.getLineWrap();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -126,7 +124,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public int getMaxParagraphSize() {
         try {
-            return multilineEdit.getMaxParagraphSize();
+            return bbjCEdit.getMaxParagraphSize();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -134,12 +132,12 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
     }
 
     public int getMaxLength() {
-        return multilineEdit.getMaxLength();
+        return bbjCEdit.getMaxLength();
     }
 
     public int getNumberOfParagraphs() {
         try {
-            return multilineEdit.getNumberOfParagraphs();
+            return bbjCEdit.getNumberOfParagraphs();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -148,7 +146,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getOvertypeMode() {
         try {
-            return multilineEdit.getOvertypeMode();
+            return bbjCEdit.getOvertypeMode();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -157,7 +155,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public String getParagraph(int parNum) {
         try {
-            return multilineEdit.getParagraph(parNum);
+            return bbjCEdit.getParagraph(parNum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -166,7 +164,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public ArrayList<String> getSelection() {
         try {
-            return (ArrayList<String>) multilineEdit.getSelection();
+            return bbjCEdit.getSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -175,7 +173,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public int getTabSize() {
         try {
-            return multilineEdit.getTabSize();
+            return bbjCEdit.getTabSize();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -184,7 +182,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getVerticalScrollable() {
         try {
-            return multilineEdit.getVerticalScrollable();
+            return bbjCEdit.getVerticalScrollable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -193,7 +191,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean getWrapStyleWord() {
         try {
-            return multilineEdit.getWrapStyleWord();
+            return bbjCEdit.getWrapStyleWord();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -202,7 +200,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void highlight(int parIndex1, int off1, int parIndex2, int off2) {
         try {
-            multilineEdit.highlight(parIndex1, off1, parIndex2, off2);
+            bbjCEdit.highlight(parIndex1, off1, parIndex2, off2);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -210,7 +208,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public boolean isEditable() {
         try {
-            return multilineEdit.isEditable();
+            return bbjCEdit.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -219,7 +217,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void removeAll() {
         try {
-            multilineEdit.removeAll();
+            bbjCEdit.removeAll();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -227,7 +225,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void removeParagraph(int parIndex) {
         try {
-            multilineEdit.removeParagraph(parIndex);
+            bbjCEdit.removeParagraph(parIndex);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -235,7 +233,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setEditable(boolean editable) {
         try {
-            multilineEdit.setEditable(editable);
+            bbjCEdit.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -243,7 +241,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setHorizontalScrollable(boolean scroll) {
         try {
-            multilineEdit.setHorizontalScrollable(scroll);
+            bbjCEdit.setHorizontalScrollable(scroll);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -251,7 +249,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setIgnoreEnters(boolean ignore) {
         try {
-            multilineEdit.setIgnoreEnters(ignore);
+            bbjCEdit.setIgnoreEnters(ignore);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -259,7 +257,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setIgnoreTabs(boolean ignore) {
         try {
-            multilineEdit.setIgnoreTabs(ignore);
+            bbjCEdit.setIgnoreTabs(ignore);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -267,7 +265,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setLimitToOneParagraph(boolean limit) {
         try {
-            multilineEdit.setLimitToOneParagraph(limit);
+            bbjCEdit.setLimitToOneParagraph(limit);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -275,7 +273,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setLineCountLimit(int limit) {
         try {
-            multilineEdit.setLineCountLimit(limit);
+            bbjCEdit.setLineCountLimit(limit);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -283,7 +281,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setLineWrap(boolean wrap) {
         try {
-            multilineEdit.setLineWrap(wrap);
+            bbjCEdit.setLineWrap(wrap);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -291,7 +289,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setMaxParagraphSize(int size) {
         try {
-            multilineEdit.setMaxParagraphSize(size);
+            bbjCEdit.setMaxParagraphSize(size);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -299,7 +297,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setMaxLength(int length) {
         try {
-            multilineEdit.setMaxLength(length);
+            bbjCEdit.setMaxLength(length);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -307,7 +305,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setOvertypeMode(boolean overtype) {
         try {
-            multilineEdit.setOvertypeMode(overtype);
+            bbjCEdit.setOvertypeMode(overtype);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -315,7 +313,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setTabSize(int size) {
         try {
-            multilineEdit.setTabSize(size);
+            bbjCEdit.setTabSize(size);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -323,7 +321,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setVerticalScrollable(boolean scroll) {
         try {
-            multilineEdit.setVerticalScrollable(scroll);
+            bbjCEdit.setVerticalScrollable(scroll);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -331,7 +329,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
 
     public void setWrapStyleWord(boolean word) {
         try {
-            multilineEdit.setWrapStyleWord(word);
+            bbjCEdit.setWrapStyleWord(word);
         } catch (BBjException e) {
             e.printStackTrace();
         }

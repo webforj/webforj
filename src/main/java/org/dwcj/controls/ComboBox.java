@@ -5,12 +5,16 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.events.ComboBoxSelectEvent;
-import org.dwcj.events.sinks.BBjComboBoxSelectEventSink;
+import org.dwcj.events.combobox.ComboBoxChangeEvent;
+import org.dwcj.events.combobox.ComboBoxSelectEvent;
+import org.dwcj.events.sinks.combobox.BBjComboBoxSelectEventSink;
+import org.dwcj.events.sinks.combobox.ComboBoxChangeEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -18,11 +22,11 @@ import java.util.function.Consumer;
  */
 public final class    ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
-    private Consumer<ComboBoxSelectEvent> callback;
+    private BBjListButton bbjListButton;
 
-    public ComboBox() {
-    }
+    private BBjComboBoxSelectEventSink comboBoxSelectEventSink;
 
+    private ComboBoxChangeEventSink comboBoxChangeEventSink;
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -36,7 +40,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
-
+            bbjListButton = (BBjListButton) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,17 +51,22 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      * Add an item into the combobox
      *
      * @param key the item key
-     * @param value the item's value
+     * @param item the item's value
      * @return the control itself
      */
-    public ComboBox addItem(Object key, String value) {
-        this.values.put(key, value);
+    public ComboBox addItem(Object key, String item) {
+        this.values.put(key, item);
         populate();
+        try {
+            bbjListButton.addItem(item);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
     /**
-     * set the list of items into the combobox
+     * set the list of items into the comboBox
      *
      * @param values A Map object containing the key-value pairs for the list
      * @return the control itself
@@ -76,19 +85,27 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         return this.values;
     }
 
+    public String getItem(Object key) {
+        return values.get(key);
+    }
+
     /**
-     * Returns an item from the comboBox
+     * returns the currently selected item, implemented for one-to-one value maps
      *
-     * @param index the index of the requested item
-     * @return the item itself
+     * @return selected entry
      */
-    public String getItemAt(int index) {
+    public SimpleEntry<Object, String> getSelectedItem() {
         try {
-            return ((BBjListButton) this.ctrl).getItemAt(index);
+            String value = bbjListButton.getSelectedItem();
+            for (Map.Entry<Object, String> entry: this.values.entrySet()) {
+                if (Objects.equals(value, entry.getValue())) {
+                    return new SimpleEntry<>(entry.getKey(),value);
+                }
+            }
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return "";
+        return new SimpleEntry<>(null,null);
     }
 
     /**
@@ -96,7 +113,18 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      */
     public void open() {
         try {
-            ((BBjListButton) this.ctrl).openList();
+            bbjListButton.openList();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * closes the ComboBox dropwdown list
+     */
+    public void close() {
+        try {
+            bbjListButton.closeList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -121,16 +149,24 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     }
 
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
-        new BBjComboBoxSelectEventSink(this, callback);
+        if (this.comboBoxSelectEventSink==null)
+            this.comboBoxSelectEventSink = new BBjComboBoxSelectEventSink(this, callback);
+        else this.comboBoxSelectEventSink.addCallback(callback);
+        return this;
+    }
+
+    public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
+        if (this.comboBoxChangeEventSink==null)
+            this.comboBoxChangeEventSink = new ComboBoxChangeEventSink(this, callback);
+        else this.comboBoxChangeEventSink.addCallback(callback);
         return this;
     }
 
     /**
      * Selects an element, for testing purposes
      */
-    public void doSelect() {
-        ComboBoxSelectEvent dwc_ev = new ComboBoxSelectEvent(this);
-        callback.accept(dwc_ev);
+    public void doSelect(Object key) {
+        this.comboBoxSelectEventSink.doSelect(key);
     }
 
     @Override

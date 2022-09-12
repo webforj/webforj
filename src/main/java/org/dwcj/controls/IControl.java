@@ -35,4 +35,47 @@ public interface IControl {
      */
     public String getAttribute(String attribute);
 
+    /**
+     * Set the tooltip text of the control
+     *
+     * @param text
+     * @return the control itself
+     */
+    public IControl setTooltipText(String text);
+
+    /**
+     * get the tooltip text property of the control
+     *
+     * @return the tooltip text
+     */
+    public String getTooltipText();
+
+    /**
+     * Set whether the control is to be enabled
+     *
+     * @param enabled
+     * @return the control itself
+     */
+    public IControl setEnabled(boolean enabled);
+
+    /**
+     *
+     * @return if control is enabled (=true) or disabled (=false)
+     */
+    public boolean isEnabled();
+
+    /**
+     * Set whether the control is visible or invisible
+     *
+     * @param visible
+     * @return the control itself
+     */
+    public IControl setVisible(boolean visible);
+
+    /**
+     *
+     * @return if control is visible (=true) or invisible (=false)
+     */
+    public boolean isVisible();
+
 }

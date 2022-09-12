@@ -13,6 +13,10 @@ import java.text.ParseException;
 import java.util.Iterator;
 
 public class GridExWidgetSample extends App {
+
+    public static final String HELLO = "Hello";
+    public static final String WORLD = "World";
+
     @Override
     public void run() throws DwcAppInitializeException {
         AppPanel p = new AppPanel();
@@ -40,18 +44,18 @@ public class GridExWidgetSample extends App {
 
         try {
             DataRow dr = new DataRow();
-            dr.setFieldValue("Hello", "Hello");
-            dr.setFieldValue("World", "World");
+            dr.setFieldValue(HELLO, HELLO);
+            dr.setFieldValue(WORLD, WORLD);
             rs.add(dr);
 
             dr = new DataRow();
-            dr.setFieldValue("Hello", "Hallo");
-            dr.setFieldValue("World", "Welt");
+            dr.setFieldValue(HELLO, "Hallo");
+            dr.setFieldValue(WORLD, "Welt");
             rs.add(dr);
 
             dr = new DataRow();
-            dr.setFieldValue("Hello", "Holà");
-            dr.setFieldValue("World", "Mundo");
+            dr.setFieldValue(HELLO, "Holà");
+            dr.setFieldValue(WORLD, "Mundo");
             rs.add(dr);
 
         } catch (ParseException e) {
@@ -60,8 +64,8 @@ public class GridExWidgetSample extends App {
         return rs;
     }
 
-    private void onGridSelect(BBjGridExWidgetSelectEvent BBjGridExWidgetSelectEvent) {
-        ResultSet sel = BBjGridExWidgetSelectEvent.getSelection();
+    private void onGridSelect(BBjGridExWidgetSelectEvent bbjGridExWidgetSelectEvent) {
+        ResultSet sel = bbjGridExWidgetSelectEvent.getSelection();
         Iterator<DataRow> it = sel.iterator();
         while (it.hasNext()) {
             DataRow rec = it.next();

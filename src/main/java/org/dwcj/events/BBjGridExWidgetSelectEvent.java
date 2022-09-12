@@ -13,16 +13,19 @@ public final class BBjGridExWidgetSelectEvent implements IDwcEvent {
     private final ResultSet selection;
 
     public BBjGridExWidgetSelectEvent(BBjGridExWidget theGrid, String eventString) {
-        ResultSet selection_tmp = null;
+        ResultSet selectionTmp = null;
         this.control = theGrid;
         try {
-            selection_tmp = ResultSet.fromJson(eventString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+            selectionTmp = ResultSet.fromJson(eventString);
+        } catch (IOException|ParseException e) {
             e.printStackTrace();
         }
-        selection = selection_tmp;
+        selection = selectionTmp;
+    }
+
+    public BBjGridExWidgetSelectEvent(BBjGridExWidget theGrid, ResultSet selection) {
+        this.control = theGrid;
+        this.selection = selection;
     }
 
     @Override

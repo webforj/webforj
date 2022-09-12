@@ -15,16 +15,8 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+@SuppressWarnings("java:S3740")
 public final class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
-
-    private String sText = "";
-
-    public BBjGridExWidget() {
-    }
-
-    public BBjGridExWidget(String text) {
-        this.sText = text;
-    }
 
 
     void create(AbstractDwcjPanel p) {

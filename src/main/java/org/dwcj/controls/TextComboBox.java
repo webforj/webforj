@@ -15,8 +15,7 @@ import java.util.Map;
  */
 public final class TextComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
-    public TextComboBox() {
-    }
+    private BBjListEdit bbjListEdit;
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -30,6 +29,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
+            this.bbjListEdit = (BBjListEdit) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,6 +65,113 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     }
 
+    public void addItem(String item) {
+        try {
+            bbjListEdit.addItem(item);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeList() {
+        try {
+            bbjListEdit.closeList();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deselect() {
+        try {
+            bbjListEdit.deselect();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map<Object, String> getAllItems() {
+            return values;
+    }
+
+    public String getEditText() {
+        try {
+            return bbjListEdit.getEditText();
+        } catch (BBjException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getItemAt(Object key) {
+        return values.get(key);
+    }
+
+    public int getItemCount() {
+        try {
+            return bbjListEdit.getItemCount();
+        } catch (BBjException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public int getSelectedIndex() {
+        try {
+            return bbjListEdit.getSelectedIndex();
+        } catch (BBjException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public boolean isEditable() {
+        try {
+            return bbjListEdit.isEditable();
+        } catch (BBjException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void openList() {
+        try {
+            bbjListEdit.openList();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAllItems() {
+        try {
+            bbjListEdit.removeAllItems();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setEditable(boolean edit) {
+        try {
+            bbjListEdit.setEditable(edit);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setEditText(String text) {
+        try {
+            bbjListEdit.setEditText(text);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setMaximumRowCount(int max) {
+        try {
+            bbjListEdit.setMaximumRowCount(max);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public TextComboBox setExpanse(Expanse expanse) {
@@ -96,4 +203,15 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
         return this;
     }
 
+    @Override
+    public TextComboBox setTooltipText(String text) {
+        super.setTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        return this;
+    }
 }

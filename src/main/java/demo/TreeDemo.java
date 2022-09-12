@@ -1,10 +1,7 @@
 package demo;
 
 import org.dwcj.App;
-import org.dwcj.controls.Button;
-import org.dwcj.controls.MultilineEdit;
-import org.dwcj.controls.TextBox;
-import org.dwcj.controls.TreeView;
+import org.dwcj.controls.*;
 import org.dwcj.events.ButtonPushEvent;
 import org.dwcj.events.IDwcEvent;
 import org.dwcj.exceptions.DwcAppInitializeException;
@@ -24,26 +21,52 @@ public class TreeDemo extends App {
 
         private final MultilineEdit multilineEdit;
 
+        private final NumericBox idBox;
+
+        private final TextBox nodeTextBox;
+
+
+
         public TreeDemoApp() throws DwcAppInitializeException {
 
             super();
 
             //setting some styles of the app panel itself
             setStyle("display", "inline-grid");
-            setStyle("grid-template-columns", "1fr 2fr");
+            setStyle("grid-template-columns", "1fr 1fr 1fr 1fr 1fr");
             setStyle("gap", "20px");
             setStyle("left", "20px");
             setStyle("top", "20px");
             setStyle("border", "1px dotted");
             setStyle("padding", "10px");
 
+            //collapse all nodes button
             Button collapseButton = new Button("Collapse All");
             add(collapseButton);
             collapseButton.onClick(this::collapseAll);
 
+            //expand all nodes button
             Button expandButton = new Button("Expand All");
             add(expandButton);
             expandButton.onClick(this::expandAll);
+
+            //set node text button
+            Button setTextButton = new Button("Set Node Text");
+            add(setTextButton);
+            setTextButton.onClick(this::setNodeText);
+
+
+            //set node text: ID input field
+            Label idLabel = new Label("Node ID:");
+            add(idLabel);
+            idBox = new NumericBox();
+            add(idBox);
+
+            //set node text: text input field
+            Label editLabel = new Label("New Node Text:");
+            add(editLabel);
+            nodeTextBox = new TextBox();
+            add(nodeTextBox);
 
 
             tree = new TreeView();
@@ -78,14 +101,19 @@ public class TreeDemo extends App {
             multilineEdit.setStyle("height","500px");
         }
 
-        private void collapseAll(ButtonPushEvent ev) {
+        private void collapseAll(ButtonPushEvent ev) { //NOSONAR
             tree.collapseTreeFromNode(tree.getRoot());
             multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: collapseTreeFromNode(tree.getRoot())");
         }
 
-        private void expandAll(ButtonPushEvent ev) {
+        private void expandAll(ButtonPushEvent ev) { //NOSONAR
             tree.expandTreeFromNode(tree.getRoot());
             multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: expandTreeFromNode(tree.getRoot())");
+        }
+
+        private void setNodeText(ButtonPushEvent ev) { //NOSONAR
+            tree.setNodeText(Integer.parseInt(idBox.getText()), nodeTextBox.getText());
+            multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: setNodeText(" + idBox.getText() + ", " + nodeTextBox.getText() + ")");
         }
 
         private void logEvent(IDwcEvent event) {

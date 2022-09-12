@@ -1,7 +1,6 @@
 package org.dwcj.bbj;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 
 public class BBjVar {
 

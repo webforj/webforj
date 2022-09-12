@@ -18,6 +18,8 @@ import java.util.List;
 final class CtrlAccessorImpl extends ControlAccessor {
 
 
+    public static final String YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD = ": You're not allowed to access this method!";
+
     @Override
     public BBjControl getBBjControl(AbstractDwcControl ctrl) throws IllegalAccessException {
 
@@ -25,11 +27,12 @@ final class CtrlAccessorImpl extends ControlAccessor {
         String caller = stack[2].getClassName();
         if (caller.startsWith("org.dwcj.")) return ctrl.getControl();
 
-        App.consoleLog(caller + ": You're not allowed to access this method!");
-        throw new IllegalAccessException(caller + ": You're not allowed to access this method!");
+        App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
+        throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
     }
 
     @Override
+    @SuppressWarnings("java:S3011") //allow increasing acessibility
     public void create(AbstractDwcControl ctrl, AbstractDwcjPanel panel) throws IllegalAccessException {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -48,7 +51,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
             return;
         }
 
-        App.consoleLog(caller + ": You're not allowed to access this method!");
-        throw new IllegalAccessException(caller + ": You're not allowed to access this method!");
+        App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
+        throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
     }
 }

@@ -14,7 +14,6 @@ public final class BBjNativeJavascriptEventSink {
 
 
     private final Consumer<JavascriptEvent> target;
-    private final BBjControl ctrl;
     private final HtmlContainer container;
 
     @SuppressWarnings({"static-access"})
@@ -29,13 +28,10 @@ public final class BBjNativeJavascriptEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.ctrl = bbjctrl;
-
     }
 
-    public void onEvent(BBjNativeJavaScriptEvent ev) {
-        JavascriptEvent dwc_ev = new JavascriptEvent(container);
-        target.accept(dwc_ev);
+    public void onEvent(BBjNativeJavaScriptEvent ev) { //NOSONAR
+        JavascriptEvent dwcEv = new JavascriptEvent(container);
+        target.accept(dwcEv);
     }
 }

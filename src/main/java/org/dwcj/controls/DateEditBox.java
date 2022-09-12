@@ -28,36 +28,31 @@ public final class DateEditBox extends AbstractDwcControl implements IStyleable,
     }
 
     @Override
-    public DateEditBox
-setExpanse(Expanse expanse) {
+    public DateEditBox setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
     @Override
-    public DateEditBox
-setStyle(String property, String value) {
+    public DateEditBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
 
     @Override
-    public DateEditBox
-addClass(String selector) {
+    public DateEditBox addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public DateEditBox
-removeClass(String selector) {
+    public DateEditBox removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
 
     @Override
-    public DateEditBox
-setTheme(Theme theme) {
+    public DateEditBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     } 

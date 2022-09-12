@@ -8,9 +8,10 @@ import org.dwcj.exceptions.DwcAppInitializeException;
  * override the run() method.
  *
  */
+@SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
 
-    public App() {
+    protected App() {
         preRun();
         try {
             run();
@@ -62,6 +63,34 @@ public abstract class App {
         return Environment.getInstance().getDwcjHelper().msgbox(alert, options, title);
     }
 
+    /**
+     * Show or hide a busy indicator overlay
+     * @param busy A boolean value true=show false=hide
+     */
+    public static void busy(boolean busy){
+        try {
+            if (busy) {
+                Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setText("");
+            }
+            Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(busy);
+        } catch (BBjException e) {
+            //ignore
+        }
+    }
+
+    /**
+     * show the busy indicator with the text passed to this method
+     * @param busyText the text to show
+     */
+    public static void busy(String busyText){
+        try {
+            Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setText(busyText);
+            Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(true);
+        } catch (BBjException e) {
+            //ignore
+        }
+    }
+
     private void preRun() {
         Environment.getInstance().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
     }
@@ -85,6 +114,6 @@ public abstract class App {
      * Override this method to implement your app behavior
      * @throws DwcAppInitializeException
      */
-    abstract public void run() throws DwcAppInitializeException;
+    public abstract void run() throws DwcAppInitializeException;
 
 }

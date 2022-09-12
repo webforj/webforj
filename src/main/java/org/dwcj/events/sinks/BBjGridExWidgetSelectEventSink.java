@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 public final class BBjGridExWidgetSelectEventSink {
 
     private final Consumer<BBjGridExWidgetSelectEvent> target;
-    private final BBjControl ctrl;
     private final BBjGridExWidget grid;
 
     @SuppressWarnings({"static-access"})
@@ -26,12 +25,11 @@ public final class BBjGridExWidgetSelectEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.ctrl = bbjctrl;
     }
 
     public void onEvent(String eventString) {
-        BBjGridExWidgetSelectEvent dwc_ev = new BBjGridExWidgetSelectEvent(grid, eventString);
-        target.accept(dwc_ev);
+        BBjGridExWidgetSelectEvent dwcEv = new BBjGridExWidgetSelectEvent(grid, eventString);
+        target.accept(dwcEv);
     }
+
 }

@@ -15,7 +15,6 @@ public class BBjTreeExpandEventSink {
 
     private final TreeView tree;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjTreeExpandEventSink(TreeView tree, Consumer<TreeExpandedEvent> target) {
@@ -31,11 +30,10 @@ public class BBjTreeExpandEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void expandEvent(BBjTreeNodeExpandedEvent ev) {
-        TreeExpandedEvent dwc_ev = new TreeExpandedEvent(this.tree);
-        target.accept(dwc_ev);
+    public void expandEvent(BBjTreeNodeExpandedEvent ev) { //NOSONAR
+        TreeExpandedEvent dwcEv = new TreeExpandedEvent(this.tree);
+        target.accept(dwcEv);
     }
 }

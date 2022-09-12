@@ -11,7 +11,6 @@ public class Icon {
 
     private File file;
 
-    public Icon() {}
  /*
     public Icon(String file) {
         try {
@@ -34,9 +33,7 @@ public class Icon {
     public Icon loadFromURL(String url) {
         try {
             this.file = new File(new URL(url).toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
+        } catch (URISyntaxException | MalformedURLException e) {
             e.printStackTrace();
         }
         return this;
@@ -47,8 +44,6 @@ public class Icon {
         InputStream inputStream = classLoader.getResourceAsStream(resource);
         try (OutputStream outputStream = new FileOutputStream(this.file)) {
             IOUtils.copy(inputStream, outputStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

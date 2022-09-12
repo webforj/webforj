@@ -7,24 +7,24 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.controls.IStyleable;
 import org.dwcj.events.RatingValueChangedEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class Rating extends AbstractShoelaceControl {
+@SuppressWarnings("java:S1192")
+public final class Rating extends AbstractShoelaceControl implements IStyleable {
 
-    final private String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
+    private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 
     private int max = 5;
     private Double value = 0.0;
     private Double precision = 1.0;
     private BBjHtmlView htmlv;
-    private Consumer<RatingValueChangedEvent> onValueChangedCallback;
-
-    public Rating() {
-    }
-
+    private ArrayList<Consumer<RatingValueChangedEvent>> onValueChangedCallbacks;
 
     void create(AbstractDwcjPanel p) {
 
@@ -44,7 +44,7 @@ public final class Rating extends AbstractShoelaceControl {
         loadShoelaceLib();
     }
 
-    private void _cbPageLoaded(BBjPageLoadedEvent ev) throws BBjException {
+    private void _cbPageLoaded(BBjPageLoadedEvent ev) throws BBjException { //NOSONAR
         htmlv.clearCallback(Environment.getInstance().getBBjAPI().ON_PAGE_LOADED);
         String scr = "document.getElementById('" + uuid + "').addEventListener('sl-change', " + "event => {var custom=new CustomEvent(" + "'custom_event',{bubbles:true,cancelable:true});" + "custom.value=event.target.value;" + "window.basisDispatchCustomEvent(event.target,custom);})";
         htmlv.executeScript(scr);
@@ -57,12 +57,13 @@ public final class Rating extends AbstractShoelaceControl {
      * @param ev
      * @throws BBjException
      */
-    private void _cbJS(BBjNativeJavaScriptEvent ev) throws BBjException {
+    private void _cbJS(BBjNativeJavaScriptEvent ev) throws BBjException { //NOSONAR
         value = Double.valueOf(ev.getEventMap().get("value"));
-        if (this.onValueChangedCallback != null) {
-            RatingValueChangedEvent vev = new RatingValueChangedEvent(this, value);
-            onValueChangedCallback.accept(vev);
-        }
+        RatingValueChangedEvent vev = new RatingValueChangedEvent(this, value);
+        Iterator<Consumer<RatingValueChangedEvent>> it = onValueChangedCallbacks.iterator();
+        while (it.hasNext())
+            it.next().accept(vev);
+
     }
 
     /**
@@ -72,7 +73,9 @@ public final class Rating extends AbstractShoelaceControl {
      * @return
      */
     public Rating onValueChanged(Consumer<RatingValueChangedEvent> callback) {
-        this.onValueChangedCallback = callback;
+        if (this.onValueChangedCallbacks == null)
+            this.onValueChangedCallbacks = new ArrayList<>();
+        this.onValueChangedCallbacks.add(callback);
         return this;
     }
 
@@ -153,4 +156,30 @@ public final class Rating extends AbstractShoelaceControl {
         return this;
     }
 
+    @Override
+    public Rating setStyle(String property, String value) {
+        setControlStyle(property,value);
+        return this;
+    }
+
+    @Override
+    public Rating addClass(String selector) {
+        addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public Rating removeClass(String selector) {
+        removeControlCssClass(selector);
+        return this;
+    }
+
+    /**
+     * returns the string of the numeric value representing the current rating
+     * @return the value of the selected rating, as String
+     */
+    @Override
+    public String getText() {
+        return getValue().toString();
+    }
 }

@@ -15,7 +15,6 @@ public final class BBjTreeSelectEventSink {
 
     private final TreeView tree;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjTreeSelectEventSink(TreeView tree, Consumer<TreeSelectedEvent> target) {
@@ -31,11 +30,10 @@ public final class BBjTreeSelectEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void selectEvent(BBjTreeNodeSelectedEvent ev) {
-        TreeSelectedEvent dwc_ev = new TreeSelectedEvent(this.tree);
-        target.accept(dwc_ev);
+    public void selectEvent(BBjTreeNodeSelectedEvent ev) { // NOSONAR
+        TreeSelectedEvent dwcEv = new TreeSelectedEvent(this.tree);
+        target.accept(dwcEv);
     }
 }
