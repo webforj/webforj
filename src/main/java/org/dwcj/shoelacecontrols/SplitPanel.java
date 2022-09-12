@@ -6,14 +6,13 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IControl;
 import org.dwcj.controls.IStyleable;
 import org.dwcj.panels.AbstractDwcjPanel;
 import org.dwcj.panels.Div;
 
 public final class SplitPanel extends AbstractShoelaceControl implements IStyleable {
 
-    final private String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
+    private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 
     private BBjHtmlView htmlv;
     private Div startPanel;
@@ -37,7 +36,7 @@ public final class SplitPanel extends AbstractShoelaceControl implements IStylea
     @Override
     protected void create(AbstractDwcjPanel p) {
 
-        String v = vertical ? "" : "vertical";
+        String v = vertical ? "" : "vertical"; //NOSONAR
 
         final String html = "<sl-split-panel id='" + uuid + "' position='" + position + "' " + v + " style='height:100%; width:100%;'>" + "<sl-icon slot='handle' name='grip-vertical'></sl-icon>" + "</sl-split-panel>";
 

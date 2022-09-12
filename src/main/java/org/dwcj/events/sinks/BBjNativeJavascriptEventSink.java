@@ -2,7 +2,6 @@ package org.dwcj.events.sinks;
 
 import com.basis.bbj.proxies.event.BBjNativeJavaScriptEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.HtmlContainer;

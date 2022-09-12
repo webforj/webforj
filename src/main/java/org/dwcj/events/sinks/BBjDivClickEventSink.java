@@ -2,10 +2,8 @@ package org.dwcj.events.sinks;
 
 import com.basis.bbj.proxies.event.BBjMouseDownEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.Label;
 import org.dwcj.events.DivClickEvent;
 import org.dwcj.panels.Div;
 

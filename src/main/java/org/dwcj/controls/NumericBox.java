@@ -3,7 +3,6 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjNumber;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
