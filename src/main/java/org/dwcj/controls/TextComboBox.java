@@ -1,6 +1,5 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.funcs.Vector;
 import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -16,10 +15,7 @@ import java.util.Map;
  */
 public final class TextComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
-    private BBjListEdit textComboBox;
-
-    public TextComboBox() {
-    }
+    private BBjListEdit bbjListEdit;
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -33,7 +29,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
-            textComboBox = (BBjListEdit) textComboBox;
+            this.bbjListEdit = (BBjListEdit) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,7 +67,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void addItem(String item) {
         try {
-            textComboBox.addItem(item);
+            bbjListEdit.addItem(item);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -79,7 +75,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void closeList() {
         try {
-            textComboBox.closeList();
+            bbjListEdit.closeList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -87,7 +83,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void deselect() {
         try {
-            textComboBox.deselect();
+            bbjListEdit.deselect();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -99,7 +95,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public String getEditText() {
         try {
-            return textComboBox.getEditText();
+            return bbjListEdit.getEditText();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -112,7 +108,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public int getItemCount() {
         try {
-            return textComboBox.getItemCount();
+            return bbjListEdit.getItemCount();
         } catch (BBjException e) {
             e.printStackTrace();
             return -1;
@@ -121,7 +117,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public int getSelectedIndex() {
         try {
-            return textComboBox.getSelectedIndex();
+            return bbjListEdit.getSelectedIndex();
         } catch (BBjException e) {
             e.printStackTrace();
             return -1;
@@ -130,7 +126,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public boolean isEditable() {
         try {
-            return textComboBox.isEditable();
+            return bbjListEdit.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -139,7 +135,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void openList() {
         try {
-            textComboBox.openList();
+            bbjListEdit.openList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -147,7 +143,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void removeAllItems() {
         try {
-            textComboBox.removeAllItems();
+            bbjListEdit.removeAllItems();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -155,7 +151,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void setEditable(boolean edit) {
         try {
-            textComboBox.setEditable(edit);
+            bbjListEdit.setEditable(edit);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -163,7 +159,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void setEditText(String text) {
         try {
-            textComboBox.setEditText(text);
+            bbjListEdit.setEditText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -171,7 +167,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     public void setMaximumRowCount(int max) {
         try {
-            textComboBox.setMaximumRowCount(max);
+            bbjListEdit.setMaximumRowCount(max);
         } catch (BBjException e) {
             e.printStackTrace();
         }

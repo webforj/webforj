@@ -1,17 +1,17 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.proxies.sysgui.BBjMenuButton;
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public final class Slider extends AbstractDwcControl implements IControl, IStyleable, IThemable {
 
-    private BBjSlider slider;
+    private BBjSlider bbjSlider;
 
     private final boolean horizontal;
 
@@ -27,7 +27,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
             else
                 ctrl = w.addVerticalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
             catchUp();
-            slider = (BBjSlider) ctrl;
+            bbjSlider = (BBjSlider) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -36,7 +36,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public boolean getInverted() {
         try {
-            return slider.getInverted();
+            return bbjSlider.getInverted();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -45,16 +45,16 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public Map<Integer,String> getLabels() {
         try {
-            return slider.getLabels();
+            return bbjSlider.getLabels();
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return null;
+        return new HashMap<>();
     }
 
     public int getMajorTickSpacing() {
         try {
-            return slider.getMajorTickSpacing();
+            return bbjSlider.getMajorTickSpacing();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -63,7 +63,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public int getMaximum() {
         try {
-            return slider.getMaximum();
+            return bbjSlider.getMaximum();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -72,7 +72,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public int getMinimum() {
         try {
-            return slider.getMinimum();
+            return bbjSlider.getMinimum();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -81,7 +81,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public int getMinorTickSpacing() {
         try {
-            return slider.getMinorTickSpacing();
+            return bbjSlider.getMinorTickSpacing();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -89,12 +89,12 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
     }
 
     public int getOrientation() {
-        return slider.getOrientation();
+        return bbjSlider.getOrientation();
     }
 
     public boolean getPaintLabels() {
         try {
-            return slider.getPaintLabels();
+            return bbjSlider.getPaintLabels();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -103,7 +103,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public boolean getPaintTicks() {
         try {
-            return slider.getPaintTicks();
+            return bbjSlider.getPaintTicks();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -112,7 +112,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public boolean getSnapToTicks() {
         try {
-            return slider.getSnapToTicks();
+            return bbjSlider.getSnapToTicks();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -121,7 +121,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public int getValue() {
         try {
-            return slider.getValue();
+            return bbjSlider.getValue();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setInverted(boolean inverted) {
         try {
-            slider.setInverted(inverted);
+            bbjSlider.setInverted(inverted);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -138,7 +138,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setLabels(Map<Integer,String> labels) {
         try {
-            slider.setLabels(labels);
+            bbjSlider.setLabels(labels);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -146,7 +146,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setMajorTickSpacing(int tick) {
         try {
-            slider.setMajorTickSpacing(tick);
+            bbjSlider.setMajorTickSpacing(tick);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -154,7 +154,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setMaximum(int maximum) {
         try {
-            slider.setMaximum(maximum);
+            bbjSlider.setMaximum(maximum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -162,7 +162,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setMinimum(int minimum) {
         try {
-            slider.setMinimum(minimum);
+            bbjSlider.setMinimum(minimum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -170,7 +170,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setMinorTickSpacing(int tick) {
         try {
-            slider.setMinorTickSpacing(tick);
+            bbjSlider.setMinorTickSpacing(tick);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -178,7 +178,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setPaintLabels(boolean paint) {
         try {
-            slider.setPaintLabels(paint);
+            bbjSlider.setPaintLabels(paint);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -186,7 +186,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setPaintTicks(boolean paint) {
         try {
-            slider.setPaintTicks(paint);
+            bbjSlider.setPaintTicks(paint);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -194,7 +194,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setSnapToTicks(boolean snap) {
         try {
-            slider.setSnapToTicks(snap);
+            bbjSlider.setSnapToTicks(snap);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -202,7 +202,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     public void setValue(int value) {
         try {
-            slider.setValue(value);
+            bbjSlider.setValue(value);
         } catch (BBjException e) {
             e.printStackTrace();
         }

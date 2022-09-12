@@ -7,9 +7,8 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class PrintPreview extends AbstractDwcControl {
 
-    private BBjPrintPreview printPreview;
+    private BBjPrintPreview bbjPrintPreview;
 
-    public PrintPreview() {}
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -18,65 +17,65 @@ public final class PrintPreview extends AbstractDwcControl {
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addPrintPreview(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", null);
             catchUp();
-            printPreview = (BBjPrintPreview) ctrl;
+            bbjPrintPreview = (BBjPrintPreview) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void firstPage() {
-        printPreview.firstPage();
+        bbjPrintPreview.firstPage();
     }
 
     public void fitToHeight() {
-        printPreview.fitToHeight();
+        bbjPrintPreview.fitToHeight();
     }
 
     public void fitToWidth() {
-        printPreview.fitToWidth();
+        bbjPrintPreview.fitToWidth();
     }
 
     public int getIndex() {
-        return printPreview.getIndex();
+        return bbjPrintPreview.getIndex();
     }
 
     public int getPageCount() {
-        return printPreview.getPageCount();
+        return bbjPrintPreview.getPageCount();
     }
 
     public double getZoom() {
-        return printPreview.getZoom();
+        return bbjPrintPreview.getZoom();
     }
 
     public void lastPage() {
-        printPreview.lastPage();
+        bbjPrintPreview.lastPage();
     }
 
     public void nextPage() {
-        printPreview.nextPage();
+        bbjPrintPreview.nextPage();
     }
 
     public void previousPage() {
-        printPreview.previousPage();
+        bbjPrintPreview.previousPage();
     }
 
     public void scrollDown() {
-        printPreview.scrollDown();
+        bbjPrintPreview.scrollDown();
     }
 
     public void scrollUp() {
-        printPreview.scrollUp();
+        bbjPrintPreview.scrollUp();
     }
 
     public void setIndex(int pageNumber) {
-        printPreview.setIndex(pageNumber);
+        bbjPrintPreview.setIndex(pageNumber);
     }
 
     public void setZoom(double zoomAmount) {
-        printPreview.setZoom(zoomAmount);
+        bbjPrintPreview.setZoom(zoomAmount);
     }
 
     public void twoPage() {
-        printPreview.twoPage();
+        bbjPrintPreview.twoPage();
     }
 }

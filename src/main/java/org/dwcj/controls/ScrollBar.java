@@ -1,6 +1,5 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.proxies.sysgui.BBjMenuButton;
 import com.basis.bbj.proxies.sysgui.BBjScrollBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -13,11 +12,9 @@ import java.util.function.Consumer;
 
 public final class ScrollBar extends AbstractDwcControl {
 
-    private Consumer<ScrollbarMoveEvent> callback;
-
     private BBjScrollbarMoveEventSink scrollbarMoveEventSink;
 
-    private BBjScrollBar scrollBar;
+    private BBjScrollBar bbjScrollBar;
 
     private boolean horizontal;
 
@@ -33,7 +30,7 @@ public final class ScrollBar extends AbstractDwcControl {
             else
                 ctrl = w.addVerticalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
             catchUp();
-            scrollBar = (BBjScrollBar) ctrl;
+            bbjScrollBar = (BBjScrollBar) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,7 +39,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public int getBlockIncrement() {
         try {
-            return scrollBar.getBlockIncrement();
+            return bbjScrollBar.getBlockIncrement();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -51,7 +48,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public int getScrollMaximum() {
         try {
-            return scrollBar.getScrollMaximum();
+            return bbjScrollBar.getScrollMaximum();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -60,7 +57,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public int getScrollMinimum() {
         try {
-            return scrollBar.getScrollMinimum();
+            return bbjScrollBar.getScrollMinimum();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -69,7 +66,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public int getScrollPosition() {
         try {
-            return scrollBar.getScrollPosition();
+            return bbjScrollBar.getScrollPosition();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -78,7 +75,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public int getScrollProp() {
         try {
-            return scrollBar.getScrollProp();
+            return bbjScrollBar.getScrollProp();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -87,7 +84,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public void setBlockIncrement(int block) {
         try {
-            scrollBar.setBlockIncrement(block);
+            bbjScrollBar.setBlockIncrement(block);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -95,7 +92,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public void setScrollPosition(int pos) {
         try {
-            scrollBar.setScrollPosition(pos);
+            bbjScrollBar.setScrollPosition(pos);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -103,7 +100,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public void setScrollProp(int prop) {
         try {
-            scrollBar.setScrollProp(prop);
+            bbjScrollBar.setScrollProp(prop);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -111,14 +108,13 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public void setScrollRange(int min, int max) {
         try {
-            scrollBar.setScrollRange(min, max);
+            bbjScrollBar.setScrollRange(min, max);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public ScrollBar onScroll(Consumer<ScrollbarMoveEvent> callback) {
-        this.callback = callback;
         if (this.scrollbarMoveEventSink==null)
             this.scrollbarMoveEventSink = new BBjScrollbarMoveEventSink(this, callback);
         else this.scrollbarMoveEventSink.addCallback(callback);

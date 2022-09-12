@@ -19,21 +19,12 @@ import java.util.function.Consumer;
 
 public final class Navigator extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    private BBjNavigator navigator;
+    private BBjNavigator bbjNavigator;
 
-    private Consumer<NavigatorFirstEvent> firstCallback;
     private NavFirstEventSink navFirstEventSink;
-
-    private Consumer<NavigatorLastEvent> lastCallback;
     private NavLastEventSink navLastEventSink;
-
-    private Consumer<NavigatorNextEvent> nextCallback;
     private NavNextEventSink navNextEventSink;
-
-    private Consumer<NavigatorPreviousEvent> previousCallback;
     private NavPreviousEventSink navPreviousEventSink;
-
-    public Navigator() {}
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -42,7 +33,7 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addNavigator(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
             catchUp();
-            navigator = (BBjNavigator) ctrl;
+            bbjNavigator = (BBjNavigator) ctrl;
         } catch (Exception e)  {
             e.printStackTrace();
         }
@@ -50,7 +41,7 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
 
     public RecordSet getTargetRecordSet() {
         try {
-            return (RecordSet) navigator.getTargetRecordSet();
+            return (RecordSet) bbjNavigator.getTargetRecordSet();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -59,7 +50,7 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
 
     public boolean isEditable() {
         try {
-            return navigator.isEditable();
+            return bbjNavigator.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -68,14 +59,13 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
 
     public void setEditable(boolean editable) {
         try {
-            navigator.setEditable(editable);
+            bbjNavigator.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public Navigator onFirst(Consumer<NavigatorFirstEvent> callback) {
-        this.firstCallback = callback;
         if (this.navFirstEventSink==null)
             this.navFirstEventSink = new NavFirstEventSink(this, callback);
         else this.navFirstEventSink.addCallback(callback);
@@ -83,7 +73,6 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
     }
 
     public Navigator onLast(Consumer<NavigatorLastEvent> callback) {
-        this.lastCallback = callback;
         if (this.navLastEventSink==null)
             this.navLastEventSink = new NavLastEventSink(this, callback);
         else this.navLastEventSink.addCallback(callback);
@@ -91,7 +80,6 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
     }
 
     public Navigator onNext(Consumer<NavigatorNextEvent> callback) {
-        this.nextCallback = callback;
         if (this.navNextEventSink==null)
             this.navNextEventSink = new NavNextEventSink(this, callback);
         else this.navNextEventSink.addCallback(callback);
@@ -99,7 +87,6 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
     }
 
     public Navigator onPrevious(Consumer<NavigatorPreviousEvent> callback) {
-        this.previousCallback = callback;
         if (this.navPreviousEventSink==null)
             this.navPreviousEventSink = new NavPreviousEventSink(this, callback);
         else this.navPreviousEventSink.addCallback(callback);

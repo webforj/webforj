@@ -18,25 +18,6 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
 
     private BBjTree tree;
 
-    private Consumer<TreeGainedFocusEvent> gainedFocusCallback;
-
-    private Consumer<TreeLostFocusEvent> lostFocusCallback;
-
-    private Consumer<TreeSelectedEvent> selectCallback;
-
-    private Consumer<TreeDeselectEvent> deselectCallback;
-
-    private Consumer<TreeExpandedEvent> expandCallback;
-
-    private Consumer<TreeCollapseEvent> collapseCallback;
-
-    private Consumer<TreeEditStoppedEvent> editStopCallback;
-
-    private Consumer<TreeDoubleClickedEvent> doubleClickCallback;
-
-    public TreeView() {
-    }
-
     @Override
     void create(AbstractDwcjPanel p) {
         try {
@@ -518,49 +499,41 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
     }
 
     public TreeView onGainedFocus(Consumer<TreeGainedFocusEvent> callback) {
-        this.gainedFocusCallback = callback;
         new BBjTreeGainedFocusEventSink(this,callback);
         return this;
     }
 
     public TreeView onLostFocus(Consumer<TreeLostFocusEvent> callback) {
-        this.lostFocusCallback = callback;
         new BBjTreeLostFocusEventSink(this,callback);
         return this;
     }
 
     public TreeView onSelect(Consumer<TreeSelectedEvent> callback) {
-        this.selectCallback = callback;
         new BBjTreeSelectEventSink(this,callback);
         return this;
     }
 
     public TreeView onDeselect(Consumer<TreeDeselectEvent> callback) {
-        this.deselectCallback = callback;
         new BBjTreeDeselectEventSink(this, callback);
         return this;
     }
 
     public TreeView onExpand(Consumer<TreeExpandedEvent> callback) {
-        this.expandCallback = callback;
         new BBjTreeExpandEventSink(this, callback);
         return this;
     }
 
     public TreeView onCollapse(Consumer<TreeCollapseEvent> callback) {
-        this.collapseCallback = callback;
         new BBjTreeCollapseEventSink(this,callback);
         return this;
     }
 
     public TreeView onEditStopped(Consumer<TreeEditStoppedEvent> callback) {
-        this.editStopCallback = callback;
         new BBjTreeEditStopEventSink(this,callback);
         return this;
     }
 
     public TreeView onDoubleClick(Consumer<TreeDoubleClickedEvent> callback) {
-        this.doubleClickCallback = callback;
         new BBjTreeDoubleClickEventSink(this, callback);
         return this;
     }

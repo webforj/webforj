@@ -6,8 +6,6 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class TabControl extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    public TabControl() {}
-
     @Override
     void create(AbstractDwcjPanel p) {
         try {

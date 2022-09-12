@@ -18,8 +18,6 @@ public final class RadioButtonGroup extends AbstractDwcControl {
 
     private ArrayList<RadioButton> radioButtons;
 
-    public RadioButtonGroup() {}
-
     @Override
     void create(AbstractDwcjPanel p) {
         try {

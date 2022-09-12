@@ -9,17 +9,15 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class RadioButton extends AbstractDwcControl implements IStyleable, IExpansible {
 
-    private BBjRadioButton radioButton;
+    private BBjRadioButton bbjRadioButton;
 
-    public RadioButton() {}
-    
     @Override
     void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
-            radioButton = (BBjRadioButton) ctrl;
+            bbjRadioButton = (BBjRadioButton) ctrl;
             catchUp();
         } catch (Exception e)  {
             e.printStackTrace();
@@ -28,7 +26,7 @@ public final class RadioButton extends AbstractDwcControl implements IStyleable,
 
     public int getID() {
         try {
-            return radioButton.getID();
+            return bbjRadioButton.getID();
         } catch (BBjException e) {
             e.printStackTrace();
             return -1;
@@ -37,7 +35,7 @@ public final class RadioButton extends AbstractDwcControl implements IStyleable,
 
     public RadioButtonGroup getRadioButtonGroup() {
         try {
-            BBjControl bbjGroup = (BBjControl) radioButton.getRadioGroup();
+            BBjControl bbjGroup = (BBjControl) bbjRadioButton.getRadioGroup();
             int id = bbjGroup.getID();
             return RadioButtonGroup.getGroupByID(id);
         } catch (BBjException e) {
@@ -48,7 +46,7 @@ public final class RadioButton extends AbstractDwcControl implements IStyleable,
 
     public boolean isEditable() {
         try {
-            return radioButton.isEditable();
+            return bbjRadioButton.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -57,7 +55,7 @@ public final class RadioButton extends AbstractDwcControl implements IStyleable,
 
     public boolean isSelected() {
         try {
-            return radioButton.isSelected();
+            return bbjRadioButton.isSelected();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -66,7 +64,7 @@ public final class RadioButton extends AbstractDwcControl implements IStyleable,
 
     public void setEditable(boolean editable) {
         try {
-            radioButton.setEditable(editable);
+            bbjRadioButton.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -74,7 +72,7 @@ public final class RadioButton extends AbstractDwcControl implements IStyleable,
 
     public void setSelected(boolean selected) {
         try {
-            radioButton.setSelected(selected);
+            bbjRadioButton.setSelected(selected);
         } catch (BBjException e) {
             e.printStackTrace();
         }

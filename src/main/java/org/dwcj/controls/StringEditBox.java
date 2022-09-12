@@ -13,7 +13,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     String mask;
 
-    private BBjInputE stringEditBox;
+    private BBjInputE bbjInputE;
 
     public StringEditBox() {}
 
@@ -27,7 +27,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             catchUp();
-            stringEditBox = (BBjInputE) ctrl;
+            bbjInputE = (BBjInputE) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,7 +40,6 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
         } catch (BBjException e) {
             App.consoleLog(e.getMessage());
             throw new RuntimeException(e);
-
         }
         }
         this.mask = mask;
@@ -49,7 +48,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public int getError() {
         try {
-            return stringEditBox.getError();
+            return bbjInputE.getError();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -58,7 +57,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public String getEditString() {
         try {
-            return new String(stringEditBox.getEditString(), StandardCharsets.UTF_8);
+            return new String(bbjInputE.getEditString(), StandardCharsets.UTF_8);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -67,7 +66,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public boolean getHighlight() {
         try {
-            return stringEditBox.getHighlight();
+            return bbjInputE.getHighlight();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -76,7 +75,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public boolean getInsertMode() {
         try {
-            return stringEditBox.getInsertMode();
+            return bbjInputE.getInsertMode();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -85,7 +84,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public int getLength() {
         try {
-            stringEditBox.getLength();
+            bbjInputE.getLength();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -94,7 +93,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public String getMask() {
         try {
-            return stringEditBox.getMask();
+            return bbjInputE.getMask();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -103,7 +102,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public int getMargin() {
         try {
-            return stringEditBox.getMargin();
+            return bbjInputE.getMargin();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -112,7 +111,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public String getPadCharacter() {
         try {
-            return stringEditBox.getPadCharacter();
+            return bbjInputE.getPadCharacter();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -121,7 +120,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public boolean getPassEnter() {
         try {
-            return stringEditBox.getPassEnter();
+            return bbjInputE.getPassEnter();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -130,7 +129,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public boolean getPassTab() {
         try {
-            return stringEditBox.getPassTab();
+            return bbjInputE.getPassTab();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -139,7 +138,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public String getRestore() {
         try {
-            return stringEditBox.getRestore();
+            return bbjInputE.getRestore();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -148,7 +147,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public boolean isEditable() {
         try {
-            return stringEditBox.isEditable();
+            return bbjInputE.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -157,7 +156,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void restore() {
         try {
-            stringEditBox.restore();
+            bbjInputE.restore();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -165,7 +164,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void selectAll() {
         try {
-            stringEditBox.selectAll();
+            bbjInputE.selectAll();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -173,7 +172,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setEditable(boolean editable) {
         try {
-            stringEditBox.setEditable(editable);
+            bbjInputE.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -181,7 +180,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setEditString(String edit) {
         try {
-            stringEditBox.setEditString(edit.getBytes(StandardCharsets.UTF_8));
+            bbjInputE.setEditString(edit.getBytes(StandardCharsets.UTF_8));
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -189,7 +188,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setHighlight(boolean highlight) {
         try {
-            stringEditBox.setHighlight(highlight);
+            bbjInputE.setHighlight(highlight);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -197,7 +196,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setInsertMode(boolean insert) {
         try {
-            stringEditBox.setInsertMode(insert);
+            bbjInputE.setInsertMode(insert);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -205,7 +204,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setLength(int len) {
         try {
-            stringEditBox.setLength(len);
+            bbjInputE.setLength(len);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -213,7 +212,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setMargin(int marginWidth) {
         try {
-            stringEditBox.setMargin(marginWidth);
+            bbjInputE.setMargin(marginWidth);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -221,7 +220,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setPadCharacter(String pad) {
         try {
-            stringEditBox.setPadCharacter(pad);
+            bbjInputE.setPadCharacter(pad);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -229,7 +228,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setPassEnter(boolean pass) {
         try {
-            stringEditBox.setPassEnter(pass);
+            bbjInputE.setPassEnter(pass);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -237,7 +236,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setPassTab(boolean pass) {
         try {
-            stringEditBox.setPassTab(pass);
+            bbjInputE.setPassTab(pass);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -245,7 +244,7 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
 
     public void setRestore(String restore) {
         try {
-            stringEditBox.setRestore(restore);
+            bbjInputE.setRestore(restore);
         } catch (BBjException e) {
             e.printStackTrace();
         }

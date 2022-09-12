@@ -1,20 +1,16 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjMenuButton;
 import com.basis.bbj.proxies.sysgui.BBjPopupMenu;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjNumber;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
-    private BBjMenuButton menuButton;
-
-    public MenuButton() {}
+    private BBjMenuButton bbjMenuButton;
 
     void create(AbstractDwcjPanel p) {
 
@@ -23,7 +19,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addMenuButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "");
             catchUp();
-            menuButton = (BBjMenuButton) ctrl;
+            bbjMenuButton = (BBjMenuButton) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,7 +27,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public PopupMenu addPopupMenu() {
         try {
-            return (PopupMenu) menuButton.addPopupMenu();
+            return (PopupMenu) bbjMenuButton.addPopupMenu();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -40,7 +36,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public void clearImageSize() {
         try {
-            menuButton.clearImageSize();
+            bbjMenuButton.clearImageSize();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -48,7 +44,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public boolean getDisableOnClick() {
         try {
-            return menuButton.getDisableOnClick();
+            return bbjMenuButton.getDisableOnClick();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -57,7 +53,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public PopupMenu getPopupMenu() {
         try {
-            return (PopupMenu) menuButton.getPopupMenu();
+            return (PopupMenu) bbjMenuButton.getPopupMenu();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -66,7 +62,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public String getImageFile() {
         try {
-            return menuButton.getImageFile();
+            return bbjMenuButton.getImageFile();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -75,7 +71,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public boolean isPopupMenuVisible() {
         try {
-            return menuButton.isDropdownMenuVisible();
+            return bbjMenuButton.isDropdownMenuVisible();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -84,7 +80,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public void removePopupMenu() {
         try {
-            menuButton.removeDropdownMenu();
+            bbjMenuButton.removeDropdownMenu();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -92,7 +88,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public void setDisableOnClick(boolean disable) {
         try {
-            menuButton.setDisableOnClick(disable);
+            bbjMenuButton.setDisableOnClick(disable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -100,7 +96,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public void setPopupMenu(PopupMenu popupMenu) {
         try {
-            menuButton.setDropdownMenu((BBjPopupMenu) popupMenu);
+            bbjMenuButton.setDropdownMenu((BBjPopupMenu) popupMenu);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -108,18 +104,15 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public void setPopupMenuVisible(boolean visible) {
         try {
-            menuButton.setDropdownMenuVisible(visible);
+            bbjMenuButton.setDropdownMenuVisible(visible);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
-    //todo, wie wollen wir BBjImage translaten?
-    public void setImage() {}
-
     public void setImageFile(String file) {
         try {
-            menuButton.setImageFile(file);
+            bbjMenuButton.setImageFile(file);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -127,7 +120,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     public void setImageSize(int height, int width) {
         try {
-            menuButton.setImageSize(new BasisNumber(height), new BasisNumber(width));
+            bbjMenuButton.setImageSize(new BasisNumber(height), new BasisNumber(width));
         } catch (BBjException e) {
             e.printStackTrace();
         }

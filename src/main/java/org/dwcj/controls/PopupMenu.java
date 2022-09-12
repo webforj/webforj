@@ -4,78 +4,73 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjMenuItem;
 import com.basis.bbj.proxies.sysgui.BBjPopupMenu;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.resource.Font;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-import java.util.Map;
-
 public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupAble {
 
-    private BBjPopupMenu popupMenu;
-
-    public PopupMenu() {}
+    private BBjPopupMenu bbjPopupMenu;
 
     void create(AbstractDwcjPanel p) {
         try{
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = (BBjControl) w.addPopupMenu();
             catchUp();
-            popupMenu = (BBjPopupMenu) ctrl;
+            bbjPopupMenu = (BBjPopupMenu) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public CheckableMenuItem addCheckableMenuItem(int ID, String title) {
+    public CheckableMenuItem addCheckableMenuItem(int id, String title) {
         try {
-            return (CheckableMenuItem) popupMenu.addCheckableMenuItem(ID, title);
+            return (CheckableMenuItem) bbjPopupMenu.addCheckableMenuItem(id, title);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public CheckableMenuItem addCheckableMenuItem(int ID, String title, boolean checked) {
+    public CheckableMenuItem addCheckableMenuItem(int id, String title, boolean checked) {
         try {
-            return (CheckableMenuItem) popupMenu.addCheckableMenuItem(ID, title, checked);
+            return (CheckableMenuItem) bbjPopupMenu.addCheckableMenuItem(id, title, checked);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem addMenuItem(int ID, String title) {
+    public MenuItem addMenuItem(int id, String title) {
         try {
-            return (MenuItem) popupMenu.addMenuItem(ID, title);
+            return (MenuItem) bbjPopupMenu.addMenuItem(id, title);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem addMenuItem(int ID, String title, int action) {
+    public MenuItem addMenuItem(int id, String title, int action) {
         try {
-            return (MenuItem) popupMenu.addMenuItem(ID, title, action);
+            return (MenuItem) bbjPopupMenu.addMenuItem(id, title, action);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem addMenuItem(int ID, String title, boolean checkable, boolean checked) {
+    public MenuItem addMenuItem(int id, String title, boolean checkable, boolean checked) {
         try {
-            return (MenuItem) popupMenu.addMenuItem(ID, title, checkable, checked);
+            return (MenuItem) bbjPopupMenu.addMenuItem(id, title, checkable, checked);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem addMenuItem(int ID, String title, boolean checkable, boolean checked, int action) {
+    public MenuItem addMenuItem(int id, String title, boolean checkable, boolean checked, int action) {
         try {
-            return (MenuItem) popupMenu.addMenuItem(ID, title, checkable, checked, action);
+            return (MenuItem) bbjPopupMenu.addMenuItem(id, title, checkable, checked, action);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -84,15 +79,15 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void addSeparator() {
         try {
-            popupMenu.addSeparator();
+            bbjPopupMenu.addSeparator();
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
-    public CheckableMenuItem getCheckableMenuItem(int ID) {
+    public CheckableMenuItem getCheckableMenuItem(int id) {
         try {
-            return (CheckableMenuItem) popupMenu.getCheckableMenuItem(ID);
+            return (CheckableMenuItem) bbjPopupMenu.getCheckableMenuItem(id);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -101,7 +96,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public CheckableMenuItem getCheckableMenuItemAt(int index) {
         try {
-            return (CheckableMenuItem) popupMenu.getCheckableMenuItemAt(index);
+            return (CheckableMenuItem) bbjPopupMenu.getCheckableMenuItemAt(index);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -109,21 +104,21 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
     }
 
     public int getChildCount() {
-        return popupMenu.getChildCount();
+        return bbjPopupMenu.getChildCount();
     }
 
     public String getClientProperty(Object key) {
         try {
-            return popupMenu.getClientProperty(key).toString();
+            return bbjPopupMenu.getClientProperty(key).toString();
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    public BBjControl getControl(int ID) {
+    public BBjControl getControl(int id) {
         try {
-            return popupMenu.getControl(ID);
+            return bbjPopupMenu.getControl(id);
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -131,16 +126,16 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
     }
 
     public int getID() {
-        return popupMenu.getID();
+        return bbjPopupMenu.getID();
     }
 
     public int getMaximumRowCount() {
-        return popupMenu.getMaximumRowCount();
+        return bbjPopupMenu.getMaximumRowCount();
     }
 
-    public MenuItem getMenuItem(int ID) {
+    public MenuItem getMenuItem(int id) {
         try {
-            return (MenuItem) popupMenu.getMenuItem(ID);
+            return (MenuItem) bbjPopupMenu.getMenuItem(id);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -149,7 +144,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public MenuItem getMenuItemAt(int index) {
         try {
-            return (MenuItem) popupMenu.getMenuItemAt(index);
+            return (MenuItem) bbjPopupMenu.getMenuItemAt(index);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -158,7 +153,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public int getMenuItemIDAt(int index) {
         try {
-            return popupMenu.getMenuItemIDAt(index);
+            return bbjPopupMenu.getMenuItemIDAt(index);
         } catch (BBjException e) {
             e.printStackTrace();
             return -1;
@@ -167,7 +162,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public String getName() {
         try {
-            return popupMenu.getName();
+            return bbjPopupMenu.getName();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -176,7 +171,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public Object getUserData() {
         try {
-            return popupMenu.getUserData();
+            return bbjPopupMenu.getUserData();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -185,60 +180,60 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void hide() {
         try {
-            popupMenu.hide();
+            bbjPopupMenu.hide();
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
-    public CheckableMenuItem insertCheckableMenuItem(int index, int ID, String title) {
+    public CheckableMenuItem insertCheckableMenuItem(int index, int id, String title) {
         try {
-            return (CheckableMenuItem) popupMenu.insertCheckableMenuItem(index, ID, title);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public CheckableMenuItem insertCheckableMenuItem(int index, int ID, String title, boolean checked) {
-        try {
-            return (CheckableMenuItem) popupMenu.insertCheckableMenuItem(index, ID, title, checked);
+            return (CheckableMenuItem) bbjPopupMenu.insertCheckableMenuItem(index, id, title);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem insertMenuItem(int index, int ID, String title) {
+    public CheckableMenuItem insertCheckableMenuItem(int index, int id, String title, boolean checked) {
         try {
-            return (MenuItem) popupMenu.insertMenuItem(index, ID, title);
+            return (CheckableMenuItem) bbjPopupMenu.insertCheckableMenuItem(index, id, title, checked);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem insertMenuItem(int index, int ID, String title, int action) {
+    public MenuItem insertMenuItem(int index, int id, String title) {
         try {
-            return (MenuItem) popupMenu.insertMenuItem(index, ID, title, action);
+            return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem insertMenuItem(int index, int ID, String title, boolean checkable, boolean checked) {
+    public MenuItem insertMenuItem(int index, int id, String title, int action) {
         try {
-            return (MenuItem) popupMenu.insertMenuItem(index, ID, title, checkable, checked);
+            return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title, action);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public MenuItem insertMenuItem(int index, int ID, String title, boolean checkable, boolean checked, int action) {
+    public MenuItem insertMenuItem(int index, int id, String title, boolean checkable, boolean checked) {
         try {
-            return (MenuItem) popupMenu.insertMenuItem(index, ID, title, checkable, checked, action);
+            return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title, checkable, checked);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public MenuItem insertMenuItem(int index, int id, String title, boolean checkable, boolean checked, int action) {
+        try {
+            return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title, checkable, checked, action);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -247,7 +242,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void insertSeparator(int index) {
         try {
-            popupMenu.insertSeparator(index);
+            bbjPopupMenu.insertSeparator(index);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -255,7 +250,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public boolean isVisible() {
         try {
-            return popupMenu.isVisible();
+            return bbjPopupMenu.isVisible();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -264,7 +259,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void putClientProperty(Object key, Object value) {
         try {
-            popupMenu.putClientProperty(key, value);
+            bbjPopupMenu.putClientProperty(key, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -272,15 +267,15 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void removeMenuItem(MenuItem item) {
         try {
-            popupMenu.removeMenuItem((BBjMenuItem) item);
+            bbjPopupMenu.removeMenuItem((BBjMenuItem) item);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
-    public void removeMenuItem(int ID) {
+    public void removeMenuItem(int id) {
         try {
-            popupMenu.removeMenuItem(ID);
+            bbjPopupMenu.removeMenuItem(id);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -288,7 +283,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void removeMenuItemAt(int index) {
         try {
-            popupMenu.removeMenuItemAt(index);
+            bbjPopupMenu.removeMenuItemAt(index);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -296,19 +291,19 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void removeSeparator(int index) {
         try {
-            popupMenu.removeSeparator(index);
+            bbjPopupMenu.removeSeparator(index);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public void setMaximumRowCount(int max) {
-        popupMenu.setMaximumRowCount(max);
+        bbjPopupMenu.setMaximumRowCount(max);
     }
 
     public void setName(String name) {
         try {
-            popupMenu.setName(name);
+            bbjPopupMenu.setName(name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -316,7 +311,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     public void setUserData(Object object) {
         try {
-            popupMenu.setUserData(object);
+            bbjPopupMenu.setUserData(object);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -325,15 +320,15 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
     //todo: how to handle BBjControl parameter?
     public void show (BBjControl control, int x, int y) {
         try {
-            popupMenu.show(control, x, y);
+            bbjPopupMenu.show(control, x, y);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
-    public void show(int context, int ID, int x, int y) {
+    public void show(int context, int id, int x, int y) {
         try {
-            popupMenu.show(context, ID, x, y);
+            bbjPopupMenu.show(context, id, x, y);
         } catch (BBjException e) {
             e.printStackTrace();
         }

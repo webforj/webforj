@@ -1,25 +1,18 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjMenuItem;
-import com.basis.bbj.proxies.sysgui.BBjPopupMenu;
-import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.resource.Menu;
 import com.basis.startup.type.BBjException;
-import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.nio.charset.StandardCharsets;
 
 public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansible, IThemable {
 
-    private BBjMenuItem menuItem;
-
-    public MenuItem() {}
+    private BBjMenuItem bbjMenuItem;
 
     public Menu getParentMenu() {
         try {
-            return (Menu) menuItem.getParentMenu();
+            return (Menu) bbjMenuItem.getParentMenu();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -28,7 +21,7 @@ public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansi
 
     public PopupMenu getParentPopupMenu() {
         try {
-            return (PopupMenu) menuItem.getParentPopupMenu();
+            return (PopupMenu) bbjMenuItem.getParentPopupMenu();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -37,7 +30,7 @@ public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansi
 
     public void setAccelerator(String accel) {
         try {
-            menuItem.setAccelerator(accel.getBytes(StandardCharsets.UTF_8));
+            bbjMenuItem.setAccelerator(accel.getBytes(StandardCharsets.UTF_8));
         } catch (BBjException e) {
             e.printStackTrace();
         }

@@ -8,9 +8,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class ProgressBar extends AbstractDwcControl implements IStyleable, IThemable {
 
-    private BBjProgressBar progressBar;
-
-    public ProgressBar() {}
+    private BBjProgressBar bbjProgressBar;
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -19,7 +17,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addProgressBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             catchUp();
-            progressBar = (BBjProgressBar) ctrl;
+            bbjProgressBar = (BBjProgressBar) ctrl;
         } catch (Exception e)  {
             e.printStackTrace();
         }
@@ -27,7 +25,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public int getMaximum() {
         try {
-            return progressBar.getMaximum();
+            return bbjProgressBar.getMaximum();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -36,7 +34,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public int getMinimum() {
         try {
-            return progressBar.getMinimum();
+            return bbjProgressBar.getMinimum();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -45,7 +43,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public int getOrientation() {
         try {
-            return progressBar.getOrientation();
+            return bbjProgressBar.getOrientation();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -54,7 +52,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public String getText() {
         try {
-            return progressBar.getText();
+            return bbjProgressBar.getText();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -63,7 +61,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public int getValue() {
         try {
-            return progressBar.getValue();
+            return bbjProgressBar.getValue();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -72,7 +70,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public boolean isIndeterminate() {
         try {
-            return progressBar.isIndeterminate();
+            return bbjProgressBar.isIndeterminate();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -81,7 +79,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public boolean isStringPainted() {
         try {
-            return progressBar.isStringPainted();
+            return bbjProgressBar.isStringPainted();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -90,7 +88,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setIndeterminate(boolean indeterminate) {
         try {
-            progressBar.setIndeterminate(indeterminate);
+            bbjProgressBar.setIndeterminate(indeterminate);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -98,7 +96,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setMaximum(int maximum) {
         try {
-            progressBar.setMaximum(maximum);
+            bbjProgressBar.setMaximum(maximum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -106,7 +104,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setMinimum(int minimum) {
         try {
-            progressBar.setMinimum(minimum);
+            bbjProgressBar.setMinimum(minimum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -114,7 +112,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setOrientation(int orientation) {
         try {
-            progressBar.setOrientation(orientation);
+            bbjProgressBar.setOrientation(orientation);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -122,7 +120,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setStringPainted(boolean value) {
         try {
-            progressBar.setStringPainted(value);
+            bbjProgressBar.setStringPainted(value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -130,7 +128,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setProgressBarText(String text) {
         try {
-            progressBar.setText(text);
+            bbjProgressBar.setText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -138,7 +136,7 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
 
     public void setValue(int value) {
         try {
-            progressBar.setValue(value);
+            bbjProgressBar.setValue(value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
