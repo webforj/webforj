@@ -16,14 +16,13 @@ public final class BBjCheckBoxCheckEventSink {
 
     private final CheckBox checkBox;
 
-    private final BBjControl ctrl;
+    private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjCheckBoxCheckEventSink(CheckBox cb, Consumer<CheckBoxCheckEvent> target) {
         this.target = target;
         this.checkBox = cb;
 
-        BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
@@ -35,18 +34,18 @@ public final class BBjCheckBoxCheckEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.ctrl = bbjctrl;
     }
 
+    @SuppressWarnings("java:S1172")
     public void checkOffEvent(BBjCheckOffEvent ev) {
-        CheckBoxCheckEvent dwc_ev = new CheckBoxCheckEvent(this.checkBox);
-        target.accept(dwc_ev);
+        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this.checkBox);
+        target.accept(dwcEv);
     }
 
+    @SuppressWarnings("java:S1172")
     public void checkOnEvent(BBjCheckOnEvent ev) {
-        CheckBoxCheckEvent dwc_ev = new CheckBoxCheckEvent(this.checkBox);
-        target.accept(dwc_ev);
+        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this.checkBox);
+        target.accept(dwcEv);
     }
 
 }
