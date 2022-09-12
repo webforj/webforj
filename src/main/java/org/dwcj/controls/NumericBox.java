@@ -12,12 +12,12 @@ public final class NumericBox extends AbstractDwcControl implements IStyleable, 
 
     private BBjInputN numBox;
 
-    public NumericBox() {}
 
     public NumericBox(String text) {
         setText(text);
     }
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
@@ -50,7 +50,7 @@ public final class NumericBox extends AbstractDwcControl implements IStyleable, 
 
     public String getEditString() {
         try {
-            return new String(numBox.getEditString());
+            return numBox.getEditString().toString();
         } catch (BBjException e) {
             e.printStackTrace();
         }
