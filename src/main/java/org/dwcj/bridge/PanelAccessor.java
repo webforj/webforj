@@ -9,9 +9,9 @@ import org.dwcj.panels.AbstractDwcjPanel;
  * Pattern see Tulach, p.75ff
  */
 public abstract class PanelAccessor {
-    private static volatile PanelAccessor DEFAULT;
+    private static PanelAccessor accessor;
 
-    public PanelAccessor() {
+    protected PanelAccessor() {
     }
 
     /**
@@ -19,7 +19,7 @@ public abstract class PanelAccessor {
      * @return the accessor instance
      */
     public static PanelAccessor getDefault() {
-        PanelAccessor a = DEFAULT;
+        PanelAccessor a = accessor;
         if (a != null) {
             return a;
         }
@@ -28,7 +28,7 @@ public abstract class PanelAccessor {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return DEFAULT;
+        return accessor;
     }
 
     /**
@@ -37,10 +37,10 @@ public abstract class PanelAccessor {
      * @param accessor the instance of the accessor implementation
      */
     public static void setDefault(PanelAccessor accessor) {
-        if (DEFAULT != null) {
+        if (PanelAccessor.accessor != null) {
             throw new IllegalStateException();
         }
-        DEFAULT = accessor;
+        PanelAccessor.accessor = accessor;
     }
 
 

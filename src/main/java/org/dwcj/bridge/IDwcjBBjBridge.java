@@ -53,6 +53,7 @@ public interface IDwcjBBjBridge {
      * @param args the arguments as a List
      * @return
      */
+    @SuppressWarnings("java:S3740") // allow raw types
     Object invokeMethod(Object object, String method, java.util.ArrayList args);
 
     /**

@@ -8,9 +8,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class BarChart extends AbstractDwcControl implements IControl, IStyleable {
 
-    private BBjBarChart barChart;
-
-    public BarChart() {}
+    private BBjBarChart bbjBarChart;
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -18,86 +16,86 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = w.addBarChart(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "x","y",0,0,false,false,false);
             catchUp();
-            barChart = (BBjBarChart) ctrl;
+            bbjBarChart = (BBjBarChart) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public boolean is3D() {
-        return barChart.is3D();
+        return bbjBarChart.is3D();
     }
 
     public int getCategoryCount() {
-        return barChart.getCategoryCount();
+        return bbjBarChart.getCategoryCount();
     }
 
     public int getSeriesCount() {
-        return barChart.getSeriesCount();
+        return bbjBarChart.getSeriesCount();
     }
 
     public String getTitle() {
-        return barChart.getTitle();
+        return bbjBarChart.getTitle();
     }
 
     public String getXLabel() {
-        return barChart.getXLabel();
+        return bbjBarChart.getXLabel();
     }
 
     public String getYLabel() {
-        return barChart.getYLabel();
+        return bbjBarChart.getYLabel();
     }
 
     public boolean isLegendShown() {
-        return barChart.isLegendShown();
+        return bbjBarChart.isLegendShown();
     }
 
     public void setBarValue(int series, int category, int value) {
         try {
-            barChart.setBarValue(series, category, value);
+            bbjBarChart.setBarValue(series, category, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public void setCategoryCount(int categories) {
-        barChart.setCategoryCount(categories);
+        bbjBarChart.setCategoryCount(categories);
     }
 
     public void setCategoryName(int category, String name) {
         try {
-            barChart.setCategoryName(category, name);
+            bbjBarChart.setCategoryName(category, name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public void setLegendShown(boolean legendShown) {
-        barChart.setLegendShown(legendShown);
+        bbjBarChart.setLegendShown(legendShown);
     }
 
     public void setSeriesCount(int series) {
-        barChart.setSeriesCount(series);
+        bbjBarChart.setSeriesCount(series);
     }
 
     public void setSeriesName(int series, String name) {
         try {
-            barChart.setSeriesName(series, name);
+            bbjBarChart.setSeriesName(series, name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public void setTitle(String title) {
-        barChart.setTitle(title);
+        bbjBarChart.setTitle(title);
     }
 
     public void setXLabel(String label) {
-        barChart.setTitle(label);
+        bbjBarChart.setTitle(label);
     }
 
     public void setYLabel(String label) {
-        barChart.setYLabel(label);
+        bbjBarChart.setYLabel(label);
     }
 
     @Override
