@@ -8,12 +8,14 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class MultilineEdit extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
     private BBjCEdit bbjCEdit;
 
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
@@ -50,7 +52,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
         }
     }
 
-    public ArrayList<String> getAllParagraphs() {
+    public List<String> getAllParagraphs() {
         try {
             return bbjCEdit.getAllParagraphs();
         } catch (BBjException e) {
@@ -162,7 +164,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
         return "";
     }
 
-    public ArrayList<String> getSelection() {
+    public List<String> getSelection() {
         try {
             return bbjCEdit.getSelection();
         } catch (BBjException e) {

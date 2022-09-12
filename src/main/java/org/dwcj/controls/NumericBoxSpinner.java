@@ -6,6 +6,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class NumericBoxSpinner extends AbstractDwcControl implements IThemable, IExpansible {
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

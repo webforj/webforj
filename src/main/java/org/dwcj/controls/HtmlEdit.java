@@ -148,7 +148,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
-    public void setBasicToolbarStyles(ArrayList styles) {
+    public void setBasicToolbarStyles(ArrayList<String> styles) {
         try {
             bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
         } catch (BBjException e) {

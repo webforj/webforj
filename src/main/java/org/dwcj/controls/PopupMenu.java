@@ -12,6 +12,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
 
     private BBjPopupMenu bbjPopupMenu;
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
         try{
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
@@ -248,6 +249,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
         }
     }
 
+    @Override
     public boolean isVisible() {
         try {
             return bbjPopupMenu.isVisible();

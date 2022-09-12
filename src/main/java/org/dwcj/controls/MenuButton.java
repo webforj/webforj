@@ -12,6 +12,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
 
     private BBjMenuButton bbjMenuButton;
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
 
         try {
