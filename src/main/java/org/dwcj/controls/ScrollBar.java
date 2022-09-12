@@ -20,6 +20,7 @@ public final class ScrollBar extends AbstractDwcControl {
 
     public ScrollBar(boolean horizontal) { this.horizontal = horizontal; }
 
+    @Override
     protected void create(AbstractDwcjPanel p) {
 
         try {
