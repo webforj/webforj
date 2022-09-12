@@ -5,13 +5,11 @@ import com.basis.startup.type.BBjException;
 
 public class CheckableMenuItem extends MenuItem {
 
-    private BBjCheckableMenuItem checkableMenuItem;
-
-    public CheckableMenuItem() {}
+    private BBjCheckableMenuItem bbjCheckableMenuItem;
 
     public void setSelected(boolean selected) {
         try {
-            checkableMenuItem.setSelected(selected);
+            bbjCheckableMenuItem.setSelected(selected);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -19,7 +17,7 @@ public class CheckableMenuItem extends MenuItem {
 
     public boolean isSelected() {
         try {
-            return checkableMenuItem.isSelected();
+            return bbjCheckableMenuItem.isSelected();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;

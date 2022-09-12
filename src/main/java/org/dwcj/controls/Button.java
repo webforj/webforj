@@ -15,7 +15,6 @@ import java.util.function.Consumer;
  */
 public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    private Consumer<ButtonPushEvent> callback;
     private ButtonPushEventSink buttonPushEventSink;
 
     /**
@@ -53,7 +52,6 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
      * @return the control itself
      */
     public Button onClick(Consumer<ButtonPushEvent> callback) {
-        this.callback = callback;
         if (this.buttonPushEventSink==null)
             this.buttonPushEventSink = new ButtonPushEventSink(this, callback);
         else this.buttonPushEventSink.addCallback(callback);

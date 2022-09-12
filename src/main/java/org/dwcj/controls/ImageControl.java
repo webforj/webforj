@@ -11,16 +11,14 @@ import java.awt.*;
 
 public final class ImageControl extends AbstractDwcControl implements IStyleable {
 
-    private BBjImageCtrl imageControl;
-
-    public ImageControl() {}
+    private BBjImageCtrl bbjImageControl;
 
     @Override
     void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = w.addImageCtrl(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
-            imageControl = (BBjImageCtrl) ctrl;
+            bbjImageControl = (BBjImageCtrl) ctrl;
             catchUp();
         } catch (Exception e) {
             e.printStackTrace();
@@ -29,7 +27,7 @@ public final class ImageControl extends AbstractDwcControl implements IStyleable
 
     public Image getImage() {
         try {
-            return (Image) imageControl.getImage();
+            return (Image) bbjImageControl.getImage();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -37,16 +35,16 @@ public final class ImageControl extends AbstractDwcControl implements IStyleable
     }
 
     public boolean isDisableable() {
-        return imageControl.isDisableable();
+        return bbjImageControl.isDisableable();
     }
 
     public void setDisableable(boolean disableable) {
-        imageControl.setDisableable(disableable);
+        bbjImageControl.setDisableable(disableable);
     }
 
     public void setImage(Image image) {
         try {
-            imageControl.setImage((BBjImage) image);
+            bbjImageControl.setImage((BBjImage) image);
         } catch (BBjException e) {
             e.printStackTrace();
         }

@@ -12,11 +12,7 @@ import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcControl implements IStyleable, IExpansible {
 
-    private BBjCheckBox checkBox;
     private Consumer<CheckBoxCheckEvent> callback;
-
-    public CheckBox() {
-    }
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -25,7 +21,6 @@ public final class CheckBox extends AbstractDwcControl implements IStyleable, IE
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
             catchUp();
-            checkBox = (BBjCheckBox) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,8 +39,8 @@ public final class CheckBox extends AbstractDwcControl implements IStyleable, IE
     }
 
     public void doCheck() {
-        CheckBoxCheckEvent dwc_ev = new CheckBoxCheckEvent(this);
-        callback.accept(dwc_ev);
+        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this);
+        callback.accept(dwcEv);
     }
 
     public boolean isSelected() {

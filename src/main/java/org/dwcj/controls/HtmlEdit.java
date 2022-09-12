@@ -11,16 +11,15 @@ import java.util.ArrayList;
 
 public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    private BBjHtmlEdit htmlEdit;
+    private BBjHtmlEdit bbjHtmlEdit;
 
-    public HtmlEdit() {}
 
     void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visbility flag
             ctrl = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
-            htmlEdit = (BBjHtmlEdit) ctrl;
+            bbjHtmlEdit = (BBjHtmlEdit) ctrl;
             catchUp();
         } catch (Exception e) {
             e.printStackTrace();
@@ -29,34 +28,34 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public ArrayList getAllToolbarStyles() {
         try {
-            return (ArrayList) htmlEdit.getAllToolbarStyles();
+            return bbjHtmlEdit.getAllToolbarStyles();
         } catch (BBjException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList();
         }
     }
 
     public ArrayList getAvailableSpellCheckLanguages() {
         try {
-            return (ArrayList) htmlEdit.getAvailableSpellCheckLanguages();
+            return bbjHtmlEdit.getAvailableSpellCheckLanguages();
         } catch (BBjException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList();
         }
     }
 
     public ArrayList getAvailableStates() {
         try {
-            return (ArrayList) htmlEdit.getAvailableStates();
+            return bbjHtmlEdit.getAvailableStates();
         } catch (BBjException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList();
         }
     }
 
     public boolean getBasicToolbar() {
         try {
-            return htmlEdit.getBasicToolbar();
+            return bbjHtmlEdit.getBasicToolbar();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -65,16 +64,16 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public ArrayList getBasicToolbarStyles() {
         try {
-            return (ArrayList) htmlEdit.getBasicToolbarStyles();
+            return bbjHtmlEdit.getBasicToolbarStyles();
         } catch (BBjException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList();
         }
     }
 
     public String getClientType() {
         try {
-            return htmlEdit.getClientType();
+            return bbjHtmlEdit.getClientType();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -83,7 +82,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public String getClientVersion() {
         try {
-            return htmlEdit.getClientVersion();
+            return bbjHtmlEdit.getClientVersion();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -91,21 +90,21 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
     }
 
     public String getLocale() {
-        return htmlEdit.getLocale();
+        return bbjHtmlEdit.getLocale();
     }
 
     public ArrayList getLocales() {
         try {
-            return (ArrayList) htmlEdit.getLocales();
+            return bbjHtmlEdit.getLocales();
         } catch (BBjException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList();
         }
     }
 
     public String getPlainText() {
         try {
-            return htmlEdit.getPlainText();
+            return bbjHtmlEdit.getPlainText();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -114,7 +113,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public String getSpellCheckLanguage() {
         try {
-            return htmlEdit.getSpellCheckLanguage();
+            return bbjHtmlEdit.getSpellCheckLanguage();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -123,7 +122,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public boolean getState(String state) {
         try {
-            return htmlEdit.getState(state);
+            return bbjHtmlEdit.getState(state);
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -132,7 +131,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public boolean isSpellChecked() {
         try {
-            return htmlEdit.isSpellChecked();
+            return bbjHtmlEdit.isSpellChecked();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -141,7 +140,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public void setBasicToolbar(boolean basicToolbar) {
         try {
-            htmlEdit.setBasicToolbar(basicToolbar);
+            bbjHtmlEdit.setBasicToolbar(basicToolbar);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -149,19 +148,19 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public void setBasicToolbarStyles(ArrayList styles) {
         try {
-            htmlEdit.setBasicToolbarStyles((BBjVector) styles);
+            bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public void setLocale(String locale) {
-        htmlEdit.setLocale(locale);
+        bbjHtmlEdit.setLocale(locale);
     }
 
     public void setPlainText(String text) {
         try {
-            htmlEdit.setPlainText(text);
+            bbjHtmlEdit.setPlainText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -169,7 +168,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public void setState(String state, boolean value) {
         try {
-            htmlEdit.setState(state, value);
+            bbjHtmlEdit.setState(state, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -177,7 +176,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public void setSpellChecked(boolean spellChecked) {
         try {
-            htmlEdit.setSpellChecked(spellChecked);
+            bbjHtmlEdit.setSpellChecked(spellChecked);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -185,7 +184,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
 
     public void setSpellCheckLanguage(String language) {
         try {
-            htmlEdit.setSpellCheckLanguage(language);
+            bbjHtmlEdit.setSpellCheckLanguage(language);
         } catch (BBjException e) {
             e.printStackTrace();
         }

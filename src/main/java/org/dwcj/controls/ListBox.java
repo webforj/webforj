@@ -19,9 +19,7 @@ import java.util.function.Consumer;
 
 public final class ListBox extends AbstractDwclistControl implements IThemable, IExpansible {
 
-    private BBjListBox listBox;
-    public ListBox() {}
-
+    private BBjListBox bbjListBox;
     @Override
     void create(AbstractDwcjPanel p) {
         try {
@@ -33,7 +31,7 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
-            listBox = (BBjListBox) ctrl;
+            bbjListBox = (BBjListBox) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,7 +64,7 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
 
     public boolean getMultipleSelection() {
         try {
-            return listBox.getMultipleSelection();
+            return bbjListBox.getMultipleSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -80,7 +78,7 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
      */
     public SimpleEntry<Object, String> getSelectedItem() {
         try {
-            String value = listBox.getSelectedItem();
+            String value = bbjListBox.getSelectedItem();
             return new SimpleEntry<>(getEntryByValue(value), value);
         } catch (BBjException e) {
             e.printStackTrace();
@@ -101,11 +99,14 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
     public Map<Object, String> getSelectedItems() {
         Map<Object, String> map = new HashMap<>();
         try {
-            Object[] indices = listBox.getSelectedIndices().toArray();
+            Object[] indices = bbjListBox.getSelectedIndices().toArray();
             for (Object index: indices) {
-                String value = listBox.getItemAt((Integer) index);
-                Object key = getEntryByValue(value).getKey();
-                map.put(key, value);
+                String value = bbjListBox.getItemAt((Integer) index);
+                SimpleEntry<Object, String> entry = getEntryByValue(value);
+                if (entry != null) {
+                    Object key = entry.getKey();
+                    if (key != null) map.put(key, value);
+                }
             }
         } catch (BBjException e) {
             e.printStackTrace();
@@ -142,7 +143,7 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
 
     public void setMultipleSelection(boolean bool) {
         try {
-            listBox.setMultipleSelection(bool);
+            bbjListBox.setMultipleSelection(bool);
         } catch (BBjException e) {
             e.printStackTrace();
         }

@@ -22,15 +22,11 @@ import java.util.function.Consumer;
  */
 public final class    ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
 
-    private BBjListButton comboBox;
+    private BBjListButton bbjListButton;
 
     private BBjComboBoxSelectEventSink comboBoxSelectEventSink;
 
     private ComboBoxChangeEventSink comboBoxChangeEventSink;
-
-    public ComboBox() {
-    }
-
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -44,7 +40,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
             ctrl.setAttribute("button-height", "auto");
             populate();
             catchUp();
-            comboBox = (BBjListButton) ctrl;
+            bbjListButton = (BBjListButton) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,7 +58,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         this.values.put(key, item);
         populate();
         try {
-            comboBox.addItem(item);
+            bbjListButton.addItem(item);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -100,7 +96,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      */
     public SimpleEntry<Object, String> getSelectedItem() {
         try {
-            String value = comboBox.getSelectedItem();
+            String value = bbjListButton.getSelectedItem();
             for (Map.Entry<Object, String> entry: this.values.entrySet()) {
                 if (Objects.equals(value, entry.getValue())) {
                     return new SimpleEntry<>(entry.getKey(),value);
@@ -117,7 +113,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      */
     public void open() {
         try {
-            comboBox.openList();
+            bbjListButton.openList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -128,7 +124,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
      */
     public void close() {
         try {
-            comboBox.closeList();
+            bbjListButton.closeList();
         } catch (BBjException e) {
             e.printStackTrace();
         }

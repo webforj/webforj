@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 public final class HtmlContainer extends AbstractDwcControl implements IStyleable {
 
-    private BBjHtmlView htmlContainer;
+    private BBjHtmlView bbjHtmlView;
 
     public HtmlContainer() {
     }
@@ -35,7 +35,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText());
             ctrl.setNoEdge(true);
-            htmlContainer = (BBjHtmlView) ctrl;
+            bbjHtmlView = (BBjHtmlView) ctrl;
             catchUp();
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,7 +44,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void executeAsyncScript(String script) {
         try {
-            htmlContainer.executeAsyncScript(script);
+            bbjHtmlView.executeAsyncScript(script);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -52,7 +52,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public Object executeScript(String script) {
         try {
-            return htmlContainer.executeScript(script);
+            return bbjHtmlView.executeScript(script);
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -61,7 +61,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public boolean getAutoNavigate() {
         try {
-            return htmlContainer.getAutoNavigate();
+            return bbjHtmlView.getAutoNavigate();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -70,7 +70,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public String getClientType() {
         try {
-            return htmlContainer.getClientType();
+            return bbjHtmlView.getClientType();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -79,7 +79,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public String getClientVersion() {
         try {
-            return htmlContainer.getClientVersion();
+            return bbjHtmlView.getClientVersion();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -88,7 +88,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public Image getImage() {
         try {
-            return (Image) htmlContainer.getImage();
+            return (Image) bbjHtmlView.getImage();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -97,7 +97,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public String getText() {
         try {
-            return htmlContainer.getText();
+            return bbjHtmlView.getText();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -106,7 +106,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public String getUrl() {
         try {
-            return htmlContainer.getUrl();
+            return bbjHtmlView.getUrl();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -115,7 +115,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public String getUserAgent() {
         try {
-            return htmlContainer.getUserAgent();
+            return bbjHtmlView.getUserAgent();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -124,7 +124,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void injectScript(String script) {
         try {
-            htmlContainer.injectScript(script);
+            bbjHtmlView.injectScript(script);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -132,7 +132,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void injectScript(String script, boolean top) {
         try {
-            htmlContainer.injectScript(script,top);
+            bbjHtmlView.injectScript(script,top);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -140,7 +140,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void injectUrl(String url) {
         try {
-            htmlContainer.injectUrl(url);
+            bbjHtmlView.injectUrl(url);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -148,7 +148,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void injectUrl(String url, boolean top) {
         try {
-            htmlContainer.injectUrl(url, top);
+            bbjHtmlView.injectUrl(url, top);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -156,7 +156,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public boolean print() {
         try {
-            return htmlContainer.print();
+            return bbjHtmlView.print();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -165,7 +165,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void setAutoNavigate(boolean autoNavigate) {
         try {
-            htmlContainer.setAutoNavigate(autoNavigate);
+            bbjHtmlView.setAutoNavigate(autoNavigate);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -173,7 +173,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void setUrl(String url) {
         try {
-            htmlContainer.setUrl(url);
+            bbjHtmlView.setUrl(url);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -181,14 +181,14 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
 
     public void setUrl(String url, boolean reload) {
         try {
-            htmlContainer.setUrl(url, reload);
+            bbjHtmlView.setUrl(url, reload);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public void setUserAgent(String userAgent) {
-        htmlContainer.setUserAgent(userAgent);
+        bbjHtmlView.setUserAgent(userAgent);
     }
 
     /**

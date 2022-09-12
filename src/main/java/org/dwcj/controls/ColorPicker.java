@@ -6,8 +6,6 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class ColorPicker extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
 
-    public ColorPicker() {}
-
     @Override
     void create(AbstractDwcjPanel p) {
 

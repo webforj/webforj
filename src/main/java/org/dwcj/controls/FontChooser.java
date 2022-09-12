@@ -19,22 +19,13 @@ import java.util.function.Consumer;
 
 public final class FontChooser extends AbstractDwcControl {
 
-    private Consumer<FontChooserApproveEvent> approveCallback;
-
-    private Consumer<FontChooserCancelEvent> cancelCallback;
-
-    private Consumer<FontChooserChangeEvent> changeCallback;
-
     private FontChooserApproveEventSink fontChooserApproveEventSink;
 
     private FontChooserCancelEventSink fontChooserCancelEventSink;
 
     private FontChooserChangeEventSink fontChooserChangeEventSink;
 
-    private BBjFontChooser fontChooser;
-
-    public FontChooser() {
-    }
+    private BBjFontChooser bbjFontChooser;
 
     @Override
     void create(AbstractDwcjPanel p) {
@@ -42,7 +33,7 @@ public final class FontChooser extends AbstractDwcControl {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visbility flag
             ctrl = w.addFontChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
-            fontChooser = (BBjFontChooser) ctrl;
+            bbjFontChooser = (BBjFontChooser) ctrl;
             catchUp();
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,7 +42,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void approveSelection() {
         try {
-            fontChooser.approveSelection();
+            bbjFontChooser.approveSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -59,7 +50,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void cancelSelection() {
         try {
-            fontChooser.cancelSelection();
+            bbjFontChooser.cancelSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -67,7 +58,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public String getApproveButtonText() {
         try {
-            return fontChooser.getApproveButtonText();
+            return bbjFontChooser.getApproveButtonText();
         } catch (BBjException e) {
             e.printStackTrace();
             return "";
@@ -76,7 +67,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public String getCancelButtonText() {
         try {
-            return fontChooser.getCancelButtonText();
+            return bbjFontChooser.getCancelButtonText();
         } catch (BBjException e) {
             e.printStackTrace();
             return "";
@@ -85,7 +76,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public boolean getControlButtonsAreShown() {
         try {
-            return fontChooser.getControlButtonsAreShown();
+            return bbjFontChooser.getControlButtonsAreShown();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -94,7 +85,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public boolean getFontsScaled() {
         try {
-            return fontChooser.getFontsScaled();
+            return bbjFontChooser.getFontsScaled();
         } catch (BBjException e) {
             e.printStackTrace();
             return false;
@@ -103,7 +94,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public String getPreviewMessage() {
         try {
-            return fontChooser.getPreviewMessage();
+            return bbjFontChooser.getPreviewMessage();
         } catch (BBjException e) {
             e.printStackTrace();
             return "";
@@ -112,7 +103,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public Font getSelectedFont() {
         try {
-            return (Font) fontChooser.getSelectedFont();
+            return (Font) bbjFontChooser.getSelectedFont();
         } catch (BBjException e) {
             e.printStackTrace();
             return null;
@@ -121,7 +112,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void setApproveButtonText(String text) {
         try {
-            fontChooser.setApproveButtonText(text);
+            bbjFontChooser.setApproveButtonText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -129,7 +120,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void setCancelButtonText(String text) {
         try {
-            fontChooser.setCancelButtonText(text);
+            bbjFontChooser.setCancelButtonText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -137,7 +128,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void setControlButtonsAreShown(boolean show) {
         try {
-            fontChooser.setControlButtonsAreShown(show);
+            bbjFontChooser.setControlButtonsAreShown(show);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -145,7 +136,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void setFontsScaled(boolean scale) {
         try {
-            fontChooser.setFontsScaled(scale);
+            bbjFontChooser.setFontsScaled(scale);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -153,7 +144,7 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void setPreviewMessage(String message) {
         try {
-            fontChooser.setPreviewMessage(message);
+            bbjFontChooser.setPreviewMessage(message);
         } catch (BBjException e) {
             e.printStackTrace();
         }
@@ -161,14 +152,13 @@ public final class FontChooser extends AbstractDwcControl {
 
     public void setSelectedFont(Font font) {
         try {
-            fontChooser.setSelectedFont((BBjFont) font);
+            bbjFontChooser.setSelectedFont((BBjFont) font);
         } catch (BBjException e) {
             e.printStackTrace();
         }
     }
 
     public FontChooser onFontChooserApprove(Consumer<FontChooserApproveEvent> callback) {
-        this.approveCallback = callback;
         if (this.fontChooserApproveEventSink == null)
             this.fontChooserApproveEventSink = new FontChooserApproveEventSink(this, callback);
         else this.fontChooserApproveEventSink.addCallback(callback);
@@ -176,7 +166,6 @@ public final class FontChooser extends AbstractDwcControl {
     }
 
     public FontChooser onFontChooserCancel(Consumer<FontChooserCancelEvent> callback) {
-        this.cancelCallback = callback;
         if (this.fontChooserCancelEventSink == null)
             this.fontChooserCancelEventSink = new FontChooserCancelEventSink(this, callback);
         else this.fontChooserCancelEventSink.addCallback(callback);
@@ -184,7 +173,6 @@ public final class FontChooser extends AbstractDwcControl {
     }
 
     public FontChooser onFontChooserChange(Consumer<FontChooserChangeEvent> callback) {
-        this.changeCallback = callback;
         if (this.fontChooserChangeEventSink == null)
             this.fontChooserChangeEventSink = new FontChooserChangeEventSink(this, callback);
         else this.fontChooserChangeEventSink.addCallback(callback);
