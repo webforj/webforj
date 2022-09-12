@@ -1,6 +1,5 @@
-package org.dwcj.events.comboBox;
+package org.dwcj.events.combobox;
 
-import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import org.dwcj.controls.ComboBox;
 import org.dwcj.events.IDwcEvent;
 

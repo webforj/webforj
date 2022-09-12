@@ -5,12 +5,12 @@ import com.basis.bbj.proxies.sysgui.BBjFontChooser;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.events.fontChooser.FontChooserApproveEvent;
-import org.dwcj.events.fontChooser.FontChooserCancelEvent;
-import org.dwcj.events.fontChooser.FontChooserChangeEvent;
-import org.dwcj.events.sinks.fontChooser.FontChooserApproveEventSink;
-import org.dwcj.events.sinks.fontChooser.FontChooserCancelEventSink;
-import org.dwcj.events.sinks.fontChooser.FontChooserChangeEventSink;
+import org.dwcj.events.fontchooser.FontChooserApproveEvent;
+import org.dwcj.events.fontchooser.FontChooserCancelEvent;
+import org.dwcj.events.fontchooser.FontChooserChangeEvent;
+import org.dwcj.events.sinks.fontchooser.FontChooserApproveEventSink;
+import org.dwcj.events.sinks.fontchooser.FontChooserCancelEventSink;
+import org.dwcj.events.sinks.fontchooser.FontChooserChangeEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.awt.*;

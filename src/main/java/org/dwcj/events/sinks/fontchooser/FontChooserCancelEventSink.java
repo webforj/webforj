@@ -1,13 +1,11 @@
-package org.dwcj.events.sinks.fontChooser;
+package org.dwcj.events.sinks.fontchooser;
 
 import com.basis.bbj.proxies.event.BBjFileChooserCancelEvent;
-import com.basis.bbj.proxies.event.BBjFileChooserChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.FontChooser;
-import org.dwcj.events.fontChooser.FontChooserCancelEvent;
-import org.dwcj.events.fontChooser.FontChooserChangeEvent;
+import org.dwcj.events.fontchooser.FontChooserCancelEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,8 +16,6 @@ public final class FontChooserCancelEventSink {
     private ArrayList<Consumer<FontChooserCancelEvent>> targets;
 
     private final FontChooser fontChooser;
-
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public FontChooserCancelEventSink(FontChooser fc, Consumer<FontChooserCancelEvent> callback) {
@@ -35,14 +31,14 @@ public final class FontChooserCancelEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
+        
     }
 
-    public void changeEvent(BBjFileChooserCancelEvent ev) {
-        FontChooserCancelEvent dwc_ev = new FontChooserCancelEvent(this.fontChooser);
+    public void changeEvent(BBjFileChooserCancelEvent ev) { //NOSONAR
+        FontChooserCancelEvent dwcEv = new FontChooserCancelEvent(this.fontChooser);
         Iterator<Consumer<FontChooserCancelEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<FontChooserCancelEvent> callback) { targets.add(callback); }

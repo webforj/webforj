@@ -36,7 +36,7 @@ public final class BBjDivClickEventSink {
         }
     }
     @SuppressWarnings("java:S1172")
-    public void pushEvent(BBjMouseDownEvent ev) {
+    public void pushEvent(BBjMouseDownEvent ev) { //NOSONAR
         DivClickEvent dwcEv = new DivClickEvent(this.div);
         Iterator<Consumer<DivClickEvent>> it = targets.iterator();
         while (it.hasNext())

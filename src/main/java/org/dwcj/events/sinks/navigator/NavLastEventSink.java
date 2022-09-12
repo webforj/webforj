@@ -17,7 +17,6 @@ public class NavLastEventSink {
 
     private final Navigator navigator;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public NavLastEventSink(Navigator ng, Consumer<NavigatorLastEvent> callback) {
@@ -34,14 +33,14 @@ public class NavLastEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
+        
     }
 
-    public void navLastEvent(BBjNavigatorMoveLastEvent ev) {
-        NavigatorLastEvent dwc_ev = new NavigatorLastEvent(this.navigator);
+    public void navLastEvent(BBjNavigatorMoveLastEvent ev) { //NOSONAR
+        NavigatorLastEvent dwcEv = new NavigatorLastEvent(this.navigator);
         Iterator<Consumer<NavigatorLastEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<NavigatorLastEvent> callback) { targets.add(callback); }

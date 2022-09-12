@@ -101,17 +101,17 @@ public class TreeDemo extends App {
             multilineEdit.setStyle("height","500px");
         }
 
-        private void collapseAll(ButtonPushEvent ev) {
+        private void collapseAll(ButtonPushEvent ev) { //NOSONAR
             tree.collapseTreeFromNode(tree.getRoot());
             multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: collapseTreeFromNode(tree.getRoot())");
         }
 
-        private void expandAll(ButtonPushEvent ev) {
+        private void expandAll(ButtonPushEvent ev) { //NOSONAR
             tree.expandTreeFromNode(tree.getRoot());
             multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: expandTreeFromNode(tree.getRoot())");
         }
 
-        private void setNodeText(ButtonPushEvent ev) {
+        private void setNodeText(ButtonPushEvent ev) { //NOSONAR
             tree.setNodeText(Integer.parseInt(idBox.getText()), nodeTextBox.getText());
             multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: setNodeText(" + idBox.getText() + ", " + nodeTextBox.getText() + ")");
         }

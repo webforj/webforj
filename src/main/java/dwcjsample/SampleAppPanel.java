@@ -93,7 +93,7 @@ public class SampleAppPanel extends AppPanel {
         ratingText.setText(txt);
     }
 
-    private void onSampleButtonPush(ButtonPushEvent ev) {
+    private void onSampleButtonPush(ButtonPushEvent ev) { //NOSONAR
         String text = edFirstname.getText() + " " + edLastname.getText() + " (" + cbGender.getText() + ")";
         App.msgbox(text, 0, "Hello World");
     }

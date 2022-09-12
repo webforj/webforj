@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 public final class BBjPageLoadedEventSink {
 
     private final Consumer<PageLoadedEvent> target;
-    private final BBjControl ctrl;
     private final HtmlContainer container;
 
     @SuppressWarnings({"static-access"})
@@ -29,15 +28,13 @@ public final class BBjPageLoadedEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.ctrl = bbjctrl;
         this.container = htmlv;
 
     }
 
-    public void onEvent(BBjPageLoadedEvent ev) {
-        PageLoadedEvent dwc_ev = new PageLoadedEvent(container);
-        target.accept(dwc_ev);
+    public void onEvent(BBjPageLoadedEvent ev) { //NOSONAR
+        PageLoadedEvent dwcEv = new PageLoadedEvent(container);
+        target.accept(dwcEv);
     }
 
 

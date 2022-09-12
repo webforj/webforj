@@ -37,13 +37,13 @@ public final class BBjCheckBoxCheckEventSink {
     }
 
     @SuppressWarnings("java:S1172")
-    public void checkOffEvent(BBjCheckOffEvent ev) {
+    public void checkOffEvent(BBjCheckOffEvent ev) { //NOSONAR
         CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this.checkBox);
         target.accept(dwcEv);
     }
 
     @SuppressWarnings("java:S1172")
-    public void checkOnEvent(BBjCheckOnEvent ev) {
+    public void checkOnEvent(BBjCheckOnEvent ev) { //NOSONAR
         CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this.checkBox);
         target.accept(dwcEv);
     }

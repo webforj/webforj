@@ -6,8 +6,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.events.listBox.ListBoxSelectEvent;
-import org.dwcj.events.sinks.listBox.BBjListBoxSelectEventSink;
+import org.dwcj.events.listbox.ListBoxSelectEvent;
+import org.dwcj.events.sinks.listbox.BBjListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;

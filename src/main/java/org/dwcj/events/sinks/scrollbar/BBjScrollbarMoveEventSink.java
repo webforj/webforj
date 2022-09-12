@@ -1,4 +1,4 @@
-package org.dwcj.events.sinks.scrollBar;
+package org.dwcj.events.sinks.scrollbar;
 
 import com.basis.bbj.proxies.event.BBjControlScrollEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
@@ -17,7 +17,6 @@ public class BBjScrollbarMoveEventSink {
 
     private final ScrollBar scrollBar;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjScrollbarMoveEventSink(ScrollBar sb, Consumer<ScrollbarMoveEvent> callback) {
@@ -34,14 +33,13 @@ public class BBjScrollbarMoveEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void scrollEvent(BBjControlScrollEvent ev) {
-        ScrollbarMoveEvent dwc_ev = new ScrollbarMoveEvent(this.scrollBar);
+    public void scrollEvent(BBjControlScrollEvent ev) { //NOSONAR
+        ScrollbarMoveEvent dwcEv = new ScrollbarMoveEvent(this.scrollBar);
         Iterator<Consumer<ScrollbarMoveEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<ScrollbarMoveEvent> callback) { targets.add(callback); }

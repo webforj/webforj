@@ -26,8 +26,8 @@ class public BBjGridExWidgetSelectEventProxy implements IEventProxy
           wend
           selectedAsText$ = selectedAsText$(1,len(selectedAsText$)-2)+"]"
           
-          dwc_event! = selectedAsText$
-          eval("o!."+#method!+"(dwc_event!)")
+          dwcEvent! = selectedAsText$
+          eval("o!."+#method!+"(dwcEvent!)")
     methodend
 
 classend

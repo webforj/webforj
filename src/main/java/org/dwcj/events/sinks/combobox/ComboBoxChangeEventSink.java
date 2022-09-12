@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.ComboBox;
-import org.dwcj.events.comboBox.ComboBoxChangeEvent;
+import org.dwcj.events.combobox.ComboBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +17,6 @@ public class ComboBoxChangeEventSink {
 
     private final ComboBox comboBox;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public ComboBoxChangeEventSink(ComboBox cb, Consumer<ComboBoxChangeEvent> callback) {
@@ -34,14 +33,13 @@ public class ComboBoxChangeEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl=bbjctrl;
     }
 
-    public void changeEvent(BBjListChangeEvent ev) {
-        ComboBoxChangeEvent dwc_ev = new ComboBoxChangeEvent(this.comboBox);
+    public void changeEvent(BBjListChangeEvent ev) { // NOSONAR
+        ComboBoxChangeEvent dwcEv = new ComboBoxChangeEvent(this.comboBox);
         Iterator<Consumer<ComboBoxChangeEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<ComboBoxChangeEvent> callback) { targets.add(callback); }

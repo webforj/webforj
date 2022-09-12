@@ -1,6 +1,5 @@
-package org.dwcj.events.fontChooser;
+package org.dwcj.events.fontchooser;
 
-import org.dwcj.controls.FileChooser;
 import org.dwcj.controls.FontChooser;
 import org.dwcj.events.IDwcEvent;
 

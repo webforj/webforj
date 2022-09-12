@@ -15,7 +15,6 @@ public final class ButtonPushEventSink {
 
     private ArrayList<Consumer<ButtonPushEvent>> targets;
     private final Button button;
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public ButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> callback) {
@@ -34,25 +33,23 @@ public final class ButtonPushEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.ctrl = bbjctrl;
     }
 
-    public void pushEvent(BBjButtonPushEvent ev) {
-        ButtonPushEvent dwc_ev = new ButtonPushEvent(this.button);
+    public void pushEvent(BBjButtonPushEvent ev) { // NOSONAR
+        ButtonPushEvent dwcEv = new ButtonPushEvent(this.button);
         Iterator<Consumer<ButtonPushEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     /**
      * Clicks the button, for testing purposes
      */
     public void doClick() {
-        ButtonPushEvent dwc_ev = new ButtonPushEvent(button);
+        ButtonPushEvent dwcEv = new ButtonPushEvent(button);
         Iterator<Consumer<ButtonPushEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<ButtonPushEvent> callback) {

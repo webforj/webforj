@@ -1,11 +1,11 @@
-package org.dwcj.events.sinks.fontChooser;
+package org.dwcj.events.sinks.fontchooser;
 
 import com.basis.bbj.proxies.event.BBjFileChooserApproveEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.FontChooser;
-import org.dwcj.events.fontChooser.FontChooserApproveEvent;
+import org.dwcj.events.fontchooser.FontChooserApproveEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,8 +16,6 @@ public final class FontChooserApproveEventSink {
     private ArrayList<Consumer<FontChooserApproveEvent>> targets;
 
     private final FontChooser fontChooser;
-
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public FontChooserApproveEventSink(FontChooser fc, Consumer<FontChooserApproveEvent> callback) {
@@ -33,14 +31,14 @@ public final class FontChooserApproveEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
+
     }
 
-    public void changeEvent(BBjFileChooserApproveEvent ev) {
-        FontChooserApproveEvent dwc_ev = new FontChooserApproveEvent(this.fontChooser);
+    public void changeEvent(BBjFileChooserApproveEvent ev) { // NOSONAR
+        FontChooserApproveEvent dwcEv = new FontChooserApproveEvent(this.fontChooser);
         Iterator<Consumer<FontChooserApproveEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<FontChooserApproveEvent> callback) { targets.add(callback); }

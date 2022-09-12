@@ -17,8 +17,6 @@ public class NavNextEventSink {
 
     private final Navigator navigator;
 
-    private final BBjControl ctrl;
-
     @SuppressWarnings({"static-access"})
     public NavNextEventSink(Navigator ng, Consumer<NavigatorNextEvent> callback) {
         this.targets = new ArrayList<>();
@@ -34,14 +32,14 @@ public class NavNextEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
+        
     }
 
-    public void navNextEvent(BBjNavigatorMoveNextEvent ev) {
-        NavigatorNextEvent dwc_ev = new NavigatorNextEvent(this.navigator);
+    public void navNextEvent(BBjNavigatorMoveNextEvent ev) { //NOSONAR
+        NavigatorNextEvent dwcEv = new NavigatorNextEvent(this.navigator);
         Iterator<Consumer<NavigatorNextEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<NavigatorNextEvent> callback) { targets.add(callback); }

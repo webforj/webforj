@@ -15,7 +15,6 @@ public class BBjTreeDoubleClickEventSink {
 
     private final TreeView tree;
 
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjTreeDoubleClickEventSink(TreeView tree, Consumer<TreeDoubleClickedEvent> target) {
@@ -31,11 +30,10 @@ public class BBjTreeDoubleClickEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
 
-    public void doubleClickEvent(BBjTreeMouseDoubleClickEvent ev) {
-        TreeDoubleClickedEvent dwc_ev = new TreeDoubleClickedEvent(this.tree);
-        target.accept(dwc_ev);
+    public void doubleClickEvent(BBjTreeMouseDoubleClickEvent ev) { //NOSONAR
+        TreeDoubleClickedEvent dwcEv = new TreeDoubleClickedEvent(this.tree);
+        target.accept(dwcEv);
     }
 }

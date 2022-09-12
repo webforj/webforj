@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.ComboBox;
-import org.dwcj.events.comboBox.ComboBoxSelectEvent;
+import org.dwcj.events.combobox.ComboBoxSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +34,7 @@ public final class BBjComboBoxSelectEventSink {
         }
     }
     @SuppressWarnings("java.S1172")
-    public void selectEvent(BBjListSelectEvent ev) {
+    public void selectEvent(BBjListSelectEvent ev) { //NOSONAR
         ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.comboBox);
         Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
