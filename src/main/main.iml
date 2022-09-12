@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../bbx/lib/BBjStartup.jar!/" />
+          <root url="jar://$USER_HOME$/bbx/lib/BBjStartup.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,7 +19,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../bbx/lib/BBj.jar!/" />
+          <root url="jar://$USER_HOME$/bbx/lib/BBj.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../bbx/lib/BBjUtil.jar!/" />
+          <root url="jar://$USER_HOME$/bbx/lib/BBjUtil.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -38,11 +38,12 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../bbx/lib/basiscomponents.jar!/" />
+          <root url="jar://$USER_HOME$/bbx/lib/basiscomponents.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
   </component>
 </module>

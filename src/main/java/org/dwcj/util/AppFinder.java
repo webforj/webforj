@@ -6,7 +6,8 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@SuppressWarnings("java:S3740") // allow raw types
+
+@SuppressWarnings({"java:S3740","java:S3776"}) // allow raw types
 public class AppFinder {
 
     private final Class appBaseClass;
@@ -52,6 +53,7 @@ public class AppFinder {
         processFile(filepath,"");
     }
 
+
     private void processFile(String base, String curFile) {
         String nextfile = base + File.separatorChar + curFile;
         File currentDirectory = new File(nextfile);
@@ -62,7 +64,7 @@ public class AppFinder {
                 if (currentDirectory.exists())
                     processJar(new ZipFile(currentDirectory));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e); //NOSONAR
             }
         }
         else {

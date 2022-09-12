@@ -18,9 +18,6 @@ public final class Div extends AbstractDwcjPanel {
 
     private BBjDivClickEventSink divClickEventSink;
 
-    public Div() {
-    }
-
     void create(AbstractDwcjPanel p) {
         BBjWindow w = p.getBBjWindow();
         try {

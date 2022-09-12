@@ -42,17 +42,17 @@ public class WelcomeApp extends App {
 
         ArrayList<String> cplist = null;
         AppFinder af = null;
-        Set applist = null;
+        Set<String> applist = null;
 
         try {
             cplist = (ArrayList<String>) Environment.getInstance().getBBjAPI().getObjectTable().get("dwcjcp");
-        } catch (BBjException e) {
+        } catch (BBjException e) { //
         }
         if (cplist != null){
             try {
                 af = new AppFinder(cplist);
                 applist = af.getAppImplmentations();
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) { //
             }
         }
 
@@ -65,7 +65,7 @@ public class WelcomeApp extends App {
 
     }
 
-    private void showAppList(Set applist) {
+    private void showAppList(Set<String> applist) {
 
         if (applist.isEmpty()) {
             panel.add(new Label("<html><h2>Oops. Looks like there are no DWCJ Apps in your Classpath</h2>"));
@@ -83,11 +83,9 @@ public class WelcomeApp extends App {
             tbl.setStyle("grid-template-columns", "5fr 1fr");
             tbl.setStyle("gap", "20px");
 
-            Iterator it = applist.iterator();
+            Iterator<String> it = applist.iterator();
             while (it.hasNext()) {
-                String app = (String) it.next();
-                //if (app.equals("org.dwcj.util.WelcomeApp"))
-                //    continue;
+                String app = it.next();
                 Label classNameLabel = new Label(app);
                 tbl.add(classNameLabel);
 

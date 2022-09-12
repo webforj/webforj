@@ -15,19 +15,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+@SuppressWarnings("java:S1192")
 public final class Rating extends AbstractShoelaceControl implements IStyleable {
 
-    final private String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
+    private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 
     private int max = 5;
     private Double value = 0.0;
     private Double precision = 1.0;
     private BBjHtmlView htmlv;
     private ArrayList<Consumer<RatingValueChangedEvent>> onValueChangedCallbacks;
-
-    public Rating() {
-    }
-
 
     void create(AbstractDwcjPanel p) {
 
@@ -47,7 +44,7 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
         loadShoelaceLib();
     }
 
-    private void _cbPageLoaded(BBjPageLoadedEvent ev) throws BBjException {
+    private void _cbPageLoaded(BBjPageLoadedEvent ev) throws BBjException { //NOSONAR
         htmlv.clearCallback(Environment.getInstance().getBBjAPI().ON_PAGE_LOADED);
         String scr = "document.getElementById('" + uuid + "').addEventListener('sl-change', " + "event => {var custom=new CustomEvent(" + "'custom_event',{bubbles:true,cancelable:true});" + "custom.value=event.target.value;" + "window.basisDispatchCustomEvent(event.target,custom);})";
         htmlv.executeScript(scr);
@@ -60,7 +57,7 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
      * @param ev
      * @throws BBjException
      */
-    private void _cbJS(BBjNativeJavaScriptEvent ev) throws BBjException {
+    private void _cbJS(BBjNativeJavaScriptEvent ev) throws BBjException { //NOSONAR
         value = Double.valueOf(ev.getEventMap().get("value"));
         RatingValueChangedEvent vev = new RatingValueChangedEvent(this, value);
         Iterator<Consumer<RatingValueChangedEvent>> it = onValueChangedCallbacks.iterator();
