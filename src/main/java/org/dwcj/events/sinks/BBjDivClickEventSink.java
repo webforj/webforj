@@ -17,7 +17,6 @@ public final class BBjDivClickEventSink {
 
     private ArrayList<Consumer<DivClickEvent>> targets;
     private final Div div;
-    private final BBjControl ctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjDivClickEventSink(Div div, Consumer<DivClickEvent> callback) {
@@ -35,24 +34,23 @@ public final class BBjDivClickEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.ctrl = bbjctrl;
     }
-
+    @SuppressWarnings("java:S1172")
     public void pushEvent(BBjMouseDownEvent ev) {
-        DivClickEvent dwc_ev = new DivClickEvent(this.div);
+        DivClickEvent dwcEv = new DivClickEvent(this.div);
         Iterator<Consumer<DivClickEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     /**
      * Clicks the button, for testing purposes
      */
     public void doClick() {
-        DivClickEvent dwc_ev = new DivClickEvent(div);
+        DivClickEvent dwcEv = new DivClickEvent(div);
         Iterator<Consumer<DivClickEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<DivClickEvent> callback) {
