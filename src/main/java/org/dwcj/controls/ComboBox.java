@@ -7,8 +7,8 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.comboBox.ComboBoxChangeEvent;
 import org.dwcj.events.comboBox.ComboBoxSelectEvent;
-import org.dwcj.events.sinks.comboBox.BBjComboBoxSelectEventSink;
-import org.dwcj.events.sinks.comboBox.ComboBoxChangeEventSink;
+import org.dwcj.events.sinks.combobox.BBjComboBoxSelectEventSink;
+import org.dwcj.events.sinks.combobox.ComboBoxChangeEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;

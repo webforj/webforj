@@ -1,4 +1,4 @@
-package org.dwcj.events.sinks.comboBox;
+package org.dwcj.events.sinks.combobox;
 
 import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
@@ -17,14 +17,13 @@ public final class BBjComboBoxSelectEventSink {
 
     private final ComboBox comboBox;
 
-    private final BBjControl ctrl;
+    private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
     public BBjComboBoxSelectEventSink(ComboBox cb, Consumer<ComboBoxSelectEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;
 
-        BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
@@ -33,23 +32,21 @@ public final class BBjComboBoxSelectEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.ctrl = bbjctrl;
     }
-
+    @SuppressWarnings("java.S1172")
     public void selectEvent(BBjListSelectEvent ev) {
-        ComboBoxSelectEvent dwc_ev = new ComboBoxSelectEvent(this.comboBox);
+        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.comboBox);
         Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void doSelect(Object key) {
-        ComboBoxSelectEvent dwc_ev = new ComboBoxSelectEvent(comboBox);
-        dwc_ev.setKey(key);
+        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(comboBox);
+        dwcEv.setKey(key);
         Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
-            it.next().accept(dwc_ev);
+            it.next().accept(dwcEv);
     }
 
     public void addCallback(Consumer<ComboBoxSelectEvent> callback) { targets.add(callback); }

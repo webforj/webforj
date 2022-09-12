@@ -1,4 +1,4 @@
-package org.dwcj.events.sinks.comboBox;
+package org.dwcj.events.sinks.combobox;
 
 import com.basis.bbj.proxies.event.BBjListChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
