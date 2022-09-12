@@ -35,6 +35,7 @@ public abstract class AbstractShoelaceControl extends AbstractDwcControl {
         }
     }
 
+    @Override
     public String getText() {
         return "";
     }
