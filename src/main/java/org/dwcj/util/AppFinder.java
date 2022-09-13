@@ -113,19 +113,6 @@ public class AppFinder {
             }
         }
     }
-
-
-    /** todo: create unit test for appfinder
-    public static void main(String[] args) throws ClassNotFoundException {
-        List<String> cpentruied;
-        cpentruied = new ArrayList<>();
-        cpentruied.add("/Users/beff/DWCJ/HelloWorldJava/target/lib/HelloWorldJava.jar");
-        cpentruied.add("/Users/beff/DWCJ/ExtendedDemos/target/lib/ExtendedDemos.jar");
-        cpentruied.add("/Users/beff/testfish_lib/common/mysql-connector-java-8.0.19.jar");
-        AppFinder af = new AppFinder(cpentruied);
-        System.out.println(af.getAppImplmentations());
-    }
-     **/
 }
 
 
