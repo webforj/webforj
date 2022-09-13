@@ -1,7 +1,6 @@
-package org.dwcj;
-import org.junit.jupiter.api.Disabled;
+package org.dwcj.test;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SimpleTest {
     @Test
