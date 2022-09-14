@@ -49,7 +49,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
 
     @SuppressWarnings("unchecked")
-    private void populate() {
+    protected void populate() {
         if (values != null && ctrl != null) try {
             BBjListEdit cb = (BBjListEdit) ctrl;
             cb.removeAllItems();
@@ -65,12 +65,10 @@ public final class TextComboBox extends AbstractDwclistControl implements IStyle
 
     }
 
-    public void addItem(String item) {
-        try {
-            bbjListEdit.addItem(item);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
+    public TextComboBox addItem(Object key, String item) {
+        this.values.put(key, item);
+        populate();
+        return this;
     }
 
     public void closeList() {

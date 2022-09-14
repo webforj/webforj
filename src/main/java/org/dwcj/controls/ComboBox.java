@@ -38,6 +38,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
             ctrl.setAttribute("button-height", "auto");
+            ctrl.setAttribute("left", "calc( 50vw - 100px )");
             populate();
             catchUp();
             bbjListButton = (BBjListButton) ctrl;
@@ -57,11 +58,6 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     public ComboBox addItem(Object key, String item) {
         this.values.put(key, item);
         populate();
-        try {
-            bbjListButton.addItem(item);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
         return this;
     }
 
@@ -132,7 +128,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
 
 
     @SuppressWarnings("unchecked")
-    private void populate() {
+    protected void populate() {
         if (values != null && ctrl != null) try {
             BBjListButton cb = (BBjListButton) ctrl;
             cb.removeAllItems();

@@ -1,7 +1,6 @@
 package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjListBox;
-import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
@@ -121,9 +120,9 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
     }
 
     @SuppressWarnings("unchecked")
-    private void populate() {
+    protected void populate() {
         if (values != null && ctrl != null) try {
-            BBjListButton cb = (BBjListButton) ctrl;
+            BBjListBox cb = (BBjListBox) ctrl;
             cb.removeAllItems();
             BBjVector v = new BBjVector();
             Iterator<Object> it = values.keySet().iterator();
