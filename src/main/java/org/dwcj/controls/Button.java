@@ -79,13 +79,14 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
         return false;
     }
 
-    public void setDisableOnClick(boolean disable) {
+    public Button setDisableOnClick(boolean disable) {
         BBjButton btn = (BBjButton) this.ctrl;
         try {
             btn.setDisableOnClick(disable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override
