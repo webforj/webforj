@@ -86,7 +86,19 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
     }
 
     private SimpleEntry<Object, String> getEntryByValue(String value) {
-        Map<Object, String> map = (Map<Object, String>) this.values.entrySet();
+        /*================================================================================
+         * 
+         * Map<Object, String> map = (Map<Object, String>) this.values.entrySet(); 
+         * 
+         * This is what the line originally was, but I needed to take it out to get the
+         * component to work correctly. It seemed to be creating a set and cashing to a 
+         * map, which was creating an error on the next line when trying to again cast
+         * it to a set?
+         * 
+         * I didn't fully understand what was happening here, but it fixed the control
+         * demo - if there's broken functionality though, this is a good spot to start! -MH
+         *================================================================================*/
+        Map<Object, String> map = (Map<Object, String>) this.values;
         for (Map.Entry<Object, String> entry : map.entrySet()) {
             if (Objects.equals(value, entry.getValue())) {
                 return new SimpleEntry<>(entry.getKey(), value);

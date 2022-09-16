@@ -28,12 +28,13 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
         }
     }
 
-    public void addParagraph(int index, String paragraph) {
+    public MultilineEdit addParagraph(int index, String paragraph) {
         try {
             bbjCEdit.addParagraph(index, paragraph);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public void addParagraphs(int index, ArrayList<String> paragraphs) {
@@ -233,108 +234,121 @@ public final class MultilineEdit extends AbstractDwcControl implements IStyleabl
         }
     }
 
-    public void setEditable(boolean editable) {
+    public MultilineEdit setEditable(boolean editable) {
         try {
             bbjCEdit.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setHorizontalScrollable(boolean scroll) {
+    public MultilineEdit setHorizontalScrollable(boolean scroll) {
         try {
             bbjCEdit.setHorizontalScrollable(scroll);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setIgnoreEnters(boolean ignore) {
+    public MultilineEdit setIgnoreEnters(boolean ignore) {
         try {
             bbjCEdit.setIgnoreEnters(ignore);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setIgnoreTabs(boolean ignore) {
+    public MultilineEdit setIgnoreTabs(boolean ignore) {
         try {
             bbjCEdit.setIgnoreTabs(ignore);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLimitToOneParagraph(boolean limit) {
+    public MultilineEdit setLimitToOneParagraph(boolean limit) {
         try {
             bbjCEdit.setLimitToOneParagraph(limit);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLineCountLimit(int limit) {
+    public MultilineEdit setLineCountLimit(int limit) {
         try {
             bbjCEdit.setLineCountLimit(limit);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLineWrap(boolean wrap) {
+    public MultilineEdit setLineWrap(boolean wrap) {
         try {
             bbjCEdit.setLineWrap(wrap);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMaxParagraphSize(int size) {
+    public MultilineEdit setMaxParagraphSize(int size) {
         try {
             bbjCEdit.setMaxParagraphSize(size);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMaxLength(int length) {
+    public MultilineEdit setMaxLength(int length) {
         try {
             bbjCEdit.setMaxLength(length);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setOvertypeMode(boolean overtype) {
+    public MultilineEdit setOvertypeMode(boolean overtype) {
         try {
             bbjCEdit.setOvertypeMode(overtype);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setTabSize(int size) {
+    public MultilineEdit setTabSize(int size) {
         try {
             bbjCEdit.setTabSize(size);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setVerticalScrollable(boolean scroll) {
+    public MultilineEdit setVerticalScrollable(boolean scroll) {
         try {
             bbjCEdit.setVerticalScrollable(scroll);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setWrapStyleWord(boolean word) {
+    public MultilineEdit setWrapStyleWord(boolean word) {
         try {
             bbjCEdit.setWrapStyleWord(word);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override

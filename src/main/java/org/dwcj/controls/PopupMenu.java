@@ -299,24 +299,27 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
         }
     }
 
-    public void setMaximumRowCount(int max) {
+    public PopupMenu setMaximumRowCount(int max) {
         bbjPopupMenu.setMaximumRowCount(max);
+        return this;
     }
 
-    public void setName(String name) {
+    public PopupMenu setName(String name) {
         try {
             bbjPopupMenu.setName(name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setUserData(Object object) {
+    public PopupMenu setUserData(Object object) {
         try {
             bbjPopupMenu.setUserData(object);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     //todo: how to handle BBjControl parameter?

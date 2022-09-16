@@ -143,7 +143,6 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         } catch (BBjException e) {
             e.printStackTrace();
         }
-
     }
 
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {

@@ -192,124 +192,139 @@ public final class NumericBox extends AbstractDwcControl implements IStyleable, 
         }
     }
 
-    public void setCommaCharacter(String comma) {
+    public NumericBox setCommaCharacter(String comma) {
         try {
             numBox.setCommaCharacter(comma);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setDotCharacter(String dot) {
+    public NumericBox setDotCharacter(String dot) {
         try {
             numBox.setDotCharacter(dot);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setEditable(boolean editable) {
+    public NumericBox setEditable(boolean editable) {
         try {
             numBox.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setEditString(String edit) {
+    public NumericBox setEditString(String edit) {
         try {
             numBox.setEditString(edit.getBytes());
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setHighlight(boolean highlight) {
+    public NumericBox setHighlight(boolean highlight) {
         try {
             numBox.setHighlight(highlight);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setInsertMode(boolean insert) {
+    public NumericBox setInsertMode(boolean insert) {
         try {
             numBox.setInsertMode(insert);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLength(int len) {
+    public NumericBox setLength(int len) {
         try {
             numBox.setLength(len);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMargin(int marginWidth) {
+    public NumericBox setMargin(int marginWidth) {
         try {
             numBox.setMargin(marginWidth);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMask(String mask) {
+    public NumericBox setMask(String mask) {
         try {
             numBox.setMask(mask);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setNegatable(boolean negatable) {
+    public NumericBox setNegatable(boolean negatable) {
         try {
             numBox.setNegateable(negatable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPassEnter(boolean pass) {
+    public NumericBox setPassEnter(boolean pass) {
         try {
             numBox.setPassEnter(pass);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPassTab(boolean pass) {
+    public NumericBox setPassTab(boolean pass) {
         try {
             numBox.setPassEnter(pass);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setRestore(float restore) {
+    public NumericBox setRestore(float restore) {
         try {
             numBox.setRestore(String.valueOf(restore));
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setUseEditCommas(boolean useCommas) {
+    public NumericBox setUseEditCommas(boolean useCommas) {
         try {
             numBox.setUseEditCommas(useCommas);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setValue(float value) {
+    public NumericBox setValue(float value) {
         try {
             numBox.setValue(BasisNumber.createBasisNumber(value));
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override

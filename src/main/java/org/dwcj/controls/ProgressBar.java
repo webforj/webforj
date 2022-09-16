@@ -86,60 +86,67 @@ public final class ProgressBar extends AbstractDwcControl implements IStyleable,
         return false;
     }
 
-    public void setIndeterminate(boolean indeterminate) {
+    public ProgressBar setIndeterminate(boolean indeterminate) {
         try {
             bbjProgressBar.setIndeterminate(indeterminate);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMaximum(int maximum) {
+    public ProgressBar setMaximum(int maximum) {
         try {
             bbjProgressBar.setMaximum(maximum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMinimum(int minimum) {
+    public ProgressBar setMinimum(int minimum) {
         try {
             bbjProgressBar.setMinimum(minimum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setOrientation(int orientation) {
+    public ProgressBar setOrientation(int orientation) {
         try {
             bbjProgressBar.setOrientation(orientation);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setStringPainted(boolean value) {
+    public ProgressBar setStringPainted(boolean value) {
         try {
             bbjProgressBar.setStringPainted(value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setProgressBarText(String text) {
+    public ProgressBar setProgressBarText(String text) {
         try {
             bbjProgressBar.setText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setValue(int value) {
+    public ProgressBar setValue(int value) {
         try {
             bbjProgressBar.setValue(value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override
