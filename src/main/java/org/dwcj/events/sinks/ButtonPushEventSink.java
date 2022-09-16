@@ -24,6 +24,7 @@ public final class ButtonPushEventSink {
         this.button = btn;
 
         BBjControl bbjctrl = null;
+        if (!Environment.isUnitTest())
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH,

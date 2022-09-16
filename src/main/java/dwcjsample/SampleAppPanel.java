@@ -1,6 +1,7 @@
 package dwcjsample;
 
 import org.dwcj.App;
+import org.dwcj.Environment;
 import org.dwcj.controls.Button;
 import org.dwcj.controls.ComboBox;
 import org.dwcj.controls.IExpansible.Expanse;
@@ -27,6 +28,8 @@ public class SampleAppPanel extends AppPanel {
     public SampleAppPanel() throws DwcAppInitializeException {
 
         super();
+
+        App.consoleLog(String.valueOf(Environment.isUnitTest()));
 
         //setting some styles of the app panel itself
         setStyle("display", "inline-grid");

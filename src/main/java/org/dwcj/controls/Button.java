@@ -63,10 +63,9 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
     /**
      * Clicks the button, for testing purposes
      */
-    public void doClick() {
+    public void performClick() {
         this.buttonPushEventSink.doClick();
     }
-
 
     public boolean getDisableOnClick() {
         //todo: why could an exception be thrown?

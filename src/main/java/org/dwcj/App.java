@@ -92,14 +92,16 @@ public abstract class App {
     }
 
     private void preRun() {
-        Environment.getInstance().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
+        if (!Environment.isUnitTest())
+            Environment.getInstance().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
     }
 
     /**
      * Call this method to terminate your App.
      */
     public void terminate() {
-        Environment.getInstance().getBBjAPI().postPriorityCustomEvent("doTerminate", null);
+        if (!Environment.isUnitTest())
+            Environment.getInstance().getBBjAPI().postPriorityCustomEvent("doTerminate", null);
         cleanup();
         Environment.cleanup();
     }

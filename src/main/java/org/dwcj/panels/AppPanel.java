@@ -15,6 +15,7 @@ public class AppPanel extends AbstractDwcjPanel {
 
     public AppPanel() throws DwcAppInitializeException {
 
+        if (!Environment.isUnitTest())
         try {
             BasisNumber b1 = BasisNumber.createBasisNumber(1);
             BasisNumber ctx = BasisNumber.createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());

@@ -15,6 +15,20 @@ public final class Environment {
     private final IDwcjBBjBridge helper;
 
 
+    private static Boolean isUnitTest = null;
+
+    public static boolean isUnitTest() {
+        if (isUnitTest == null) {
+            isUnitTest = true;
+            try {
+                Class.forName("org.junit.jupiter.api.Test");
+            } catch (ClassNotFoundException e) {
+                isUnitTest = false;
+            }
+        }
+        return isUnitTest;
+    }
+
     private Environment(BBjAPI api, IDwcjBBjBridge helper) throws BBjException {
         this.api = api;
         this.sysgui = api.openSysGui("X0");
