@@ -7,12 +7,14 @@ public class CheckableMenuItem extends MenuItem {
 
     private BBjCheckableMenuItem bbjCheckableMenuItem;
 
-    public void setSelected(boolean selected) {
+    public CheckableMenuItem setSelected(boolean selected) {
         try {
             bbjCheckableMenuItem.setSelected(selected);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
+
     }
 
     public boolean isSelected() {

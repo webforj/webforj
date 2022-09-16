@@ -40,20 +40,22 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public void approveSelection() {
+    public FontChooser approveSelection() {
         try {
             bbjFontChooser.approveSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void cancelSelection() {
+    public FontChooser cancelSelection() {
         try {
             bbjFontChooser.cancelSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public String getApproveButtonText() {
@@ -110,52 +112,58 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public void setApproveButtonText(String text) {
+    public FontChooser setApproveButtonText(String text) {
         try {
             bbjFontChooser.setApproveButtonText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setCancelButtonText(String text) {
+    public FontChooser setCancelButtonText(String text) {
         try {
             bbjFontChooser.setCancelButtonText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setControlButtonsAreShown(boolean show) {
+    public FontChooser setControlButtonsAreShown(boolean show) {
         try {
             bbjFontChooser.setControlButtonsAreShown(show);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setFontsScaled(boolean scale) {
+    public FontChooser setFontsScaled(boolean scale) {
         try {
             bbjFontChooser.setFontsScaled(scale);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPreviewMessage(String message) {
+    public FontChooser setPreviewMessage(String message) {
         try {
             bbjFontChooser.setPreviewMessage(message);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setSelectedFont(Font font) {
+    public FontChooser setSelectedFont(Font font) {
         try {
             bbjFontChooser.setSelectedFont((BBjFont) font);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public FontChooser onFontChooserApprove(Consumer<FontChooserApproveEvent> callback) {

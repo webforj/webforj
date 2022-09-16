@@ -107,23 +107,25 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     /**
      * opens the ComboBox dropdown list
      */
-    public void open() {
+    public ComboBox open() {
         try {
             bbjListButton.openList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     /**
      * closes the ComboBox dropwdown list
      */
-    public void close() {
+    public ComboBox close() {
         try {
             bbjListButton.closeList();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
 

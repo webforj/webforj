@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class BBjComboBoxSelectEventSink {
 
-    private ArrayList<Consumer<ComboBoxSelectEvent>> targets;
+    private ArrayList<Consumer<ComboBoxSelectEvent>> targets = new ArrayList<>();
 
     private final ComboBox comboBox;
 

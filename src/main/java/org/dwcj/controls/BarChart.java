@@ -50,52 +50,61 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
         return bbjBarChart.isLegendShown();
     }
 
-    public void setBarValue(int series, int category, int value) {
+    public BarChart setBarValue(int series, int category, int value) {
         try {
             bbjBarChart.setBarValue(series, category, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setCategoryCount(int categories) {
+    public BarChart setCategoryCount(int categories) {
         bbjBarChart.setCategoryCount(categories);
+        return this;
     }
 
-    public void setCategoryName(int category, String name) {
+    public BarChart setCategoryName(int category, String name) {
         try {
             bbjBarChart.setCategoryName(category, name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLegendShown(boolean legendShown) {
+    public BarChart setLegendShown(boolean legendShown) {
         bbjBarChart.setLegendShown(legendShown);
+        return this;
     }
 
-    public void setSeriesCount(int series) {
+    public BarChart setSeriesCount(int series) {
         bbjBarChart.setSeriesCount(series);
+        return this;
     }
 
-    public void setSeriesName(int series, String name) {
+    public BarChart setSeriesName(int series, String name) {
         try {
             bbjBarChart.setSeriesName(series, name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setTitle(String title) {
+    public BarChart setTitle(String title) {
         bbjBarChart.setTitle(title);
+        return this;
     }
 
-    public void setXLabel(String label) {
-        bbjBarChart.setTitle(label);
+    public BarChart setXLabel(String label) {
+        bbjBarChart.setXLabel(label); //Fixed copy/paste error here - MH
+        return this;
     }
 
-    public void setYLabel(String label) {
+    public BarChart setYLabel(String label) {
         bbjBarChart.setYLabel(label);
+        return this;
     }
 
     @Override

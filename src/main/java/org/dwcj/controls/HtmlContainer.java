@@ -164,32 +164,36 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
         }
     }
 
-    public void setAutoNavigate(boolean autoNavigate) {
+    public HtmlContainer setAutoNavigate(boolean autoNavigate) {
         try {
             bbjHtmlView.setAutoNavigate(autoNavigate);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setUrl(String url) {
+    public HtmlContainer setUrl(String url) {
         try {
             bbjHtmlView.setUrl(url);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setUrl(String url, boolean reload) {
+    public HtmlContainer setUrl(String url, boolean reload) {
         try {
             bbjHtmlView.setUrl(url, reload);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setUserAgent(String userAgent) {
+    public HtmlContainer setUserAgent(String userAgent) {
         bbjHtmlView.setUserAgent(userAgent);
+        return this;
     }
 
     /**
