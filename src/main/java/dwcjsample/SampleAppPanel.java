@@ -29,8 +29,6 @@ public class SampleAppPanel extends AppPanel {
 
         super();
 
-        App.consoleLog(String.valueOf(Environment.isUnitTest()));
-
         //setting some styles of the app panel itself
         setStyle("display", "inline-grid");
         setStyle("grid-template-columns", "1fr 2fr");
