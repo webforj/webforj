@@ -13,13 +13,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SeleniumButtonTest {
 
+    // set this constant to the path of your chromedriver
+    // see https://www.selenium.dev/documentation/webdriver/getting_started/install_drivers/ for other options
+    public static final String CHROMEDRIVER_PATH = "/home/beff/chromedriver";
+
+    // for this prototype of selenium tests, we use the ButtonPushSample that is built with the engine
+    // selenium test applications and the according tests should be externalized to a separate project
+    public static final String TEST_APP_URL = "http://localhost:8888/webapp/dwcj?class=dwcjsample.ButtonPushSample";
+
     @Test
     void testButtonPush(){
-        System.setProperty("webdriver.chrome.driver","/home/beff/chromedriver");
+        System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
+
         WebDriverManager.chromedriver().setup();
         ChromeDriver driver = new ChromeDriver();
 
-        driver.get("http://localhost:8888/webapp/dwcj?class=dwcjsample.ButtonPushSample");
+        driver.get(TEST_APP_URL);
 
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
 
