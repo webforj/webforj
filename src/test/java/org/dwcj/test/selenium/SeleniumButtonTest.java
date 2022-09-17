@@ -33,8 +33,6 @@ public class SeleniumButtonTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
 
         WebElement button = driver.findElement(By.id("bbj-button-9"));
-
-
         WebElement output = driver.findElement((By.id("10")));
 
         String outputtext = output.getAttribute("innerHTML");
