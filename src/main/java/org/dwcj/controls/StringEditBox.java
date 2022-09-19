@@ -163,92 +163,103 @@ public final class StringEditBox extends AbstractDwcControl implements IStyleabl
         }
     }
 
-    public void selectAll() {
+    public StringEditBox selectAll() {
         try {
             bbjInputE.selectAll();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setEditable(boolean editable) {
+    public StringEditBox setEditable(boolean editable) {
         try {
             bbjInputE.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setEditString(String edit) {
+    public StringEditBox setEditString(String edit) {
         try {
             bbjInputE.setEditString(edit.getBytes(StandardCharsets.UTF_8));
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setHighlight(boolean highlight) {
+    public StringEditBox setHighlight(boolean highlight) {
         try {
             bbjInputE.setHighlight(highlight);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setInsertMode(boolean insert) {
+    public StringEditBox setInsertMode(boolean insert) {
         try {
             bbjInputE.setInsertMode(insert);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLength(int len) {
+    public StringEditBox setLength(int len) {
         try {
             bbjInputE.setLength(len);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMargin(int marginWidth) {
+    public StringEditBox setMargin(int marginWidth) {
         try {
             bbjInputE.setMargin(marginWidth);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPadCharacter(String pad) {
+    public StringEditBox setPadCharacter(String pad) {
         try {
             bbjInputE.setPadCharacter(pad);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPassEnter(boolean pass) {
+    public StringEditBox setPassEnter(boolean pass) {
         try {
             bbjInputE.setPassEnter(pass);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPassTab(boolean pass) {
+    public StringEditBox setPassTab(boolean pass) {
         try {
             bbjInputE.setPassTab(pass);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setRestore(String restore) {
+    public StringEditBox setRestore(String restore) {
         try {
             bbjInputE.setRestore(restore);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override

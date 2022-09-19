@@ -129,84 +129,94 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return -1;
     }
 
-    public void setInverted(boolean inverted) {
+    public Slider setInverted(boolean inverted) {
         try {
             bbjSlider.setInverted(inverted);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setLabels(Map<Integer,String> labels) {
+    public Slider setLabels(Map<Integer,String> labels) {
         try {
             bbjSlider.setLabels(labels);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMajorTickSpacing(int tick) {
+    public Slider setMajorTickSpacing(int tick) {
         try {
             bbjSlider.setMajorTickSpacing(tick);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMaximum(int maximum) {
+    public Slider setMaximum(int maximum) {
         try {
             bbjSlider.setMaximum(maximum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMinimum(int minimum) {
+    public Slider setMinimum(int minimum) {
         try {
             bbjSlider.setMinimum(minimum);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setMinorTickSpacing(int tick) {
+    public Slider setMinorTickSpacing(int tick) {
         try {
             bbjSlider.setMinorTickSpacing(tick);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPaintLabels(boolean paint) {
+    public Slider setPaintLabels(boolean paint) {
         try {
             bbjSlider.setPaintLabels(paint);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPaintTicks(boolean paint) {
+    public Slider setPaintTicks(boolean paint) {
         try {
             bbjSlider.setPaintTicks(paint);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setSnapToTicks(boolean snap) {
+    public Slider setSnapToTicks(boolean snap) {
         try {
             bbjSlider.setSnapToTicks(snap);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setValue(int value) {
+    public Slider setValue(int value) {
         try {
             bbjSlider.setValue(value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override

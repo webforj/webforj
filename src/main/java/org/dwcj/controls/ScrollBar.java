@@ -83,36 +83,42 @@ public final class ScrollBar extends AbstractDwcControl {
         return -1;
     }
 
-    public void setBlockIncrement(int block) {
+
+
+    public ScrollBar setBlockIncrement(int block) {
         try {
             bbjScrollBar.setBlockIncrement(block);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setScrollPosition(int pos) {
+    public ScrollBar setScrollPosition(int pos) {
         try {
             bbjScrollBar.setScrollPosition(pos);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setScrollProp(int prop) {
+    public ScrollBar setScrollProp(int prop) {
         try {
             bbjScrollBar.setScrollProp(prop);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setScrollRange(int min, int max) {
+    public ScrollBar setScrollRange(int min, int max) {
         try {
             bbjScrollBar.setScrollRange(min, max);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public ScrollBar onScroll(Consumer<ScrollbarMoveEvent> callback) {

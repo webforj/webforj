@@ -24,9 +24,10 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
     }
 
     /**
-     * Create the button with a text
+     * Parameterized button constructor, accepts a string as an argument which will be the initial text displayed on the button
      *
-     * @param text The caption of the button
+     * @param text String value for initial button text
+     * 
      *
      */
     public Button(String text) {
@@ -68,6 +69,10 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
     }
 
 
+    /**
+     * Accessor for whether or not the button is disabled. 
+     * @return Boolean value 
+     */
     public boolean getDisableOnClick() {
         //todo: why could an exception be thrown?
         BBjButton btn = (BBjButton) this.ctrl;
@@ -79,6 +84,11 @@ public final class Button extends AbstractDwcControl implements IStyleable, IThe
         return false;
     }
 
+    /**
+     * Mutator for whether or not the button is disabled on click
+     * @param disable Boolean value
+     * @return Instance of the object to enable method chaining.
+     */
     public Button setDisableOnClick(boolean disable) {
         BBjButton btn = (BBjButton) this.ctrl;
         try {
