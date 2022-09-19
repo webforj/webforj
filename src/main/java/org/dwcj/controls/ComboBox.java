@@ -81,13 +81,17 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         return this.values;
     }
 
+    /**
+     * Returns a single string at the given key within the box
+     * @param key - Returns a single string at the given key within the box
+     * @return String
+     */
     public String getItem(Object key) {
         return values.get(key);
     }
 
     /**
      * returns the currently selected item, implemented for one-to-one value maps
-     *
      * @return selected entry
      */
     public SimpleEntry<Object, String> getSelectedItem() {
@@ -106,6 +110,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
 
     /**
      * opens the ComboBox dropdown list
+     * @return ComboBox - returns this
      */
     public ComboBox open() {
         try {
@@ -118,6 +123,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
 
     /**
      * closes the ComboBox dropwdown list
+     * @return ComboBox - returns this
      */
     public ComboBox close() {
         try {

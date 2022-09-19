@@ -50,17 +50,27 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
     }
 
     /**
-     *
+     * Returns a map of all of the items within the ListBox 
      * @return all values in the listBox
      */
     public Map<Object, String> getAllItems() {
         return this.values;
     }
 
+    /**
+     * Returns a single String representing the item at the given key.
+     * @param key - Object representing the key in the map
+     * @return String item at the given key
+     */
     public String getItem(Object key) {
         return values.get(key);
     }
 
+    /**
+     * Returns true or false based on the ListBox allows selection of multiple items
+     * @param N/A
+     * @return boolean
+     */
     public boolean getMultipleSelection() {
         try {
             return bbjListBox.getMultipleSelection();
@@ -107,6 +117,11 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
         return null;
     }
 
+    /**
+     * Returns a map of the items that have been selected in the ListBox
+     * @param N/A
+     * @return Map of the selected items
+     */
     public Map<Object, String> getSelectedItems() {
         Map<Object, String> map = new HashMap<>();
         try {
@@ -125,6 +140,11 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
         return map;
     }
 
+    /**
+     * Allows you to pass in a map of objects which will replace the objects currently in the ListBox
+     * @param values - A map with <Object, String> pairs.
+     * @return ListBox
+     */
     public ListBox setItems(Map<Object, String> values) {
         this.values = values;
         populate();
@@ -147,17 +167,28 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
         }
     }
 
+    /**
+     * Function that takes another function as parameter which allows functionality to be written when an item is selected within the box
+     * @param callback - Function written that implements behavior when an item is selected
+     * @return ListBox
+     */
     public ListBox onSelect(Consumer<ListBoxSelectEvent> callback) {
         new BBjListBoxSelectEventSink(this, callback);
         return this;
     }
 
-    public void setMultipleSelection(boolean bool) {
+    /**
+     * Sets whether or not it is possible to select multiple items within the box
+     * @param bool - True or false whether or not to allow multiple selection
+     * @return boolean
+     */
+    public ListBox setMultipleSelection(boolean bool) {
         try {
             bbjListBox.setMultipleSelection(bool);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override
