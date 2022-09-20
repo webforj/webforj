@@ -74,7 +74,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
     }
 
     /**
-     *
+     * Returns all of the values in the ComboBox as a Map
      * @return all values in the comboBox
      */
     public Map<Object, String> getAllItems() {
@@ -151,6 +151,12 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         }
     }
 
+    /**
+     * Register a callback for selecting an item within the box
+     *
+     * @param callback A method to receive the selection event
+     * @return the control itself
+     */
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
         if (this.comboBoxSelectEventSink==null)
             this.comboBoxSelectEventSink = new BBjComboBoxSelectEventSink(this, callback);
@@ -158,6 +164,12 @@ public final class    ComboBox extends AbstractDwclistControl implements IStylea
         return this;
     }
 
+    /**
+     * Register a callback for selecting an item within the box
+     *
+     * @param callback A method to receive the selection event
+     * @return the control itself
+     */
     public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
         if (this.comboBoxChangeEventSink==null)
             this.comboBoxChangeEventSink = new ComboBoxChangeEventSink(this, callback);

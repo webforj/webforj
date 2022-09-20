@@ -28,6 +28,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns a List of strings that specifies all available styles in the HtmlEdit toolbar.
+     * @return List of strings that specifies all available styles in the HtmlEdit toolbar.
+     */
     public List<String> getAllToolbarStyles() {
         try {
             return bbjHtmlEdit.getAllToolbarStyles();
@@ -37,6 +41,11 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns the list of available spell-check languages for a HtmlEdit control.
+     *
+     * @return Returns a List of strings of available spell-check languages for a HtmlEdit control.
+     */
     public List<String> getAvailableSpellCheckLanguages() {
         try {
             return bbjHtmlEdit.getAvailableSpellCheckLanguages();
@@ -46,6 +55,11 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns a List of strings that specifies all available editor states in the HTMLEditor toolbar.
+     * 
+     * @return Returns a list of strings that specifies all available editor stattes in the HTMLEditor toolbar.
+     */
     public List<String> getAvailableStates() {
         try {
             return bbjHtmlEdit.getAvailableStates();
@@ -55,6 +69,12 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+
+    /**
+     * This method returns a boolean that indicates whether this HtmlEdit control is currently set to use a basic toolbar.
+     * 
+     * @return Returns a boolean that indicates whether this HtmlEdit control is currently set to use a basic toolbar .
+     */
     public boolean getBasicToolbar() {
         try {
             return bbjHtmlEdit.getBasicToolbar();
@@ -64,6 +84,11 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns a List of strings that specifies the styles to be included when the HtmlEdit basic toolbar is selected.
+     * 
+     * @return Returns a List of strings that specifies the styles to be included when the HtmlEdit basic toolbar is selected.
+     */
     public List<String> getBasicToolbarStyles() {
         try {
             return bbjHtmlEdit.getBasicToolbarStyles();
@@ -73,6 +98,11 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns a string representing the client type for this HTMLEdit control.
+     * 
+     * @return Returns a string representing the client type for the HtmlEdit control ("Browser" (BUI or DWC), "Swing" (basic HTML 3.2), "JavaFX" (WebKit), "Chromium").
+     */
     public String getClientType() {
         try {
             return bbjHtmlEdit.getClientType();
@@ -82,6 +112,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns the client version for this BBjHtmlEdit control.
+     * @return Returns the version of the HtmlEdit control - the client versions will change over time. 
+     */
     public String getClientVersion() {
         try {
             return bbjHtmlEdit.getClientVersion();
@@ -91,10 +125,18 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns the UI locale of an HTMLEdit control.
+     * @return A string representing the UI locale of the HTMLEdit control.
+     */
     public String getLocale() {
         return bbjHtmlEdit.getLocale();
     }
 
+    /**
+     *  This method returns the list of available UI Locales for an HTMLEdit control.
+     * @return a List of strings representing the available UI locales for an HTMLEdit control.
+     */
     public List<String> getLocales() {
         try {
             return bbjHtmlEdit.getLocales();
@@ -104,6 +146,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns the plain text content of an HTMLEditor control, without any HTML markup.
+     * @return A string representing only the plaintext content of the HTML control.
+     */
     public String getPlainText() {
         try {
             return bbjHtmlEdit.getPlainText();
@@ -222,3 +268,4 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         return this;
     }
 }
+
