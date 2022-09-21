@@ -159,6 +159,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns the spell-check language of an HTMLEdit control.
+     * @return A string representing the spell-check language of an HTMLEdit control.
+     */
     public String getSpellCheckLanguage() {
         try {
             return bbjHtmlEdit.getSpellCheckLanguage();
@@ -168,6 +172,11 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns the Boolean value of a specified state in the HtmlEdit toolbar.
+     * @param String specifying one of the state names from HTMLEdit::getAvailableStates
+     * @return Boolean value of the specified state in the HtmlEdit toolbar.
+     */
     public boolean getState(String state) {
         try {
             return bbjHtmlEdit.getState(state);
@@ -177,6 +186,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method returns a boolean that indicates whether spell-checking is currently enabled on this HTMLEdit control.
+     * @return a boolean representing whether or not spell-check is enabled on this control.
+     */
     public boolean isSpellChecked() {
         try {
             return bbjHtmlEdit.isSpellChecked();
@@ -186,6 +199,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method specifies whether this HTMLEdit control should use a basic toolbar
+     * @param basicToolbar - Boolean representing whether or not to use a basic toolbar, true for yes, false for no
+     */
     public void setBasicToolbar(boolean basicToolbar) {
         try {
             bbjHtmlEdit.setBasicToolbar(basicToolbar);
@@ -194,6 +211,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * This method specifies the styles to be included when the HTMLEdit basic toolbar is used
+     * @param styles - A List of styles to be shown when the basic toolbar is selected, should be an array of Strings
+     */
     public void setBasicToolbarStyles(ArrayList<String> styles) {
         try {
             bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
@@ -202,6 +223,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
         }
     }
 
+    /**
+     * 
+     * @param locale
+     */
     public void setLocale(String locale) {
         bbjHtmlEdit.setLocale(locale);
     }

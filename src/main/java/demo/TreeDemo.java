@@ -21,8 +21,6 @@ public class TreeDemo extends App {
 
         private final MultilineEdit multilineEdit;
 
-        private final NumericBox idBox;
-
         private final TextBox nodeTextBox;
 
 
@@ -55,13 +53,6 @@ public class TreeDemo extends App {
             add(setTextButton);
             setTextButton.onClick(this::setNodeText);
 
-
-            //set node text: ID input field
-            Label idLabel = new Label("Node ID:");
-            add(idLabel);
-            idBox = new NumericBox();
-            add(idBox);
-
             //set node text: text input field
             Label editLabel = new Label("New Node Text:");
             add(editLabel);
@@ -80,7 +71,7 @@ public class TreeDemo extends App {
             tree.insertNode(4,1,"child4",0);
             tree.insertExpandableNode(5,1,"child5",1);
 
-            //log events
+            //log tree events
             tree.onGainedFocus(this::logEvent);
             tree.onLostFocus(this::logEvent);
             tree.onSelect(this::logEvent);
@@ -90,7 +81,10 @@ public class TreeDemo extends App {
             tree.onEditStopped(this::logEvent);
             tree.onDoubleClick(this::logEvent);
 
-
+            //log buttton events
+            collapseButton.onClick(this::logEvent);
+            expandButton.onClick(this::logEvent);
+            setTextButton.onClick(this::logEvent);
 
 
             multilineEdit = new MultilineEdit();
@@ -103,21 +97,26 @@ public class TreeDemo extends App {
 
         private void collapseAll(ButtonPushEvent ev) { //NOSONAR
             tree.collapseTreeFromNode(tree.getRoot());
-            multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: collapseTreeFromNode(tree.getRoot())");
+            multilineEdit.addParagraph(-1, (multilineEdit.getNumberOfParagraphs() + 1) + ". " + "Method: collapseTreeFromNode(tree.getRoot())");
         }
 
         private void expandAll(ButtonPushEvent ev) { //NOSONAR
             tree.expandTreeFromNode(tree.getRoot());
-            multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: expandTreeFromNode(tree.getRoot())");
+            multilineEdit.addParagraph(-1, (multilineEdit.getNumberOfParagraphs() + 1) + ". " + "Method: expandTreeFromNode(tree.getRoot())");
         }
 
+        /**
+         * Sets the currently selected node's text to the "New Node Text" input
+         *
+         * @param ev the button push event that is triggered by clicking on "Set Node Text"
+         */
         private void setNodeText(ButtonPushEvent ev) { //NOSONAR
-            tree.setNodeText(Integer.parseInt(idBox.getText()), nodeTextBox.getText());
-            multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + "Method: setNodeText(" + idBox.getText() + ", " + nodeTextBox.getText() + ")");
+            tree.setNodeText(tree.getSelectedNode(), nodeTextBox.getText());
+            multilineEdit.addParagraph(-1, (multilineEdit.getNumberOfParagraphs() + 1) + ". " + "Method: setNodeText(" + tree.getSelectedNode() + ", " + nodeTextBox.getText() + ")");
         }
 
         private void logEvent(IDwcEvent event) {
-            multilineEdit.addParagraph(-1, (multilineEdit.getCurrentParagraphIndex() + 1) + ". " + event.toString());
+            multilineEdit.addParagraph(-1, (multilineEdit.getNumberOfParagraphs() + 1) + ". " + event.toString());
         }
     }
 }

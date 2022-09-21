@@ -13,4 +13,8 @@ public final class ButtonPushEvent implements IDwcEvent {
     public Button getControl() {
         return control;
     }
+
+    public String toString() {
+        return "Event: ButtonPushed";
+    }
 }
