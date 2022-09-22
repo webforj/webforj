@@ -35,6 +35,15 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
 
     }
 
+    /*
+     * ==I tested the set method and no inversion happens, but this method does properly return the boolean value
+     * if it's been changed== -MH
+     */
+
+    /**
+     * This method gets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
+     * @return Returns whether the control orientation is inverted.
+     */
     public boolean getInverted() {
         try {
             return bbjSlider.getInverted();
@@ -44,6 +53,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return false;
     }
 
+    /**
+     * This method returns the labels from a ProgressBar control.
+     * @return Returns a Java Map<Integer,String> structure, where each Integer key is the slider position of the corresponding String label.
+     */
     public Map<Integer,String> getLabels() {
         try {
             return bbjSlider.getLabels();
@@ -53,6 +66,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return new HashMap<>();
     }
 
+    /**
+     * This method queries the slider's major tick spacing.
+     * @return Returns the slider's major tick spacing.
+     */
     public int getMajorTickSpacing() {
         try {
             return bbjSlider.getMajorTickSpacing();
@@ -62,6 +79,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return -1;
     }
 
+    /**
+     * This method returns the maximum value of the ProgressBar control.
+     * @return Returns the maximum value of the control.
+     */
     public int getMaximum() {
         try {
             return bbjSlider.getMaximum();
@@ -71,6 +92,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return -1;
     }
 
+    /**
+     * This method returns the minimum value of the ProgressBar control.
+     * @return Returns the minimum value of the control.
+     */
     public int getMinimum() {
         try {
             return bbjSlider.getMinimum();
@@ -80,6 +105,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return -1;
     }
 
+    /**
+     * This method queries the minor tick spacing of the ProgressBar control.
+     * @return Returns the slider's minor tick spacing.
+     */
     public int getMinorTickSpacing() {
         try {
             return bbjSlider.getMinorTickSpacing();
@@ -89,10 +118,18 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return -1;
     }
 
+    /**
+     * This method returns the orientation of the ProgressBar control.
+     * @return Returns the orientation of the control (false = HORIZONTAL, true = VERTICAL).
+     */
     public int getOrientation() {
         return bbjSlider.getOrientation();
     }
 
+    /**
+     * This method queries whether to paint labels on the ProgressBar control.
+     * @return Returns whether labels are painted on this slider.
+     */
     public boolean getPaintLabels() {
         try {
             return bbjSlider.getPaintLabels();
@@ -102,6 +139,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return false;
     }
 
+    /**
+     * This method queries whether to paint ticks on the ProgressBar control.
+     * @return Returns whether ticks are painted on this slider.
+     */
     public boolean getPaintTicks() {
         try {
             return bbjSlider.getPaintTicks();
@@ -111,6 +152,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return false;
     }
 
+    /**
+     * This method queries whether a ProgressBar control should snap to the nearest tick when the user drags the thumb.
+     * @return Returns whether the BBjSlider should snap to the nearest tick when the user drags the thumb.
+     */
     public boolean getSnapToTicks() {
         try {
             return bbjSlider.getSnapToTicks();
@@ -120,6 +165,10 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return false;
     }
 
+    /**
+     * This method returns the current value of the ProgressBar control.
+     * @return Returns the current value of the control.
+     */
     public int getValue() {
         try {
             return bbjSlider.getValue();
@@ -129,6 +178,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return -1;
     }
 
+    /**
+     * This method sets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
+     * @param inverted - Specifies whether the slider orientation is inverted.
+     * @return Returns this
+     */
     public Slider setInverted(boolean inverted) {
         try {
             bbjSlider.setInverted(inverted);
@@ -138,6 +192,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets the custom labels for a ProgressBar control.
+     * @param labels - A Java Map<Integer,String> structure, where the Integer key is the slider position of the corresponding String label.
+     * @return Returns this
+     */
     public Slider setLabels(Map<Integer,String> labels) {
         try {
             bbjSlider.setLabels(labels);
@@ -147,6 +206,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets the major tick spacing for a ProgressBar control.
+     * @param prop - Specifies the major tick spacing.
+     * @return Returns this
+     */
     public Slider setMajorTickSpacing(int tick) {
         try {
             bbjSlider.setMajorTickSpacing(tick);
@@ -156,6 +220,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets the maximum value of the ProgressBar control.
+     * @param value - Specifies the maximum value.
+     * @return Returns this
+     */
     public Slider setMaximum(int maximum) {
         try {
             bbjSlider.setMaximum(maximum);
@@ -165,6 +234,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets the minimum value of the ProgressBar control.
+     * @param value - Specifies the minimum value.
+     * @return Returns this
+     */
     public Slider setMinimum(int minimum) {
         try {
             bbjSlider.setMinimum(minimum);
@@ -174,6 +248,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets the minor tick spacing of a ProgressBar control.
+     * @param tick - Specifies the minor tick spacing.
+     * @return Returns this
+     */
     public Slider setMinorTickSpacing(int tick) {
         try {
             bbjSlider.setMinorTickSpacing(tick);
@@ -183,6 +262,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets whether labels are painted on a ProgressBar control.
+     * @param paint - Specifies whether labels are painted on the
+     * @return Returns this
+     */
     public Slider setPaintLabels(boolean paint) {
         try {
             bbjSlider.setPaintLabels(paint);
@@ -192,6 +276,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets whether ticks are painted on a ProgressBar control.
+     * @param paint - Specifies whether ticks are painted on the control.
+     * @return Returns this
+     */
     public Slider setPaintTicks(boolean paint) {
         try {
             bbjSlider.setPaintTicks(paint);
@@ -201,6 +290,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets whether a ProgressBar control should snap to the nearest tick when the user drags the thumb.
+     * @param snap - Specifies whether the control should snap to the nearest tick when the user drags the thumb.
+     * @return Returns this
+     */
     public Slider setSnapToTicks(boolean snap) {
         try {
             bbjSlider.setSnapToTicks(snap);
@@ -210,6 +304,11 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
         return this;
     }
 
+    /**
+     * This method sets the value of the ProgressBar control.
+     * @param value - Specifies the slider value.
+     * @return Returns this
+     */
     public Slider setValue(int value) {
         try {
             bbjSlider.setValue(value);

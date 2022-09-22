@@ -216,7 +216,6 @@ public final class NumericBox extends AbstractDwcControl implements IStyleable, 
 
     /**
      * Returns the value of the contents of the NumericBox control.
-     * @param wrap - 
      * @return Returns the value of the contents of the control.
      */
     public float getValue() {
