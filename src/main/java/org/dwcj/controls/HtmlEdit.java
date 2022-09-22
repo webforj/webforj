@@ -202,65 +202,96 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
     /**
      * This method specifies whether this HTMLEdit control should use a basic toolbar
      * @param basicToolbar - Boolean representing whether or not to use a basic toolbar, true for yes, false for no
+     * @return Returns this
      */
-    public void setBasicToolbar(boolean basicToolbar) {
+    public HtmlEdit setBasicToolbar(boolean basicToolbar) {
         try {
             bbjHtmlEdit.setBasicToolbar(basicToolbar);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     /**
      * This method specifies the styles to be included when the HTMLEdit basic toolbar is used
      * @param styles - A List of styles to be shown when the basic toolbar is selected, should be an array of Strings
+     * @return Returns this
      */
-    public void setBasicToolbarStyles(ArrayList<String> styles) {
+    public HtmlEdit setBasicToolbarStyles(ArrayList<String> styles) {
         try {
             bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     /**
-     * 
-     * @param locale
+     * Sets the UI locale of the HTMLEdit control
+     * @param locale - A String representing the locale you wish to set the HTMLEdit to.
+     * @return Returns this
      */
-    public void setLocale(String locale) {
+    public HtmlEdit setLocale(String locale) {
         bbjHtmlEdit.setLocale(locale);
+        return this;
     }
 
-    public void setPlainText(String text) {
+    /**
+     * Sets the text of an HtmlEdit control
+     * @param locale - A String representing the text you wish to set.
+     * @return Returns this
+     */
+    public HtmlEdit setPlainText(String text) {
         try {
             bbjHtmlEdit.setPlainText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setState(String state, boolean value) {
+    /**
+     * Sets a specified state in the HtmlEdit toolbar to the specified boolean value
+     * @param state - One of the state names from HtmlEdit::getAvailableStates()
+     * @param value - Boolean value - true activates the specified state while false deactivates it. The null() method toggles it. Empty parameter is assumed null()
+     * @return Returns this
+     */
+    public HtmlEdit setState(String state, boolean value) {
         try {
             bbjHtmlEdit.setState(state, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setSpellChecked(boolean spellChecked) {
+    /**
+     * Specifies whether or not spell checking should be enabled in this HtmlEdit control
+     * @param spellChecked - boolean value - true enables spell checking, false disables it.
+     * @return Returns this
+     */
+    public HtmlEdit setSpellChecked(boolean spellChecked) {
         try {
             bbjHtmlEdit.setSpellChecked(spellChecked);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setSpellCheckLanguage(String language) {
+    /**
+     * Sets the spell check language for this HtmlEdit control.
+     * @param langeuage - String representing the desired language for spell checking
+     * @return Returns this
+     */
+    public HtmlEdit setSpellCheckLanguage(String language) {
         try {
             bbjHtmlEdit.setSpellCheckLanguage(language);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     @Override
