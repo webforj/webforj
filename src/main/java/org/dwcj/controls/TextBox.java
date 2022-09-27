@@ -1,11 +1,19 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.funcs.Vector;
+import com.basis.bbj.iris.bdt.gbf.nodes.APINodeChildren.Array;
+import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjVector;
+
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
-public final class    TextBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class TextBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+
+    private BBjEditBox bbjEditBox;
 
     public TextBox() {
     }
@@ -14,19 +22,122 @@ public final class    TextBox extends AbstractDwcControl implements IStyleable, 
         setText(text);
     }
 
+    
     @Override
     protected void create(AbstractDwcjPanel p) {
-
-
+        
+        
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText());
             catchUp();
+            bbjEditBox = (BBjEditBox) this.ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+    }
 
+    public String getEditType(){
+        return bbjEditBox.getEditType();
+    }
+
+    public int getMaxLength(){
+        return bbjEditBox.getMaxLength();
+    }
+
+    public boolean getPassHomeDelete(){
+        try{
+            return bbjEditBox.getPassHomeDelete();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String getSelectedText(){
+        try{
+            return bbjEditBox.getSelectedText();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /*Unsure if this is the correct return type for this functionality -MH */
+    public Object[] getSelection(){
+        try{
+            return bbjEditBox.getSelection().toArray();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean isEditable(){
+        try{
+            return bbjEditBox.isEditable();
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+    
+    public boolean isPasswordVisible(){
+        try{
+            return bbjEditBox.isPasswordVisible();
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public TextBox select(int offset1, int offset2){
+        bbjEditBox.select(offset1, offset2);
+        return this;    
+    }
+
+    public TextBox setEditable(boolean editable){
+        try{
+            bbjEditBox.setEditable(editable);
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    public TextBox setMaxLength(int length){
+        try{
+            bbjEditBox.setMaxLength(length);
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    public TextBox setPassHomeDelete(boolean pass){
+        try{
+            bbjEditBox.setPassHomeDelete(pass);
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    public TextBox setPasswordVisible(boolean visible){
+        try{
+            bbjEditBox.setPasswordVisible(visible);
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
     }
 
 

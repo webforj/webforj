@@ -24,7 +24,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
 
     /**
      * Returns true or false based on whether or not the chart has been created as a 3D chart or not.
-     * @param N/A
      * @return boolean
      */
     public boolean is3D() {
@@ -34,7 +33,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     /**
      * 
      * Returns the number of categories in the chart. Categories are groups of data.
-     * @param N/A
      * @return int
      */
     public int getCategoryCount() {
@@ -44,7 +42,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     /**
      * 
      * Returns the number of series in the chart. Series are the pieces of data, or bars, within a category.
-     * @param N/A
      * @return int
      */
     public int getSeriesCount() {
@@ -54,7 +51,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     /**
      * 
      * Returns the title of the chart.
-     * @param N/A
      * @return String
      */
     public String getTitle() {
@@ -64,7 +60,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     /**
      * 
      * Returns the X axis label of the chart.
-     * @param N/A
      * @return String
      */
     public String getXLabel() {
@@ -74,7 +69,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     /**
      * 
      * Returns the Y axis label of the chart.
-     * @param N/A
      * @return String
      */
     public String getYLabel() {
@@ -84,7 +78,6 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     /**
      * 
      * Returns a true or false value based on whether the legend for the chart is currently visable.
-     * @param N/A
      * @return boolean
      */
     public boolean isLegendShown() {

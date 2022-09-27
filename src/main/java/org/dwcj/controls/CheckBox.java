@@ -26,6 +26,14 @@ public final class CheckBox extends AbstractDwcControl implements IStyleable, IE
         }
     }
 
+    /*
+     * == Still likely need to implement some of the other 
+     * == methods outlined in the BBj documentation, but wanted 
+     * == to check and see which of these methods were 
+     * == going to be necessary before implementing them here.
+     * -MH
+     */
+
     /**
      * register an event callback for a checkOn or checkOff event
      *
@@ -43,6 +51,27 @@ public final class CheckBox extends AbstractDwcControl implements IStyleable, IE
         callback.accept(dwcEv);
     }
 
+    public int getHorizontalTextPosition(){
+        try {
+            return ((BBjCheckBox) this.ctrl).getHorizontalTextPosition();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    //Should change to getEditable?
+    public boolean isEditable() {
+        //todo: why could an exception be thrown?
+        try {
+            return ((BBjCheckBox) this.ctrl).isEditable();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //Should change to getSelected?
     public boolean isSelected() {
         //todo: why could an exception be thrown?
         try {
@@ -52,6 +81,40 @@ public final class CheckBox extends AbstractDwcControl implements IStyleable, IE
         }
         return false;
     }
+
+    public CheckBox setEditable(boolean editable) {
+        //todo: why could an exception be thrown?
+        try {
+            ((BBjCheckBox) this.ctrl).setEditable(editable);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    public CheckBox setHorizontalTextPosition(int position) {
+        //todo: why could an exception be thrown?
+        try {
+            ((BBjCheckBox) this.ctrl).setHorizontalTextPosition(position);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    public CheckBox setSelected(boolean selected) {
+        //todo: why could an exception be thrown?
+        try {
+            ((BBjCheckBox) this.ctrl).setSelected(selected);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
 
     @Override
     public CheckBox setExpanse(Expanse expanse) {

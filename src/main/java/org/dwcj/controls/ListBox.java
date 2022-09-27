@@ -48,6 +48,24 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
         populate();
         return this;
     }
+    
+    public ListBox deselectAll() {
+        try{
+            bbjListBox.deselectAll();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+    
+    public ListBox deselectIndex(int index) {
+        try{
+            bbjListBox.deselectIndex(index);
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
 
     /**
      * Returns a map of all of the items within the ListBox 
@@ -64,6 +82,15 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
      */
     public String getItem(Object key) {
         return values.get(key);
+    }
+
+    public ListBox getItemCount() {
+        try{
+            bbjListBox.getItemCount();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
     }
 
     /**
