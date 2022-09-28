@@ -8,7 +8,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupAble {
+public class PopupMenu extends AbstractDwcControl implements IPopupAble {
 
     private BBjPopupMenu bbjPopupMenu;
 
@@ -340,19 +340,19 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
     }
 
     @Override
-    public IStyleable setStyle(String property, String value) {
+    public PopupMenu setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public PopupMenu addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public PopupMenu removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

@@ -26,4 +26,22 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
         return this;
     }
 
+    @Override
+    public BBjPanelAdapter setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public BBjPanelAdapter addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public BBjPanelAdapter removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
+
 }

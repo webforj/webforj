@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements IStyleable, IExpansible {
+public final class CheckBox extends AbstractDwcControl implements IExpansible {
 
     private Consumer<CheckBoxCheckEvent> callback;
 

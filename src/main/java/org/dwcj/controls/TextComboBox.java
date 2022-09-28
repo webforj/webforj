@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
+public final class TextComboBox extends AbstractDwclistControl implements IThemable, IExpansible {
 
     private BBjListEdit bbjListEdit;
 

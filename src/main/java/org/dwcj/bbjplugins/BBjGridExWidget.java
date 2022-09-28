@@ -7,7 +7,6 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.IStyleable;
 import org.dwcj.events.BBjGridExWidgetSelectEvent;
 import org.dwcj.events.sinks.BBjGridExWidgetSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 @SuppressWarnings("java:S3740")
-public final class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
+public final class BBjGridExWidget extends AbstractDwcControl {
 
     @Override
     protected void create(AbstractDwcjPanel p) {

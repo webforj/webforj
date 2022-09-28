@@ -8,7 +8,7 @@ import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class MenuButton extends AbstractDwcControl implements IStyleable {
+public final class MenuButton extends AbstractDwcControl {
 
     private BBjMenuButton bbjMenuButton;
 
@@ -128,19 +128,19 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
     }
 
     @Override
-    public IStyleable setStyle(String property, String value) {
+    public MenuButton setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public MenuButton addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public MenuButton removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

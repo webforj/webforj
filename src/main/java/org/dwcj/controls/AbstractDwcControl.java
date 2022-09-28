@@ -172,6 +172,10 @@ public abstract class AbstractDwcControl implements IControl {
     }
 
 
+    public abstract AbstractDwcControl setStyle(String property, String value);
+    public abstract AbstractDwcControl addClass(String selector);
+    public abstract AbstractDwcControl removeClass(String selector);
+
     protected void setControlStyle(String property, String value) {
         if (ctrl != null) try {
             ctrl.setStyle(property, value);

@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class RadioButton extends AbstractDwcControl implements IStyleable, IExpansible {
+public final class RadioButton extends AbstractDwcControl implements IExpansible {
 
     private BBjRadioButton bbjRadioButton;
 

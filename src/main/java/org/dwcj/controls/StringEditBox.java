@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.nio.charset.StandardCharsets;
 
-public final class StringEditBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class StringEditBox extends AbstractDwcControl implements IThemable, IExpansible {
 
     String mask;
 

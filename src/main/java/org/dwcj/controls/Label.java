@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class Label extends AbstractDwcControl implements IStyleable {
+public final class Label extends AbstractDwcControl {
 
     private BBjStaticText bbjStaticText;
 

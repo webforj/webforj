@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import java.nio.charset.StandardCharsets;
 
-public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansible, IThemable {
+public class MenuItem extends AbstractDwcControl implements IExpansible, IThemable {
 
     private BBjMenuItem bbjMenuItem;
 
@@ -44,19 +44,19 @@ public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansi
     }
 
     @Override
-    public IStyleable setStyle(String property, String value) {
+    public MenuItem setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public MenuItem addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public MenuItem removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

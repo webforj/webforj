@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
-public class NumericBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public class NumericBox extends AbstractDwcControl implements IThemable, IExpansible {
 
     private BBjInputN numBox;
 

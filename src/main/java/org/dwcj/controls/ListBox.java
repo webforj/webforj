@@ -229,4 +229,22 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
         super.setControlTheme(theme);
         return this;
     }
+
+    @Override
+    public ListBox setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public ListBox addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public ListBox removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }

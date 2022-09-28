@@ -86,4 +86,22 @@ public final class RadioButtonGroup extends AbstractDwcControl {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public RadioButtonGroup setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public RadioButtonGroup addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public RadioButtonGroup removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }

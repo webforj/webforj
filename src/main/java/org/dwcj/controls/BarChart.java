@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class BarChart extends AbstractDwcControl implements IControl, IStyleable {
+public final class BarChart extends AbstractDwcControl implements IControl {
 
     private BBjBarChart bbjBarChart;
 
@@ -204,19 +204,19 @@ public final class BarChart extends AbstractDwcControl implements IControl, ISty
     }
 
     @Override
-    public IStyleable setStyle(String property, String value) {
+    public BarChart setStyle(String property, String value) {
         super.setControlStyle(property,value);
         return this;
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public BarChart addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public BarChart removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

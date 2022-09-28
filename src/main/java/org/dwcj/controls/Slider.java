@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Slider extends AbstractDwcControl implements IControl, IStyleable, IThemable {
+public final class Slider extends AbstractDwcControl implements IControl, IThemable {
 
     private BBjSlider bbjSlider;
 
@@ -319,19 +319,19 @@ public final class Slider extends AbstractDwcControl implements IControl, IStyle
     }
 
     @Override
-    public IStyleable setStyle(String property, String value) {
+    public Slider setStyle(String property, String value) {
         super.setControlStyle(property,value);
         return this;
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public Slider addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public Slider removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

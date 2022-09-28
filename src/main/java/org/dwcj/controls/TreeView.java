@@ -543,4 +543,22 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
         super.setControlExpanse(expanse);
         return this;
     }
+
+    @Override
+    public TreeView setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public TreeView addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public TreeView removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }

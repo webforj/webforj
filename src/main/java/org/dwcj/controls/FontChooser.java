@@ -186,4 +186,22 @@ public final class FontChooser extends AbstractDwcControl {
         else this.fontChooserChangeEventSink.addCallback(callback);
         return this;
     }
+
+    @Override
+    public FontChooser setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public FontChooser addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public FontChooser removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }

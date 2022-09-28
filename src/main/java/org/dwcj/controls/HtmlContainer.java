@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcControl implements IStyleable {
+public final class HtmlContainer extends AbstractDwcControl {
 
     private BBjHtmlView bbjHtmlView;
 
@@ -224,13 +224,13 @@ public final class HtmlContainer extends AbstractDwcControl implements IStyleabl
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public HtmlContainer addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public HtmlContainer removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

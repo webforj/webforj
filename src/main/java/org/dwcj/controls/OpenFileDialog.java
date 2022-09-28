@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class OpenFileDialog extends AbstractDwcControl implements IStyleable, IThemable {
+public final class OpenFileDialog extends AbstractDwcControl implements IThemable {
     
     @Override
     protected void create(AbstractDwcjPanel p) {

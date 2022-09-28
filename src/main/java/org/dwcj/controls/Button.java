@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public final class Button extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class Button extends AbstractDwcControl implements IThemable, IExpansible {
 
     private ButtonPushEventSink buttonPushEventSink;
 

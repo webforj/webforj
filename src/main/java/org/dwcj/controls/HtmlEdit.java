@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final  class HtmlEdit extends AbstractDwcControl implements IThemable, IExpansible {
 
     private BBjHtmlEdit bbjHtmlEdit;
 
@@ -301,19 +301,19 @@ public final  class HtmlEdit extends AbstractDwcControl implements IStyleable, I
     }
 
     @Override
-    public IStyleable setStyle(String property, String value) {
+    public HtmlEdit setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
 
     @Override
-    public IStyleable addClass(String selector) {
+    public HtmlEdit addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
     @Override
-    public IStyleable removeClass(String selector) {
+    public HtmlEdit removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

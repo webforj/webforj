@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class ProgressBar extends AbstractDwcControl implements IStyleable, IThemable {
+public final class ProgressBar extends AbstractDwcControl implements IThemable {
 
     private BBjProgressBar bbjProgressBar;
 

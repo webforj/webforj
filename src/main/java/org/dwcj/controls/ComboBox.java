@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class    ComboBox extends AbstractDwclistControl implements IStyleable, IThemable, IExpansible {
+public final class    ComboBox extends AbstractDwclistControl implements IThemable, IExpansible {
 
     private BBjListButton bbjListButton;
 

@@ -6,11 +6,10 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IStyleable;
 import org.dwcj.panels.AbstractDwcjPanel;
 import org.dwcj.panels.Div;
 
-public final class SplitPanel extends AbstractShoelaceControl implements IStyleable {
+public final class SplitPanel extends AbstractShoelaceControl {
 
     private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 

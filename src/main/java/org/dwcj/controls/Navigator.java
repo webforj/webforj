@@ -17,7 +17,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class Navigator extends AbstractDwcControl implements IThemable, IExpansible {
 
     private BBjNavigator bbjNavigator;
 

@@ -78,4 +78,22 @@ public final class PrintPreview extends AbstractDwcControl {
     public void twoPage() {
         bbjPrintPreview.twoPage();
     }
+
+    @Override
+    public PrintPreview setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public PrintPreview addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public PrintPreview removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }

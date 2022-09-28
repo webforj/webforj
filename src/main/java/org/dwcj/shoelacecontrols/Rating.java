@@ -7,7 +7,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IStyleable;
 import org.dwcj.events.RatingValueChangedEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
@@ -16,7 +15,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 @SuppressWarnings("java:S1192")
-public final class Rating extends AbstractShoelaceControl implements IStyleable {
+public final class Rating extends AbstractShoelaceControl {
 
     private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 

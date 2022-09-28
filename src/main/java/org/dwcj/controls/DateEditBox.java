@@ -13,7 +13,7 @@ import org.apache.commons.lang.ObjectUtils.Null;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class DateEditBox extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class DateEditBox extends AbstractDwcControl implements IThemable, IExpansible {
     
     private BBjInputD bbjDateEditBox;
 

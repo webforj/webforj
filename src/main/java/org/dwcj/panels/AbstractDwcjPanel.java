@@ -6,12 +6,11 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.IStyleable;
 
 /**
  * the base class for all panel implementations
  */
-public abstract class AbstractDwcjPanel extends AbstractDwcControl implements IStyleable {
+public abstract class AbstractDwcjPanel extends AbstractDwcControl {
 
     protected BBjWindow wnd;
 

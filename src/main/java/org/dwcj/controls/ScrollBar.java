@@ -127,4 +127,22 @@ public final class ScrollBar extends AbstractDwcControl {
         else this.scrollbarMoveEventSink.addCallback(callback);
         return this;
     }
+
+    @Override
+    public ScrollBar setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+
+    @Override
+    public ScrollBar addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public ScrollBar removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }

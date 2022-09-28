@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class ColorPicker extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class ColorPicker extends AbstractDwcControl implements IThemable, IExpansible {
 
     @Override
     protected void create(AbstractDwcjPanel p) {
