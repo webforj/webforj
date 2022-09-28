@@ -90,7 +90,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
      * Returns whether the text in the NumericBox control is highlighted when focus is gained from tabbing into the control.
      * @returnReturns whether the text in the control is highlighted (false = Not highlighted, true = highlighted).
      */
-    public boolean getHighlight() {
+    public boolean isHighlight() {
         try {
             return numBox.getHighlight();
         } catch (BBjException e) {
@@ -103,7 +103,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
      * Returns whether the NumericBox control is in insert mode.
      * @return Returns whether the control is in the insert mode (false = Not in insert mode, true = In insert mode).
      */
-    public boolean getInsertMode() {
+    public boolean isInsertMode() {
         try {
             return numBox.getInsertMode();
         } catch (BBjException e) {
@@ -155,7 +155,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
      * Returns whether the NumericBox control will accept negative values.
      * @return Returns whether this control will accept negative values.
      */
-    public boolean getNegatable() {
+    public boolean isNegatable() {
         try {
             return numBox.getNegateable();
         } catch (BBjException e) {
@@ -168,7 +168,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
      * Returns whether the NumericBox control passes the ENTER key to the top-level window.
      * @return Returns whether the ENTER key is passed to the top-level window (false = Not passed, true = Passed).
      */
-    public boolean getPassEnter() {
+    public boolean isPassEnter() {
         try {
             return numBox.getPassEnter();
         } catch (BBjException e) {
@@ -181,7 +181,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
      * Returns whether the NumericBox control passes the TAB key notification to the top-level window.
      * @return Returns whether the TAB key notification is passed to the top-level window (false = Not passed, true = Passed) .
      */
-    public boolean getPassTab() {
+    public boolean isPassTab() {
         try {
             return numBox.getPassTab();
         } catch (BBjException e) {
@@ -207,7 +207,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
      * Returns whether comma characters are displayed while in edit mode in the NumericBox control.
      * @return Returns whether comma characters are displayed while in edit mode (0 = Do not display commas, 1 = Display commas). By default, commas are not displayed.
      */
-    public boolean getUseEditCommas() {
+    public boolean isUseEditCommas() {
         try {
             return numBox.getUseEditCommas();
         } catch (BBjException e) {

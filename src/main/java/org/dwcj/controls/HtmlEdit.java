@@ -75,7 +75,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IThemable, IE
      * 
      * @return Returns a boolean that indicates whether this HtmlEdit control is currently set to use a basic toolbar .
      */
-    public boolean getBasicToolbar() {
+    public boolean isBasicToolbar() {
         try {
             return bbjHtmlEdit.getBasicToolbar();
         } catch (BBjException e) {

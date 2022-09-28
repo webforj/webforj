@@ -73,7 +73,7 @@ public final class Button extends AbstractDwcControl implements IThemable, IExpa
      * Accessor for whether or not the button is disabled. 
      * @return Boolean value 
      */
-    public boolean getDisableOnClick() {
+    public boolean isDisableOnClick() {
         //todo: why could an exception be thrown?
         BBjButton btn = (BBjButton) this.ctrl;
         try {

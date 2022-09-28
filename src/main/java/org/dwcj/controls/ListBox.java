@@ -98,7 +98,7 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
      * @param N/A
      * @return boolean
      */
-    public boolean getMultipleSelection() {
+    public boolean isMultipleSelection() {
         try {
             return bbjListBox.getMultipleSelection();
         } catch (BBjException e) {

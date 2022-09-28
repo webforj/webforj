@@ -89,7 +89,7 @@ public final class SplitPanel extends AbstractShoelaceControl {
      *
      * @return true if vertical, false if horizontal
      */
-    public Boolean getVertical() {
+    public Boolean isVertical() {
         return vertical;
     }
 

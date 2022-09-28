@@ -51,7 +51,7 @@ public final class Label extends AbstractDwcControl {
         return -1;
     }
 
-    public boolean getLineWrap(){
+    public boolean isLineWrap(){
         try{
             return bbjStaticText.getLineWrap();
         } catch (BBjException e){

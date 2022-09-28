@@ -172,6 +172,9 @@ public abstract class AbstractDwcControl implements IControl {
     }
 
 
+    /* Created abstract methods for each control to overwrite in order to allow
+     * for proper, functional method chaining.
+     */
     public abstract AbstractDwcControl setStyle(String property, String value);
     public abstract AbstractDwcControl addClass(String selector);
     public abstract AbstractDwcControl removeClass(String selector);

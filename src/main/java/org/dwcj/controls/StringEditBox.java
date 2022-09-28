@@ -65,7 +65,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return "";
     }
 
-    public boolean getHighlight() {
+    public boolean isHighlight() {
         try {
             return bbjInputE.getHighlight();
         } catch (BBjException e) {
@@ -74,7 +74,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return false;
     }
 
-    public boolean getInsertMode() {
+    public boolean isInsertMode() {
         try {
             return bbjInputE.getInsertMode();
         } catch (BBjException e) {
@@ -119,7 +119,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return "";
     }
 
-    public boolean getPassEnter() {
+    public boolean isPassEnter() {
         try {
             return bbjInputE.getPassEnter();
         } catch (BBjException e) {
@@ -128,7 +128,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return false;
     }
 
-    public boolean getPassTab() {
+    public boolean isPassTab() {
         try {
             return bbjInputE.getPassTab();
         } catch (BBjException e) {

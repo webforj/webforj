@@ -102,7 +102,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether a horizontal scroll bar will appear when the text is too large to fit within the  MultilineEdit control area
      * @return Returns whether a horizontal scroll bar will appear when the text is too large to fit within the control area (false = No Horizontal Scroll Bar, true = Horizontal Scroll Bar).
      */
-    public boolean getHorizontalScrollable() {
+    public boolean isHorizontalScrollable() {
         try {
             return bbjCEdit.getHorizontalScrollable();
         } catch (BBjException e) {
@@ -115,7 +115,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * This method returns whether the ENTER key is ignored in the MultilineEdit control
      * @return Returns whether the ENTER key is ignored in the MultilineEdit control (false = ENTER key not ignored, true = ENTER key ignored).
      */
-    public boolean getIgnoreEnters() {
+    public boolean isIgnoreEnters() {
         try {
             return bbjCEdit.getIgnoreEnters();
         } catch (BBjException e) {
@@ -128,7 +128,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether TAB key is ignored in the MultilineEdit control
      * @return Returns whether the TAB key is ignored in the control (false = TAB key not ignored, true = TAB key ignored).
      */
-    public boolean getIgnoreTabs() {
+    public boolean isIgnoreTabs() {
         try {
             return bbjCEdit.getIgnoreTabs();
         } catch (BBjException e) {
@@ -141,7 +141,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether the MultilineEdit control is limited to one paragraph.
      * @return Returns whether the control is limited to one paragraph (false = Not limited, true = Limited).
      */
-    public boolean getLimitToOneParagraph() {
+    public boolean isLimitToOneParagraph() {
         try {
             return bbjCEdit.getLimitToOneParagraph();
         } catch (BBjException e) {
@@ -167,7 +167,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether lines are wrapped in the MultilineEdit control
      * @return Returns whether the lines are wrapped in the control (false = Not Wrapped, true = Wrapped).
      */
-    public boolean getLineWrap() {
+    public boolean isLineWrap() {
         try {
             return bbjCEdit.getLineWrap();
         } catch (BBjException e) {
@@ -214,7 +214,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether overtype mode is used in the MultilineEdit control
      * @return Returns whether overtype mode is being used in the control (false = Not in Overtype Mode, true = In Overtype Mode).
      */
-    public boolean getOvertypeMode() {
+    public boolean isOvertypeMode() {
         try {
             return bbjCEdit.getOvertypeMode();
         } catch (BBjException e) {
@@ -275,7 +275,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether a vertical scroll bar will appear when the text is too large to fit within the MultilineEdit control area.
      * @return Returns whether a vertical scroll bar will appear when the text is too large to fit within control area (false = No Vertical Scroll Bar, true = Vertical Scroll Bar).
      */
-    public boolean getVerticalScrollable() {
+    public boolean isVerticalScrollable() {
         try {
             return bbjCEdit.getVerticalScrollable();
         } catch (BBjException e) {
@@ -288,7 +288,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * This method gets the style of wrapping used if the MultilineEdit control is wrapping lines
      * @return Returns the style of wrapping used if the text area is wrapping lines (true = wrap at word boundaries; false = wrap at character boundaries).
      */
-    public boolean getWrapStyleWord() {
+    public boolean isWrapStyleWord() {
         try {
             return bbjCEdit.getWrapStyleWord();
         } catch (BBjException e) {

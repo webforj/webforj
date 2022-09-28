@@ -38,7 +38,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         ((BBjInputD) this.ctrl).calendar();
     }
 
-    public boolean getBeep(){
+    public boolean isBeep(){
         try {
             return bbjDateEditBox.getBeep();
         } catch (BBjException e){
@@ -75,7 +75,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return -1;
     }
     
-    public boolean getHighlight(){
+    public boolean isHighlighted(){
         try {
             return bbjDateEditBox.getHighlight();
         } catch (BBjException e){
@@ -84,7 +84,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return false;
     }
     
-    public boolean getInsertMode(){
+    public boolean isInsertMode(){
         try {
             return bbjDateEditBox.getInsertMode();
         } catch (BBjException e){
@@ -124,7 +124,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return null;
     }
 
-    public boolean getPassEnter(){
+    public boolean isPassEnter(){
         try {
             return bbjDateEditBox.getPassEnter();
         } catch (BBjException e){
@@ -133,7 +133,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return false;
     }
 
-    public boolean getPassTab(){
+    public boolean isPassTab(){
         try {
             return bbjDateEditBox.getPassTab();
         } catch (BBjException e){
@@ -142,7 +142,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return false;
     }
 
-    public boolean getPlusMinus(){
+    public boolean isPlusMinus(){
         try {
             return bbjDateEditBox.getPlusMinus();
         } catch (BBjException e){
@@ -160,7 +160,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return null;
     }
 
-    public boolean getShowWeeks(){
+    public boolean isShowWeeks(){
         try {
             return bbjDateEditBox.getShowWeeks();
         } catch (BBjException e){

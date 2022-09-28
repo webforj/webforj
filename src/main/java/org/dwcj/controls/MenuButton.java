@@ -43,7 +43,7 @@ public final class MenuButton extends AbstractDwcControl {
         }
     }
 
-    public boolean getDisableOnClick() {
+    public boolean isDisableOnClick() {
         try {
             return bbjMenuButton.getDisableOnClick();
         } catch (BBjException e) {

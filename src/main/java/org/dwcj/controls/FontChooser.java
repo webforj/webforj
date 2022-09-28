@@ -76,7 +76,7 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public boolean getControlButtonsAreShown() {
+    public boolean isControlButtonsAreShown() {
         try {
             return bbjFontChooser.getControlButtonsAreShown();
         } catch (BBjException e) {
@@ -85,7 +85,7 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public boolean getFontsScaled() {
+    public boolean isFontsScaled() {
         try {
             return bbjFontChooser.getFontsScaled();
         } catch (BBjException e) {

@@ -47,7 +47,7 @@ public final class TextBox extends AbstractDwcControl implements IThemable, IExp
         return bbjEditBox.getMaxLength();
     }
 
-    public boolean getPassHomeDelete(){
+    public boolean isPassHomeDelete(){
         try{
             return bbjEditBox.getPassHomeDelete();
         } catch(BBjException e){

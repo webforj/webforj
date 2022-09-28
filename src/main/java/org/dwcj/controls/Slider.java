@@ -44,7 +44,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IThema
      * This method gets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
      * @return Returns whether the control orientation is inverted.
      */
-    public boolean getInverted() {
+    public boolean isInverted() {
         try {
             return bbjSlider.getInverted();
         } catch (BBjException e) {
@@ -130,7 +130,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IThema
      * This method queries whether to paint labels on the ProgressBar control.
      * @return Returns whether labels are painted on this slider.
      */
-    public boolean getPaintLabels() {
+    public boolean isPaintLabels() {
         try {
             return bbjSlider.getPaintLabels();
         } catch (BBjException e) {
@@ -143,7 +143,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IThema
      * This method queries whether to paint ticks on the ProgressBar control.
      * @return Returns whether ticks are painted on this slider.
      */
-    public boolean getPaintTicks() {
+    public boolean isPaintTicks() {
         try {
             return bbjSlider.getPaintTicks();
         } catch (BBjException e) {
@@ -156,7 +156,7 @@ public final class Slider extends AbstractDwcControl implements IControl, IThema
      * This method queries whether a ProgressBar control should snap to the nearest tick when the user drags the thumb.
      * @return Returns whether the BBjSlider should snap to the nearest tick when the user drags the thumb.
      */
-    public boolean getSnapToTicks() {
+    public boolean isSnapToTicks() {
         try {
             return bbjSlider.getSnapToTicks();
         } catch (BBjException e) {

@@ -59,7 +59,7 @@ public final class HtmlContainer extends AbstractDwcControl {
         }
     }
 
-    public boolean getAutoNavigate() {
+    public boolean isAutoNavigate() {
         try {
             return bbjHtmlView.getAutoNavigate();
         } catch (BBjException e) {
