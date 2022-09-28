@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class BarChart extends AbstractDwcControl implements IControl {
+public final class BarChart extends AbstractDwcControl {
 
     private BBjBarChart bbjBarChart;
 

@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IThemable, IExpansible {
+public final class TextComboBox extends AbstractDwclistControl implements IThemable, IExpansible, IEnable {
 
     private BBjListEdit bbjListEdit;
 
@@ -209,7 +209,21 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
 
     @Override
     public TextComboBox setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+        if (this.ctrl != null) try {
+            ctrl.setEnabled(enabled);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
         return this;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        if (this.ctrl != null) try {
+            return ctrl.isEnabled();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }

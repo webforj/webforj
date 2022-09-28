@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public final class Button extends AbstractDwcControl implements IThemable, IExpansible {
+public final class Button extends AbstractDwcControl implements IThemable, IExpansible, IEnable {
 
     private ButtonPushEventSink buttonPushEventSink;
 
@@ -133,6 +133,26 @@ public final class Button extends AbstractDwcControl implements IThemable, IExpa
     public Button setText(String text) {
         super.setText(text);
         return this;
+    }
+
+    @Override
+    public Button setEnabled(boolean enabled) {
+        if (this.ctrl != null) try {
+            ctrl.setEnabled(enabled);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        if (this.ctrl != null) try {
+            return ctrl.isEnabled();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
 }

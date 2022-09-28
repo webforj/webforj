@@ -27,7 +27,6 @@ public abstract class AbstractDwcControl implements IControl {
     private IThemable.Theme theme;
     private IExpansible.Expanse expanse;
     private Boolean visible = null;
-    private Boolean enabled = null;
     private String tooltipText = "";
 
     protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
@@ -241,26 +240,26 @@ public abstract class AbstractDwcControl implements IControl {
         return tooltipText;
     }
 
-    @Override
-    public IControl setEnabled(boolean b) {
-        if (this.ctrl != null) try {
-            ctrl.setEnabled(b);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.enabled = b;
-        return this;
-    }
+    // @Override
+    // public IControl setEnabled(boolean b) {
+    //     if (this.ctrl != null) try {
+    //         ctrl.setEnabled(b);
+    //     } catch (BBjException e) {
+    //         e.printStackTrace();
+    //     }
+    //     this.enabled = b;
+    //     return this;
+    // }
 
-    @Override
-    public boolean isEnabled() {
-        if (this.ctrl != null) try {
-            return ctrl.isEnabled();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return enabled;
-    }
+    // @Override
+    // public boolean isEnabled() {
+    //     if (this.ctrl != null) try {
+    //         return ctrl.isEnabled();
+    //     } catch (BBjException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return enabled;
+    // }
 
     @Override
     public IControl setVisible(boolean b) {
@@ -339,9 +338,9 @@ public abstract class AbstractDwcControl implements IControl {
             this.setVisible(this.visible);
         }
 
-        if (this.enabled != null) {
-            this.setEnabled(this.enabled);
-        }
+        // if (this.enabled != null) {
+        //     this.setEnabled(this.enabled);
+        // }
 
         this.caughtUp = true;
 
