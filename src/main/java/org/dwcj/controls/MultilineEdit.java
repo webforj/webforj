@@ -10,10 +10,14 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MultilineEdit extends AbstractDwcControl implements IThemable, IExpansible {
+public final class MultilineEdit extends AbstractDwcControl implements IThemable {
 
     private BBjCEdit bbjCEdit;
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+    
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -532,9 +536,8 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
         return this;
     }
 
-    @Override
-    public IExpansible setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+    public MultilineEdit setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -559,6 +562,12 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
     @Override
     public IThemable setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public MultilineEdit setID(String id){
+        super.setID(id);
         return this;
     }
 }

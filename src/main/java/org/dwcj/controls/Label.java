@@ -140,4 +140,10 @@ public final class Label extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
+    @Override
+    public Label setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

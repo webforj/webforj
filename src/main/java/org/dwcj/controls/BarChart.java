@@ -220,4 +220,13 @@ public final class BarChart extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
+    @Override
+    public BarChart setID(String id){
+        super.setID(id);
+        return this;
+    }
+
+
+
 }

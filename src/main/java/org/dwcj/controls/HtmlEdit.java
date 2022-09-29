@@ -10,9 +10,13 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final  class HtmlEdit extends AbstractDwcControl implements IThemable, IExpansible {
+public final  class HtmlEdit extends AbstractDwcControl implements IThemable {
 
     private BBjHtmlEdit bbjHtmlEdit;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
 
     @Override
@@ -294,9 +298,8 @@ public final  class HtmlEdit extends AbstractDwcControl implements IThemable, IE
         return this;
     }
 
-    @Override
-    public IExpansible setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+    public HtmlEdit setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -321,6 +324,12 @@ public final  class HtmlEdit extends AbstractDwcControl implements IThemable, IE
     @Override
     public IThemable setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public HtmlEdit setID(String id){
+        super.setID(id);
         return this;
     }
 }

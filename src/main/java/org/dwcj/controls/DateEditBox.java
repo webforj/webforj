@@ -1,6 +1,5 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -9,13 +8,16 @@ import com.basis.startup.type.sysgui.BBjColor;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.ObjectUtils.Null;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class DateEditBox extends AbstractDwcControl implements IThemable, IExpansible {
+public final class DateEditBox extends AbstractDwcControl implements IThemable {
     
     private BBjInputD bbjDateEditBox;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     public DateEditBox(){}
 
@@ -430,9 +432,8 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         return this; 
     }
 
-    @Override
     public DateEditBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -459,4 +460,10 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable, 
         super.setControlTheme(theme);
         return this;
     } 
+
+    @Override
+    public DateEditBox setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

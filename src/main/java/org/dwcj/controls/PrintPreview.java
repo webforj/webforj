@@ -96,4 +96,10 @@ public final class PrintPreview extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
+    @Override
+    public PrintPreview setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

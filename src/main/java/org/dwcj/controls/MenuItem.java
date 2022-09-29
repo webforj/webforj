@@ -6,9 +6,13 @@ import com.basis.startup.type.BBjException;
 
 import java.nio.charset.StandardCharsets;
 
-public class MenuItem extends AbstractDwcControl implements IExpansible, IThemable {
+public class MenuItem extends AbstractDwcControl implements IThemable {
 
     private BBjMenuItem bbjMenuItem;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     public Menu getParentMenu() {
         try {
@@ -37,9 +41,8 @@ public class MenuItem extends AbstractDwcControl implements IExpansible, IThemab
     }
 
 
-    @Override
-    public IExpansible setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+    public MenuItem setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -64,6 +67,12 @@ public class MenuItem extends AbstractDwcControl implements IExpansible, IThemab
     @Override
     public IThemable setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public MenuItem setID(String id){
+        super.setID(id);
         return this;
     }
 }

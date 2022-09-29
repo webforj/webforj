@@ -17,7 +17,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcControl implements IThemable, IExpansible {
+public final class Navigator extends AbstractDwcControl implements IThemable {
 
     private BBjNavigator bbjNavigator;
 
@@ -25,6 +25,10 @@ public final class Navigator extends AbstractDwcControl implements IThemable, IE
     private NavLastEventSink navLastEventSink;
     private NavNextEventSink navNextEventSink;
     private NavPreviousEventSink navPreviousEventSink;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -93,9 +97,8 @@ public final class Navigator extends AbstractDwcControl implements IThemable, IE
         return this;
     }
 
-    @Override
     public Navigator setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -120,6 +123,12 @@ public final class Navigator extends AbstractDwcControl implements IThemable, IE
     @Override
     public Navigator setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public Navigator setID(String id){
+        super.setID(id);
         return this;
     }
 }

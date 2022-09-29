@@ -235,5 +235,11 @@ public final class HtmlContainer extends AbstractDwcControl {
         return this;
     }
 
+    @Override
+    public HtmlContainer setID(String id){
+        super.setID(id);
+        return this;
+    }
+
 
 }

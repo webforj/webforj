@@ -4,7 +4,11 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class TabControl extends AbstractDwcControl implements IThemable, IExpansible {
+public final class TabControl extends AbstractDwcControl implements IThemable {
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -18,9 +22,8 @@ public final class TabControl extends AbstractDwcControl implements IThemable, I
         }
     }
 
-    @Override
     public TabControl setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -45,6 +48,12 @@ public final class TabControl extends AbstractDwcControl implements IThemable, I
     @Override
     public TabControl setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public TabControl setID(String id){
+        super.setID(id);
         return this;
     }
 }

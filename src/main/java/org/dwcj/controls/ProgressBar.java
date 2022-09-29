@@ -248,4 +248,10 @@ public final class ProgressBar extends AbstractDwcControl implements IThemable {
         super.setControlTheme(theme);
         return this;
     }
+
+    @Override
+    public ProgressBar setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

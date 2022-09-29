@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Slider extends AbstractDwcControl implements IControl, IThemable {
+public final class Slider extends AbstractDwcControl implements IThemable {
 
     private BBjSlider bbjSlider;
 
@@ -339,6 +339,12 @@ public final class Slider extends AbstractDwcControl implements IControl, IThema
     @Override
     public IThemable setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public Slider setID(String id){
+        super.setID(id);
         return this;
     }
 }

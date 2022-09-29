@@ -3,7 +3,6 @@ package dwcjsample;
 import org.dwcj.App;
 import org.dwcj.controls.Button;
 import org.dwcj.controls.ComboBox;
-import org.dwcj.controls.IExpansible.Expanse;
 import org.dwcj.controls.IThemable.Theme;
 import org.dwcj.controls.Label;
 import org.dwcj.controls.TextBox;
@@ -73,7 +72,7 @@ public class SampleAppPanel extends AppPanel {
         Button btn = new Button("Say Hello");
         add(btn);
         btn.setTheme(Theme.WARNING);
-        btn.setExpanse(Expanse.XLARGE);
+        btn.setExpanse(Button.Expanse.XLARGE);
         btn.setStyle("grid-column", "1 / span 2");
         btn.setStyle("width", "100%");
         btn.onClick(this::onSampleButtonPush);

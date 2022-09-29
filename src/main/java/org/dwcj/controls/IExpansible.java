@@ -12,7 +12,6 @@ public interface IExpansible {
     IExpansible setExpanse(Expanse expanse);
 
     enum Expanse {
-        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
 }

@@ -42,4 +42,10 @@ public final class OpenFileDialog extends AbstractDwcControl implements IThemabl
         super.setControlTheme(theme);
         return this;
     }
+
+    @Override
+    public OpenFileDialog setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

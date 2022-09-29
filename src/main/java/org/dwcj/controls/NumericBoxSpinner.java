@@ -13,6 +13,10 @@ public final class NumericBoxSpinner extends NumericBox {
 
     private BBjInputNSpinner numBoxS;
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         try {
@@ -44,15 +48,20 @@ public final class NumericBoxSpinner extends NumericBox {
         return this;
     }
 
-    @Override
     public NumericBoxSpinner setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
     @Override
     public NumericBoxSpinner setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public NumericBoxSpinner setID(String id){
+        super.setID(id);
         return this;
     }
 }

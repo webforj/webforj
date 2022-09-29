@@ -13,9 +13,13 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public final class Button extends AbstractDwcControl implements IThemable, IExpansible {
+public final class Button extends AbstractDwcControl implements IThemable {
 
     private ButtonPushEventSink buttonPushEventSink;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     /**
      * create a Button
@@ -60,15 +64,6 @@ public final class Button extends AbstractDwcControl implements IThemable, IExpa
         return this;
     }
 
-
-    /**
-     * Clicks the button, for testing purposes
-     */
-    public void doClick() {
-        this.buttonPushEventSink.doClick();
-    }
-
-
     /**
      * Accessor for whether or not the button is disabled. 
      * @return Boolean value 
@@ -99,9 +94,8 @@ public final class Button extends AbstractDwcControl implements IThemable, IExpa
         return this;
     }
 
-    @Override
     public Button setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -155,4 +149,9 @@ public final class Button extends AbstractDwcControl implements IThemable, IExpa
         return true;
     }
 
+    @Override
+    public Button setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

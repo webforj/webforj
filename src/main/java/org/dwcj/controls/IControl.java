@@ -35,6 +35,10 @@ public interface IControl {
      */
     public String getAttribute(String attribute);
 
+    public IControl setID(String id);
+
+    public String getID();
+
     /**
      * Set the tooltip text of the control
      *

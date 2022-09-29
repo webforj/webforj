@@ -20,13 +20,17 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class    ComboBox extends AbstractDwclistControl implements IThemable, IExpansible {
+public final class    ComboBox extends AbstractDwclistControl implements IThemable {
 
     private BBjListButton bbjListButton;
 
     private BBjComboBoxSelectEventSink comboBoxSelectEventSink;
 
     private ComboBoxChangeEventSink comboBoxChangeEventSink;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -184,9 +188,8 @@ public final class    ComboBox extends AbstractDwclistControl implements IThemab
         this.comboBoxSelectEventSink.doSelect(key);
     }
 
-    @Override
     public ComboBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -211,6 +214,12 @@ public final class    ComboBox extends AbstractDwclistControl implements IThemab
     @Override
     public ComboBox setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public ComboBox setID(String id){
+        super.setID(id);
         return this;
     }
 }

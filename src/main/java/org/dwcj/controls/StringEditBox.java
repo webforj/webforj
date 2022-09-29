@@ -9,12 +9,16 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.nio.charset.StandardCharsets;
 
-public final class StringEditBox extends AbstractDwcControl implements IThemable, IExpansible {
+public final class StringEditBox extends AbstractDwcControl implements IThemable {
 
     String mask;
 
     private BBjInputE bbjInputE;
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+    
     public StringEditBox() {}
 
     public StringEditBox(String text) {
@@ -262,9 +266,8 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return this;
     }
 
-    @Override
     public StringEditBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -303,5 +306,11 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         super.catchUp();
         if (this.mask != null)
             setMask(this.mask);
+    }
+
+    @Override
+    public StringEditBox setID(String id){
+        super.setID(id);
+        return this;
     }
 }

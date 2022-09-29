@@ -144,4 +144,10 @@ public final class MenuButton extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
+    @Override
+    public MenuButton setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

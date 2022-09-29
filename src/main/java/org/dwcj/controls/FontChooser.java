@@ -204,4 +204,10 @@ public final class FontChooser extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
+    @Override
+    public FontChooser setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

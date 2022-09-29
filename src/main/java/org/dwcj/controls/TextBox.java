@@ -1,19 +1,20 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.funcs.Vector;
-import com.basis.bbj.iris.bdt.gbf.nodes.APINodeChildren.Array;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjVector;
 
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
-public final class TextBox extends AbstractDwcControl implements IThemable, IExpansible {
+public final class TextBox extends AbstractDwcControl implements IThemable {
 
     private BBjEditBox bbjEditBox;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     public TextBox() {
     }
@@ -141,9 +142,8 @@ public final class TextBox extends AbstractDwcControl implements IThemable, IExp
     }
 
 
-    @Override
     public TextBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -168,6 +168,12 @@ public final class TextBox extends AbstractDwcControl implements IThemable, IExp
     @Override
     public TextBox setTheme(Theme theme) {
         super.setControlTheme(theme);
+        return this;
+    }
+
+    @Override
+    public TextBox setID(String id){
+        super.setID(id);
         return this;
     }
 }

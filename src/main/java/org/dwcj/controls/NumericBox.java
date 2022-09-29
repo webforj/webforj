@@ -9,10 +9,13 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
-public class NumericBox extends AbstractDwcControl implements IThemable, IExpansible {
+public class NumericBox extends AbstractDwcControl implements IThemable {
 
     private BBjInputN numBox;
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     public NumericBox(String text) {
         setText(text);
@@ -477,9 +480,8 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
         return this;
     }
 
-    @Override
     public NumericBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -510,6 +512,12 @@ public class NumericBox extends AbstractDwcControl implements IThemable, IExpans
     @Override
     public NumericBox setText(String text) {
         super.setText(text);
+        return this;
+    }
+
+    @Override
+    public NumericBox setID(String id){
+        super.setID(id);
         return this;
     }
 }

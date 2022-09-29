@@ -126,7 +126,7 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
         }
     }
 
-    public int getID() {
+    public int getMenuID() {
         return bbjPopupMenu.getID();
     }
 
@@ -365,5 +365,11 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
     @Override
     public IPopupAble removePopupMenu(int id, String title) {
         return null;
+    }
+
+    @Override
+    public PopupMenu setID(String id){
+        super.setID(id);
+        return this;
     }
 }

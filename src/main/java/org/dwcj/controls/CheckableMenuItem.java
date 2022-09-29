@@ -25,4 +25,10 @@ public class CheckableMenuItem extends MenuItem {
             return false;
         }
     }
+
+    @Override
+    public CheckableMenuItem setID(String id){
+        super.setID(id);
+        return this;
+    }
 }

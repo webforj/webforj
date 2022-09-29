@@ -14,9 +14,13 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class TreeView extends AbstractDwcControl implements IExpansible {
+public final class TreeView extends AbstractDwcControl {
 
     private BBjTree tree;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -538,9 +542,8 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
         return this;
     }
 
-    @Override
     public TreeView setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -559,6 +562,12 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
     @Override
     public TreeView removeClass(String selector) {
         super.removeControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public TreeView setID(String id){
+        super.setID(id);
         return this;
     }
 }

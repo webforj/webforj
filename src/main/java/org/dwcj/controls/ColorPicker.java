@@ -4,8 +4,13 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class ColorPicker extends AbstractDwcControl implements IThemable, IExpansible {
+public final class ColorPicker extends AbstractDwcControl implements IThemable {
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
+    }
+
+    
     @Override
     protected void create(AbstractDwcjPanel p) {
 
@@ -19,9 +24,8 @@ public final class ColorPicker extends AbstractDwcControl implements IThemable, 
         }
     }
 
-    @Override
     public ColorPicker setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -52,6 +56,12 @@ public final class ColorPicker extends AbstractDwcControl implements IThemable, 
     @Override
     public ColorPicker setText(String text) {
         super.setText(text);
+        return this;
+    }
+
+    @Override
+    public ColorPicker setID(String id){
+        super.setID(id);
         return this;
     }
     

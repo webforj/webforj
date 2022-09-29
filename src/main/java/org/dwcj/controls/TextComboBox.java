@@ -13,9 +13,13 @@ import java.util.Map;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IThemable, IExpansible {
+public final class TextComboBox extends AbstractDwclistControl implements IThemable {
 
     private BBjListEdit bbjListEdit;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -171,9 +175,8 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
         }
     }
 
-    @Override
     public TextComboBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -204,6 +207,12 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
     @Override
     public TextComboBox setTooltipText(String text) {
         super.setTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setID(String id){
+        super.setID(id);
         return this;
     }
 

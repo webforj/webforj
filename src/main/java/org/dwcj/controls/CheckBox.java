@@ -10,9 +10,13 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements IExpansible {
+public final class CheckBox extends AbstractDwcControl {
 
     private Consumer<CheckBoxCheckEvent> callback;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -60,7 +64,6 @@ public final class CheckBox extends AbstractDwcControl implements IExpansible {
         return -1;
     }
 
-    //Should change to getEditable?
     public boolean isEditable() {
         //todo: why could an exception be thrown?
         try {
@@ -115,10 +118,8 @@ public final class CheckBox extends AbstractDwcControl implements IExpansible {
 
 
 
-
-    @Override
     public CheckBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -137,6 +138,12 @@ public final class CheckBox extends AbstractDwcControl implements IExpansible {
     @Override
     public CheckBox removeClass(String selector) {
         super.removeControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public CheckBox setID(String id){
+        super.setID(id);
         return this;
     }
 

@@ -16,9 +16,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl implements IThemable, IExpansible {
+public final class ListBox extends AbstractDwclistControl implements IThemable {
 
     private BBjListBox bbjListBox;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         try {
@@ -218,9 +223,8 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
         return this;
     }
 
-    @Override
     public ListBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -245,6 +249,12 @@ public final class ListBox extends AbstractDwclistControl implements IThemable, 
     @Override
     public ListBox removeClass(String selector) {
         super.removeControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public ListBox setID(String id){
+        super.setID(id);
         return this;
     }
 }

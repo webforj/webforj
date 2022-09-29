@@ -25,7 +25,7 @@ public abstract class AbstractDwcControl implements IControl {
     protected BBjControl ctrl;
     private String text = "";
     private IThemable.Theme theme;
-    private IExpansible.Expanse expanse;
+    private String expanse;
     private Boolean visible = null;
     private Boolean enabled = null;
     private String tooltipText = "";
@@ -89,6 +89,27 @@ public abstract class AbstractDwcControl implements IControl {
         return this;
     }
 
+    @Override
+    public IControl setID(String id){
+        try{
+            ctrl.setAttribute("id", id);
+            return this;
+        } catch (BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    @Override
+    public String getID(){
+        try{
+            return ctrl.getAttribute("id");
+        } catch (BBjException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * get an attribute of the control
      * @param attribute the name of the attribute
@@ -111,23 +132,29 @@ public abstract class AbstractDwcControl implements IControl {
     ------------------------------------------------------------
      */
 
-    protected void setControlExpanse(IExpansible.Expanse expanse) {
+    protected void setControlExpanse(String expanse) {
         if (ctrl != null) try {
             switch (expanse) {
-                case LARGE:
+                case "LARGE":
                     ctrl.setAttribute(STR_EXPANSE, "l");
                     break;
-                case MEDIUM:
+                case "MEDIUM":
                     ctrl.setAttribute(STR_EXPANSE, "m");
                     break;
-                case SMALL:
+                case "SMALL":
                     ctrl.setAttribute(STR_EXPANSE, "s");
                     break;
-                case XLARGE:
+                case "XLARGE":
                     ctrl.setAttribute(STR_EXPANSE, "xl");
                     break;
-                case XSMALL:
+                case "XSMALL":
                     ctrl.setAttribute(STR_EXPANSE, "xs");
+                    break;
+                case "XXSMALL":
+                    ctrl.setAttribute(STR_EXPANSE, "xxs");
+                    break;
+                case "XXXSMALL":
+                    ctrl.setAttribute(STR_EXPANSE, "xxs");
                     break;
                 default:
                     //noop
@@ -137,6 +164,32 @@ public abstract class AbstractDwcControl implements IControl {
         }
         this.expanse = expanse;
     }
+    // protected void setControlExpanse(IExpansible.Expanse expanse) {
+    //     if (ctrl != null) try {
+    //         switch (expanse) {
+    //             case LARGE:
+    //                 ctrl.setAttribute(STR_EXPANSE, "l");
+    //                 break;
+    //             case MEDIUM:
+    //                 ctrl.setAttribute(STR_EXPANSE, "m");
+    //                 break;
+    //             case SMALL:
+    //                 ctrl.setAttribute(STR_EXPANSE, "s");
+    //                 break;
+    //             case XLARGE:
+    //                 ctrl.setAttribute(STR_EXPANSE, "xl");
+    //                 break;
+    //             case XSMALL:
+    //                 ctrl.setAttribute(STR_EXPANSE, "xs");
+    //                 break;
+    //             default:
+    //                 //noop
+    //         }
+    //     } catch (BBjException e) {
+    //         e.printStackTrace();
+    //     }
+        // this.expanse = expanse;
+    // }
 
 
     protected void setControlTheme(IThemable.Theme theme) {
@@ -207,6 +260,15 @@ public abstract class AbstractDwcControl implements IControl {
             e.printStackTrace();
         }
         this.cssClasses.remove(selector);
+    }
+
+    public String getComputedStyle(String property){
+        if (ctrl != null) try {
+            ctrl.getComputedStyle(property);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

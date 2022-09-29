@@ -50,7 +50,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
         }
     }
 
-    public int getID() {
+    public int getGroupID() {
         BBjControl control = (BBjControl) radioGroup;
         try {
             return control.getID();
@@ -62,7 +62,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
 
     private RadioButton getButtonByID(int id) {
         for (RadioButton radioButton : radioButtons) {
-            if (radioButton.getID() == id) {
+            if (radioButton.getButtonID() == id) {
                 return radioButton;
             }
         }
@@ -71,7 +71,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
 
     public static RadioButtonGroup getGroupByID(int id) {
         for (RadioButtonGroup radioButtonGroup : radioButtonGroups) {
-            if (radioButtonGroup.getID() == id) {
+            if (radioButtonGroup.getGroupID() == id) {
                 return radioButtonGroup;
             }
         }
@@ -102,6 +102,12 @@ public final class RadioButtonGroup extends AbstractDwcControl {
     @Override
     public RadioButtonGroup removeClass(String selector) {
         super.removeControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public RadioButtonGroup setID(String id){
+        super.setID(id);
         return this;
     }
 }

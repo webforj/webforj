@@ -7,9 +7,13 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class RadioButton extends AbstractDwcControl implements IExpansible {
+public final class RadioButton extends AbstractDwcControl {
 
     private BBjRadioButton bbjRadioButton;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -24,7 +28,7 @@ public final class RadioButton extends AbstractDwcControl implements IExpansible
         }
     }
 
-    public int getID() {
+    public int getButtonID() {
         try {
             return bbjRadioButton.getID();
         } catch (BBjException e) {
@@ -78,9 +82,8 @@ public final class RadioButton extends AbstractDwcControl implements IExpansible
         }
     }
 
-    @Override
     public RadioButton setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+        super.setControlExpanse(expanse.toString());
         return this;
     }
 
@@ -99,6 +102,12 @@ public final class RadioButton extends AbstractDwcControl implements IExpansible
     @Override
     public RadioButton removeClass(String selector) {
         super.removeControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public RadioButton setID(String id){
+        super.setID(id);
         return this;
     }
 }
