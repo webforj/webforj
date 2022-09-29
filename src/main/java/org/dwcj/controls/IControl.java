@@ -56,13 +56,13 @@ public interface IControl {
      * @param enabled
      * @return the control itself
      */
-    // public IControl setEnabled(boolean enabled);
+    public IControl setEnabled(boolean enabled);
 
     /**
      *
      * @return if control is enabled (=true) or disabled (=false)
      */
-    // public boolean isEnabled();
+    public boolean isEnabled();
 
     /**
      * Set whether the control is visible or invisible
