@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl {
+public final class CheckBox extends AbstractDwcControl implements IEditable {
 
     private Consumer<CheckBoxCheckEvent> callback;
 
@@ -50,11 +50,11 @@ public final class CheckBox extends AbstractDwcControl {
         return this;
     }
 
-    public void doCheck() {
-        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this);
-        callback.accept(dwcEv);
-    }
-
+    /**
+     * This method returns the horizontal position of the text in the CheckBox control. The default horizontal text position is RIGHT.
+     *
+     * @return This method returns the horizontal position of the text in the CheckBox control.
+     */
     public int getHorizontalTextPosition(){
         try {
             return ((BBjCheckBox) this.ctrl).getHorizontalTextPosition();
@@ -64,6 +64,12 @@ public final class CheckBox extends AbstractDwcControl {
         return -1;
     }
 
+    /**
+     * Returns whether the BBjCheckBox is editable (false = not editable, true = editable).
+     * 
+     * @return false if not editable, true if editable.
+     */
+    @Override
     public boolean isEditable() {
         //todo: why could an exception be thrown?
         try {
@@ -74,7 +80,11 @@ public final class CheckBox extends AbstractDwcControl {
         return false;
     }
 
-    //Should change to getSelected?
+    /**
+     * Returns whether the BBjCheckBox is checked on or off (false = not checked, true = checked).
+     * 
+     * @return false if not checked, true if checked.
+     */
     public boolean isSelected() {
         //todo: why could an exception be thrown?
         try {
@@ -85,6 +95,13 @@ public final class CheckBox extends AbstractDwcControl {
         return false;
     }
 
+    /**
+     * this method sets whether the CheckBox can be edited. True is editable, false is uneditable.
+     * 
+     * @param editable
+     * @return this
+     */
+    @Override
     public CheckBox setEditable(boolean editable) {
         //todo: why could an exception be thrown?
         try {
@@ -95,6 +112,7 @@ public final class CheckBox extends AbstractDwcControl {
         return this;
     }
 
+  
     public CheckBox setHorizontalTextPosition(int position) {
         //todo: why could an exception be thrown?
         try {
@@ -119,7 +137,7 @@ public final class CheckBox extends AbstractDwcControl {
 
 
     public CheckBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 

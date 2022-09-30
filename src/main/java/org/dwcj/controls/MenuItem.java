@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import java.nio.charset.StandardCharsets;
 
-public class MenuItem extends AbstractDwcControl implements IThemable {
+public class MenuItem extends AbstractDwcControl {
 
     private BBjMenuItem bbjMenuItem;
 
@@ -14,6 +14,10 @@ public class MenuItem extends AbstractDwcControl implements IThemable {
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
+    
     public Menu getParentMenu() {
         try {
             return (Menu) bbjMenuItem.getParentMenu();
@@ -42,7 +46,7 @@ public class MenuItem extends AbstractDwcControl implements IThemable {
 
 
     public MenuItem setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -64,8 +68,7 @@ public class MenuItem extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
-    public IThemable setTheme(Theme theme) {
+    public MenuItem setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }

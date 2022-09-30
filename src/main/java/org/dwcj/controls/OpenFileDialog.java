@@ -4,7 +4,13 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class OpenFileDialog extends AbstractDwcControl implements IThemable {
+public final class OpenFileDialog extends AbstractDwcControl {
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
+        OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS,
+        OUTLINED_PRIMARY, OUTLINED_WARNING
+    }
     
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -37,7 +43,6 @@ public final class OpenFileDialog extends AbstractDwcControl implements IThemabl
         return this;
     }
 
-    @Override
     public OpenFileDialog setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

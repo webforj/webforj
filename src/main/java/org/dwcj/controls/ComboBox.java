@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class    ComboBox extends AbstractDwclistControl implements IThemable {
+public final class ComboBox extends AbstractDwclistControl {
 
     private BBjListButton bbjListButton;
 
@@ -30,6 +30,11 @@ public final class    ComboBox extends AbstractDwclistControl implements IThemab
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
+        OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
 
     @Override
@@ -189,7 +194,7 @@ public final class    ComboBox extends AbstractDwclistControl implements IThemab
     }
 
     public ComboBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -211,7 +216,6 @@ public final class    ComboBox extends AbstractDwclistControl implements IThemab
         return this;
     }
 
-    @Override
     public ComboBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

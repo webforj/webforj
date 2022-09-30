@@ -17,7 +17,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcControl implements IThemable {
+public final class Navigator extends AbstractDwcControl implements IEditable{
 
     private BBjNavigator bbjNavigator;
 
@@ -28,6 +28,10 @@ public final class Navigator extends AbstractDwcControl implements IThemable {
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
     @Override
@@ -52,6 +56,7 @@ public final class Navigator extends AbstractDwcControl implements IThemable {
         }
     }
 
+    @Override
     public boolean isEditable() {
         try {
             return bbjNavigator.isEditable();
@@ -61,12 +66,14 @@ public final class Navigator extends AbstractDwcControl implements IThemable {
         }
     }
 
-    public void setEditable(boolean editable) {
+    @Override
+    public Navigator setEditable(boolean editable) {
         try {
             bbjNavigator.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public Navigator onFirst(Consumer<NavigatorFirstEvent> callback) {
@@ -98,7 +105,7 @@ public final class Navigator extends AbstractDwcControl implements IThemable {
     }
 
     public Navigator setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -120,7 +127,6 @@ public final class Navigator extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public Navigator setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

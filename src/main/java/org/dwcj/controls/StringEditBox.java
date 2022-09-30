@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.nio.charset.StandardCharsets;
 
-public final class StringEditBox extends AbstractDwcControl implements IThemable {
+public final class StringEditBox extends AbstractDwcControl implements IEditable{
 
     String mask;
 
@@ -17,6 +17,10 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
     
     public StringEditBox() {}
@@ -150,6 +154,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return "";
     }
 
+    @Override
     public boolean isEditable() {
         try {
             return bbjInputE.isEditable();
@@ -176,6 +181,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return this;
     }
 
+    @Override
     public StringEditBox setEditable(boolean editable) {
         try {
             bbjInputE.setEditable(editable);
@@ -267,7 +273,7 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
     }
 
     public StringEditBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -289,7 +295,6 @@ public final class StringEditBox extends AbstractDwcControl implements IThemable
         return this;
     }
 
-    @Override
     public StringEditBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

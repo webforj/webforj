@@ -4,10 +4,14 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class TabControl extends AbstractDwcControl implements IThemable {
+public final class TabControl extends AbstractDwcControl {
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
     }
 
     @Override
@@ -23,7 +27,7 @@ public final class TabControl extends AbstractDwcControl implements IThemable {
     }
 
     public TabControl setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -45,7 +49,6 @@ public final class TabControl extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public TabControl setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

@@ -13,12 +13,16 @@ import java.util.Map;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IThemable {
+public final class TextComboBox extends AbstractDwclistControl implements IEditable{
 
     private BBjListEdit bbjListEdit;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, PRIMARY, SUCCESS, WARNING
     }
 
     @Override
@@ -126,6 +130,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
         }
     }
 
+    @Override
     public boolean isEditable() {
         try {
             return bbjListEdit.isEditable();
@@ -151,12 +156,14 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
         }
     }
 
-    public void setEditable(boolean edit) {
+    @Override
+    public TextComboBox setEditable(boolean edit) {
         try {
             bbjListEdit.setEditable(edit);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public void setEditText(String text) {
@@ -176,7 +183,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
     }
 
     public TextComboBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -198,7 +205,6 @@ public final class TextComboBox extends AbstractDwclistControl implements IThema
         return this;
     }
 
-    @Override
     public TextComboBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

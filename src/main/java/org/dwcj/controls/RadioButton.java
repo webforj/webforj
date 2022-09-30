@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class RadioButton extends AbstractDwcControl {
+public final class RadioButton extends AbstractDwcControl implements IEditable{
 
     private BBjRadioButton bbjRadioButton;
 
@@ -48,6 +48,7 @@ public final class RadioButton extends AbstractDwcControl {
         }
     }
 
+    @Override
     public boolean isEditable() {
         try {
             return bbjRadioButton.isEditable();
@@ -66,12 +67,14 @@ public final class RadioButton extends AbstractDwcControl {
         }
     }
 
-    public void setEditable(boolean editable) {
+    @Override
+    public RadioButton setEditable(boolean editable) {
         try {
             bbjRadioButton.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public void setSelected(boolean selected) {
@@ -83,7 +86,7 @@ public final class RadioButton extends AbstractDwcControl {
     }
 
     public RadioButton setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 

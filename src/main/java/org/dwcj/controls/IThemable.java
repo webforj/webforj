@@ -8,17 +8,8 @@ public interface IThemable {
      * @param theme the theme to apply
      * @return the control itself
      */
-    IThemable setTheme(Theme theme);
+    IThemable setTheme(Enum theme);
 
-    enum Theme {
-        DEFAULT,
-        DANGER,
-        GRAY,
-        INFO,
-        PRIMARY,
-        SUCCESS,
-        WARNING
-    }
 
 
 }

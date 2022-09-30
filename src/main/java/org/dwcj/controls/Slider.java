@@ -9,11 +9,15 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Slider extends AbstractDwcControl implements IThemable {
+public final class Slider extends AbstractDwcControl {
 
     private BBjSlider bbjSlider;
 
     private final boolean horizontal;
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
+    }
 
     public Slider(boolean horizontal) { this.horizontal = horizontal; }
 
@@ -336,8 +340,7 @@ public final class Slider extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
-    public IThemable setTheme(Theme theme) {
+    public Slider setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }

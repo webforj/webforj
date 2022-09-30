@@ -13,12 +13,18 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public final class Button extends AbstractDwcControl implements IThemable {
+public final class Button extends AbstractDwcControl {
 
     private ButtonPushEventSink buttonPushEventSink;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
+        OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY,
+        OUTLINED_WARNING
     }
 
     /**
@@ -95,7 +101,7 @@ public final class Button extends AbstractDwcControl implements IThemable {
     }
 
     public Button setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -117,7 +123,6 @@ public final class Button extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public Button setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

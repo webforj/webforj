@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl implements IThemable {
+public final class ListBox extends AbstractDwclistControl {
 
     private BBjListBox bbjListBox;
 
@@ -224,15 +224,10 @@ public final class ListBox extends AbstractDwclistControl implements IThemable {
     }
 
     public ListBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
-    @Override
-    public ListBox setTheme(Theme theme) {
-        super.setControlTheme(theme);
-        return this;
-    }
 
     @Override
     public ListBox setStyle(String property, String value) {

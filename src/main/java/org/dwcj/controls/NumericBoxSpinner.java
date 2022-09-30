@@ -49,7 +49,7 @@ public final class NumericBoxSpinner extends NumericBox {
     }
 
     public NumericBoxSpinner setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 

@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MultilineEdit extends AbstractDwcControl implements IThemable {
+public final class MultilineEdit extends AbstractDwcControl implements IEditable {
 
     private BBjCEdit bbjCEdit;
 
@@ -18,6 +18,9 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -320,6 +323,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * Returns whether the text is editable in the MultilineEdit control
      * @return Returns whether the text is editable in the control (false = Not Editable, true = Editable).
      */
+    @Override
     public boolean isEditable() {
         try {
             return bbjCEdit.isEditable();
@@ -359,6 +363,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
      * @param editable - Specifies whether the text can be edited (false = Not Editable, true = Editable).
      * @return Returns this
      */
+    @Override
     public MultilineEdit setEditable(boolean editable) {
         try {
             bbjCEdit.setEditable(editable);
@@ -537,7 +542,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
     }
 
     public MultilineEdit setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -559,8 +564,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IThemable
         return this;
     }
 
-    @Override
-    public IThemable setTheme(Theme theme) {
+    public MultilineEdit setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }

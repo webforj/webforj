@@ -9,9 +9,7 @@ public interface IExpansible {
      * @param expanse the expanse
      * @return the control itself
      */
-    IExpansible setExpanse(Expanse expanse);
+    IExpansible setExpanse(Enum expanse);
 
-    enum Expanse {
-    }
 
 }

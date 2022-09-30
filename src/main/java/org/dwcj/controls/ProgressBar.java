@@ -6,9 +6,13 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class ProgressBar extends AbstractDwcControl implements IThemable {
+public final class ProgressBar extends AbstractDwcControl {
 
     private BBjProgressBar bbjProgressBar;
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -243,7 +247,6 @@ public final class ProgressBar extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public ProgressBar setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

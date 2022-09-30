@@ -24,8 +24,8 @@ public abstract class AbstractDwcControl implements IControl {
 
     protected BBjControl ctrl;
     private String text = "";
-    private IThemable.Theme theme;
-    private String expanse;
+    private Enum theme;
+    private Enum expanse;
     private Boolean visible = null;
     private Boolean enabled = null;
     private String tooltipText = "";
@@ -132,9 +132,9 @@ public abstract class AbstractDwcControl implements IControl {
     ------------------------------------------------------------
      */
 
-    protected void setControlExpanse(String expanse) {
+    protected void setControlExpanse(Enum expanse) {
         if (ctrl != null) try {
-            switch (expanse) {
+            switch (expanse.toString()) {
                 case "LARGE":
                     ctrl.setAttribute(STR_EXPANSE, "l");
                     break;
@@ -192,29 +192,50 @@ public abstract class AbstractDwcControl implements IControl {
     // }
 
 
-    protected void setControlTheme(IThemable.Theme theme) {
+    protected void setControlTheme(Enum theme) {
         if (ctrl != null) try {
-            switch (theme) {
-                case DEFAULT:
+            switch (theme.toString()) {
+                case "DEFAULT":
                     ctrl.setAttribute(STR_THEME, "default");
                     break;
-                case DANGER:
+                case "DANGER":
                     ctrl.setAttribute(STR_THEME, "danger");
                     break;
-                case GRAY:
+                case "GRAY":
                     ctrl.setAttribute(STR_THEME, "gray");
                     break;
-                case INFO:
+                case "INFO":
                     ctrl.setAttribute(STR_THEME, "info");
                     break;
-                case PRIMARY:
+                case "PRIMARY":
                     ctrl.setAttribute(STR_THEME, "primary");
                     break;
-                case SUCCESS:
+                case "SUCCESS":
                     ctrl.setAttribute(STR_THEME, "success");
                     break;
-                case WARNING:
+                case "WARNING":
                     ctrl.setAttribute(STR_THEME, "warning");
+                    break;
+                case "OUTLINED_DANGER":
+                    ctrl.setAttribute(STR_THEME, "outlined-danger");
+                    break;
+                case "OUTLINED_DEFAULT":
+                    ctrl.setAttribute(STR_THEME, "outlined-default");
+                    break;
+                case "OUTLINED_GRAY":
+                    ctrl.setAttribute(STR_THEME, "outlined-gray");
+                    break;
+                case "OUTLINED_INFO":
+                    ctrl.setAttribute(STR_THEME, "outlined-info");
+                    break;
+                case "OUTLINED_SUCCESS":
+                    ctrl.setAttribute(STR_THEME, "outlined-success");
+                    break;
+                case "OUTLINED_WARNING":
+                    ctrl.setAttribute(STR_THEME, "outlined-warning");
+                    break;
+                case "OUTLINED_PRIMARY":
+                    ctrl.setAttribute(STR_THEME, "outlined-primary");
                     break;
                 default:
                     //noop

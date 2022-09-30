@@ -6,12 +6,15 @@ public final class CheckBoxCheckEvent implements IDwcEvent {
 
     private final CheckBox control;
 
-    public CheckBoxCheckEvent(CheckBox cCheckBox) {
+    private boolean isChecked = false; 
+
+    public CheckBoxCheckEvent(CheckBox cCheckBox, boolean checked) {
+        this.isChecked = checked;
         this.control = cCheckBox;
     }
 
     public boolean isSelected(){
-        return control.isSelected();
+        return isChecked;
     }
 
     @Override

@@ -543,7 +543,7 @@ public final class TreeView extends AbstractDwcControl {
     }
 
     public TreeView setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 

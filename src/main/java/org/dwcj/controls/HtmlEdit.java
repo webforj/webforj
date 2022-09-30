@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final  class HtmlEdit extends AbstractDwcControl implements IThemable {
+public final  class HtmlEdit extends AbstractDwcControl {
 
     private BBjHtmlEdit bbjHtmlEdit;
 
@@ -299,7 +299,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements IThemable {
     }
 
     public HtmlEdit setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -318,12 +318,6 @@ public final  class HtmlEdit extends AbstractDwcControl implements IThemable {
     @Override
     public HtmlEdit removeClass(String selector) {
         super.removeControlCssClass(selector);
-        return this;
-    }
-
-    @Override
-    public IThemable setTheme(Theme theme) {
-        super.setControlTheme(theme);
         return this;
     }
 

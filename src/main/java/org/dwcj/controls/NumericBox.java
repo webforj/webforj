@@ -9,12 +9,16 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
-public class NumericBox extends AbstractDwcControl implements IThemable {
+public class NumericBox extends AbstractDwcControl implements IEditable{
 
     private BBjInputN numBox;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
     public NumericBox(String text) {
@@ -236,6 +240,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable {
      * Returns whether the text in the NumericBox control can be edited.
      * @return Returns whether the text in the control can be edited (false = Not Editable, true = Editable). By default, the text is editable.
      */
+    @Override
     public boolean isEditable() {
         try {
             return numBox.isEditable();
@@ -302,6 +307,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable {
      * @param editable - Sets the editability of the control (false = Not Editable, true = Editable)
      * @return Returns this
      */
+    @Override
     public NumericBox setEditable(boolean editable) {
         try {
             numBox.setEditable(editable);
@@ -481,7 +487,7 @@ public class NumericBox extends AbstractDwcControl implements IThemable {
     }
 
     public NumericBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -503,7 +509,6 @@ public class NumericBox extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public NumericBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

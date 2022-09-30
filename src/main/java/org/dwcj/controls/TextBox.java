@@ -8,13 +8,19 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
-public final class TextBox extends AbstractDwcControl implements IThemable {
+public final class TextBox extends AbstractDwcControl implements IEditable{
 
     private BBjEditBox bbjEditBox;
 
+    
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
+
 
     public TextBox() {
     }
@@ -76,6 +82,7 @@ public final class TextBox extends AbstractDwcControl implements IThemable {
         return null;
     }
 
+    @Override
     public boolean isEditable(){
         try{
             return bbjEditBox.isEditable();
@@ -101,6 +108,7 @@ public final class TextBox extends AbstractDwcControl implements IThemable {
         return this;    
     }
 
+    @Override
     public TextBox setEditable(boolean editable){
         try{
             bbjEditBox.setEditable(editable);
@@ -143,7 +151,7 @@ public final class TextBox extends AbstractDwcControl implements IThemable {
 
 
     public TextBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -165,7 +173,6 @@ public final class TextBox extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public TextBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;

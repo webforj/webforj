@@ -11,12 +11,16 @@ import java.io.IOException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class DateEditBox extends AbstractDwcControl implements IThemable {
+public final class DateEditBox extends AbstractDwcControl implements IEditable{
     
     private BBjInputD bbjDateEditBox;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
     public DateEditBox(){}
@@ -36,10 +40,20 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
         }
     }
 
+    /**
+     * This method pops up a calendar dialog attached to the DateEditBox control
+     * 
+     */
     public void calendar() {
         ((BBjInputD) this.ctrl).calendar();
     }
 
+    /**
+     * This method returns whether the DateEditBox control beeps on invalid input.
+     * 
+     * @returns Returns whether the control will beep on invalid input (false = No Beep, true = Beep).
+     * 
+     */
     public boolean isBeep(){
         try {
             return bbjDateEditBox.getBeep();
@@ -49,6 +63,11 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
         return false;
     }
 
+    /**
+     * This method returns the caret position in the DateEditBox control.
+     * 
+     * @returns Returns the position of the caret in the BBjInputD control.
+     */
     public int getCaretPosition(){
         try {
             return bbjDateEditBox.getCaretPosition();
@@ -68,6 +87,11 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
         return null;
     }
 
+    /**
+     * This method returns the number of the last error generated in the DateEditBox control.
+     * 
+     * @returns Returns the position of the caret in the BBjInputD control.
+     */
     public int getError(){
         try {
             return bbjDateEditBox.getError();
@@ -211,6 +235,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
         return null;
     }
 
+    @Override
     public boolean isEditable(){
         try {
             return bbjDateEditBox.isEditable();
@@ -272,6 +297,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
         return this; 
     }
     
+    @Override
     public DateEditBox setEditable(boolean editable){
         try {
             bbjDateEditBox.setEditable(editable);
@@ -433,7 +459,7 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
     }
 
     public DateEditBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse.toString());
+        super.setControlExpanse(expanse);
         return this;
     }
 
@@ -455,7 +481,6 @@ public final class DateEditBox extends AbstractDwcControl implements IThemable {
         return this;
     }
 
-    @Override
     public DateEditBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
