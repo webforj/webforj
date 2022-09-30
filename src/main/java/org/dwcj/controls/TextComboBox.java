@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IEditable{
+public final class TextComboBox extends AbstractDwclistControl implements IReadOnly{
 
     private BBjListEdit bbjListEdit;
 
@@ -131,7 +131,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IEdita
     }
 
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         try {
             return bbjListEdit.isEditable();
         } catch (BBjException e) {
@@ -157,7 +157,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IEdita
     }
 
     @Override
-    public TextComboBox setEditable(boolean edit) {
+    public TextComboBox setReadOnly(boolean edit) {
         try {
             bbjListEdit.setEditable(edit);
         } catch (BBjException e) {

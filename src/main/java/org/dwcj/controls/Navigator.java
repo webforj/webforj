@@ -17,7 +17,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcControl implements IEditable{
+public final class Navigator extends AbstractDwcControl implements IReadOnly{
 
     private BBjNavigator bbjNavigator;
 
@@ -57,7 +57,7 @@ public final class Navigator extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         try {
             return bbjNavigator.isEditable();
         } catch (BBjException e) {
@@ -67,7 +67,7 @@ public final class Navigator extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public Navigator setEditable(boolean editable) {
+    public Navigator setReadOnly(boolean editable) {
         try {
             bbjNavigator.setEditable(editable);
         } catch (BBjException e) {

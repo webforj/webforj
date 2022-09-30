@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MultilineEdit extends AbstractDwcControl implements IEditable {
+public final class MultilineEdit extends AbstractDwcControl implements IReadOnly {
 
     private BBjCEdit bbjCEdit;
 
@@ -324,7 +324,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IEditable
      * @return Returns whether the text is editable in the control (false = Not Editable, true = Editable).
      */
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         try {
             return bbjCEdit.isEditable();
         } catch (BBjException e) {
@@ -364,7 +364,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IEditable
      * @return Returns this
      */
     @Override
-    public MultilineEdit setEditable(boolean editable) {
+    public MultilineEdit setReadOnly(boolean editable) {
         try {
             bbjCEdit.setEditable(editable);
         } catch (BBjException e) {

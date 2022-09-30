@@ -13,7 +13,7 @@ import org.dwcj.events.sinks.RadioButtonCheckEventSink;
 import java.util.function.Consumer;
 
 
-public final class RadioButton extends AbstractDwcControl implements IEditable{
+public final class RadioButton extends AbstractDwcControl implements IReadOnly{
 
     private BBjRadioButton bbjRadioButton;
 
@@ -69,7 +69,7 @@ public final class RadioButton extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         try {
             return bbjRadioButton.isEditable();
         } catch (BBjException e) {
@@ -88,7 +88,7 @@ public final class RadioButton extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public RadioButton setEditable(boolean editable) {
+    public RadioButton setReadOnly(boolean editable) {
         try {
             bbjRadioButton.setEditable(editable);
         } catch (BBjException e) {

@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements IEditable {
+public final class CheckBox extends AbstractDwcControl implements IReadOnly {
 
     private Consumer<CheckBoxChangeEvent> callback;
 
@@ -70,7 +70,7 @@ public final class CheckBox extends AbstractDwcControl implements IEditable {
      * @return false if not editable, true if editable.
      */
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         //todo: why could an exception be thrown?
         try {
             return ((BBjCheckBox) this.ctrl).isEditable();
@@ -102,7 +102,7 @@ public final class CheckBox extends AbstractDwcControl implements IEditable {
      * @return this
      */
     @Override
-    public CheckBox setEditable(boolean editable) {
+    public CheckBox setReadOnly(boolean editable) {
         //todo: why could an exception be thrown?
         try {
             ((BBjCheckBox) this.ctrl).setEditable(editable);

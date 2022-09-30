@@ -8,7 +8,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
-public final class TextBox extends AbstractDwcControl implements IEditable{
+public final class TextBox extends AbstractDwcControl implements IReadOnly{
 
     private BBjEditBox bbjEditBox;
 
@@ -83,7 +83,7 @@ public final class TextBox extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public boolean isEditable(){
+    public boolean isReadOnly(){
         try{
             return bbjEditBox.isEditable();
         }
@@ -109,7 +109,7 @@ public final class TextBox extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public TextBox setEditable(boolean editable){
+    public TextBox setReadOnly(boolean editable){
         try{
             bbjEditBox.setEditable(editable);
         }

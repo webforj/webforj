@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
-public class NumericBox extends AbstractDwcControl implements IEditable{
+public class NumericBox extends AbstractDwcControl implements IReadOnly{
 
     private BBjInputN numBox;
 
@@ -241,7 +241,7 @@ public class NumericBox extends AbstractDwcControl implements IEditable{
      * @return Returns whether the text in the control can be edited (false = Not Editable, true = Editable). By default, the text is editable.
      */
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         try {
             return numBox.isEditable();
         } catch (BBjException e) {
@@ -308,7 +308,7 @@ public class NumericBox extends AbstractDwcControl implements IEditable{
      * @return Returns this
      */
     @Override
-    public NumericBox setEditable(boolean editable) {
+    public NumericBox setReadOnly(boolean editable) {
         try {
             numBox.setEditable(editable);
         } catch (BBjException e) {

@@ -11,7 +11,7 @@ import java.io.IOException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class DateEditBox extends AbstractDwcControl implements IEditable{
+public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     
     private BBjInputD bbjDateEditBox;
 
@@ -236,7 +236,7 @@ public final class DateEditBox extends AbstractDwcControl implements IEditable{
     }
 
     @Override
-    public boolean isEditable(){
+    public boolean isReadOnly(){
         try {
             return bbjDateEditBox.isEditable();
         } catch (BBjException e){
@@ -298,7 +298,7 @@ public final class DateEditBox extends AbstractDwcControl implements IEditable{
     }
     
     @Override
-    public DateEditBox setEditable(boolean editable){
+    public DateEditBox setReadOnly(boolean editable){
         try {
             bbjDateEditBox.setEditable(editable);
         } catch (BBjException e){

@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.nio.charset.StandardCharsets;
 
-public final class StringEditBox extends AbstractDwcControl implements IEditable{
+public final class StringEditBox extends AbstractDwcControl implements IReadOnly{
 
     String mask;
 
@@ -155,7 +155,7 @@ public final class StringEditBox extends AbstractDwcControl implements IEditable
     }
 
     @Override
-    public boolean isEditable() {
+    public boolean isReadOnly() {
         try {
             return bbjInputE.isEditable();
         } catch (BBjException e) {
@@ -182,7 +182,7 @@ public final class StringEditBox extends AbstractDwcControl implements IEditable
     }
 
     @Override
-    public StringEditBox setEditable(boolean editable) {
+    public StringEditBox setReadOnly(boolean editable) {
         try {
             bbjInputE.setEditable(editable);
         } catch (BBjException e) {
