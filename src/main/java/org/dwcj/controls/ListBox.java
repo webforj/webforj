@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.listbox.ListBoxSelectEvent;
-import org.dwcj.events.sinks.listbox.BBjListBoxSelectEventSink;
+import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -205,7 +205,7 @@ public final class ListBox extends AbstractDwclistControl {
      * @return ListBox
      */
     public ListBox onSelect(Consumer<ListBoxSelectEvent> callback) {
-        new BBjListBoxSelectEventSink(this, callback);
+        new ListBoxSelectEventSink(this, callback);
         return this;
     }
 

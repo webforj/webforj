@@ -4,17 +4,17 @@ import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.events.CheckBoxCheckEvent;
-import org.dwcj.events.sinks.BBjCheckBoxCheckEventSink;
+import org.dwcj.events.CheckBoxChangeEvent;
+import org.dwcj.events.sinks.CheckBoxCheckEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcControl implements IEditable {
 
-    private Consumer<CheckBoxCheckEvent> callback;
+    private Consumer<CheckBoxChangeEvent> callback;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
@@ -41,12 +41,12 @@ public final class CheckBox extends AbstractDwcControl implements IEditable {
     /**
      * register an event callback for a checkOn or checkOff event
      *
-     * @param callback A method to receive the onCheck event
+     * @param callback A method to receive the onChange event
      * @return
      */
-    public CheckBox onCheck(Consumer<CheckBoxCheckEvent> callback) {
+    public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
         this.callback = callback;
-        new BBjCheckBoxCheckEventSink(this, callback);
+        new CheckBoxCheckEventSink(this, callback);
         return this;
     }
 
@@ -123,7 +123,7 @@ public final class CheckBox extends AbstractDwcControl implements IEditable {
         return this;
     }
 
-    public CheckBox setSelected(boolean selected) {
+    public CheckBox setChecked(boolean selected) {
         //todo: why could an exception be thrown?
         try {
             ((BBjCheckBox) this.ctrl).setSelected(selected);
@@ -132,7 +132,6 @@ public final class CheckBox extends AbstractDwcControl implements IEditable {
         }
         return this;
     }
-
 
 
 
@@ -164,5 +163,7 @@ public final class CheckBox extends AbstractDwcControl implements IEditable {
         super.setID(id);
         return this;
     }
+
+
 
 }

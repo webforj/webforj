@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.combobox.ComboBoxChangeEvent;
 import org.dwcj.events.combobox.ComboBoxSelectEvent;
-import org.dwcj.events.sinks.combobox.BBjComboBoxSelectEventSink;
+import org.dwcj.events.sinks.combobox.ComboBoxSelectEventSink;
 import org.dwcj.events.sinks.combobox.ComboBoxChangeEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
@@ -24,7 +24,7 @@ public final class ComboBox extends AbstractDwclistControl {
 
     private BBjListButton bbjListButton;
 
-    private BBjComboBoxSelectEventSink comboBoxSelectEventSink;
+    private ComboBoxSelectEventSink comboBoxSelectEventSink;
 
     private ComboBoxChangeEventSink comboBoxChangeEventSink;
 
@@ -168,7 +168,7 @@ public final class ComboBox extends AbstractDwclistControl {
      */
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
         if (this.comboBoxSelectEventSink==null)
-            this.comboBoxSelectEventSink = new BBjComboBoxSelectEventSink(this, callback);
+            this.comboBoxSelectEventSink = new ComboBoxSelectEventSink(this, callback);
         else this.comboBoxSelectEventSink.addCallback(callback);
         return this;
     }

@@ -6,20 +6,20 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.CheckBox;
-import org.dwcj.events.CheckBoxCheckEvent;
+import org.dwcj.events.CheckBoxChangeEvent;
 
 import java.util.function.Consumer;
 
-public final class BBjCheckBoxCheckEventSink {
+public final class CheckBoxCheckEventSink {
 
-    private final Consumer<CheckBoxCheckEvent> target;
+    private final Consumer<CheckBoxChangeEvent> target;
 
     private final CheckBox checkBox;
 
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
-    public BBjCheckBoxCheckEventSink(CheckBox cb, Consumer<CheckBoxCheckEvent> target) {
+    public CheckBoxCheckEventSink(CheckBox cb, Consumer<CheckBoxChangeEvent> target) {
         this.target = target;
         this.checkBox = cb;
 
@@ -38,13 +38,13 @@ public final class BBjCheckBoxCheckEventSink {
 
     @SuppressWarnings("java:S1172")
     public void checkOffEvent(BBjCheckOffEvent ev) { //NOSONAR
-        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this.checkBox, false);
+        CheckBoxChangeEvent dwcEv = new CheckBoxChangeEvent(this.checkBox, false);
         target.accept(dwcEv);
     }
 
     @SuppressWarnings("java:S1172")
     public void checkOnEvent(BBjCheckOnEvent ev) { //NOSONAR
-        CheckBoxCheckEvent dwcEv = new CheckBoxCheckEvent(this.checkBox, true);
+        CheckBoxChangeEvent dwcEv = new CheckBoxChangeEvent(this.checkBox, true);
         target.accept(dwcEv);
     }
 

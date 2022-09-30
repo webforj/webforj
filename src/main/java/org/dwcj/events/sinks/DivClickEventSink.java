@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class BBjDivClickEventSink {
+public final class DivClickEventSink {
 
     private ArrayList<Consumer<DivClickEvent>> targets;
     private final Div div;
 
     @SuppressWarnings({"static-access"})
-    public BBjDivClickEventSink(Div div, Consumer<DivClickEvent> callback) {
+    public DivClickEventSink(Div div, Consumer<DivClickEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.div = div;

@@ -18,7 +18,7 @@ public final class Button extends AbstractDwcControl {
     private ButtonPushEventSink buttonPushEventSink;
 
     public static enum Expanse{
-        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+        LARGE(), MEDIUM, SMALL, XLARGE, XSMALL
     }
 
     public static enum Theme{

@@ -9,13 +9,13 @@ import org.dwcj.events.PageLoadedEvent;
 
 import java.util.function.Consumer;
 
-public final class BBjPageLoadedEventSink {
+public final class PageLoadedEventSink {
 
     private final Consumer<PageLoadedEvent> target;
     private final HtmlContainer container;
 
     @SuppressWarnings({"static-access"})
-    public BBjPageLoadedEventSink(HtmlContainer htmlv, Consumer<PageLoadedEvent> target) {
+    public PageLoadedEventSink(HtmlContainer htmlv, Consumer<PageLoadedEvent> target) {
         this.target = target;
 
         BBjControl bbjctrl = null;

@@ -8,13 +8,13 @@ import org.dwcj.events.BBjGridExWidgetSelectEvent;
 
 import java.util.function.Consumer;
 
-public final class BBjGridExWidgetSelectEventSink {
+public final class GridExWidgetSelectEventSink {
 
     private final Consumer<BBjGridExWidgetSelectEvent> target;
     private final BBjGridExWidget grid;
 
     @SuppressWarnings({"static-access"})
-    public BBjGridExWidgetSelectEventSink(BBjGridExWidget grid, Consumer<BBjGridExWidgetSelectEvent> target) {
+    public GridExWidgetSelectEventSink(BBjGridExWidget grid, Consumer<BBjGridExWidgetSelectEvent> target) {
         this.target = target;
         this.grid = grid;
 

@@ -8,7 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.events.BBjGridExWidgetSelectEvent;
-import org.dwcj.events.sinks.BBjGridExWidgetSelectEventSink;
+import org.dwcj.events.sinks.GridExWidgetSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public final class BBjGridExWidget extends AbstractDwcControl {
      * @return - the widget itself
      */
     public BBjGridExWidget onSelect(Consumer<BBjGridExWidgetSelectEvent> callback) {
-        new BBjGridExWidgetSelectEventSink(this, callback);
+        new GridExWidgetSelectEventSink(this, callback);
         return this;
     }
 

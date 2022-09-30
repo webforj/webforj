@@ -7,9 +7,17 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import org.dwcj.events.RadioButtonCheckEvent;
+import org.dwcj.events.sinks.RadioButtonCheckEventSink;
+
+import java.util.function.Consumer;
+
+
 public final class RadioButton extends AbstractDwcControl implements IEditable{
 
     private BBjRadioButton bbjRadioButton;
+
+    private Consumer<RadioButtonCheckEvent> callback;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
@@ -26,6 +34,18 @@ public final class RadioButton extends AbstractDwcControl implements IEditable{
         } catch (Exception e)  {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * register an event callback for a checkOn or checkOff event
+     *
+     * @param callback A method to receive the onCheck event
+     * @return
+     */
+    public RadioButton onCheck(Consumer<RadioButtonCheckEvent> callback) {
+        this.callback = callback;
+        new RadioButtonCheckEventSink(this, callback);
+        return this;
     }
 
     public int getButtonID() {

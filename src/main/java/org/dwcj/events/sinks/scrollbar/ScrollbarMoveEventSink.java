@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class BBjScrollbarMoveEventSink {
+public class ScrollbarMoveEventSink {
 
     private ArrayList<Consumer<ScrollbarMoveEvent>> targets;
 
@@ -19,7 +19,7 @@ public class BBjScrollbarMoveEventSink {
 
 
     @SuppressWarnings({"static-access"})
-    public BBjScrollbarMoveEventSink(ScrollBar sb, Consumer<ScrollbarMoveEvent> callback) {
+    public ScrollbarMoveEventSink(ScrollBar sb, Consumer<ScrollbarMoveEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.scrollBar = sb;

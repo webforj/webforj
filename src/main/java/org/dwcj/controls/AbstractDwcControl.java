@@ -91,21 +91,21 @@ public abstract class AbstractDwcControl implements IControl {
 
     @Override
     public IControl setID(String id){
-        try{
-            ctrl.setAttribute("id", id);
-            return this;
-        } catch (BBjException e){
-            e.printStackTrace();
-        }
+        this.setAttribute("id", id);
         return this;
     }
 
     @Override
     public String getID(){
-        try{
-            return ctrl.getAttribute("id");
-        } catch (BBjException e){
-            e.printStackTrace();
+        if(this.attributes.containsKey("id")){
+            return getAttribute("id");
+        }
+        if(this.ctrl != null){
+            try{
+                return ctrl.getAttribute("id");
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return null;
     }

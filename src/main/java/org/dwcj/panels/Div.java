@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.events.DivClickEvent;
-import org.dwcj.events.sinks.BBjDivClickEventSink;
+import org.dwcj.events.sinks.DivClickEventSink;
 
 import java.util.function.Consumer;
 
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public final class Div extends AbstractDwcjPanel {
 
-    private BBjDivClickEventSink divClickEventSink;
+    private DivClickEventSink divClickEventSink;
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -38,7 +38,7 @@ public final class Div extends AbstractDwcjPanel {
      */
     public Div onClick(Consumer<DivClickEvent> callback) {
         if (this.divClickEventSink ==null)
-            this.divClickEventSink = new BBjDivClickEventSink(this, callback);
+            this.divClickEventSink = new DivClickEventSink(this, callback);
         else this.divClickEventSink.addCallback(callback);
         return this;
     }

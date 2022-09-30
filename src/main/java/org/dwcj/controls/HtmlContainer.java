@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.JavascriptEvent;
 import org.dwcj.events.PageLoadedEvent;
-import org.dwcj.events.sinks.BBjNativeJavascriptEventSink;
-import org.dwcj.events.sinks.BBjPageLoadedEventSink;
+import org.dwcj.events.sinks.NativeJavascriptEventSink;
+import org.dwcj.events.sinks.PageLoadedEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.awt.*;
@@ -202,7 +202,7 @@ public final class HtmlContainer extends AbstractDwcControl {
      * @return the control itself
      */
     public HtmlContainer onPageLoaded(Consumer<PageLoadedEvent> callback) {
-        new BBjPageLoadedEventSink(this, callback);
+        new PageLoadedEventSink(this, callback);
         return this;
     }
 
@@ -213,7 +213,7 @@ public final class HtmlContainer extends AbstractDwcControl {
      * @return the control itself
      */
     public HtmlContainer onJavascriptEvent(Consumer<JavascriptEvent> callback) {
-        new BBjNativeJavascriptEventSink(this, callback);
+        new NativeJavascriptEventSink(this, callback);
         return this;
     }
 

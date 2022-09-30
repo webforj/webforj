@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class BBjListBoxSelectEventSink {
+public final class ListBoxSelectEventSink {
 
     private final ArrayList<Consumer<ListBoxSelectEvent>> targets;
 
     private final ListBox listBox;
 
     @SuppressWarnings({"static-access"})
-    public BBjListBoxSelectEventSink(ListBox listBox, Consumer<ListBoxSelectEvent> callback) {
+    public ListBoxSelectEventSink(ListBox listBox, Consumer<ListBoxSelectEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.listBox = listBox;
