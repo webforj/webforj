@@ -18,7 +18,13 @@ public final class Button extends AbstractDwcControl {
     private ButtonPushEventSink buttonPushEventSink;
 
     public static enum Expanse{
-        LARGE(), MEDIUM, SMALL, XLARGE, XSMALL
+        LARGE("l"), MEDIUM("m"), SMALL("s"), XLARGE("xl"), XSMALL("xs");
+
+        public final String expanse;
+
+        private Expanse(String expanse){
+            this.expanse = expanse;
+        }
     }
 
     public static enum Theme{

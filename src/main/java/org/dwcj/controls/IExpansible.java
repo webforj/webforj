@@ -11,5 +11,4 @@ public interface IExpansible {
      */
     IExpansible setExpanse(Enum expanse);
 
-
 }

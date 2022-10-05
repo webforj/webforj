@@ -69,13 +69,13 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
     }
 
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         try {
             return bbjRadioButton.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
-            return false;
         }
+        return null;
     }
 
     public boolean isSelected() {

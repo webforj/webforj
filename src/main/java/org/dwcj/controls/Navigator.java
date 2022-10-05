@@ -57,13 +57,13 @@ public final class Navigator extends AbstractDwcControl implements IReadOnly{
     }
 
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         try {
             return bbjNavigator.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
-            return false;
         }
+        return null;
     }
 
     @Override

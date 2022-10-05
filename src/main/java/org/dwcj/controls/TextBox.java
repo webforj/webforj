@@ -83,14 +83,14 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
     }
 
     @Override
-    public boolean isReadOnly(){
+    public Boolean isReadOnly(){
         try{
             return bbjEditBox.isEditable();
         }
         catch(BBjException e){
             e.printStackTrace();
         }
-        return true;
+        return null;
     }
     
     public boolean isPasswordVisible(){

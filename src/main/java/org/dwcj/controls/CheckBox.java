@@ -3,6 +3,8 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.CheckBoxChangeEvent;
 import org.dwcj.events.sinks.CheckBoxCheckEventSink;
@@ -12,11 +14,25 @@ import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcControl implements IReadOnly {
 
-    private Consumer<CheckBoxChangeEvent> callback;
+    private Consumer<CheckBoxChangeEvent> callback = null;
+
+    public static enum HorizontalTextPosition{
+        RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
+        
+        public final Integer position;
+        
+        private HorizontalTextPosition(Integer position){
+            this.position = position;
+        }
+    }
+    HorizontalTextPosition position = null;
+    Boolean checked = null;
+
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
+
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -24,7 +40,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
-            catchUp();
+            this.catchUp();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,8 +61,12 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      * @return
      */
     public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
+        App.consoleLog("Hello");
+        if(this.ctrl != null){
+            new CheckBoxCheckEventSink(this, callback);
+        }
         this.callback = callback;
-        new CheckBoxCheckEventSink(this, callback);
+        
         return this;
     }
 
@@ -55,13 +75,8 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      *
      * @return This method returns the horizontal position of the text in the CheckBox control.
      */
-    public int getHorizontalTextPosition(){
-        try {
-            return ((BBjCheckBox) this.ctrl).getHorizontalTextPosition();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return -1;
+    public HorizontalTextPosition getHorizontalTextPosition(){
+        return this.position;
     }
 
     /**
@@ -70,14 +85,10 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      * @return false if not editable, true if editable.
      */
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         //todo: why could an exception be thrown?
-        try {
-            return ((BBjCheckBox) this.ctrl).isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return false;
+            // return ((BBjCheckBox) this.ctrl).isEditable();
+        return super.isReadOnly();
     }
 
     /**
@@ -85,7 +96,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      * 
      * @return false if not checked, true if checked.
      */
-    public boolean isSelected() {
+    public boolean isChecked() {
         //todo: why could an exception be thrown?
         try {
             return ((BBjCheckBox) this.ctrl).isSelected();
@@ -104,32 +115,41 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
     @Override
     public CheckBox setReadOnly(boolean editable) {
         //todo: why could an exception be thrown?
-        try {
-            ((BBjCheckBox) this.ctrl).setEditable(editable);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                ((BBjCheckBox) this.ctrl).setEditable(editable);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        super.setReadOnly(editable);
         return this;
     }
 
   
-    public CheckBox setHorizontalTextPosition(int position) {
+    public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
         //todo: why could an exception be thrown?
-        try {
-            ((BBjCheckBox) this.ctrl).setHorizontalTextPosition(position);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                ((BBjCheckBox) this.ctrl).setHorizontalTextPosition(position.position);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.position = position;
         return this;
     }
 
-    public CheckBox setChecked(boolean selected) {
+    public CheckBox setChecked(Boolean selected) {
         //todo: why could an exception be thrown?
-        try {
-            ((BBjCheckBox) this.ctrl).setSelected(selected);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                ((BBjCheckBox) this.ctrl).setSelected(selected);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.checked = selected;
         return this;
     }
 
@@ -164,6 +184,26 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
         return this;
     }
 
+    @Override
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        if (this.caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
+
+        super.catchUp();
+        
+        if(this.position != null){
+            this.setHorizontalTextPosition(this.position);
+        }
+        if(this.checked != null){
+            this.setChecked(this.checked);
+        } 
+        if(this.callback != null){
+            this.onChange(this.callback);
+        }
+
+        this.caughtUp = true;
+
+    }
 
 
 }

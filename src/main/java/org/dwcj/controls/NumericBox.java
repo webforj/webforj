@@ -241,13 +241,13 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly{
      * @return Returns whether the text in the control can be edited (false = Not Editable, true = Editable). By default, the text is editable.
      */
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         try {
             return numBox.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     /**

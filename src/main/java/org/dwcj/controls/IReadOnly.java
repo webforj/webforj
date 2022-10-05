@@ -4,6 +4,6 @@ public interface IReadOnly {
     
     IReadOnly setReadOnly(boolean editable);
 
-    boolean isReadOnly();
+    Boolean isReadOnly();
 
 }

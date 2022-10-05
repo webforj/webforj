@@ -236,13 +236,13 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     }
 
     @Override
-    public boolean isReadOnly(){
+    public Boolean isReadOnly(){
         try {
             return bbjDateEditBox.isEditable();
         } catch (BBjException e){
             e.printStackTrace();
         } 
-        return true;
+        return null;
     }
 
     public boolean isValid(){

@@ -155,13 +155,13 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
     }
 
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         try {
             return bbjInputE.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     public void restore() {

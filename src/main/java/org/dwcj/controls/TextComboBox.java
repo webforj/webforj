@@ -131,13 +131,13 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     }
 
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         try {
             return bbjListEdit.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
-            return false;
         }
+        return null;
     }
 
     public void openList() {

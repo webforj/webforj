@@ -324,13 +324,13 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @return Returns whether the text is editable in the control (false = Not Editable, true = Editable).
      */
     @Override
-    public boolean isReadOnly() {
+    public Boolean isReadOnly() {
         try {
             return bbjCEdit.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     /**

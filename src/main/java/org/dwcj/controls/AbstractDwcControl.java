@@ -29,6 +29,7 @@ public abstract class AbstractDwcControl implements IControl {
     private Boolean visible = null;
     private Boolean enabled = null;
     private String tooltipText = "";
+    private Boolean readOnly = null;
     
 
     protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
@@ -39,7 +40,7 @@ public abstract class AbstractDwcControl implements IControl {
     private final List<String> cssClasses = new ArrayList<>();
 
     private final Map<String, Object> userData = new HashMap<>();
-    private boolean caughtUp = false;
+    protected boolean caughtUp = false;
 
 
     /**
@@ -124,6 +125,26 @@ public abstract class AbstractDwcControl implements IControl {
         }
         //fall back to the internal list
         return attributes.get(attribute);
+    }
+
+    
+    protected AbstractDwcControl setReadOnly(boolean readOnly){
+        if(ctrl != null){
+            try{
+                ctrl.setEnabled(readOnly);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+            this.readOnly = readOnly;
+        }
+        return this;
+    }
+
+    protected Boolean isReadOnly(){
+        if(ctrl != null){
+            return this.readOnly;
+        }
+        return null;
     }
 
     /*
@@ -423,9 +444,13 @@ public abstract class AbstractDwcControl implements IControl {
             this.setVisible(this.visible);
         }
 
-        // if (this.enabled != null) {
-        //     this.setEnabled(this.enabled);
-        // }
+        if (this.enabled != null) {
+            this.setEnabled(this.enabled);
+        }
+
+        if (this.readOnly != null) {
+            this.setReadOnly(this.readOnly);
+        }
 
         this.caughtUp = true;
 
