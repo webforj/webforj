@@ -33,6 +33,18 @@ public final class Button extends AbstractDwcControl {
         OUTLINED_WARNING
     }
 
+    public static enum TextVertialAlignment{
+        TOP(1), CENTER(0), BOTTOM(3);
+
+        public final Integer alignment;
+
+        private TextVertialAlignment(Integer alignment){
+            this.alignment = alignment;
+        }
+    }
+
+    TextVertialAlignment alignment = TextVertialAlignment.CENTER;
+
     /**
      * create a Button
      */
@@ -91,6 +103,10 @@ public final class Button extends AbstractDwcControl {
         return false;
     }
 
+    public TextVertialAlignment getVerticalAlignment(){
+        return this.alignment;
+    }
+
     /**
      * Mutator for whether or not the button is disabled on click
      * @param disable Boolean value
@@ -102,6 +118,18 @@ public final class Button extends AbstractDwcControl {
             btn.setDisableOnClick(disable);
         } catch (BBjException e) {
             e.printStackTrace();
+        }
+        return this;
+    }
+
+    public Button setVerticalAlignment(TextVertialAlignment alignment){
+        BBjButton btn = (BBjButton) this.ctrl;
+        if(this.ctrl != null){
+            try{
+                btn.setVerticalAlignment(alignment.alignment);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this;
     }

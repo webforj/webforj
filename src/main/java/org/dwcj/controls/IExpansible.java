@@ -9,6 +9,6 @@ public interface IExpansible {
      * @param expanse the expanse
      * @return the control itself
      */
-    IExpansible setExpanse(Enum expanse);
+    IExpansible setExpanse(Enum<?> expanse);
 
 }

@@ -24,8 +24,8 @@ public abstract class AbstractDwcControl implements IControl {
 
     protected BBjControl ctrl;
     private String text = "";
-    private Enum theme;
-    private Enum expanse;
+    private Enum<?> theme;
+    private Enum<?> expanse;
     private Boolean visible = null;
     private Boolean enabled = null;
     private String tooltipText = "";
@@ -147,13 +147,18 @@ public abstract class AbstractDwcControl implements IControl {
         return null;
     }
 
+    public Enum<?> getExpanse(){
+        return this.expanse;
+    }
+
     /*
     ------------------------------------------------------------
     internal protected methods that implement internal behaviour
     ------------------------------------------------------------
      */
 
-    protected void setControlExpanse(Enum expanse) {
+
+    protected void setControlExpanse(Enum<?> expanse) {
         if (ctrl != null) try {
             switch (expanse.toString()) {
                 case "LARGE":
@@ -213,7 +218,7 @@ public abstract class AbstractDwcControl implements IControl {
     // }
 
 
-    protected void setControlTheme(Enum theme) {
+    protected void setControlTheme(Enum<?> theme) {
         if (ctrl != null) try {
             switch (theme.toString()) {
                 case "DEFAULT":

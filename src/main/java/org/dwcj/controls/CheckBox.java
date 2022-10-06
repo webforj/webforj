@@ -12,10 +12,12 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements IReadOnly {
+public final class CheckBox extends AbstractDwcControl implements IReadOnly, IExpansible {
 
-    private Consumer<CheckBoxChangeEvent> callback = null;
-
+    
+    /*
+    * These values represent the underlying integer constants in 
+    */
     public static enum HorizontalTextPosition{
         RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
         
@@ -25,13 +27,16 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
             this.position = position;
         }
     }
-    HorizontalTextPosition position = null;
-    Boolean checked = null;
-
-
+    
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
+    
+    private Consumer<CheckBoxChangeEvent> callback = null;
+    HorizontalTextPosition position = HorizontalTextPosition.RIGHT;
+    Boolean checked = null;
+
+
 
 
     @Override
@@ -61,7 +66,6 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      * @return
      */
     public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
-        App.consoleLog("Hello");
         if(this.ctrl != null){
             new CheckBoxCheckEventSink(this, callback);
         }
@@ -98,10 +102,12 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      */
     public boolean isChecked() {
         //todo: why could an exception be thrown?
-        try {
-            return ((BBjCheckBox) this.ctrl).isSelected();
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                return ((BBjCheckBox) this.ctrl).isSelected();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
@@ -140,22 +146,22 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
         return this;
     }
 
-    public CheckBox setChecked(Boolean selected) {
+    public CheckBox setChecked(Boolean checked) {
         //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
-                ((BBjCheckBox) this.ctrl).setSelected(selected);
+                ((BBjCheckBox) this.ctrl).setSelected(checked);
             } catch (BBjException e) {
                 e.printStackTrace();
             }
         }
-        this.checked = selected;
+        this.checked = checked;
         return this;
     }
 
 
-
-    public CheckBox setExpanse(Expanse expanse) {
+    @Override
+    public CheckBox setExpanse(Enum<?> expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
