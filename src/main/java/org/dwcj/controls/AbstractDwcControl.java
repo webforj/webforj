@@ -180,7 +180,7 @@ public abstract class AbstractDwcControl implements IControl {
                     ctrl.setAttribute(STR_EXPANSE, "xxs");
                     break;
                 case "XXXSMALL":
-                    ctrl.setAttribute(STR_EXPANSE, "xxs");
+                    ctrl.setAttribute(STR_EXPANSE, "xxxs");
                     break;
                 default:
                     //noop

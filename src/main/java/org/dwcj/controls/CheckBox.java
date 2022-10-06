@@ -12,7 +12,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements IReadOnly, IExpansible {
+public final class CheckBox extends AbstractDwcControl implements IReadOnly {
 
     
     /*
@@ -50,14 +50,6 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IEx
             e.printStackTrace();
         }
     }
-
-    /*
-     * == Still likely need to implement some of the other 
-     * == methods outlined in the BBj documentation, but wanted 
-     * == to check and see which of these methods were 
-     * == going to be necessary before implementing them here.
-     * -MH
-     */
 
     /**
      * register an event callback for a checkOn or checkOff event
@@ -159,9 +151,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IEx
         return this;
     }
 
-
-    @Override
-    public CheckBox setExpanse(Enum<?> expanse) {
+    public CheckBox setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
@@ -206,9 +196,6 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IEx
         if(this.callback != null){
             this.onChange(this.callback);
         }
-
-        this.caughtUp = true;
-
     }
 
 
