@@ -14,16 +14,21 @@ import java.util.*;
 public abstract class AbstractDwcControl implements IControl {
 
 
-    //Members implemented for interfacing with BBj methods/implementations
+    /*=====================================================================================
+     * Members implemented for interfacing with BBj methods/implementations
+     *=====================================================================================
+     */
     public static final String STR_EXPANSE = "expanse";
     public static final String STR_THEME = "theme";
     protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
     protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
     protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
+    
 
-    
-    
-    //Members common to all inheriting controls
+    /*=====================================================================================
+     * Members common to all inheriting controls
+     *=====================================================================================
+     */
     protected BBjControl ctrl;
     private String text = "";
     private Boolean visible = null;
@@ -34,11 +39,20 @@ public abstract class AbstractDwcControl implements IControl {
     private final List<String> cssClasses = new ArrayList<>();
     private final Map<String, Object> userData = new HashMap<>();
     
-    //Theme and Expanse variables which need to be enumerated in their respective child components
+
+    /*=====================================================================================
+     * Theme and Expanse variables which need to be enumerated in their respective child 
+     * components
+     *=====================================================================================
+     */
     private Enum<?> theme;
     private Enum<?> expanse;
 
-    //Interface-controlled members
+
+    /*=====================================================================================
+     * Interface-controlled members
+     *=====================================================================================
+     */
     protected Boolean readOnly = null;
     protected Boolean focusable = null;
     protected Boolean tabTraversable = null;
@@ -73,14 +87,10 @@ public abstract class AbstractDwcControl implements IControl {
 
 
 
-    /*
-    ------------------------------------------------------------
-    internal protected methods that implement internal behaviour
-    ------------------------------------------------------------
-     */
-
-    /* Created abstract methods for abstract class setter methods to be
-     * overridden in child classes to enable method chaining
+    /*=====================================================================================
+     * Abstract setter methods to be overridden in child components to allow for method
+     * chaining, with the control versions implemented beneath
+     *=====================================================================================
      */
     public abstract AbstractDwcControl setText(String text);
     public abstract AbstractDwcControl setVisible(Boolean visible);
@@ -281,12 +291,11 @@ public abstract class AbstractDwcControl implements IControl {
 
 
 
-
-
-
-
-
-
+    /*=====================================================================================
+     * Implementation to allow child controls to utilize base class Theme and Expanse
+     * setters with their own option-appropriate Enums.
+     *=====================================================================================
+     */
 
     protected void setControlTheme(Enum<?> theme) {
         if (ctrl != null) try {
