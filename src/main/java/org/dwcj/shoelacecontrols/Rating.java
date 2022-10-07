@@ -157,20 +157,56 @@ public final class Rating extends AbstractShoelaceControl {
     }
 
     @Override
-    public Rating setStyle(String property, String value) {
-        setControlStyle(property,value);
+    public Rating setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
     @Override
+    public Rating setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public Rating setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public Rating setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public Rating setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public Rating setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    @Override
+    public Rating setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    @Override
     public Rating addClass(String selector) {
-        addControlCssClass(selector);
+        super.addControlCssClass(selector);
         return this;
     }
 
     @Override
     public Rating removeClass(String selector) {
-        removeControlCssClass(selector);
+        super.removeControlCssClass(selector);
         return this;
     }
 

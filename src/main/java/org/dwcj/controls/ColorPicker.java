@@ -28,8 +28,41 @@ public final class ColorPicker extends AbstractDwcControl {
         }
     }
 
-    public ColorPicker setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+    @Override
+    public ColorPicker setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public ColorPicker setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public ColorPicker setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public ColorPicker setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public ColorPicker setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public ColorPicker setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -38,7 +71,7 @@ public final class ColorPicker extends AbstractDwcControl {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public ColorPicker addClass(String selector) {
         super.addControlCssClass(selector);
@@ -51,20 +84,17 @@ public final class ColorPicker extends AbstractDwcControl {
         return this;
     }
 
+
+
+
+
+    public ColorPicker setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public ColorPicker setTheme(Theme theme) {
         super.setControlTheme(theme);
-        return this;
-    }
-
-    @Override
-    public ColorPicker setText(String text) {
-        super.setText(text);
-        return this;
-    }
-
-    @Override
-    public ColorPicker setID(String id){
-        super.setID(id);
         return this;
     }
     

@@ -83,8 +83,13 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
     @Override
     public Boolean isReadOnly() {
         //todo: why could an exception be thrown?
-            // return ((BBjCheckBox) this.ctrl).isEditable();
-        return super.isReadOnly();
+        BBjCheckBox cbox = (BBjCheckBox) this.ctrl;
+        try{
+            return cbox.isEditable();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -111,7 +116,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
      * @return this
      */
     @Override
-    public CheckBox setReadOnly(boolean editable) {
+    public CheckBox setReadOnly(Boolean editable) {
         //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
@@ -120,7 +125,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
                 e.printStackTrace();
             }
         }
-        super.setReadOnly(editable);
+        this.setReadOnly(editable);
         return this;
     }
 
@@ -156,12 +161,53 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
         return this;
     }
 
+
+
+
+
+
+    @Override
+    public CheckBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public CheckBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public CheckBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public CheckBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public CheckBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public CheckBox setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     @Override
     public CheckBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public CheckBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -171,12 +217,6 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly {
     @Override
     public CheckBox removeClass(String selector) {
         super.removeControlCssClass(selector);
-        return this;
-    }
-
-    @Override
-    public CheckBox setID(String id){
-        super.setID(id);
         return this;
     }
 

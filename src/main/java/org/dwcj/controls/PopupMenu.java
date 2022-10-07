@@ -339,23 +339,6 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
         }
     }
 
-    @Override
-    public PopupMenu setStyle(String property, String value) {
-        super.setControlStyle(property, value);
-        return this;
-    }
-
-    @Override
-    public PopupMenu addClass(String selector) {
-        super.addControlCssClass(selector);
-        return this;
-    }
-
-    @Override
-    public PopupMenu removeClass(String selector) {
-        super.removeControlCssClass(selector);
-        return this;
-    }
 
     @Override
     public IPopupAble addPopupMenu(int id, String title) {
@@ -367,9 +350,61 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
         return null;
     }
 
+
+
+
+
+    @Override
+    public PopupMenu setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public PopupMenu setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public PopupMenu setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public PopupMenu setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public PopupMenu setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
     @Override
     public PopupMenu setID(String id){
-        super.setID(id);
+        super.setControlID(id);
+        return this;
+    }
+
+    @Override
+    public PopupMenu setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    @Override
+    public PopupMenu addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public PopupMenu removeClass(String selector) {
+        super.removeControlCssClass(selector);
         return this;
     }
 }

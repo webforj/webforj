@@ -59,7 +59,7 @@ public final class Button extends AbstractDwcControl {
      *
      */
     public Button(String text) {
-        super.setText(text);
+        super.setControlText(text);
     }
 
     @Override
@@ -134,8 +134,52 @@ public final class Button extends AbstractDwcControl {
         return this;
     }
 
-    public Button setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public Button setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public Button setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public Button setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public Button setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public Button setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public Button setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -144,7 +188,7 @@ public final class Button extends AbstractDwcControl {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public Button addClass(String selector) {
         super.addControlCssClass(selector);
@@ -157,40 +201,15 @@ public final class Button extends AbstractDwcControl {
         return this;
     }
 
+
+    public Button setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public Button setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
-
-    @Override
-    public Button setText(String text) {
-        super.setText(text);
-        return this;
-    }
-
-    @Override
-    public Button setEnabled(boolean enabled) {
-        if (this.ctrl != null) try {
-            ctrl.setEnabled(enabled);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        if (this.ctrl != null) try {
-            return ctrl.isEnabled();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    @Override
-    public Button setID(String id){
-        super.setID(id);
-        return this;
-    }
+        
 }

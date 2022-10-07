@@ -298,7 +298,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     }
     
     @Override
-    public DateEditBox setReadOnly(boolean editable){
+    public DateEditBox setReadOnly(Boolean editable){
         try {
             bbjDateEditBox.setEditable(editable);
         } catch (BBjException e){
@@ -458,8 +458,40 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
         return this; 
     }
 
-    public DateEditBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+    @Override
+    public DateEditBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public DateEditBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public DateEditBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public DateEditBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public DateEditBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public DateEditBox setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -468,7 +500,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public DateEditBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -481,14 +513,17 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
+
+
+
+    public DateEditBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public DateEditBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     } 
 
-    @Override
-    public DateEditBox setID(String id){
-        super.setID(id);
-        return this;
-    }
 }

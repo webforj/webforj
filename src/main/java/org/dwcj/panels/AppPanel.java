@@ -37,4 +37,53 @@ public class AppPanel extends AbstractDwcjPanel {
         return this;
     }
 
+
+
+    @Override
+    public AppPanel setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public AppPanel setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public AppPanel setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public AppPanel setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public AppPanel setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public AppPanel setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+    
+    @Override
+    public AppPanel addClass(String selector) {
+        super.addClass(selector);
+        return this;
+    }
+
+    @Override
+    public AppPanel removeClass(String selector) {
+        super.removeClass(selector);
+        return this;
+    }
 }

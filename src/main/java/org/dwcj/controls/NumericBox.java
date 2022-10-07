@@ -308,7 +308,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly{
      * @return Returns this
      */
     @Override
-    public NumericBox setReadOnly(boolean editable) {
+    public NumericBox setReadOnly(Boolean editable) {
         try {
             numBox.setEditable(editable);
         } catch (BBjException e) {
@@ -486,8 +486,42 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
-    public NumericBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    @Override
+    public NumericBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public NumericBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public NumericBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public NumericBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public NumericBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public NumericBox setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -496,7 +530,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly{
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public NumericBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -509,20 +543,16 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
+
+
+
+    public NumericBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public NumericBox setTheme(Theme theme) {
         super.setControlTheme(theme);
-        return this;
-    }
-
-    @Override
-    public NumericBox setText(String text) {
-        super.setText(text);
-        return this;
-    }
-
-    @Override
-    public NumericBox setID(String id){
-        super.setID(id);
         return this;
     }
 }

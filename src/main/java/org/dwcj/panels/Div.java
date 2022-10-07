@@ -43,6 +43,60 @@ public final class Div extends AbstractDwcjPanel {
         return this;
     }
 
+
+    @Override
+    public Div setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public Div setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public Div setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public Div setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public Div setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public Div setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    @Override
+    public Div setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    @Override
+    public Div addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    @Override
+    public Div removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
 }
 
 

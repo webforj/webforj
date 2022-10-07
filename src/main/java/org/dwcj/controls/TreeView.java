@@ -542,8 +542,42 @@ public final class TreeView extends AbstractDwcControl {
         return this;
     }
 
-    public TreeView setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    @Override
+    public TreeView setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public TreeView setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public TreeView setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public TreeView setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TreeView setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public TreeView setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -552,7 +586,7 @@ public final class TreeView extends AbstractDwcControl {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public TreeView addClass(String selector) {
         super.addControlCssClass(selector);
@@ -565,9 +599,12 @@ public final class TreeView extends AbstractDwcControl {
         return this;
     }
 
-    @Override
-    public TreeView setID(String id){
-        super.setID(id);
+
+
+
+    public TreeView setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
         return this;
     }
+
 }

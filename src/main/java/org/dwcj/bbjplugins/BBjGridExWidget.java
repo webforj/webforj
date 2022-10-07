@@ -57,11 +57,47 @@ public final class BBjGridExWidget extends AbstractDwcControl {
     }
 
     @Override
+    public BBjGridExWidget setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public BBjGridExWidget setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public BBjGridExWidget setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public BBjGridExWidget setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public BBjGridExWidget setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public BBjGridExWidget setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    @Override
     public BBjGridExWidget setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public BBjGridExWidget addClass(String selector) {
         super.addControlCssClass(selector);
@@ -73,5 +109,6 @@ public final class BBjGridExWidget extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
 
 }

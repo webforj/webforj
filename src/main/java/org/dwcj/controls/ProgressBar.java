@@ -229,12 +229,53 @@ public final class ProgressBar extends AbstractDwcControl {
         return this;
     }
 
+
+
+
+
+
+    @Override
+    public ProgressBar setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public ProgressBar setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public ProgressBar setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public ProgressBar setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public ProgressBar setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public ProgressBar setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     @Override
     public ProgressBar setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public ProgressBar addClass(String selector) {
         super.addControlCssClass(selector);
@@ -244,17 +285,6 @@ public final class ProgressBar extends AbstractDwcControl {
     @Override
     public ProgressBar removeClass(String selector) {
         super.removeControlCssClass(selector);
-        return this;
-    }
-
-    public ProgressBar setTheme(Theme theme) {
-        super.setControlTheme(theme);
-        return this;
-    }
-
-    @Override
-    public ProgressBar setID(String id){
-        super.setID(id);
         return this;
     }
 }

@@ -127,12 +127,51 @@ public final class MenuButton extends AbstractDwcControl {
         }
     }
 
+
+
+
+    @Override
+    public MenuButton setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public MenuButton setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public MenuButton setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public MenuButton setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public MenuButton setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public MenuButton setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     @Override
     public MenuButton setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public MenuButton addClass(String selector) {
         super.addControlCssClass(selector);
@@ -145,9 +184,6 @@ public final class MenuButton extends AbstractDwcControl {
         return this;
     }
 
-    @Override
-    public MenuButton setID(String id){
-        super.setID(id);
-        return this;
-    }
+
+    
 }

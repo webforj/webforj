@@ -82,16 +82,7 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
         return null;
     }
 
-    @Override
-    public Boolean isReadOnly(){
-        try{
-            return bbjEditBox.isEditable();
-        }
-        catch(BBjException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
+    
     
     public boolean isPasswordVisible(){
         try{
@@ -108,16 +99,7 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
         return this;    
     }
 
-    @Override
-    public TextBox setReadOnly(boolean editable){
-        try{
-            bbjEditBox.setEditable(editable);
-        }
-        catch(BBjException e){
-            e.printStackTrace();
-        }
-        return this;
-    }
+    
 
     public TextBox setMaxLength(int length){
         try{
@@ -150,8 +132,65 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
     }
 
 
-    public TextBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+    @Override
+    public Boolean isReadOnly(){
+        try{
+            return bbjEditBox.isEditable();
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    @Override
+    public TextBox setReadOnly(Boolean editable){
+        try{
+            bbjEditBox.setEditable(editable);
+        }
+        catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
+
+    @Override
+    public TextBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public TextBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public TextBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public TextBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TextBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public TextBox setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -160,7 +199,7 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public TextBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -173,14 +212,18 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
+
+
+
+    public TextBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public TextBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
 
-    @Override
-    public TextBox setID(String id){
-        super.setID(id);
-        return this;
-    }
+
 }

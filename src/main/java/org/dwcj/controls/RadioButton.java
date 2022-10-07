@@ -68,15 +68,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         }
     }
 
-    @Override
-    public Boolean isReadOnly() {
-        try {
-            return bbjRadioButton.isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 
     public boolean isSelected() {
         try {
@@ -87,15 +79,6 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         }
     }
 
-    @Override
-    public RadioButton setReadOnly(boolean editable) {
-        try {
-            bbjRadioButton.setEditable(editable);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
 
     public void setSelected(boolean selected) {
         try {
@@ -105,8 +88,65 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         }
     }
 
-    public RadioButton setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    @Override
+    public Boolean isReadOnly() {
+        try {
+            return bbjRadioButton.isEditable();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+  @Override
+    public RadioButton setReadOnly(Boolean editable) {
+        try {
+            bbjRadioButton.setEditable(editable);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
+    @Override
+    public RadioButton setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public RadioButton setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public RadioButton setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public RadioButton setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public RadioButton setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public RadioButton setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -115,7 +155,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public RadioButton addClass(String selector) {
         super.addControlCssClass(selector);
@@ -128,9 +168,13 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
-    @Override
-    public RadioButton setID(String id){
-        super.setID(id);
+
+
+
+
+    public RadioButton setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
         return this;
     }
+
 }

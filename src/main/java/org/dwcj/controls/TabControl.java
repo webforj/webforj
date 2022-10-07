@@ -26,8 +26,41 @@ public final class TabControl extends AbstractDwcControl {
         }
     }
 
-    public TabControl setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+    @Override
+    public TabControl setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public TabControl setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public TabControl setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public TabControl setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TabControl setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public TabControl setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -36,7 +69,7 @@ public final class TabControl extends AbstractDwcControl {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public TabControl addClass(String selector) {
         super.addControlCssClass(selector);
@@ -49,14 +82,17 @@ public final class TabControl extends AbstractDwcControl {
         return this;
     }
 
+
+
+    public TabControl setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
+
     public TabControl setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
 
-    @Override
-    public TabControl setID(String id){
-        super.setID(id);
-        return this;
-    }
 }

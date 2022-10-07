@@ -67,11 +67,47 @@ public final class SplitPanel extends AbstractShoelaceControl {
     }
 
     @Override
+    public SplitPanel setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public SplitPanel setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public SplitPanel setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public SplitPanel setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public SplitPanel setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public SplitPanel setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    @Override
     public SplitPanel setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public SplitPanel addClass(String selector) {
         super.addControlCssClass(selector);

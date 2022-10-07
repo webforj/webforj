@@ -130,15 +130,6 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         }
     }
 
-    @Override
-    public Boolean isReadOnly() {
-        try {
-            return bbjListEdit.isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public void openList() {
         try {
@@ -156,15 +147,6 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         }
     }
 
-    @Override
-    public TextComboBox setReadOnly(boolean edit) {
-        try {
-            bbjListEdit.setEditable(edit);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
 
     public void setEditText(String text) {
         try {
@@ -182,8 +164,65 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         }
     }
 
-    public TextComboBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+    
+
+    @Override
+    public Boolean isReadOnly() {
+        try {
+            return bbjListEdit.isEditable();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    @Override
+    public TextComboBox setReadOnly(Boolean edit) {
+        try {
+            bbjListEdit.setEditable(edit);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
+    @Override
+    public TextComboBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public TextComboBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public TextComboBox setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -192,7 +231,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public TextComboBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -205,40 +244,17 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         return this;
     }
 
+
+    
+
+    public TextComboBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public TextComboBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
 
-    @Override
-    public TextComboBox setTooltipText(String text) {
-        super.setTooltipText(text);
-        return this;
-    }
-
-    @Override
-    public TextComboBox setID(String id){
-        super.setID(id);
-        return this;
-    }
-
-    // @Override
-    // public TextComboBox setEnabled(boolean enabled) {
-    //     if (this.ctrl != null) try {
-    //         ctrl.setEnabled(enabled);
-    //     } catch (BBjException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return this;
-    // }
-
-    // @Override
-    // public boolean isEnabled() {
-    //     if (this.ctrl != null) try {
-    //         return ctrl.isEnabled();
-    //     } catch (BBjException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return true;
-    // }
 }

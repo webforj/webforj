@@ -1,6 +1,7 @@
 package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.ControlAccessor;
@@ -14,32 +15,42 @@ import java.util.*;
 public abstract class AbstractDwcControl implements IControl {
 
 
+    //Members implemented for interfacing with BBj methods/implementations
     public static final String STR_EXPANSE = "expanse";
     public static final String STR_THEME = "theme";
+    protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
+    protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
+    protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
 
+    
+    
+    //Members common to all inheriting controls
+    protected BBjControl ctrl;
+    private String text = "";
+    private Boolean visible = null;
+    private Boolean enabled = null;
+    private String tooltipText = "";
+    private final Map<String, String> attributes = new HashMap<>();
+    private final Map<String, String> styles = new HashMap<>();
+    private final List<String> cssClasses = new ArrayList<>();
+    private final Map<String, Object> userData = new HashMap<>();
+    
+    //Theme and Expanse variables which need to be enumerated in their respective child components
+    private Enum<?> theme;
+    private Enum<?> expanse;
+
+    //Interface-controlled members
+    protected Boolean readOnly = null;
+    protected Boolean focusable = null;
+    protected Boolean tabTraversable = null;
+    protected TextAlignable textAlignment = null;
+
+        
     static {
         ControlAccessor.setDefault(new CtrlAccessorImpl());
     }
 
 
-    protected BBjControl ctrl;
-    private String text = "";
-    private Enum<?> theme;
-    private Enum<?> expanse;
-    private Boolean visible = null;
-    private Boolean enabled = null;
-    private String tooltipText = "";
-    private Boolean readOnly = null;
-    
-
-    protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
-    protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
-    protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
-    private final Map<String, String> attributes = new HashMap<>();
-    private final Map<String, String> styles = new HashMap<>();
-    private final List<String> cssClasses = new ArrayList<>();
-
-    private final Map<String, Object> userData = new HashMap<>();
     protected boolean caughtUp = false;
 
 
@@ -49,6 +60,40 @@ public abstract class AbstractDwcControl implements IControl {
      * @param p
      */
     protected void create(AbstractDwcjPanel p) {}
+
+        /**
+     * This method returns the underlying original BBj control
+     * It's package private and can only be accessed through the ControlAccessor
+     * No API user / customer shall ever work directly with BBj controls
+     *
+     * @return the underlying BBj control
+     */
+    BBjControl getControl() {
+        return this.ctrl;
+    }
+
+
+
+    /*
+    ------------------------------------------------------------
+    internal protected methods that implement internal behaviour
+    ------------------------------------------------------------
+     */
+
+    /* Created abstract methods for abstract class setter methods to be
+     * overridden in child classes to enable method chaining
+     */
+    public abstract AbstractDwcControl setText(String text);
+    public abstract AbstractDwcControl setVisible(Boolean visible);
+    public abstract AbstractDwcControl setEnabled(Boolean enabled);
+    public abstract AbstractDwcControl setTooltipText(String text);
+    public abstract AbstractDwcControl setAttribute(String attribute, String value);
+    public abstract AbstractDwcControl setID(String id);
+    public abstract AbstractDwcControl setStyle(String property, String value);
+    public abstract AbstractDwcControl addClass(String selector);
+    public abstract AbstractDwcControl removeClass(String selector);
+
+    
 
     @Override
     public String getText() {
@@ -60,8 +105,7 @@ public abstract class AbstractDwcControl implements IControl {
         return text;
     }
 
-    @Override
-    public IControl setText(String text) {
+    protected IControl setControlText(String text) {
         if (ctrl != null) try {
             ctrl.setText(text);
         } catch (BBjException e) {
@@ -73,6 +117,85 @@ public abstract class AbstractDwcControl implements IControl {
             this.text = "<null>";
         return this;
     }
+   
+    @Override
+    public boolean isVisible() {
+        if (this.ctrl != null) try {
+            return ctrl.isVisible();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return visible;
+    }
+
+    protected IControl setControlVisible(Boolean visible) {
+        if (this.ctrl != null) try {
+            ctrl.setVisible(visible);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.visible = visible;
+        return this;
+    }
+
+
+
+    @Override
+    public boolean isEnabled() {
+        if (this.ctrl != null) try {
+            return ctrl.isEnabled();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return enabled;
+    }
+
+    
+    protected IControl setControlEnabled(Boolean enabled) {
+        if (this.ctrl != null) try {
+            ctrl.setEnabled(enabled);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.enabled = enabled;
+        return this;
+    }
+    
+    @Override
+    public String getTooltipText() {
+        if (this.ctrl != null) try {
+            return ctrl.getToolTipText();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return tooltipText;
+    }
+
+    protected IControl setControlTooltipText(String text) {
+        if (this.ctrl != null) try {
+            ctrl.setToolTipText(text);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.tooltipText = text;
+        return this;
+    }
+    
+    /**
+     * get an attribute of the control
+     * @param attribute the name of the attribute
+     * @return the value of the attribute in the control
+     */
+    public String getAttribute(String attribute) {
+        //ask the control first
+        if (ctrl != null) try {
+            return ctrl.getAttribute(attribute);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        //fall back to the internal list
+        return attributes.get(attribute);
+    }
 
     /**
      * set the value for an attribute in the control
@@ -80,19 +203,13 @@ public abstract class AbstractDwcControl implements IControl {
      * @param value the value to be set
      * @return the control itself
      */
-    public IControl setAttribute(String attribute, String value) {
+    protected IControl setControlAttribute(String attribute, String value) {
         if (ctrl != null) try {
             ctrl.setAttribute(attribute, value);
         } catch (BBjException e) {
             e.printStackTrace();
         }
         attributes.put(attribute, value);
-        return this;
-    }
-
-    @Override
-    public IControl setID(String id){
-        this.setAttribute("id", id);
         return this;
     }
 
@@ -111,111 +228,65 @@ public abstract class AbstractDwcControl implements IControl {
         return null;
     }
 
-    /**
-     * get an attribute of the control
-     * @param attribute the name of the attribute
-     * @return the value of the attribute in the control
-     */
-    public String getAttribute(String attribute) {
-        //ask the control first
-        if (ctrl != null) try {
-            return ctrl.getAttribute(attribute);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        //fall back to the internal list
-        return attributes.get(attribute);
-    }
-
-    
-    protected AbstractDwcControl setReadOnly(boolean readOnly){
-        if(ctrl != null){
-            try{
-                ctrl.setEnabled(readOnly);
-            } catch(BBjException e){
-                e.printStackTrace();
-            }
-            this.readOnly = readOnly;
-        }
+    protected IControl setControlID(String id){
+        this.setAttribute("id", id);
         return this;
     }
 
-    protected Boolean isReadOnly(){
-        if(ctrl != null){
-            return this.readOnly;
+    protected void setControlStyle(String property, String value) {
+        if (ctrl != null) try {
+            ctrl.setStyle(property, value);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.styles.put(property, value);
+    }
+
+
+    protected void addControlCssClass(String selector) {
+        if (ctrl != null) try {
+            ctrl.addStyle(selector);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.cssClasses.add(selector);
+    }
+
+
+    protected void removeControlCssClass(String selector) {
+        if (ctrl != null) try {
+            ctrl.removeStyle(selector);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.cssClasses.remove(selector);
+    }
+
+    public String getComputedStyle(String property){
+        if (ctrl != null) try {
+            ctrl.getComputedStyle(property);
+        } catch (BBjException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public Enum<?> getExpanse(){
-        return this.expanse;
+
+    public Object getUserData(String key){
+        return userData.get(key);
     }
 
-    /*
-    ------------------------------------------------------------
-    internal protected methods that implement internal behaviour
-    ------------------------------------------------------------
-     */
-
-
-    protected void setControlExpanse(Enum<?> expanse) {
-        if (ctrl != null) try {
-            switch (expanse.toString()) {
-                case "LARGE":
-                    ctrl.setAttribute(STR_EXPANSE, "l");
-                    break;
-                case "MEDIUM":
-                    ctrl.setAttribute(STR_EXPANSE, "m");
-                    break;
-                case "SMALL":
-                    ctrl.setAttribute(STR_EXPANSE, "s");
-                    break;
-                case "XLARGE":
-                    ctrl.setAttribute(STR_EXPANSE, "xl");
-                    break;
-                case "XSMALL":
-                    ctrl.setAttribute(STR_EXPANSE, "xs");
-                    break;
-                case "XXSMALL":
-                    ctrl.setAttribute(STR_EXPANSE, "xxs");
-                    break;
-                case "XXXSMALL":
-                    ctrl.setAttribute(STR_EXPANSE, "xxxs");
-                    break;
-                default:
-                    //noop
-            }
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.expanse = expanse;
+    public void setUserData(String key, Object data){
+        userData.put(key, data);
     }
-    // protected void setControlExpanse(IExpansible.Expanse expanse) {
-    //     if (ctrl != null) try {
-    //         switch (expanse) {
-    //             case LARGE:
-    //                 ctrl.setAttribute(STR_EXPANSE, "l");
-    //                 break;
-    //             case MEDIUM:
-    //                 ctrl.setAttribute(STR_EXPANSE, "m");
-    //                 break;
-    //             case SMALL:
-    //                 ctrl.setAttribute(STR_EXPANSE, "s");
-    //                 break;
-    //             case XLARGE:
-    //                 ctrl.setAttribute(STR_EXPANSE, "xl");
-    //                 break;
-    //             case XSMALL:
-    //                 ctrl.setAttribute(STR_EXPANSE, "xs");
-    //                 break;
-    //             default:
-    //                 //noop
-    //         }
-    //     } catch (BBjException e) {
-    //         e.printStackTrace();
-    //     }
-        // this.expanse = expanse;
-    // }
+
+
+
+
+
+
+
+
 
 
     protected void setControlTheme(Enum<?> theme) {
@@ -273,125 +344,42 @@ public abstract class AbstractDwcControl implements IControl {
     }
 
 
-    /* Created abstract methods for each control to overwrite in order to allow
-     * for proper, functional method chaining.
-     */
-    public abstract AbstractDwcControl setStyle(String property, String value);
-    public abstract AbstractDwcControl addClass(String selector);
-    public abstract AbstractDwcControl removeClass(String selector);
-
-    protected void setControlStyle(String property, String value) {
+    protected void setControlExpanse(Enum<?> expanse) {
         if (ctrl != null) try {
-            ctrl.setStyle(property, value);
+            switch (expanse.toString()) {
+                case "LARGE":
+                    ctrl.setAttribute(STR_EXPANSE, "l");
+                    break;
+                case "MEDIUM":
+                    ctrl.setAttribute(STR_EXPANSE, "m");
+                    break;
+                case "SMALL":
+                    ctrl.setAttribute(STR_EXPANSE, "s");
+                    break;
+                case "XLARGE":
+                    ctrl.setAttribute(STR_EXPANSE, "xl");
+                    break;
+                case "XSMALL":
+                    ctrl.setAttribute(STR_EXPANSE, "xs");
+                    break;
+                case "XXSMALL":
+                    ctrl.setAttribute(STR_EXPANSE, "xxs");
+                    break;
+                case "XXXSMALL":
+                    ctrl.setAttribute(STR_EXPANSE, "xxxs");
+                    break;
+                default:
+                    //noop
+            }
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        this.styles.put(property, value);
+        this.expanse = expanse;
     }
 
 
-    protected void addControlCssClass(String selector) {
-        if (ctrl != null) try {
-            ctrl.addStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.cssClasses.add(selector);
-    }
 
-
-    protected void removeControlCssClass(String selector) {
-        if (ctrl != null) try {
-            ctrl.removeStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.cssClasses.remove(selector);
-    }
-
-    public String getComputedStyle(String property){
-        if (ctrl != null) try {
-            ctrl.getComputedStyle(property);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    /**
-     * This method returns the underlying original BBj control
-     * It's package private and can only be accessed through the ControlAccessor
-     * No API user / customer shall ever work directly with BBj controls
-     *
-     * @return the underlying BBj control
-     */
-    BBjControl getControl() {
-        return this.ctrl;
-    }
-
-    @Override
-    public IControl  setTooltipText(String text) {
-        if (this.ctrl != null) try {
-            ctrl.setToolTipText(text);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.tooltipText = text;
-        return this;
-    }
-
-    @Override
-    public String getTooltipText() {
-        if (this.ctrl != null) try {
-            return ctrl.getToolTipText();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return tooltipText;
-    }
-
-    @Override
-    public IControl setEnabled(boolean b) {
-        if (this.ctrl != null) try {
-            ctrl.setEnabled(b);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.enabled = b;
-        return this;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        if (this.ctrl != null) try {
-            return ctrl.isEnabled();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return enabled;
-    }
-
-    @Override
-    public IControl setVisible(boolean b) {
-        if (this.ctrl != null) try {
-            ctrl.setVisible(b);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.visible = b;
-        return this;
-    }
-
-    @Override
-    public boolean isVisible() {
-        if (this.ctrl != null) try {
-            return ctrl.isVisible();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return visible;
-    }
+    
 
     /**
      * The catchUp method is used to replay attributes and settings that the API user might have
@@ -412,15 +400,23 @@ public abstract class AbstractDwcControl implements IControl {
                 e.printStackTrace();
             }
         }
-
-        if (this.theme != null) {
-            this.setControlTheme(this.theme);
+        
+        if (this.visible != null) {
+            this.setVisible(this.visible);
         }
 
-        if (this.expanse != null) {
-            this.setControlExpanse(this.expanse);
+        if (this.enabled != null) {
+            this.setEnabled(this.enabled);
         }
 
+        if (!this.tooltipText.isEmpty()){
+            try{
+                ctrl.setToolTipText(this.tooltipText);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        
         if (!this.attributes.isEmpty()) {
             Iterator<String> it = this.attributes.keySet().iterator();
             while (it.hasNext()) {
@@ -445,27 +441,25 @@ public abstract class AbstractDwcControl implements IControl {
             }
         }
 
-        if (this.visible != null) {
-            this.setVisible(this.visible);
+        if (!this.userData.isEmpty()) {
+            Iterator<String> it = this.cssClasses.iterator();
+            while (it.hasNext()) {
+                String cl = it.next();
+                this.setUserData(cl, this.userData.get(cl));
+            }
         }
 
-        if (this.enabled != null) {
-            this.setEnabled(this.enabled);
+        if (this.theme != null) {
+            this.setControlTheme(this.theme);
         }
 
-        if (this.readOnly != null) {
-            this.setReadOnly(this.readOnly);
+        if (this.expanse != null) {
+            this.setControlExpanse(this.expanse);
         }
 
         this.caughtUp = true;
 
     }
 
-    public void setUserData(String key, Object data){
-        userData.put(key, data);
-    }
 
-    public Object getUserData(String key){
-        return userData.get(key);
-    }
 }

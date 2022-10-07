@@ -223,18 +223,51 @@ public final class ListBox extends AbstractDwclistControl {
         return this;
     }
 
-    public ListBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    @Override
+    public ListBox setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
+    @Override
+    public ListBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public ListBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public ListBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public ListBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public ListBox setID(String id){
+        super.setControlID(id);
+        return this;
+    }
 
     @Override
     public ListBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public ListBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -247,9 +280,12 @@ public final class ListBox extends AbstractDwclistControl {
         return this;
     }
 
-    @Override
-    public ListBox setID(String id){
-        super.setID(id);
+
+    
+
+    public ListBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
         return this;
     }
+
 }

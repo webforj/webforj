@@ -67,7 +67,7 @@ public final class Navigator extends AbstractDwcControl implements IReadOnly{
     }
 
     @Override
-    public Navigator setReadOnly(boolean editable) {
+    public Navigator setReadOnly(Boolean editable) {
         try {
             bbjNavigator.setEditable(editable);
         } catch (BBjException e) {
@@ -104,8 +104,42 @@ public final class Navigator extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
-    public Navigator setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    @Override
+    public Navigator setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public Navigator setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public Navigator setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public Navigator setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public Navigator setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public Navigator setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -114,7 +148,7 @@ public final class Navigator extends AbstractDwcControl implements IReadOnly{
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public Navigator addClass(String selector) {
         super.addControlCssClass(selector);
@@ -127,14 +161,17 @@ public final class Navigator extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
+
+
+
+    public Navigator setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public Navigator setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
 
-    @Override
-    public Navigator setID(String id){
-        super.setID(id);
-        return this;
-    }
 }

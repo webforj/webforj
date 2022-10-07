@@ -323,15 +323,6 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * Returns whether the text is editable in the MultilineEdit control
      * @return Returns whether the text is editable in the control (false = Not Editable, true = Editable).
      */
-    @Override
-    public Boolean isReadOnly() {
-        try {
-            return bbjCEdit.isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     /**
      * This method removes all paragraphs from the MultilineEdit control
@@ -358,20 +349,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         return this;
     }
 
-    /**
-     * Sets whether the text is editable in the MultilineEdit control
-     * @param editable - Specifies whether the text can be edited (false = Not Editable, true = Editable).
-     * @return Returns this
-     */
-    @Override
-    public MultilineEdit setReadOnly(boolean editable) {
-        try {
-            bbjCEdit.setEditable(editable);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
+
 
     /**
      * Sets whether a horizontal scroll bar will appear when the text is too large to fit within the MultilineEdit control
@@ -541,8 +519,42 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         return this;
     }
 
-    public MultilineEdit setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    @Override
+    public MultilineEdit setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public MultilineEdit setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public MultilineEdit setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public MultilineEdit setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public MultilineEdit setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public MultilineEdit setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -551,7 +563,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public MultilineEdit addClass(String selector) {
         super.addControlCssClass(selector);
@@ -564,14 +576,45 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         return this;
     }
 
+
+
+    @Override
+    public Boolean isReadOnly(){
+        try{
+            return bbjCEdit.isEditable();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Sets whether the text is editable in the MultilineEdit control
+     * @param editable - Specifies whether the text can be edited (false = Not Editable, true = Editable).
+     * @return Returns this
+     */
+    @Override
+    public MultilineEdit setReadOnly(Boolean editable) {
+        try {
+            bbjCEdit.setEditable(editable);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
+    public MultilineEdit setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public MultilineEdit setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
 
-    @Override
-    public MultilineEdit setID(String id){
-        super.setID(id);
-        return this;
-    }
+
 }

@@ -193,8 +193,40 @@ public final class ComboBox extends AbstractDwclistControl {
         this.comboBoxSelectEventSink.doSelect(key);
     }
 
-    public ComboBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+    @Override
+    public ComboBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public ComboBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public ComboBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public ComboBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public ComboBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public ComboBox setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -203,7 +235,7 @@ public final class ComboBox extends AbstractDwclistControl {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public ComboBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -216,14 +248,12 @@ public final class ComboBox extends AbstractDwclistControl {
         return this;
     }
 
-    public ComboBox setTheme(Theme theme) {
-        super.setControlTheme(theme);
+
+    
+
+    public ComboBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
         return this;
     }
 
-    @Override
-    public ComboBox setID(String id){
-        super.setID(id);
-        return this;
-    }
 }

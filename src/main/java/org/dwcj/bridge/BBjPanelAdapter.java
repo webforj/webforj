@@ -44,4 +44,51 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
         return this;
     }
 
+
+
+
+
+
+
+
+
+
+    @Override
+    public BBjPanelAdapter setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public BBjPanelAdapter setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public BBjPanelAdapter setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public BBjPanelAdapter setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public BBjPanelAdapter setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public BBjPanelAdapter setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+
+
 }

@@ -123,12 +123,51 @@ public final class Label extends AbstractDwcControl {
         return this;
     }
 
+
+
+
+    @Override
+    public Label setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public Label setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public Label setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public Label setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public Label setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public Label setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     @Override
     public Label setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public Label addClass(String selector) {
         super.addControlCssClass(selector);
@@ -138,12 +177,6 @@ public final class Label extends AbstractDwcControl {
     @Override
     public Label removeClass(String selector) {
         super.removeControlCssClass(selector);
-        return this;
-    }
-
-    @Override
-    public Label setID(String id){
-        super.setID(id);
         return this;
     }
 }

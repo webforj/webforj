@@ -2,7 +2,7 @@ package org.dwcj.controls;
 
 public interface IReadOnly {
     
-    IReadOnly setReadOnly(boolean editable);
+    IReadOnly setReadOnly(Boolean editable);
 
     Boolean isReadOnly();
 

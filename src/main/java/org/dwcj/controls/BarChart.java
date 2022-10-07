@@ -203,12 +203,53 @@ public final class BarChart extends AbstractDwcControl {
         return this;
     }
 
+    
+
+
+
+
     @Override
-    public BarChart setStyle(String property, String value) {
-        super.setControlStyle(property,value);
+    public BarChart setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
+    @Override
+    public BarChart setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public BarChart setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public BarChart setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public BarChart setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public BarChart setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    @Override
+    public BarChart setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
     @Override
     public BarChart addClass(String selector) {
         super.addControlCssClass(selector);
@@ -218,12 +259,6 @@ public final class BarChart extends AbstractDwcControl {
     @Override
     public BarChart removeClass(String selector) {
         super.removeControlCssClass(selector);
-        return this;
-    }
-
-    @Override
-    public BarChart setID(String id){
-        super.setID(id);
         return this;
     }
 

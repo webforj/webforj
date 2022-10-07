@@ -154,15 +154,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         return "";
     }
 
-    @Override
-    public Boolean isReadOnly() {
-        try {
-            return bbjInputE.isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 
     public void restore() {
         try {
@@ -181,15 +173,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         return this;
     }
 
-    @Override
-    public StringEditBox setReadOnly(boolean editable) {
-        try {
-            bbjInputE.setEditable(editable);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
+
 
     public StringEditBox setEditString(String edit) {
         try {
@@ -272,8 +256,63 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         return this;
     }
 
-    public StringEditBox setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+    @Override
+    public Boolean isReadOnly() {
+        try {
+            return bbjInputE.isEditable();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    @Override
+    public StringEditBox setReadOnly(Boolean editable) {
+        try {
+            bbjInputE.setEditable(editable);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
+
+    @Override
+    public StringEditBox setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    @Override
+    public StringEditBox setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    @Override
+    public StringEditBox setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    @Override
+    public StringEditBox setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    @Override
+    public StringEditBox setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    @Override
+    public StringEditBox setID(String id){
+        super.setControlID(id);
         return this;
     }
 
@@ -282,7 +321,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         super.setControlStyle(property, value);
         return this;
     }
-
+    
     @Override
     public StringEditBox addClass(String selector) {
         super.addControlCssClass(selector);
@@ -295,16 +334,21 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         return this;
     }
 
+
+
+
+
+    public StringEditBox setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
+
     public StringEditBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
 
-    @Override
-    public StringEditBox setText(String text) {
-        super.setText(text);
-        return this;
-    }
 
     @Override
     protected void catchUp() throws IllegalAccessException {
@@ -313,9 +357,4 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
             setMask(this.mask);
     }
 
-    @Override
-    public StringEditBox setID(String id){
-        super.setID(id);
-        return this;
-    }
 }

@@ -43,30 +43,36 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
 
     @Override
     public AbstractDwcjPanel setStyle(String property, String value) {
-        try {
-            wnd.setStyle(property, value);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.wnd != null){
+            try {
+                wnd.setStyle(property, value);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
 
     @Override
     public AbstractDwcjPanel addClass(String selector) {
-        try {
-            wnd.addStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.wnd != null){
+            try {
+                wnd.addStyle(selector);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
 
     @Override
     public AbstractDwcjPanel removeClass(String selector) {
-        try {
-            wnd.removeStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.wnd != null){
+            try {
+                wnd.removeStyle(selector);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
