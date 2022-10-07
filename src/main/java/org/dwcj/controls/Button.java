@@ -13,50 +13,75 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public final class Button extends AbstractDwcControl {
+public final class Button extends AbstractDwcControl implements IFocusable,  ITabTraversable, ITextAlignable{
 
-    private ButtonPushEventSink buttonPushEventSink;
+
+
+    /*=====================================================================================
+     * Initialize the enums for Expanse and Theme if applicable to the control.
+     *=====================================================================================
+     */
 
     public static enum Expanse{
-        LARGE("l"), MEDIUM("m"), SMALL("s"), XLARGE("xl"), XSMALL("xs");
-
-        public final String expanse;
-
-        private Expanse(String expanse){
-            this.expanse = expanse;
-        }
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL;
     }
-
+    
     public static enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY,
         OUTLINED_WARNING
     }
 
+
+
+    /*=====================================================================================
+     * If a control has BBj integer constants, create an enum with parameterized constructors
+     * that correspond to these numeric constants in BBj.
+     * =====================================================================================
+     */
+    
     public static enum TextVertialAlignment{
         TOP(1), CENTER(0), BOTTOM(3);
-
+        
         public final Integer alignment;
-
+        
         private TextVertialAlignment(Integer alignment){
             this.alignment = alignment;
         }
     }
+    
 
-    TextVertialAlignment alignment = TextVertialAlignment.CENTER;
 
-    /**
-     * create a Button
+    /* =====================================================================================
+     * Create a member variable of the BBj component, casted from this.ctrl.
+     * Initialize any other control-specific events or member variables as needed.
+     * These extra member variables should be listed in the BBj documentation for each
+     * control.
+     * =====================================================================================
      */
+    
+    private ButtonPushEventSink buttonPushEventSink;
+    private Boolean disableOnClick = null;
+    TextVertialAlignment verticalAlignment = TextVertialAlignment.CENTER;
+    
+    
+
+
+
+    /*=====================================================================================
+     *  This first section implements parameterized constructors, overrides the
+     * create() method, and implements methods for the control-specific behaviors,
+     * which often include getters and setters for control-specific member variables
+     * and/or functionality.
+     * =====================================================================================
+     */
+
     public Button() {
     }
 
     /**
      * Parameterized button constructor, accepts a string as an argument which will be the initial text displayed on the button
-     *
      * @param text String value for initial button text
-     * 
-     *
      */
     public Button(String text) {
         super.setControlText(text);
@@ -92,19 +117,16 @@ public final class Button extends AbstractDwcControl {
      * Accessor for whether or not the button is disabled. 
      * @return Boolean value 
      */
-    public boolean isDisableOnClick() {
+    public Boolean isDisableOnClick() {
         //todo: why could an exception be thrown?
-        BBjButton btn = (BBjButton) this.ctrl;
-        try {
-            return btn.getDisableOnClick();
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                ((BBjButton) ctrl).getDisableOnClick();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return false;
-    }
-
-    public TextVertialAlignment getVerticalAlignment(){
-        return this.alignment;
     }
 
     /**
@@ -112,40 +134,48 @@ public final class Button extends AbstractDwcControl {
      * @param disable Boolean value
      * @return Instance of the object to enable method chaining.
      */
-    public Button setDisableOnClick(boolean disable) {
-        BBjButton btn = (BBjButton) this.ctrl;
-        try {
-            btn.setDisableOnClick(disable);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Button setDisableOnClick(Boolean disable) {
+        if(this.ctrl != null){
+            try {
+                ((BBjButton) ctrl).setDisableOnClick(disable);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.disableOnClick = disable;
         return this;
     }
 
+
+
+    public TextVertialAlignment getVerticalAlignment(){
+        if(this.ctrl != null){
+            return this.verticalAlignment;
+        }
+        return TextVertialAlignment.CENTER;
+    }
+
+
     public Button setVerticalAlignment(TextVertialAlignment alignment){
-        BBjButton btn = (BBjButton) this.ctrl;
         if(this.ctrl != null){
             try{
-                btn.setVerticalAlignment(alignment.alignment);
+                ((BBjButton) ctrl).setVerticalAlignment(alignment.alignment);
             } catch(BBjException e){
                 e.printStackTrace();
             }
         }
+        this.verticalAlignment = alignment;
         return this;
     }
 
 
 
-
-
-
-
-
-
-
-
-
-
+    /*=====================================================================================
+     * This section overrides the various base class abstract methods in the 
+     * AbstractDwcjControl class. These need to be overridden for method chaining 
+     * purposes (i.e. setExample().setExample2().setExample3() ).
+     * =====================================================================================
+     */
 
     @Override
     public Button setText(String text) {
@@ -202,14 +232,147 @@ public final class Button extends AbstractDwcControl {
     }
 
 
+
+
+    /*=====================================================================================
+    * If Themes or Expanses are applicable for this control (if they have had Enums
+    * implemented for their respective options), create the methods to set these by calling
+    * the super method and returning this for chaining.
+    * =====================================================================================
+    */
+
     public Button setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
-        return this;
+        if(this.ctrl != null){
+            super.setControlExpanse(expanse);
+            return this;
+        }
+        return null;
     }
 
     public Button setTheme(Theme theme) {
-        super.setControlTheme(theme);
+        if(this.ctrl != null){
+            super.setControlTheme(theme);
+            return this;
+        }
+        return null;
+    }
+
+
+
+
+    /*=====================================================================================
+    * Ensure that any interfaces which are applicable to the control have their methods
+    * overridden.
+    * =====================================================================================
+    */
+
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                ((BBjButton) ctrl).isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public Button setFocusable(Boolean focusable){
+        if(this.ctrl != null){
+            try{
+                ((BBjButton) ctrl).setFocusable(focusable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
         return this;
+    }
+
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                ((BBjButton) ctrl).isTabTraversable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public Button setTabTraversable(Boolean traversable){
+        if(this.ctrl != null){
+            try{
+                ((BBjButton) ctrl).setTabTraversable(traversable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+
+    @Override
+    public Alignment getTextAlignment(){
+        if(this.ctrl != null){
+            return this.textAlignment;
+        }
+        return null;
+    }
+
+    @Override 
+    public Button setTextAlignment(Alignment alignment){
+        if(this.ctrl != null){
+            try{
+                ((BBjButton) ctrl).setAlignment(alignment.textPosition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+
+
+
+    /*=====================================================================================
+    * Finally, override the catchUp() method - this is done by calling the super method,
+    * and then catching up any control-specific member variables and/or interface 
+    * variables for this control.
+    * =====================================================================================
+    */
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+        if(this.disableOnClick != null){
+            this.setDisableOnClick(this.disableOnClick);
+        }
+
+        if(this.verticalAlignment != TextVertialAlignment.CENTER){
+            try{
+                ((BBjButton) ctrl).setVerticalAlignment(this.verticalAlignment.alignment);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+
+        if(this.focusable != null){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.tabTraversable != null){
+            this.setTabTraversable(this.tabTraversable);
+        }
+
+        if(this.textAlignment != null){
+            this.setTextAlignment(this.textAlignment);
+        }
     }
         
 }

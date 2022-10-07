@@ -4,6 +4,6 @@ public interface IFocusable {
 
     Boolean isFocusable();
 
-    IFocusable setFocusable(boolean focusable) ;
+    IFocusable setFocusable(Boolean focusable) ;
     
 }

@@ -1,7 +1,6 @@
 package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.ControlAccessor;
@@ -43,7 +42,7 @@ public abstract class AbstractDwcControl implements IControl {
     protected Boolean readOnly = null;
     protected Boolean focusable = null;
     protected Boolean tabTraversable = null;
-    protected TextAlignable textAlignment = null;
+    protected ITextAlignable.Alignment textAlignment = null;
 
         
     static {

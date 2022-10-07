@@ -1,6 +1,6 @@
 package org.dwcj.controls;
 
-public interface ITextAlignment {
+public interface ITextAlignable {
     
     enum Alignment {
         LEFT(8192),
@@ -16,6 +16,6 @@ public interface ITextAlignment {
 
     Alignment getTextAlignment();
 
-    ITextAlignment setTextAlignment(Alignment alignment);
+    ITextAlignable setTextAlignment(Alignment alignment);
 
 }
