@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.controls.IMouseWheelEnableable.MouseWheelCondition;
 import org.dwcj.events.listbox.ListBoxSelectEvent;
 import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
@@ -16,13 +17,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl {
+public final class ListBox extends AbstractDwclistControl implements IScrollable, IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable{
 
     private BBjListBox bbjListBox;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
+
+    private Consumer<ListBoxSelectEvent> callback;
+    Boolean multipleSelection;
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -55,19 +59,23 @@ public final class ListBox extends AbstractDwclistControl {
     }
     
     public ListBox deselectAll() {
-        try{
-            bbjListBox.deselectAll();
-        } catch(BBjException e){
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try{
+                bbjListBox.deselectAll();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this;
     }
     
     public ListBox deselectIndex(int index) {
-        try{
-            bbjListBox.deselectIndex(index);
-        } catch(BBjException e){
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try{
+                bbjListBox.deselectIndex(index);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this;
     }
@@ -77,7 +85,10 @@ public final class ListBox extends AbstractDwclistControl {
      * @return all values in the listBox
      */
     public Map<Object, String> getAllItems() {
-        return this.values;
+        if(this.ctrl != null){
+            return this.values;
+        }
+        return null;
     }
 
     /**
@@ -86,14 +97,19 @@ public final class ListBox extends AbstractDwclistControl {
      * @return String item at the given key
      */
     public String getItem(Object key) {
-        return values.get(key);
+        if(this.ctrl != null){
+            return values.get(key);
+        }
+        return null;
     }
 
     public ListBox getItemCount() {
-        try{
-            bbjListBox.getItemCount();
-        } catch(BBjException e){
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try{
+                bbjListBox.getItemCount();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this;
     }
@@ -103,11 +119,13 @@ public final class ListBox extends AbstractDwclistControl {
      * @param N/A
      * @return boolean
      */
-    public boolean isMultipleSelection() {
-        try {
-            return bbjListBox.getMultipleSelection();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isMultipleSelection() {
+        if(this.ctrl != null){
+            try {
+                return bbjListBox.getMultipleSelection();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
@@ -118,16 +136,18 @@ public final class ListBox extends AbstractDwclistControl {
      * @return selected entry
      */
     public SimpleEntry<Object, String> getSelectedItem() {
-        try {
-            String value = bbjListBox.getSelectedItem();
-            return new SimpleEntry<>(getEntryByValue(value), value);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                String value = bbjListBox.getSelectedItem();
+                return new SimpleEntry<>(getEntryByValue(value), value);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
 
-    private SimpleEntry<Object, String> getEntryByValue(String value) {
+    public SimpleEntry<Object, String> getEntryByValue(String value) {
         /*================================================================================
          * 
          * Map<Object, String> map = (Map<Object, String>) this.values.entrySet(); 
@@ -140,10 +160,12 @@ public final class ListBox extends AbstractDwclistControl {
          * I didn't fully understand what was happening here, but it fixed the control
          * demo - if there's broken functionality though, this is a good spot to start! -MH
          *================================================================================*/
-        Map<Object, String> map = (Map<Object, String>) this.values;
-        for (Map.Entry<Object, String> entry : map.entrySet()) {
-            if (Objects.equals(value, entry.getValue())) {
-                return new SimpleEntry<>(entry.getKey(), value);
+        if(this.ctrl != null){
+            Map<Object, String> map = (Map<Object, String>) this.values;
+            for (Map.Entry<Object, String> entry : map.entrySet()) {
+                if (Objects.equals(value, entry.getValue())) {
+                    return new SimpleEntry<>(entry.getKey(), value);
+                }
             }
         }
         return null;
@@ -155,21 +177,24 @@ public final class ListBox extends AbstractDwclistControl {
      * @return Map of the selected items
      */
     public Map<Object, String> getSelectedItems() {
-        Map<Object, String> map = new HashMap<>();
-        try {
-            Object[] indices = bbjListBox.getSelectedIndices().toArray();
-            for (Object index: indices) {
-                String value = bbjListBox.getItemAt((Integer) index);
-                SimpleEntry<Object, String> entry = getEntryByValue(value);
-                if (entry != null) {
-                    Object key = entry.getKey();
-                    if (key != null) map.put(key, value);
+        if(this.ctrl != null){
+            Map<Object, String> map = new HashMap<>();
+            try {
+                Object[] indices = bbjListBox.getSelectedIndices().toArray();
+                for (Object index: indices) {
+                    String value = bbjListBox.getItemAt((Integer) index);
+                    SimpleEntry<Object, String> entry = getEntryByValue(value);
+                    if (entry != null) {
+                        Object key = entry.getKey();
+                        if (key != null) map.put(key, value);
+                    }
                 }
+            } catch (BBjException e) {
+                e.printStackTrace();
             }
-        } catch (BBjException e) {
-            e.printStackTrace();
+            return map;
         }
-        return map;
+        return null;
     }
 
     /**
@@ -185,18 +210,20 @@ public final class ListBox extends AbstractDwclistControl {
 
     @SuppressWarnings("unchecked")
     protected void populate() {
-        if (values != null && ctrl != null) try {
-            BBjListBox cb = (BBjListBox) ctrl;
-            cb.removeAllItems();
-            BBjVector v = new BBjVector();
-            Iterator<Object> it = values.keySet().iterator();
-            while (it.hasNext()) {
-                v.add(values.get(it.next()));
+        if (values != null && ctrl != null){
+            try {
+                BBjListBox cb = (BBjListBox) ctrl;
+                cb.removeAllItems();
+                BBjVector v = new BBjVector();
+                Iterator<Object> it = values.keySet().iterator();
+                while (it.hasNext()) {
+                    v.add(values.get(it.next()));
+                }
+                cb.insertItems(0, v);
+            } catch (BBjException e) {
+                e.printStackTrace();
             }
-            cb.insertItems(0, v);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
+        } 
     }
 
     /**
@@ -205,7 +232,10 @@ public final class ListBox extends AbstractDwclistControl {
      * @return ListBox
      */
     public ListBox onSelect(Consumer<ListBoxSelectEvent> callback) {
-        new ListBoxSelectEventSink(this, callback);
+        if(this.ctrl != null){
+            new ListBoxSelectEventSink(this, callback);
+        }
+        this.callback = callback;
         return this;
     }
 
@@ -214,12 +244,15 @@ public final class ListBox extends AbstractDwclistControl {
      * @param bool - True or false whether or not to allow multiple selection
      * @return boolean
      */
-    public ListBox setMultipleSelection(boolean bool) {
-        try {
-            bbjListBox.setMultipleSelection(bool);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ListBox setMultipleSelection(Boolean multipleSelection) {
+        if(this.ctrl != null){
+            try {
+                bbjListBox.setMultipleSelection(multipleSelection);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.multipleSelection = multipleSelection;
         return this;
     }
 
@@ -287,5 +320,271 @@ public final class ListBox extends AbstractDwclistControl {
         super.setControlExpanse(expanse);
         return this;
     }
+
+
+
+
+    @Override
+    public Integer getHorizontalScrollBarHeight(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).getHorizontalScrollBarHeight();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Integer getHorizontalScrollBarPosition(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).getHorizontalScrollBarPosition();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Integer getHorizontalScrollBarWidth(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).getHorizontalScrollBarWidth();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Integer getVerticalScrollBarHeight(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).getVerticalScrollBarHeight();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Integer getVerticalScrollBarPosition(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).getVerticalScrollBarPosition();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Integer getVerticalScrollBarWidth(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).getVerticalScrollBarWidth();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Boolean isHorizontalScrollBarVisible(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).isHorizontalScrollBarVisible();
+        }
+        return null;
+
+    }
+
+    @Override
+    public Boolean isVerticalScrollBarVisible(){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).isVerticalScrollBarVisible();
+        }
+        return null;
+
+    }
+
+    @Override
+    public ListBox setHorizontalScrollBarPosition(Integer position){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).setHorizontalScrollBarPosition(position);
+        }
+        this.horizontalScrollBarPosition = position;
+        return this;
+    }
+
+    @Override
+    public ListBox setVerticalScrollBarPosition(Integer position){
+        if(this.ctrl != null){
+                ((BBjListBox) this.ctrl).setVerticalScrollBarPosition(position);
+        }
+        this.verticalScrollBarPosition = position;
+        return this;
+    }
+
+
+
+    @Override
+    public Boolean isReadOnly(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListBox) this.ctrl).isEditable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ListBox setReadOnly(Boolean editable){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).setEditable(editable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+            return this;
+        }
+        this.readOnly = editable;
+        return this;
+    }
+
+
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListBox) this.ctrl).isFocusable();
+            }
+            catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ListBox setFocusable(Boolean focusable) {
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).setFocusable(focusable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.focusable = focusable;
+        return this;
+    }
+
+
+    @Override
+    public MouseWheelCondition getScrollWheelBehavior(){
+        if(this.ctrl != null){
+            return this.mouseWheelCondition;
+        }
+        return null;
+    }
+
+    @Override
+    public ListBox setScrollWheelBehavior(MouseWheelCondition condition){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.mouseWheelCondition = condition;
+        return this;
+    }
+
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListBox) this.ctrl).isTabTraversable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ListBox setTabTraversable(Boolean traversable){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).setTabTraversable(traversable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.tabTraversable = traversable;
+        return this;
+    }
+
+
+    @Override
+    public Alignment getTextAlignment(){
+        if(this.ctrl != null){
+            return this.textAlignment;
+        }
+        return null;
+    } 
+
+    @Override
+    public ListBox setTextAlignment(Alignment alignment){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).setAlignment(alignment.textPosition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.textAlignment = alignment;
+        return this;
+    }
+
+
+
+
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+        if(this.callback != null){
+            this.onSelect(this.callback);
+        }
+
+        if(this.multipleSelection != null){
+            this.setMultipleSelection(this.multipleSelection);
+        }
+
+        if(this.horizontalScrollBarPosition != null){
+            this.setHorizontalScrollBarPosition(this.horizontalScrollBarPosition);
+        }
+
+        if(this.verticalScrollBarPosition != null){
+            this.setVerticalScrollBarPosition(verticalScrollBarPosition);
+        }
+
+        if(this.readOnly != null){
+            this.setReadOnly(this.readOnly);
+        }
+
+        if(this.focusable != null){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.mouseWheelCondition != null){
+            this.setScrollWheelBehavior(this.mouseWheelCondition);
+        }
+
+        if(this.tabTraversable != null){
+            this.setTabTraversable(this.tabTraversable);
+        }
+        
+        if(this.textAlignment != null){
+            this.setTextAlignment(this.textAlignment);
+        }
+
+
+    }
+
 
 }

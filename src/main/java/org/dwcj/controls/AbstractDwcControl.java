@@ -57,6 +57,9 @@ public abstract class AbstractDwcControl implements IControl {
     protected Boolean focusable = null;
     protected Boolean tabTraversable = null;
     protected ITextAlignable.Alignment textAlignment = null;
+    protected Integer horizontalScrollBarPosition = null; 
+    protected Integer verticalScrollBarPosition = null;
+    protected IMouseWheelEnableable.MouseWheelCondition mouseWheelCondition = null;
 
         
     static {

@@ -287,6 +287,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
+        this.focusable = focusable;
         return this;
     }
 
@@ -312,6 +313,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
+        this.tabTraversable = traversable;
         return this;
     }
 
@@ -333,6 +335,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
+        this.textAlignment = alignment;
         return this;
     }
 
