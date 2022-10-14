@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IMouseWheelEnableable.MouseWheelCondition;
 import org.dwcj.events.listbox.ListBoxSelectEvent;
 import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;

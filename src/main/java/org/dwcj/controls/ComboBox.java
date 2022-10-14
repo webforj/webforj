@@ -1,5 +1,6 @@
 package org.dwcj.controls;
 
+import com.basis.bbj.iris.facade.BBjCEditFacade;
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -13,6 +14,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -24,18 +26,28 @@ public final class ComboBox extends AbstractDwclistControl {
 
     private BBjListButton bbjListButton;
 
-    private ComboBoxSelectEventSink comboBoxSelectEventSink;
-
-    private ComboBoxChangeEventSink comboBoxChangeEventSink;
-
+    
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
-
+    
     public static enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
+    
+    
+    
+    
+    private ComboBoxSelectEventSink comboBoxSelectEventSink = null;
+    private ComboBoxChangeEventSink comboBoxChangeEventSink = null;
+
+    private Consumer<ComboBoxChangeEvent> changeEvent = null;
+    private Consumer<ComboBoxSelectEvent> selectEvent = null;
+    private Integer fieldHeight;
+    private Integer maxRowCount;
+    private Integer openWidth;
+    
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -71,6 +83,51 @@ public final class ComboBox extends AbstractDwclistControl {
     }
 
     /**
+     * closes the ComboBox dropwdown list
+     * @return ComboBox - returns this
+     */
+    public ComboBox closeList(){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).closeList();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    public ComboBox deselect(){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).deselect();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Returns all of the values in the ComboBox as a Map
+     * @return all values in the comboBox
+     */
+    public Map<Object, String> getAllItems() {
+        return this.values;
+    }
+
+    // public Integer getFieldHeight(){
+    //     if(this.ctrl != null){
+    //         try{
+    //             return (Integer)((java.lang.Number)((BBjListButton) this.ctrl).getFieldHeight());
+    //         } catch(BBjException e){
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return null;
+    // }
+
+    /**
      * set the list of items into the comboBox
      *
      * @param values A Map object containing the key-value pairs for the list
@@ -82,13 +139,6 @@ public final class ComboBox extends AbstractDwclistControl {
         return this;
     }
 
-    /**
-     * Returns all of the values in the ComboBox as a Map
-     * @return all values in the comboBox
-     */
-    public Map<Object, String> getAllItems() {
-        return this.values;
-    }
 
     /**
      * Returns a single string at the given key within the box
@@ -130,20 +180,6 @@ public final class ComboBox extends AbstractDwclistControl {
         return this;
     }
 
-    /**
-     * closes the ComboBox dropwdown list
-     * @return ComboBox - returns this
-     */
-    public ComboBox close() {
-        try {
-            bbjListButton.closeList();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
-
-
     @SuppressWarnings("unchecked")
     protected void populate() {
         if (values != null && ctrl != null) try {
@@ -167,11 +203,19 @@ public final class ComboBox extends AbstractDwclistControl {
      * @return the control itself
      */
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
-        if (this.comboBoxSelectEventSink==null)
-            this.comboBoxSelectEventSink = new ComboBoxSelectEventSink(this, callback);
-        else this.comboBoxSelectEventSink.addCallback(callback);
+        if(this.ctrl != null){
+            if (this.comboBoxSelectEventSink==null){
+                this.comboBoxSelectEventSink = new ComboBoxSelectEventSink(this, callback);
+                this.comboBoxSelectEventSink.addCallback(callback);
+            }            
+            else {
+                this.comboBoxSelectEventSink.addCallback(callback);
+            }
+        }
+        this.selectEvent = callback;
         return this;
     }
+
 
     /**
      * Register a callback for selecting an item within the box
@@ -180,17 +224,15 @@ public final class ComboBox extends AbstractDwclistControl {
      * @return the control itself
      */
     public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
-        if (this.comboBoxChangeEventSink==null)
-            this.comboBoxChangeEventSink = new ComboBoxChangeEventSink(this, callback);
-        else this.comboBoxChangeEventSink.addCallback(callback);
+        if(this.ctrl != null){
+            if (this.comboBoxChangeEventSink==null)
+                this.comboBoxChangeEventSink = new ComboBoxChangeEventSink(this, callback);
+            else {
+            this.comboBoxChangeEventSink.addCallback(callback);
+            }
+        }
+        this.changeEvent=callback;
         return this;
-    }
-
-    /**
-     * Selects an element, for testing purposes
-     */
-    public void doSelect(Object key) {
-        this.comboBoxSelectEventSink.doSelect(key);
     }
 
 
@@ -256,4 +298,29 @@ public final class ComboBox extends AbstractDwclistControl {
         return this;
     }
 
+
+
+
+
+
+
+
+
+
+    @Override
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        if (this.caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
+
+        super.catchUp();
+
+        if(this.changeEvent != null){
+            this.onChange(this.changeEvent);
+        }
+
+        if(this.selectEvent != null){
+            this.onSelect(this.selectEvent);
+        }
+
+    }
 }

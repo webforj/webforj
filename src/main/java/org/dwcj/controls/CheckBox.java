@@ -2,10 +2,8 @@ package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.bbj.proxies.sysgui.TabTraversable;
 import com.basis.startup.type.BBjException;
 
-import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.CheckBoxChangeEvent;
 import org.dwcj.events.sinks.CheckBoxCheckEventSink;

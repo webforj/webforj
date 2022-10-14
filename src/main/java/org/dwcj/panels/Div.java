@@ -24,7 +24,8 @@ public final class Div extends AbstractDwcjPanel {
             //todo honor visible flag if set before addition to panel
             wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags, Environment.getInstance().getSysGui().getAvailableContext());
             ctrl = wnd;
-        } catch (BBjException e) {
+            catchUp();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
