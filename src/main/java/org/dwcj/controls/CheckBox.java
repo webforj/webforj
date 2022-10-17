@@ -381,6 +381,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
         if(this.readOnly != null){
             this.setReadOnly(this.readOnly);
         }
+
         if(this.focusable != null){
             this.setFocusable(this.focusable);
         }
@@ -393,6 +394,5 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
             this.setTextAlignment(this.textAlignment);
         }
     }
-
-
+    
 }

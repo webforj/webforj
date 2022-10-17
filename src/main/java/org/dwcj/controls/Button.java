@@ -107,9 +107,11 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * @return the control itself
      */
     public Button onClick(Consumer<ButtonPushEvent> callback) {
-        if (this.buttonPushEventSink==null)
-            this.buttonPushEventSink = new ButtonPushEventSink(this, callback);
-        else this.buttonPushEventSink.addCallback(callback);
+        if(this.ctrl != null){
+            if (this.buttonPushEventSink==null)
+                this.buttonPushEventSink = new ButtonPushEventSink(this, callback);
+            else this.buttonPushEventSink.addCallback(callback);
+        }
         return this;
     }
 

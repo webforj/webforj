@@ -132,6 +132,9 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
     }
 
 
+
+
+
     @Override
     public Boolean isReadOnly(){
         try{
@@ -153,8 +156,6 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
         }
         return this;
     }
-
-
 
 
 

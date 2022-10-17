@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IReadOnly{
+public final class TextComboBox extends AbstractDwclistControl implements IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
 
     private BBjListEdit bbjListEdit;
 
@@ -169,20 +169,114 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     
 
     @Override
-    public Boolean isReadOnly() {
-        try {
-            return bbjListEdit.isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isReadOnly(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListEdit) this.ctrl).isEditable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return null;
     }
+
+    @Override 
+    public TextComboBox setReadOnly(Boolean readOnly){
+        if(this.ctrl != null){
+            try{
+                ((BBjListEdit) this.ctrl).setEditable(readOnly);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
     @Override
-    public TextComboBox setReadOnly(Boolean edit) {
-        try {
-            bbjListEdit.setEditable(edit);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListEdit) this.ctrl).isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public TextComboBox setFocusable(Boolean focusable){
+        if(this.ctrl != null){
+            try{
+                ((BBjListEdit) this.ctrl).setFocusable(focusable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public MouseWheelCondition getScrollWheelBehavior(){
+        if(this.ctrl != null){
+            return this.mouseWheelCondition;
+        }
+        return null;
+    }
+
+    @Override
+    public TextComboBox setScrollWheelBehavior(MouseWheelCondition condition){
+        if(this.ctrl != null){
+            try{
+                ((BBjListEdit) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+
+    }
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListEdit) this.ctrl).isTabTraversable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public TextComboBox setTabTraversable(Boolean traversable){
+        if(this.ctrl != null){
+            try{
+                ((BBjListEdit) this.ctrl).setTabTraversable(traversable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public Alignment getTextAlignment(){
+        if(this.ctrl != null){
+            return this.textAlignment;
+        }
+        return null;
+    }
+
+    @Override
+    public TextComboBox setTextAlignment(Alignment textAlignment){
+        if(this.ctrl != null){
+            try{
+                ((BBjListEdit) this.ctrl).setAlignment(textAlignment.textPosition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this;
     }

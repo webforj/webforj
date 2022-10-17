@@ -1,10 +1,12 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.iris.facade.BBjCEditFacade;
+
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjNumber; //Can't cast
 import com.basis.startup.type.BBjVector;
+
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.combobox.ComboBoxChangeEvent;
 import org.dwcj.events.combobox.ComboBoxSelectEvent;
@@ -14,7 +16,6 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class ComboBox extends AbstractDwclistControl {
+public final class ComboBox extends AbstractDwclistControl implements IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
 
     private BBjListButton bbjListButton;
 
@@ -39,15 +40,14 @@ public final class ComboBox extends AbstractDwclistControl {
     
     
     
-    private ComboBoxSelectEventSink comboBoxSelectEventSink = null;
-    private ComboBoxChangeEventSink comboBoxChangeEventSink = null;
+    // private ComboBoxSelectEventSink comboBoxSelectEventSink = null;
+    // private ComboBoxChangeEventSink comboBoxChangeEventSink = null;
 
     private Consumer<ComboBoxChangeEvent> changeEvent = null;
     private Consumer<ComboBoxSelectEvent> selectEvent = null;
-    private Integer fieldHeight;
+    //private Number fieldHeight;
     private Integer maxRowCount;
-    private Integer openWidth;
-    
+    //private Number openWidth;
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -82,6 +82,35 @@ public final class ComboBox extends AbstractDwclistControl {
         return this;
     }
 
+    public ComboBox insertItem(Object key, String item, Integer index){
+        this.values.put(key, item);
+        try{
+            BBjListButton cb = (BBjListButton) ctrl;
+            BBjVector v = new BBjVector();
+            v.add(values.get(key));
+            cb.insertItems(index, v);
+        }catch(BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+        /**
+     * set the list of items into the comboBox
+     *
+     * @param values A Map object containing the key-value pairs for the list
+     * @return the control itself
+     */
+    public ComboBox setItems(Map<Object, String> values) {
+        this.values = values;
+        populate();
+        return this;
+    }
+
+
+
+
+
     /**
      * closes the ComboBox dropwdown list
      * @return ComboBox - returns this
@@ -115,30 +144,6 @@ public final class ComboBox extends AbstractDwclistControl {
     public Map<Object, String> getAllItems() {
         return this.values;
     }
-
-    // public Integer getFieldHeight(){
-    //     if(this.ctrl != null){
-    //         try{
-    //             return (Integer)((java.lang.Number)((BBjListButton) this.ctrl).getFieldHeight());
-    //         } catch(BBjException e){
-    //             e.printStackTrace();
-    //         }
-    //     }
-    //     return null;
-    // }
-
-    /**
-     * set the list of items into the comboBox
-     *
-     * @param values A Map object containing the key-value pairs for the list
-     * @return the control itself
-     */
-    public ComboBox setItems(Map<Object, String> values) {
-        this.values = values;
-        populate();
-        return this;
-    }
-
 
     /**
      * Returns a single string at the given key within the box
@@ -204,13 +209,7 @@ public final class ComboBox extends AbstractDwclistControl {
      */
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
         if(this.ctrl != null){
-            if (this.comboBoxSelectEventSink==null){
-                this.comboBoxSelectEventSink = new ComboBoxSelectEventSink(this, callback);
-                this.comboBoxSelectEventSink.addCallback(callback);
-            }            
-            else {
-                this.comboBoxSelectEventSink.addCallback(callback);
-            }
+            new ComboBoxSelectEventSink(this, callback);
         }
         this.selectEvent = callback;
         return this;
@@ -225,15 +224,163 @@ public final class ComboBox extends AbstractDwclistControl {
      */
     public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
         if(this.ctrl != null){
-            if (this.comboBoxChangeEventSink==null)
-                this.comboBoxChangeEventSink = new ComboBoxChangeEventSink(this, callback);
-            else {
-            this.comboBoxChangeEventSink.addCallback(callback);
-            }
+            new ComboBoxChangeEventSink(this, callback);
         }
         this.changeEvent=callback;
         return this;
     }
+
+
+    // public ComboBox setFieldHeight(Number height){
+    //     if(this.ctrl != null){
+    //         try{
+    //             ((BBjListButton) this.ctrl).setFieldHeight((BBjNumber)height);
+    //         } catch(BBjException e){
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     this.fieldHeight = height;
+    //     return this;
+    // }
+
+    public ComboBox setMaximumRowCount(Integer max){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).setMaximumRowCount(max);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.maxRowCount = max;
+        return this;
+    }
+
+    // public ComboBox setOpenWidth(Number width){
+    //     if(this.ctrl != null){
+    //         ((BBjListButton) this.ctrl).setOpenWidth((BBjNumber)width);
+    //     }
+    //     this.openWidth = width;
+    //     return this;
+    // }
+
+
+    
+
+
+    @Override
+    public Boolean isReadOnly(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListButton) this.ctrl).isEditable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public ComboBox setReadOnly(Boolean readOnly){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).setEditable(readOnly);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListButton) this.ctrl).isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public ComboBox setFocusable(Boolean focusable){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).setFocusable(focusable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public MouseWheelCondition getScrollWheelBehavior(){
+        if(this.ctrl != null){
+            return this.mouseWheelCondition;
+        }
+        return null;
+    }
+
+    @Override
+    public ComboBox setScrollWheelBehavior(MouseWheelCondition condition){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+
+    }
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListButton) this.ctrl).isTabTraversable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override 
+    public ComboBox setTabTraversable(Boolean traversable){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).setTabTraversable(traversable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public Alignment getTextAlignment(){
+        if(this.ctrl != null){
+            return this.textAlignment;
+        }
+        return null;
+    }
+
+    @Override
+    public ComboBox setTextAlignment(Alignment textAlignment){
+        if(this.ctrl != null){
+            try{
+                ((BBjListButton) this.ctrl).setAlignment(textAlignment.textPosition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+
 
 
     @Override
@@ -321,6 +468,18 @@ public final class ComboBox extends AbstractDwclistControl {
         if(this.selectEvent != null){
             this.onSelect(this.selectEvent);
         }
+
+        // if(this.fieldHeight != null){
+        //     this.setFieldHeight(fieldHeight);
+        // }
+
+        if(this.maxRowCount != null){
+            this.setMaximumRowCount(maxRowCount);
+        }
+        
+        // if(this.openWidth != null){
+        //     this.setOpenWidth(openWidth);
+        // }
 
     }
 }
