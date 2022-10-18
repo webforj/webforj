@@ -76,69 +76,120 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
      * @param item the item's value
      * @return the control itself
      */
+
+
     public ComboBox addItem(Object key, String item) {
         this.values.put(key, item);
+        data2.add(values.get(key));
         populate();
         return this;
     }
 
     public ComboBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
-        if(this.ctrl != null){
-            try{
-                BBjListButton cb = (BBjListButton) ctrl;
-                BBjVector v = new BBjVector();
-                v.add(values.get(key));
-                cb.insertItems(index, v);
-            } catch(BBjException e){
-                e.printStackTrace();
-            }
-        }
+        data2.add(index, values.get(key));
+        populate();
         return this;
     }
-
 
     public ComboBox addItems(Map<Object, String> items){
         this.values.putAll(items);
-        this.populate();
+        Iterator<Object> it = items.keySet().iterator();
+        while (it.hasNext()) {
+            data2.add(values.get(it.next()));
+        }
+        populate();
         return this;
     }
 
-
     public ComboBox insertItemsAt(Map<Object, String> items, Integer index){
         this.values.putAll(items);
-        if(this.ctrl != null){
-            try{
-                BBjListButton cb = (BBjListButton) ctrl;
-                Iterator<Object> it = items.keySet().iterator();
-                Integer counter = 0; 
-                while (it.hasNext()) {
-                    BBjVector v = new BBjVector();
-                    v.add(values.get(it.next()));
-                    cb.insertItems(index + counter++, v);
-                }
-            } catch(BBjException e){
-                e.printStackTrace();
-            }
+        Iterator<Object> it = items.keySet().iterator();
+        Integer counter = 0;
+        while (it.hasNext()) {
+            data2.add(index + counter++, values.get(it.next()));
         }
+        populate();
         return this;
     }
 
     @SuppressWarnings("unchecked")
     protected void populate() {
-        if (values != null && ctrl != null) try {
-            BBjListButton cb = (BBjListButton) ctrl;
-            cb.removeAllItems();
-            BBjVector v = new BBjVector();
-            Iterator<Object> it = values.keySet().iterator();
-            while (it.hasNext()) {
-                v.add(values.get(it.next()));
+        if(this.ctrl != null){
+            try{
+                BBjListButton cb = (BBjListButton) ctrl;
+                cb.removeAllItems();
+                cb.insertItems(0, data2);
+            } catch(BBjException e){
+                e.printStackTrace();
             }
-            cb.insertItems(0, v);
-        } catch (BBjException e) {
-            e.printStackTrace();
         }
     }
+
+
+    // public ComboBox addItem(Object key, String item) {
+    //     this.values.put(key, item);
+    //     populate();
+    //     return this;
+    // }
+
+    // public ComboBox insertItemAt(Object key, String item, Integer index){
+    //     this.values.put(key, item);
+    //     if(this.ctrl != null){
+    //         try{
+    //             BBjListButton cb = (BBjListButton) ctrl;
+    //             BBjVector v = new BBjVector();
+    //             v.add(values.get(key));
+    //             cb.insertItems(index, v);
+    //         } catch(BBjException e){
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return this;
+    // }
+
+
+    // public ComboBox addItems(Map<Object, String> items){
+    //     this.values.putAll(items);
+    //     this.populate();
+    //     return this;
+    // }
+
+
+    // public ComboBox insertItemsAt(Map<Object, String> items, Integer index){
+    //     this.values.putAll(items);
+    //     if(this.ctrl != null){
+    //         try{
+    //             BBjListButton cb = (BBjListButton) ctrl;
+    //             Iterator<Object> it = items.keySet().iterator();
+    //             Integer counter = 0; 
+    //             while (it.hasNext()) {
+    //                 BBjVector v = new BBjVector();
+    //                 v.add(values.get(it.next()));
+    //                 cb.insertItems(index + counter++, v);
+    //             }
+    //         } catch(BBjException e){
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return this;
+    // }
+
+    // @SuppressWarnings("unchecked")
+    // protected void populate() {
+    //     if (values != null && ctrl != null) try {
+    //         BBjListButton cb = (BBjListButton) ctrl;
+    //         cb.removeAllItems();
+    //         BBjVector v = new BBjVector();
+    //         Iterator<Object> it = values.keySet().iterator();
+    //         while (it.hasNext()) {
+    //             v.add(values.get(it.next()));
+    //         }
+    //         cb.insertItems(0, v);
+    //     } catch (BBjException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
 
 
@@ -151,6 +202,10 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
      */
     public ComboBox setItems(Map<Object, String> values) {
         this.values = values;
+        Iterator<Object> it = values.keySet().iterator();
+        while (it.hasNext()) {
+            data2.add(values.get(it.next()));
+        }
         populate();
         return this;
     }

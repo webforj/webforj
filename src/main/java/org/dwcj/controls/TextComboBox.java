@@ -43,67 +43,116 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected void populate() {
-        if (values != null && ctrl != null) try {
-            BBjListEdit cb = (BBjListEdit) ctrl;
-            cb.removeAllItems();
-            BBjVector v = new BBjVector();
-            Iterator<Object> it = values.keySet().iterator();
-            while (it.hasNext()) {
-                v.add(values.get(it.next()));
-            }
-            cb.insertItems(0, v);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
+    // @SuppressWarnings("unchecked")
+    // protected void populate() {
+    //     if (values != null && ctrl != null) try {
+    //         BBjListEdit cb = (BBjListEdit) ctrl;
+    //         cb.removeAllItems();
+    //         BBjVector v = new BBjVector();
+    //         Iterator<Object> it = values.keySet().iterator();
+    //         while (it.hasNext()) {
+    //             v.add(values.get(it.next()));
+    //         }
+    //         cb.insertItems(0, v);
+    //     } catch (BBjException e) {
+    //         e.printStackTrace();
+    //     }
 
-    }
+    // }
+
+    // public TextComboBox addItem(Object key, String item) {
+    //     this.values.put(key, item);
+    //     populate();
+    //     return this;
+    // }
+
+    // public TextComboBox insertItemAt(Object key, String item, Integer index){
+    //     this.values.put(key, item);
+    //     if(this.ctrl != null){
+    //         try{
+    //             BBjListEdit cb = (BBjListEdit) ctrl;
+    //             BBjVector v = new BBjVector();
+    //             v.add(values.get(key));
+    //             cb.insertItems(index, v);
+    //         } catch(BBjException e){
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return this;
+    // }
+
+    // public TextComboBox addItems(Map<Object, String> items){
+    //     this.values.putAll(items);
+    //     this.populate();
+    //     return this;
+    // }
+
+    // public TextComboBox insertItemsAt(Map<Object, String> items, Integer index){
+    //     this.values.putAll(items);
+    //     if(this.ctrl != null){
+    //         try{
+    //             BBjListEdit cb = (BBjListEdit) ctrl;
+    //             Iterator<Object> it = items.keySet().iterator();
+    //             Integer counter = 0; 
+    //             while (it.hasNext()) {
+    //                 BBjVector v = new BBjVector();
+    //                 v.add(values.get(it.next()));
+    //                 cb.insertItems(index + counter++, v);
+    //             }
+    //         } catch(BBjException e){
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return this;
+    // }
+
 
     public TextComboBox addItem(Object key, String item) {
         this.values.put(key, item);
+        data2.add(values.get(key));
         populate();
         return this;
     }
 
     public TextComboBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
-        if(this.ctrl != null){
-            try{
-                BBjListEdit cb = (BBjListEdit) ctrl;
-                BBjVector v = new BBjVector();
-                v.add(values.get(key));
-                cb.insertItems(index, v);
-            } catch(BBjException e){
-                e.printStackTrace();
-            }
-        }
+        data2.add(index, values.get(key));
+        populate();
         return this;
     }
 
     public TextComboBox addItems(Map<Object, String> items){
         this.values.putAll(items);
-        this.populate();
+        Iterator<Object> it = items.keySet().iterator();
+        while (it.hasNext()) {
+            data2.add(values.get(it.next()));
+        }
+        populate();
         return this;
     }
 
     public TextComboBox insertItemsAt(Map<Object, String> items, Integer index){
         this.values.putAll(items);
+        Iterator<Object> it = items.keySet().iterator();
+        Integer counter = 0;
+        while (it.hasNext()) {
+            data2.add(index + counter++, values.get(it.next()));
+        }
+        populate();
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void populate() {
         if(this.ctrl != null){
             try{
                 BBjListEdit cb = (BBjListEdit) ctrl;
-                Iterator<Object> it = items.keySet().iterator();
-                Integer counter = 0; 
-                while (it.hasNext()) {
-                    BBjVector v = new BBjVector();
-                    v.add(values.get(it.next()));
-                    cb.insertItems(index + counter++, v);
-                }
+                cb.removeAllItems();
+                cb.insertItems(0, data2);
             } catch(BBjException e){
                 e.printStackTrace();
             }
         }
-        return this;
     }
 
 
@@ -197,6 +246,10 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
      */
     public TextComboBox setItems(Map<Object, String> values) {
         this.values = values;
+        Iterator<Object> it = values.keySet().iterator();
+        while (it.hasNext()) {
+            data2.add(values.get(it.next()));
+        }
         populate();
         return this;
     }

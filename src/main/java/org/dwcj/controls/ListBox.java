@@ -63,16 +63,12 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         return this;
     }
 
-
-
     public ListBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
         data2.add(index, values.get(key));
         populate();
         return this;
     }
-
-
 
     public ListBox addItems(Map<Object, String> items){
         this.values.putAll(items);
@@ -84,9 +80,6 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         return this;
     }
 
-
-
-
     public ListBox insertItemsAt(Map<Object, String> items, Integer index){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
@@ -97,10 +90,6 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         populate();
         return this;
     }
-
-
-
-
 
     @SuppressWarnings("unchecked")
     protected void populate() {
@@ -115,8 +104,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         }
     }
 
-
-    
+   
     
     
     public ListBox deselectAll() {
@@ -280,6 +268,10 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
      */
     public ListBox setItems(Map<Object, String> values) {
         this.values = values;
+        Iterator<Object> it = values.keySet().iterator();
+        while (it.hasNext()) {
+            data2.add(values.get(it.next()));
+        }
         populate();
         return this;
     }
