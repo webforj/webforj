@@ -82,20 +82,68 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         return this;
     }
 
-    public ComboBox insertItem(Object key, String item, Integer index){
+    public ComboBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
-        try{
-            BBjListButton cb = (BBjListButton) ctrl;
-            BBjVector v = new BBjVector();
-            v.add(values.get(key));
-            cb.insertItems(index, v);
-        }catch(BBjException e){
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try{
+                BBjListButton cb = (BBjListButton) ctrl;
+                BBjVector v = new BBjVector();
+                v.add(values.get(key));
+                cb.insertItems(index, v);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this;
     }
 
-        /**
+
+    public ComboBox addItems(Map<Object, String> items){
+        this.values.putAll(items);
+        this.populate();
+        return this;
+    }
+
+
+    public ComboBox insertItemsAt(Map<Object, String> items, Integer index){
+        this.values.putAll(items);
+        if(this.ctrl != null){
+            try{
+                BBjListButton cb = (BBjListButton) ctrl;
+                Iterator<Object> it = items.keySet().iterator();
+                Integer counter = 0; 
+                while (it.hasNext()) {
+                    BBjVector v = new BBjVector();
+                    v.add(values.get(it.next()));
+                    cb.insertItems(index + counter++, v);
+                }
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void populate() {
+        if (values != null && ctrl != null) try {
+            BBjListButton cb = (BBjListButton) ctrl;
+            cb.removeAllItems();
+            BBjVector v = new BBjVector();
+            Iterator<Object> it = values.keySet().iterator();
+            while (it.hasNext()) {
+                v.add(values.get(it.next()));
+            }
+            cb.insertItems(0, v);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    /**
      * set the list of items into the comboBox
      *
      * @param values A Map object containing the key-value pairs for the list
@@ -106,10 +154,6 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         populate();
         return this;
     }
-
-
-
-
 
     /**
      * closes the ComboBox dropwdown list
@@ -154,6 +198,29 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         return values.get(key);
     }
 
+    public String getItemAt(Integer idx){
+        if(this.ctrl != null){
+            try{
+                BBjListButton cb = (BBjListButton) ctrl;
+                return cb.getItemAt(idx);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public Integer getSelectedIndex(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListButton) ctrl).getSelectedIndex();
+            }catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     /**
      * returns the currently selected item, implemented for one-to-one value maps
      * @return selected entry
@@ -172,6 +239,17 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         return new SimpleEntry<>(null,null);
     }
 
+    public Integer getItemCount(){
+        if(this.ctrl != null){
+            try{
+                return ((BBjListButton) ctrl).getItemCount();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     /**
      * opens the ComboBox dropdown list
      * @return ComboBox - returns this
@@ -183,22 +261,6 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
             e.printStackTrace();
         }
         return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void populate() {
-        if (values != null && ctrl != null) try {
-            BBjListButton cb = (BBjListButton) ctrl;
-            cb.removeAllItems();
-            BBjVector v = new BBjVector();
-            Iterator<Object> it = values.keySet().iterator();
-            while (it.hasNext()) {
-                v.add(values.get(it.next()));
-            }
-            cb.insertItems(0, v);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

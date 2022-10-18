@@ -4,19 +4,24 @@ import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+
+import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.listbox.ListBoxSelectEvent;
 import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl implements IScrollable, IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable{
+public final class ListBox extends AbstractDwclistControl implements IScrollable, IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
 
     private BBjListBox bbjListBox;
 
@@ -53,9 +58,66 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
      */
     public ListBox addItem(Object key, String item) {
         this.values.put(key, item);
+        data2.add(values.get(key));
         populate();
         return this;
     }
+
+
+
+    public ListBox insertItemAt(Object key, String item, Integer index){
+        this.values.put(key, item);
+        data2.add(index, values.get(key));
+        populate();
+        return this;
+    }
+
+
+
+    public ListBox addItems(Map<Object, String> items){
+        this.values.putAll(items);
+        Iterator<Object> it = items.keySet().iterator();
+        while (it.hasNext()) {
+            data2.add(values.get(it.next()));
+        }
+        populate();
+        return this;
+    }
+
+
+
+
+    public ListBox insertItemsAt(Map<Object, String> items, Integer index){
+        this.values.putAll(items);
+        Iterator<Object> it = items.keySet().iterator();
+        Integer counter = 0;
+        while (it.hasNext()) {
+            data2.add(index + counter++, values.get(it.next()));
+        }
+        populate();
+        return this;
+    }
+
+
+
+
+
+    @SuppressWarnings("unchecked")
+    protected void populate() {
+        if(this.ctrl != null){
+            try{
+                BBjListBox cb = (BBjListBox) ctrl;
+                cb.removeAllItems();
+                cb.insertItems(0, data2);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    
+    
     
     public ListBox deselectAll() {
         if(this.ctrl != null){
@@ -67,7 +129,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         }
         return this;
     }
-    
+
     public ListBox deselectIndex(int index) {
         if(this.ctrl != null){
             try{
@@ -78,7 +140,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         }
         return this;
     }
-
+    
     /**
      * Returns a map of all of the items within the ListBox 
      * @return all values in the listBox
@@ -101,6 +163,19 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         }
         return null;
     }
+    
+    public String getItemAt(Integer idx){
+        if(this.ctrl != null){
+            try{
+                BBjListBox cb = (BBjListBox) ctrl;
+                return cb.getItemAt(idx);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
     public ListBox getItemCount() {
         if(this.ctrl != null){
@@ -196,6 +271,8 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         return null;
     }
 
+    
+
     /**
      * Allows you to pass in a map of objects which will replace the objects currently in the ListBox
      * @param values - A map with <Object, String> pairs.
@@ -207,23 +284,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void populate() {
-        if (values != null && ctrl != null){
-            try {
-                BBjListBox cb = (BBjListBox) ctrl;
-                cb.removeAllItems();
-                BBjVector v = new BBjVector();
-                Iterator<Object> it = values.keySet().iterator();
-                while (it.hasNext()) {
-                    v.add(values.get(it.next()));
-                }
-                cb.insertItems(0, v);
-            } catch (BBjException e) {
-                e.printStackTrace();
-            }
-        } 
-    }
+
 
     /**
      * Function that takes another function as parameter which allows functionality to be written when an item is selected within the box
@@ -537,6 +598,8 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         this.textAlignment = alignment;
         return this;
     }
+
+    
 
 
 

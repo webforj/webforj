@@ -43,19 +43,6 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         }
     }
 
-    /**
-     * set the list of items into the ComboBoxEdit
-     *
-     * @param values A Map object containing the key-value pairs for the list
-     * @return the control itself
-     */
-    public TextComboBox setItems(Map<Object, String> values) {
-        this.values = values;
-        populate();
-        return this;
-    }
-
-
     @SuppressWarnings("unchecked")
     protected void populate() {
         if (values != null && ctrl != null) try {
@@ -78,6 +65,52 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         populate();
         return this;
     }
+
+    public TextComboBox insertItemAt(Object key, String item, Integer index){
+        this.values.put(key, item);
+        if(this.ctrl != null){
+            try{
+                BBjListEdit cb = (BBjListEdit) ctrl;
+                BBjVector v = new BBjVector();
+                v.add(values.get(key));
+                cb.insertItems(index, v);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    public TextComboBox addItems(Map<Object, String> items){
+        this.values.putAll(items);
+        this.populate();
+        return this;
+    }
+
+    public TextComboBox insertItemsAt(Map<Object, String> items, Integer index){
+        this.values.putAll(items);
+        if(this.ctrl != null){
+            try{
+                BBjListEdit cb = (BBjListEdit) ctrl;
+                Iterator<Object> it = items.keySet().iterator();
+                Integer counter = 0; 
+                while (it.hasNext()) {
+                    BBjVector v = new BBjVector();
+                    v.add(values.get(it.next()));
+                    cb.insertItems(index + counter++, v);
+                }
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+
+
+
+
+
 
     public void closeList() {
         try {
@@ -154,6 +187,18 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         } catch (BBjException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * set the list of items into the ComboBoxEdit
+     *
+     * @param values A Map object containing the key-value pairs for the list
+     * @return the control itself
+     */
+    public TextComboBox setItems(Map<Object, String> values) {
+        this.values = values;
+        populate();
+        return this;
     }
 
     public void setMaximumRowCount(int max) {
