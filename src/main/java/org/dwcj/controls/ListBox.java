@@ -3,20 +3,15 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjVector;
 
-import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.listbox.ListBoxSelectEvent;
 import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -24,13 +19,14 @@ import java.util.function.Consumer;
 public final class ListBox extends AbstractDwclistControl implements IScrollable, IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
 
     private BBjListBox bbjListBox;
-
+    
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
-
+    
     private Consumer<ListBoxSelectEvent> callback;
-    Boolean multipleSelection;
+    Boolean multipleSelection = null;
+    private SimpleEntry<Integer, String> textAt = null;
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -163,18 +159,18 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         }
         return null;
     }
-
-
-    public ListBox getItemCount() {
-        if(this.ctrl != null){
-            try{
-                bbjListBox.getItemCount();
-            } catch(BBjException e){
-                e.printStackTrace();
+    
+    
+        public ListBox getItemCount() {
+            if(this.ctrl != null){
+                try{
+                    bbjListBox.getItemCount();
+                } catch(BBjException e){
+                    e.printStackTrace();
+                }
             }
+            return this;
         }
-        return this;
-    }
 
     /**
      * Returns true or false based on the ListBox allows selection of multiple items
@@ -296,6 +292,41 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
      * @param bool - True or false whether or not to allow multiple selection
      * @return boolean
      */
+    
+    public ListBox removeAllItems(){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).removeAllItems();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    public ListBox removeItemAt(Integer idx){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).removeItemAt(idx);
+            }catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    public ListBox selectIndex(Integer idx){
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).selectIndex(idx);
+            }catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+
     public ListBox setMultipleSelection(Boolean multipleSelection) {
         if(this.ctrl != null){
             try {
@@ -305,6 +336,18 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
             }
         }
         this.multipleSelection = multipleSelection;
+        return this;
+    }
+
+    public ListBox setTextAt(Integer idx, String text){
+        this.textAt = new SimpleEntry<Integer,String>(idx, text);
+        if(this.ctrl != null){
+            try{
+                ((BBjListBox) this.ctrl).setTextAt(idx, text);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
         return this;
     }
 
@@ -607,6 +650,10 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
 
         if(this.multipleSelection != null){
             this.setMultipleSelection(this.multipleSelection);
+        }
+
+        if(this.textAt != null){
+            this.setTextAt(this.textAt.getKey(), this.textAt.getValue());
         }
 
         if(this.horizontalScrollBarPosition != null){
