@@ -5,7 +5,9 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.listbox.ListBoxDoubleClickEvent;
 import org.dwcj.events.listbox.ListBoxSelectEvent;
+import org.dwcj.events.sinks.listbox.ListBoxDoubleClickEventSink;
 import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
@@ -24,7 +26,8 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    private Consumer<ListBoxSelectEvent> callback;
+    private Consumer<ListBoxSelectEvent> selectEvent;
+    private Consumer<ListBoxDoubleClickEvent> doubleClickEvent;
     Boolean multipleSelection = null;
     private SimpleEntry<Integer, String> textAt = null;
 
@@ -283,7 +286,15 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
             new ListBoxSelectEventSink(this, callback);
         }
-        this.callback = callback;
+        this.selectEvent = callback;
+        return this;
+    }
+
+    public ListBox onDoubleClick(Consumer<ListBoxDoubleClickEvent> callback) {
+        if(this.ctrl != null){
+            new ListBoxDoubleClickEventSink(this, callback);
+        }
+        this.doubleClickEvent = callback;
         return this;
     }
 
@@ -644,8 +655,12 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
 
-        if(this.callback != null){
-            this.onSelect(this.callback);
+        if(this.selectEvent != null){
+            this.onSelect(this.selectEvent);
+        }
+        
+        if(this.doubleClickEvent != null){
+            this.onDoubleClick(this.doubleClickEvent);
         }
 
         if(this.multipleSelection != null){
