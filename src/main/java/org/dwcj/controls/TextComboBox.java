@@ -4,7 +4,9 @@ import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.sinks.textComboBox.TextComboBoxChangeEventSink;
 import org.dwcj.events.sinks.textComboBox.TextComboBoxSelectEventSink;
+import org.dwcj.events.textComboBox.TextComboBoxChangeEvent;
 import org.dwcj.events.textComboBox.TextComboBoxSelectEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
@@ -30,6 +32,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     }
 
     private Consumer<TextComboBoxSelectEvent> selectEvent = null;
+    private Consumer<TextComboBoxChangeEvent> changeEvent = null;
     private String editText = null;
     private Integer maxRowCount = null;
     private SimpleEntry<Integer, String> textAt = null;
@@ -294,6 +297,15 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             new TextComboBoxSelectEventSink(this, callback);
         }
         this.selectEvent = callback;
+        return this;
+    }
+    
+    
+    public TextComboBox onChange(Consumer<TextComboBoxChangeEvent> callback) {
+        if(this.ctrl != null){
+            new TextComboBoxChangeEventSink(this, callback);
+        }
+        this.changeEvent = callback;
         return this;
     }
 
