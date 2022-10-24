@@ -5,8 +5,14 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.sinks.textComboBox.TextComboBoxChangeEventSink;
+import org.dwcj.events.sinks.textComboBox.TextComboBoxCloseEventSink;
+import org.dwcj.events.sinks.textComboBox.TextComboBoxEditModifyEventSink;
+import org.dwcj.events.sinks.textComboBox.TextComboBoxOpenEventSink;
 import org.dwcj.events.sinks.textComboBox.TextComboBoxSelectEventSink;
 import org.dwcj.events.textComboBox.TextComboBoxChangeEvent;
+import org.dwcj.events.textComboBox.TextComboBoxCloseEvent;
+import org.dwcj.events.textComboBox.TextComboBoxEditModifyEvent;
+import org.dwcj.events.textComboBox.TextComboBoxOpenEvent;
 import org.dwcj.events.textComboBox.TextComboBoxSelectEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
@@ -33,6 +39,9 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
 
     private Consumer<TextComboBoxSelectEvent> selectEvent = null;
     private Consumer<TextComboBoxChangeEvent> changeEvent = null;
+    private Consumer<TextComboBoxOpenEvent> openEvent = null;
+    private Consumer<TextComboBoxCloseEvent> closeEvent = null;
+    private Consumer<TextComboBoxEditModifyEvent> editModifyEvent = null;
     private String editText = null;
     private Integer maxRowCount = null;
     private SimpleEntry<Integer, String> textAt = null;
@@ -292,6 +301,11 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
 
 
 
+
+
+
+
+    
     public TextComboBox onSelect(Consumer<TextComboBoxSelectEvent> callback) {
         if(this.ctrl != null){
             new TextComboBoxSelectEventSink(this, callback);
@@ -306,6 +320,30 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             new TextComboBoxChangeEventSink(this, callback);
         }
         this.changeEvent = callback;
+        return this;
+    }
+
+    public TextComboBox onOpen(Consumer<TextComboBoxOpenEvent> callback) {
+        if(this.ctrl != null){
+            new TextComboBoxOpenEventSink(this, callback);
+        }
+        this.openEvent = callback;
+        return this;
+    }
+    
+    public TextComboBox onClose(Consumer<TextComboBoxCloseEvent> callback) {
+        if(this.ctrl != null){
+            new TextComboBoxCloseEventSink(this, callback);
+        }
+        this.closeEvent = callback;
+        return this;
+    }
+
+    public TextComboBox onEditModify(Consumer<TextComboBoxEditModifyEvent> callback) {
+        if(this.ctrl != null){
+            new TextComboBoxEditModifyEventSink(this, callback);
+        }
+        this.editModifyEvent = callback;
         return this;
     }
 
@@ -325,6 +363,12 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     // }
 
     
+
+
+
+
+
+
 
     @Override
     public Boolean isReadOnly(){
@@ -532,6 +576,18 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
 
         if(this.selectEvent != null){
             this.onSelect(this.selectEvent);
+        }
+        if(this.changeEvent != null){
+            this.onChange(this.changeEvent);
+        }
+        if(this.openEvent != null){
+            this.onOpen(this.openEvent);
+        }
+        if(this.closeEvent != null){
+            this.onClose(this.closeEvent);
+        }
+        if(this.editModifyEvent != null){
+            this.onEditModify(this.editModifyEvent);
         }
 
         // if(this.fieldHeight != null){

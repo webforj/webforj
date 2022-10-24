@@ -9,9 +9,13 @@ import com.basis.startup.type.BBjVector;
 
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.combobox.ComboBoxChangeEvent;
+import org.dwcj.events.combobox.ComboBoxCloseEvent;
+import org.dwcj.events.combobox.ComboBoxOpenEvent;
 import org.dwcj.events.combobox.ComboBoxSelectEvent;
 import org.dwcj.events.sinks.combobox.ComboBoxSelectEventSink;
 import org.dwcj.events.sinks.combobox.ComboBoxChangeEventSink;
+import org.dwcj.events.sinks.combobox.ComboBoxCloseEventSink;
+import org.dwcj.events.sinks.combobox.ComboBoxOpenEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -45,6 +49,8 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
 
     private Consumer<ComboBoxChangeEvent> changeEvent = null;
     private Consumer<ComboBoxSelectEvent> selectEvent = null;
+    private Consumer<ComboBoxOpenEvent> openEvent = null;
+    private Consumer<ComboBoxCloseEvent> closeEvent = null;
     //private Number fieldHeight;
     private Integer maxRowCount;
     //private Number openWidth;
@@ -255,6 +261,13 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         return this;
     }
 
+
+
+
+
+
+
+
     /**
      * Register a callback for selecting an item within the box
      *
@@ -283,6 +296,31 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         this.changeEvent=callback;
         return this;
     }
+
+
+
+    public ComboBox onOpen(Consumer<ComboBoxOpenEvent> callback){
+        if(this.ctrl != null){
+            new ComboBoxOpenEventSink(this, callback);
+        }
+        this.openEvent = callback;
+        return this;
+    }
+    
+    
+    public ComboBox onClose(Consumer<ComboBoxCloseEvent> callback){
+        if(this.ctrl != null){
+            new ComboBoxCloseEventSink(this, callback);
+        }
+        this.closeEvent = callback;
+        return this;
+    }
+
+
+
+
+
+
 
     public ComboBox removeAllItems(){
         if(this.ctrl != null){
@@ -572,6 +610,14 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
 
         if(this.selectEvent != null){
             this.onSelect(this.selectEvent);
+        }
+        
+        if(this.openEvent != null){
+            this.onOpen(this.openEvent);
+        }
+        
+        if(this.closeEvent != null){
+            this.onClose(this.closeEvent);
         }
 
         // if(this.fieldHeight != null){
