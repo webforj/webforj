@@ -11,7 +11,7 @@ import java.io.IOException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
+public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable {
     
     private BBjInputD bbjDateEditBox;
 
@@ -22,6 +22,25 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     public static enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
+
+    private Boolean beep = null;
+    private Integer cHeight = null;
+    private Integer cWidth = null;
+    private Integer caretPos = null;
+    private String editString = null;
+    private Boolean highlight = null;
+    private Boolean insert = null;
+    private Integer length = null;
+    private String locale = null;
+    private Integer margin = null;
+    private String mask = null;
+    private Boolean pEnter = null;
+    private Boolean pTab = null;
+    private String restore = null;
+    private Boolean plusMinus = null;
+    private Boolean showWeeks = null;
+
+
 
     public DateEditBox(){}
 
@@ -196,9 +215,9 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     }
 
     /*==Unsure if this is the correct return type== */
-    public Object getTodayColor(){
+    public String getTodayColor(){
         try {
-            return bbjDateEditBox.getTodayColor();
+            return bbjDateEditBox.getTodayColor().toString();
         } catch (BBjException e){
             e.printStackTrace();
         } 
@@ -206,9 +225,9 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     }
 
     /*==Unsure if this is the correct return type== */
-    public Object getValue(){
+    public String getValue(){
         try {
-            return bbjDateEditBox.getValue();
+            return bbjDateEditBox.getValue().toString();
         } catch (BBjException e){
             e.printStackTrace();
         } 
@@ -216,9 +235,9 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     }
 
     /*==Unsure if this is the correct return type== */
-    public Object getWeekdayColor(){
+    public String getWeekdayColor(){
         try {
-            return bbjDateEditBox.getWeekdayColor();
+            return bbjDateEditBox.getWeekdayColor().toString();
         } catch (BBjException e){
             e.printStackTrace();
         } 
@@ -226,26 +245,22 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
     }
 
     /*==Unsure if this is the correct return type== */
-    public Object getWeekendColor(){
+    public String getWeekendColor(){
         try {
-            return bbjDateEditBox.getWeekendColor();
+            return bbjDateEditBox.getWeekendColor().toString();
         } catch (BBjException e){
             e.printStackTrace();
         } 
         return null;
     }
 
-    @Override
-    public Boolean isReadOnly(){
-        try {
-            return bbjDateEditBox.isEditable();
-        } catch (BBjException e){
-            e.printStackTrace();
-        } 
-        return null;
-    }
 
-    public boolean isValid(){
+
+
+    
+
+
+    public Boolean isValid(){
         try {
             return bbjDateEditBox.isValid();
         } catch (BBjException e){
@@ -270,143 +285,187 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
         } 
     }
 
-    public DateEditBox setBeep(boolean beep){
-        try {
-            bbjDateEditBox.setBeep(beep);
-        } catch (BBjException e){
-            e.printStackTrace();
+    public DateEditBox setBeep(Boolean beep){
+        this.beep = beep;
+        if(this.ctrl != null) {
+            try {
+                bbjDateEditBox.setBeep(beep);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
     
     public DateEditBox setCalendarSize(int width, int height){
-        try {
-            bbjDateEditBox.setCalendarSize(width, height);
-        } catch (BBjException e){
-            e.printStackTrace();
+        this.cWidth = width;
+        this.cHeight = height;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setCalendarSize(width, height);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
 
     public DateEditBox setCaretPosition(int position){
-        try {
-            bbjDateEditBox.setCaretPosition(position);
-        } catch (BBjException e){
-            e.printStackTrace();
+        this.caretPos = position;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setCaretPosition(position);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+
         }
         return this; 
     }
     
-    @Override
-    public DateEditBox setReadOnly(Boolean editable){
-        try {
-            bbjDateEditBox.setEditable(editable);
-        } catch (BBjException e){
-            e.printStackTrace();
-        }
-        return this; 
-    }
+
     
     public DateEditBox setEditString(String edit){
-        try {
-            bbjDateEditBox.setEditString(edit.getBytes());
-        } catch (BBjException e){
-            e.printStackTrace();
+        this.editString = edit;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setEditString(edit.getBytes());
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
+
         return this; 
     }
     
-    public DateEditBox setHighlight(boolean highlight){
-        try {
-            bbjDateEditBox.setHighlight(highlight);
-        } catch (BBjException e){
-            e.printStackTrace();
+    public DateEditBox setHighlight(Boolean highlight){
+        this.highlight = highlight;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setHighlight(highlight);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+
+        return this; 
+    }
+
+
+    public DateEditBox setInsertMode(Boolean insert){
+        this.insert = insert;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setInsertMode(insert);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+    
+        return this; 
+    }
+
+    public DateEditBox setLength(Integer length){
+        this.length = length;
+        if(ctrl != null){
+            try {
+                bbjDateEditBox.setLength(length);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
 
-    public DateEditBox setInsertMode(boolean insert){
-        try {
-            bbjDateEditBox.setInsertMode(insert);
-        } catch (BBjException e){
-            e.printStackTrace();
-        }
-        return this; 
-    }
-
-    public DateEditBox setLength(int length){
-        try {
-            bbjDateEditBox.setLength(length);
-        } catch (BBjException e){
-            e.printStackTrace();
-        }
-        return this; 
-    }
 
     public DateEditBox setLocale(String locale){
-        bbjDateEditBox.setLocale(locale);
+        this.locale = locale;
+        if(this.ctrl != null){
+            bbjDateEditBox.setLocale(locale);
+        }
         return this;
     }
 
-    public DateEditBox setMargin(int marginWidth){
-        try {
-            bbjDateEditBox.setMargin(marginWidth);
-        } catch (BBjException e){
-            e.printStackTrace();
+    public DateEditBox setMargin(Integer marginWidth){
+        this.margin = marginWidth;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setMargin(marginWidth);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
     
     public DateEditBox setMask(String mask){
-        try {
-            bbjDateEditBox.setMask(mask);
-        } catch (BBjException e){
-            e.printStackTrace();
+        this.mask = mask;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setMask(mask);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
     
-    public DateEditBox setPassEnter(boolean pass){
-        try {
-            bbjDateEditBox.setPassEnter(pass);
-        } catch (BBjException e){
-            e.printStackTrace();
+    public DateEditBox setPassEnter(Boolean pass){
+        this.pEnter = pass;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setPassEnter(pass);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
     
-    public DateEditBox setPassTab(boolean pass){
-        try {
-            bbjDateEditBox.setPassTab(pass);
-        } catch (BBjException e){
-            e.printStackTrace();
+    public DateEditBox setPassTab(Boolean pass){
+        this.pTab = pass;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setPassTab(pass);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
     
     public DateEditBox setRestore(String restore){
-        try {
+        this.restore = restore;
+        if(this.ctrl != null){
+            try {
             bbjDateEditBox.setRestore(restore);
         } catch (BBjException e){
             e.printStackTrace();
         }
+        }
         return this; 
     }
     
-    public DateEditBox setPlusMinus(boolean plusMinus){
-        try {
-            bbjDateEditBox.setPlusMinus(plusMinus);
-        } catch (BBjException e){
-            e.printStackTrace();
+    public DateEditBox setPlusMinus(Boolean plusMinus){
+        this.plusMinus = plusMinus;
+        if(ctrl != null){
+            try {
+                bbjDateEditBox.setPlusMinus(plusMinus);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
     
     public DateEditBox setShowWeeks(boolean showWeeks){
-        try {
-            bbjDateEditBox.setShowWeeks(showWeeks);
-        } catch (BBjException e){
-            e.printStackTrace();
+        this.showWeeks = showWeeks;
+        if(this.ctrl != null){
+            try {
+                bbjDateEditBox.setShowWeeks(showWeeks);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
         }
         return this; 
     }
@@ -457,6 +516,56 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
         }
         return this; 
     }
+
+
+
+
+
+
+
+    @Override
+    public Boolean isReadOnly(){
+        try {
+            return bbjDateEditBox.isEditable();
+        } catch (BBjException e){
+            e.printStackTrace();
+        } 
+        return null;
+    }
+
+    @Override
+    public DateEditBox setReadOnly(Boolean editable){
+        try {
+            bbjDateEditBox.setEditable(editable);
+        } catch (BBjException e){
+            e.printStackTrace();
+        }
+        return this; 
+    }
+
+    @Override
+    public Boolean isFocusable(){
+        try{
+            bbjDateEditBox.isFocusable();
+        } catch(BBjException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public DateEditBox setFocusable(Boolean focusable){
+        try{
+            bbjDateEditBox.setFocusable(focusable);
+        } catch (BBjException e){
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+
+
+
 
 
     @Override
@@ -526,4 +635,15 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly{
         return this;
     } 
 
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+        if(this.focusable != null){
+            this.setFocusable(this.focusable);
+        }
+
+
+    }
 }
