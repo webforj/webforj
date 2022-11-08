@@ -644,6 +644,73 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setFocusable(this.focusable);
         }
 
+        if(this.beep != null){
+            this.setBeep(this.beep);
+        }
+
+        if(this.caretPos != null){
+            this.setCaretPosition(this.caretPos);
+        }
+
+        if(this.cHeight != null && this.cWidth != null){
+            this.setCalendarSize(this.cHeight, this.cWidth);
+        }
+
+        if(this.editString != null){
+            this.setEditString(this.editString);
+        }
+
+        if(this.highlight != null){
+            this.setHighlight(this.highlight);
+        }
+
+        if(this.insert != null){
+            this.setInsertMode(this.insert);
+        }
+
+        if(this.length != null){
+            this.setLength(this.length);
+        }
+
+        if(this.locale != null){
+            this.setLocale(this.locale);
+        }
+
+        if(this.margin != null){
+            this.setMargin(this.margin);
+        }
+
+        if(this.mask!=null){
+            this.setMask(this.mask);
+        }
+
+        if(this.pEnter != null){
+            this.setPassEnter(this.pEnter);
+        }
+
+        if(this.pTab != null){
+            this.setPassTab(this.pTab);
+        }
+
+        if(this.restore != null){
+            this.setRestore(this.restore);
+        }
+
+        if(this.plusMinus != null){
+            this.setPlusMinus(this.plusMinus);
+        }
+
+        if(this.showWeeks != null){
+            this.setShowWeeks(this.showWeeks);
+        }
+
+        if(this.readOnly != null){
+            this.setReadOnly(this.readOnly);
+        }
+
+        if(this.focusable != null){
+            this.setFocusable(this.focusable);
+        }
 
     }
 }
