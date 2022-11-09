@@ -47,6 +47,15 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     private SimpleEntry<Integer, String> textAt = null;
 
 
+
+    public TextComboBox(){
+        this.readOnly = false;
+        this.focusable = true;
+        this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
+        this.tabTraversable = true;
+        this.textAlignment = Alignment.LEFT;
+    }
+
     @Override
     protected void create(AbstractDwcjPanel p) {
 
@@ -379,7 +388,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.readOnly;
     }
 
     @Override 
@@ -391,6 +400,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
+        this.readOnly = readOnly;
         return this;
     }
 
@@ -403,7 +413,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.focusable;
     }
 
     @Override 
@@ -415,15 +425,13 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
+        this.focusable = focusable;
         return this;
     }
 
     @Override
     public MouseWheelCondition getScrollWheelBehavior(){
-        if(this.ctrl != null){
-            return this.mouseWheelCondition;
-        }
-        return null;
+        return this.mouseWheelCondition;
     }
 
     @Override
@@ -448,7 +456,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.tabTraversable;
     }
 
     @Override 
@@ -460,6 +468,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
+        this.tabTraversable = traversable;
         return this;
     }
 
@@ -468,7 +477,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         if(this.ctrl != null){
             return this.textAlignment;
         }
-        return null;
+        return this.textAlignment;
     }
 
     @Override
@@ -480,6 +489,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
+        this.textAlignment = textAlignment;
         return this;
     }
 
@@ -597,10 +607,35 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         if(this.maxRowCount != null){
             this.setMaximumRowCount(maxRowCount);
         }
+
+        if(this.editText != null){
+            this.setEditText(this.editText);
+        }
         
         // if(this.openWidth != null){
         //     this.setOpenWidth(openWidth);
         // }
+
+        if(this.readOnly != false){
+            this.setReadOnly(this.readOnly);
+        }
+
+        if(this.focusable != true){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.mouseWheelCondition != MouseWheelCondition.DEFAULT){
+            this.setScrollWheelBehavior(this.mouseWheelCondition);
+        }
+
+        if(this.tabTraversable != true){
+            this.setTabTraversable(this.tabTraversable);
+        }
+
+        if(this.textAlignment != Alignment.LEFT){
+            this.setTextAlignment(this.textAlignment);
+        }
+        
 
     }
 }

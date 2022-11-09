@@ -4,8 +4,6 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjNumber; //Can't cast
-import com.basis.startup.type.BBjVector;
 
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.combobox.ComboBoxChangeEvent;
@@ -40,21 +38,24 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
-    
-    
-    
-    
-    // private ComboBoxSelectEventSink comboBoxSelectEventSink = null;
-    // private ComboBoxChangeEventSink comboBoxChangeEventSink = null;
 
     private Consumer<ComboBoxChangeEvent> changeEvent = null;
     private Consumer<ComboBoxSelectEvent> selectEvent = null;
     private Consumer<ComboBoxOpenEvent> openEvent = null;
     private Consumer<ComboBoxCloseEvent> closeEvent = null;
-    //private Number fieldHeight;
     private Integer maxRowCount;
-    //private Number openWidth;
     private SimpleEntry<Integer, String> textAt = null;
+
+
+    public ComboBox(){
+        this.readOnly = false;
+        this.focusable = true;
+        this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
+        this.tabTraversable = true;
+        this.textAlignment = Alignment.LEFT;
+    }
+
+
 
 
     @Override
@@ -367,6 +368,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
     //     return this;
     // }
 
+
     public ComboBox setMaximumRowCount(Integer max){
         if(this.ctrl != null){
             try{
@@ -411,7 +413,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.readOnly;
     }
 
     @Override 
@@ -423,6 +425,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
+        this.readOnly = readOnly;
         return this;
     }
 
@@ -435,7 +438,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.focusable;
     }
 
     @Override 
@@ -447,15 +450,13 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
+        this.focusable = focusable;
         return this;
     }
 
     @Override
     public MouseWheelCondition getScrollWheelBehavior(){
-        if(this.ctrl != null){
             return this.mouseWheelCondition;
-        }
-        return null;
     }
 
     @Override
@@ -467,6 +468,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
+        this.mouseWheelCondition = condition;
         return this;
 
     }
@@ -480,7 +482,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.tabTraversable;
     }
 
     @Override 
@@ -492,15 +494,13 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
+        this.tabTraversable = traversable;
         return this;
     }
 
     @Override
     public Alignment getTextAlignment(){
-        if(this.ctrl != null){
-            return this.textAlignment;
-        }
-        return null;
+        return this.textAlignment;
     }
 
     @Override
@@ -512,6 +512,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
                 e.printStackTrace();
             }
         }
+        this.textAlignment = textAlignment;
         return this;
     }
 
@@ -631,6 +632,26 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         // if(this.openWidth != null){
         //     this.setOpenWidth(openWidth);
         // }
+
+        if(this.readOnly != false){
+            this.setReadOnly(this.readOnly);
+        }
+
+        if(this.focusable != true){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.mouseWheelCondition != MouseWheelCondition.DEFAULT){
+            this.setScrollWheelBehavior(this.mouseWheelCondition);
+        }
+
+        if(this.tabTraversable != true){
+            this.setTabTraversable(this.tabTraversable);
+        }
+
+        if(this.textAlignment != Alignment.LEFT){
+            this.setTextAlignment(this.textAlignment);
+        }
 
     }
 }

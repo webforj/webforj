@@ -61,8 +61,9 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      */
     
     private ButtonPushEventSink buttonPushEventSink;
-    private Boolean disableOnClick = null;
+    private Boolean disableOnClick = false;
     TextVertialAlignment verticalAlignment = TextVertialAlignment.CENTER;
+    
     
     
 
@@ -72,11 +73,13 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      *  This first section implements parameterized constructors, overrides the
      * create() method, and implements methods for the control-specific behaviors,
      * which often include getters and setters for control-specific member variables
-     * and/or functionality.
+     * and/or functionality. Constructors initialize the inherited interface member
+     * variables.
      * =====================================================================================
      */
 
     public Button() {
+        this("");
     }
 
     /**
@@ -85,6 +88,9 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      */
     public Button(String text) {
         super.setControlText(text);
+        this.focusable = true;
+        this.tabTraversable = true;
+        this.textAlignment = Alignment.MIDDLE;
     }
 
     @Override
@@ -128,7 +134,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
-        return false;
+        return this.disableOnClick;
     }
 
     /**
@@ -154,7 +160,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
         if(this.ctrl != null){
             return this.verticalAlignment;
         }
-        return TextVertialAlignment.CENTER;
+        return this.verticalAlignment;
     }
 
 
@@ -277,7 +283,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.tabTraversable;
     }
 
     @Override 
@@ -303,7 +309,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.tabTraversable;
     }
 
     @Override 
@@ -322,10 +328,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
     @Override
     public Alignment getTextAlignment(){
-        if(this.ctrl != null){
-            return this.textAlignment;
-        }
-        return null;
+        return this.textAlignment;
     }
 
     @Override 
@@ -355,7 +358,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
 
-        if(this.disableOnClick != null){
+        if(this.disableOnClick != false){
             this.setDisableOnClick(this.disableOnClick);
         }
 
@@ -367,15 +370,15 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
             }
         }
 
-        if(this.focusable != null){
+        if(this.focusable != true){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != null){
+        if(this.tabTraversable != true){
             this.setTabTraversable(this.tabTraversable);
         }
 
-        if(this.textAlignment != null){
+        if(this.textAlignment != Alignment.MIDDLE){
             this.setTextAlignment(this.textAlignment);
         }
     }

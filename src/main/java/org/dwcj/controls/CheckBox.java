@@ -50,10 +50,20 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
      */
     private Consumer<CheckBoxChangeEvent> callback = null;
     HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
-    Boolean checked = null;
+    Boolean checked = false;
 
 
-
+    /* =====================================================================================
+     * Constructor initializes the inherited interface member variables to their defaults
+     * =====================================================================================
+     */
+    public CheckBox(){
+        this.readOnly = false;
+        this.focusable = true;
+        this.tabTraversable = true;
+        this.textAlignment = Alignment.LEFT;
+        
+    }
 
     /*=====================================================================================
      *  This first section implements parameterized constructors, overrides the
@@ -248,7 +258,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.readOnly;
     }
 
     /**
@@ -280,7 +290,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.focusable;
     }
 
     @Override
@@ -307,7 +317,7 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.tabTraversable;
     }
 
     @Override
@@ -378,19 +388,19 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
             this.setHorizontalTextPosition(this.horizontalTextPosition);
         }
 
-        if(this.readOnly != null){
-            this.setReadOnly(this.readOnly);
+        if(this.readOnly != false){
+            this.setReadOnly(true);
         }
 
-        if(this.focusable != null){
+        if(this.focusable != true){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != null){
+        if(this.tabTraversable != true){
             this.setTabTraversable(this.tabTraversable);
         }
 
-        if(this.textAlignment != null){
+        if(this.textAlignment != Alignment.LEFT){
             this.setTextAlignment(this.textAlignment);
         }
     }
