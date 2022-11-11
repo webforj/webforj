@@ -51,9 +51,9 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
             ctrl.setAttribute("button-height", "auto");
+            bbjListBox = (BBjListBox) ctrl;
             populate();
             catchUp();
-            bbjListBox = (BBjListBox) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -500,7 +500,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
                 ((BBjListBox) this.ctrl).isHorizontalScrollBarVisible();
         }
-        return null;
+        return false;
 
     }
 
@@ -509,7 +509,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
                 ((BBjListBox) this.ctrl).isVerticalScrollBarVisible();
         }
-        return null;
+        return false;
 
     }
 

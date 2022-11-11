@@ -66,9 +66,9 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
             ctrl.setAttribute("button-height", "auto");
+            this.bbjListEdit = (BBjListEdit) ctrl;
             populate();
             catchUp();
-            this.bbjListEdit = (BBjListEdit) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }

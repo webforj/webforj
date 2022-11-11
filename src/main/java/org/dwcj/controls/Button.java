@@ -283,7 +283,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
                 e.printStackTrace();
             }
         }
-        return this.tabTraversable;
+        return this.focusable;
     }
 
     @Override 

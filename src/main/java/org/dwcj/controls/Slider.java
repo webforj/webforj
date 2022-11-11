@@ -31,8 +31,8 @@ public final class Slider extends AbstractDwcControl {
                 ctrl = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
             else
                 ctrl = w.addVerticalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
-            catchUp();
-            bbjSlider = (BBjSlider) ctrl;
+                bbjSlider = (BBjSlider) ctrl;
+                catchUp();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -60,6 +60,7 @@ public abstract class AbstractDwcControl implements IControl {
     protected Integer horizontalScrollBarPosition = null; 
     protected Integer verticalScrollBarPosition = null;
     protected IMouseWheelEnableable.MouseWheelCondition mouseWheelCondition = null;
+    protected ITextControl.Highlight textHighlight = null;
 
         
     static {

@@ -38,8 +38,8 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly{
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText());
-            catchUp();
             bbjEditBox = (BBjEditBox) this.ctrl;
+            catchUp();
         } catch (Exception e) {
             e.printStackTrace();
         }

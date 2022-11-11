@@ -12,7 +12,7 @@ import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable {
+public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextControl, ITextAlignable {
     
     private BBjInputD bbjDateEditBox;
 
@@ -53,6 +53,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
         this.focusable = true;
         this.tabTraversable = true;
         this.textAlignment = Alignment.LEFT; 
+        this.textHighlight = Highlight.HIGHLIGHT_NONE;
     }
     
     @Override
@@ -651,6 +652,24 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
     }
 
     @Override
+    public Highlight getHighlightOnFocus(){
+        return this.textHighlight;
+    } 
+
+    @Override
+    public DateEditBox setHighlightOnFocus(Highlight highlight){
+        if(this.ctrl != null){
+            try{
+                bbjDateEditBox.setHighlightOnFocus(highlight.highlight);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.textHighlight = highlight;
+        return this;
+    }
+
+    @Override
     public Alignment getTextAlignment(){
         if(this.ctrl != null){
             return this.textAlignment;
@@ -750,8 +769,6 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
 
-        App.consoleLog("In catchup" + this.beep.toString());
-
         if(this.beep != false){
             this.setBeep(this.beep);
         }
@@ -829,6 +846,10 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
 
         if(this.textAlignment != Alignment.LEFT){
             this.setTextAlignment(this.textAlignment);
+        }
+
+        if(this.textHighlight != Highlight.HIGHLIGHT_NONE){
+            this.setHighlightOnFocus(this.textHighlight);
         }
 
     }
