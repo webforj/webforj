@@ -250,19 +250,13 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
     */
 
     public Button setExpanse(Expanse expanse) {
-        if(this.ctrl != null){
             super.setControlExpanse(expanse);
             return this;
-        }
-        return null;
     }
 
     public Button setTheme(Theme theme) {
-        if(this.ctrl != null){
             super.setControlTheme(theme);
             return this;
-        }
-        return null;
     }
 
 
@@ -381,6 +375,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
         if(this.textAlignment != Alignment.MIDDLE){
             this.setTextAlignment(this.textAlignment);
         }
+
     }
         
 }

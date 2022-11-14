@@ -45,8 +45,8 @@ public abstract class AbstractDwcControl implements IControl {
      * components
      *=====================================================================================
      */
-    private Enum<?> theme;
-    private Enum<?> expanse;
+    private Enum<?> theme = null;
+    private Enum<?> expanse = null;
 
 
     /*=====================================================================================

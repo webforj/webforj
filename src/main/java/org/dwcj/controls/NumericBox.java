@@ -11,7 +11,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
 public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextControl{
 
-    private BBjInputN numBox;
+    protected BBjInputN numBox;
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
@@ -24,20 +24,20 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
 
 
 
-    private String commaChar = ",";
-    private String dotChar = ".";
-    private String editString = "";
-    private Boolean highlight = false;
-    private Boolean insertMode = true;
-    private Integer length = 9;
-    private Integer margin = 3;
-    private String mask = "-########";
-    private Boolean negatable = true;
-    private Boolean pEnter = false;
-    private Boolean pTab = false;
-    private float restore = 0;
-    private Boolean commas = false;
-    private float value = 0;
+    protected String commaChar = ",";
+    protected String dotChar = ".";
+    protected String editString = "";
+    protected Boolean highlight = false;
+    protected Boolean insertMode = true;
+    protected Integer length = 9;
+    protected Integer margin = 3;
+    protected String mask = "-########";
+    protected Boolean negatable = true;
+    protected Boolean pEnter = false;
+    protected Boolean pTab = false;
+    protected float restore = 0;
+    protected Boolean commas = false;
+    protected float value = 0;
 
     
 

@@ -13,7 +13,7 @@ import org.dwcj.events.sinks.RadioButtonCheckEventSink;
 import java.util.function.Consumer;
 
 
-public final class RadioButton extends AbstractDwcControl implements IReadOnly{
+public final class RadioButton extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable {
 
     private BBjRadioButton bbjRadioButton;
 
@@ -21,6 +21,25 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
 
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum HorizontalTextPosition{
+        RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
+        
+        public final Integer position;
+        
+        private HorizontalTextPosition(Integer position){
+            this.position = position;
+        }
+    }
+
+    Boolean selected = false;
+    HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
+
+    public RadioButton(){
+        this.readOnly = false;
+        this.focusable = true;
+        this.tabTraversable = true;
     }
 
     @Override
@@ -48,7 +67,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         return this;
     }
 
-    public int getButtonID() {
+    public Integer getButtonID() {
         try {
             return bbjRadioButton.getID();
         } catch (BBjException e) {
@@ -69,23 +88,49 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
     }
 
 
-
-    public boolean isSelected() {
-        try {
-            return bbjRadioButton.isSelected();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return false;
+    public HorizontalTextPosition getHorizontalTextPosition(){
+        if(this.ctrl != null){
+            return this.horizontalTextPosition;
         }
+        return HorizontalTextPosition.RIGHT;
     }
 
 
-    public void setSelected(boolean selected) {
-        try {
-            bbjRadioButton.setSelected(selected);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public RadioButton setHorizontalTextPosition(HorizontalTextPosition position) {
+        //todo: why could an exception be thrown?
+        if(this.ctrl != null){
+            try {
+                bbjRadioButton.setHorizontalTextPosition(position.position);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.horizontalTextPosition = position;
+        return this;
+    }
+
+
+    public Boolean isSelected() {
+        if(this.ctrl != null){
+            try {
+                return bbjRadioButton.isSelected();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+
+    public RadioButton setSelected(boolean selected) {
+        if(this.ctrl != null){
+            try {
+                bbjRadioButton.setSelected(selected);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
     }
 
 
@@ -101,13 +146,63 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
         return null;
     }
 
-  @Override
+    @Override
     public RadioButton setReadOnly(Boolean editable) {
         try {
             bbjRadioButton.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
+    }
+
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                bbjRadioButton.isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public RadioButton setFocusable(Boolean focusable){
+        if(this.ctrl != null) {
+            try{
+                bbjRadioButton.setFocusable(focusable);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.focusable = focusable;
+        return this;
+    }
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                bbjRadioButton.isTabTraversable();
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public RadioButton setTabTraversable(Boolean traverse){
+        if(this.ctrl != null){
+            try{
+                bbjRadioButton.setTabTraversable(traverse);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.tabTraversable = traverse;
         return this;
     }
 
@@ -175,6 +270,44 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly{
     public RadioButton setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
+    }
+
+
+    @Override
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        if (this.caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
+
+        super.catchUp();
+        
+        if(this.selected != false){
+            this.setSelected(this.selected);
+        } 
+        if(this.callback != null){
+            this.onCheck(this.callback);
+        }
+        
+        if(this.horizontalTextPosition != HorizontalTextPosition.RIGHT){
+            try{
+                bbjRadioButton.setHorizontalTextPosition(horizontalTextPosition.position);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+            this.setHorizontalTextPosition(this.horizontalTextPosition);
+        }
+
+        if(this.readOnly != false){
+            this.setReadOnly(true);
+        }
+
+        if(this.focusable != true){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.tabTraversable != true){
+            this.setTabTraversable(this.tabTraversable);
+        }
+
     }
 
 }

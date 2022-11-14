@@ -14,6 +14,16 @@ public final class ProgressBar extends AbstractDwcControl {
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
+    Boolean indeterminate = false;
+    Integer maximum = 100;
+    Integer minimum = 0;
+    /* 0 for horizontal, 1 for vertical */
+    Integer orientation = 0;
+    Boolean stringPainted = true;
+    String text = "0%";
+    Integer value = 0;
+
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         try {
@@ -31,45 +41,46 @@ public final class ProgressBar extends AbstractDwcControl {
      * This method returns the maximum range of theProgressBar control.
      * @return Returns the maximum range of the progress bar.
      */
-    public int getMaximum() {
-        try {
-            return bbjProgressBar.getMaximum();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getMaximum() {
+        if(this.ctrl != null){
+            try {
+                return bbjProgressBar.getMaximum();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.maximum;
     }
 
     /**
      * This method returns the minimum range of theProgressBar control.
      * @return Returns the minimum range of the progress bar.
      */
-    public int getMinimum() {
-        try {
-            return bbjProgressBar.getMinimum();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getMinimum() {
+        if(this.ctrl != null){
+            try {
+                return bbjProgressBar.getMinimum();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.minimum;
     }
 
-    /*
-     * ===TODO: Fix/update the return value for the Javadoc notes once
-     * confirmation of handling the BBj constants is sorted out
-     * ===
-     */
 
     /**
      * This method returns the orientation of the ProgressBar control.
-     * @return Returns HORIZONTAL if horizontal, VERTICAL if vertical.
+     * @return Returns 0 if horizontal, 1 if vertical.
      */
-    public int getOrientation() {
-        try {
-            return bbjProgressBar.getOrientation();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getOrientation() {
+        if(this.ctrl != null){
+            try {
+                return bbjProgressBar.getOrientation();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.orientation;
     }
 
     /**
@@ -77,52 +88,60 @@ public final class ProgressBar extends AbstractDwcControl {
      * @return Returns the text (label) of the progress bar control.
      */
     public String getText() {
-        try {
-            return bbjProgressBar.getText();
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                return bbjProgressBar.getText();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return "";
+        return this.text;
     }
 
     /**
      * This method returns the current value of a ProgressBar control.
      * @return Returns the current value of the progress bar control.
      */
-    public int getValue() {
-        try {
-            return bbjProgressBar.getValue();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getValue() {
+        if(this.ctrl != null){
+            try {
+                return bbjProgressBar.getValue();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.value;
     }
 
     /**
      * This method returns whether the ProgressBar control.
      * @return Returns whether the progress bar is indeterminate (false = specific range, true = indeterminate).
      */
-    public boolean isIndeterminate() {
-        try {
-            return bbjProgressBar.isIndeterminate();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isIndeterminate() {
+        if(this.ctrl != null){
+            try {
+                return bbjProgressBar.isIndeterminate();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
+        return this.indeterminate;
     }
 
     /**
      * This method returns whether the ProgressBar control will display a label (defaults to % complete).
      * @return Returns whether the progress bar will show a label (false = no label, true = label will be displayed).
      */
-    public boolean isStringPainted() {
-        try {
-            System.out.println(bbjProgressBar.isStringPainted());
-            return bbjProgressBar.isStringPainted();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isStringPainted() {
+        if(this.ctrl != null){
+            try {
+                System.out.println(bbjProgressBar.isStringPainted());
+                return bbjProgressBar.isStringPainted();
+            } catch (BBjException e) {
+                e.printStackTrace();
         }
-        return false;
+        }
+        return this.stringPainted;
     }
 
     /**
@@ -130,11 +149,13 @@ public final class ProgressBar extends AbstractDwcControl {
      * @param indeterminate - Sets whether the progress bar is indeterminate (false = Progress bar has a fixed range, which can be retrieved with getMinimum() and getMaximum(), true = Progress bar is indeterminate, indicating that the duration of the task is not yet known.)
      * @return Returns this
      */
-    public ProgressBar setIndeterminate(boolean indeterminate) {
-        try {
-            bbjProgressBar.setIndeterminate(indeterminate);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ProgressBar setIndeterminate(Boolean indeterminate) {
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setIndeterminate(indeterminate);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
@@ -144,12 +165,15 @@ public final class ProgressBar extends AbstractDwcControl {
      * @param maximum - Specifies the maximum range of the BBjProgressBar control.
      * @return Returns this
      */
-    public ProgressBar setMaximum(int maximum) {
-        try {
-            bbjProgressBar.setMaximum(maximum);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ProgressBar setMaximum(Integer maximum) {
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setMaximum(maximum);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.maximum = maximum;
         return this;
     }
 
@@ -158,32 +182,32 @@ public final class ProgressBar extends AbstractDwcControl {
      * @param minimum - Specifies the minimum range of the BBjProgressBar control.
      * @return Returns this
      */
-    public ProgressBar setMinimum(int minimum) {
-        try {
-            bbjProgressBar.setMinimum(minimum);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ProgressBar setMinimum(Integer minimum) {
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setMinimum(minimum);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.minimum = minimum;
         return this;
     }
-
-    /*
-     * ===TODO: Fix/update the parameter value for the Javadoc notes once
-     * confirmation of handling the BBj constants is sorted out
-     * ===
-     */
 
     /**
      * This method sets the orientation of the ProgressBar control to HORIZONTAL or VERTICAL.
      * @param orientation - Specifies the orientation as HORIZONTAL or VERTICAL.
      * @return Returns this
      */
-    public ProgressBar setOrientation(int orientation) {
-        try {
-            bbjProgressBar.setOrientation(orientation);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ProgressBar setOrientation(Integer orientation) {
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setOrientation(orientation);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.orientation = orientation;
         return this;
     }
 
@@ -192,12 +216,15 @@ public final class ProgressBar extends AbstractDwcControl {
      * @param stringPainted - Specifies whether the progress bar should display a label (false = Not painted, 1 = Painted)
      * @return Returns this
      */
-    public ProgressBar setStringPainted(boolean stringPainted) {
-        try {
-            bbjProgressBar.setStringPainted(stringPainted);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ProgressBar setStringPainted(Boolean stringPainted) {
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setStringPainted(stringPainted);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.stringPainted = stringPainted;
         return this;
     }
 
@@ -207,11 +234,14 @@ public final class ProgressBar extends AbstractDwcControl {
      * @return Returns this
      */
     public ProgressBar setProgressBarText(String text) {
-        try {
-            bbjProgressBar.setText(text);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setText(text);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.text = text;
         return this;
     }
 
@@ -220,17 +250,17 @@ public final class ProgressBar extends AbstractDwcControl {
      * @param value - Specifies the value of the control.
      * @return Returns this
      */
-    public ProgressBar setValue(int value) {
-        try {
-            bbjProgressBar.setValue(value);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public ProgressBar setValue(Integer value) {
+        if(this.ctrl != null){
+            try {
+                bbjProgressBar.setValue(value);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.value = value;
         return this;
     }
-
-
-
 
 
 
@@ -287,4 +317,42 @@ public final class ProgressBar extends AbstractDwcControl {
         super.removeControlCssClass(selector);
         return this;
     }
+
+
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+        if(this.indeterminate != false){
+            this.setIndeterminate(this.indeterminate);
+        }
+
+        if(this.maximum != 100){
+            this.setMaximum(this.maximum);
+        }
+
+        if(this.minimum != 0){
+            this.setMinimum(this.minimum);
+        }
+
+        if(this.orientation != 0){
+            this.setOrientation(this.orientation);
+        }
+
+        if(this.stringPainted != true){
+            this.setStringPainted(this.stringPainted);
+        }
+
+        if(this.text != "0%"){
+            this.setText(this.text);
+        }
+
+        if(this.value != 0){
+            this.setValue(this.value);
+        }
+
+    }
+
+
 }
