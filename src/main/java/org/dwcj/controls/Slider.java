@@ -9,17 +9,38 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Slider extends AbstractDwcControl {
+public final class Slider extends AbstractDwcControl implements IFocusable, IMouseWheelEnableable, ITabTraversable {
 
     private BBjSlider bbjSlider;
 
-    private final boolean horizontal;
-
+    
     public static enum Theme{
         DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
     }
+    
+    
+    private Boolean horizontal = true;
+    private Boolean inverted = false;
+    private Integer majorTickSpacing = 1;
+    private Integer minorTickSpacing = 1;
+    private Integer maximum = 100;
+    private Integer minimum = 0;
+    private Boolean paintLabels = false;
+    private Boolean paintTicks = false;
+    private Boolean snapToTicks = false;
+    private Integer value = 0;     
 
-    public Slider(boolean horizontal) { this.horizontal = horizontal; }
+    
+    public Slider(){
+        this(true);
+    }
+
+    public Slider(Boolean horizontal){ 
+        this.horizontal = horizontal; 
+        this.focusable = true;
+        this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
+        this.tabTraversable = true;
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -40,7 +61,7 @@ public final class Slider extends AbstractDwcControl {
     }
 
     /*
-     * ==I tested the set method and no inversion happens, but this method does properly return the boolean value
+     * ==I tested the set method and no inversion happens, but this method does properly return the Boolean value
      * if it's been changed== -MH
      */
 
@@ -48,13 +69,15 @@ public final class Slider extends AbstractDwcControl {
      * This method gets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
      * @return Returns whether the control orientation is inverted.
      */
-    public boolean isInverted() {
-        try {
-            return bbjSlider.getInverted();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isInverted() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getInverted();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
+        return this.inverted;
     }
 
     /**
@@ -62,10 +85,12 @@ public final class Slider extends AbstractDwcControl {
      * @return Returns a Java Map<Integer,String> structure, where each Integer key is the slider position of the corresponding String label.
      */
     public Map<Integer,String> getLabels() {
-        try {
-            return bbjSlider.getLabels();
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getLabels();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return new HashMap<>();
     }
@@ -74,112 +99,134 @@ public final class Slider extends AbstractDwcControl {
      * This method queries the slider's major tick spacing.
      * @return Returns the slider's major tick spacing.
      */
-    public int getMajorTickSpacing() {
-        try {
-            return bbjSlider.getMajorTickSpacing();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getMajorTickSpacing() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getMajorTickSpacing();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.majorTickSpacing;
     }
 
     /**
      * This method returns the maximum value of the ProgressBar control.
      * @return Returns the maximum value of the control.
      */
-    public int getMaximum() {
-        try {
-            return bbjSlider.getMaximum();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getMaximum() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getMaximum();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.maximum;
     }
 
     /**
      * This method returns the minimum value of the ProgressBar control.
      * @return Returns the minimum value of the control.
      */
-    public int getMinimum() {
-        try {
-            return bbjSlider.getMinimum();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getMinimum() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getMinimum();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.minimum;
     }
 
     /**
      * This method queries the minor tick spacing of the ProgressBar control.
      * @return Returns the slider's minor tick spacing.
      */
-    public int getMinorTickSpacing() {
-        try {
-            return bbjSlider.getMinorTickSpacing();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getMinorTickSpacing() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getMinorTickSpacing();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.minorTickSpacing;
     }
 
     /**
      * This method returns the orientation of the ProgressBar control.
      * @return Returns the orientation of the control (false = HORIZONTAL, true = VERTICAL).
      */
-    public int getOrientation() {
-        return bbjSlider.getOrientation();
+    public Integer getOrientation() {
+        if(this.ctrl != null){
+            return bbjSlider.getOrientation();
+        }
+        if(this.horizontal){
+            return 0;
+        }
+        return 1;
     }
 
     /**
      * This method queries whether to paint labels on the ProgressBar control.
      * @return Returns whether labels are painted on this slider.
      */
-    public boolean isPaintLabels() {
-        try {
-            return bbjSlider.getPaintLabels();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isPaintLabels() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getPaintLabels();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
+        return this.paintLabels;
     }
 
     /**
      * This method queries whether to paint ticks on the ProgressBar control.
      * @return Returns whether ticks are painted on this slider.
      */
-    public boolean isPaintTicks() {
-        try {
-            return bbjSlider.getPaintTicks();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isPaintTicks() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getPaintTicks();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
+        return this.paintTicks;
     }
 
     /**
      * This method queries whether a ProgressBar control should snap to the nearest tick when the user drags the thumb.
      * @return Returns whether the BBjSlider should snap to the nearest tick when the user drags the thumb.
      */
-    public boolean isSnapToTicks() {
-        try {
-            return bbjSlider.getSnapToTicks();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Boolean isSnapToTicks() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getSnapToTicks();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
+        return this.snapToTicks;
     }
 
     /**
      * This method returns the current value of the ProgressBar control.
      * @return Returns the current value of the control.
      */
-    public int getValue() {
-        try {
-            return bbjSlider.getValue();
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Integer getValue() {
+        if(this.ctrl != null){
+            try {
+                return bbjSlider.getValue();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return -1;
+        return this.value;
     }
 
     /**
@@ -187,12 +234,15 @@ public final class Slider extends AbstractDwcControl {
      * @param inverted - Specifies whether the slider orientation is inverted.
      * @return Returns this
      */
-    public Slider setInverted(boolean inverted) {
-        try {
-            bbjSlider.setInverted(inverted);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setInverted(Boolean inverted) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setInverted(inverted);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.inverted = inverted;
         return this;
     }
 
@@ -202,10 +252,12 @@ public final class Slider extends AbstractDwcControl {
      * @return Returns this
      */
     public Slider setLabels(Map<Integer,String> labels) {
-        try {
-            bbjSlider.setLabels(labels);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setLabels(labels);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
@@ -215,12 +267,15 @@ public final class Slider extends AbstractDwcControl {
      * @param prop - Specifies the major tick spacing.
      * @return Returns this
      */
-    public Slider setMajorTickSpacing(int tick) {
-        try {
-            bbjSlider.setMajorTickSpacing(tick);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setMajorTickSpacing(Integer tick) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setMajorTickSpacing(tick);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.majorTickSpacing = tick;
         return this;
     }
 
@@ -229,12 +284,15 @@ public final class Slider extends AbstractDwcControl {
      * @param value - Specifies the maximum value.
      * @return Returns this
      */
-    public Slider setMaximum(int maximum) {
-        try {
-            bbjSlider.setMaximum(maximum);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setMaximum(Integer maximum) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setMaximum(maximum);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.maximum = maximum;
         return this;
     }
 
@@ -243,12 +301,15 @@ public final class Slider extends AbstractDwcControl {
      * @param value - Specifies the minimum value.
      * @return Returns this
      */
-    public Slider setMinimum(int minimum) {
-        try {
-            bbjSlider.setMinimum(minimum);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setMinimum(Integer minimum) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setMinimum(minimum);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.minimum = minimum;
         return this;
     }
 
@@ -257,12 +318,15 @@ public final class Slider extends AbstractDwcControl {
      * @param tick - Specifies the minor tick spacing.
      * @return Returns this
      */
-    public Slider setMinorTickSpacing(int tick) {
-        try {
-            bbjSlider.setMinorTickSpacing(tick);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setMinorTickSpacing(Integer tick) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setMinorTickSpacing(tick);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.minorTickSpacing = tick;
         return this;
     }
 
@@ -271,12 +335,15 @@ public final class Slider extends AbstractDwcControl {
      * @param paint - Specifies whether labels are painted on the
      * @return Returns this
      */
-    public Slider setPaintLabels(boolean paint) {
-        try {
-            bbjSlider.setPaintLabels(paint);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setPaintLabels(Boolean paint) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setPaintLabels(paint);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.paintLabels = paint;
         return this;
     }
 
@@ -285,12 +352,15 @@ public final class Slider extends AbstractDwcControl {
      * @param paint - Specifies whether ticks are painted on the control.
      * @return Returns this
      */
-    public Slider setPaintTicks(boolean paint) {
-        try {
-            bbjSlider.setPaintTicks(paint);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setPaintTicks(Boolean paint) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setPaintTicks(paint);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.paintTicks = paint;
         return this;
     }
 
@@ -299,12 +369,15 @@ public final class Slider extends AbstractDwcControl {
      * @param snap - Specifies whether the control should snap to the nearest tick when the user drags the thumb.
      * @return Returns this
      */
-    public Slider setSnapToTicks(boolean snap) {
-        try {
-            bbjSlider.setSnapToTicks(snap);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setSnapToTicks(Boolean snap) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setSnapToTicks(snap);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.snapToTicks = snap;
         return this;
     }
 
@@ -313,15 +386,87 @@ public final class Slider extends AbstractDwcControl {
      * @param value - Specifies the slider value.
      * @return Returns this
      */
-    public Slider setValue(int value) {
-        try {
-            bbjSlider.setValue(value);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public Slider setValue(Integer value) {
+        if(this.ctrl != null){
+            try {
+                bbjSlider.setValue(value);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.value = value;
         return this;
     }
 
+
+
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                bbjSlider.isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Slider setFocusable(Boolean focusable){
+        if(this.ctrl != null) {
+            try{
+                bbjSlider.setFocusable(focusable);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.focusable = focusable;
+        return this;
+    }
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                bbjSlider.isTabTraversable();
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Slider setTabTraversable(Boolean traverse){
+        if(this.ctrl != null){
+            try{
+                bbjSlider.setTabTraversable(traverse);
+            } catch (BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.tabTraversable = traverse;
+        return this;
+    }
+
+
+    @Override
+    public MouseWheelCondition getScrollWheelBehavior(){
+        return this.mouseWheelCondition;
+    }
+
+    @Override
+    public Slider setScrollWheelBehavior(MouseWheelCondition condition){
+        if(this.ctrl != null){
+            try{
+                bbjSlider.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
 
 
     @Override
@@ -384,6 +529,68 @@ public final class Slider extends AbstractDwcControl {
     public Slider setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
+    }
+
+
+
+
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+
+        if(this.inverted != false){
+            this.setInverted(this.inverted);
+        }
+
+        if(this.majorTickSpacing != 1){
+            this.setMajorTickSpacing(this.majorTickSpacing);
+        }
+
+        if(this.minorTickSpacing != 0){
+            this.setMinorTickSpacing(this.minorTickSpacing);
+        }
+
+        if(this.maximum != 100){
+            this.setMaximum(this.maximum);
+        }
+
+        if(this.minimum != 0){
+            this.setMinimum(this.minimum);
+        }
+
+        if(this.paintLabels != false){
+            this.setPaintLabels(this.paintLabels);
+        }
+
+        if(this.paintTicks != false){
+            this.setPaintTicks(this.paintLabels);
+        }
+
+        if(this.snapToTicks != false){
+            this.setPaintTicks(this.paintLabels);
+        }
+
+        if(this.value != 0){
+            this.setValue(this.value);
+        }
+
+
+
+        if(this.focusable != true){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.tabTraversable != true){
+            this.setTabTraversable(this.tabTraversable);
+        }
+
+        if(this.mouseWheelCondition != MouseWheelCondition.DEFAULT){
+            this.setScrollWheelBehavior(this.mouseWheelCondition);
+        }
+
+
     }
 
 }

@@ -17,12 +17,11 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
 
     private BBjRadioButton bbjRadioButton;
 
-    private Consumer<RadioButtonCheckEvent> callback;
-
+    
     public static enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
-
+    
     public static enum HorizontalTextPosition{
         RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
         
@@ -32,9 +31,10 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
             this.position = position;
         }
     }
-
-    Boolean selected = false;
-    HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
+    
+    private Consumer<RadioButtonCheckEvent> callback;
+    private Boolean selected = false;
+    private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
 
     public RadioButton(){
         this.readOnly = false;

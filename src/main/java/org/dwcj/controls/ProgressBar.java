@@ -14,14 +14,14 @@ public final class ProgressBar extends AbstractDwcControl {
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
-    Boolean indeterminate = false;
-    Integer maximum = 100;
-    Integer minimum = 0;
+    private Boolean indeterminate = false;
+    private Integer maximum = 100;
+    private Integer minimum = 0;
     /* 0 for horizontal, 1 for vertical */
-    Integer orientation = 0;
-    Boolean stringPainted = true;
-    String text = "0%";
-    Integer value = 0;
+    private Integer orientation = 0;
+    private Boolean stringPainted = true;
+    private String text = "0%";
+    private Integer value = 0;
 
 
     @Override
