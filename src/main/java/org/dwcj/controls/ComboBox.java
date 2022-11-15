@@ -519,55 +519,46 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
 
 
 
-    @Override
     public ComboBox setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public ComboBox setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public ComboBox setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public ComboBox setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public ComboBox setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public ComboBox setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public ComboBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public ComboBox addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public ComboBox removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;

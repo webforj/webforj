@@ -96,15 +96,21 @@ public abstract class AbstractDwcControl implements IControl {
      * chaining, with the control versions implemented beneath
      *=====================================================================================
      */
-    public abstract AbstractDwcControl setText(String text);
-    public abstract AbstractDwcControl setVisible(Boolean visible);
-    public abstract AbstractDwcControl setEnabled(Boolean enabled);
-    public abstract AbstractDwcControl setTooltipText(String text);
-    public abstract AbstractDwcControl setAttribute(String attribute, String value);
-    public abstract AbstractDwcControl setID(String id);
-    public abstract AbstractDwcControl setStyle(String property, String value);
-    public abstract AbstractDwcControl addClass(String selector);
-    public abstract AbstractDwcControl removeClass(String selector);
+
+
+    //  public AbstractDwcControl setText(String text){
+    //     this.setControlText(text);
+    //     return this;
+    // }
+    // public AbstractDwcControl setVisible(Boolean visible){
+    // }
+    // public AbstractDwcControl setEnabled(Boolean enabled)
+    // public AbstractDwcControl setTooltipText(String text)
+    // public AbstractDwcControl setAttribute(String attribute, String value)
+    // public AbstractDwcControl setID(String id)
+    // public AbstractDwcControl setStyle(String property, String value)
+    // public AbstractDwcControl addClass(String selector)
+    // public AbstractDwcControl removeClass(String selector)
 
     
 

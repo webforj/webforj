@@ -209,55 +209,46 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
 
 
 
-    @Override
     public RadioButton setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public RadioButton setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public RadioButton setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public RadioButton setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public RadioButton setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public RadioButton setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public RadioButton setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public RadioButton addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public RadioButton removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;

@@ -165,55 +165,46 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
      * =====================================================================================
      */
 
-    @Override
     public CheckBox setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public CheckBox setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public CheckBox setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public CheckBox setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public CheckBox setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public CheckBox setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public CheckBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public CheckBox addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public CheckBox removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;

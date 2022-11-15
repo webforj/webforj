@@ -185,55 +185,46 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * =====================================================================================
      */
 
-    @Override
     public Button setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public Button setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public Button setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public Button setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public Button setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public Button setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public Button setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public Button addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public Button removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;

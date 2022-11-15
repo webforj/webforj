@@ -41,7 +41,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
         return wnd;
     }
 
-    @Override
+    
     public AbstractDwcjPanel setStyle(String property, String value) {
         if(this.wnd != null){
             try {
@@ -53,7 +53,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
         return this;
     }
 
-    @Override
+    
     public AbstractDwcjPanel addClass(String selector) {
         if(this.wnd != null){
             try {
@@ -65,7 +65,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
         return this;
     }
 
-    @Override
+    
     public AbstractDwcjPanel removeClass(String selector) {
         if(this.wnd != null){
             try {

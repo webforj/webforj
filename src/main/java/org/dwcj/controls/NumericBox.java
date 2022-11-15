@@ -697,55 +697,46 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
 
 
 
-    @Override
     public NumericBox setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public NumericBox setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public NumericBox setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public NumericBox setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public NumericBox setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public NumericBox setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public NumericBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public NumericBox addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public NumericBox removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;

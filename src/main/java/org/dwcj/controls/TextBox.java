@@ -280,55 +280,46 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
 
 
 
-    @Override
     public TextBox setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public TextBox setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public TextBox setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public TextBox setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public TextBox setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public TextBox setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public TextBox setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public TextBox addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public TextBox removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;

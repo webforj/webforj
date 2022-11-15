@@ -469,55 +469,46 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
     }
 
 
-    @Override
     public Slider setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    @Override
     public Slider setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    @Override
     public Slider setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    @Override
     public Slider setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    @Override
     public Slider setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    @Override
     public Slider setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    @Override
     public Slider setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    @Override
     public Slider addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public Slider removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
