@@ -89,31 +89,6 @@ public abstract class AbstractDwcControl implements IControl {
         return this.ctrl;
     }
 
-
-
-    /*=====================================================================================
-     * Abstract setter methods to be overridden in child components to allow for method
-     * chaining, with the control versions implemented beneath
-     *=====================================================================================
-     */
-
-
-    //  public AbstractDwcControl setText(String text){
-    //     this.setControlText(text);
-    //     return this;
-    // }
-    // public AbstractDwcControl setVisible(Boolean visible){
-    // }
-    // public AbstractDwcControl setEnabled(Boolean enabled)
-    // public AbstractDwcControl setTooltipText(String text)
-    // public AbstractDwcControl setAttribute(String attribute, String value)
-    // public AbstractDwcControl setID(String id)
-    // public AbstractDwcControl setStyle(String property, String value)
-    // public AbstractDwcControl addClass(String selector)
-    // public AbstractDwcControl removeClass(String selector)
-
-    
-
     @Override
     public String getText() {
         if (ctrl != null) try {

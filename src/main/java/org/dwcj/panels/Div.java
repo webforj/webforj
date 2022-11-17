@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * This class represents a div container, which behaves as a panel and
  * can be styled and hold other divs (panels) and controls
  */
-public final class Div extends AbstractDwcjPanel {
+public class Div extends AbstractDwcjPanel {
 
     private DivClickEventSink divClickEventSink;
 

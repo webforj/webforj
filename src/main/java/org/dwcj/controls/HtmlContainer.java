@@ -16,9 +16,23 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcControl {
+public final class HtmlContainer extends AbstractDwcControl implements IFocusable, ITabTraversable {
 
     private BBjHtmlView bbjHtmlView;
+
+    private String asyncScript = "";
+    private String executeScript = "";
+    private String injectScript = "";
+    private Boolean injectScriptTop = false;
+    private String injectURL = "";
+    private Boolean injectURLTop = false;
+    private Boolean autoNavigate = false;
+    private String downloadDirectory = "";
+    private String URL = "";
+    private Boolean reload = false;
+    private String userAgent = "";
+
+
 
     public HtmlContainer() {
     }
@@ -29,7 +43,6 @@ public final class HtmlContainer extends AbstractDwcControl {
 
     @Override
     protected void create(AbstractDwcjPanel p) {
-
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
@@ -43,156 +56,217 @@ public final class HtmlContainer extends AbstractDwcControl {
     }
 
     public void executeAsyncScript(String script) {
-        try {
-            bbjHtmlView.executeAsyncScript(script);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.executeAsyncScript(script);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.asyncScript = script;
     }
 
     public Object executeScript(String script) {
-        try {
-            return bbjHtmlView.executeScript(script);
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.executeScript(script);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.executeScript = script;
+        return null;
     }
 
-    public boolean isAutoNavigate() {
-        try {
-            return bbjHtmlView.getAutoNavigate();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return false;
+    public Boolean isAutoNavigate() {
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.getAutoNavigate();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return this.autoNavigate;
     }
 
     public String getClientType() {
-        try {
-            return bbjHtmlView.getClientType();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.getClientType();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
     public String getClientVersion() {
-        try {
-            return bbjHtmlView.getClientVersion();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.getClientVersion();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
     public Image getImage() {
-        try {
-            return (Image) bbjHtmlView.getImage();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return (Image) bbjHtmlView.getImage();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
     @Override
     public String getText() {
-        try {
-            return bbjHtmlView.getText();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.getText();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
     public String getUrl() {
-        try {
-            return bbjHtmlView.getUrl();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.getUrl();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }    
         }
+        return this.URL;
     }
 
     public String getUserAgent() {
-        try {
-            return bbjHtmlView.getUserAgent();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.getUserAgent();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return this.userAgent;
     }
 
-    public void injectScript(String script) {
-        try {
-            bbjHtmlView.injectScript(script);
-        } catch (BBjException e) {
-            e.printStackTrace();
+
+    public HtmlContainer injectScript(String script) {
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.injectScript(script);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.injectScript = script;
+        return this;
     }
 
-    public void injectScript(String script, boolean top) {
-        try {
-            bbjHtmlView.injectScript(script,top);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public HtmlContainer injectScript(String script, Boolean top) {
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.injectScript(script,top);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.injectScript = script;
+        this.injectScriptTop = top;
+        return this;
     }
 
-    public void injectUrl(String url) {
-        try {
-            bbjHtmlView.injectUrl(url);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public HtmlContainer injectUrl(String url) {
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.injectUrl(url);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.injectURL = url;
+        return this;
     }
 
-    public void injectUrl(String url, boolean top) {
-        try {
-            bbjHtmlView.injectUrl(url, top);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public HtmlContainer injectUrl(String url, Boolean top) {
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.injectUrl(url, top);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.injectURL = url;
+        this.injectURLTop = top;
+        return this;
     }
 
-    public boolean print() {
-        try {
-            return bbjHtmlView.print();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return false;
+    public Boolean print() {
+        if(this.ctrl != null){
+            try {
+                return bbjHtmlView.print();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return false;
     }
 
-    public HtmlContainer setAutoNavigate(boolean autoNavigate) {
-        try {
-            bbjHtmlView.setAutoNavigate(autoNavigate);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public HtmlContainer setAutoNavigate(Boolean autoNavigate) {
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.setAutoNavigate(autoNavigate);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.autoNavigate = autoNavigate;
+        return this;
+    }
+
+    public HtmlContainer setDownloadDirectory(String downloadDir) {
+        if(this.ctrl != null){
+                bbjHtmlView.setDownloadDirectory(downloadDir);
+        }
+        this.downloadDirectory = downloadDir;
         return this;
     }
 
     public HtmlContainer setUrl(String url) {
-        try {
-            bbjHtmlView.setUrl(url);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.setUrl(url);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.URL = url;
         return this;
     }
 
-    public HtmlContainer setUrl(String url, boolean reload) {
-        try {
-            bbjHtmlView.setUrl(url, reload);
-        } catch (BBjException e) {
-            e.printStackTrace();
+    public HtmlContainer setUrl(String url, Boolean reload) {
+        if(this.ctrl != null){
+            try {
+                bbjHtmlView.setUrl(url, reload);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        this.URL = url;
+        this.reload = reload;
         return this;
     }
 
     public HtmlContainer setUserAgent(String userAgent) {
-        bbjHtmlView.setUserAgent(userAgent);
+        if(this.ctrl != null){
+            bbjHtmlView.setUserAgent(userAgent);
+        }
         return this;
     }
 
@@ -214,6 +288,59 @@ public final class HtmlContainer extends AbstractDwcControl {
      */
     public HtmlContainer onJavascriptEvent(Consumer<JavascriptEvent> callback) {
         new NativeJavascriptEventSink(this, callback);
+        return this;
+    }
+
+
+
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                bbjHtmlView.isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this.focusable;
+    }
+
+    @Override 
+    public HtmlContainer setFocusable(Boolean focusable){
+        if(this.ctrl != null){
+            try{
+                bbjHtmlView.setFocusable(focusable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.focusable = focusable;
+        return this;
+    }
+
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                bbjHtmlView.isTabTraversable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this.tabTraversable;
+    }
+
+    @Override 
+    public HtmlContainer setTabTraversable(Boolean traversable){
+        if(this.ctrl != null){
+            try{
+                bbjHtmlView.setTabTraversable(traversable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.tabTraversable = traversable;
         return this;
     }
 
@@ -262,6 +389,54 @@ public final class HtmlContainer extends AbstractDwcControl {
     public HtmlContainer removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
+    }
+
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+        if(this.asyncScript != ""){
+            this.executeAsyncScript(this.asyncScript);
+        }
+
+        if(this.executeScript != ""){
+            this.executeScript(this.executeScript);
+        }
+
+        if(this.injectScript != ""){
+            this.injectScript(this.injectScript, this.injectScriptTop);
+        }
+
+        if(this.injectURL != ""){
+            this.injectUrl(this.injectURL, this.injectURLTop);
+        }
+
+        if(this.autoNavigate != false){
+            this.setAutoNavigate(this.autoNavigate);
+        }
+
+        if(this.downloadDirectory != ""){
+            this.setDownloadDirectory(this.downloadDirectory);
+        }
+
+        if(this.URL != ""){
+            this.setUrl(this.URL, this.reload);
+        }
+
+        if(this.userAgent != ""){
+            this.setUserAgent(this.userAgent);
+        }
+
+
+        if(this.focusable != true){
+            this.setFocusable(this.focusable);
+        }
+
+        if(this.tabTraversable != true){
+            this.setTabTraversable(this.tabTraversable);
+        }
+
     }
 
 
