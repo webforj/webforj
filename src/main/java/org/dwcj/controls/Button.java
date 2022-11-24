@@ -127,31 +127,17 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      */
 
     public Button onClick(Consumer<ButtonPushEvent> callback) {
-        /* Only add a callback into the array if it is non-null */
         if(callback != null){
             this.callbacks.add(callback);
         }
-        /* If control is null, then return, otherwise proceed */
+
         if(this.ctrl != null){
-            /* If a sink has not yet been created, create it using first callback in array in constructor */
             if(this.buttonPushEventSink == null){
-                this.buttonPushEventSink = new ButtonPushEventSink(this, callbacks.get(0));
-                /* If there is more than one callback, start at the second callback in the array, as 
-                 * the first one has already been used to construct the sink, and add all of the remaining
-                 * callbacks to the sink using the addCallback() method
-                 */
-                if(this.callbacks.size() > 1){
-                    for(int i = 1; 1 < this.callbacks.size() - 1; i++){
-                        this.buttonPushEventSink.addCallback(callbacks.get(i));
-                    }
-                }
+                this.buttonPushEventSink = new ButtonPushEventSink(this);
             }
-            /*If the sink has already been created, simply add the most recent callback in the array
-             * to the sink
-             */
-            else{
-                this.buttonPushEventSink.addCallback(this.callbacks.get(this.callbacks.size() - 1));
-            }
+            
+            while(!callbacks.isEmpty())
+            this.buttonPushEventSink.addCallback(callbacks.remove(0));
         }
         return this;
     }
