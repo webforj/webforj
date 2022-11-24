@@ -31,8 +31,8 @@ public abstract class AbstractDwcControl implements IControl {
      */
     protected BBjControl ctrl;
     private String text = "";
-    private Boolean visible = null;
-    private Boolean enabled = null;
+    private Boolean visible = true;
+    private Boolean enabled = true;
     private String tooltipText = "";
     private final Map<String, String> attributes = new HashMap<>();
     private final Map<String, String> styles = new HashMap<>();
@@ -394,13 +394,13 @@ public abstract class AbstractDwcControl implements IControl {
             }
         }
         
-        if (this.visible != null) {
-            this.setVisible(this.visible);
-        }
+        // if (this.visible != true) {
+        //     this.setVisible(this.visible);
+        // }
 
-        if (this.enabled != null) {
-            this.setEnabled(this.enabled);
-        }
+        // if (this.enabled != true) {
+        //     this.setEnabled(this.enabled);
+        // }
 
         if (!this.tooltipText.isEmpty()){
             try{

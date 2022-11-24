@@ -8,6 +8,7 @@ import org.dwcj.events.ButtonPushEvent;
 import org.dwcj.events.sinks.ButtonPushEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
@@ -60,7 +61,9 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * =====================================================================================
      */
     
-    private ButtonPushEventSink buttonPushEventSink;
+    // private ButtonPushEventSink buttonPushEventSink;
+    private ArrayList<Consumer<ButtonPushEvent>> callbacks = new ArrayList<>();
+    private ButtonPushEventSink buttonPushEventSink = null;
     private Boolean disableOnClick = false;
     TextVertialAlignment verticalAlignment = TextVertialAlignment.CENTER;
     
@@ -99,7 +102,17 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText());
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText(), flags);
             catchUp();
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,11 +125,34 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * @param callback A method to receive the click event
      * @return the control itself
      */
+
     public Button onClick(Consumer<ButtonPushEvent> callback) {
+        /* Return immediately if callback is null to avoid empty space in callback array */
+        if(callback != null){
+            this.callbacks.add(callback);
+        }
+        /* Otherwise, add the callback to array, then continue with logical checks */
+        /* If control is null, then return, otherwise proceed */
         if(this.ctrl != null){
-            if (this.buttonPushEventSink==null)
-                this.buttonPushEventSink = new ButtonPushEventSink(this, callback);
-            else this.buttonPushEventSink.addCallback(callback);
+            /* If a sink has not yet been created, create it using first callback in array in constructor */
+            if(this.buttonPushEventSink == null){
+                this.buttonPushEventSink = new ButtonPushEventSink(this, callbacks.get(0));
+                /* If there is more than one callback, start at the second callback in the array, as 
+                 * the first one has already been used to construct the sink, and add all of the remaining
+                 * callbacks to the sink using the addCallback() method
+                 */
+                if(this.callbacks.size() > 1){
+                    for(int i = 1; 1 < this.callbacks.size() - 1; i++){
+                        this.buttonPushEventSink.addCallback(callbacks.get(i));
+                    }
+                }
+            }
+            /*If the sink has already been created, simply add the most recent callback in the array
+             * to the sink
+             */
+            else{
+                this.buttonPushEventSink.addCallback(this.callbacks.get(this.callbacks.size() - 1));
+            }
         }
         return this;
     }
@@ -345,6 +381,10 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
         if(this.disableOnClick != false){
             this.setDisableOnClick(this.disableOnClick);
+        }
+
+        if(this.callbacks.size() > 0){
+            this.onClick(null);
         }
 
         if(this.verticalAlignment != TextVertialAlignment.CENTER){
