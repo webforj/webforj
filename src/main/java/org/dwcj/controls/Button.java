@@ -127,11 +127,10 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      */
 
     public Button onClick(Consumer<ButtonPushEvent> callback) {
-        /* Return immediately if callback is null to avoid empty space in callback array */
+        /* Only add a callback into the array if it is non-null */
         if(callback != null){
             this.callbacks.add(callback);
         }
-        /* Otherwise, add the callback to array, then continue with logical checks */
         /* If control is null, then return, otherwise proceed */
         if(this.ctrl != null){
             /* If a sink has not yet been created, create it using first callback in array in constructor */
