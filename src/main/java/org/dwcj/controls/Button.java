@@ -128,6 +128,9 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
     public Button onClick(Consumer<ButtonPushEvent> callback) {
         if(this.ctrl != null){
+            if(this.buttonPushEventSink == null){
+                this.buttonPushEventSink = new ButtonPushEventSink(this);
+            }
             this.buttonPushEventSink.addCallback(callback);
         }
         else{
@@ -135,22 +138,6 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
         }
         return this;
     }
-    
-    // public Button onClick(Consumer<ButtonPushEvent> callback) {
-    //     if(callback != null){
-    //         this.callbacks.add(callback);
-    //     }
-
-    //     if(this.ctrl != null){
-    //         if(this.buttonPushEventSink == null){
-    //             this.buttonPushEventSink = new ButtonPushEventSink(this);
-    //         }
-
-    //         while(!callbacks.isEmpty())
-    //         this.buttonPushEventSink.addCallback(callbacks.remove(0));
-    //     }
-    //     return this;
-    // }
 
     /**
      * Accessor for whether or not the button is disabled. 
@@ -378,7 +365,9 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
             this.setDisableOnClick(this.disableOnClick);
         }
 
-        this.buttonPushEventSink = new ButtonPushEventSink(this);
+        if(this.buttonPushEventSink == null){
+            this.buttonPushEventSink = new ButtonPushEventSink(this);
+        }
         while(!this.callbacks.isEmpty()){
             this.buttonPushEventSink.addCallback(this.callbacks.remove(0));
         }
