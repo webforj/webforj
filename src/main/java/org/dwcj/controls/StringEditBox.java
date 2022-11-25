@@ -55,8 +55,17 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            ctrl = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             bbjInputE = (BBjInputE) ctrl;
             catchUp();
         } catch (Exception e) {
@@ -367,7 +376,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return null;
+        return this.readOnly;
     }
     @Override
     public StringEditBox setReadOnly(Boolean editable) {

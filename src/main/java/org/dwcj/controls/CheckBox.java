@@ -77,8 +77,17 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
             this.catchUp();
         } catch (Exception e) {
             e.printStackTrace();

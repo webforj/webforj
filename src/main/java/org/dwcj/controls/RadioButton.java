@@ -46,8 +46,16 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+            byte[] flags = new byte[]{(byte)0x00, bFlag};               
+            ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
             bbjRadioButton = (BBjRadioButton) ctrl;
             catchUp();
         } catch (Exception e)  {
@@ -68,23 +76,27 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
     }
 
     public Integer getButtonID() {
-        try {
-            return bbjRadioButton.getID();
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return -1;
+        if(this.ctrl != null){
+            try {
+                return bbjRadioButton.getID();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
     public RadioButtonGroup getRadioButtonGroup() {
-        try {
-            BBjControl bbjGroup = (BBjControl) bbjRadioButton.getRadioGroup();
-            int id = bbjGroup.getID();
-            return RadioButtonGroup.getGroupByID(id);
-        } catch (BBjException e) {
-            e.printStackTrace();
-            return null;
+        if(this.ctrl != null){
+            try {
+                BBjControl bbjGroup = (BBjControl) bbjRadioButton.getRadioGroup();
+                int id = bbjGroup.getID();
+                return RadioButtonGroup.getGroupByID(id);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
+        return null;
     }
 
 
@@ -138,20 +150,24 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
 
     @Override
     public Boolean isReadOnly() {
-        try {
-            return bbjRadioButton.isEditable();
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                return bbjRadioButton.isEditable();
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return this.readOnly;
     }
 
     @Override
     public RadioButton setReadOnly(Boolean editable) {
-        try {
-            bbjRadioButton.setEditable(editable);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try {
+                bbjRadioButton.setEditable(editable);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
@@ -165,7 +181,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.focusable;
     }
 
     @Override
@@ -190,7 +206,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             }
         }
-        return true;
+        return this.tabTraversable;
     }
 
     @Override

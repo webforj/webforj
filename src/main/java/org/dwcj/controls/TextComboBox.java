@@ -42,7 +42,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     private Consumer<TextComboBoxOpenEvent> openEvent = null;
     private Consumer<TextComboBoxCloseEvent> closeEvent = null;
     private Consumer<TextComboBoxEditModifyEvent> editModifyEvent = null;
-    private String editText = null;
+    private String editText = "";
     private Integer maxRowCount = null;
     private SimpleEntry<Integer, String> textAt = null;
 
@@ -61,8 +61,17 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addListEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "");
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            ctrl = w.addListEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "", flags);
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
             ctrl.setAttribute("button-height", "auto");
@@ -147,7 +156,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
-        return null;
+        return this;
     }
 
     public Map<Object, String> getAllItems() {
@@ -162,7 +171,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.editText;
     }
 
     public String getItemAt(Object key) {
@@ -181,7 +190,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             }
 
         }
-        return null;
+        return this.values.size();
     }
 
     public Integer getSelectedIndex() {

@@ -46,8 +46,17 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addListBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "");
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            ctrl = w.addListBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "", flags);
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
             ctrl.setAttribute("button-height", "auto");
@@ -437,7 +446,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
                 ((BBjListBox) this.ctrl).getHorizontalScrollBarHeight();
         }
-        return null;
+        return 0;
 
     }
 
@@ -455,7 +464,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
                 ((BBjListBox) this.ctrl).getHorizontalScrollBarWidth();
         }
-        return null;
+        return 0;
 
     }
 
@@ -464,7 +473,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
                 ((BBjListBox) this.ctrl).getVerticalScrollBarHeight();
         }
-        return null;
+        return 0;
 
     }
 
@@ -482,7 +491,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         if(this.ctrl != null){
                 ((BBjListBox) this.ctrl).getVerticalScrollBarWidth();
         }
-        return null;
+        return 0;
 
     }
 

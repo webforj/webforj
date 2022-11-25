@@ -45,8 +45,17 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText());
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
             ctrl.setNoEdge(true);
             bbjHtmlView = (BBjHtmlView) ctrl;
             catchUp();
@@ -131,7 +140,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
                 e.printStackTrace();
             }
         }
-        return null;
+        return super.getText();
     }
 
     public String getUrl() {

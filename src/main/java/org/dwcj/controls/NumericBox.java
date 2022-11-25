@@ -62,8 +62,16 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addInputN(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            ctrl = w.addInputN(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             numBox = (BBjInputN) this.ctrl;
             catchUp();
         } catch (Exception e) {
@@ -584,7 +592,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.readOnly;
     }
 
     /**
@@ -613,7 +621,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.focusable;
     }
 
     @Override
@@ -638,7 +646,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
                 e.printStackTrace();
             }
         }
-        return true;
+        return this.tabTraversable;
     }
 
     @Override
@@ -674,10 +682,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
 
     @Override
     public Alignment getTextAlignment(){
-        if(this.ctrl != null){
-            return this.textAlignment;
-        }
-        return null;
+        return this.textAlignment;
     }
 
     @Override 
@@ -825,7 +830,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != null){
+        if(this.focusable != true){
             this.setFocusable(this.focusable);
         }
 

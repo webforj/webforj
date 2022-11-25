@@ -60,8 +60,17 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addInputD(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            ctrl = w.addInputD(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             bbjDateEditBox = (BBjInputD) ctrl;
             catchUp();
         } catch (Exception e) {
@@ -260,7 +269,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
         } catch (BBjException e){
             e.printStackTrace();
         } 
-        return null;
+        return "r=255,g=0,b=0";
     }
 
     /*==Unsure if this is the correct return type== */
@@ -270,7 +279,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
         } catch (BBjException e){
             e.printStackTrace();
         } 
-        return null;
+        return "2459909";
     }
 
     /*==Unsure if this is the correct return type== */
@@ -280,7 +289,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
         } catch (BBjException e){
             e.printStackTrace();
         } 
-        return null;
+        return "r=0,g=0,b=255";
     }
 
     /*==Unsure if this is the correct return type== */
@@ -290,7 +299,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
         } catch (BBjException e){
             e.printStackTrace();
         } 
-        return null;
+        return "r=0,g=128,b=0";
     }
 
 
@@ -307,7 +316,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             } 
         }
-        return null;
+        return true;
     }
 
     public DateEditBox restore(){
@@ -585,7 +594,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             } 
         }
-        return null;
+        return this.readOnly;
     }
 
     @Override
@@ -610,7 +619,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             }
         }
-        return null;
+        return this.focusable;
     }
 
     @Override
@@ -635,7 +644,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             }
         }
-        return true;
+        return this.tabTraversable;
     }
 
     @Override
@@ -671,10 +680,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
 
     @Override
     public Alignment getTextAlignment(){
-        if(this.ctrl != null){
-            return this.textAlignment;
-        }
-        return null;
+        return this.textAlignment;
     }
 
     @Override 
@@ -827,7 +833,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != null){
+        if(this.focusable != true){
             this.setFocusable(this.focusable);
         }
 

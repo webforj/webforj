@@ -257,7 +257,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         if(this.ctrl != null){
             return bbjCEdit.getMaxLength();
         }
-        return null;
+        return 2147483647;
     }
 
     /**
@@ -272,7 +272,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
                 e.printStackTrace();
             }
         }
-        return null;
+        return 0;
     }
 
     /**
@@ -342,7 +342,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
                 e.printStackTrace();
             }
         }
-        return null;
+        return 8;
     }
 
     /**
@@ -752,7 +752,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         if(this.ctrl != null){
                 bbjCEdit.getHorizontalScrollBarWidth();
         }
-        return null;
+        return 0;
 
     }
 
@@ -761,7 +761,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         if(this.ctrl != null){
                 bbjCEdit.getVerticalScrollBarHeight();
         }
-        return null;
+        return 0;
 
     }
 

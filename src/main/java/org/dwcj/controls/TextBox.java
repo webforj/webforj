@@ -175,7 +175,7 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
         catch(BBjException e){
             e.printStackTrace();
         }
-        return null;
+        return this.readOnly;
     }
     
     @Override

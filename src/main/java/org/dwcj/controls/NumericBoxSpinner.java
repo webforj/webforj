@@ -24,8 +24,16 @@ public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEn
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+            byte[] flags = new byte[]{(byte)0x00, bFlag};               
+            ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             numBoxS = (BBjInputNSpinner) this.numBox;
             this.numBox = (BBjInputNSpinner) this.ctrl;
             super.catchUp();
@@ -33,26 +41,6 @@ public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEn
             e.printStackTrace();
         }
     }
-
-    // public Number getMaximum(){
-    //     try{
-    //         numBoxS.getMaximum();
-    //     } catch(BBjException e){
-    //         e.printStackTrace();
-    //     }
-    //     return null;
-    // }
-
-    // public NumericBoxSpinner setMaximum(Number num){
-    //     if(this.ctrl != null){
-    //         try{
-    //             numBoxS.setMaximum((BBjNumber)num);
-    //         } catch(BBjException e){
-    //             e.printStackTrace();
-    //         }
-    //     }
-    //     return this;
-    // } 
     
 
     @Override

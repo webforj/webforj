@@ -3,6 +3,7 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ButtonPushEvent;
 import org.dwcj.events.sinks.ButtonPushEventSink;
@@ -63,7 +64,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
     
     // private ButtonPushEventSink buttonPushEventSink;
     private ArrayList<Consumer<ButtonPushEvent>> callbacks = new ArrayList<>();
-    private ButtonPushEventSink buttonPushEventSink = null;
+    private ButtonPushEventSink buttonPushEventSink;
     private Boolean disableOnClick = false;
     TextVertialAlignment verticalAlignment = TextVertialAlignment.CENTER;
     
@@ -101,7 +102,6 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             byte bFlag = (byte)0x00;
 
             if(!this.isEnabled()){
@@ -127,20 +127,30 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      */
 
     public Button onClick(Consumer<ButtonPushEvent> callback) {
-        if(callback != null){
-            this.callbacks.add(callback);
-        }
-
         if(this.ctrl != null){
-            if(this.buttonPushEventSink == null){
-                this.buttonPushEventSink = new ButtonPushEventSink(this);
-            }
-            
-            while(!callbacks.isEmpty())
-            this.buttonPushEventSink.addCallback(callbacks.remove(0));
+            this.buttonPushEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
         }
         return this;
     }
+    
+    // public Button onClick(Consumer<ButtonPushEvent> callback) {
+    //     if(callback != null){
+    //         this.callbacks.add(callback);
+    //     }
+
+    //     if(this.ctrl != null){
+    //         if(this.buttonPushEventSink == null){
+    //             this.buttonPushEventSink = new ButtonPushEventSink(this);
+    //         }
+
+    //         while(!callbacks.isEmpty())
+    //         this.buttonPushEventSink.addCallback(callbacks.remove(0));
+    //     }
+    //     return this;
+    // }
 
     /**
      * Accessor for whether or not the button is disabled. 
@@ -368,9 +378,11 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
             this.setDisableOnClick(this.disableOnClick);
         }
 
-        if(this.callbacks.size() > 0){
-            this.onClick(null);
+        this.buttonPushEventSink = new ButtonPushEventSink(this);
+        while(!this.callbacks.isEmpty()){
+            this.buttonPushEventSink.addCallback(this.callbacks.remove(0));
         }
+        
 
         if(this.verticalAlignment != TextVertialAlignment.CENTER){
             try{
