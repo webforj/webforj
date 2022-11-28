@@ -3,9 +3,12 @@ package org.dwcj.panels;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.events.DivClickEvent;
 import org.dwcj.events.sinks.DivClickEventSink;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
@@ -14,6 +17,7 @@ import java.util.function.Consumer;
  */
 public class Div extends AbstractDwcjPanel {
 
+    private ArrayList<AbstractDwcControl> controls = new ArrayList<>();
     private DivClickEventSink divClickEventSink;
 
     @Override
@@ -29,6 +33,21 @@ public class Div extends AbstractDwcjPanel {
             e.printStackTrace();
         }
 
+    }
+
+
+    public Div add(AbstractDwcControl control){
+        if(this.ctrl != null){
+            try {
+                ControlAccessor.getDefault().create(control,this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            controls.add(control);
+        }
+        return this;
     }
 
     /**
@@ -98,6 +117,18 @@ public class Div extends AbstractDwcjPanel {
         super.removeControlCssClass(selector);
         return this;
     }
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+
+        super.catchUp();
+
+        while(!this.controls.isEmpty()){
+            this.add(controls.remove(0));
+        }
+
+    }
+
 }
 
 
