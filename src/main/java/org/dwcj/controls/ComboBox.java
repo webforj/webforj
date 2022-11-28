@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.combobox.ComboBoxChangeEvent;
 import org.dwcj.events.combobox.ComboBoxCloseEvent;
@@ -17,6 +18,7 @@ import org.dwcj.events.sinks.combobox.ComboBoxOpenEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -39,10 +41,14 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
 
-    private Consumer<ComboBoxChangeEvent> changeEvent = null;
-    private Consumer<ComboBoxSelectEvent> selectEvent = null;
-    private Consumer<ComboBoxOpenEvent> openEvent = null;
-    private Consumer<ComboBoxCloseEvent> closeEvent = null;
+    private ArrayList<Consumer<ComboBoxChangeEvent>> changeEvents = new ArrayList<>();
+    private ComboBoxChangeEventSink changeEventSink;
+    private ArrayList<Consumer<ComboBoxSelectEvent>> selectEvents = new ArrayList<>();
+    private ComboBoxSelectEventSink selectEventSink;
+    private ArrayList<Consumer<ComboBoxOpenEvent>> openEvents = new ArrayList<>();
+    private ComboBoxOpenEventSink openEventSink;
+    private ArrayList<Consumer<ComboBoxCloseEvent>> closeEvents = new ArrayList<>();
+    private ComboBoxCloseEventSink closeEventSink;
     private Integer maxRowCount;
     private SimpleEntry<Integer, String> textAt = null;
 
@@ -286,9 +292,14 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
      */
     public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
         if(this.ctrl != null){
-            new ComboBoxSelectEventSink(this, callback);
+            if(this.selectEventSink == null){
+                this.selectEventSink = new ComboBoxSelectEventSink(this);
+            }
+            this.selectEventSink.addCallback(callback);
         }
-        this.selectEvent = callback;
+        else{
+            this.selectEvents.add(callback);
+        }
         return this;
     }
 
@@ -301,9 +312,14 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
      */
     public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
         if(this.ctrl != null){
-            new ComboBoxChangeEventSink(this, callback);
+            if(this.changeEventSink == null){
+                this.changeEventSink = new ComboBoxChangeEventSink(this);
+            }
+            this.changeEventSink.addCallback(callback);
         }
-        this.changeEvent=callback;
+        else{
+            this.changeEvents.add(callback);
+        }
         return this;
     }
 
@@ -311,18 +327,28 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
 
     public ComboBox onOpen(Consumer<ComboBoxOpenEvent> callback){
         if(this.ctrl != null){
-            new ComboBoxOpenEventSink(this, callback);
+            if(this.openEventSink == null){
+                this.openEventSink = new ComboBoxOpenEventSink(this);
+            }
+            this.openEventSink.addCallback(callback);
         }
-        this.openEvent = callback;
+        else{
+            this.openEvents.add(callback);
+        }
         return this;
     }
     
     
     public ComboBox onClose(Consumer<ComboBoxCloseEvent> callback){
         if(this.ctrl != null){
-            new ComboBoxCloseEventSink(this, callback);
+            if(this.closeEventSink == null){
+                this.closeEventSink = new ComboBoxCloseEventSink(this);
+            }
+            this.closeEventSink.addCallback(callback);
         }
-        this.closeEvent = callback;
+        else{
+            this.closeEvents.add(callback);
+        }
         return this;
     }
 
@@ -605,20 +631,29 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
             this.setTextAt(this.textAt.getKey(), this.textAt.getValue());
         }
 
-        if(this.changeEvent != null){
-            this.onChange(this.changeEvent);
+        if(!this.changeEvents.isEmpty()){
+            this.changeEventSink = new ComboBoxChangeEventSink(this);
+            while(!this.changeEvents.isEmpty()){
+                this.changeEventSink.addCallback(this.changeEvents.remove(0));
+            }
         }
-
-        if(this.selectEvent != null){
-            this.onSelect(this.selectEvent);
+        if(!this.selectEvents.isEmpty()){
+            this.selectEventSink = new ComboBoxSelectEventSink(this);
+            while(!this.selectEvents.isEmpty()){
+                this.selectEventSink.addCallback(this.selectEvents.remove(0));
+            }
         }
-        
-        if(this.openEvent != null){
-            this.onOpen(this.openEvent);
+        if(!this.openEvents.isEmpty()){
+            this.openEventSink = new ComboBoxOpenEventSink(this);
+            while(!this.openEvents.isEmpty()){
+                this.openEventSink.addCallback(this.openEvents.remove(0));
+            }
         }
-        
-        if(this.closeEvent != null){
-            this.onClose(this.closeEvent);
+        if(!this.closeEvents.isEmpty()){
+            this.closeEventSink = new ComboBoxCloseEventSink(this);
+            while(!this.closeEvents.isEmpty()){
+                this.closeEventSink.addCallback(this.closeEvents.remove(0));
+            }
         }
 
         // if(this.fieldHeight != null){

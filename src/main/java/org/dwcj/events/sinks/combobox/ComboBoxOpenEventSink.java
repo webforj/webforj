@@ -21,6 +21,20 @@ public class ComboBoxOpenEventSink {
 
 
     @SuppressWarnings({"static-access"})
+    public ComboBoxOpenEventSink(ComboBox cb) {
+        this.comboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public ComboBoxOpenEventSink(ComboBox cb, Consumer<ComboBoxOpenEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;

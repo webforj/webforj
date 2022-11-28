@@ -19,6 +19,20 @@ public class ComboBoxCloseEventSink {
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
+    public ComboBoxCloseEventSink(ComboBox cb) {
+        this.comboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public ComboBoxCloseEventSink(ComboBox cb, Consumer<ComboBoxCloseEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;

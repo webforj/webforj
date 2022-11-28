@@ -383,11 +383,11 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
             this.setChecked(this.checked);
         } 
         
-        if(this.checkboxCheckEventSink == null && !this.callbacks.isEmpty()){
+        if(!this.callbacks.isEmpty()){
             this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
-        }
-        while(!this.callbacks.isEmpty()){
-            this.checkboxCheckEventSink.addCallback(this.callbacks.remove(0));
+            while(!this.callbacks.isEmpty()){
+                this.checkboxCheckEventSink.addCallback(this.callbacks.remove(0));
+            }
         }
 
         
