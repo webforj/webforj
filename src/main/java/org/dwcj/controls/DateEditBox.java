@@ -7,9 +7,13 @@ import com.basis.startup.type.BBjNumber;
 import com.basis.startup.type.sysgui.BBjColor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.DateEditBoxEditModifyEvent;
+import org.dwcj.events.sinks.DateEditBoxEditModifyEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextControl, ITextAlignable {
@@ -23,6 +27,9 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
     public static enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
+
+    private ArrayList<Consumer<DateEditBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    private DateEditBoxEditModifyEventSink editModifyEventSink;
 
     private Boolean beep = false;
     private Integer cHeight = null;
@@ -76,6 +83,19 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public DateEditBox onEditModify(Consumer<DateEditBoxEditModifyEvent> callback){
+        if(this.ctrl != null){
+            if(this.editModifyEventSink == null){
+                this.editModifyEventSink = new DateEditBoxEditModifyEventSink(this);
+            }
+            this.editModifyEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
     /**
@@ -765,6 +785,13 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
+
+        if(!this.callbacks.isEmpty()){
+            this.editModifyEventSink = new DateEditBoxEditModifyEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.editModifyEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
 
         if(this.beep != false){
             this.setBeep(this.beep);
