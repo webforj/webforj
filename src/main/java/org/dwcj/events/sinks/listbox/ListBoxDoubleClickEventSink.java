@@ -18,6 +18,22 @@ public class ListBoxDoubleClickEventSink {
     private final ListBox listBox;
 
     @SuppressWarnings({"static-access"})
+    public ListBoxDoubleClickEventSink(ListBox listBox) {
+        this.targets = new ArrayList<>();
+        this.listBox = listBox;
+
+        BBjControl bbjctrl = null;
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(listBox);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_DOUBLE_CLICK,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public ListBoxDoubleClickEventSink(ListBox listBox, Consumer<ListBoxDoubleClickEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
@@ -48,6 +64,10 @@ public class ListBoxDoubleClickEventSink {
         Iterator<Consumer<ListBoxDoubleClickEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
+    }
+
+    public void addCallback(Consumer<ListBoxDoubleClickEvent> callback){
+        targets.add(callback);
     }
     
 }

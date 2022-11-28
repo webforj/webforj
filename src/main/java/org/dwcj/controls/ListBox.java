@@ -12,6 +12,7 @@ import org.dwcj.events.sinks.listbox.ListBoxSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,8 +27,10 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    private Consumer<ListBoxSelectEvent> selectEvent;
-    private Consumer<ListBoxDoubleClickEvent> doubleClickEvent;
+    private ArrayList<Consumer<ListBoxSelectEvent>> selectEvents = new ArrayList<>();
+    private ListBoxSelectEventSink selectEventSink;
+    private ArrayList<Consumer<ListBoxDoubleClickEvent>> doubleClickEvents = new ArrayList<>();
+    private ListBoxDoubleClickEventSink doubleClickEventSink;
     Boolean multipleSelection = false;
     private SimpleEntry<Integer, String> textAt = null;
 
@@ -304,17 +307,27 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
      */
     public ListBox onSelect(Consumer<ListBoxSelectEvent> callback) {
         if(this.ctrl != null){
-            new ListBoxSelectEventSink(this, callback);
+            if(this.selectEventSink == null){
+                this.selectEventSink = new ListBoxSelectEventSink(this);
+            }
+            this.selectEventSink.addCallback(callback);
         }
-        this.selectEvent = callback;
+        else{
+            this.selectEvents.add(callback);
+        }
         return this;
     }
 
     public ListBox onDoubleClick(Consumer<ListBoxDoubleClickEvent> callback) {
         if(this.ctrl != null){
-            new ListBoxDoubleClickEventSink(this, callback);
+            if(this.doubleClickEventSink == null){
+                this.doubleClickEventSink = new ListBoxDoubleClickEventSink(this);
+            }
+            this.doubleClickEventSink.addCallback(callback);
         }
-        this.doubleClickEvent = callback;
+        else{
+            this.doubleClickEvents.add(callback);
+        }
         return this;
     }
 
@@ -660,12 +673,18 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
 
-        if(this.selectEvent != null){
-            this.onSelect(this.selectEvent);
+        if(!this.selectEvents.isEmpty()){
+            this.selectEventSink = new ListBoxSelectEventSink(this);
+            while(!this.selectEvents.isEmpty()){
+                this.selectEventSink.addCallback(this.selectEvents.remove(0));
+            }
         }
-        
-        if(this.doubleClickEvent != null){
-            this.onDoubleClick(this.doubleClickEvent);
+
+        if(!this.doubleClickEvents.isEmpty()){
+            this.doubleClickEventSink = new ListBoxDoubleClickEventSink(this);
+            while(!this.doubleClickEvents.isEmpty()){
+                this.doubleClickEventSink.addCallback(this.doubleClickEvents.remove(0));
+            }
         }
 
         if(this.multipleSelection != false){
