@@ -4,10 +4,13 @@ import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.MultilineEditOnEditModifyEvent;
+import org.dwcj.events.sinks.MultilineEditOnEditModifyEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class MultilineEdit extends AbstractDwcControl implements IReadOnly, ITextControl, IFocusable, IMouseWheelEnableable, IScrollable, ITabTraversable {
 
@@ -20,6 +23,9 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     public static enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
+
+    private ArrayList<Consumer<MultilineEditOnEditModifyEvent>> callbacks = new ArrayList<>();
+    private MultilineEditOnEditModifyEventSink editModifyEventSink;
 
 
     private Boolean hScroll = false;
@@ -62,6 +68,19 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public MultilineEdit onEditModify(Consumer<MultilineEditOnEditModifyEvent> callback){
+        if(this.ctrl != null){
+            if(this.editModifyEventSink == null){
+                this.editModifyEventSink = new MultilineEditOnEditModifyEventSink(this);
+            }
+            this.editModifyEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
     /**
@@ -912,6 +931,13 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
+
+        if(!this.callbacks.isEmpty()){
+            this.editModifyEventSink = new MultilineEditOnEditModifyEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.editModifyEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
 
         if(this.hScroll != false){
             this.setHorizontalScrollable(this.hScroll);
