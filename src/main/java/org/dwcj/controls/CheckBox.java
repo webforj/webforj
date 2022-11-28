@@ -9,6 +9,7 @@ import org.dwcj.events.CheckBoxChangeEvent;
 import org.dwcj.events.sinks.CheckBoxCheckEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable {
@@ -48,9 +49,10 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
      * control.
      * =====================================================================================
      */
-    private Consumer<CheckBoxChangeEvent> callback = null;
-    HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
-    Boolean checked = false;
+    private ArrayList<Consumer<CheckBoxChangeEvent>> callbacks = new ArrayList<>();
+    private CheckBoxCheckEventSink checkboxCheckEventSink;
+    private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
+    private Boolean checked = false;
 
 
     /* =====================================================================================
@@ -102,9 +104,14 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
      */
     public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
         if(this.ctrl != null){
-            new CheckBoxCheckEventSink(this, callback);
+            if(this.checkboxCheckEventSink == null){
+                this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
+            }
+            this.checkboxCheckEventSink.addCallback(callback);
         }
-        this.callback = callback;     
+        else{
+            this.callbacks.add(callback);
+        }
         return this;
     }
 
@@ -375,9 +382,14 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
         if(this.checked != null){
             this.setChecked(this.checked);
         } 
-        if(this.callback != null){
-            this.onChange(this.callback);
+        
+        if(this.checkboxCheckEventSink == null && !this.callbacks.isEmpty()){
+            this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
         }
+        while(!this.callbacks.isEmpty()){
+            this.checkboxCheckEventSink.addCallback(this.callbacks.remove(0));
+        }
+
         
         if(this.horizontalTextPosition != HorizontalTextPosition.RIGHT){
             try{

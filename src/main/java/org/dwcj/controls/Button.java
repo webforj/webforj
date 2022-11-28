@@ -365,7 +365,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
             this.setDisableOnClick(this.disableOnClick);
         }
 
-        if(this.buttonPushEventSink == null){
+        if(this.buttonPushEventSink == null && !this.callbacks.isEmpty()){
             this.buttonPushEventSink = new ButtonPushEventSink(this);
         }
         while(!this.callbacks.isEmpty()){
