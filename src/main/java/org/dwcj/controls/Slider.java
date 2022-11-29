@@ -4,10 +4,14 @@ import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.SliderOnControlScrollEvent;
+import org.dwcj.events.sinks.SliderOnControlScrollEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public final class Slider extends AbstractDwcControl implements IFocusable, IMouseWheelEnableable, ITabTraversable {
 
@@ -18,6 +22,8 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
         DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
     }
     
+    private ArrayList<Consumer<SliderOnControlScrollEvent>> callbacks = new ArrayList<>();
+    private SliderOnControlScrollEventSink scrollEventSink;
     
     private Boolean horizontal = true;
     private Boolean inverted = false;
@@ -68,6 +74,19 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
             e.printStackTrace();
         }
 
+    }
+
+    public Slider onScroll(Consumer<SliderOnControlScrollEvent> callback) {
+        if(this.ctrl != null){
+            if(this.scrollEventSink == null){
+                this.scrollEventSink = new SliderOnControlScrollEventSink(this);
+            }
+            this.scrollEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
     /*
@@ -539,6 +558,14 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
+
+
+        if(!this.callbacks.isEmpty()){
+            this.scrollEventSink = new SliderOnControlScrollEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.scrollEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
 
 
         if(this.inverted != false){
