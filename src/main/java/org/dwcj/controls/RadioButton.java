@@ -4,12 +4,15 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import org.dwcj.events.RadioButtonCheckEvent;
 import org.dwcj.events.sinks.RadioButtonCheckEventSink;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 
@@ -32,7 +35,8 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
         }
     }
     
-    private Consumer<RadioButtonCheckEvent> callback;
+    private ArrayList<Consumer<RadioButtonCheckEvent>> callbacks = new ArrayList<> ();
+    private RadioButtonCheckEventSink checkEventSink; 
     private Boolean selected = false;
     private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
 
@@ -69,9 +73,16 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
      * @param callback A method to receive the onCheck event
      * @return
      */
-    public RadioButton onCheck(Consumer<RadioButtonCheckEvent> callback) {
-        this.callback = callback;
-        new RadioButtonCheckEventSink(this, callback);
+    public RadioButton onChange(Consumer<RadioButtonCheckEvent> callback) {
+        if(this.ctrl != null){
+            if(this.checkEventSink == null){
+                this.checkEventSink = new RadioButtonCheckEventSink(this);
+            }
+            this.checkEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
         return this;
     }
 
@@ -83,6 +94,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             }
         }
+        App.consoleError("ID cannot be fetched as control does not yet exist. Please add control to a window first");
         return null;
     }
 
@@ -96,6 +108,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
                 e.printStackTrace();
             }
         }
+        App.consoleError("Button group cannot be fetched as control does not yet exist. Please add control to a window first");
         return null;
     }
 
@@ -290,8 +303,12 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
         if(this.selected != false){
             this.setSelected(this.selected);
         } 
-        if(this.callback != null){
-            this.onCheck(this.callback);
+
+        if(!this.callbacks.isEmpty()){
+            this.checkEventSink = new RadioButtonCheckEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.checkEventSink.addCallback(this.callbacks.remove(0));
+            }
         }
         
         if(this.horizontalTextPosition != HorizontalTextPosition.RIGHT){

@@ -4,7 +4,13 @@ import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.NumericBoxEditModifyEvent;
+import org.dwcj.events.sinks.NumericBoxEditModifyEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
@@ -22,6 +28,8 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
     }
 
 
+    protected ArrayList<Consumer<NumericBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    protected NumericBoxEditModifyEventSink editModifyEventSink;
 
 
     protected String commaChar = ",";
@@ -77,6 +85,19 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public NumericBox onEditModify(Consumer<NumericBoxEditModifyEvent> callback){
+        if(this.ctrl != null){
+            if(this.editModifyEventSink == null){
+                this.editModifyEventSink = new NumericBoxEditModifyEventSink(this);
+            }
+            this.editModifyEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
     /**
@@ -766,6 +787,13 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
+
+        if(!this.callbacks.isEmpty()){
+            this.editModifyEventSink = new NumericBoxEditModifyEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.editModifyEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
 
 
         if(this.commaChar != ","){
