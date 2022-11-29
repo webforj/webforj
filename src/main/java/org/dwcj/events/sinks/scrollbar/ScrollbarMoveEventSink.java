@@ -19,6 +19,23 @@ public class ScrollbarMoveEventSink {
 
 
     @SuppressWarnings({"static-access"})
+    public ScrollbarMoveEventSink(ScrollBar sb) {
+        this.targets = new ArrayList<>();
+        this.scrollBar = sb;
+
+        BBjControl bbjctrl = null;
+        try{
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(sb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CONTROL_SCROLL,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this,"scrollEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @SuppressWarnings({"static-access"})
     public ScrollbarMoveEventSink(ScrollBar sb, Consumer<ScrollbarMoveEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
