@@ -841,7 +841,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setPassTab(this.pTab);
         }
 
-        if(this.restore != "0"){
+        if(!"0".equals(this.restore)){
             this.setRestore(this.restore);
         }
 
