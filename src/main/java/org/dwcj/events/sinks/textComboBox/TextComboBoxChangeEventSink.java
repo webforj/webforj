@@ -1,7 +1,6 @@
 package org.dwcj.events.sinks.textComboBox;
 
 import com.basis.bbj.proxies.event.BBjListChangeEvent;
-import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
@@ -21,6 +20,20 @@ public class TextComboBoxChangeEventSink {
     private final TextComboBox textComboBox;
 
     private BBjControl bbjctrl;
+
+    @SuppressWarnings({"static-access"})
+    public TextComboBoxChangeEventSink(TextComboBox cb) {
+        this.textComboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CHANGE,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @SuppressWarnings({"static-access"})
     public TextComboBoxChangeEventSink(TextComboBox cb, Consumer<TextComboBoxChangeEvent> callback) {

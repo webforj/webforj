@@ -10,7 +10,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.List;
 
-public final  class HtmlEdit extends AbstractDwcControl {
+public final  class HtmlEdit extends AbstractDwcControl implements IFocusable, ITabTraversable {
 
     private BBjHtmlEdit bbjHtmlEdit;
 
@@ -19,12 +19,23 @@ public final  class HtmlEdit extends AbstractDwcControl {
     }
 
 
+    
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visbility flag
-            ctrl = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+            byte[] flags = new byte[]{(byte)0x00, bFlag};  
+
+            ctrl = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
             bbjHtmlEdit = (BBjHtmlEdit) ctrl;
             catchUp();
         } catch (Exception e) {
@@ -300,6 +311,58 @@ public final  class HtmlEdit extends AbstractDwcControl {
 
 
 
+    @Override
+    public Boolean isFocusable(){
+        if(this.ctrl != null){
+            try{
+                return bbjHtmlEdit.isFocusable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this.focusable;
+    }
+
+    @Override 
+    public HtmlEdit setFocusable(Boolean focusable){
+        if(this.ctrl != null){
+            try{
+                bbjHtmlEdit.setFocusable(focusable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.focusable = focusable;
+        return this;
+    }
+
+    @Override
+    public Boolean isTabTraversable(){
+        if(this.ctrl != null){
+            try{
+                return bbjHtmlEdit.isTabTraversable();
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        return this.tabTraversable;
+    }
+
+    @Override 
+    public HtmlEdit setTabTraversable(Boolean traversable){
+        if(this.ctrl != null){
+            try{
+                bbjHtmlEdit.setTabTraversable(traversable);
+            } catch(BBjException e){
+                e.printStackTrace();
+            }
+        }
+        this.tabTraversable = traversable;
+        return this;
+    }
+
+
+
     public HtmlEdit setText(String text) {
         super.setControlText(text);
         return this;
@@ -345,14 +408,18 @@ public final  class HtmlEdit extends AbstractDwcControl {
         return this;
     }
 
-
-
-
     public HtmlEdit setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
+
+
+    @Override
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        //TODO
+    }
 
 }
 

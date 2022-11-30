@@ -16,6 +16,7 @@ import org.dwcj.events.textComboBox.TextComboBoxOpenEvent;
 import org.dwcj.events.textComboBox.TextComboBoxSelectEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -37,11 +38,19 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         DEFAULT, DANGER, PRIMARY, SUCCESS, WARNING
     }
 
-    private Consumer<TextComboBoxSelectEvent> selectEvent = null;
-    private Consumer<TextComboBoxChangeEvent> changeEvent = null;
-    private Consumer<TextComboBoxOpenEvent> openEvent = null;
-    private Consumer<TextComboBoxCloseEvent> closeEvent = null;
-    private Consumer<TextComboBoxEditModifyEvent> editModifyEvent = null;
+
+    private ArrayList<Consumer<TextComboBoxSelectEvent>> selectEvents = new ArrayList<>();
+    private TextComboBoxSelectEventSink selectEventSink;
+    private ArrayList<Consumer<TextComboBoxChangeEvent>> changeEvents = new ArrayList<>();
+    private TextComboBoxChangeEventSink changeEventSink;
+    private ArrayList<Consumer<TextComboBoxOpenEvent>> openEvents = new ArrayList<>();
+    private TextComboBoxOpenEventSink openEventSink;
+    private ArrayList<Consumer<TextComboBoxCloseEvent>> closeEvents = new ArrayList<>();
+    private TextComboBoxCloseEventSink closeEventSink;
+    private ArrayList<Consumer<TextComboBoxEditModifyEvent>> editModifyEvents = new ArrayList<>();
+    private TextComboBoxEditModifyEventSink editModifyEventSink;
+
+
     private String editText = "";
     private Integer maxRowCount = null;
     private SimpleEntry<Integer, String> textAt = null;
@@ -317,75 +326,72 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         return this;
     }
 
-
-
-
-
-
-
     
     public TextComboBox onSelect(Consumer<TextComboBoxSelectEvent> callback) {
         if(this.ctrl != null){
-            new TextComboBoxSelectEventSink(this, callback);
+            if(this.selectEventSink == null){
+                this.selectEventSink = new TextComboBoxSelectEventSink(this);
+            }
+            this.selectEventSink.addCallback(callback);
         }
-        this.selectEvent = callback;
+        else{
+            this.selectEvents.add(callback);
+        }
         return this;
     }
     
     
     public TextComboBox onChange(Consumer<TextComboBoxChangeEvent> callback) {
-        if(this.ctrl != null){
-            new TextComboBoxChangeEventSink(this, callback);
+       if(this.ctrl != null){
+            if(this.changeEventSink == null){
+                this.changeEventSink = new TextComboBoxChangeEventSink(this);
+            }
+            this.changeEventSink.addCallback(callback);
         }
-        this.changeEvent = callback;
+        else{
+            this.changeEvents.add(callback);
+        }
         return this;
     }
 
     public TextComboBox onOpen(Consumer<TextComboBoxOpenEvent> callback) {
         if(this.ctrl != null){
-            new TextComboBoxOpenEventSink(this, callback);
+            if(this.openEventSink == null){
+                this.openEventSink = new TextComboBoxOpenEventSink(this);
+            }
+            this.openEventSink.addCallback(callback);
         }
-        this.openEvent = callback;
+        else{
+            this.openEvents.add(callback);
+        }
         return this;
     }
     
     public TextComboBox onClose(Consumer<TextComboBoxCloseEvent> callback) {
         if(this.ctrl != null){
-            new TextComboBoxCloseEventSink(this, callback);
+            if(this.closeEventSink == null){
+                this.closeEventSink = new TextComboBoxCloseEventSink(this);
+            }
+            this.closeEventSink.addCallback(callback);
         }
-        this.closeEvent = callback;
+        else{
+            this.closeEvents.add(callback);
+        }
         return this;
     }
 
     public TextComboBox onEditModify(Consumer<TextComboBoxEditModifyEvent> callback) {
         if(this.ctrl != null){
-            new TextComboBoxEditModifyEventSink(this, callback);
+            if(this.editModifyEventSink == null){
+                this.editModifyEventSink = new TextComboBoxEditModifyEventSink(this);
+            }
+            this.editModifyEventSink.addCallback(callback);
         }
-        this.editModifyEvent = callback;
+        else{
+            this.editModifyEvents.add(callback);
+        }
         return this;
     }
-
-
-    /**
-     * Register a callback for selecting an item within the box
-     *
-     * @param callback A method to receive the selection event
-     * @return the control itself
-     */
-    // public TextComboBox onChange(Consumer<TextComboBoxChangeEvent> callback) {
-    //     if(this.ctrl != null){
-    //         new TextComboBoxChangeEventSink(this, callback);
-    //     }
-    //     this.changeEvent=callback;
-    //     return this;
-    // }
-
-    
-
-
-
-
-
 
 
     @Override
@@ -564,6 +570,43 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     }
 
 
+    private void eventCatchUp(){
+        if(!this.selectEvents.isEmpty()){
+            this.selectEventSink = new TextComboBoxSelectEventSink(this);
+            while(!this.selectEvents.isEmpty()){
+                this.selectEventSink.addCallback(this.selectEvents.remove(0));
+            }
+        }
+
+        if(!this.changeEvents.isEmpty()){
+            this.changeEventSink = new TextComboBoxChangeEventSink(this);
+            while(!this.changeEvents.isEmpty()){
+                this.changeEventSink.addCallback(this.changeEvents.remove(0));
+            }
+        }
+
+        if(!this.openEvents.isEmpty()){
+            this.openEventSink = new TextComboBoxOpenEventSink(this);
+            while(!this.openEvents.isEmpty()){
+                this.openEventSink.addCallback(this.openEvents.remove(0));
+            }
+        }
+
+        if(!this.closeEvents.isEmpty()){
+            this.closeEventSink = new TextComboBoxCloseEventSink(this);
+            while(!this.closeEvents.isEmpty()){
+                this.closeEventSink.addCallback(this.closeEvents.remove(0));
+            }
+        }
+
+        if(!this.editModifyEvents.isEmpty()){
+            this.editModifyEventSink = new TextComboBoxEditModifyEventSink(this);
+            while(!this.editModifyEvents.isEmpty()){
+                this.editModifyEventSink.addCallback(this.editModifyEvents.remove(0));
+            }
+        }
+    }
+
 
     @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
@@ -571,6 +614,9 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         if (this.caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
 
         super.catchUp();
+
+        this.eventCatchUp();
+
 
         if(this.maxRowCount != null){
             this.setMaximumRowCount(this.maxRowCount);
@@ -580,30 +626,6 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             this.setTextAt(this.textAt.getKey(), this.textAt.getValue());
         }
 
-        // if(this.changeEvent != null){
-        //     this.onChange(this.changeEvent);
-        // }
-
-        if(this.selectEvent != null){
-            this.onSelect(this.selectEvent);
-        }
-        if(this.changeEvent != null){
-            this.onChange(this.changeEvent);
-        }
-        if(this.openEvent != null){
-            this.onOpen(this.openEvent);
-        }
-        if(this.closeEvent != null){
-            this.onClose(this.closeEvent);
-        }
-        if(this.editModifyEvent != null){
-            this.onEditModify(this.editModifyEvent);
-        }
-
-        // if(this.fieldHeight != null){
-        //     this.setFieldHeight(fieldHeight);
-        // }
-
         if(this.maxRowCount != null){
             this.setMaximumRowCount(maxRowCount);
         }
@@ -611,10 +633,6 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
         if(this.editText != null){
             this.setEditText(this.editText);
         }
-        
-        // if(this.openWidth != null){
-        //     this.setOpenWidth(openWidth);
-        // }
 
         if(this.readOnly != false){
             this.setReadOnly(this.readOnly);

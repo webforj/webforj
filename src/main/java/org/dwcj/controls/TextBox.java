@@ -3,7 +3,13 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.TextBoxEditModifyEvent;
+import org.dwcj.events.sinks.TextBoxEditModifyEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 
@@ -20,6 +26,8 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
+    private ArrayList<Consumer<TextBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    private TextBoxEditModifyEventSink editModifyEventSink;
 
     private Integer maxLength = 2147483647;
     private Boolean homeDelete = false;
@@ -48,6 +56,20 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
             e.printStackTrace();
         }
         
+    }
+
+
+    public TextBox onEditModify(Consumer<TextBoxEditModifyEvent> callback){
+        if(this.ctrl != null){
+            if(this.editModifyEventSink == null){
+                this.editModifyEventSink = new TextBoxEditModifyEventSink(this);
+            }
+            this.editModifyEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
     public String getEditType(){
@@ -343,6 +365,12 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
 
+        if(!this.callbacks.isEmpty()){
+            this.editModifyEventSink = new TextBoxEditModifyEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.editModifyEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
                 
         if(this.maxLength != 2147483647){
             this.setMaxLength(this.maxLength);

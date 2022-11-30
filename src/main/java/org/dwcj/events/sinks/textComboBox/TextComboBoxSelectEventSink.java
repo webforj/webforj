@@ -20,6 +20,20 @@ public final class TextComboBoxSelectEventSink {
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
+    public TextComboBoxSelectEventSink(TextComboBox cb) {
+        this.textComboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public TextComboBoxSelectEventSink(TextComboBox cb, Consumer<TextComboBoxSelectEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
@@ -33,6 +47,7 @@ public final class TextComboBoxSelectEventSink {
             e.printStackTrace();
         }
     }
+
     @SuppressWarnings("java.S1172")
     public void selectEvent(BBjListSelectEvent ev) { //NOSONAR
         TextComboBoxSelectEvent dwcEv = new TextComboBoxSelectEvent(this.textComboBox);

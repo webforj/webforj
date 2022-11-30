@@ -9,6 +9,11 @@ public abstract class AbstractCompoundControl extends AbstractDwcControl{
 
     protected Div canvas = new Div();
 
+    /*
+     * Will need to have a create() method for any controls that extend this class, but it's
+     * acceptable to simply call the super.create() method and pass the AbstractDwcjPanel from
+     * the custom compound control's create function into that of the super.create().
+     */
     @Override
     public void create(AbstractDwcjPanel panel) {
         panel.add(canvas);
@@ -19,11 +24,21 @@ public abstract class AbstractCompoundControl extends AbstractDwcControl{
         canvas.add(control);
     }
 
+    /*
+     * Overwrite the init() function with the desired
+     * implementation of your compound control. This is where adding
+     * various components, styling them, etc can take place.
+     */
     public abstract void init();
 
 
 
 
+    /*
+     * Developers may want to override some of these methods for 
+     * their specific endgoals, such as having setText work in a 
+     * more specific way for their custom group of controls.
+     */
 
     public AbstractCompoundControl setText(String text){
         super.setControlText(text);

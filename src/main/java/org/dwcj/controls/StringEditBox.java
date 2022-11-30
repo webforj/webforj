@@ -1,9 +1,13 @@
 package org.dwcj.controls;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.events.StringEditBoxEditModifyEvent;
+import org.dwcj.events.sinks.StringEditBoxEditModifyEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import com.basis.bbj.proxies.sysgui.BBjInputE;
@@ -23,6 +27,9 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
     
+
+    private ArrayList<Consumer<StringEditBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    private StringEditBoxEditModifyEventSink editModifyEventSink;
     
     private Integer caretPos = 1;
     private String editString = "";
@@ -71,6 +78,20 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public StringEditBox onEditModify(Consumer<StringEditBoxEditModifyEvent> callback){
+
+        if(this.ctrl != null){
+            if(this.editModifyEventSink == null){
+                this.editModifyEventSink = new StringEditBoxEditModifyEventSink(this);
+            }
+            this.editModifyEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
 
@@ -546,6 +567,15 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
     @Override
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
+
+        
+        if(!this.callbacks.isEmpty()){
+            this.editModifyEventSink = new StringEditBoxEditModifyEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.editModifyEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
+
         
         if(this.caretPos != 1){
             this.setCaretPos(this.caretPos);

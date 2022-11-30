@@ -20,6 +20,20 @@ public class TextComboBoxOpenEventSink {
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
+    public TextComboBoxOpenEventSink(TextComboBox cb) {
+        this.textComboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public TextComboBoxOpenEventSink(TextComboBox cb, Consumer<TextComboBoxOpenEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;

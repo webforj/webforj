@@ -19,6 +19,20 @@ public class TextComboBoxEditModifyEventSink {
 
 
     @SuppressWarnings({"static-access"})
+    public TextComboBoxEditModifyEventSink(TextComboBox cb) {
+        this.textComboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public TextComboBoxEditModifyEventSink(TextComboBox cb, Consumer<TextComboBoxEditModifyEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;

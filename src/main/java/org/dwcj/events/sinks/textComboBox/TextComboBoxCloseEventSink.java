@@ -18,6 +18,20 @@ public class TextComboBoxCloseEventSink {
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
+    public TextComboBoxCloseEventSink(TextComboBox cb) {
+        this.textComboBox = cb;
+
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
     public TextComboBoxCloseEventSink(TextComboBox cb, Consumer<TextComboBoxCloseEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
