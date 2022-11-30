@@ -27,11 +27,20 @@ public final class ScrollBar extends AbstractDwcControl {
         
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};
             if (horizontal)
-            ctrl = w.addHorizontalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
+                ctrl = w.addHorizontalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
             else
-            ctrl = w.addVerticalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
+                ctrl = w.addVerticalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
             catchUp();
             bbjScrollBar = (BBjScrollBar) ctrl;
         } catch (Exception e) {
