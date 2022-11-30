@@ -10,7 +10,6 @@ public class HtmlContainerOnScriptLoadedEvent implements IDwcEvent {
 
     public HtmlContainerOnScriptLoadedEvent(HtmlContainer cHtmlContainer) {
         this.control = cHtmlContainer;
-        App.consoleLog("Loaded Event Constructed");
     }
 
     @Override
