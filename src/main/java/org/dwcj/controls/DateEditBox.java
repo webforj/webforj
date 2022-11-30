@@ -821,7 +821,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setLength(this.length);
         }
 
-        if(this.locale != "en_US"){
+        if(!this.locale.equals("en_US")){
             this.setLocale(this.locale);
         }
 
