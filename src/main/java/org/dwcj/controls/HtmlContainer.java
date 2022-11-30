@@ -3,14 +3,21 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjHtmlView;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.JavascriptEvent;
 import org.dwcj.events.PageLoadedEvent;
+import org.dwcj.events.htmlcontainer.HtmlContainerOnScriptFailedEvent;
+import org.dwcj.events.htmlcontainer.HtmlContainerOnScriptLoadedEvent;
 import org.dwcj.events.sinks.NativeJavascriptEventSink;
 import org.dwcj.events.sinks.PageLoadedEventSink;
+import org.dwcj.events.sinks.htmlcontainer.HtmlContainerOnScriptFailedEventSink;
+import org.dwcj.events.sinks.htmlcontainer.HtmlContainerOnScriptLoadedEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
@@ -19,6 +26,11 @@ import java.util.function.Consumer;
 public final class HtmlContainer extends AbstractDwcControl implements IFocusable, ITabTraversable {
 
     private BBjHtmlView bbjHtmlView;
+
+    private ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
+    private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
+    private ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
+    private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;;
 
     private String asyncScript = "";
     private String executeScript = "";
@@ -63,6 +75,37 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
             e.printStackTrace();
         }
     }
+
+
+    public HtmlContainer onScriptLoaded(Consumer<HtmlContainerOnScriptLoadedEvent> callback){
+        if(this.ctrl != null){
+            if(this.onScriptLoadedSink == null){
+                this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);
+                App.consoleLog(":)");
+            }
+            this.onScriptLoadedSink.addCallback(callback);
+        }
+        else{
+            this.scriptLoadedEvents.add(callback);
+        }
+        return this;
+
+    }
+    
+    public HtmlContainer onScriptFailed(Consumer<HtmlContainerOnScriptFailedEvent> callback){
+        if(this.ctrl != null){
+            if(this.onScriptFailedSink == null){
+                this.onScriptFailedSink = new HtmlContainerOnScriptFailedEventSink(this);
+            }
+            this.onScriptFailedSink.addCallback(callback);
+        }
+        else{
+            this.scriptFailedEvents.add(callback);
+        }
+        return this;
+
+    }
+
 
     public void executeAsyncScript(String script) {
         if(this.ctrl != null){
@@ -405,19 +448,33 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
     protected void catchUp() throws IllegalAccessException {
         super.catchUp();
 
-        if(this.asyncScript != ""){
+        if(!this.scriptLoadedEvents.isEmpty()){
+            this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);
+            while(!this.scriptLoadedEvents.isEmpty()){
+                this.onScriptLoadedSink.addCallback(this.scriptLoadedEvents.remove(0));
+            }
+        }
+
+        if(!this.scriptFailedEvents.isEmpty()){
+            this.onScriptFailedSink = new HtmlContainerOnScriptFailedEventSink(this);
+            while(!this.scriptFailedEvents.isEmpty()){
+                this.onScriptFailedSink.addCallback(this.scriptFailedEvents.remove(0));
+            }
+        }
+
+        if(!this.asyncScript.equals("")){
             this.executeAsyncScript(this.asyncScript);
         }
 
-        if(this.executeScript != ""){
+        if(!this.executeScript.equals("")){
             this.executeScript(this.executeScript);
         }
 
-        if(this.injectScript != ""){
+        if(!this.injectScript.equals("")){
             this.injectScript(this.injectScript, this.injectScriptTop);
         }
 
-        if(this.injectURL != ""){
+        if(!this.injectURL.equals("")){
             this.injectUrl(this.injectURL, this.injectURLTop);
         }
 
@@ -425,15 +482,15 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
             this.setAutoNavigate(this.autoNavigate);
         }
 
-        if(this.downloadDirectory != ""){
+        if(!this.downloadDirectory.equals("")){
             this.setDownloadDirectory(this.downloadDirectory);
         }
 
-        if(this.URL != ""){
+        if(!this.URL.equals("")){
             this.setUrl(this.URL, this.reload);
         }
 
-        if(this.userAgent != ""){
+        if(!this.userAgent.equals("")){
             this.setUserAgent(this.userAgent);
         }
 

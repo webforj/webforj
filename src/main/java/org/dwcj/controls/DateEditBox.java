@@ -829,7 +829,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setMargin(this.margin);
         }
 
-        if(this.mask != "%Mz/%Dz/%Yz"){
+        if(!this.mask.equals("%Mz/%Dz/%Yz")){
             this.setMask(this.mask);
         }
 

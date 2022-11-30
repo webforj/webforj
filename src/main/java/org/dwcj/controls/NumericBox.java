@@ -796,15 +796,15 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
         }
 
 
-        if(this.commaChar != ","){
+        if(!",".equals(this.commaChar)){
             this.setCommaCharacter(this.commaChar);
         }
 
-        if(this.dotChar != "."){
+        if(!".".equals(this.dotChar)){
             this.setDotCharacter(this.dotChar);
         }
 
-        if(this.editString != ""){
+        if(!"".equals(this.editString)){
             this.setEditString(this.editString);
         }
 
@@ -824,7 +824,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
             this.setMargin(this.margin);
         }
 
-        if(this.mask != "-########"){
+        if(!"-########".equals(this.mask)){
             this.setMask(this.mask);
         }
 

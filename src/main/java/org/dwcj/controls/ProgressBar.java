@@ -334,7 +334,7 @@ public final class ProgressBar extends AbstractDwcControl {
             this.setStringPainted(this.stringPainted);
         }
 
-        if(this.text != "0%"){
+        if(!"0%".equals(this.text)){
             this.setText(this.text);
         }
 

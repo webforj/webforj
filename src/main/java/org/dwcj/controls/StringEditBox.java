@@ -581,7 +581,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
             this.setCaretPos(this.caretPos);
         }
 
-        if(this.editString != ""){
+        if(!"".equals(this.editString)){
             this.setEditString(this.editString);
         }
 
@@ -601,11 +601,11 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
             this.setMargin(this.margin);
         }
 
-        if(this.mask != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"){
+        if(!"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX".equals(this.mask)){
             this.setMask(this.mask);
         }
 
-        if(this.pad != " "){
+        if(!" ".equals(this.pad)){
             this.setPadCharacter(this.pad);
         }
 
@@ -617,7 +617,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
             this.setPassTab(this.passTab);
         }
 
-        if(this.restore != ""){
+        if(!"".equals(this.restore)){
             this.setRestore(this.restore);
         }
 

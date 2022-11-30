@@ -60,16 +60,6 @@ public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEn
         return this;
     }
     
-    
-    public NumericBoxSpinner setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
-        return this;
-    }
-
-    public NumericBoxSpinner setTheme(Theme theme) {
-        super.setControlTheme(theme);
-        return this;
-    }
 
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
