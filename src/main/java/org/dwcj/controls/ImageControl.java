@@ -9,7 +9,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.awt.*;
 
-public final class ImageControl extends AbstractDwcControl implements IStyleable {
+public final class ImageControl extends AbstractDwcControl {
 
     private BBjImageCtrl bbjImageControl;
 
@@ -50,20 +50,47 @@ public final class ImageControl extends AbstractDwcControl implements IStyleable
         }
     }
 
-    @Override
-    public IStyleable setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+    public ImageControl setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
-    @Override
-    public IStyleable addClass(String selector) {
+    public ImageControl setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public ImageControl setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public ImageControl setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public ImageControl setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public ImageControl setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public ImageControl setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public ImageControl addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
-    public IStyleable removeClass(String selector) {
+    public ImageControl removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

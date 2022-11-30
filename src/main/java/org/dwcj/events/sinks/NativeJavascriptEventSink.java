@@ -9,14 +9,14 @@ import org.dwcj.events.JavascriptEvent;
 
 import java.util.function.Consumer;
 
-public final class BBjNativeJavascriptEventSink {
+public final class NativeJavascriptEventSink {
 
 
     private final Consumer<JavascriptEvent> target;
     private final HtmlContainer container;
 
     @SuppressWarnings({"static-access"})
-    public BBjNativeJavascriptEventSink(HtmlContainer htmlv, Consumer<JavascriptEvent> target) {
+    public NativeJavascriptEventSink(HtmlContainer htmlv, Consumer<JavascriptEvent> target) {
         this.target = target;
         this.container = htmlv;
 

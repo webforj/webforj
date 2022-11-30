@@ -7,16 +7,15 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.IStyleable;
 import org.dwcj.events.BBjGridExWidgetSelectEvent;
-import org.dwcj.events.sinks.BBjGridExWidgetSelectEventSink;
+import org.dwcj.events.sinks.GridExWidgetSelectEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
 @SuppressWarnings("java:S3740")
-public final class BBjGridExWidget extends AbstractDwcControl implements IStyleable {
+public final class BBjGridExWidget extends AbstractDwcControl {
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -53,26 +52,54 @@ public final class BBjGridExWidget extends AbstractDwcControl implements IStylea
      * @return - the widget itself
      */
     public BBjGridExWidget onSelect(Consumer<BBjGridExWidgetSelectEvent> callback) {
-        new BBjGridExWidgetSelectEventSink(this, callback);
+        new GridExWidgetSelectEventSink(this, callback);
         return this;
     }
 
-    @Override
+    public BBjGridExWidget setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public BBjGridExWidget setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public BBjGridExWidget setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public BBjGridExWidget setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public BBjGridExWidget setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public BBjGridExWidget setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     public BBjGridExWidget setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
+    
     public BBjGridExWidget addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public BBjGridExWidget removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
+
 
 }

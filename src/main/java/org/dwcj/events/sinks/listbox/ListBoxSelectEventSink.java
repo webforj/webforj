@@ -11,14 +11,30 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class BBjListBoxSelectEventSink {
+public final class ListBoxSelectEventSink {
 
     private final ArrayList<Consumer<ListBoxSelectEvent>> targets;
 
     private final ListBox listBox;
 
     @SuppressWarnings({"static-access"})
-    public BBjListBoxSelectEventSink(ListBox listBox, Consumer<ListBoxSelectEvent> callback) {
+    public ListBoxSelectEventSink(ListBox listBox) {
+        this.targets = new ArrayList<>();
+        this.listBox = listBox;
+
+        BBjControl bbjctrl = null;
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(listBox);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLICK,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
+                    "onEvent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({"static-access"})
+    public ListBoxSelectEventSink(ListBox listBox, Consumer<ListBoxSelectEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.listBox = listBox;
@@ -48,5 +64,9 @@ public final class BBjListBoxSelectEventSink {
         Iterator<Consumer<ListBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
+    }
+
+    public void addCallback(Consumer<ListBoxSelectEvent> callback){
+        targets.add(callback);
     }
 }

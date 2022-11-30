@@ -17,6 +17,23 @@ public final class ButtonPushEventSink {
     private final Button button;
 
     @SuppressWarnings({"static-access"})
+    public ButtonPushEventSink(Button btn) {
+
+        this.targets = new ArrayList<>();
+        this.button = btn;
+
+        BBjControl bbjctrl = null;
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
+                    "onEvent");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public ButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> callback) {
 
         this.targets = new ArrayList<>();

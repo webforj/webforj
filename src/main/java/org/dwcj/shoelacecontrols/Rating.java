@@ -7,7 +7,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IStyleable;
 import org.dwcj.events.RatingValueChangedEvent;
 import org.dwcj.panels.AbstractDwcjPanel;
 
@@ -16,7 +15,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 @SuppressWarnings("java:S1192")
-public final class Rating extends AbstractShoelaceControl implements IStyleable {
+public final class Rating extends AbstractShoelaceControl {
 
     private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 
@@ -157,21 +156,48 @@ public final class Rating extends AbstractShoelaceControl implements IStyleable 
         return this;
     }
 
-    @Override
+    public Rating setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public Rating setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public Rating setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public Rating setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public Rating setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public Rating setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     public Rating setStyle(String property, String value) {
-        setControlStyle(property,value);
+        super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
+    
     public Rating addClass(String selector) {
-        addControlCssClass(selector);
+        super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public Rating removeClass(String selector) {
-        removeControlCssClass(selector);
+        super.removeControlCssClass(selector);
         return this;
     }
 

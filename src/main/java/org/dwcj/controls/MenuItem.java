@@ -6,10 +6,18 @@ import com.basis.startup.type.BBjException;
 
 import java.nio.charset.StandardCharsets;
 
-public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansible, IThemable {
+public class MenuItem extends AbstractDwcControl {
 
     private BBjMenuItem bbjMenuItem;
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
+    
     public Menu getParentMenu() {
         try {
             return (Menu) bbjMenuItem.getParentMenu();
@@ -37,33 +45,58 @@ public class MenuItem extends AbstractDwcControl implements IStyleable, IExpansi
     }
 
 
-    @Override
-    public IExpansible setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+    public MenuItem setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
-    @Override
-    public IStyleable setStyle(String property, String value) {
+    public MenuItem setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public MenuItem setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public MenuItem setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public MenuItem setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public MenuItem setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public MenuItem setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
-    public IStyleable addClass(String selector) {
+    
+    public MenuItem addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
-    public IStyleable removeClass(String selector) {
+    public MenuItem removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
 
-    @Override
-    public IThemable setTheme(Theme theme) {
-        super.setControlTheme(theme);
+
+
+
+    public MenuItem setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
         return this;
     }
+
 }

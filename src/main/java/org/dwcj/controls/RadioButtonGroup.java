@@ -50,7 +50,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
         }
     }
 
-    public int getID() {
+    public int getGroupID() {
         BBjControl control = (BBjControl) radioGroup;
         try {
             return control.getID();
@@ -62,7 +62,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
 
     private RadioButton getButtonByID(int id) {
         for (RadioButton radioButton : radioButtons) {
-            if (radioButton.getID() == id) {
+            if (radioButton.getButtonID() == id) {
                 return radioButton;
             }
         }
@@ -71,7 +71,7 @@ public final class RadioButtonGroup extends AbstractDwcControl {
 
     public static RadioButtonGroup getGroupByID(int id) {
         for (RadioButtonGroup radioButtonGroup : radioButtonGroups) {
-            if (radioButtonGroup.getID() == id) {
+            if (radioButtonGroup.getGroupID() == id) {
                 return radioButtonGroup;
             }
         }
@@ -86,4 +86,53 @@ public final class RadioButtonGroup extends AbstractDwcControl {
             e.printStackTrace();
         }
     }
+
+
+
+
+    public RadioButtonGroup setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public RadioButtonGroup setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public RadioButtonGroup setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public RadioButtonGroup setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public RadioButtonGroup setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public RadioButtonGroup setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public RadioButtonGroup setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public RadioButtonGroup addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    public RadioButtonGroup removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
+    
 }

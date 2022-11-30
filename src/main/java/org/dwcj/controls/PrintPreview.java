@@ -78,4 +78,53 @@ public final class PrintPreview extends AbstractDwcControl {
     public void twoPage() {
         bbjPrintPreview.twoPage();
     }
+
+
+
+    public PrintPreview setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public PrintPreview setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public PrintPreview setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public PrintPreview setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public PrintPreview setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public PrintPreview setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public PrintPreview setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public PrintPreview addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    public PrintPreview removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
+
+
 }

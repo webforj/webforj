@@ -8,7 +8,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupAble {
+public class PopupMenu extends AbstractDwcControl implements IPopupAble {
 
     private BBjPopupMenu bbjPopupMenu;
 
@@ -126,7 +126,7 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
         }
     }
 
-    public int getID() {
+    public int getMenuID() {
         return bbjPopupMenu.getID();
     }
 
@@ -299,24 +299,27 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
         }
     }
 
-    public void setMaximumRowCount(int max) {
+    public PopupMenu setMaximumRowCount(int max) {
         bbjPopupMenu.setMaximumRowCount(max);
+        return this;
     }
 
-    public void setName(String name) {
+    public PopupMenu setName(String name) {
         try {
             bbjPopupMenu.setName(name);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setUserData(Object object) {
+    public PopupMenu setUserData(Object object) {
         try {
             bbjPopupMenu.setUserData(object);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     //todo: how to handle BBjControl parameter?
@@ -336,23 +339,6 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
         }
     }
 
-    @Override
-    public IStyleable setStyle(String property, String value) {
-        super.setControlStyle(property, value);
-        return this;
-    }
-
-    @Override
-    public IStyleable addClass(String selector) {
-        super.addControlCssClass(selector);
-        return this;
-    }
-
-    @Override
-    public IStyleable removeClass(String selector) {
-        super.removeControlCssClass(selector);
-        return this;
-    }
 
     @Override
     public IPopupAble addPopupMenu(int id, String title) {
@@ -362,5 +348,54 @@ public class PopupMenu extends AbstractDwcControl implements IStyleable, IPopupA
     @Override
     public IPopupAble removePopupMenu(int id, String title) {
         return null;
+    }
+
+
+
+
+
+    public PopupMenu setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public PopupMenu setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public PopupMenu setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public PopupMenu setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public PopupMenu setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public PopupMenu setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public PopupMenu setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public PopupMenu addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    public PopupMenu removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
     }
 }

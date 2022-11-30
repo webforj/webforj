@@ -14,9 +14,13 @@ import org.dwcj.panels.AbstractDwcjPanel;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class TreeView extends AbstractDwcControl implements IExpansible {
+public final class TreeView extends AbstractDwcControl {
 
     private BBjTree tree;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -24,8 +28,8 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
-            catchUp();
             tree = (BBjTree) ctrl;
+            catchUp();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -538,9 +542,60 @@ public final class TreeView extends AbstractDwcControl implements IExpansible {
         return this;
     }
 
-    @Override
+
+
+
+    public TreeView setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public TreeView setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public TreeView setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public TreeView setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public TreeView setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public TreeView setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public TreeView setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public TreeView addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    public TreeView removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
+
+
+
+
     public TreeView setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
+
 }

@@ -5,14 +5,16 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.events.ScrollbarMoveEvent;
-import org.dwcj.events.sinks.scrollbar.BBjScrollbarMoveEventSink;
+import org.dwcj.events.sinks.scrollbar.ScrollbarMoveEventSink;
 import org.dwcj.panels.AbstractDwcjPanel;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class ScrollBar extends AbstractDwcControl {
 
-    private BBjScrollbarMoveEventSink scrollbarMoveEventSink;
+    private ArrayList<Consumer<ScrollbarMoveEvent>> callbacks = new ArrayList<>();
+    private ScrollbarMoveEventSink scrollbarMoveEventSink;
 
     private BBjScrollBar bbjScrollBar;
 
@@ -22,20 +24,43 @@ public final class ScrollBar extends AbstractDwcControl {
 
     @Override
     protected void create(AbstractDwcjPanel p) {
-
+        
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
+            byte bFlag = (byte)0x00;
+
+            if(!this.isEnabled()){
+                bFlag += (byte)0x01;
+            }
+            if(!this.isVisible()){
+                bFlag += (byte)0x10;
+            }
+
+            byte[] flags = new byte[]{(byte)0x00, bFlag};
             if (horizontal)
-                ctrl = w.addHorizontalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
+                ctrl = w.addHorizontalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
             else
-                ctrl = w.addVerticalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250);
+                ctrl = w.addVerticalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
             catchUp();
             bbjScrollBar = (BBjScrollBar) ctrl;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
+    }
+    
+    
+    public ScrollBar onScroll(Consumer<ScrollbarMoveEvent> callback) {
+        if(this.ctrl != null){
+            if (this.scrollbarMoveEventSink==null){
+                this.scrollbarMoveEventSink = new ScrollbarMoveEventSink(this);
+            }
+            this.scrollbarMoveEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
     }
 
     public int getBlockIncrement() {
@@ -83,42 +108,108 @@ public final class ScrollBar extends AbstractDwcControl {
         return -1;
     }
 
-    public void setBlockIncrement(int block) {
+
+
+    public ScrollBar setBlockIncrement(int block) {
         try {
             bbjScrollBar.setBlockIncrement(block);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setScrollPosition(int pos) {
+    public ScrollBar setScrollPosition(int pos) {
         try {
             bbjScrollBar.setScrollPosition(pos);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setScrollProp(int prop) {
+    public ScrollBar setScrollProp(int prop) {
         try {
             bbjScrollBar.setScrollProp(prop);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setScrollRange(int min, int max) {
+    public ScrollBar setScrollRange(int min, int max) {
         try {
             bbjScrollBar.setScrollRange(min, max);
         } catch (BBjException e) {
             e.printStackTrace();
         }
-    }
-
-    public ScrollBar onScroll(Consumer<ScrollbarMoveEvent> callback) {
-        if (this.scrollbarMoveEventSink==null)
-            this.scrollbarMoveEventSink = new BBjScrollbarMoveEventSink(this, callback);
-        else this.scrollbarMoveEventSink.addCallback(callback);
         return this;
     }
+
+
+
+
+
+
+
+    public ScrollBar setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public ScrollBar setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public ScrollBar setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public ScrollBar setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public ScrollBar setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public ScrollBar setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public ScrollBar setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public ScrollBar addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    public ScrollBar removeClass(String selector) {
+        super.removeControlCssClass(selector);
+        return this;
+    }
+
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        super.catchUp();
+
+        if(!this.callbacks.isEmpty()){
+            this.scrollbarMoveEventSink = new ScrollbarMoveEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.scrollbarMoveEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
+
+    }
+
+
 }

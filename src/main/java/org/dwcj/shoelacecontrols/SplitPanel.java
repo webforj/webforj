@@ -6,11 +6,10 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.IStyleable;
 import org.dwcj.panels.AbstractDwcjPanel;
 import org.dwcj.panels.Div;
 
-public final class SplitPanel extends AbstractShoelaceControl implements IStyleable {
+public final class SplitPanel extends AbstractShoelaceControl {
 
     private final String uuid = "id" + java.util.UUID.randomUUID().toString().replace("-", "");
 
@@ -67,19 +66,46 @@ public final class SplitPanel extends AbstractShoelaceControl implements IStylea
         loadShoelaceLib();
     }
 
-    @Override
+    public SplitPanel setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public SplitPanel setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public SplitPanel setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public SplitPanel setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public SplitPanel setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public SplitPanel setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     public SplitPanel setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
+    
     public SplitPanel addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public SplitPanel removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
@@ -90,7 +116,7 @@ public final class SplitPanel extends AbstractShoelaceControl implements IStylea
      *
      * @return true if vertical, false if horizontal
      */
-    public Boolean getVertical() {
+    public Boolean isVertical() {
         return vertical;
     }
 

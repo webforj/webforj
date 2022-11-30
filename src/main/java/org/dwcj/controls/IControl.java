@@ -35,6 +35,10 @@ public interface IControl {
      */
     public String getAttribute(String attribute);
 
+    public IControl setID(String id);
+
+    public String getID();
+
     /**
      * Set the tooltip text of the control
      *
@@ -56,7 +60,7 @@ public interface IControl {
      * @param enabled
      * @return the control itself
      */
-    public IControl setEnabled(boolean enabled);
+    public IControl setEnabled(Boolean enabled);
 
     /**
      *
@@ -70,7 +74,7 @@ public interface IControl {
      * @param visible
      * @return the control itself
      */
-    public IControl setVisible(boolean visible);
+    public IControl setVisible(Boolean visible);
 
     /**
      *

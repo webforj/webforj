@@ -33,6 +33,15 @@ public abstract class App {
         }
     }
 
+    public static void consoleError(String output) {
+        try {
+
+            Environment.getInstance().getSysGui().executeScript("console.error(\"" + output + "\")");
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Shows a message box
      * @param alert The message to show

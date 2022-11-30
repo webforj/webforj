@@ -8,7 +8,7 @@ import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class MenuButton extends AbstractDwcControl implements IStyleable {
+public final class MenuButton extends AbstractDwcControl {
 
     private BBjMenuButton bbjMenuButton;
 
@@ -43,7 +43,7 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
         }
     }
 
-    public boolean getDisableOnClick() {
+    public boolean isDisableOnClick() {
         try {
             return bbjMenuButton.getDisableOnClick();
         } catch (BBjException e) {
@@ -127,21 +127,54 @@ public final class MenuButton extends AbstractDwcControl implements IStyleable {
         }
     }
 
-    @Override
-    public IStyleable setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+
+
+
+    public MenuButton setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
-    @Override
-    public IStyleable addClass(String selector) {
+    public MenuButton setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public MenuButton setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public MenuButton setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public MenuButton setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public MenuButton setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public MenuButton setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public MenuButton addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
-    public IStyleable removeClass(String selector) {
+    public MenuButton removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
+
+
+    
 }

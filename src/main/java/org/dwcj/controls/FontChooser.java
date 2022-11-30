@@ -40,20 +40,22 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public void approveSelection() {
+    public FontChooser approveSelection() {
         try {
             bbjFontChooser.approveSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void cancelSelection() {
+    public FontChooser cancelSelection() {
         try {
             bbjFontChooser.cancelSelection();
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public String getApproveButtonText() {
@@ -74,7 +76,7 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public boolean getControlButtonsAreShown() {
+    public boolean isControlButtonsAreShown() {
         try {
             return bbjFontChooser.getControlButtonsAreShown();
         } catch (BBjException e) {
@@ -83,7 +85,7 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public boolean getFontsScaled() {
+    public boolean isFontsScaled() {
         try {
             return bbjFontChooser.getFontsScaled();
         } catch (BBjException e) {
@@ -110,52 +112,58 @@ public final class FontChooser extends AbstractDwcControl {
         }
     }
 
-    public void setApproveButtonText(String text) {
+    public FontChooser setApproveButtonText(String text) {
         try {
             bbjFontChooser.setApproveButtonText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setCancelButtonText(String text) {
+    public FontChooser setCancelButtonText(String text) {
         try {
             bbjFontChooser.setCancelButtonText(text);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setControlButtonsAreShown(boolean show) {
+    public FontChooser setControlButtonsAreShown(boolean show) {
         try {
             bbjFontChooser.setControlButtonsAreShown(show);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setFontsScaled(boolean scale) {
+    public FontChooser setFontsScaled(boolean scale) {
         try {
             bbjFontChooser.setFontsScaled(scale);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setPreviewMessage(String message) {
+    public FontChooser setPreviewMessage(String message) {
         try {
             bbjFontChooser.setPreviewMessage(message);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void setSelectedFont(Font font) {
+    public FontChooser setSelectedFont(Font font) {
         try {
             bbjFontChooser.setSelectedFont((BBjFont) font);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public FontChooser onFontChooserApprove(Consumer<FontChooserApproveEvent> callback) {
@@ -176,6 +184,51 @@ public final class FontChooser extends AbstractDwcControl {
         if (this.fontChooserChangeEventSink == null)
             this.fontChooserChangeEventSink = new FontChooserChangeEventSink(this, callback);
         else this.fontChooserChangeEventSink.addCallback(callback);
+        return this;
+    }
+
+    public FontChooser setText(String text) {
+        super.setControlText(text);
+        return this;
+    }
+
+    public FontChooser setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public FontChooser setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public FontChooser setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public FontChooser setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public FontChooser setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
+    public FontChooser setStyle(String property, String value) {
+        super.setControlStyle(property, value);
+        return this;
+    }
+    
+    public FontChooser addClass(String selector) {
+        super.addControlCssClass(selector);
+        return this;
+    }
+
+    public FontChooser removeClass(String selector) {
+        super.removeControlCssClass(selector);
         return this;
     }
 }

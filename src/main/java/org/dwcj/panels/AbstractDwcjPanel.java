@@ -6,12 +6,11 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.IStyleable;
 
 /**
  * the base class for all panel implementations
  */
-public abstract class AbstractDwcjPanel extends AbstractDwcControl implements IStyleable {
+public abstract class AbstractDwcjPanel extends AbstractDwcControl {
 
     protected BBjWindow wnd;
 
@@ -42,32 +41,38 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl implements IS
         return wnd;
     }
 
-    @Override
+    
     public AbstractDwcjPanel setStyle(String property, String value) {
-        try {
-            wnd.setStyle(property, value);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.wnd != null){
+            try {
+                wnd.setStyle(property, value);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
 
-    @Override
+    
     public AbstractDwcjPanel addClass(String selector) {
-        try {
-            wnd.addStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.wnd != null){
+            try {
+                wnd.addStyle(selector);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
 
-    @Override
+    
     public AbstractDwcjPanel removeClass(String selector) {
-        try {
-            wnd.removeStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
+        if(this.wnd != null){
+            try {
+                wnd.removeStyle(selector);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }

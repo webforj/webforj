@@ -9,10 +9,6 @@ public interface IExpansible {
      * @param expanse the expanse
      * @return the control itself
      */
-    IExpansible setExpanse(Expanse expanse);
-
-    enum Expanse {
-        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
-    }
+    IExpansible setExpanse(Enum<?> expanse);
 
 }

@@ -4,7 +4,15 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class TabControl extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class TabControl extends AbstractDwcControl {
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -18,33 +26,64 @@ public final class TabControl extends AbstractDwcControl implements IStyleable, 
         }
     }
 
-    @Override
-    public TabControl setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+    public TabControl setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
-    @Override
+    public TabControl setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public TabControl setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public TabControl setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public TabControl setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public TabControl setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     public TabControl setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
+    
     public TabControl addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public TabControl removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
 
-    @Override
+
+
+    public TabControl setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
+
     public TabControl setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
+
 }

@@ -9,7 +9,7 @@ public final class ListBoxSelectEvent implements IDwcEvent {
 
     private final ListBox control;
 
-    private ArrayList<Object> keys;
+    private ArrayList<Object> keys = new ArrayList<>(); //This was uninitialized, added initialization -MH
 
     public ListBoxSelectEvent(ListBox clistBox) {
         this.control = clistBox;

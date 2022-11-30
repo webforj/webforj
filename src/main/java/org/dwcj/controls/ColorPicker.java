@@ -4,8 +4,17 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.panels.AbstractDwcjPanel;
 
-public final class ColorPicker extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class ColorPicker extends AbstractDwcControl {
 
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
+
+    
     @Override
     protected void create(AbstractDwcjPanel p) {
 
@@ -19,39 +28,64 @@ public final class ColorPicker extends AbstractDwcControl implements IStyleable,
         }
     }
 
-    @Override
-    public ColorPicker setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+    public ColorPicker setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
-    @Override
+    public ColorPicker setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public ColorPicker setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public ColorPicker setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public ColorPicker setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public ColorPicker setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     public ColorPicker setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
+    
     public ColorPicker addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public ColorPicker removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
 
-    @Override
-    public ColorPicker setTheme(Theme theme) {
-        super.setControlTheme(theme);
+
+
+
+
+    public ColorPicker setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
         return this;
     }
 
-    @Override
-    public ColorPicker setText(String text) {
-        super.setText(text);
+    public ColorPicker setTheme(Theme theme) {
+        super.setControlTheme(theme);
         return this;
     }
     

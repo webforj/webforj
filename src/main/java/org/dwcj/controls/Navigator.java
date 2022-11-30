@@ -17,7 +17,7 @@ import org.dwcj.panels.AbstractDwcjPanel;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcControl implements IStyleable, IThemable, IExpansible {
+public final class Navigator extends AbstractDwcControl implements IReadOnly{
 
     private BBjNavigator bbjNavigator;
 
@@ -25,6 +25,14 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
     private NavLastEventSink navLastEventSink;
     private NavNextEventSink navNextEventSink;
     private NavPreviousEventSink navPreviousEventSink;
+
+    public static enum Expanse{
+        LARGE, MEDIUM, SMALL, XLARGE, XSMALL
+    }
+
+    public static enum Theme{
+        DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    }
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -48,21 +56,24 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
         }
     }
 
-    public boolean isEditable() {
+    @Override
+    public Boolean isReadOnly() {
         try {
             return bbjNavigator.isEditable();
         } catch (BBjException e) {
             e.printStackTrace();
-            return false;
         }
+        return null;
     }
 
-    public void setEditable(boolean editable) {
+    @Override
+    public Navigator setReadOnly(Boolean editable) {
         try {
             bbjNavigator.setEditable(editable);
         } catch (BBjException e) {
             e.printStackTrace();
         }
+        return this;
     }
 
     public Navigator onFirst(Consumer<NavigatorFirstEvent> callback) {
@@ -93,33 +104,65 @@ public final class Navigator extends AbstractDwcControl implements IStyleable, I
         return this;
     }
 
-    @Override
-    public Navigator setExpanse(Expanse expanse) {
-        super.setControlExpanse(expanse);
+
+
+
+    public Navigator setText(String text) {
+        super.setControlText(text);
         return this;
     }
 
-    @Override
+    public Navigator setVisible(Boolean visible){
+        super.setControlVisible(visible);
+        return this;
+    }
+    
+    public Navigator setEnabled(Boolean enabled) {
+        super.setControlEnabled(enabled);
+        return this;
+    }
+
+    public Navigator setTooltipText(String text) {
+        super.setControlTooltipText(text);
+        return this;
+    }
+
+    public Navigator setAttribute(String attribute, String value){
+        super.setControlAttribute(attribute, value);
+        return this;
+    }
+
+    public Navigator setID(String id){
+        super.setControlID(id);
+        return this;
+    }
+
     public Navigator setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
-
-    @Override
+    
     public Navigator addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    @Override
     public Navigator removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
 
-    @Override
+
+
+
+    public Navigator setExpanse(Expanse expanse) {
+        super.setControlExpanse(expanse);
+        return this;
+    }
+
     public Navigator setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
+
 }
