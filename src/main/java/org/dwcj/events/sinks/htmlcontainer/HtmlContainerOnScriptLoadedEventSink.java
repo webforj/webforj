@@ -34,7 +34,6 @@ public class HtmlContainerOnScriptLoadedEventSink {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        App.consoleLog(":))");
     }
 
     public void scriptLoadedEvent(BBjScriptLoadedEvent ev) { // NOSONAR
@@ -46,6 +45,5 @@ public class HtmlContainerOnScriptLoadedEventSink {
     
     public void addCallback(Consumer<HtmlContainerOnScriptLoadedEvent> callback) {
         targets.add(callback);
-        App.consoleLog(":)))");
     }
 }
