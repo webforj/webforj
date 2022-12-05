@@ -88,8 +88,8 @@
             <groupId>com.basis.lib</groupId>
             <artifactId>jackson-core.jar</artifactId>
             <scope>system</scope>
-            <version>2.12.2</version>
-            <systemPath>${jar-directory}/jackson-core-2.13.1.jar</systemPath>
+            <version>2.13.3</version>
+            <systemPath>${jar-directory}/jackson-core-2.13.3.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
