@@ -3,7 +3,7 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 import java.lang.reflect.Method;
 

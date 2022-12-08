@@ -4,7 +4,11 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.interfaces.IControl;
+import org.dwcj.interfaces.IMouseWheelEnableable;
+import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.ITextControl;
 
 import java.util.*;
 

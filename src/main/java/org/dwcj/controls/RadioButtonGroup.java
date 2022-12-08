@@ -6,7 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
 

@@ -3,12 +3,12 @@ package org.dwcj.util;
 import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.controls.Button;
-import org.dwcj.controls.Label;
-import org.dwcj.events.ButtonPushEvent;
+import org.dwcj.controls.button.Button;
+import org.dwcj.controls.button.events.ButtonPushEvent;
+import org.dwcj.controls.label.Label;
+import org.dwcj.controls.panels.AppPanel;
+import org.dwcj.controls.panels.Div;
 import org.dwcj.exceptions.DwcAppInitializeException;
-import org.dwcj.panels.AppPanel;
-import org.dwcj.panels.Div;
 
 import java.util.ArrayList;
 import java.util.Iterator;

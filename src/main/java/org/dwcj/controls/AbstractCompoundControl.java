@@ -1,7 +1,7 @@
 package org.dwcj.controls;
 
-import org.dwcj.panels.AbstractDwcjPanel;
-import org.dwcj.panels.Div;
+import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.Div;
 
 
 
