@@ -1,6 +1,6 @@
-package org.dwcj.controls.checkBox.events;
+package org.dwcj.controls.checkbox.events;
 
-import org.dwcj.controls.checkBox.CheckBox;
+import org.dwcj.controls.checkbox.CheckBox;
 import org.dwcj.interfaces.IDwcEvent;
 
 public final class CheckBoxChangeEvent implements IDwcEvent {

@@ -1,4 +1,4 @@
-package org.dwcj.controls.colorPicker;
+package org.dwcj.controls.colorpicker;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;

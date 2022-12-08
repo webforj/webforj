@@ -1,6 +1,6 @@
-package org.dwcj.controls.stringEditBox.events;
+package org.dwcj.controls.stringeditbox.events;
 
-import org.dwcj.controls.stringEditBox.StringEditBox;
+import org.dwcj.controls.stringeditbox.StringEditBox;
 import org.dwcj.interfaces.IDwcEvent;
 
 public class StringEditBoxEditModifyEvent implements IDwcEvent {

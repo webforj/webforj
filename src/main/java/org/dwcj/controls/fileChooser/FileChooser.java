@@ -1,4 +1,4 @@
-package org.dwcj.controls.fileChooser;
+package org.dwcj.controls.filechooser;
 
 import org.dwcj.controls.AbstractDwcControl;
 

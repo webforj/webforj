@@ -1,6 +1,6 @@
-package org.dwcj.controls.comboBox.events;
+package org.dwcj.controls.combobox.events;
 
-import org.dwcj.controls.comboBox.ComboBox;
+import org.dwcj.controls.combobox.ComboBox;
 import org.dwcj.interfaces.IDwcEvent;
 
 public final class ComboBoxSelectEvent implements IDwcEvent {

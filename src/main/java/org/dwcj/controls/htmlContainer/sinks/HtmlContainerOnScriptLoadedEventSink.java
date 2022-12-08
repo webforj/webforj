@@ -1,4 +1,4 @@
-package org.dwcj.controls.htmlContainer.sinks;
+package org.dwcj.controls.htmlcontainer.sinks;
 
 import com.basis.bbj.proxies.event.BBjScriptLoadedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
@@ -6,8 +6,8 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.htmlContainer.HtmlContainer;
-import org.dwcj.controls.htmlContainer.events.HtmlContainerOnScriptLoadedEvent;
+import org.dwcj.controls.htmlcontainer.HtmlContainer;
+import org.dwcj.controls.htmlcontainer.events.HtmlContainerOnScriptLoadedEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

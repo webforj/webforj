@@ -1,4 +1,4 @@
-package org.dwcj.controls.dateEditBox;
+package org.dwcj.controls.dateeditbox;
 
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.dateEditBox.events.DateEditBoxEditModifyEvent;
-import org.dwcj.controls.dateEditBox.sinks.DateEditBoxEditModifyEventSink;
+import org.dwcj.controls.dateeditbox.events.DateEditBoxEditModifyEvent;
+import org.dwcj.controls.dateeditbox.sinks.DateEditBoxEditModifyEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IReadOnly;

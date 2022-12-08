@@ -37,7 +37,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
         if (caller.startsWith("org.dwcj.")) {
             try {
                 Method m = null;
-                m = ctrl.getClass().getDeclaredMethod("create", Class.forName("org.dwcj.panels.AbstractDwcjPanel"));
+                m = ctrl.getClass().getDeclaredMethod("create", Class.forName("org.dwcj.controls.panels.AbstractDwcjPanel"));
                 m.setAccessible(true);
                 m.invoke(ctrl,panel);
             } catch (Exception e) {

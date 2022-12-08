@@ -1,4 +1,4 @@
-package org.dwcj.controls.tabControl;
+package org.dwcj.controls.tabcontrol;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;

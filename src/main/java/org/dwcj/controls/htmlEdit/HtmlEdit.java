@@ -1,4 +1,4 @@
-package org.dwcj.controls.htmlEdit;
+package org.dwcj.controls.htmledit;
 
 import com.basis.bbj.proxies.sysgui.BBjHtmlEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;

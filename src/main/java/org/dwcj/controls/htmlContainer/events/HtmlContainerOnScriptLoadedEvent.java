@@ -1,7 +1,7 @@
-package org.dwcj.controls.htmlContainer.events;
+package org.dwcj.controls.htmlcontainer.events;
 
 import org.dwcj.App;
-import org.dwcj.controls.htmlContainer.HtmlContainer;
+import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.interfaces.IDwcEvent;
 
 public class HtmlContainerOnScriptLoadedEvent implements IDwcEvent {

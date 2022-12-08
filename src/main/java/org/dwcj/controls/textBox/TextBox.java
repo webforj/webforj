@@ -1,4 +1,4 @@
-package org.dwcj.controls.textBox;
+package org.dwcj.controls.textbox;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.controls.textBox.events.TextBoxEditModifyEvent;
-import org.dwcj.controls.textBox.sinks.TextBoxEditModifyEventSink;
+import org.dwcj.controls.textbox.events.TextBoxEditModifyEvent;
+import org.dwcj.controls.textbox.sinks.TextBoxEditModifyEventSink;
 import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IReadOnly;
 import org.dwcj.interfaces.ITabTraversable;

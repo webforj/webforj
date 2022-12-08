@@ -1,4 +1,4 @@
-package org.dwcj.controls.menuButton;
+package org.dwcj.controls.menubutton;
 
 import com.basis.bbj.proxies.sysgui.BBjMenuButton;
 import com.basis.bbj.proxies.sysgui.BBjPopupMenu;
@@ -8,7 +8,7 @@ import com.basis.util.common.BasisNumber;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.controls.popupMenu.PopupMenu;
+import org.dwcj.controls.popupmenu.PopupMenu;
 
 public final class MenuButton extends AbstractDwcControl {
 

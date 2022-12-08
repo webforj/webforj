@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 @SuppressWarnings("java:S3740")
-public final class BBjGridExWidget extends AbstractDwcControl {
+public final class GridExWidget extends AbstractDwcControl {
 
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -38,7 +38,7 @@ public final class BBjGridExWidget extends AbstractDwcControl {
      * @param rs - a com.basiscomponents.db.ResultSet holding the data to display in the grid
      * @return the widget itself
      */
-    public BBjGridExWidget setData(ResultSet rs) {
+    public GridExWidget setData(ResultSet rs) {
         ArrayList args = new ArrayList();
         args.add(rs);
         Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setData", args);
@@ -51,52 +51,52 @@ public final class BBjGridExWidget extends AbstractDwcControl {
      * @param callback - the consumer method that will be invoked
      * @return - the widget itself
      */
-    public BBjGridExWidget onSelect(Consumer<GridExWidgetSelectEvent> callback) {
+    public GridExWidget onSelect(Consumer<GridExWidgetSelectEvent> callback) {
         new GridExWidgetSelectEventSink(this, callback);
         return this;
     }
 
-    public BBjGridExWidget setText(String text) {
+    public GridExWidget setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    public BBjGridExWidget setVisible(Boolean visible){
+    public GridExWidget setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    public BBjGridExWidget setEnabled(Boolean enabled) {
+    public GridExWidget setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    public BBjGridExWidget setTooltipText(String text) {
+    public GridExWidget setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    public BBjGridExWidget setAttribute(String attribute, String value){
+    public GridExWidget setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    public BBjGridExWidget setID(String id){
+    public GridExWidget setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    public BBjGridExWidget setStyle(String property, String value) {
+    public GridExWidget setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    public BBjGridExWidget addClass(String selector) {
+    public GridExWidget addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    public BBjGridExWidget removeClass(String selector) {
+    public GridExWidget removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }

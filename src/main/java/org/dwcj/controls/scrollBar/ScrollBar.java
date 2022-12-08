@@ -1,4 +1,4 @@
-package org.dwcj.controls.scrollBar;
+package org.dwcj.controls.scrollbar;
 
 import com.basis.bbj.proxies.sysgui.BBjScrollBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.controls.scrollBar.events.ScrollbarMoveEvent;
-import org.dwcj.controls.scrollBar.sinks.ScrollbarMoveEventSink;
+import org.dwcj.controls.scrollbar.events.ScrollbarMoveEvent;
+import org.dwcj.controls.scrollbar.sinks.ScrollbarMoveEventSink;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;

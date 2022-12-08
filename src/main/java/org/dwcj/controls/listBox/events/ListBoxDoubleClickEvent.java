@@ -1,6 +1,6 @@
-package org.dwcj.controls.listBox.events;
+package org.dwcj.controls.listbox.events;
 
-import org.dwcj.controls.listBox.ListBox;
+import org.dwcj.controls.listbox.ListBox;
 import org.dwcj.interfaces.IDwcEvent;
 
 import java.util.ArrayList;

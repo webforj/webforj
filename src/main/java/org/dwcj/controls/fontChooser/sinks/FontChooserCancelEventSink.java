@@ -1,11 +1,11 @@
-package org.dwcj.controls.fontChooser.sinks;
+package org.dwcj.controls.fontchooser.sinks;
 
 import com.basis.bbj.proxies.event.BBjFileChooserCancelEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.fontChooser.FontChooser;
-import org.dwcj.controls.fontChooser.events.FontChooserCancelEvent;
+import org.dwcj.controls.fontchooser.FontChooser;
+import org.dwcj.controls.fontchooser.events.FontChooserCancelEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

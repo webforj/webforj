@@ -1,4 +1,4 @@
-package org.dwcj.controls.printPreview;
+package org.dwcj.controls.printpreview;
 
 import com.basis.bbj.proxies.sysgui.BBjPrintPreview;
 import com.basis.bbj.proxies.sysgui.BBjWindow;

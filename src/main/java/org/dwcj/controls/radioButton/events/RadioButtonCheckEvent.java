@@ -1,4 +1,4 @@
-package org.dwcj.controls.radioButton.events;
+package org.dwcj.controls.radiobutton.events;
 
 import org.dwcj.controls.RadioButton;
 import org.dwcj.interfaces.IDwcEvent;

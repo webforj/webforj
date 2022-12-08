@@ -1,4 +1,4 @@
-package org.dwcj.controls.popupMenu;
+package org.dwcj.controls.popupmenu;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjMenuItem;
@@ -7,8 +7,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.checkableMenuItem.CheckableMenuItem;
-import org.dwcj.controls.menuItem.MenuItem;
+import org.dwcj.controls.checkablemenuitem.CheckableMenuItem;
+import org.dwcj.controls.menuitem.MenuItem;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.IPopupAble;
 

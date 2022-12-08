@@ -1,11 +1,11 @@
-package org.dwcj.controls.treeView.sinks;
+package org.dwcj.controls.treeview.sinks;
 
 import com.basis.bbj.proxies.event.BBjTreeNodeDeselectedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.treeView.TreeView;
-import org.dwcj.controls.treeView.events.TreeDeselectEvent;
+import org.dwcj.controls.treeview.TreeView;
+import org.dwcj.controls.treeview.events.TreeDeselectEvent;
 
 import java.util.function.Consumer;
 

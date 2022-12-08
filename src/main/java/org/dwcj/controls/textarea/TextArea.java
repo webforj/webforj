@@ -1,13 +1,13 @@
-package org.dwcj.controls.multilineEdit;
+package org.dwcj.controls.textarea;
 
 import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.multilineEdit.events.MultilineEditOnEditModifyEvent;
-import org.dwcj.controls.multilineEdit.sinks.MultilineEditOnEditModifyEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.textarea.events.TextAreaOnEditModifyEvent;
+import org.dwcj.controls.textarea.sinks.TextAreaOnEditModifyEventSink;
 import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IMouseWheelEnableable;
 import org.dwcj.interfaces.IReadOnly;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class MultilineEdit extends AbstractDwcControl implements IReadOnly, ITextControl, IFocusable, IMouseWheelEnableable, IScrollable, ITabTraversable {
+public final class TextArea extends AbstractDwcControl implements IReadOnly, ITextControl, IFocusable, IMouseWheelEnableable, IScrollable, ITabTraversable {
 
     private BBjCEdit bbjCEdit;
 
@@ -31,8 +31,8 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
-    private ArrayList<Consumer<MultilineEditOnEditModifyEvent>> callbacks = new ArrayList<>();
-    private MultilineEditOnEditModifyEventSink editModifyEventSink;
+    private ArrayList<Consumer<TextAreaOnEditModifyEvent>> callbacks = new ArrayList<>();
+    private TextAreaOnEditModifyEventSink editModifyEventSink;
 
 
     private Boolean hScroll = false;
@@ -52,7 +52,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
 
 
 
-    public MultilineEdit(){
+    public TextArea(){
         this.readOnly = false;
         this.textHighlight = Highlight.HIGHLIGHT_NONE;
         this.horizontalScrollBarPosition = 0;
@@ -87,10 +87,10 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         }
     }
 
-    public MultilineEdit onEditModify(Consumer<MultilineEditOnEditModifyEvent> callback){
+    public TextArea onEditModify(Consumer<TextAreaOnEditModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
-                this.editModifyEventSink = new MultilineEditOnEditModifyEventSink(this);
+                this.editModifyEventSink = new TextAreaOnEditModifyEventSink(this);
             }
             this.editModifyEventSink.addCallback(callback);
         }
@@ -106,7 +106,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param paragraph - Specifies the paragraph to be added.
      * @return Returns this
      */
-    public MultilineEdit addParagraph(Integer index, String paragraph) {
+    public TextArea addParagraph(Integer index, String paragraph) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.addParagraph(index, paragraph);
@@ -137,7 +137,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param test - Specifies the text to be appended to the end of the paragraph.
      * @return Returns this
      */
-    public MultilineEdit appendToParagraph(Integer parNum, String text) {
+    public TextArea appendToParagraph(Integer parNum, String text) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.appendToParagraph(parNum, text);
@@ -451,7 +451,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param parIndex - Specifies the 0-based index of the paragraph to be removed.
      * @return Returns this
      */
-    public MultilineEdit removeParagraph(Integer parIndex) {
+    public TextArea removeParagraph(Integer parIndex) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.removeParagraph(parIndex);
@@ -469,7 +469,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param scroll - Specifies whether a horizontal scroll bar will appear when the text is too large to fit within control area (false = No Horizontal Scroll, true = Horizontal Scroll).
      * @return Returns this
      */
-    public MultilineEdit setHorizontalScrollable(Boolean scroll) {
+    public TextArea setHorizontalScrollable(Boolean scroll) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setHorizontalScrollable(scroll);
@@ -486,7 +486,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param ignore - Specifies whether the ENTER key is ignored (false = ENTER key not ignored, true = ENTER key ignored).
      * @return Returns this
      */
-    public MultilineEdit setIgnoreEnters(Boolean ignore) {
+    public TextArea setIgnoreEnters(Boolean ignore) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setIgnoreEnters(ignore);
@@ -503,7 +503,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param ignore - Specifies whether the TAB key is ignored (false = TAB key not ignored, true = TAB key ignored)
      * @return Returns this
      */
-    public MultilineEdit setIgnoreTabs(Boolean ignore) {
+    public TextArea setIgnoreTabs(Boolean ignore) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setIgnoreTabs(ignore);
@@ -520,7 +520,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param limit - Specifies whether control is limited to one paragraph (false = Not limited, true = Limited)
      * @return Returns this
      */
-    public MultilineEdit setLimitToOneParagraph(Boolean limit) {
+    public TextArea setLimitToOneParagraph(Boolean limit) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setLimitToOneParagraph(limit);
@@ -537,7 +537,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param limit - Maximum number of lines (paragraphs) that can be entered into the control.
      * @return Returns this
      */
-    public MultilineEdit setLineCountLimit(Integer limit) {
+    public TextArea setLineCountLimit(Integer limit) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setLineCountLimit(limit);
@@ -554,7 +554,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
      * @return Returns this
      */
-    public MultilineEdit setLineWrap(Boolean wrap) {
+    public TextArea setLineWrap(Boolean wrap) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setLineWrap(wrap);
@@ -571,7 +571,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param limit - Specifies the number of characters to be allowed in a paragraph.
      * @return Returns this
      */
-    public MultilineEdit setMaxParagraphSize(Integer size) {
+    public TextArea setMaxParagraphSize(Integer size) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setMaxParagraphSize(size);
@@ -588,7 +588,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param limit - Specifies the maximum length of the text in the control.
      * @return Returns this
      */
-    public MultilineEdit setMaxLength(Integer length) {
+    public TextArea setMaxLength(Integer length) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setMaxLength(length);
@@ -605,7 +605,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param overtype - Specifies whether to use overtype mode (false = Not in Overtype Mode, true = In Overtype Mode)
      * @return Returns this
      */
-    public MultilineEdit setOvertypeMode(Boolean overtype) {
+    public TextArea setOvertypeMode(Boolean overtype) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setOvertypeMode(overtype);
@@ -622,7 +622,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param size - Specifies the tab size.
      * @return Returns this
      */
-    public MultilineEdit setTabSize(Integer size) {
+    public TextArea setTabSize(Integer size) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setTabSize(size);
@@ -639,7 +639,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param scroll - Specifies whether a vertical scroll bar will appear when the text is too large to fit within control area (false = No Vertical Scroll Bar, true = Vertical Scroll Bar)
      * @return Returns this
      */
-    public MultilineEdit setVerticalScrollable(Boolean scroll) {
+    public TextArea setVerticalScrollable(Boolean scroll) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setVerticalScrollable(scroll);
@@ -656,7 +656,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @param wrap - Sets the style of wrapping used if the BBjCEdit is wrapping lines (false = Wrap at character boundaries, true = Wrap at word boundaries.)
      * @return Returns this
      */
-    public MultilineEdit setWrapStyleWord(Boolean word) {
+    public TextArea setWrapStyleWord(Boolean word) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setWrapStyleWord(word);
@@ -691,7 +691,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
      * @return Returns this
      */
     @Override
-    public MultilineEdit setReadOnly(Boolean editable) {
+    public TextArea setReadOnly(Boolean editable) {
         if(this.ctrl != null){
             try {
                 bbjCEdit.setEditable(editable);
@@ -710,7 +710,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     } 
 
     @Override
-    public MultilineEdit setHighlightOnFocus(Highlight highlight){
+    public TextArea setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
                 bbjCEdit.setHighlightOnFocus(highlight.highlight);
@@ -735,7 +735,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     }
 
     @Override 
-    public MultilineEdit setFocusable(Boolean focusable){
+    public TextArea setFocusable(Boolean focusable){
         if(this.ctrl != null){
             try{
                 bbjCEdit.setFocusable(focusable);
@@ -753,7 +753,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     }
 
     @Override
-    public MultilineEdit setScrollWheelBehavior(MouseWheelCondition condition){
+    public TextArea setScrollWheelBehavior(MouseWheelCondition condition){
         if(this.ctrl != null){
             try{
                 bbjCEdit.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
@@ -838,7 +838,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     }
 
     @Override
-    public MultilineEdit setHorizontalScrollBarPosition(Integer position){
+    public TextArea setHorizontalScrollBarPosition(Integer position){
         if(this.ctrl != null){
                 bbjCEdit.setHorizontalScrollBarPosition(position);
         }
@@ -847,7 +847,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     }
 
     @Override
-    public MultilineEdit setVerticalScrollBarPosition(Integer position){
+    public TextArea setVerticalScrollBarPosition(Integer position){
         if(this.ctrl != null){
                 bbjCEdit.setVerticalScrollBarPosition(position);
         }
@@ -868,7 +868,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
     }
 
     @Override
-    public MultilineEdit setTabTraversable(Boolean traversable){
+    public TextArea setTabTraversable(Boolean traversable){
         if(this.ctrl != null){
             try{
                 bbjCEdit.setTabTraversable(traversable);
@@ -882,47 +882,47 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
 
 
 
-    public MultilineEdit setText(String text) {
+    public TextArea setText(String text) {
         super.setControlText(text);
         return this;
     }
 
-    public MultilineEdit setVisible(Boolean visible){
+    public TextArea setVisible(Boolean visible){
         super.setControlVisible(visible);
         return this;
     }
     
-    public MultilineEdit setEnabled(Boolean enabled) {
+    public TextArea setEnabled(Boolean enabled) {
         super.setControlEnabled(enabled);
         return this;
     }
 
-    public MultilineEdit setTooltipText(String text) {
+    public TextArea setTooltipText(String text) {
         super.setControlTooltipText(text);
         return this;
     }
 
-    public MultilineEdit setAttribute(String attribute, String value){
+    public TextArea setAttribute(String attribute, String value){
         super.setControlAttribute(attribute, value);
         return this;
     }
 
-    public MultilineEdit setID(String id){
+    public TextArea setID(String id){
         super.setControlID(id);
         return this;
     }
 
-    public MultilineEdit setStyle(String property, String value) {
+    public TextArea setStyle(String property, String value) {
         super.setControlStyle(property, value);
         return this;
     }
     
-    public MultilineEdit addClass(String selector) {
+    public TextArea addClass(String selector) {
         super.addControlCssClass(selector);
         return this;
     }
 
-    public MultilineEdit removeClass(String selector) {
+    public TextArea removeClass(String selector) {
         super.removeControlCssClass(selector);
         return this;
     }
@@ -934,12 +934,12 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
 
 
 
-    public MultilineEdit setExpanse(Expanse expanse) {
+    public TextArea setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
-    public MultilineEdit setTheme(Theme theme) {
+    public TextArea setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
@@ -950,7 +950,7 @@ public final class MultilineEdit extends AbstractDwcControl implements IReadOnly
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
-            this.editModifyEventSink = new MultilineEditOnEditModifyEventSink(this);
+            this.editModifyEventSink = new TextAreaOnEditModifyEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.editModifyEventSink.addCallback(this.callbacks.remove(0));
             }

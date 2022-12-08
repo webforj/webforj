@@ -1,4 +1,4 @@
-package org.dwcj.controls.progressBar;
+package org.dwcj.controls.progressbar;
 
 import com.basis.bbj.proxies.sysgui.BBjProgressBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;

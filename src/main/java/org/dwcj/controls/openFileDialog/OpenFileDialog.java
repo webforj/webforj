@@ -1,4 +1,4 @@
-package org.dwcj.controls.openFileDialog;
+package org.dwcj.controls.openfiledialog;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.PanelAccessor;

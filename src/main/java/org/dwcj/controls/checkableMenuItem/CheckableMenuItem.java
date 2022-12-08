@@ -1,6 +1,6 @@
-package org.dwcj.controls.checkableMenuItem;
+package org.dwcj.controls.checkablemenuitem;
 
-import org.dwcj.controls.menuItem.MenuItem;
+import org.dwcj.controls.menuitem.MenuItem;
 
 import com.basis.bbj.proxies.sysgui.BBjCheckableMenuItem;
 import com.basis.startup.type.BBjException;

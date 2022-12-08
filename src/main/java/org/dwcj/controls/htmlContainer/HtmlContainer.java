@@ -1,4 +1,4 @@
-package org.dwcj.controls.htmlContainer;
+package org.dwcj.controls.htmlcontainer;
 
 import com.basis.bbj.proxies.sysgui.BBjHtmlView;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -7,14 +7,14 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.htmlContainer.events.HtmlContainerOnScriptFailedEvent;
-import org.dwcj.controls.htmlContainer.events.HtmlContainerOnScriptLoadedEvent;
-import org.dwcj.controls.htmlContainer.events.HtmlContainerJavascriptEvent;
-import org.dwcj.controls.htmlContainer.events.HtmlContainerPageLoadedEvent;
-import org.dwcj.controls.htmlContainer.sinks.HtmlContainerOnScriptFailedEventSink;
-import org.dwcj.controls.htmlContainer.sinks.HtmlContainerOnScriptLoadedEventSink;
-import org.dwcj.controls.htmlContainer.sinks.HtmlContainerNativeJavascriptEventSink;
-import org.dwcj.controls.htmlContainer.sinks.HtmlContainerPageLoadedEventSink;
+import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
+import org.dwcj.controls.htmlcontainer.events.HtmlContainerOnScriptFailedEvent;
+import org.dwcj.controls.htmlcontainer.events.HtmlContainerOnScriptLoadedEvent;
+import org.dwcj.controls.htmlcontainer.events.HtmlContainerPageLoadedEvent;
+import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerNativeJavascriptEventSink;
+import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerOnScriptFailedEventSink;
+import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerOnScriptLoadedEventSink;
+import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerPageLoadedEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.ITabTraversable;

@@ -1,11 +1,11 @@
-package org.dwcj.controls.listBox.sinks;
+package org.dwcj.controls.listbox.sinks;
 
 import com.basis.bbj.proxies.event.BBjListClickEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.listBox.ListBox;
-import org.dwcj.controls.listBox.events.ListBoxSelectEvent;
+import org.dwcj.controls.listbox.ListBox;
+import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

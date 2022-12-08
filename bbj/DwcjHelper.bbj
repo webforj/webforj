@@ -1,4 +1,4 @@
-use org.dwcj.events.IEventProxy
+use org.dwcj.interfaces.IEventProxy
 use org.dwcj.bridge.IDwcjBBjBridge
 use java.util.ArrayList
 

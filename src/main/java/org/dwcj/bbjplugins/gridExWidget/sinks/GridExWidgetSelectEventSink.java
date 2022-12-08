@@ -2,7 +2,7 @@ package org.dwcj.bbjplugins.gridExWidget.sinks;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bbjplugins.gridExWidget.BBjGridExWidget;
+import org.dwcj.bbjplugins.gridExWidget.GridExWidget;
 import org.dwcj.bbjplugins.gridExWidget.events.GridExWidgetSelectEvent;
 import org.dwcj.bridge.ControlAccessor;
 
@@ -11,10 +11,10 @@ import java.util.function.Consumer;
 public final class GridExWidgetSelectEventSink {
 
     private final Consumer<GridExWidgetSelectEvent> target;
-    private final BBjGridExWidget grid;
+    private final GridExWidget grid;
 
     @SuppressWarnings({"static-access"})
-    public GridExWidgetSelectEventSink(BBjGridExWidget grid, Consumer<GridExWidgetSelectEvent> target) {
+    public GridExWidgetSelectEventSink(GridExWidget grid, Consumer<GridExWidgetSelectEvent> target) {
         this.target = target;
         this.grid = grid;
 

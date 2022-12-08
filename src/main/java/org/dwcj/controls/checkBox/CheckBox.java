@@ -1,4 +1,4 @@
-package org.dwcj.controls.checkBox;
+package org.dwcj.controls.checkbox;
 
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.checkBox.events.CheckBoxChangeEvent;
-import org.dwcj.controls.checkBox.sinks.CheckBoxCheckEventSink;
+import org.dwcj.controls.checkbox.events.CheckBoxChangeEvent;
+import org.dwcj.controls.checkbox.sinks.CheckBoxCheckEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IReadOnly;

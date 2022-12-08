@@ -1,6 +1,6 @@
-package org.dwcj.controls.textBox.events;
+package org.dwcj.controls.textbox.events;
 
-import org.dwcj.controls.textBox.TextBox;
+import org.dwcj.controls.textbox.TextBox;
 import org.dwcj.interfaces.IDwcEvent;
 
 public class TextBoxEditModifyEvent implements IDwcEvent {

@@ -1,6 +1,6 @@
-package org.dwcj.controls.fontChooser.events;
+package org.dwcj.controls.fontchooser.events;
 
-import org.dwcj.controls.fontChooser.FontChooser;
+import org.dwcj.controls.fontchooser.FontChooser;
 import org.dwcj.interfaces.IDwcEvent;
 
 public class FontChooserChangeEvent implements IDwcEvent {

@@ -1,11 +1,11 @@
-package org.dwcj.controls.scrollBar.sinks;
+package org.dwcj.controls.scrollbar.sinks;
 
 import com.basis.bbj.proxies.event.BBjControlScrollEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.scrollBar.ScrollBar;
-import org.dwcj.controls.scrollBar.events.ScrollbarMoveEvent;
+import org.dwcj.controls.scrollbar.ScrollBar;
+import org.dwcj.controls.scrollbar.events.ScrollbarMoveEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package org.dwcj.controls.imageControl;
+package org.dwcj.controls.imagecontrol;
 
 import com.basis.bbj.proxies.sysgui.BBjImage;
 import com.basis.bbj.proxies.sysgui.BBjImageCtrl;

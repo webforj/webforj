@@ -1,11 +1,11 @@
-package org.dwcj.controls.comboBox.sinks;
+package org.dwcj.controls.combobox.sinks;
 
 import com.basis.bbj.proxies.event.BBjListCloseEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.comboBox.ComboBox;
-import org.dwcj.controls.comboBox.events.ComboBoxCloseEvent;
+import org.dwcj.controls.combobox.ComboBox;
+import org.dwcj.controls.combobox.events.ComboBoxCloseEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

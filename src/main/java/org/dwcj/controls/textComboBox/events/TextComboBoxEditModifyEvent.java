@@ -1,6 +1,6 @@
-package org.dwcj.controls.textComboBox.events;
+package org.dwcj.controls.textcombobox.events;
 
-import org.dwcj.controls.textComboBox.TextComboBox;
+import org.dwcj.controls.textcombobox.TextComboBox;
 import org.dwcj.interfaces.IDwcEvent;
 
 

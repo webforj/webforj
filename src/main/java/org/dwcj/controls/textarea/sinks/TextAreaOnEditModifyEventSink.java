@@ -1,23 +1,23 @@
-package org.dwcj.controls.multilineEdit.sinks;
+package org.dwcj.controls.textarea.sinks;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.multilineEdit.MultilineEdit;
-import org.dwcj.controls.multilineEdit.events.MultilineEditOnEditModifyEvent;
+import org.dwcj.controls.textarea.TextArea;
+import org.dwcj.controls.textarea.events.TextAreaOnEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class MultilineEditOnEditModifyEventSink {
+public final class TextAreaOnEditModifyEventSink {
 
-    private ArrayList<Consumer<MultilineEditOnEditModifyEvent>> targets;
-    private final MultilineEdit multilineEdit;
+    private ArrayList<Consumer<TextAreaOnEditModifyEvent>> targets;
+    private final TextArea multilineEdit;
 
     @SuppressWarnings({"static-access"})
-    public MultilineEditOnEditModifyEventSink(MultilineEdit MLEdit) {
+    public TextAreaOnEditModifyEventSink(TextArea MLEdit) {
 
         this.targets = new ArrayList<>();
         this.multilineEdit = MLEdit;
@@ -34,7 +34,7 @@ public final class MultilineEditOnEditModifyEventSink {
         }
     }
 
-    public MultilineEditOnEditModifyEventSink(MultilineEdit MLEdit, Consumer<MultilineEditOnEditModifyEvent> callback) {
+    public TextAreaOnEditModifyEventSink(TextArea MLEdit, Consumer<TextAreaOnEditModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
@@ -53,13 +53,13 @@ public final class MultilineEditOnEditModifyEventSink {
     }
 
     public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        MultilineEditOnEditModifyEvent dwcEv = new MultilineEditOnEditModifyEvent(this.multilineEdit);
-        Iterator<Consumer<MultilineEditOnEditModifyEvent>> it = targets.iterator();
+        TextAreaOnEditModifyEvent dwcEv = new TextAreaOnEditModifyEvent(this.multilineEdit);
+        Iterator<Consumer<TextAreaOnEditModifyEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<MultilineEditOnEditModifyEvent> callback) {
+    public void addCallback(Consumer<TextAreaOnEditModifyEvent> callback) {
         targets.add(callback);
     }
 }

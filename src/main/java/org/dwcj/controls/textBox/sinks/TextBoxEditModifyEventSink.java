@@ -1,11 +1,11 @@
-package org.dwcj.controls.textBox.sinks;
+package org.dwcj.controls.textbox.sinks;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.textBox.TextBox;
-import org.dwcj.controls.textBox.events.TextBoxEditModifyEvent;
+import org.dwcj.controls.textbox.TextBox;
+import org.dwcj.controls.textbox.events.TextBoxEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

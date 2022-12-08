@@ -1,12 +1,12 @@
-package org.dwcj.controls.checkBox.sinks;
+package org.dwcj.controls.checkbox.sinks;
 
 import com.basis.bbj.proxies.event.BBjCheckOffEvent;
 import com.basis.bbj.proxies.event.BBjCheckOnEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.checkBox.CheckBox;
-import org.dwcj.controls.checkBox.events.CheckBoxChangeEvent;
+import org.dwcj.controls.checkbox.CheckBox;
+import org.dwcj.controls.checkbox.events.CheckBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

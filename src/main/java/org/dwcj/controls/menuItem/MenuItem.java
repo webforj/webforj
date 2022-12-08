@@ -1,4 +1,4 @@
-package org.dwcj.controls.menuItem;
+package org.dwcj.controls.menuitem;
 
 import com.basis.bbj.proxies.sysgui.BBjMenuItem;
 import com.basis.resource.Menu;
@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import java.nio.charset.StandardCharsets;
 
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.popupMenu.PopupMenu;
+import org.dwcj.controls.popupmenu.PopupMenu;
 
 public class MenuItem extends AbstractDwcControl {
 

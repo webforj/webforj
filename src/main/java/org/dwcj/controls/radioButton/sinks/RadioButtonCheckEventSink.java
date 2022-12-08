@@ -1,4 +1,4 @@
-package org.dwcj.controls.radioButton.sinks;
+package org.dwcj.controls.radiobutton.sinks;
 
 import com.basis.bbj.proxies.event.BBjCheckOffEvent;
 import com.basis.bbj.proxies.event.BBjCheckOnEvent;
@@ -7,7 +7,7 @@ import org.dwcj.Environment;
 
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.RadioButton;
-import org.dwcj.controls.radioButton.events.RadioButtonCheckEvent;
+import org.dwcj.controls.radiobutton.events.RadioButtonCheckEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

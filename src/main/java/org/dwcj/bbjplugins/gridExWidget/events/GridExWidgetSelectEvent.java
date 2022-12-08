@@ -2,7 +2,7 @@ package org.dwcj.bbjplugins.gridExWidget.events;
 
 import com.basiscomponents.db.ResultSet;
 
-import org.dwcj.bbjplugins.gridExWidget.BBjGridExWidget;
+import org.dwcj.bbjplugins.gridExWidget.GridExWidget;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.interfaces.IDwcEvent;
 
@@ -11,10 +11,10 @@ import java.text.ParseException;
 
 public final class GridExWidgetSelectEvent implements IDwcEvent {
 
-    private final BBjGridExWidget control;
+    private final GridExWidget control;
     private final ResultSet selection;
 
-    public GridExWidgetSelectEvent(BBjGridExWidget theGrid, String eventString) {
+    public GridExWidgetSelectEvent(GridExWidget theGrid, String eventString) {
         ResultSet selectionTmp = null;
         this.control = theGrid;
         try {
@@ -25,7 +25,7 @@ public final class GridExWidgetSelectEvent implements IDwcEvent {
         selection = selectionTmp;
     }
 
-    public GridExWidgetSelectEvent(BBjGridExWidget theGrid, ResultSet selection) {
+    public GridExWidgetSelectEvent(GridExWidget theGrid, ResultSet selection) {
         this.control = theGrid;
         this.selection = selection;
     }

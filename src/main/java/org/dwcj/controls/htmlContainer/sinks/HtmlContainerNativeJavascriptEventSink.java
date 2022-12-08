@@ -1,11 +1,11 @@
-package org.dwcj.controls.htmlContainer.sinks;
+package org.dwcj.controls.htmlcontainer.sinks;
 
 import com.basis.bbj.proxies.event.BBjNativeJavaScriptEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.htmlContainer.HtmlContainer;
-import org.dwcj.controls.htmlContainer.events.HtmlContainerJavascriptEvent;
+import org.dwcj.controls.htmlcontainer.HtmlContainer;
+import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
 
 import java.util.function.Consumer;
 

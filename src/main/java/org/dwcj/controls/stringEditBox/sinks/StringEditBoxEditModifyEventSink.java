@@ -1,11 +1,11 @@
-package org.dwcj.controls.stringEditBox.sinks;
+package org.dwcj.controls.stringeditbox.sinks;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.stringEditBox.StringEditBox;
-import org.dwcj.controls.stringEditBox.events.StringEditBoxEditModifyEvent;
+import org.dwcj.controls.stringeditbox.StringEditBox;
+import org.dwcj.controls.stringeditbox.events.StringEditBoxEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

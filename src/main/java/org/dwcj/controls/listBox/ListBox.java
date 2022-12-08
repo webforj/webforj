@@ -1,4 +1,4 @@
-package org.dwcj.controls.listBox;
+package org.dwcj.controls.listbox;
 
 import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -6,10 +6,10 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwclistControl;
-import org.dwcj.controls.listBox.events.ListBoxDoubleClickEvent;
-import org.dwcj.controls.listBox.events.ListBoxSelectEvent;
-import org.dwcj.controls.listBox.sinks.ListBoxDoubleClickEventSink;
-import org.dwcj.controls.listBox.sinks.ListBoxSelectEventSink;
+import org.dwcj.controls.listbox.events.ListBoxDoubleClickEvent;
+import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
+import org.dwcj.controls.listbox.sinks.ListBoxDoubleClickEventSink;
+import org.dwcj.controls.listbox.sinks.ListBoxSelectEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IMouseWheelEnableable;

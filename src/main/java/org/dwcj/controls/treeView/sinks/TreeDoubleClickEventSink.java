@@ -1,11 +1,11 @@
-package org.dwcj.controls.treeView.sinks;
+package org.dwcj.controls.treeview.sinks;
 
 import com.basis.bbj.proxies.event.BBjTreeMouseDoubleClickEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.treeView.TreeView;
-import org.dwcj.controls.treeView.events.TreeDoubleClickedEvent;
+import org.dwcj.controls.treeview.TreeView;
+import org.dwcj.controls.treeview.events.TreeDoubleClickedEvent;
 
 import java.util.function.Consumer;
 

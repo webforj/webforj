@@ -1,6 +1,6 @@
-package org.dwcj.controls.scrollBar.events;
+package org.dwcj.controls.scrollbar.events;
 
-import org.dwcj.controls.scrollBar.ScrollBar;
+import org.dwcj.controls.scrollbar.ScrollBar;
 import org.dwcj.interfaces.IDwcEvent;
 
 public class ScrollbarMoveEvent implements IDwcEvent {

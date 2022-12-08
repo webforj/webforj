@@ -1,4 +1,4 @@
-package org.dwcj.controls.fontChooser;
+package org.dwcj.controls.fontchooser;
 
 import com.basis.bbj.proxies.sysgui.BBjFont;
 import com.basis.bbj.proxies.sysgui.BBjFontChooser;
@@ -6,12 +6,12 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.fontChooser.events.FontChooserApproveEvent;
-import org.dwcj.controls.fontChooser.events.FontChooserCancelEvent;
-import org.dwcj.controls.fontChooser.events.FontChooserChangeEvent;
-import org.dwcj.controls.fontChooser.sinks.FontChooserApproveEventSink;
-import org.dwcj.controls.fontChooser.sinks.FontChooserCancelEventSink;
-import org.dwcj.controls.fontChooser.sinks.FontChooserChangeEventSink;
+import org.dwcj.controls.fontchooser.events.FontChooserApproveEvent;
+import org.dwcj.controls.fontchooser.events.FontChooserCancelEvent;
+import org.dwcj.controls.fontchooser.events.FontChooserChangeEvent;
+import org.dwcj.controls.fontchooser.sinks.FontChooserApproveEventSink;
+import org.dwcj.controls.fontchooser.sinks.FontChooserCancelEventSink;
+import org.dwcj.controls.fontchooser.sinks.FontChooserChangeEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 import java.awt.*;

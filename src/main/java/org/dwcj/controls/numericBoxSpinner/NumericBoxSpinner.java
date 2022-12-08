@@ -1,11 +1,11 @@
-package org.dwcj.controls.numericBoxSpinner;
+package org.dwcj.controls.numericboxspinner;
 
 import com.basis.bbj.proxies.sysgui.BBjInputNSpinner;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.numericBox.NumericBox;
+import org.dwcj.controls.numericbox.NumericBox;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.IMouseWheelEnableable;
 
