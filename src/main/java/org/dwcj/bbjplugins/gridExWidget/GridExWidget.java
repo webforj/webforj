@@ -1,12 +1,12 @@
-package org.dwcj.bbjplugins.gridExWidget;
+package org.dwcj.bbjplugins.gridexwidget;
 
 import com.basis.bbj.proxies.sysgui.BBjChildWindow;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basiscomponents.db.ResultSet;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.bbjplugins.gridExWidget.events.GridExWidgetSelectEvent;
-import org.dwcj.bbjplugins.gridExWidget.sinks.GridExWidgetSelectEventSink;
+import org.dwcj.bbjplugins.gridexwidget.events.GridExWidgetSelectEvent;
+import org.dwcj.bbjplugins.gridexwidget.sinks.GridExWidgetSelectEventSink;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;

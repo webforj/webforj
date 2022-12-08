@@ -1,8 +1,8 @@
-package org.dwcj.bbjplugins.gridExWidget.events;
+package org.dwcj.bbjplugins.gridexwidget.events;
 
 import com.basiscomponents.db.ResultSet;
 
-import org.dwcj.bbjplugins.gridExWidget.GridExWidget;
+import org.dwcj.bbjplugins.gridexwidget.GridExWidget;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.interfaces.IDwcEvent;
 

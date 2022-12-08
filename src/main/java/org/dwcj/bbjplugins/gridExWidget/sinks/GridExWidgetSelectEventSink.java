@@ -1,9 +1,9 @@
-package org.dwcj.bbjplugins.gridExWidget.sinks;
+package org.dwcj.bbjplugins.gridexwidget.sinks;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bbjplugins.gridExWidget.GridExWidget;
-import org.dwcj.bbjplugins.gridExWidget.events.GridExWidgetSelectEvent;
+import org.dwcj.bbjplugins.gridexwidget.GridExWidget;
+import org.dwcj.bbjplugins.gridexwidget.events.GridExWidgetSelectEvent;
 import org.dwcj.bridge.ControlAccessor;
 
 import java.util.function.Consumer;
