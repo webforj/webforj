@@ -3,7 +3,7 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 import java.lang.reflect.Method;
 
@@ -37,7 +37,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
         if (caller.startsWith("org.dwcj.")) {
             try {
                 Method m = null;
-                m = ctrl.getClass().getDeclaredMethod("create", Class.forName("org.dwcj.panels.AbstractDwcjPanel"));
+                m = ctrl.getClass().getDeclaredMethod("create", Class.forName("org.dwcj.controls.panels.AbstractDwcjPanel"));
                 m.setAccessible(true);
                 m.invoke(ctrl,panel);
             } catch (Exception e) {

@@ -1,7 +1,8 @@
 package org.dwcj.bridge;
 
+import org.dwcj.controls.panels.AbstractDwcjPanel;
+
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import org.dwcj.panels.AbstractDwcjPanel;
 
 /**
  * This class implements the accessor to BBj specifics in the AbstractDwcjPanel-derived set of panel class
