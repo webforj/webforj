@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.AbstractDwclistControl;
 import org.dwcj.controls.listbox.events.ListBoxDoubleClickEvent;
 import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
 import org.dwcj.controls.listbox.sinks.ListBoxDoubleClickEventSink;

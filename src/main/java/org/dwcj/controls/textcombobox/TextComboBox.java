@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.controls.AbstractDwclistControl;
+import org.dwcj.controls.listbox.AbstractDwclistControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.textcombobox.events.TextComboBoxChangeEvent;
 import org.dwcj.controls.textcombobox.events.TextComboBoxCloseEvent;
