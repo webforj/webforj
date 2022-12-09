@@ -1,4 +1,4 @@
-package org.dwcj.controls;
+package org.dwcj.controls.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.radiobutton.events.RadioButtonCheckEvent;
 import org.dwcj.controls.radiobutton.sinks.RadioButtonCheckEventSink;
@@ -100,19 +101,7 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
         return null;
     }
 
-    public RadioButtonGroup getRadioButtonGroup() {
-        if(this.ctrl != null){
-            try {
-                BBjControl bbjGroup = (BBjControl) bbjRadioButton.getRadioGroup();
-                int id = bbjGroup.getID();
-                return RadioButtonGroup.getGroupByID(id);
-            } catch (BBjException e) {
-                e.printStackTrace();
-            }
-        }
-        App.consoleError("Button group cannot be fetched as control does not yet exist. Please add control to a window first");
-        return null;
-    }
+
 
 
     public HorizontalTextPosition getHorizontalTextPosition(){
