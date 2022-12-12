@@ -188,48 +188,57 @@ public final class FontChooser extends AbstractDwcControl {
         return this;
     }
 
+    @Override
     public FontChooser setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public FontChooser setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public FontChooser setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public FontChooser setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public FontChooser setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public FontChooser setID(String id){
-        super.setControlID(id);
+    @Override
+    public FontChooser setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public FontChooser setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public FontChooser addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public FontChooser removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 }

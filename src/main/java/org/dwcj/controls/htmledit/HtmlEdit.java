@@ -366,48 +366,57 @@ public final  class HtmlEdit extends AbstractDwcControl implements IFocusable, I
 
 
 
+    @Override
     public HtmlEdit setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public HtmlEdit setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public HtmlEdit setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public HtmlEdit setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public HtmlEdit setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public HtmlEdit setID(String id){
-        super.setControlID(id);
+    @Override
+    public HtmlEdit setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public HtmlEdit setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public HtmlEdit addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public HtmlEdit removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 

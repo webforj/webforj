@@ -20,9 +20,9 @@ import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IReadOnly;
 import org.dwcj.interfaces.ITabTraversable;
 import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextControl;
+import org.dwcj.interfaces.ITextHighlightable;
 
-public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextControl, ITextAlignable {
+public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextHighlightable, ITextAlignable {
     
     private BBjInputD bbjDateEditBox;
 
@@ -729,48 +729,57 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
 
 
 
+    @Override
     public DateEditBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public DateEditBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public DateEditBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public DateEditBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public DateEditBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public DateEditBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public DateEditBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public DateEditBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public DateEditBox addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public DateEditBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -790,6 +799,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
@@ -799,7 +809,7 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             }
         }
 
-        if(this.beep != false){
+        if(Boolean.TRUE.equals(this.beep)){
             this.setBeep(this.beep);
         }
 
@@ -815,11 +825,11 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setEditString(this.editString);
         }
 
-        if(this.highlight != false){
+        if(Boolean.TRUE.equals(this.highlight)){
             this.setHighlight(this.highlight);
         }
 
-        if(this.insert != false){
+        if(Boolean.TRUE.equals(this.insert)){
             this.setInsertMode(this.insert);
         }
 
@@ -839,11 +849,11 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setMask(this.mask);
         }
 
-        if(this.pEnter != false){
+        if(Boolean.TRUE.equals(this.pEnter)){
             this.setPassEnter(this.pEnter);
         }
 
-        if(this.pTab != false){
+        if(Boolean.TRUE.equals(this.pTab)){
             this.setPassTab(this.pTab);
         }
 
@@ -851,26 +861,26 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
             this.setRestore(this.restore);
         }
 
-        if(this.plusMinus != false){
+        if(Boolean.TRUE.equals(this.plusMinus)){
             this.setPlusMinus(this.plusMinus);
         }
 
-        if(this.showWeeks != false){
+        if(Boolean.TRUE.equals(this.showWeeks)){
             this.setShowWeeks(this.showWeeks);
         }
 
 
 
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

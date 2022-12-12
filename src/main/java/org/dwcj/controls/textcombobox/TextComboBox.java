@@ -517,48 +517,57 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
 
 
 
+    @Override
     public TextComboBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public TextComboBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public TextComboBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public TextComboBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public TextComboBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public TextComboBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public TextComboBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public TextComboBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public TextComboBox addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public TextComboBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -617,8 +626,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-        if (this.caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
-
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         this.eventCatchUp();
@@ -640,11 +648,11 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             this.setEditText(this.editText);
         }
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
@@ -652,7 +660,7 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
             this.setScrollWheelBehavior(this.mouseWheelCondition);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

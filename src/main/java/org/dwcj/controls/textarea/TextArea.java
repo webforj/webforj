@@ -13,13 +13,13 @@ import org.dwcj.interfaces.IMouseWheelEnableable;
 import org.dwcj.interfaces.IReadOnly;
 import org.dwcj.interfaces.IScrollable;
 import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextControl;
+import org.dwcj.interfaces.ITextHighlightable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class TextArea extends AbstractDwcControl implements IReadOnly, ITextControl, IFocusable, IMouseWheelEnableable, IScrollable, ITabTraversable {
+public final class TextArea extends AbstractDwcControl implements IReadOnly, ITextHighlightable, IFocusable, IMouseWheelEnableable, IScrollable, ITabTraversable {
 
     private BBjCEdit bbjCEdit;
 
@@ -882,48 +882,57 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
 
 
 
+    @Override
     public TextArea setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public TextArea setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public TextArea setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public TextArea setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public TextArea setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public TextArea setID(String id){
-        super.setControlID(id);
+    @Override
+    public TextArea setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public TextArea setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public TextArea addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public TextArea removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -947,6 +956,7 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
@@ -956,19 +966,19 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
             }
         }
 
-        if(this.hScroll != false){
+        if(Boolean.TRUE.equals(this.hScroll)){
             this.setHorizontalScrollable(this.hScroll);
         }
 
-        if(this.ignoreEnter != false){
+        if(Boolean.TRUE.equals(this.ignoreEnter)){
             this.setIgnoreEnters(this.ignoreEnter);
         }
 
-        if(this.ignoreTab != false){
+        if(Boolean.TRUE.equals(this.ignoreTab)){
             this.setIgnoreTabs(this.ignoreTab);
         }
 
-        if(this.oneParagraph != false){
+        if(Boolean.TRUE.equals(this.oneParagraph)){
             this.setLimitToOneParagraph(this.oneParagraph);
         }
 
@@ -976,7 +986,7 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
             this.setLineCountLimit(this.lineLimit);
         }
 
-        if(this.lineWrap != false){
+        if(Boolean.TRUE.equals(this.lineWrap)){
             this.setLineWrap(this.lineWrap);
         }
 
@@ -988,7 +998,7 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
             this.setMaxLength(this.maxLength);
         }
 
-        if(this.overtype != false){
+        if(Boolean.TRUE.equals(this.overtype)){
             this.setOvertypeMode(this.overtype);
         }
 
@@ -996,16 +1006,16 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
             this.setTabSize(this.tabSize);
         }
 
-        if(this.vScroll != false){
+        if(Boolean.TRUE.equals(this.vScroll)){
             this.setVerticalScrollable(this.vScroll);
         }
 
-        if(this.wrapWord != true){
+        if(Boolean.FALSE.equals(this.wrapWord)){
             this.setWrapStyleWord(this.wrapWord);
         }
 
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
@@ -1013,7 +1023,7 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
             this.setHighlightOnFocus(this.textHighlight);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
@@ -1029,7 +1039,7 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
             this.setScrollWheelBehavior(this.mouseWheelCondition);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
 
         }

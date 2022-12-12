@@ -1,6 +1,6 @@
 package org.dwcj.interfaces;
 
-public interface ITextControl {
+public interface ITextHighlightable {
     
     enum Highlight {
         HIGHLIGHT_NONE(0),
@@ -21,5 +21,5 @@ public interface ITextControl {
 
     Highlight getHighlightOnFocus();
 
-    ITextControl setHighlightOnFocus(Highlight highlight);
+    ITextHighlightable setHighlightOnFocus(Highlight highlight);
 }

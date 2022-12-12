@@ -3,83 +3,36 @@ package org.dwcj.interfaces;
 public interface IControl {
 
     /**
-     * get the text property of the control
-     *
-     * @return the text
+     * Returns the control's ID
+     * 
+     * @return Control's ID
      */
-    public String getText();
+    public String getId();
 
     /**
-     * set the text of the control
-     * Each control has a text property, which might be visible in different ways (caption, title, contents of edit) or sometimes not visible at all
-     *
-     * @param text
-     * @return the control itself
+     * Assigns the ID of a control
+     * 
+     * @param id Desired ID designation
+     * @return The control itself
      */
-    public IControl setText(String text);
+    public IControl setId(String id);
+
 
     /**
-     * set an attribute value
+     * Allows user to fetch extraneous, user-included information from the control
      *
-     * @param attribute the key/name of the attribute
-     * @param value     the value
-     * @return the control itself
+     * @param key
+     * @return Desired piece of user data
      */
-    public IControl setAttribute(String attribute, String value);
+    public Object getUserData(String key);
 
     /**
-     * retrieve the value of the given attribute
+     * Allows user to include extraneous information in the control
      *
-     * @param attribute the key/name of the attribute
-     * @return the value
+     * @param key Key of the data 
+     * @param data Desired piece of information
+     * @return The control itself
      */
-    public String getAttribute(String attribute);
-
-    public IControl setID(String id);
-
-    public String getID();
-
-    /**
-     * Set the tooltip text of the control
-     *
-     * @param text
-     * @return the control itself
-     */
-    public IControl setTooltipText(String text);
-
-    /**
-     * get the tooltip text property of the control
-     *
-     * @return the tooltip text
-     */
-    public String getTooltipText();
-
-    /**
-     * Set whether the control is to be enabled
-     *
-     * @param enabled
-     * @return the control itself
-     */
-    public IControl setEnabled(Boolean enabled);
-
-    /**
-     *
-     * @return if control is enabled (=true) or disabled (=false)
-     */
-    public boolean isEnabled();
-
-    /**
-     * Set whether the control is visible or invisible
-     *
-     * @param visible
-     * @return the control itself
-     */
-    public IControl setVisible(Boolean visible);
-
-    /**
-     *
-     * @return if control is visible (=true) or invisible (=false)
-     */
-    public boolean isVisible();
+    public IControl setUserData(String key, Object data);
 
 }

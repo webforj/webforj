@@ -189,48 +189,88 @@ public final class Label extends AbstractDwcControl implements ITextAlignable {
 
 
 
+    @Override
     public Label setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public Label setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public Label setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public Label setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public Label setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public Label setID(String id){
-        super.setControlID(id);
+    @Override
+    public Label setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public Label setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public Label addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public Label removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
+
+
+
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
+        
+        super.catchUp();
+
+        if(Boolean.TRUE.equals(this.lineWrap)){
+            this.setLineWrap(this.lineWrap);
+        }
+
+
+        if(this.margins[0] != 0){
+            this.setTopMargin(this.margins[0]);
+        }
+        if(this.margins[1] != 0){
+            this.setRightMargin(this.margins[1]);
+        }
+        if(this.margins[2] != 0){
+            this.setBottomMargin(this.margins[2]);
+        }
+        if(this.margins[3] != 0){
+            this.setLeftMargin(this.margins[3]);
+        }
+
+    }
+
+
+
 }

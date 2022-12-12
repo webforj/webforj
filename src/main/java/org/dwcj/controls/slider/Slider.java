@@ -502,48 +502,57 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
     }
 
 
+    @Override
     public Slider setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public Slider setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public Slider setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public Slider setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public Slider setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public Slider setID(String id){
-        super.setControlID(id);
+    @Override
+    public Slider setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public Slider setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public Slider addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public Slider removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -561,6 +570,7 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
 
@@ -572,7 +582,7 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
         }
 
 
-        if(this.inverted != false){
+        if(Boolean.TRUE.equals(this.inverted)){
             this.setInverted(this.inverted);
         }
 
@@ -592,15 +602,15 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
             this.setMinimum(this.minimum);
         }
 
-        if(this.paintLabels != false){
+        if(Boolean.TRUE.equals(this.paintLabels)){
             this.setPaintLabels(this.paintLabels);
         }
 
-        if(this.paintTicks != false){
+        if(Boolean.TRUE.equals(this.paintTicks)){
             this.setPaintTicks(this.paintLabels);
         }
 
-        if(this.snapToTicks != false){
+        if(Boolean.TRUE.equals(this.snapToTicks)){
             this.setPaintTicks(this.paintLabels);
         }
 
@@ -610,11 +620,11 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
 
 
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

@@ -46,12 +46,12 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * =====================================================================================
      */
     
-    public static enum TextVertialAlignment{
+    public static enum TextVerticalAlignment{
         TOP(1), CENTER(0), BOTTOM(3);
         
         public final Integer alignment;
         
-        private TextVertialAlignment(Integer alignment){
+        private TextVerticalAlignment(Integer alignment){
             this.alignment = alignment;
         }
     }
@@ -66,11 +66,10 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * =====================================================================================
      */
     
-    // private ButtonPushEventSink buttonPushEventSink;
     private ArrayList<Consumer<ButtonPushEvent>> callbacks = new ArrayList<>();
     private ButtonPushEventSink buttonPushEventSink;
     private Boolean disableOnClick = false;
-    TextVertialAlignment verticalAlignment = TextVertialAlignment.CENTER;
+    TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
     
     
     
@@ -95,7 +94,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
      * @param text String value for initial button text
      */
     public Button(String text) {
-        super.setControlText(text);
+        super.setText(text);
         this.focusable = true;
         this.tabTraversable = true;
         this.textAlignment = Alignment.MIDDLE;
@@ -178,7 +177,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
 
 
-    public TextVertialAlignment getVerticalAlignment(){
+    public TextVerticalAlignment getVerticalAlignment(){
         if(this.ctrl != null){
             return this.verticalAlignment;
         }
@@ -186,7 +185,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
     }
 
 
-    public Button setVerticalAlignment(TextVertialAlignment alignment){
+    public Button setVerticalAlignment(TextVerticalAlignment alignment){
         if(this.ctrl != null){
             try{
                 ((BBjButton) ctrl).setVerticalAlignment(alignment.alignment);
@@ -202,53 +201,62 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
     /*=====================================================================================
      * This section overrides the various base class abstract methods in the 
-     * AbstractDwcjControl class. These need to be overridden for method chaining 
+     * AbstractDwcjControl class. These need to be should for method chaining 
      * purposes (i.e. setExample().setExample2().setExample3() ).
      * =====================================================================================
      */
 
+     @Override
     public Button setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public Button setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public Button setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public Button setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public Button setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public Button setID(String id){
-        super.setControlID(id);
+    @Override
+    public Button setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public Button setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public Button addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public Button removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -363,9 +371,11 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
+        
         super.catchUp();
 
-        if(this.disableOnClick != false){
+        if(Boolean.TRUE.equals(this.disableOnClick)){
             this.setDisableOnClick(this.disableOnClick);
         }
 
@@ -377,7 +387,7 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
         }
         
 
-        if(this.verticalAlignment != TextVertialAlignment.CENTER){
+        if(this.verticalAlignment != TextVerticalAlignment.CENTER){
             try{
                 ((BBjButton) ctrl).setVerticalAlignment(this.verticalAlignment.alignment);
             } catch(BBjException e){
@@ -385,11 +395,11 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
             }
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

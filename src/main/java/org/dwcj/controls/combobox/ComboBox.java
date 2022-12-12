@@ -432,7 +432,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
 
 
     public ComboBox setTextAt(Integer idx, String text){
-        this.textAt = new SimpleEntry<Integer,String>(idx, text);
+        this.textAt = new SimpleEntry<>(idx, text);
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).setTextAt(idx, text);
@@ -560,48 +560,57 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
 
 
 
+    @Override
     public ComboBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public ComboBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public ComboBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public ComboBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public ComboBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public ComboBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public ComboBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public ComboBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public ComboBox addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public ComboBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -625,7 +634,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
     @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-        if (this.caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
 
         super.catchUp();
 
@@ -662,23 +671,16 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
             }
         }
 
-        // if(this.fieldHeight != null){
-        //     this.setFieldHeight(fieldHeight);
-        // }
-
         if(this.maxRowCount != null){
             this.setMaximumRowCount(maxRowCount);
         }
         
-        // if(this.openWidth != null){
-        //     this.setOpenWidth(openWidth);
-        // }
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
@@ -686,7 +688,7 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
             this.setScrollWheelBehavior(this.mouseWheelCondition);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

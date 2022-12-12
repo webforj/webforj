@@ -66,6 +66,7 @@ public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEn
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(this.mouseWheelCondition != MouseWheelCondition.DEFAULT){

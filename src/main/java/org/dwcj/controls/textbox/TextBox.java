@@ -16,10 +16,10 @@ import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IReadOnly;
 import org.dwcj.interfaces.ITabTraversable;
 import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextControl;
+import org.dwcj.interfaces.ITextHighlightable;
 
 
-public final class TextBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextControl {
+public final class TextBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextHighlightable {
 
     private BBjEditBox bbjEditBox;
 
@@ -47,6 +47,11 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
 
     public TextBox(String text) {
         setText(text);
+        this.readOnly = false;
+        this.focusable = true;
+        this.tabTraversable = true;
+        this.textAlignment = Alignment.LEFT;
+        this.textHighlight = Highlight.HIGHLIGHT_NONE;
     }
 
     
@@ -317,48 +322,57 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
 
 
 
+    @Override
     public TextBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public TextBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public TextBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public TextBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public TextBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public TextBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public TextBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public TextBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public TextBox addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public TextBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -378,6 +392,7 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
 
     @Override
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
@@ -391,24 +406,24 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
             this.setMaxLength(this.maxLength);
         }
 
-        if(this.homeDelete != false){
+        if(Boolean.TRUE.equals(this.homeDelete)){
             this.setPassHomeDelete(this.homeDelete);
         }
         
-        if(this.passwordVisible != false){
+        if(Boolean.TRUE.equals(this.passwordVisible)){
             this.setPasswordVisible(this.passwordVisible);
         }
         
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

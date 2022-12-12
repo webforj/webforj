@@ -17,11 +17,11 @@ import org.dwcj.interfaces.IFocusable;
 import org.dwcj.interfaces.IReadOnly;
 import org.dwcj.interfaces.ITabTraversable;
 import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextControl;
+import org.dwcj.interfaces.ITextHighlightable;
 
 
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
-public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextControl{
+public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextHighlightable{
 
     protected BBjInputN numBox;
 
@@ -729,48 +729,57 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
 
 
 
+    @Override
     public NumericBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public NumericBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public NumericBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public NumericBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public NumericBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public NumericBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public NumericBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public NumericBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
+    @Override
     public NumericBox addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
+    @Override
     public NumericBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
@@ -792,6 +801,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
@@ -814,11 +824,11 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
             this.setEditString(this.editString);
         }
 
-        if(this.highlight != false){
+        if(Boolean.TRUE.equals(this.highlight)){
             this.setHighlight(this.highlight);
         }
 
-        if(this.insertMode != true){
+        if(Boolean.FALSE.equals(this.insertMode)){
             this.setInsertMode(this.insertMode);
         }
 
@@ -834,15 +844,15 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
             this.setMask(this.mask);
         }
 
-        if(this.negatable != true){
+        if(Boolean.FALSE.equals(this.negatable)){
             this.setNegatable(this.negatable);
         }
 
-        if(this.pEnter != false){
+        if(Boolean.TRUE.equals(this.pEnter)){
             this.setPassEnter(this.pEnter);
         }
 
-        if(this.pTab != false){
+        if(Boolean.TRUE.equals(this.pTab)){
             this.setPassTab(this.pTab);
         }
 
@@ -850,7 +860,7 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
             this.setRestore(this.restore);
         }
 
-        if(this.commas != false){
+        if(Boolean.TRUE.equals(this.commas)){
             this.setUseEditCommas(this.commas);
         }
 
@@ -860,15 +870,15 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
 
         
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 
