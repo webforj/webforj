@@ -56,10 +56,10 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
         this.readOnly = false;
         this.textHighlight = Highlight.HIGHLIGHT_NONE;
         this.horizontalScrollBarPosition = 0;
-        this.verticalScrollBarPosition = 0;this.focusable = true;
+        this.verticalScrollBarPosition = 0;
+        this.focusable = true;
         this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
         this.tabTraversable = true;
-        this.focusable = true;
 
     }
 

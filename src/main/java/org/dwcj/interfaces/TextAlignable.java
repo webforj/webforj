@@ -21,8 +21,17 @@ public interface TextAlignable {
         }
     }
 
+    /**
+     * Returns a value indicating the text's horizontal alignment.
+     * @return
+     */
     Alignment getTextAlignment();
 
+    /**
+     * Sets the horizontal alignment of the text within the control.
+     * @param alignment Enum from list representing an internal BBj numeric constant
+     * @return The control itself
+     */
     TextAlignable setTextAlignment(Alignment alignment);
 
 }

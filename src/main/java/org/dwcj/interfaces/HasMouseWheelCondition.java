@@ -24,8 +24,17 @@ public interface HasMouseWheelCondition {
         }
     }
 
+    /**
+     * getScrollWheelBehavior returns a constant indicating under what situations the control will respond to the mouse scroll wheel.
+     * @return Enum value of scroll behavior
+     */
     MouseWheelCondition getScrollWheelBehavior();
 
+    /**
+     * setScrollWheelBehavior configures under what situations the control will respond to the mouse scroll wheel.
+     * @param condition Enum value for desired behavior
+     * @return The control itself
+     */
     HasMouseWheelCondition setScrollWheelBehavior(MouseWheelCondition condition);
 
 

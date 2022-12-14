@@ -1,9 +1,9 @@
 package org.dwcj.controls.htmlcontainer.events;
 
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
-import org.dwcj.interfaces.IDwcEvent;
+import org.dwcj.interfaces.DwcEvent;
 
-public class HtmlContainerOnScriptFailedEvent implements IDwcEvent {
+public class HtmlContainerOnScriptFailedEvent implements DwcEvent {
     
     private final HtmlContainer control;
 

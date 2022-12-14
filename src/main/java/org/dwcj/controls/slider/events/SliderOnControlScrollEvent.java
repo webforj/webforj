@@ -1,9 +1,9 @@
 package org.dwcj.controls.slider.events;
 
 import org.dwcj.controls.slider.Slider;
-import org.dwcj.interfaces.IDwcEvent;
+import org.dwcj.interfaces.DwcEvent;
 
-public class SliderOnControlScrollEvent implements IDwcEvent {
+public class SliderOnControlScrollEvent implements DwcEvent {
     
     private final Slider control;
 

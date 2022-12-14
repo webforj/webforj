@@ -2,9 +2,9 @@ package org.dwcj.interfaces;
 
 /**
  * Interface facilitating implementation of behavior to modify a specific
- * CSS class to a provided value.
+ * CSS property to a provided value.
  */
-public interface HasCssStyle {
+public interface HasStyle {
     
     /**
      * Assigns specified value to the specified CSS property
@@ -13,5 +13,5 @@ public interface HasCssStyle {
      * @param value The value of the selected CSS property
      * @return The control itself
      */
-    public HasCssStyle setStyle(String property, String value);
+    public HasStyle setStyle(String property, String value);
 }

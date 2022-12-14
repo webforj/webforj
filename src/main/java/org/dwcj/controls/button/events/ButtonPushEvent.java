@@ -1,9 +1,9 @@
 package org.dwcj.controls.button.events;
 
 import org.dwcj.controls.button.Button;
-import org.dwcj.interfaces.IDwcEvent;
+import org.dwcj.interfaces.DwcEvent;
 
-public final class ButtonPushEvent implements IDwcEvent {
+public final class ButtonPushEvent implements DwcEvent {
     private final Button control;
 
     public ButtonPushEvent(Button cButton) {

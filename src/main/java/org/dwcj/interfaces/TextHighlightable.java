@@ -25,7 +25,16 @@ public interface TextHighlightable {
         }
     }
 
+    /**
+     * This method returns an enum representing the current behavior of highlighting in a text control when the control receives focus.
+     * @return Enum representing BBj constant for highlight on focus
+     */
     Highlight getHighlightOnFocus();
 
+    /**
+     * This method sets the behavior of controls implementing the TextControl interface when receiving focus via the keyboard, mouse, or BBjControl::focus() method FOCUS mnemonic.
+     * @param highlight Enum representing a BBj constant that dictates highlight behavior for control
+     * @return The control itself.
+     */
     TextHighlightable setHighlightOnFocus(Highlight highlight);
 }

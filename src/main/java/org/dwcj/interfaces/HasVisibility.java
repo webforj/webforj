@@ -5,7 +5,7 @@ package org.dwcj.interfaces;
  * Interface facilitates implementation of behaviors to modify a 
  * controls visibility on a page
  */
-public interface Visible {
+public interface HasVisibility {
     
     /**
      *
@@ -19,5 +19,5 @@ public interface Visible {
      * @param visible
      * @return the control itself
      */
-    public Visible setVisible(Boolean visible);
+    public HasVisibility setVisible(Boolean visible);
 }

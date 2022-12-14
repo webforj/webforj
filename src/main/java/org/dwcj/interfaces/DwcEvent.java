@@ -5,7 +5,7 @@ import org.dwcj.controls.AbstractDwcControl;
 /**
  * Base interface for DWC events
  */
-public interface IDwcEvent {
+public interface DwcEvent {
     /**
      * obtain a reference to the control that triggered the event
      *

@@ -16,14 +16,14 @@ import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasComputedStyle;
 import org.dwcj.interfaces.HasControlText;
-import org.dwcj.interfaces.HasCssClass;
-import org.dwcj.interfaces.HasCssStyle;
+import org.dwcj.interfaces.HasClassName;
+import org.dwcj.interfaces.HasStyle;
 import org.dwcj.interfaces.Enableable;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.interfaces.HasTooltip;
-import org.dwcj.interfaces.Visible;
+import org.dwcj.interfaces.HasVisibility;
 
 
 
@@ -32,7 +32,7 @@ import org.dwcj.interfaces.Visible;
  * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
  * default behaviors for the implemented interface methods. 
  */
-public abstract class AbstractDwcControl extends AbstractControl implements HasAttribute, HasControlText, HasComputedStyle, HasCssClass, HasCssStyle, Enableable, HasTooltip, Visible{
+public abstract class AbstractDwcControl extends AbstractControl implements HasAttribute, HasControlText, HasComputedStyle, HasClassName, HasStyle, Enableable, HasTooltip, HasVisibility{
 
 
     /*=====================================================================================
