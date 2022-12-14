@@ -31,48 +31,57 @@ public final class ColorPicker extends AbstractDwcControl {
 
 
 
+    @Override
     public ColorPicker setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public ColorPicker setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public ColorPicker setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public ColorPicker setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public ColorPicker setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public ColorPicker setID(String id){
-        super.setControlID(id);
+    @Override
+    public ColorPicker setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public ColorPicker setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public ColorPicker addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public ColorPicker addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public ColorPicker removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public ColorPicker removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

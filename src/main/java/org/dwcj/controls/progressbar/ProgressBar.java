@@ -264,48 +264,57 @@ public final class ProgressBar extends AbstractDwcControl {
 
 
 
+    @Override
     public ProgressBar setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public ProgressBar setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public ProgressBar setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public ProgressBar setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public ProgressBar setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public ProgressBar setID(String id){
-        super.setControlID(id);
+    @Override
+    public ProgressBar setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public ProgressBar setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public ProgressBar addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public ProgressBar addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public ProgressBar removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public ProgressBar removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
@@ -313,9 +322,10 @@ public final class ProgressBar extends AbstractDwcControl {
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
-        if(this.indeterminate != false){
+        if(Boolean.TRUE.equals(this.indeterminate)){
             this.setIndeterminate(this.indeterminate);
         }
 
@@ -331,7 +341,7 @@ public final class ProgressBar extends AbstractDwcControl {
             this.setOrientation(this.orientation);
         }
 
-        if(this.stringPainted != true){
+        if(Boolean.FALSE.equals(this.stringPainted)){
             this.setStringPainted(this.stringPainted);
         }
 

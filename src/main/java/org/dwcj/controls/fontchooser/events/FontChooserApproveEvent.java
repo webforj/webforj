@@ -1,9 +1,9 @@
 package org.dwcj.controls.fontchooser.events;
 
 import org.dwcj.controls.fontchooser.FontChooser;
-import org.dwcj.interfaces.IDwcEvent;
+import org.dwcj.interfaces.DwcEvent;
 
-public class FontChooserApproveEvent implements IDwcEvent {
+public class FontChooserApproveEvent implements DwcEvent {
 
     private final FontChooser control;
 

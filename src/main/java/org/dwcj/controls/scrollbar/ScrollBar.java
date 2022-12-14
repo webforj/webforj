@@ -153,54 +153,64 @@ public final class ScrollBar extends AbstractDwcControl {
 
 
 
+    @Override
     public ScrollBar setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public ScrollBar setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public ScrollBar setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public ScrollBar setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public ScrollBar setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public ScrollBar setID(String id){
-        super.setControlID(id);
+    @Override
+    public ScrollBar setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public ScrollBar setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public ScrollBar addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public ScrollBar addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public ScrollBar removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public ScrollBar removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){

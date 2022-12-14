@@ -10,17 +10,17 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.stringeditbox.events.StringEditBoxEditModifyEvent;
 import org.dwcj.controls.stringeditbox.sinks.StringEditBoxEditModifyEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextControl;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
 
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class StringEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextControl {
+public final class StringEditBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
     
     private BBjInputE bbjInputE;
@@ -505,48 +505,57 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
 
 
 
+    @Override
     public StringEditBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public StringEditBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public StringEditBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public StringEditBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public StringEditBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public StringEditBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public StringEditBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public StringEditBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public StringEditBox addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public StringEditBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public StringEditBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public StringEditBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
@@ -572,6 +581,7 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
 
     @Override
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         
@@ -591,11 +601,11 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
             this.setEditString(this.editString);
         }
 
-        if(this.highlight != false){
+        if(Boolean.TRUE.equals(this.highlight)){
             this.setHighlight(this.highlight);
         }
 
-        if(this.insert != false){
+        if(Boolean.TRUE.equals(this.insert)){
             this.setInsertMode(this.insert);
         }
 
@@ -615,11 +625,11 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
             this.setPadCharacter(this.pad);
         }
 
-        if(this.passEnter != false){
+        if(Boolean.TRUE.equals(this.passEnter)){
             this.setPassEnter(this.passEnter);
         }
 
-        if(this.passTab != false){
+        if(Boolean.TRUE.equals(this.passTab)){
             this.setPassTab(this.passTab);
         }
 
@@ -629,15 +639,15 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
 
 
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

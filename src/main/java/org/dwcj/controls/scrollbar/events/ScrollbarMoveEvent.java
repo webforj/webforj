@@ -1,9 +1,9 @@
 package org.dwcj.controls.scrollbar.events;
 
 import org.dwcj.controls.scrollbar.ScrollBar;
-import org.dwcj.interfaces.IDwcEvent;
+import org.dwcj.interfaces.DwcEvent;
 
-public class ScrollbarMoveEvent implements IDwcEvent {
+public class ScrollbarMoveEvent implements DwcEvent {
 
     private final ScrollBar control;
 

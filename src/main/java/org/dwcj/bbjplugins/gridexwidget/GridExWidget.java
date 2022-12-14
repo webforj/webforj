@@ -56,48 +56,57 @@ public final class GridExWidget extends AbstractDwcControl {
         return this;
     }
 
+    @Override
     public GridExWidget setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public GridExWidget setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public GridExWidget setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public GridExWidget setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public GridExWidget setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public GridExWidget setID(String id){
-        super.setControlID(id);
+    @Override
+    public GridExWidget setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public GridExWidget setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public GridExWidget addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public GridExWidget addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public GridExWidget removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public GridExWidget removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

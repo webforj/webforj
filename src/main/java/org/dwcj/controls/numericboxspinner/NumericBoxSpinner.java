@@ -7,10 +7,10 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.numericbox.NumericBox;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IMouseWheelEnableable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
 
 //public final class NumericBoxSpinner extends NumericBox implements IThemable, IExpansible {
-public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEnableable {
+public final class NumericBoxSpinner extends NumericBox implements HasMouseWheelCondition {
 
     private BBjInputNSpinner numBoxS;
 
@@ -66,6 +66,7 @@ public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEn
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(this.mouseWheelCondition != MouseWheelCondition.DEFAULT){

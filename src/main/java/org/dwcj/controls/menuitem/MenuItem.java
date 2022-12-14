@@ -49,48 +49,57 @@ public class MenuItem extends AbstractDwcControl {
 
 
 
+    @Override
     public MenuItem setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public MenuItem setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public MenuItem setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public MenuItem setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public MenuItem setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public MenuItem setID(String id){
-        super.setControlID(id);
+    @Override
+    public MenuItem setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public MenuItem setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public MenuItem addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public MenuItem addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public MenuItem removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public MenuItem removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

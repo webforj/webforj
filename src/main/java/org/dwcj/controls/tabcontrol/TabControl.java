@@ -29,48 +29,57 @@ public final class TabControl extends AbstractDwcControl {
 
 
 
+    @Override
     public TabControl setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public TabControl setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public TabControl setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public TabControl setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public TabControl setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public TabControl setID(String id){
-        super.setControlID(id);
+    @Override
+    public TabControl setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public TabControl setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public TabControl addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public TabControl addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public TabControl removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public TabControl removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

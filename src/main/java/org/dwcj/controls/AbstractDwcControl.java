@@ -3,19 +3,36 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IControl;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextControl;
 
-import java.util.*;
+import org.dwcj.interfaces.HasAttribute;
+import org.dwcj.interfaces.HasComputedStyle;
+import org.dwcj.interfaces.HasControlText;
+import org.dwcj.interfaces.HasClassName;
+import org.dwcj.interfaces.HasStyle;
+import org.dwcj.interfaces.Enableable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
+import org.dwcj.interfaces.HasTooltip;
+import org.dwcj.interfaces.HasVisibility;
+
+
+
 
 /**
- * The base class for all controls and panels
+ * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
+ * default behaviors for the implemented interface methods. 
  */
-public abstract class AbstractDwcControl implements IControl {
+public abstract class AbstractDwcControl extends AbstractControl implements HasAttribute, HasControlText, HasComputedStyle, HasClassName, HasStyle, Enableable, HasTooltip, HasVisibility{
 
 
     /*=====================================================================================
@@ -33,15 +50,15 @@ public abstract class AbstractDwcControl implements IControl {
      * Members common to all inheriting controls
      *=====================================================================================
      */
-    protected BBjControl ctrl;
+
     private String text = "";
     private Boolean visible = true;
     private Boolean enabled = true;
     private String tooltipText = "";
+
     private final Map<String, String> attributes = new HashMap<>();
-    private final Map<String, String> styles = new HashMap<>();
     private final List<String> cssClasses = new ArrayList<>();
-    private final Map<String, Object> userData = new HashMap<>();
+    private final Map<String, String> styles = new HashMap<>();
     
 
     /*=====================================================================================
@@ -60,11 +77,11 @@ public abstract class AbstractDwcControl implements IControl {
     protected Boolean readOnly = null;
     protected Boolean focusable = null;
     protected Boolean tabTraversable = null;
-    protected ITextAlignable.Alignment textAlignment = null;
+    protected TextAlignable.Alignment textAlignment = null;
     protected Integer horizontalScrollBarPosition = null; 
     protected Integer verticalScrollBarPosition = null;
-    protected IMouseWheelEnableable.MouseWheelCondition mouseWheelCondition = null;
-    protected ITextControl.Highlight textHighlight = null;
+    protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
+    protected TextHighlightable.Highlight textHighlight = null;
 
         
     static {
@@ -72,7 +89,7 @@ public abstract class AbstractDwcControl implements IControl {
     }
 
 
-    protected boolean caughtUp = false;
+    
 
 
     /**
@@ -93,97 +110,8 @@ public abstract class AbstractDwcControl implements IControl {
         return this.ctrl;
     }
 
-    @Override
-    public String getText() {
-        if (ctrl != null) try {
-            return ctrl.getText();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return text;
-    }
-
-    protected IControl setControlText(String text) {
-        if (ctrl != null) try {
-            ctrl.setText(text);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        if (text != null)
-            this.text = new String(text.getBytes());
-        else
-            this.text = "<null>";
-        return this;
-    }
-   
-    @Override
-    public boolean isVisible() {
-        if (this.ctrl != null) try {
-            return ctrl.isVisible();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return visible;
-    }
-
-    protected IControl setControlVisible(Boolean visible) {
-        if (this.ctrl != null) try {
-            ctrl.setVisible(visible);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.visible = visible;
-        return this;
-    }
-
-
 
     @Override
-    public boolean isEnabled() {
-        if (this.ctrl != null) try {
-            return ctrl.isEnabled();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return enabled;
-    }
-
-    
-    protected IControl setControlEnabled(Boolean enabled) {
-        if (this.ctrl != null) try {
-            ctrl.setEnabled(enabled);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.enabled = enabled;
-        return this;
-    }
-    
-    @Override
-    public String getTooltipText() {
-        if (this.ctrl != null) try {
-            return ctrl.getToolTipText();
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        return tooltipText;
-    }
-
-    protected IControl setControlTooltipText(String text) {
-        if (this.ctrl != null) try {
-            ctrl.setToolTipText(text);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.tooltipText = text;
-        return this;
-    }
-    
-    /**
-     * get an attribute of the control
-     * @param attribute the name of the attribute
-     * @return the value of the attribute in the control
-     */
     public String getAttribute(String attribute) {
         //ask the control first
         if (ctrl != null) try {
@@ -201,7 +129,8 @@ public abstract class AbstractDwcControl implements IControl {
      * @param value the value to be set
      * @return the control itself
      */
-    protected IControl setControlAttribute(String attribute, String value) {
+    @Override
+    public AbstractDwcControl setAttribute(String attribute, String value) {
         if (ctrl != null) try {
             ctrl.setAttribute(attribute, value);
         } catch (BBjException e) {
@@ -211,55 +140,36 @@ public abstract class AbstractDwcControl implements IControl {
         return this;
     }
 
+
     @Override
-    public String getID(){
-        if(this.attributes.containsKey("id")){
-            return getAttribute("id");
+    public String getText() {
+        if (ctrl != null) try {
+            return ctrl.getText();
+        } catch (BBjException e) {
+            e.printStackTrace();
         }
-        if(this.ctrl != null){
-            try{
-                return ctrl.getAttribute("id");
-            } catch (BBjException e){
-                e.printStackTrace();
-            }
-        }
-        return null;
+        return text;
     }
 
-    protected IControl setControlID(String id){
-        this.setAttribute("id", id);
+    @Override
+    public AbstractDwcControl setText(String text) {
+        if (ctrl != null){
+            try {
+                ctrl.setText(text);
+            } catch (BBjException e) {
+                e.printStackTrace();
+            }
+        } 
+        if (text != null){
+            this.text = new String(text.getBytes());
+        }
+        else{
+            this.text = "<null>";
+        }
         return this;
     }
 
-    protected void setControlStyle(String property, String value) {
-        if (ctrl != null) try {
-            ctrl.setStyle(property, value);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.styles.put(property, value);
-    }
-
-
-    protected void addControlCssClass(String selector) {
-        if (ctrl != null) try {
-            ctrl.addStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.cssClasses.add(selector);
-    }
-
-
-    protected void removeControlCssClass(String selector) {
-        if (ctrl != null) try {
-            ctrl.removeStyle(selector);
-        } catch (BBjException e) {
-            e.printStackTrace();
-        }
-        this.cssClasses.remove(selector);
-    }
-
+    @Override
     public String getComputedStyle(String property){
         if (ctrl != null) try {
             ctrl.getComputedStyle(property);
@@ -269,14 +179,106 @@ public abstract class AbstractDwcControl implements IControl {
         return null;
     }
 
-
-    public Object getUserData(String key){
-        return userData.get(key);
+    @Override
+    public AbstractDwcControl addClassName(String selector) {
+        if (ctrl != null) try {
+            ctrl.addStyle(selector);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.cssClasses.add(selector);
+        return this;
     }
 
-    public void setUserData(String key, Object data){
-        userData.put(key, data);
+    @Override
+    public AbstractDwcControl removeClassName(String selector) {
+        if (ctrl != null) try {
+            ctrl.removeStyle(selector);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.cssClasses.remove(selector);
+        return this;
     }
+
+    @Override
+    public AbstractDwcControl setStyle(String property, String value) {
+        if (ctrl != null) try {
+            ctrl.setStyle(property, value);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.styles.put(property, value);
+        return this;
+    }
+
+
+    @Override
+    public Boolean isEnabled() {
+        if (this.ctrl != null) try {
+            return ctrl.isEnabled();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return enabled;
+    }
+
+    @Override
+    public AbstractDwcControl setEnabled(Boolean enabled) {
+        if (this.ctrl != null) try {
+            ctrl.setEnabled(enabled);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.enabled = enabled;
+        return this;
+    }
+
+    @Override
+    public String getTooltipText() {
+        if (this.ctrl != null) try {
+            return ctrl.getToolTipText();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return tooltipText;
+    }
+
+    @Override
+    public AbstractDwcControl setTooltipText(String text) {
+        if (this.ctrl != null) try {
+            ctrl.setToolTipText(text);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.tooltipText = text;
+        return this;
+    }
+
+    
+    @Override
+    public Boolean isVisible() {
+        if (this.ctrl != null) try {
+            return ctrl.isVisible();
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        return visible;
+    }
+
+    @Override
+    public AbstractDwcControl setVisible(Boolean visible) {
+        if (this.ctrl != null) try {
+            ctrl.setVisible(visible);
+        } catch (BBjException e) {
+            e.printStackTrace();
+        }
+        this.visible = visible;
+        return this;
+    }
+
+
+
 
 
 
@@ -388,8 +390,9 @@ public abstract class AbstractDwcControl implements IControl {
      */
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-        if (caughtUp) throw new IllegalAccessException("catchUp cannot be called twice");
-
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
+        super.catchUp();
+        
         if (!this.text.isEmpty()) {
             try {
                 ctrl.setText(this.text);
@@ -398,13 +401,13 @@ public abstract class AbstractDwcControl implements IControl {
             }
         }
         
-        // if (this.visible != true) {
-        //     this.setVisible(this.visible);
-        // }
+        if (!Boolean.TRUE.equals(this.visible)) {
+            this.setVisible(this.visible);
+        }
 
-        // if (this.enabled != true) {
-        //     this.setEnabled(this.enabled);
-        // }
+        if (!Boolean.TRUE.equals(this.enabled)) {
+            this.setEnabled(this.enabled);
+        }
 
         if (!this.tooltipText.isEmpty()){
             try{
@@ -426,7 +429,7 @@ public abstract class AbstractDwcControl implements IControl {
             Iterator<String> it = this.styles.keySet().iterator();
             while (it.hasNext()) {
                 String key = it.next();
-                this.setControlStyle(key, this.styles.get(key));
+                this.setStyle(key, this.styles.get(key));
             }
         }
 
@@ -434,7 +437,7 @@ public abstract class AbstractDwcControl implements IControl {
             Iterator<String> it = this.cssClasses.iterator();
             while (it.hasNext()) {
                 String cl = it.next();
-                this.addControlCssClass(cl);
+                this.addClassName(cl);
             }
         }
 
@@ -454,7 +457,6 @@ public abstract class AbstractDwcControl implements IControl {
             this.setControlExpanse(this.expanse);
         }
 
-        this.caughtUp = true;
 
     }
 

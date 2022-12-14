@@ -66,61 +66,61 @@ public class Div extends AbstractDwcjPanel {
 
     @Override
     public Div setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
     @Override
     public Div setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
     @Override
     public Div setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
     @Override
     public Div setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
     @Override
     public Div setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public Div setID(String id){
-        super.setControlID(id);
+    public Div setId(String id){
+        super.setId(id);
         return this;
     }
 
     @Override
     public Div setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
     @Override
     public Div addClass(String selector) {
-        super.addControlCssClass(selector);
+        super.addClass(selector);
         return this;
     }
 
     @Override
     public Div removeClass(String selector) {
-        super.removeControlCssClass(selector);
+        super.removeClass(selector);
         return this;
     }
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         while(!this.controls.isEmpty()){

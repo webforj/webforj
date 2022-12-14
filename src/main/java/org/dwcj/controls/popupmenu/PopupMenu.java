@@ -10,9 +10,9 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.controls.menuitem.MenuItem;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IPopupAble;
+import org.dwcj.interfaces.HasPopupMenu;
 
-public class PopupMenu extends AbstractDwcControl implements IPopupAble {
+public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
 
     private BBjPopupMenu bbjPopupMenu;
 
@@ -254,7 +254,7 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
     }
 
     @Override
-    public boolean isVisible() {
+    public Boolean isVisible() {
         try {
             return bbjPopupMenu.isVisible();
         } catch (BBjException e) {
@@ -345,12 +345,12 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
 
 
     @Override
-    public IPopupAble addPopupMenu(int id, String title) {
+    public HasPopupMenu addPopupMenu(int id, String title) {
         return null;
     }
 
     @Override
-    public IPopupAble removePopupMenu(int id, String title) {
+    public HasPopupMenu removePopupMenu(int id, String title) {
         return null;
     }
 
@@ -358,48 +358,57 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
 
 
 
+    @Override
     public PopupMenu setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public PopupMenu setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public PopupMenu setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public PopupMenu setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public PopupMenu setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public PopupMenu setID(String id){
-        super.setControlID(id);
+    @Override
+    public PopupMenu setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public PopupMenu setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public PopupMenu addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public PopupMenu addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public PopupMenu removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public PopupMenu removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 }

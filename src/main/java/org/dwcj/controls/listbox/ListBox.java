@@ -10,12 +10,12 @@ import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
 import org.dwcj.controls.listbox.sinks.ListBoxDoubleClickEventSink;
 import org.dwcj.controls.listbox.sinks.ListBoxSelectEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.IScrollable;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.Scrollable;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl implements IScrollable, IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
+public final class ListBox extends AbstractDwclistControl implements Scrollable, HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListBox bbjListBox;
     
@@ -404,48 +404,57 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
 
 
 
+    @Override
     public ListBox setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public ListBox setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public ListBox setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public ListBox setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public ListBox setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public ListBox setID(String id){
-        super.setControlID(id);
+    @Override
+    public ListBox setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public ListBox setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public ListBox addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public ListBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public ListBox removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public ListBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
@@ -677,6 +686,8 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.selectEvents.isEmpty()){
@@ -693,7 +704,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
             }
         }
 
-        if(this.multipleSelection != false){
+        if(Boolean.TRUE.equals(this.multipleSelection)){
             this.setMultipleSelection(this.multipleSelection);
         }
 
@@ -709,11 +720,11 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
             this.setVerticalScrollBarPosition(this.horizontalScrollBarPosition);
         }
 
-        if(this.readOnly != false){
+        if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
         }
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
@@ -721,7 +732,7 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
             this.setScrollWheelBehavior(this.mouseWheelCondition);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

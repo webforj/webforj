@@ -16,8 +16,8 @@ import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerOnScriptFailedEventSin
 import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerOnScriptLoadedEventSink;
 import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerPageLoadedEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.ITabTraversable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.TabTraversable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcControl implements IFocusable, ITabTraversable {
+public final class HtmlContainer extends AbstractDwcControl implements Focusable, TabTraversable {
 
     private BBjHtmlView bbjHtmlView;
 
@@ -401,54 +401,64 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
 
 
 
+    @Override
     public HtmlContainer setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public HtmlContainer setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public HtmlContainer setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public HtmlContainer setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public HtmlContainer setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public HtmlContainer setID(String id){
-        super.setControlID(id);
+    @Override
+    public HtmlContainer setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public HtmlContainer setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public HtmlContainer addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public HtmlContainer addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public HtmlContainer removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public HtmlContainer removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
 
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.scriptLoadedEvents.isEmpty()){
@@ -481,7 +491,7 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
             this.injectUrl(this.injectURL, this.injectURLTop);
         }
 
-        if(this.autoNavigate != false){
+        if(Boolean.TRUE.equals(this.autoNavigate)){
             this.setAutoNavigate(this.autoNavigate);
         }
 
@@ -498,11 +508,11 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
         }
 
 
-        if(this.focusable != true){
+        if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
         }
 
-        if(this.tabTraversable != true){
+        if(Boolean.FALSE.equals(this.tabTraversable)){
             this.setTabTraversable(this.tabTraversable);
         }
 

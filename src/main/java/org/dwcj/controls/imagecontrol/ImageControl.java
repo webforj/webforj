@@ -51,48 +51,57 @@ public final class ImageControl extends AbstractDwcControl {
         }
     }
 
+    @Override
     public ImageControl setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public ImageControl setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public ImageControl setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public ImageControl setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public ImageControl setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public ImageControl setID(String id){
-        super.setControlID(id);
+    @Override
+    public ImageControl setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public ImageControl setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public ImageControl addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public ImageControl addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public ImageControl removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public ImageControl removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 }

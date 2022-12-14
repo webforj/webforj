@@ -1,9 +1,9 @@
 package org.dwcj.controls.numericbox.events;
 
 import org.dwcj.controls.numericbox.NumericBox;
-import org.dwcj.interfaces.IDwcEvent;
+import org.dwcj.interfaces.DwcEvent;
 
-public class NumericBoxEditModifyEvent implements IDwcEvent {
+public class NumericBoxEditModifyEvent implements DwcEvent {
 
     private final NumericBox control;
 

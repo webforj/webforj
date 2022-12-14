@@ -30,48 +30,57 @@ public final class OpenFileDialog extends AbstractDwcControl {
 
 
 
+    @Override
     public OpenFileDialog setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public OpenFileDialog setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public OpenFileDialog setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public OpenFileDialog setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public OpenFileDialog setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public OpenFileDialog setID(String id){
-        super.setControlID(id);
+    @Override
+    public OpenFileDialog setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public OpenFileDialog setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public OpenFileDialog addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public OpenFileDialog addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public OpenFileDialog removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public OpenFileDialog removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

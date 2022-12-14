@@ -28,64 +28,56 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
 
     @Override
     public BBjPanelAdapter setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter addClass(String selector) {
-        super.addControlCssClass(selector);
+    public BBjPanelAdapter addClassName(String selector) {
+        super.addClass(selector);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    public BBjPanelAdapter removeClassName(String selector) {
+        super.removeClass(selector);
         return this;
     }
-
-
-
-
-
-
-
-
 
 
     @Override
     public BBjPanelAdapter setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
     @Override
     public BBjPanelAdapter setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
     @Override
     public BBjPanelAdapter setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
     @Override
     public BBjPanelAdapter setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
     @Override
     public BBjPanelAdapter setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter setID(String id){
-        super.setControlID(id);
+    public BBjPanelAdapter setId(String id){
+        super.setId(id);
         return this;
     }
 

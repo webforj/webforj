@@ -4,48 +4,57 @@ import org.dwcj.controls.AbstractDwcControl;
 
 public class FileChooser extends AbstractDwcControl {
 
+    @Override
     public FileChooser setText(String text) {
-        super.setControlText(text);
+        super.setText(text);
         return this;
     }
 
+    @Override
     public FileChooser setVisible(Boolean visible){
-        super.setControlVisible(visible);
+        super.setVisible(visible);
         return this;
     }
     
+    @Override
     public FileChooser setEnabled(Boolean enabled) {
-        super.setControlEnabled(enabled);
+        super.setEnabled(enabled);
         return this;
     }
 
+    @Override
     public FileChooser setTooltipText(String text) {
-        super.setControlTooltipText(text);
+        super.setTooltipText(text);
         return this;
     }
 
+    @Override
     public FileChooser setAttribute(String attribute, String value){
-        super.setControlAttribute(attribute, value);
+        super.setAttribute(attribute, value);
         return this;
     }
 
-    public FileChooser setID(String id){
-        super.setControlID(id);
+    @Override
+    public FileChooser setId(String id){
+        super.setId(id);
         return this;
     }
 
+    @Override
     public FileChooser setStyle(String property, String value) {
-        super.setControlStyle(property, value);
+        super.setStyle(property, value);
         return this;
     }
     
-    public FileChooser addClass(String selector) {
-        super.addControlCssClass(selector);
+    @Override
+    public FileChooser addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
-    public FileChooser removeClass(String selector) {
-        super.removeControlCssClass(selector);
+    @Override
+    public FileChooser removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
