@@ -33,13 +33,13 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
     }
 
     @Override
-    public BBjPanelAdapter addClass(String selector) {
+    public BBjPanelAdapter addClassName(String selector) {
         super.addClass(selector);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter removeClass(String selector) {
+    public BBjPanelAdapter removeClassName(String selector) {
         super.removeClass(selector);
         return this;
     }

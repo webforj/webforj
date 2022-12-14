@@ -1,6 +1,12 @@
 package org.dwcj.interfaces;
 
-public interface ITextHighlightable {
+/**
+ * On applicable controls, creates enum which 
+ * helps facilitate underlying BBj constant integers for text highlighting
+ * behavior to legible enum values, and facilitates implementation of methods
+ * to interact with this behavior.
+ */
+public interface TextHighlightable {
     
     enum Highlight {
         HIGHLIGHT_NONE(0),
@@ -21,5 +27,5 @@ public interface ITextHighlightable {
 
     Highlight getHighlightOnFocus();
 
-    ITextHighlightable setHighlightOnFocus(Highlight highlight);
+    TextHighlightable setHighlightOnFocus(Highlight highlight);
 }

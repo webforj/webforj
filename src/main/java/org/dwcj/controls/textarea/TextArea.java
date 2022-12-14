@@ -8,18 +8,18 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.textarea.events.TextAreaOnEditModifyEvent;
 import org.dwcj.controls.textarea.sinks.TextAreaOnEditModifyEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.IScrollable;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextHighlightable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.Scrollable;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextHighlightable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class TextArea extends AbstractDwcControl implements IReadOnly, ITextHighlightable, IFocusable, IMouseWheelEnableable, IScrollable, ITabTraversable {
+public final class TextArea extends AbstractDwcControl implements HasReadOnly, TextHighlightable, Focusable, HasMouseWheelCondition, Scrollable, TabTraversable {
 
     private BBjCEdit bbjCEdit;
 
@@ -925,14 +925,14 @@ public final class TextArea extends AbstractDwcControl implements IReadOnly, ITe
     }
     
     @Override
-    public TextArea addClass(String selector) {
-        super.addClass(selector);
+    public TextArea addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TextArea removeClass(String selector) {
-        super.removeClass(selector);
+    public TextArea removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -1,6 +1,6 @@
 package org.dwcj.controls;
 
-import org.dwcj.interfaces.IControl;
+import org.dwcj.interfaces.Control;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,13 @@ import java.util.Map;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 
-public class AbstractControl implements IControl {
+
+/**
+ * Abstract base class for all engine controls. Implements default behaviors
+ * for the implemented interface methods. Extended by AbstractDwcControl.
+ */
+
+public abstract class AbstractControl implements Control {
     
     /*
      * Underlying BBj control

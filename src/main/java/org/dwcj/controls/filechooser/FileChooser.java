@@ -47,14 +47,14 @@ public class FileChooser extends AbstractDwcControl {
     }
     
     @Override
-    public FileChooser addClass(String selector) {
-        super.addClass(selector);
+    public FileChooser addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public FileChooser removeClass(String selector) {
-        super.removeClass(selector);
+    public FileChooser removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

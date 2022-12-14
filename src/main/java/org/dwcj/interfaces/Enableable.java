@@ -1,6 +1,12 @@
 package org.dwcj.interfaces;
 
-public interface IEnableable {
+
+/**
+ * Interface that facilitates implementation of behavior which
+ * determines whether or not a control can be 
+ * disabled after being rendered to the page
+ */
+public interface Enableable {
     
     /**
      *
@@ -14,5 +20,5 @@ public interface IEnableable {
      * @param enabled
      * @return the control itself
      */
-    public IEnableable setEnabled(Boolean enabled);
+    public Enableable setEnabled(Boolean enabled);
 }

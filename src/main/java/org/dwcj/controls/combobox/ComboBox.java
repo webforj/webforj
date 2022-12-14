@@ -17,11 +17,11 @@ import org.dwcj.controls.combobox.sinks.ComboBoxOpenEventSink;
 import org.dwcj.controls.combobox.sinks.ComboBoxSelectEventSink;
 import org.dwcj.controls.listbox.AbstractDwclistControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class ComboBox extends AbstractDwclistControl implements IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
+public final class ComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListButton bbjListButton;
 
@@ -603,14 +603,14 @@ public final class ComboBox extends AbstractDwclistControl implements IReadOnly,
     }
     
     @Override
-    public ComboBox addClass(String selector) {
-        super.addClass(selector);
+    public ComboBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ComboBox removeClass(String selector) {
-        super.removeClass(selector);
+    public ComboBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

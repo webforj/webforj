@@ -3,28 +3,36 @@ package org.dwcj.controls;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
-import org.dwcj.interfaces.IAttributable;
-import org.dwcj.interfaces.IComputedStylable;
-import org.dwcj.interfaces.IControl;
-import org.dwcj.interfaces.IControlTextable;
-import org.dwcj.interfaces.ICssClassable;
-import org.dwcj.interfaces.ICssStylable;
-import org.dwcj.interfaces.IEnableable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextHighlightable;
-import org.dwcj.interfaces.ITooltipable;
-import org.dwcj.interfaces.IVisible;
+import org.dwcj.interfaces.HasAttribute;
+import org.dwcj.interfaces.HasComputedStyle;
+import org.dwcj.interfaces.HasControlText;
+import org.dwcj.interfaces.HasCssClass;
+import org.dwcj.interfaces.HasCssStyle;
+import org.dwcj.interfaces.Enableable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
+import org.dwcj.interfaces.HasTooltip;
+import org.dwcj.interfaces.Visible;
 
-import java.util.*;
+
+
 
 /**
- * The base class for all controls and panels
+ * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
+ * default behaviors for the implemented interface methods. 
  */
-public abstract class AbstractDwcControl extends AbstractControl implements IAttributable, IControlTextable, IComputedStylable, ICssClassable, ICssStylable, IEnableable, ITooltipable, IVisible{
+public abstract class AbstractDwcControl extends AbstractControl implements HasAttribute, HasControlText, HasComputedStyle, HasCssClass, HasCssStyle, Enableable, HasTooltip, Visible{
 
 
     /*=====================================================================================
@@ -69,11 +77,11 @@ public abstract class AbstractDwcControl extends AbstractControl implements IAtt
     protected Boolean readOnly = null;
     protected Boolean focusable = null;
     protected Boolean tabTraversable = null;
-    protected ITextAlignable.Alignment textAlignment = null;
+    protected TextAlignable.Alignment textAlignment = null;
     protected Integer horizontalScrollBarPosition = null; 
     protected Integer verticalScrollBarPosition = null;
-    protected IMouseWheelEnableable.MouseWheelCondition mouseWheelCondition = null;
-    protected ITextHighlightable.Highlight textHighlight = null;
+    protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
+    protected TextHighlightable.Highlight textHighlight = null;
 
         
     static {
@@ -172,7 +180,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements IAtt
     }
 
     @Override
-    public AbstractDwcControl addClass(String selector) {
+    public AbstractDwcControl addClassName(String selector) {
         if (ctrl != null) try {
             ctrl.addStyle(selector);
         } catch (BBjException e) {
@@ -183,7 +191,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements IAtt
     }
 
     @Override
-    public AbstractDwcControl removeClass(String selector) {
+    public AbstractDwcControl removeClassName(String selector) {
         if (ctrl != null) try {
             ctrl.removeStyle(selector);
         } catch (BBjException e) {
@@ -429,7 +437,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements IAtt
             Iterator<String> it = this.cssClasses.iterator();
             while (it.hasNext()) {
                 String cl = it.next();
-                this.addClass(cl);
+                this.addClassName(cl);
             }
         }
 

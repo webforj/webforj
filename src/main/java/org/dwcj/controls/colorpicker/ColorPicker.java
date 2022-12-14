@@ -74,14 +74,14 @@ public final class ColorPicker extends AbstractDwcControl {
     }
     
     @Override
-    public ColorPicker addClass(String selector) {
-        super.addClass(selector);
+    public ColorPicker addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ColorPicker removeClass(String selector) {
-        super.removeClass(selector);
+    public ColorPicker removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -1,6 +1,12 @@
 package org.dwcj.interfaces;
 
-public interface IMouseWheelEnableable {
+/**
+ * On applicable controls, creates enum which 
+ * helps facilitate underlying BBj constant integers for scroll wheel 
+ * behavior to legible enum values, and facilitates implementation of methods
+ * to interact with this behavior.
+ */
+public interface HasMouseWheelCondition {
     
     enum MouseWheelCondition{
         DEFAULT(0),
@@ -20,7 +26,7 @@ public interface IMouseWheelEnableable {
 
     MouseWheelCondition getScrollWheelBehavior();
 
-    IMouseWheelEnableable setScrollWheelBehavior(MouseWheelCondition condition);
+    HasMouseWheelCondition setScrollWheelBehavior(MouseWheelCondition condition);
 
 
 }

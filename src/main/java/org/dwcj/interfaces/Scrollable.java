@@ -1,6 +1,10 @@
 package org.dwcj.interfaces;
 
-public interface IScrollable {
+/**
+ * Interface which facilitates implementation of methods to
+ * handle controls with scrolling behavior.
+ */
+public interface Scrollable {
     
     Integer getHorizontalScrollBarHeight();
 
@@ -18,7 +22,7 @@ public interface IScrollable {
 
     Boolean isVerticalScrollBarVisible();
 
-    IScrollable setHorizontalScrollBarPosition(Integer position);
+    Scrollable setHorizontalScrollBarPosition(Integer position);
 
-    IScrollable setVerticalScrollBarPosition(Integer position);
+    Scrollable setVerticalScrollBarPosition(Integer position);
 }

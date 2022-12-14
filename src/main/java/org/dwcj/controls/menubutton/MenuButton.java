@@ -175,14 +175,14 @@ public final class MenuButton extends AbstractDwcControl {
     }
     
     @Override
-    public MenuButton addClass(String selector) {
-        super.addClass(selector);
+    public MenuButton addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public MenuButton removeClass(String selector) {
-        super.removeClass(selector);
+    public MenuButton removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

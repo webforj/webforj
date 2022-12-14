@@ -72,14 +72,14 @@ public final class TabControl extends AbstractDwcControl {
     }
     
     @Override
-    public TabControl addClass(String selector) {
-        super.addClass(selector);
+    public TabControl addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TabControl removeClass(String selector) {
-        super.removeClass(selector);
+    public TabControl removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

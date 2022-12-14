@@ -7,13 +7,13 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.ITabTraversable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.TabTraversable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final  class HtmlEdit extends AbstractDwcControl implements IFocusable, ITabTraversable {
+public final  class HtmlEdit extends AbstractDwcControl implements Focusable, TabTraversable {
 
     private BBjHtmlEdit bbjHtmlEdit;
 
@@ -409,14 +409,14 @@ public final  class HtmlEdit extends AbstractDwcControl implements IFocusable, I
     }
     
     @Override
-    public HtmlEdit addClass(String selector) {
-        super.addClass(selector);
+    public HtmlEdit addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public HtmlEdit removeClass(String selector) {
-        super.removeClass(selector);
+    public HtmlEdit removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

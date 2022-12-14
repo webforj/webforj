@@ -10,17 +10,17 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.stringeditbox.events.StringEditBoxEditModifyEvent;
 import org.dwcj.controls.stringeditbox.sinks.StringEditBoxEditModifyEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextHighlightable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
 
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class StringEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextHighlightable {
+public final class StringEditBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
     
     private BBjInputE bbjInputE;
@@ -548,14 +548,14 @@ public final class StringEditBox extends AbstractDwcControl implements IReadOnly
     }
     
     @Override
-    public StringEditBox addClass(String selector) {
-        super.addClass(selector);
+    public StringEditBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public StringEditBox removeClass(String selector) {
-        super.removeClass(selector);
+    public StringEditBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -7,10 +7,10 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.numericbox.NumericBox;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IMouseWheelEnableable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
 
 //public final class NumericBoxSpinner extends NumericBox implements IThemable, IExpansible {
-public final class NumericBoxSpinner extends NumericBox implements IMouseWheelEnableable {
+public final class NumericBoxSpinner extends NumericBox implements HasMouseWheelCondition {
 
     private BBjInputNSpinner numBoxS;
 

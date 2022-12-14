@@ -16,8 +16,8 @@ import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerOnScriptFailedEventSin
 import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerOnScriptLoadedEventSink;
 import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerPageLoadedEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.ITabTraversable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.TabTraversable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcControl implements IFocusable, ITabTraversable {
+public final class HtmlContainer extends AbstractDwcControl implements Focusable, TabTraversable {
 
     private BBjHtmlView bbjHtmlView;
 
@@ -444,14 +444,14 @@ public final class HtmlContainer extends AbstractDwcControl implements IFocusabl
     }
     
     @Override
-    public HtmlContainer addClass(String selector) {
-        super.addClass(selector);
+    public HtmlContainer addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public HtmlContainer removeClass(String selector) {
-        super.removeClass(selector);
+    public HtmlContainer removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -16,11 +16,11 @@ import org.dwcj.controls.textcombobox.sinks.TextComboBoxCloseEventSink;
 import org.dwcj.controls.textcombobox.sinks.TextComboBoxEditModifyEventSink;
 import org.dwcj.controls.textcombobox.sinks.TextComboBoxOpenEventSink;
 import org.dwcj.controls.textcombobox.sinks.TextComboBoxSelectEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
+public final class TextComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListEdit bbjListEdit;
 
@@ -560,14 +560,14 @@ public final class TextComboBox extends AbstractDwclistControl implements IReadO
     }
     
     @Override
-    public TextComboBox addClass(String selector) {
-        super.addClass(selector);
+    public TextComboBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TextComboBox removeClass(String selector) {
-        super.removeClass(selector);
+    public TextComboBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

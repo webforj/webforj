@@ -196,14 +196,14 @@ public final class ScrollBar extends AbstractDwcControl {
     }
     
     @Override
-    public ScrollBar addClass(String selector) {
-        super.addClass(selector);
+    public ScrollBar addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ScrollBar removeClass(String selector) {
-        super.removeClass(selector);
+    public ScrollBar removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

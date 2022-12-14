@@ -9,9 +9,9 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.button.events.ButtonPushEvent;
 import org.dwcj.controls.button.sinks.ButtonPushEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 /**
  * A Push Button
  */
-public final class Button extends AbstractDwcControl implements IFocusable,  ITabTraversable, ITextAlignable{
+public final class Button extends AbstractDwcControl implements Focusable,  TabTraversable, TextAlignable{
 
 
 
@@ -249,14 +249,14 @@ public final class Button extends AbstractDwcControl implements IFocusable,  ITa
     }
     
     @Override
-    public Button addClass(String selector) {
-        super.addClass(selector);
+    public Button addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public Button removeClass(String selector) {
-        super.removeClass(selector);
+    public Button removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -9,15 +9,15 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.checkbox.events.CheckBoxChangeEvent;
 import org.dwcj.controls.checkbox.sinks.CheckBoxCheckEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable {
+public final class CheckBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
 
     /*=====================================================================================
@@ -230,14 +230,14 @@ public final class CheckBox extends AbstractDwcControl implements IReadOnly, IFo
     }
     
     @Override
-    public CheckBox addClass(String selector) {
-        super.addClass(selector);
+    public CheckBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public CheckBox removeClass(String selector) {
-        super.removeClass(selector);
+    public CheckBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

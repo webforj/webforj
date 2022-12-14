@@ -16,13 +16,13 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.dateeditbox.events.DateEditBoxEditModifyEvent;
 import org.dwcj.controls.dateeditbox.sinks.DateEditBoxEditModifyEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextHighlightable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
 
-public final class DateEditBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextHighlightable, ITextAlignable {
+public final class DateEditBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
     
     private BBjInputD bbjDateEditBox;
 
@@ -772,14 +772,14 @@ public final class DateEditBox extends AbstractDwcControl implements IReadOnly, 
     }
     
     @Override
-    public DateEditBox addClass(String selector) {
-        super.addClass(selector);
+    public DateEditBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public DateEditBox removeClass(String selector) {
-        super.removeClass(selector);
+    public DateEditBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

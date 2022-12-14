@@ -1,6 +1,11 @@
 package org.dwcj.interfaces;
 
-public interface IControl {
+/**
+ * Interface used to include all common properties of new controls/components
+ * that will be added to the engine, but exclude some of the more specific 
+ * properties not common across every control.
+ */
+public interface Control {
 
     /**
      * Returns the control's ID
@@ -15,7 +20,7 @@ public interface IControl {
      * @param id Desired ID designation
      * @return The control itself
      */
-    public IControl setId(String id);
+    public Control setId(String id);
 
 
     /**
@@ -33,6 +38,6 @@ public interface IControl {
      * @param data Desired piece of information
      * @return The control itself
      */
-    public IControl setUserData(String key, Object data);
+    public Control setUserData(String key, Object data);
 
 }

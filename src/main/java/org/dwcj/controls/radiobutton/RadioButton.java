@@ -11,15 +11,15 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.radiobutton.events.RadioButtonCheckEvent;
 import org.dwcj.controls.radiobutton.sinks.RadioButtonCheckEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
 
-public final class RadioButton extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable {
+public final class RadioButton extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable {
 
     private BBjRadioButton bbjRadioButton;
 
@@ -272,14 +272,14 @@ public final class RadioButton extends AbstractDwcControl implements IReadOnly, 
     }
     
     @Override
-    public RadioButton addClass(String selector) {
-        super.addClass(selector);
+    public RadioButton addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public RadioButton removeClass(String selector) {
-        super.removeClass(selector);
+    public RadioButton removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

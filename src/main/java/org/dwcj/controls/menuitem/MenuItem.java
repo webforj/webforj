@@ -92,14 +92,14 @@ public class MenuItem extends AbstractDwcControl {
     }
     
     @Override
-    public MenuItem addClass(String selector) {
-        super.addClass(selector);
+    public MenuItem addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public MenuItem removeClass(String selector) {
-        super.removeClass(selector);
+    public MenuItem removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

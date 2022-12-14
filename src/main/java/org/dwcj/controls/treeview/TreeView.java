@@ -603,14 +603,14 @@ public final class TreeView extends AbstractDwcControl {
     }
     
     @Override
-    public TreeView addClass(String selector) {
-        super.addClass(selector);
+    public TreeView addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TreeView removeClass(String selector) {
-        super.removeClass(selector);
+    public TreeView removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

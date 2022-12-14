@@ -10,9 +10,9 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.controls.menuitem.MenuItem;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IPopupAble;
+import org.dwcj.interfaces.HasPopupMenu;
 
-public class PopupMenu extends AbstractDwcControl implements IPopupAble {
+public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
 
     private BBjPopupMenu bbjPopupMenu;
 
@@ -345,12 +345,12 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
 
 
     @Override
-    public IPopupAble addPopupMenu(int id, String title) {
+    public HasPopupMenu addPopupMenu(int id, String title) {
         return null;
     }
 
     @Override
-    public IPopupAble removePopupMenu(int id, String title) {
+    public HasPopupMenu removePopupMenu(int id, String title) {
         return null;
     }
 
@@ -401,14 +401,14 @@ public class PopupMenu extends AbstractDwcControl implements IPopupAble {
     }
     
     @Override
-    public PopupMenu addClass(String selector) {
-        super.addClass(selector);
+    public PopupMenu addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public PopupMenu removeClass(String selector) {
-        super.removeClass(selector);
+    public PopupMenu removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 }

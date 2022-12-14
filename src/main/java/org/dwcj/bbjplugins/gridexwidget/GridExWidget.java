@@ -99,14 +99,14 @@ public final class GridExWidget extends AbstractDwcControl {
     }
     
     @Override
-    public GridExWidget addClass(String selector) {
-        super.addClass(selector);
+    public GridExWidget addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public GridExWidget removeClass(String selector) {
-        super.removeClass(selector);
+    public GridExWidget removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

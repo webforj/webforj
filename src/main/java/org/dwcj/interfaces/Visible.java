@@ -1,6 +1,11 @@
 package org.dwcj.interfaces;
 
-public interface IVisible {
+
+/**
+ * Interface facilitates implementation of behaviors to modify a 
+ * controls visibility on a page
+ */
+public interface Visible {
     
     /**
      *
@@ -14,5 +19,5 @@ public interface IVisible {
      * @param visible
      * @return the control itself
      */
-    public IVisible setVisible(Boolean visible);
+    public Visible setVisible(Boolean visible);
 }

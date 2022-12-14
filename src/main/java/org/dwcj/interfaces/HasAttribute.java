@@ -1,6 +1,10 @@
 package org.dwcj.interfaces;
 
-public interface IAttributable {
+/**
+ * Interface which facilitates implementation of behavior that allows
+ * for access and mutation of HTML attributes on a control
+ */
+public interface HasAttribute {
     
     /**
      * retrieve the value of the given attribute
@@ -17,5 +21,5 @@ public interface IAttributable {
      * @param value     the value
      * @return the control itself
      */
-    public IAttributable setAttribute(String attribute, String value);
+    public HasAttribute setAttribute(String attribute, String value);
 }

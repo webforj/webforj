@@ -8,16 +8,16 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.slider.events.SliderOnControlScrollEvent;
 import org.dwcj.controls.slider.sinks.SliderOnControlScrollEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.ITabTraversable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.TabTraversable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public final class Slider extends AbstractDwcControl implements IFocusable, IMouseWheelEnableable, ITabTraversable {
+public final class Slider extends AbstractDwcControl implements Focusable, HasMouseWheelCondition, TabTraversable {
 
     private BBjSlider bbjSlider;
 
@@ -545,14 +545,14 @@ public final class Slider extends AbstractDwcControl implements IFocusable, IMou
     }
     
     @Override
-    public Slider addClass(String selector) {
-        super.addClass(selector);
+    public Slider addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public Slider removeClass(String selector) {
-        super.removeClass(selector);
+    public Slider removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

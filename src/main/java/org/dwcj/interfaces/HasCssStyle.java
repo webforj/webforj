@@ -1,6 +1,10 @@
 package org.dwcj.interfaces;
 
-public interface ICssStylable {
+/**
+ * Interface facilitating implementation of behavior to modify a specific
+ * CSS class to a provided value.
+ */
+public interface HasCssStyle {
     
     /**
      * Assigns specified value to the specified CSS property
@@ -9,5 +13,5 @@ public interface ICssStylable {
      * @param value The value of the selected CSS property
      * @return The control itself
      */
-    public ICssStylable setStyle(String property, String value);
+    public HasCssStyle setStyle(String property, String value);
 }

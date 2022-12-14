@@ -125,14 +125,14 @@ public final class PrintPreview extends AbstractDwcControl {
     }
     
     @Override
-    public PrintPreview addClass(String selector) {
-        super.addClass(selector);
+    public PrintPreview addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public PrintPreview removeClass(String selector) {
-        super.removeClass(selector);
+    public PrintPreview removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -10,12 +10,12 @@ import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
 import org.dwcj.controls.listbox.sinks.ListBoxDoubleClickEventSink;
 import org.dwcj.controls.listbox.sinks.ListBoxSelectEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IMouseWheelEnableable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.IScrollable;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.Scrollable;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl implements IScrollable, IReadOnly, IFocusable, IMouseWheelEnableable, ITabTraversable, ITextAlignable {
+public final class ListBox extends AbstractDwclistControl implements Scrollable, HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListBox bbjListBox;
     
@@ -447,14 +447,14 @@ public final class ListBox extends AbstractDwclistControl implements IScrollable
     }
     
     @Override
-    public ListBox addClass(String selector) {
-        super.addClass(selector);
+    public ListBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ListBox removeClass(String selector) {
-        super.removeClass(selector);
+    public ListBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

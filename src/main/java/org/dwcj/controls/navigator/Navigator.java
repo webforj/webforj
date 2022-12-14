@@ -15,11 +15,11 @@ import org.dwcj.controls.navigator.sinks.NavLastEventSink;
 import org.dwcj.controls.navigator.sinks.NavNextEventSink;
 import org.dwcj.controls.navigator.sinks.NavPreviousEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IReadOnly;
+import org.dwcj.interfaces.HasReadOnly;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcControl implements IReadOnly{
+public final class Navigator extends AbstractDwcControl implements HasReadOnly{
 
     private BBjNavigator bbjNavigator;
 
@@ -152,14 +152,14 @@ public final class Navigator extends AbstractDwcControl implements IReadOnly{
     }
     
     @Override
-    public Navigator addClass(String selector) {
-        super.addClass(selector);
+    public Navigator addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public Navigator removeClass(String selector) {
-        super.removeClass(selector);
+    public Navigator removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

@@ -307,14 +307,14 @@ public final class ProgressBar extends AbstractDwcControl {
     }
     
     @Override
-    public ProgressBar addClass(String selector) {
-        super.addClass(selector);
+    public ProgressBar addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ProgressBar removeClass(String selector) {
-        super.removeClass(selector);
+    public ProgressBar removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

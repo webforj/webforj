@@ -13,15 +13,15 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.numericbox.events.NumericBoxEditModifyEvent;
 import org.dwcj.controls.numericbox.sinks.NumericBoxEditModifyEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextHighlightable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
 
 
 /* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
-public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextHighlightable{
+public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable{
 
     protected BBjInputN numBox;
 
@@ -772,14 +772,14 @@ public class NumericBox extends AbstractDwcControl implements IReadOnly, IFocusa
     }
     
     @Override
-    public NumericBox addClass(String selector) {
-        super.addClass(selector);
+    public NumericBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public NumericBox removeClass(String selector) {
-        super.removeClass(selector);
+    public NumericBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

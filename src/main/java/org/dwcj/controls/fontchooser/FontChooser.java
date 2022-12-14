@@ -231,14 +231,14 @@ public final class FontChooser extends AbstractDwcControl {
     }
     
     @Override
-    public FontChooser addClass(String selector) {
-        super.addClass(selector);
+    public FontChooser addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public FontChooser removeClass(String selector) {
-        super.removeClass(selector);
+    public FontChooser removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 }

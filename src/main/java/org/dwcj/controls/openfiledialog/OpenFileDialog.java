@@ -73,14 +73,14 @@ public final class OpenFileDialog extends AbstractDwcControl {
     }
     
     @Override
-    public OpenFileDialog addClass(String selector) {
-        super.addClass(selector);
+    public OpenFileDialog addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public OpenFileDialog removeClass(String selector) {
-        super.removeClass(selector);
+    public OpenFileDialog removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

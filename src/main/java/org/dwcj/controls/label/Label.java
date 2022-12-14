@@ -7,9 +7,9 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.interfaces.ITextAlignable;
+import org.dwcj.interfaces.TextAlignable;
 
-public final class Label extends AbstractDwcControl implements ITextAlignable {
+public final class Label extends AbstractDwcControl implements TextAlignable {
 
     private BBjStaticText bbjStaticText;
 
@@ -232,14 +232,14 @@ public final class Label extends AbstractDwcControl implements ITextAlignable {
     }
     
     @Override
-    public Label addClass(String selector) {
-        super.addClass(selector);
+    public Label addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public Label removeClass(String selector) {
-        super.removeClass(selector);
+    public Label removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

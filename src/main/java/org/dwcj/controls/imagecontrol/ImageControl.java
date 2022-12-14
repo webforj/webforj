@@ -94,14 +94,14 @@ public final class ImageControl extends AbstractDwcControl {
     }
     
     @Override
-    public ImageControl addClass(String selector) {
-        super.addClass(selector);
+    public ImageControl addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ImageControl removeClass(String selector) {
-        super.removeClass(selector);
+    public ImageControl removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 }

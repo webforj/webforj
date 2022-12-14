@@ -1,6 +1,12 @@
 package org.dwcj.interfaces;
 
-public interface ITooltipable {
+
+/**
+ * On applicable controls, helps facilitate tooltip functionality
+ * to facilitate implementation of methods
+ * to interact with this behavior.
+ */
+public interface HasTooltip {
 
     /**
      * get the tooltip text property of the control
@@ -15,6 +21,6 @@ public interface ITooltipable {
      * @param text
      * @return the control itself
      */
-    public ITooltipable setTooltipText(String tooltipText);
+    public HasTooltip setTooltipText(String tooltipText);
     
 }

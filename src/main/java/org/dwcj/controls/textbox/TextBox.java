@@ -12,14 +12,14 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.textbox.events.TextBoxEditModifyEvent;
 import org.dwcj.controls.textbox.sinks.TextBoxEditModifyEventSink;
-import org.dwcj.interfaces.IFocusable;
-import org.dwcj.interfaces.IReadOnly;
-import org.dwcj.interfaces.ITabTraversable;
-import org.dwcj.interfaces.ITextAlignable;
-import org.dwcj.interfaces.ITextHighlightable;
+import org.dwcj.interfaces.Focusable;
+import org.dwcj.interfaces.HasReadOnly;
+import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.interfaces.TextHighlightable;
 
 
-public final class TextBox extends AbstractDwcControl implements IReadOnly, IFocusable, ITabTraversable, ITextAlignable, ITextHighlightable {
+public final class TextBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
     private BBjEditBox bbjEditBox;
 
@@ -365,14 +365,14 @@ public final class TextBox extends AbstractDwcControl implements IReadOnly, IFoc
     }
     
     @Override
-    public TextBox addClass(String selector) {
-        super.addClass(selector);
+    public TextBox addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TextBox removeClass(String selector) {
-        super.removeClass(selector);
+    public TextBox removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 

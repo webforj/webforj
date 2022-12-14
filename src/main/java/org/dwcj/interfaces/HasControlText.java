@@ -1,6 +1,12 @@
 package org.dwcj.interfaces;
 
-public interface IControlTextable {
+
+/**
+ * Interface which facilitates controls that implement it the ability to 
+ * set the text of the control, if applicable, in a way that makes 
+ * sense for the specific control itself.
+ */
+public interface HasControlText {
 
     /**
      * get the text property of the control
@@ -16,6 +22,6 @@ public interface IControlTextable {
      * @param text
      * @return the control itself
      */
-    public IControlTextable setText(String text);
+    public HasControlText setText(String text);
     
 }
