@@ -3,7 +3,6 @@ package org.dwcj.bridge;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 import org.dwcj.controls.AbstractControl;
-import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 /**
