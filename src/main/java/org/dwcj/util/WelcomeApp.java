@@ -107,7 +107,7 @@ public class WelcomeApp extends App {
         panel.setVisible(false);
 
         try {
-            Class.forName(className).newInstance();
+            Class.forName(className).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
             msgbox("cannot launch app!",0,"Error");
