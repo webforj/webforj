@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.button.events.ButtonPushEvent;
+import org.dwcj.controls.button.events.ButtonClickEvent;
 import org.dwcj.controls.button.sinks.ButtonPushEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Focusable;
@@ -28,11 +28,11 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      *=====================================================================================
      */
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL;
     }
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY,
         OUTLINED_WARNING
@@ -46,7 +46,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      * =====================================================================================
      */
     
-    public static enum TextVerticalAlignment{
+    public enum TextVerticalAlignment{
         TOP(1), CENTER(0), BOTTOM(3);
         
         public final Integer alignment;
@@ -66,7 +66,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      * =====================================================================================
      */
     
-    private ArrayList<Consumer<ButtonPushEvent>> callbacks = new ArrayList<>();
+    private ArrayList<Consumer<ButtonClickEvent>> callbacks = new ArrayList<>();
     private ButtonPushEventSink buttonPushEventSink;
     private Boolean disableOnClick = false;
     TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
@@ -107,10 +107,10 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -129,7 +129,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      * @return the control itself
      */
 
-    public Button onClick(Consumer<ButtonPushEvent> callback) {
+    public Button onClick(Consumer<ButtonClickEvent> callback) {
         if(this.ctrl != null){
             if(this.buttonPushEventSink == null){
                 this.buttonPushEventSink = new ButtonPushEventSink(this);
@@ -206,7 +206,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      * =====================================================================================
      */
 
-     @Override
+    @Override
     public Button setText(String text) {
         super.setText(text);
         return this;
@@ -369,6 +369,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     * =====================================================================================
     */
 
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

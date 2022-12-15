@@ -22,7 +22,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     private BBjSlider bbjSlider;
 
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
     }
     
@@ -59,19 +59,21 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
             byte[] flags = new byte[]{(byte)0x00, bFlag};
 
-            if (horizontal)
+            if (Boolean.TRUE.equals(horizontal)){
                 ctrl = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
-            else
+            }
+            else{
                 ctrl = w.addVerticalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
+            }
                 bbjSlider = (BBjSlider) ctrl;
                 catchUp();
         } catch (Exception e) {
@@ -567,7 +569,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
 
 
-
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

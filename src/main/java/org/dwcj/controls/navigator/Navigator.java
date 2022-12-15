@@ -28,11 +28,11 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
     private NavNextEventSink navNextEventSink;
     private NavPreviousEventSink navPreviousEventSink;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
@@ -65,7 +65,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         } catch (BBjException e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
     @Override

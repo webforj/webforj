@@ -3,10 +3,10 @@ package org.dwcj.controls.button.events;
 import org.dwcj.controls.button.Button;
 import org.dwcj.interfaces.ControlEvent;
 
-public final class ButtonPushEvent implements ControlEvent {
+public final class ButtonClickEvent implements ControlEvent {
     private final Button control;
 
-    public ButtonPushEvent(Button cButton) {
+    public ButtonClickEvent(Button cButton) {
         this.control = cButton;
     }
 

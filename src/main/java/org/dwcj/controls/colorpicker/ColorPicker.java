@@ -7,11 +7,11 @@ import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 public final class ColorPicker extends AbstractDwcControl {
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 

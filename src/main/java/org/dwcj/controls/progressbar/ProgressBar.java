@@ -11,7 +11,7 @@ public final class ProgressBar extends AbstractDwcControl {
 
     private BBjProgressBar bbjProgressBar;
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
@@ -135,7 +135,6 @@ public final class ProgressBar extends AbstractDwcControl {
     public Boolean isStringPainted() {
         if(this.ctrl != null){
             try {
-                System.out.println(bbjProgressBar.isStringPainted());
                 return bbjProgressBar.isStringPainted();
             } catch (BBjException e) {
                 e.printStackTrace();
@@ -319,7 +318,7 @@ public final class ProgressBar extends AbstractDwcControl {
     }
 
 
-
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

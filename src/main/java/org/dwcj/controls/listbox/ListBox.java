@@ -4,6 +4,8 @@ import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.listbox.events.ListBoxDoubleClickEvent;
 import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
@@ -29,7 +31,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
 
     private BBjListBox bbjListBox;
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
@@ -57,10 +59,10 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -165,7 +167,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
         if(this.ctrl != null){
             return this.values;
         }
-        return null;
+        return Collections.emptyMap();
     }
 
     /**
@@ -238,20 +240,8 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     }
 
     public SimpleEntry<Object, String> getEntryByValue(String value) {
-        /*================================================================================
-         * 
-         * Map<Object, String> map = (Map<Object, String>) this.values.entrySet(); 
-         * 
-         * This is what the line originally was, but I needed to take it out to get the
-         * component to work correctly. It seemed to be creating a set and cashing to a 
-         * map, which was creating an error on the next line when trying to again cast
-         * it to a set?
-         * 
-         * I didn't fully understand what was happening here, but it fixed the control
-         * demo - if there's broken functionality though, this is a good spot to start! -MH
-         *================================================================================*/
         if(this.ctrl != null){
-            Map<Object, String> map = (Map<Object, String>) this.values;
+            Map<Object, String> map = this.values;
             for (Map.Entry<Object, String> entry : map.entrySet()) {
                 if (Objects.equals(value, entry.getValue())) {
                     return new SimpleEntry<>(entry.getKey(), value);
@@ -284,7 +274,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             }
             return map;
         }
-        return null;
+        return Collections.emptyMap();
     }
 
     
@@ -683,7 +673,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
 
 
 
-
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
 

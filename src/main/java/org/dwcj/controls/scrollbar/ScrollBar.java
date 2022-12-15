@@ -30,10 +30,10 @@ public final class ScrollBar extends AbstractDwcControl {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -208,6 +208,7 @@ public final class ScrollBar extends AbstractDwcControl {
     }
 
 
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

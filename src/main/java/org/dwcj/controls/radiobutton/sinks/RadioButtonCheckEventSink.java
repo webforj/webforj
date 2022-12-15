@@ -22,6 +22,8 @@ public final class RadioButtonCheckEventSink {
 
     private BBjControl bbjControl;
 
+    private static final String ON_EVENT = "onEvent";
+
     @SuppressWarnings({"static-access"})
     public RadioButtonCheckEventSink(RadioButton rb){
         this.radioButton = rb;
@@ -30,10 +32,10 @@ public final class RadioButtonCheckEventSink {
             bbjControl = ControlAccessor.getDefault().getBBjControl(rb);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
-                                   "onEvent");
+                                   ON_EVENT);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
-                                   "onEvent");
+                                   ON_EVENT);
 
         } catch(Exception e){
             e.printStackTrace();
@@ -49,10 +51,10 @@ public final class RadioButtonCheckEventSink {
             bbjControl = ControlAccessor.getDefault().getBBjControl(rb);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
-                                   "onEvent");
+                                   ON_EVENT);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
-                                   "onEvent");
+                                   ON_EVENT);
 
         } catch(Exception e){
             e.printStackTrace();

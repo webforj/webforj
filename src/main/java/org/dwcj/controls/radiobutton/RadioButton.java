@@ -1,6 +1,5 @@
 package org.dwcj.controls.radiobutton;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -24,11 +23,11 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     private BBjRadioButton bbjRadioButton;
 
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    public static enum HorizontalTextPosition{
+    public enum HorizontalTextPosition{
         RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
         
         public final Integer position;
@@ -55,10 +54,10 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
             byte[] flags = new byte[]{(byte)0x00, bFlag};               
@@ -113,7 +112,6 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
 
 
     public RadioButton setHorizontalTextPosition(HorizontalTextPosition position) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 bbjRadioButton.setHorizontalTextPosition(position.position);
