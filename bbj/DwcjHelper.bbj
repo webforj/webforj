@@ -1,13 +1,13 @@
-use org.dwcj.interfaces.IEventProxy
+use org.dwcj.interfaces.EventProxy
 use org.dwcj.bridge.IDwcjBBjBridge
 use java.util.ArrayList
 
-class public EventProxy implements IEventProxy
+class public BBjEventProxy implements EventProxy
 
     field private Object obj!
     field private String method!
 
-    method public EventProxy(Object obj!, String method!)
+    method public BBjEventProxy(Object obj!, String method!)
         #obj! = obj!
         #method! = method!
     methodend
@@ -44,7 +44,7 @@ classend
 class public DwcjHelper implements IDwcjBBjBridge
 
     method public CustomObject getEventProxy(Object obj!, String method!)
-        methodret new EventProxy(obj!, method!)
+        methodret new BBjEventProxy(obj!, method!)
     methodend
     
     method public CustomObject getEventProxy(Object obj!, String method!, String eventClass!)
