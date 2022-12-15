@@ -85,8 +85,8 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());          
-            ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", this.flags);
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+            ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
             this.catchUp();
         } catch (Exception e) {
             e.printStackTrace();

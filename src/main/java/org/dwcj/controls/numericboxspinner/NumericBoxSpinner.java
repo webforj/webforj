@@ -26,8 +26,8 @@ public final class NumericBoxSpinner extends NumericBox implements HasMouseWheel
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());             
-            ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, this.flags);
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+            ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             numBoxS = (BBjInputNSpinner) this.numBox;
             this.numBox = (BBjInputNSpinner) this.ctrl;
             super.catchUp();

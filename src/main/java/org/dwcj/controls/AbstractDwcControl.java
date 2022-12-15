@@ -45,7 +45,6 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
      * Members common to all inheriting controls
      *=====================================================================================
      */
-    protected byte[] flags;
     private String text = "";
     private Boolean visible = true;
     private Boolean enabled = true;

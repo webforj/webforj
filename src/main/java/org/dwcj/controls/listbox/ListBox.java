@@ -58,8 +58,8 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());          
-            ctrl = w.addListBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "", this.flags);
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());          
+            ctrl = w.addListBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "", flags);
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
             ctrl.setAttribute("button-height", "auto");

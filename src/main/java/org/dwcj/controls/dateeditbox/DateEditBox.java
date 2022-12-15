@@ -74,8 +74,8 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());
-            ctrl = w.addInputD(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, this.flags);
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+            ctrl = w.addInputD(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             bbjDateEditBox = (BBjInputD) ctrl;
             catchUp();
         } catch (Exception e) {

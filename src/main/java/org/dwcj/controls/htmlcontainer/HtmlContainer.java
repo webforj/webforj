@@ -61,8 +61,8 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());
-            ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), this.flags);
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+            ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
             ctrl.setNoEdge(true);
             bbjHtmlView = (BBjHtmlView) ctrl;
             catchUp();
