@@ -1,7 +1,8 @@
 package org.dwcj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import org.dwcj.controls.AbstractDwcControl;
+
+import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 /**
@@ -50,8 +51,8 @@ public abstract class ControlAccessor {
      * @return - the BBjControl
      * @throws IllegalAccessException
      */
-    public abstract BBjControl getBBjControl(AbstractDwcControl ctrl) throws IllegalAccessException;
+    public abstract BBjControl getBBjControl(AbstractControl ctrl) throws IllegalAccessException;
 
-    public abstract void create(AbstractDwcControl ctrl,AbstractDwcjPanel panel) throws IllegalAccessException;
+    public abstract void create(AbstractControl ctrl,AbstractDwcjPanel panel) throws IllegalAccessException;
 }
 
