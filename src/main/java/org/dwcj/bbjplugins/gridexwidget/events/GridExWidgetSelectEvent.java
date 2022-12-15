@@ -4,12 +4,12 @@ import com.basiscomponents.db.ResultSet;
 
 import org.dwcj.bbjplugins.gridexwidget.GridExWidget;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
 import java.io.IOException;
 import java.text.ParseException;
 
-public final class GridExWidgetSelectEvent implements DwcEvent {
+public final class GridExWidgetSelectEvent implements ControlEvent {
 
     private final GridExWidget control;
     private final ResultSet selection;

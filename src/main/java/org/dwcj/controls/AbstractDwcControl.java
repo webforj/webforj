@@ -1,6 +1,5 @@
 package org.dwcj.controls;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 
@@ -9,9 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasComputedStyle;
@@ -82,34 +78,6 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
     protected Integer verticalScrollBarPosition = null;
     protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
     protected TextHighlightable.Highlight textHighlight = null;
-
-        
-    static {
-        ControlAccessor.setDefault(new CtrlAccessorImpl());
-    }
-
-
-    
-
-
-    /**
-     * Create the object on a panel p. The preferred way of creating an object is using the
-     * Panel::add(Control) method, instead of this
-     * @param p
-     */
-    protected void create(AbstractDwcjPanel p) {}
-
-        /**
-     * This method returns the underlying original BBj control
-     * It's package private and can only be accessed through the ControlAccessor
-     * No API user / customer shall ever work directly with BBj controls
-     *
-     * @return the underlying BBj control
-     */
-    BBjControl getControl() {
-        return this.ctrl;
-    }
-
 
     @Override
     public String getAttribute(String attribute) {

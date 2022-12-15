@@ -1,9 +1,9 @@
 package org.dwcj.controls.panels.events;
 
 import org.dwcj.controls.panels.Div;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
-public final class DivClickEvent implements DwcEvent {
+public final class DivClickEvent implements ControlEvent {
     private final Div control;
 
     public DivClickEvent(Div div) {

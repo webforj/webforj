@@ -1,7 +1,8 @@
 package org.dwcj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import org.dwcj.controls.AbstractDwcControl;
+
+import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 /**
@@ -17,7 +18,7 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
     }
 
     @Override
-    public AbstractDwcjPanel add(AbstractDwcControl ctrl) {
+    public AbstractDwcjPanel add(AbstractControl ctrl) {
         try {
             ControlAccessor.getDefault().create(ctrl,this);
         } catch (IllegalAccessException e) {

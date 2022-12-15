@@ -1,10 +1,10 @@
 package org.dwcj.controls.textcombobox.events;
 
 import org.dwcj.controls.textcombobox.TextComboBox;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
 
-public class TextComboBoxChangeEvent implements DwcEvent {
+public class TextComboBoxChangeEvent implements ControlEvent {
     
     private final TextComboBox control;
 

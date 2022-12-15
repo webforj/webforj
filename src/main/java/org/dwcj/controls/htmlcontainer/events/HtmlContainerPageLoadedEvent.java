@@ -1,9 +1,9 @@
 package org.dwcj.controls.htmlcontainer.events;
 
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
-public final class HtmlContainerPageLoadedEvent implements DwcEvent {
+public final class HtmlContainerPageLoadedEvent implements ControlEvent {
 
     private final HtmlContainer control;
 

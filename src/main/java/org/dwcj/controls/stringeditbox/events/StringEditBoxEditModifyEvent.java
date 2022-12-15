@@ -1,9 +1,9 @@
 package org.dwcj.controls.stringeditbox.events;
 
 import org.dwcj.controls.stringeditbox.StringEditBox;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
-public class StringEditBoxEditModifyEvent implements DwcEvent {
+public class StringEditBoxEditModifyEvent implements ControlEvent {
 
     private final StringEditBox control;
 
