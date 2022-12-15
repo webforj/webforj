@@ -63,8 +63,8 @@ public abstract class AbstractControl implements Control {
         return this;
     }
 
-    public Map<String, Object> getUserData(String key){
-        return this.userData;
+    public Object getUserData(String key){
+        return this.userData.get(key);
     }
 
 
