@@ -1,9 +1,9 @@
 package org.dwcj.controls.navigator.events;
 
 import org.dwcj.controls.navigator.Navigator;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
-public final class NavigatorPreviousEvent implements DwcEvent {
+public final class NavigatorPreviousEvent implements ControlEvent {
 
     private final Navigator control;
 

@@ -1,9 +1,9 @@
 package org.dwcj.controls.dateeditbox.events;
 
 import org.dwcj.controls.dateeditbox.DateEditBox;
-import org.dwcj.interfaces.DwcEvent;
+import org.dwcj.interfaces.ControlEvent;
 
-public final class DateEditBoxEditModifyEvent implements DwcEvent {
+public final class DateEditBoxEditModifyEvent implements ControlEvent {
     private final DateEditBox control;
 
     public DateEditBoxEditModifyEvent(DateEditBox cDateEditBox) {
