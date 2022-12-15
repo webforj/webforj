@@ -18,6 +18,7 @@ import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerPageLoadedEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -60,17 +61,8 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(Boolean.FALSE.equals(this.isEnabled())){
-                bFlag += (byte)0x01;
-            }
-            if(Boolean.FALSE.equals(this.isVisible())){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
-            ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
+            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());
+            ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), this.flags);
             ctrl.setNoEdge(true);
             bbjHtmlView = (BBjHtmlView) ctrl;
             catchUp();

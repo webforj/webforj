@@ -13,6 +13,7 @@ import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -84,17 +85,8 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(Boolean.FALSE.equals(this.isEnabled())){
-                bFlag += (byte)0x01;
-            }
-            if(Boolean.FALSE.equals(this.isVisible())){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};            
-            ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
+            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());          
+            ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", this.flags);
             this.catchUp();
         } catch (Exception e) {
             e.printStackTrace();

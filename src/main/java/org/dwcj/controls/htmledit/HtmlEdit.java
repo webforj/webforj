@@ -9,6 +9,7 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +29,8 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(Boolean.FALSE.equals(this.isEnabled())){
-                bFlag += (byte)0x01;
-            }
-            if(Boolean.FALSE.equals(this.isVisible())){
-                bFlag += (byte)0x10;
-            }
-            byte[] flags = new byte[]{(byte)0x00, bFlag};  
-
-            ctrl = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
+            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());
+            ctrl = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", this.flags);
             bbjHtmlEdit = (BBjHtmlEdit) ctrl;
             catchUp();
         } catch (Exception e) {

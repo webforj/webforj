@@ -17,6 +17,7 @@ import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.Scrollable;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextHighlightable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,18 +72,8 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
-            byte bFlag = (byte)0x00;
-
-            if(Boolean.FALSE.equals(this.isEnabled())){
-                bFlag += (byte)0x01;
-            }
-            if(Boolean.FALSE.equals(this.isVisible())){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
-            ctrl = w.addCEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText(), flags);
+            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());
+            ctrl = w.addCEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText(), this.flags);
             bbjCEdit = (BBjCEdit) ctrl;
             catchUp();
         } catch (Exception e) {

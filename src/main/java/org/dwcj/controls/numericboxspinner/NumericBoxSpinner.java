@@ -8,6 +8,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.numericbox.NumericBox;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 public final class NumericBoxSpinner extends NumericBox implements HasMouseWheelCondition {
 
@@ -25,16 +26,8 @@ public final class NumericBoxSpinner extends NumericBox implements HasMouseWheel
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(Boolean.FALSE.equals(this.isEnabled())){
-                bFlag += (byte)0x01;
-            }
-            if(Boolean.FALSE.equals(this.isVisible())){
-                bFlag += (byte)0x10;
-            }
-            byte[] flags = new byte[]{(byte)0x00, bFlag};               
-            ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
+            this.flags = BBjFunctionalityHelper.byteArrayCreation(this.isVisible(), this.isEnabled());             
+            ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, this.flags);
             numBoxS = (BBjInputNSpinner) this.numBox;
             this.numBox = (BBjInputNSpinner) this.ctrl;
             super.catchUp();
