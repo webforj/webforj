@@ -20,6 +20,8 @@ public final class CheckBoxCheckEventSink {
 
     private BBjControl bbjctrl;
 
+    private static final String ON_EVENT = "onEvent";
+
     @SuppressWarnings({"static-access"})
     public CheckBoxCheckEventSink(CheckBox cb) {
         this.checkBox = cb;
@@ -28,10 +30,10 @@ public final class CheckBoxCheckEventSink {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
-                    "onEvent");
+                    ON_EVENT);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
-                    "onEvent");
+                    ON_EVENT);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,10 +48,10 @@ public final class CheckBoxCheckEventSink {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
-                    "onEvent");
+                    ON_EVENT);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
-                    "onEvent");
+                    ON_EVENT);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -107,17 +107,18 @@ public class Div extends AbstractDwcjPanel {
     }
     
     @Override
-    public Div addClass(String selector) {
-        super.addClass(selector);
+    public Div addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public Div removeClass(String selector) {
-        super.removeClass(selector);
+    public Div removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

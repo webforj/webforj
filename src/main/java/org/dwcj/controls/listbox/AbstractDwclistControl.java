@@ -17,12 +17,6 @@ public abstract class AbstractDwclistControl extends AbstractDwcControl {
 
     
 
-    abstract protected void populate();
-
-    @Override
-    protected void catchUp() throws IllegalAccessException {
-        super.catchUp();
-    }
-
+    protected abstract void populate();
 
 }

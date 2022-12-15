@@ -36,11 +36,11 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
     private BBjListEdit bbjListEdit;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, PRIMARY, SUCCESS, WARNING
     }
 
@@ -78,10 +78,10 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 

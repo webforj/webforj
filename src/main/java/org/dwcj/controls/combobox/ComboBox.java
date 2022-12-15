@@ -38,11 +38,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     private BBjListButton bbjListButton;
 
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
@@ -77,10 +77,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -397,19 +397,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
-    // public ComboBox setFieldHeight(Number height){
-    //     if(this.ctrl != null){
-    //         try{
-    //             ((BBjListButton) this.ctrl).setFieldHeight((BBjNumber)height);
-    //         } catch(BBjException e){
-    //             e.printStackTrace();
-    //         }
-    //     }
-    //     this.fieldHeight = height;
-    //     return this;
-    // }
-
-
     public ComboBox setMaximumRowCount(Integer max){
         if(this.ctrl != null){
             try{
@@ -422,13 +409,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
-    // public ComboBox setOpenWidth(Number width){
-    //     if(this.ctrl != null){
-    //         ((BBjListButton) this.ctrl).setOpenWidth((BBjNumber)width);
-    //     }
-    //     this.openWidth = width;
-    //     return this;
-    // }
 
 
     public ComboBox setTextAt(Integer idx, String text){
@@ -442,7 +422,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         }
         return this;
     }
-    
 
 
     @Override

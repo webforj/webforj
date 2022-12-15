@@ -24,11 +24,11 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     private BBjEditBox bbjEditBox;
 
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
@@ -61,10 +61,10 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -147,12 +147,13 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     
     
     public boolean isPasswordVisible(){
-        if(this.ctrl != null)
-        try{
-            return bbjEditBox.isPasswordVisible();
-        }
-        catch(BBjException e){
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try{
+                return bbjEditBox.isPasswordVisible();
+            }
+            catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this.passwordVisible;
     }

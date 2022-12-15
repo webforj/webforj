@@ -76,14 +76,14 @@ public class AppPanel extends AbstractDwcjPanel {
     }
     
     @Override
-    public AppPanel addClass(String selector) {
-        super.addClass(selector);
+    public AppPanel addClassName(String selector) {
+        super.addClassName(selector);
         return this;
     }
 
     @Override
-    public AppPanel removeClass(String selector) {
-        super.removeClass(selector);
+    public AppPanel removeClassName(String selector) {
+        super.removeClassName(selector);
         return this;
     }
 }

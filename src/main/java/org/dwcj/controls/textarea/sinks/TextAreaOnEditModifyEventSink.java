@@ -17,14 +17,14 @@ public final class TextAreaOnEditModifyEventSink {
     private final TextArea multilineEdit;
 
     @SuppressWarnings({"static-access"})
-    public TextAreaOnEditModifyEventSink(TextArea MLEdit) {
+    public TextAreaOnEditModifyEventSink(TextArea txtArea) {
 
         this.targets = new ArrayList<>();
-        this.multilineEdit = MLEdit;
+        this.multilineEdit = txtArea;
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(MLEdit);
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(txtArea);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");
@@ -34,15 +34,15 @@ public final class TextAreaOnEditModifyEventSink {
         }
     }
 
-    public TextAreaOnEditModifyEventSink(TextArea MLEdit, Consumer<TextAreaOnEditModifyEvent> callback) {
+    public TextAreaOnEditModifyEventSink(TextArea txtArea, Consumer<TextAreaOnEditModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
-        this.multilineEdit = MLEdit;
+        this.multilineEdit = txtArea;
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(MLEdit);
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(txtArea);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");

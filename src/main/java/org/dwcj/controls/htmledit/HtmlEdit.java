@@ -17,7 +17,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
 
     private BBjHtmlEdit bbjHtmlEdit;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
@@ -30,10 +30,10 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
             byte[] flags = new byte[]{(byte)0x00, bFlag};  
@@ -236,7 +236,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
      * @param styles - A List of styles to be shown when the basic toolbar is selected, should be an array of Strings
      * @return Returns this
      */
-    public HtmlEdit setBasicToolbarStyles(ArrayList<String> styles) {
+    public HtmlEdit setBasicToolbarStyles(List<String> styles) {
         try {
             bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
         } catch (BBjException e) {
@@ -430,7 +430,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
     @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-        //TODO
+        super.catchUp();
     }
 
 }

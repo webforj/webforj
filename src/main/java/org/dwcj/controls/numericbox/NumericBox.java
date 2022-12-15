@@ -20,16 +20,15 @@ import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.interfaces.TextHighlightable;
 
 
-/* ==REMOVED FINAL TO ALLOW NumericBoxSpinner TO INHERIT - MH */
 public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable{
 
     protected BBjInputN numBox;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
@@ -78,10 +77,10 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
             byte[] flags = new byte[]{(byte)0x00, bFlag};            
@@ -798,7 +797,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
 
 
-
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

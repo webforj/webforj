@@ -25,11 +25,11 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     
     private BBjInputE bbjInputE;
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
     
@@ -70,10 +70,10 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -472,7 +472,6 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
 
     @Override
     public StringEditBox setTextAlignment(Alignment alignment) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 bbjInputE.setAlignment(alignment.textPosition);

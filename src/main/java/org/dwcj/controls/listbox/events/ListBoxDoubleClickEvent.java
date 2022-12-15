@@ -4,6 +4,7 @@ import org.dwcj.controls.listbox.ListBox;
 import org.dwcj.interfaces.DwcEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ListBoxDoubleClickEvent implements DwcEvent{
@@ -19,7 +20,7 @@ public class ListBoxDoubleClickEvent implements DwcEvent{
     }
 
     public void addKey(Object key) { keys.add(key); }
-    public ArrayList<Object> getKeys() { return keys; }
+    public List<Object> getKeys() { return keys; }
 
 
     @Override

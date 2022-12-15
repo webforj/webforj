@@ -1,9 +1,9 @@
-use org.dwcj.interfaces.IEventProxy
+use org.dwcj.interfaces.EventProxy
 use org.dwcj.bridge.IDwcjBBjBridge
 use ::BBjGridExWidget/GxClientModels.bbj::GxClientRowModel
 
 
-class public BBjGridExWidgetSelectEventProxy implements IEventProxy
+class public BBjGridExWidgetSelectEventProxy implements EventProxy
 
     field private Object obj!
     field private String method!

@@ -3,7 +3,6 @@ package org.dwcj.controls.htmlcontainer.sinks;
 import com.basis.bbj.proxies.event.BBjScriptLoadedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 
-import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;

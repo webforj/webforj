@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.button.Button;
-import org.dwcj.controls.button.events.ButtonPushEvent;
+import org.dwcj.controls.button.events.ButtonClickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class ButtonPushEventSink {
 
-    private ArrayList<Consumer<ButtonPushEvent>> targets;
+    private ArrayList<Consumer<ButtonClickEvent>> targets;
     private final Button button;
 
     @SuppressWarnings({"static-access"})
@@ -34,7 +34,7 @@ public final class ButtonPushEventSink {
         }
     }
 
-    public ButtonPushEventSink(Button btn, Consumer<ButtonPushEvent> callback) {
+    public ButtonPushEventSink(Button btn, Consumer<ButtonClickEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
@@ -53,8 +53,8 @@ public final class ButtonPushEventSink {
     }
 
     public void pushEvent(BBjButtonPushEvent ev) { // NOSONAR
-        ButtonPushEvent dwcEv = new ButtonPushEvent(this.button);
-        Iterator<Consumer<ButtonPushEvent>> it = targets.iterator();
+        ButtonClickEvent dwcEv = new ButtonClickEvent(this.button);
+        Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
@@ -63,13 +63,13 @@ public final class ButtonPushEventSink {
      * Clicks the button, for testing purposes
      */
     public void doClick() {
-        ButtonPushEvent dwcEv = new ButtonPushEvent(button);
-        Iterator<Consumer<ButtonPushEvent>> it = targets.iterator();
+        ButtonClickEvent dwcEv = new ButtonClickEvent(button);
+        Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<ButtonPushEvent> callback) {
+    public void addCallback(Consumer<ButtonClickEvent> callback) {
         targets.add(callback);
     }
 }

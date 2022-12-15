@@ -36,7 +36,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
      * that correspond to these numeric constants in BBj.
      * =====================================================================================
      */
-    public static enum HorizontalTextPosition{
+    public enum HorizontalTextPosition{
         RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
         
         public final Integer position;
@@ -86,10 +86,10 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte bFlag = (byte)0x00;
 
-            if(!this.isEnabled()){
+            if(Boolean.FALSE.equals(this.isEnabled())){
                 bFlag += (byte)0x01;
             }
-            if(!this.isVisible()){
+            if(Boolean.FALSE.equals(this.isVisible())){
                 bFlag += (byte)0x10;
             }
 
@@ -134,7 +134,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
 
 
     public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjCheckBox) this.ctrl).setHorizontalTextPosition(position.position);
@@ -153,7 +152,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
      * @return false if not checked, true if checked.
      */
     public Boolean isChecked() {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 return ((BBjCheckBox) this.ctrl).isSelected();
@@ -165,7 +163,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     }
 
     public CheckBox setChecked(Boolean checked) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjCheckBox) this.ctrl).setSelected(checked);
@@ -272,7 +269,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
      */
     @Override
     public Boolean isReadOnly() {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try{
                 return ((BBjCheckBox) ctrl).isEditable();
@@ -291,7 +287,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
      */
     @Override
     public CheckBox setReadOnly(Boolean editable) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjCheckBox) this.ctrl).setEditable(editable);
@@ -317,7 +312,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
 
     @Override
     public CheckBox setFocusable(Boolean focusable) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjCheckBox) this.ctrl).setFocusable(focusable);
@@ -344,7 +338,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
 
     @Override
     public CheckBox setTabTraversable(Boolean traversable) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjCheckBox) this.ctrl).setTabTraversable(traversable);
@@ -364,7 +357,6 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
 
     @Override
     public CheckBox setTextAlignment(Alignment alignment) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjCheckBox) this.ctrl).setAlignment(alignment.textPosition);
