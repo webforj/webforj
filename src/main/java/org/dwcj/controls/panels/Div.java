@@ -1,10 +1,9 @@
 package org.dwcj.controls.panels;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.events.DivClickEvent;
 import org.dwcj.controls.panels.sinks.DivClickEventSink;
 
@@ -17,9 +16,10 @@ import java.util.function.Consumer;
  */
 public class Div extends AbstractDwcjPanel {
 
-    private ArrayList<AbstractDwcControl> controls = new ArrayList<>();
+    private ArrayList<AbstractControl> controls = new ArrayList<>();
     private DivClickEventSink divClickEventSink;
 
+    
     @Override
     protected void create(AbstractDwcjPanel p) {
         BBjWindow w = p.getBBjWindow();
@@ -35,17 +35,28 @@ public class Div extends AbstractDwcjPanel {
 
     }
 
-
-    public Div add(AbstractDwcControl control){
+    /**
+     * Used to add controls to a panel. Multiple controls can be passed to this
+     * function, and will be added in the order the arguments are passed 
+     * (arg0 added first, arg1 second, etc...)
+     * @param ctrl the control(s) to be added
+     * @return the panel itself
+     */
+    @Override
+    public Div add(AbstractControl ...control){
         if(this.ctrl != null){
-            try {
-                ControlAccessor.getDefault().create(control,this);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            for(AbstractControl c: control){
+                try {
+                    ControlAccessor.getDefault().create(c,this);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
         else{
-            controls.add(control);
+            for(AbstractControl c: control){
+                this.controls.add(c);
+            }
         }
         return this;
     }
