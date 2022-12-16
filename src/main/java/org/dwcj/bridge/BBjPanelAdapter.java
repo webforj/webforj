@@ -18,11 +18,13 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
     }
 
     @Override
-    public AbstractDwcjPanel add(AbstractControl ctrl) {
-        try {
-            ControlAccessor.getDefault().create(ctrl,this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+    public AbstractDwcjPanel add(AbstractControl ...ctrl) {
+        for(AbstractControl c: ctrl){
+            try {
+                ControlAccessor.getDefault().create(c,this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }

@@ -1,10 +1,9 @@
 package org.dwcj.controls.panels;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.events.DivClickEvent;
 import org.dwcj.controls.panels.sinks.DivClickEventSink;
 
@@ -17,7 +16,7 @@ import java.util.function.Consumer;
  */
 public class Div extends AbstractDwcjPanel {
 
-    private ArrayList<AbstractDwcControl> controls = new ArrayList<>();
+    private ArrayList<AbstractControl> controls = new ArrayList<>();
     private DivClickEventSink divClickEventSink;
 
     @Override
@@ -36,16 +35,21 @@ public class Div extends AbstractDwcjPanel {
     }
 
 
-    public Div add(AbstractDwcControl control){
+    @Override
+    public Div add(AbstractControl ...control){
         if(this.ctrl != null){
-            try {
-                ControlAccessor.getDefault().create(control,this);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            for(AbstractControl c: control){
+                try {
+                    ControlAccessor.getDefault().create(c,this);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
         else{
-            controls.add(control);
+            for(AbstractControl c: control){
+                this.controls.add(c);
+            }
         }
         return this;
     }

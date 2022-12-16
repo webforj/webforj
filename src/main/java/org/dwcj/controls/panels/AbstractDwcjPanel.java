@@ -20,11 +20,13 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
      * @param ctrl the control to be added
      * @return the panel itself
      */
-    public AbstractDwcjPanel add(AbstractControl ctrl) {
-        try {
-            ControlAccessor.getDefault().create(ctrl,this);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+    public AbstractDwcjPanel add(AbstractControl ...ctrl) {
+        for(AbstractControl c: ctrl){
+            try {
+                ControlAccessor.getDefault().create(c,this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
         return this;
     }
