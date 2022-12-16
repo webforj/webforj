@@ -17,6 +17,13 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
         this.wnd = w;
     }
 
+    /**
+     * Used to add controls to a panel. Multiple controls can be passed to this
+     * function, and will be added in the order the arguments are passed 
+     * (arg0 added first, arg1 second, etc...)
+     * @param ctrl the control(s) to be added
+     * @return the panel itself
+     */
     @Override
     public AbstractDwcjPanel add(AbstractControl ...ctrl) {
         for(AbstractControl c: ctrl){
