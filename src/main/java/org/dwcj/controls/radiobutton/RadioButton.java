@@ -1,6 +1,5 @@
 package org.dwcj.controls.radiobutton;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -14,6 +13,7 @@ import org.dwcj.controls.radiobutton.sinks.RadioButtonCheckEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -24,11 +24,11 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     private BBjRadioButton bbjRadioButton;
 
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    public static enum HorizontalTextPosition{
+    public enum HorizontalTextPosition{
         RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
         
         public final Integer position;
@@ -53,15 +53,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-            byte[] flags = new byte[]{(byte)0x00, bFlag};               
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
             bbjRadioButton = (BBjRadioButton) ctrl;
             catchUp();
@@ -113,7 +105,6 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
 
 
     public RadioButton setHorizontalTextPosition(HorizontalTextPosition position) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 bbjRadioButton.setHorizontalTextPosition(position.position);

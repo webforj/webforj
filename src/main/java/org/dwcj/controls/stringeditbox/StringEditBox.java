@@ -15,6 +15,7 @@ import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.interfaces.TextHighlightable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -25,11 +26,11 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     
     private BBjInputE bbjInputE;
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
     
@@ -68,16 +69,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             bbjInputE = (BBjInputE) ctrl;
             catchUp();
@@ -472,7 +464,6 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
 
     @Override
     public StringEditBox setTextAlignment(Alignment alignment) {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 bbjInputE.setAlignment(alignment.textPosition);

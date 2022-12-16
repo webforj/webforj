@@ -22,6 +22,7 @@ import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -38,11 +39,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     private BBjListButton bbjListButton;
 
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
@@ -75,16 +76,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addListButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "", flags);
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
@@ -397,19 +389,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
-    // public ComboBox setFieldHeight(Number height){
-    //     if(this.ctrl != null){
-    //         try{
-    //             ((BBjListButton) this.ctrl).setFieldHeight((BBjNumber)height);
-    //         } catch(BBjException e){
-    //             e.printStackTrace();
-    //         }
-    //     }
-    //     this.fieldHeight = height;
-    //     return this;
-    // }
-
-
     public ComboBox setMaximumRowCount(Integer max){
         if(this.ctrl != null){
             try{
@@ -422,13 +401,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
-    // public ComboBox setOpenWidth(Number width){
-    //     if(this.ctrl != null){
-    //         ((BBjListButton) this.ctrl).setOpenWidth((BBjNumber)width);
-    //     }
-    //     this.openWidth = width;
-    //     return this;
-    // }
 
 
     public ComboBox setTextAt(Integer idx, String text){
@@ -442,7 +414,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         }
         return this;
     }
-    
 
 
     @Override

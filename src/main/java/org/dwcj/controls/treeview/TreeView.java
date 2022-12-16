@@ -33,7 +33,7 @@ public final class TreeView extends AbstractDwcControl {
 
     private BBjTree tree;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 

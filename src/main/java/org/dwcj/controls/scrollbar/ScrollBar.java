@@ -8,6 +8,7 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.scrollbar.events.ScrollbarMoveEvent;
 import org.dwcj.controls.scrollbar.sinks.ScrollbarMoveEventSink;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -28,16 +29,7 @@ public final class ScrollBar extends AbstractDwcControl {
         
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             if (horizontal)
                 ctrl = w.addHorizontalScrollBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
             else
@@ -208,6 +200,7 @@ public final class ScrollBar extends AbstractDwcControl {
     }
 
 
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

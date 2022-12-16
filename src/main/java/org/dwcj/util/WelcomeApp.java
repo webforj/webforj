@@ -4,7 +4,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.controls.button.Button;
-import org.dwcj.controls.button.events.ButtonPushEvent;
+import org.dwcj.controls.button.events.ButtonClickEvent;
 import org.dwcj.controls.label.Label;
 import org.dwcj.controls.panels.AppPanel;
 import org.dwcj.controls.panels.Div;
@@ -101,7 +101,7 @@ public class WelcomeApp extends App {
         panel.add(new Label("<html><p>If you do not see an App that you have created recently, please remember that you may have to compile / build it first in your IDE.</p>"));
     }
 
-    private void onLaunchClick(ButtonPushEvent buttonPushEvent) {
+    private void onLaunchClick(ButtonClickEvent buttonPushEvent) {
         String className = buttonPushEvent.getControl().getUserData("classname").toString();
 
         panel.setVisible(false);

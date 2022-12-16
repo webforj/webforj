@@ -40,13 +40,11 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
     protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
     protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
     protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
-    
 
     /*=====================================================================================
      * Members common to all inheriting controls
      *=====================================================================================
      */
-
     private String text = "";
     private Boolean visible = true;
     private Boolean enabled = true;

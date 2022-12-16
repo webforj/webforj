@@ -1,6 +1,5 @@
 package org.dwcj.controls.htmlcontainer.events;
 
-import org.dwcj.App;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.interfaces.ControlEvent;
 

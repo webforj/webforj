@@ -17,6 +17,7 @@ import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.interfaces.TextHighlightable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 
 public final class TextBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
@@ -24,11 +25,11 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     private BBjEditBox bbjEditBox;
 
     
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
@@ -59,16 +60,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
             bbjEditBox = (BBjEditBox) this.ctrl;
             catchUp();
@@ -147,12 +139,13 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     
     
     public boolean isPasswordVisible(){
-        if(this.ctrl != null)
-        try{
-            return bbjEditBox.isPasswordVisible();
-        }
-        catch(BBjException e){
-            e.printStackTrace();
+        if(this.ctrl != null){
+            try{
+                return bbjEditBox.isPasswordVisible();
+            }
+            catch(BBjException e){
+                e.printStackTrace();
+            }
         }
         return this.passwordVisible;
     }

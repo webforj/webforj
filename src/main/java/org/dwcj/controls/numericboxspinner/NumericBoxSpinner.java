@@ -8,13 +8,13 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.numericbox.NumericBox;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.HasMouseWheelCondition;
+import org.dwcj.util.BBjFunctionalityHelper;
 
-//public final class NumericBoxSpinner extends NumericBox implements IThemable, IExpansible {
 public final class NumericBoxSpinner extends NumericBox implements HasMouseWheelCondition {
 
     private BBjInputNSpinner numBoxS;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
@@ -26,15 +26,7 @@ public final class NumericBoxSpinner extends NumericBox implements HasMouseWheel
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-            byte[] flags = new byte[]{(byte)0x00, bFlag};               
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             numBoxS = (BBjInputNSpinner) this.numBox;
             this.numBox = (BBjInputNSpinner) this.ctrl;
@@ -63,7 +55,7 @@ public final class NumericBoxSpinner extends NumericBox implements HasMouseWheel
     }
     
 
-
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

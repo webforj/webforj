@@ -13,11 +13,11 @@ public class MenuItem extends AbstractDwcControl {
 
     private BBjMenuItem bbjMenuItem;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
     

@@ -7,7 +7,7 @@ import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 public final class OpenFileDialog extends AbstractDwcControl {
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS,
         OUTLINED_PRIMARY, OUTLINED_WARNING

@@ -18,6 +18,7 @@ import org.dwcj.controls.htmlcontainer.sinks.HtmlContainerPageLoadedEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     private ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
     private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
     private ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
-    private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;;
+    private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;
 
     private String asyncScript = "";
     private String executeScript = "";
@@ -43,7 +44,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     private Boolean injectURLTop = false;
     private Boolean autoNavigate = false;
     private String downloadDirectory = "";
-    private String URL = "";
+    private String url = "";
     private Boolean reload = false;
     private String userAgent = "";
 
@@ -60,16 +61,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
             ctrl.setNoEdge(true);
             bbjHtmlView = (BBjHtmlView) ctrl;
@@ -197,7 +189,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 e.printStackTrace();
             }    
         }
-        return this.URL;
+        return this.url;
     }
 
     public String getUserAgent() {
@@ -301,7 +293,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 e.printStackTrace();
             }
         }
-        this.URL = url;
+        this.url = url;
         return this;
     }
 
@@ -313,7 +305,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 e.printStackTrace();
             }
         }
-        this.URL = url;
+        this.url = url;
         this.reload = reload;
         return this;
     }
@@ -456,6 +448,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     }
 
 
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
@@ -499,8 +492,8 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             this.setDownloadDirectory(this.downloadDirectory);
         }
 
-        if(!this.URL.equals("")){
-            this.setUrl(this.URL, this.reload);
+        if(!this.url.equals("")){
+            this.setUrl(this.url, this.reload);
         }
 
         if(!this.userAgent.equals("")){

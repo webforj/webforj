@@ -114,8 +114,9 @@ public abstract class AbstractControl implements Control {
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
 
-        if (this.caughtUp)
+        if (Boolean.TRUE.equals(this.caughtUp)){
             throw new IllegalAccessException("catchUp cannot be called twice");
+        } 
 
         if (!(this.Id.equals(""))) {
             this.setId(this.Id);

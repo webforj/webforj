@@ -11,6 +11,7 @@ import org.dwcj.controls.slider.sinks.SliderOnControlScrollEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.TabTraversable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     private BBjSlider bbjSlider;
 
     
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
     }
     
@@ -57,21 +58,13 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};
-
-            if (horizontal)
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+            if (Boolean.TRUE.equals(horizontal)){
                 ctrl = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
-            else
+            }
+            else{
                 ctrl = w.addVerticalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
+            }
                 bbjSlider = (BBjSlider) ctrl;
                 catchUp();
         } catch (Exception e) {
@@ -567,7 +560,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
 
 
-
+    @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");

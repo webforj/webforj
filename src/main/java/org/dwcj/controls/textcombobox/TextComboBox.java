@@ -21,6 +21,7 @@ import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,11 +37,11 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
     private BBjListEdit bbjListEdit;
 
-    public static enum Expanse{
+    public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public static enum Theme{
+    public enum Theme{
         DEFAULT, DANGER, PRIMARY, SUCCESS, WARNING
     }
 
@@ -76,16 +77,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte bFlag = (byte)0x00;
-
-            if(!this.isEnabled()){
-                bFlag += (byte)0x01;
-            }
-            if(!this.isVisible()){
-                bFlag += (byte)0x10;
-            }
-
-            byte[] flags = new byte[]{(byte)0x00, bFlag};            
+            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addListEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, "", flags);
             ctrl.setAttribute("max-row-count", "25");
             ctrl.setAttribute("open-width", "2500");
