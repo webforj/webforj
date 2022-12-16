@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class ButtonPushEventSink {
+public final class ButtonClickEventSink {
 
     private ArrayList<Consumer<ButtonClickEvent>> targets;
     private final Button button;
 
     @SuppressWarnings({"static-access"})
-    public ButtonPushEventSink(Button btn) {
+    public ButtonClickEventSink(Button btn) {
 
         this.targets = new ArrayList<>();
         this.button = btn;
@@ -34,7 +34,7 @@ public final class ButtonPushEventSink {
         }
     }
 
-    public ButtonPushEventSink(Button btn, Consumer<ButtonClickEvent> callback) {
+    public ButtonClickEventSink(Button btn, Consumer<ButtonClickEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);

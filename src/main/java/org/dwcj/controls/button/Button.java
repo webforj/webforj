@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.button.events.ButtonClickEvent;
-import org.dwcj.controls.button.sinks.ButtonPushEventSink;
+import org.dwcj.controls.button.sinks.ButtonClickEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.TabTraversable;
@@ -68,7 +68,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      */
     
     private ArrayList<Consumer<ButtonClickEvent>> callbacks = new ArrayList<>();
-    private ButtonPushEventSink buttonPushEventSink;
+    private ButtonClickEventSink buttonClickEventSink;
     private Boolean disableOnClick = false;
     TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
     
@@ -123,10 +123,10 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
 
     public Button onClick(Consumer<ButtonClickEvent> callback) {
         if(this.ctrl != null){
-            if(this.buttonPushEventSink == null){
-                this.buttonPushEventSink = new ButtonPushEventSink(this);
+            if(this.buttonClickEventSink == null){
+                this.buttonClickEventSink = new ButtonClickEventSink(this);
             }
-            this.buttonPushEventSink.addCallback(callback);
+            this.buttonClickEventSink.addCallback(callback);
         }
         else{
             this.callbacks.add(callback);
@@ -362,6 +362,13 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     */
 
     @Override
+    /*=====================================================================================
+    * Finally, override the catchUp() method - this is done by calling the super method,
+    * and then catching up any control-specific member variables and/or interface 
+    * variables for this control.
+    * =====================================================================================
+    */
+
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
@@ -373,14 +380,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
         }
 
         if(!this.callbacks.isEmpty()){
-            this.buttonPushEventSink = new ButtonPushEventSink(this);
-            while(!this.callbacks.isEmpty()){
-                this.buttonPushEventSink.addCallback(this.callbacks.remove(0));
-            }
-        }
-        
-
-        if(this.verticalAlignment != TextVerticalAlignment.CENTER){
+            this.buttonClickEventSink = new ButtonClickEventSink(this);
             try{
                 ((BBjButton) ctrl).setVerticalAlignment(this.verticalAlignment.alignment);
             } catch(BBjException e){
