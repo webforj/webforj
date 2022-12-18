@@ -1,9 +1,10 @@
 package org.dwcj.environment.namespace;
 
-import com.basis.bbj.proxies.BBjNamespace;
+import org.dwcj.Environment;
 
 public class GlobalNamespace extends StandardNamespace implements Namespace {
 
-
-
+    public GlobalNamespace() {
+        ns = Environment.getInstance().getBBjAPI().getGlobalNamespace();
+    }
 }
