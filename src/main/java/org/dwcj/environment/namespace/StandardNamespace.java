@@ -52,7 +52,7 @@ abstract class StandardNamespace implements Namespace, CanLock {
             return keyset;
         }
 
-        Iterator it = tmp.iterator();
+        Iterator<Object> it = tmp.iterator();
         while (it.hasNext())
             keyset.add(it.next().toString());
         return keyset;
