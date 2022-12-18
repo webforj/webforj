@@ -4,7 +4,7 @@ Java API for BBj DWC Dynamic Web Client
 
 ## Setup Instructions
 
-1. Download and Install BBj 21.14 or higher, on OpenJDK11
+1. Download and Install BBj 22.12 or higher, on OpenJDK11
 2. Clone this project
 3. Add a custom classpath with
 
