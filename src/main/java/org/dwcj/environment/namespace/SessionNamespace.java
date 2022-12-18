@@ -37,7 +37,7 @@ public class SessionNamespace implements Namespace
     @Override
     public Set<String> keySet() {
         BBjVector tmp = otable.getKeys();
-        Iterator it = tmp.iterator();
+        Iterator<Object> it = tmp.iterator();
         HashSet<String> keyset = new HashSet<>();
         while (it.hasNext())
             keyset.add(it.next().toString());
