@@ -1,6 +1,7 @@
 package org.dwcj;
 
 import com.basis.startup.type.BBjException;
+import org.dwcj.environment.namespace.*;
 import org.dwcj.exceptions.DwcAppInitializeException;
 
 /**
@@ -124,5 +125,31 @@ public abstract class App {
      * @throws DwcAppInitializeException
      */
     public abstract void run() throws DwcAppInitializeException;
+
+
+    public static Namespace getNamespace(Namespace.NamespaceType namespaceType){
+        switch (namespaceType){
+            case PRIVATE:
+                throw new IllegalArgumentException("PRIVATE namespaces have a prefix and a name!");
+            case SESSION:
+                return new SessionNamespace();
+            case GROUP:
+                return new GroupNamespace();
+            case GLOBAL:
+                return new GlobalNamespace();
+            default:
+                throw new IllegalArgumentException("Illegal Type!");
+
+        }
+    }
+
+
+    public static Namespace getNamespace(String prefix, String name, Boolean fCreateIfMissing ){
+        if (prefix.isBlank() || name.isBlank())
+            throw new IllegalArgumentException("You need a prefix and a name here");
+
+        return new PrivateNamespace( prefix, name, fCreateIfMissing );
+
+    }
 
 }
