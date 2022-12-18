@@ -3,13 +3,15 @@ package org.dwcj.environment.namespace;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import org.dwcj.environment.namespace.events.NamespaceEvent;
+import org.dwcj.environment.namespace.sinks.NamespaceEventSink;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Consumer;
 
-abstract class StandardNamespace implements Namespace, CanLock {
+public abstract class StandardNamespace implements Namespace, CanLock {
 
     protected BBjNamespace ns;
 
@@ -43,7 +45,7 @@ abstract class StandardNamespace implements Namespace, CanLock {
 
     @Override
     public Set<String> keySet() {
-        BBjVector tmp = null;
+        BBjVector tmp;
         HashSet<String> keyset = new HashSet<>();
 
         try {
@@ -52,9 +54,7 @@ abstract class StandardNamespace implements Namespace, CanLock {
             return keyset;
         }
 
-        Iterator<Object> it = tmp.iterator();
-        while (it.hasNext())
-            keyset.add(it.next().toString());
+        for (Object o : tmp) keyset.add(o.toString());
         return keyset;
     }
 
@@ -90,4 +90,25 @@ abstract class StandardNamespace implements Namespace, CanLock {
         }
 
     }
+
+    public StandardNamespace onChange(Consumer<NamespaceEvent> c){
+        new NamespaceEventSink(ns,true,c);
+        return this;
+    }
+
+    public StandardNamespace onAccess(Consumer<NamespaceEvent> c) {
+        new NamespaceEventSink(ns,false,c);
+        return this;
+    }
+
+    public StandardNamespace onVariableChange(String key, Consumer<NamespaceEvent> c){
+        new NamespaceEventSink(ns,key,true,c);
+        return this;
+    }
+
+    public StandardNamespace onVariableAccess(String key, Consumer<NamespaceEvent> c) {
+        new NamespaceEventSink(ns, key, false,c);
+        return this;
+    }
+
 }
