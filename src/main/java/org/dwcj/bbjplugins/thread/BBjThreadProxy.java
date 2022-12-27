@@ -13,6 +13,7 @@ public class BBjThreadProxy {
 
     private final Object classInstance;
     private final ArrayList<Consumer<BBjThreadProxy>> finishedConsumerList = new ArrayList<>();
+    private final ArrayList<Consumer<BBjThreadProxy>> updateConsumerList = new ArrayList<>();
 
     private BBjThreadProxy(){
             classInstance=null;
@@ -54,5 +55,26 @@ public class BBjThreadProxy {
 
     public void start() {
         dwcjHelper.invokeMethod(classInstance,"start",null);
+    }
+
+    public void kill() {
+        dwcjHelper.invokeMethod(classInstance,"kill",null);
+    }
+
+    public void onUpdate(Consumer<BBjThreadProxy> c) {
+        if (updateConsumerList.isEmpty()){
+            ArrayList<Object> arglist = new ArrayList<>();
+            arglist.add(12352);
+            arglist.add(  Environment.getInstance().getDwcjHelper().getEventProxy(this, "updateEvent"));
+            arglist.add( "onEvent");
+            dwcjHelper.invokeMethod(classInstance,"setCallback",arglist);
+        }
+        updateConsumerList.add(c);
+    }
+
+    public void updateEvent(BBjCustomEvent ev){//NOSONAR
+        for (Consumer<BBjThreadProxy> consumer : updateConsumerList) {
+            consumer.accept(this);
+        }
     }
 }
