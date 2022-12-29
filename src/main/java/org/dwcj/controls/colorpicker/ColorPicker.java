@@ -30,8 +30,6 @@ public final class ColorPicker extends AbstractDwcControl {
         }
     }
 
-
-
     @Override
     public ColorPicker setText(String text) {
         super.setText(text);
@@ -85,9 +83,6 @@ public final class ColorPicker extends AbstractDwcControl {
         super.removeClassName(selector);
         return this;
     }
-
-
-
 
 
     public ColorPicker setExpanse(Expanse expanse) {

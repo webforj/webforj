@@ -68,9 +68,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         this.textAlignment = Alignment.LEFT;
     }
 
-
-
-
     @Override
     protected void create(AbstractDwcjPanel p) {
 
@@ -147,9 +144,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             }
         }
     }
-
-
-
 
     /**
      * set the list of items into the comboBox
@@ -274,11 +268,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         }
         return this;
     }
-
-
-
-
-
 
 
 
