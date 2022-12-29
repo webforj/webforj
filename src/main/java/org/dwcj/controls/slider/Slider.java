@@ -527,8 +527,8 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     }
 
     @Override
-    public Slider setId(String id){
-        super.setId(id);
+    public Slider setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

@@ -87,8 +87,8 @@ public final class GridExWidget extends AbstractDwcControl {
     }
 
     @Override
-    public GridExWidget setId(String id){
-        super.setId(id);
+    public GridExWidget setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

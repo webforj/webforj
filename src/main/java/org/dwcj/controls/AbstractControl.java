@@ -26,7 +26,7 @@ public abstract class AbstractControl implements Control {
     /*
      * Members responsible for tracking ID attribute and user data
      */
-    protected String Id = "";
+    protected String elementId = "";
     protected final Map<String, Object> userData = new HashMap<>();
 
     /*
@@ -68,22 +68,22 @@ public abstract class AbstractControl implements Control {
             } catch (BBjException e) {
                 Environment.logError(e);
             }
-        } else if (!(this.Id.equals(""))) {
-            return this.Id;
+        } else if (!(this.elementId.equals(""))) {
+            return this.elementId;
         }
         return "";
     }
 
     @Override
-    public AbstractControl setId(String id) {
+    public AbstractControl setId(String elementId) {
         if (this.ctrl != null) {
             try {
-                this.ctrl.setAttribute("id", id);
+                this.ctrl.setAttribute("id", elementId);
             } catch (BBjException e) {
                 Environment.logError(e);
             }
         }
-        this.Id = id;
+        this.elementId = elementId;
         return this;
     }
 
@@ -119,8 +119,8 @@ public abstract class AbstractControl implements Control {
             throw new IllegalAccessException("catchUp cannot be called twice");
         } 
 
-        if (!(this.Id.equals(""))) {
-            this.setId(this.Id);
+        if (!(this.elementId.equals(""))) {
+            this.setId(this.elementId);
         }
 
         this.caughtUp = true;

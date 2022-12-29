@@ -753,8 +753,8 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     }
 
     @Override
-    public NumericBox setId(String id){
-        super.setId(id);
+    public NumericBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

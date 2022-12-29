@@ -220,8 +220,8 @@ public final class FontChooser extends AbstractDwcControl {
     }
 
     @Override
-    public FontChooser setId(String id){
-        super.setId(id);
+    public FontChooser setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

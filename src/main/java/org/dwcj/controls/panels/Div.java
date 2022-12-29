@@ -106,8 +106,8 @@ public class Div extends AbstractDwcjPanel {
     }
 
     @Override
-    public Div setId(String id){
-        super.setId(id);
+    public Div setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

@@ -425,8 +425,8 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     }
 
     @Override
-    public HtmlContainer setId(String id){
-        super.setId(id);
+    public HtmlContainer setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

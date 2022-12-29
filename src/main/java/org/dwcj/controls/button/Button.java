@@ -230,8 +230,8 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     }
 
     @Override
-    public Button setId(String id){
-        super.setId(id);
+    public Button setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

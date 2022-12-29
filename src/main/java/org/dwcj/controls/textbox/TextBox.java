@@ -347,8 +347,8 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     }
 
     @Override
-    public TextBox setId(String id){
-        super.setId(id);
+    public TextBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

@@ -296,8 +296,8 @@ public final class ProgressBar extends AbstractDwcControl {
     }
 
     @Override
-    public ProgressBar setId(String id){
-        super.setId(id);
+    public ProgressBar setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

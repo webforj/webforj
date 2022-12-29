@@ -114,8 +114,8 @@ public final class PrintPreview extends AbstractDwcControl {
     }
 
     @Override
-    public PrintPreview setId(String id){
-        super.setId(id);
+    public PrintPreview setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

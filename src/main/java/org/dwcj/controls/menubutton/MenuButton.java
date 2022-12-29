@@ -164,8 +164,8 @@ public final class MenuButton extends AbstractDwcControl {
     }
 
     @Override
-    public MenuButton setId(String id){
-        super.setId(id);
+    public MenuButton setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

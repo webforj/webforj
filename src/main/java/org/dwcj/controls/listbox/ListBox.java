@@ -418,8 +418,8 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     }
 
     @Override
-    public ListBox setId(String id){
-        super.setId(id);
+    public ListBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

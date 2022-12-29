@@ -87,8 +87,8 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
     }
 
     @Override
-    public BBjPanelAdapter setId(String id){
-        super.setId(id);
+    public BBjPanelAdapter setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

@@ -541,8 +541,8 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override
-    public TextComboBox setId(String id){
-        super.setId(id);
+    public TextComboBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

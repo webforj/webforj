@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.combobox.events.ComboBoxChangeEvent;
@@ -563,8 +562,8 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     @Override
-    public ComboBox setId(String id){
-        super.setId(id);
+    public ComboBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

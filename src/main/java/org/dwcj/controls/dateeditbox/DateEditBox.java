@@ -753,8 +753,8 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override
-    public DateEditBox setId(String id){
-        super.setId(id);
+    public DateEditBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

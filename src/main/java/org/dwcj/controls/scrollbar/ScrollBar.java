@@ -177,8 +177,8 @@ public final class ScrollBar extends AbstractDwcControl {
     }
 
     @Override
-    public ScrollBar setId(String id){
-        super.setId(id);
+    public ScrollBar setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 
