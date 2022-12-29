@@ -695,7 +695,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
     public TextArea setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
-                bbjCEdit.setHighlightOnFocus(highlight.highlight);
+                bbjCEdit.setHighlightOnFocus(highlight.highlightType);
             } catch (BBjException e){
                 Environment.logError(e);
             }

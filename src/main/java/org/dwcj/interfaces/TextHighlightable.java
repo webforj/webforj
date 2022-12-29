@@ -18,10 +18,10 @@ public interface TextHighlightable {
         HIGHLIGHT_FOCUS_OR_MOUSE(6),
         HIGHLIGHT_ALL(7);
 
-        public final Integer highlight;
+        public final Integer highlightType;
         
         private Highlight(Integer num){
-            this.highlight = num;
+            this.highlightType = num;
         }
     }
 

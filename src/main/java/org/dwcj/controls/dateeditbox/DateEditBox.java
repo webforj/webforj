@@ -688,7 +688,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     public DateEditBox setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
-                bbjDateEditBox.setHighlightOnFocus(highlight.highlight);
+                bbjDateEditBox.setHighlightOnFocus(highlight.highlightType);
             } catch (BBjException e){
                 Environment.logError(e);
             }
