@@ -62,8 +62,8 @@ public final class OpenFileDialog extends AbstractDwcControl {
     }
 
     @Override
-    public OpenFileDialog setId(String id){
-        super.setId(id);
+    public OpenFileDialog setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

@@ -390,8 +390,8 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
     }
 
     @Override
-    public HtmlEdit setId(String id){
-        super.setId(id);
+    public HtmlEdit setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

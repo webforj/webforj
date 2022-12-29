@@ -81,8 +81,8 @@ public class MenuItem extends AbstractDwcControl {
     }
 
     @Override
-    public MenuItem setId(String id){
-        super.setId(id);
+    public MenuItem setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

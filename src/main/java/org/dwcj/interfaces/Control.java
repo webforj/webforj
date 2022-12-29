@@ -17,10 +17,10 @@ public interface Control {
     /**
      * Assigns the ID of a control
      * 
-     * @param id Desired ID designation
+     * @param elementId Desired ID designation
      * @return The control itself
      */
-    public Control setId(String id);
+    public Control setId(String elementId);
 
 
     /**

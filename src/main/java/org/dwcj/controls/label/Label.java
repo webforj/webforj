@@ -213,8 +213,8 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
     }
 
     @Override
-    public Label setId(String id){
-        super.setId(id);
+    public Label setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

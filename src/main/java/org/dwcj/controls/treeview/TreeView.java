@@ -28,6 +28,7 @@ import org.dwcj.controls.treeview.sinks.TreeSelectEventSink;
 import org.dwcj.models.Icon;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public final class TreeView extends AbstractDwcControl {
@@ -210,9 +211,9 @@ public final class TreeView extends AbstractDwcControl {
         return 0;
     }
 
-    public ArrayList<Integer> getExpandedNodes() {
+    public List<Integer> getExpandedNodes() {
         try {
-            return tree.getExpandedNodes();
+            return (List)tree.getExpandedNodes();
         } catch (BBjException e) {
             Environment.logError(e);
         }
@@ -401,7 +402,7 @@ public final class TreeView extends AbstractDwcControl {
         return 0;
     }
 
-    public ArrayList<Integer> getSelectedNodes() {
+    public List<Integer> getSelectedNodes() {
         try {
             return tree.getSelectedNodes();
         } catch (BBjException e) {
@@ -489,7 +490,7 @@ public final class TreeView extends AbstractDwcControl {
         return "";
     }
 
-    public ArrayList<String> getDropTypes(int id) {
+    public List<String> getDropTypes(int id) {
         try {
             return tree.getDropTypes(id);
         } catch (BBjException e) {
@@ -510,7 +511,7 @@ public final class TreeView extends AbstractDwcControl {
         }
     }
 
-    public void setDropTypes(int id, ArrayList<String> types) {
+    public void setDropTypes(int id, List<String> types) {
         try {
             tree.setDropTypes(id, (BBjVector) types);
         } catch (BBjException e) {
@@ -592,8 +593,8 @@ public final class TreeView extends AbstractDwcControl {
     }
 
     @Override
-    public TreeView setId(String id){
-        super.setId(id);
+    public TreeView setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

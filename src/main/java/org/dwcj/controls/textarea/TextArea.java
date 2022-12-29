@@ -895,8 +895,8 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
     }
 
     @Override
-    public TextArea setId(String id){
-        super.setId(id);
+    public TextArea setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

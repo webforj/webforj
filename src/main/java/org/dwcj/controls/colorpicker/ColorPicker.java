@@ -63,8 +63,8 @@ public final class ColorPicker extends AbstractDwcControl {
     }
 
     @Override
-    public ColorPicker setId(String id){
-        super.setId(id);
+    public ColorPicker setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

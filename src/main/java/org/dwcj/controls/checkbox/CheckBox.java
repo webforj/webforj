@@ -208,8 +208,8 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     }
 
     @Override
-    public CheckBox setId(String id){
-        super.setId(id);
+    public CheckBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

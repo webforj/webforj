@@ -252,8 +252,8 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override
-    public RadioButton setId(String id){
-        super.setId(id);
+    public RadioButton setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

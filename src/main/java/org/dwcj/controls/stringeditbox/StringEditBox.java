@@ -528,8 +528,8 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     }
 
     @Override
-    public StringEditBox setId(String id){
-        super.setId(id);
+    public StringEditBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

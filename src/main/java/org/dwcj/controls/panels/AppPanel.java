@@ -70,8 +70,8 @@ public class AppPanel extends AbstractDwcjPanel {
     }
 
     @Override
-    public AppPanel setId(String id){
-        super.setId(id);
+    public AppPanel setId(String elementId){
+        super.setId(elementId);
         return this;
     }
     

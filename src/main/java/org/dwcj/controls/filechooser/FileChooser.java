@@ -35,8 +35,8 @@ public class FileChooser extends AbstractDwcControl {
     }
 
     @Override
-    public FileChooser setId(String id){
-        super.setId(id);
+    public FileChooser setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

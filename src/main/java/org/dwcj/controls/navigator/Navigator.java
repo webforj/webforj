@@ -141,8 +141,8 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
     }
 
     @Override
-    public Navigator setId(String id){
-        super.setId(id);
+    public Navigator setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

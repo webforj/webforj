@@ -11,7 +11,6 @@ import org.dwcj.controls.panels.Div;
 import org.dwcj.exceptions.DwcAppInitializeException;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 public class WelcomeApp extends App {

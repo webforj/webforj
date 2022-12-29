@@ -83,8 +83,8 @@ public final class ImageControl extends AbstractDwcControl {
     }
 
     @Override
-    public ImageControl setId(String id){
-        super.setId(id);
+    public ImageControl setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

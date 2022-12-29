@@ -61,8 +61,8 @@ public final class TabControl extends AbstractDwcControl {
     }
 
     @Override
-    public TabControl setId(String id){
-        super.setId(id);
+    public TabControl setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 

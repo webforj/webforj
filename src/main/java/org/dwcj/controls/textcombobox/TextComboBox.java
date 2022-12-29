@@ -314,7 +314,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     public TextComboBox setTextAt(Integer idx, String text){
-        this.textAt = new SimpleEntry<Integer,String>(idx, text);
+        this.textAt = new SimpleEntry<>(idx, text);
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).setTextAt(idx, text);
@@ -541,8 +541,8 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override
-    public TextComboBox setId(String id){
-        super.setId(id);
+    public TextComboBox setId(String elementId){
+        super.setId(elementId);
         return this;
     }
 
