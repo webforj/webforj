@@ -71,10 +71,12 @@ class public DwcjHelper implements IDwcjBBjBridge
 
     method public java.lang.Object invokeMethod(java.lang.Object e!, java.lang.String method!, java.util.ArrayList args!)
         cmd! = "e!."+method!+"("
-        for i=0 to args!.size()-1
-            cmd! = cmd! + "args!.get("+str(i)+"),"
-        next
-        cmd! = cmd!.substring(0,cmd!.length()-1)
+        if args!<>null() AND args!.size()>0 then
+          for i=0 to args!.size()-1
+              cmd! = cmd! + "args!.get("+str(i)+"),"
+          next
+          cmd! = cmd!.substring(0,cmd!.length()-1)
+        fi
         cmd! = cmd! + ")"
         result!=eval(cmd!)
         methodret result!
