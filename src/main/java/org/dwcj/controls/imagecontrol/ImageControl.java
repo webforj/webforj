@@ -22,7 +22,7 @@ public final class ImageControl extends AbstractDwcControl {
             bbjImageControl = (BBjImageCtrl) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -30,7 +30,7 @@ public final class ImageControl extends AbstractDwcControl {
         try {
             return (Image) bbjImageControl.getImage();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -47,7 +47,7 @@ public final class ImageControl extends AbstractDwcControl {
         try {
             bbjImageControl.setImage((BBjImage) image);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

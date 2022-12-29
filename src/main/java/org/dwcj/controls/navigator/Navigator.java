@@ -45,7 +45,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
             catchUp();
             bbjNavigator = (BBjNavigator) ctrl;
         } catch (Exception e)  {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -53,7 +53,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         try {
             return (RecordSet) bbjNavigator.getTargetRecordSet();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -63,7 +63,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         try {
             return bbjNavigator.isEditable();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -73,7 +73,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         try {
             bbjNavigator.setEditable(editable);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }

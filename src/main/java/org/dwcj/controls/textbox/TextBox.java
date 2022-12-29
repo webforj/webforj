@@ -65,7 +65,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             bbjEditBox = (BBjEditBox) this.ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         
     }

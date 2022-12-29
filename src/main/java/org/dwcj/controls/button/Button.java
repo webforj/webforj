@@ -345,7 +345,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).setAlignment(alignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;
@@ -385,7 +385,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).setVerticalAlignment(this.verticalAlignment.alignment);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
 

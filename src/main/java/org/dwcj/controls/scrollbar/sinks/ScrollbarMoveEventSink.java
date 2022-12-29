@@ -30,7 +30,7 @@ public class ScrollbarMoveEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this,"scrollEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

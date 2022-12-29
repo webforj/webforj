@@ -21,7 +21,7 @@ public class AppPanel extends AbstractDwcjPanel {
             wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", Ints.toByteArray(0x01111088));
             ctrl = wnd;
         } catch (NumberFormatException | BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             throw new DwcAppInitializeException(e);
         }
 

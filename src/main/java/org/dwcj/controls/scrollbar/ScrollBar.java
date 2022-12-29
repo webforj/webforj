@@ -37,7 +37,7 @@ public final class ScrollBar extends AbstractDwcControl {
             catchUp();
             bbjScrollBar = (BBjScrollBar) ctrl;
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         
     }

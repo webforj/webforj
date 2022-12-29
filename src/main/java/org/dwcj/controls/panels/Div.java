@@ -30,7 +30,7 @@ public class Div extends AbstractDwcjPanel {
             ctrl = wnd;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
 
     }
@@ -49,7 +49,7 @@ public class Div extends AbstractDwcjPanel {
                 try {
                     ControlAccessor.getDefault().create(c,this);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    Environment.logError(e);
                 }
             }
         }

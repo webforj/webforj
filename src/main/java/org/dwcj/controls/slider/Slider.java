@@ -68,7 +68,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
                 bbjSlider = (BBjSlider) ctrl;
                 catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
 
     }

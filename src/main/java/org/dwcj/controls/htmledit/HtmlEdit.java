@@ -325,7 +325,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
             try{
                 bbjHtmlEdit.setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -338,7 +338,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
             try{
                 return bbjHtmlEdit.isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -350,7 +350,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
             try{
                 bbjHtmlEdit.setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;

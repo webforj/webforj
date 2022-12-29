@@ -124,7 +124,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.appendToParagraph(parNum, text);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -139,7 +139,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getAllParagraphs();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return new ArrayList<>();
@@ -156,7 +156,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getCurrentParagraphIndex();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return -1;
@@ -171,7 +171,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getHorizontalScrollable();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -186,7 +186,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getIgnoreEnters();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -201,7 +201,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getIgnoreTabs();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -216,7 +216,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getLimitToOneParagraph();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -231,7 +231,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getLineCountLimit();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return -1;
@@ -246,7 +246,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getLineWrap();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -261,7 +261,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getMaxParagraphSize();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return -1;
@@ -287,7 +287,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getNumberOfParagraphs();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return 0;
@@ -302,7 +302,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getOvertypeMode();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
 
         }
@@ -319,7 +319,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getParagraph(parNum);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return "";
@@ -342,7 +342,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getSelection();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return Collections.emptyList();
@@ -357,7 +357,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getTabSize();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return 8;
@@ -372,7 +372,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getVerticalScrollable();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -387,7 +387,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 return bbjCEdit.getWrapStyleWord();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -405,7 +405,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.highlight(parIndex1, off1, parIndex2, off2);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
     }
@@ -423,7 +423,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.removeAll();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
     }
@@ -438,7 +438,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.removeParagraph(parIndex);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -456,7 +456,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setHorizontalScrollable(scroll);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.hScroll = scroll;
@@ -473,7 +473,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setIgnoreEnters(ignore);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.ignoreEnter = ignore;
@@ -490,7 +490,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setIgnoreTabs(ignore);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.ignoreTab = ignore;
@@ -507,7 +507,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setLimitToOneParagraph(limit);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.oneParagraph = limit;
@@ -524,7 +524,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setLineCountLimit(limit);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.lineLimit = limit;
@@ -541,7 +541,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setLineWrap(wrap);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.lineWrap = wrap;
@@ -558,7 +558,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setMaxParagraphSize(size);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.maxParagraphSize = size;
@@ -575,7 +575,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setMaxLength(length);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.maxLength = length;
@@ -592,7 +592,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setOvertypeMode(overtype);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.overtype = overtype;
@@ -609,7 +609,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setTabSize(size);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabSize = size;
@@ -626,7 +626,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setVerticalScrollable(scroll);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.vScroll = scroll;
@@ -643,7 +643,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setWrapStyleWord(word);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.wrapWord = word;
@@ -661,7 +661,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 return bbjCEdit.isEditable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -678,7 +678,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.setEditable(editable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.readOnly = editable;
@@ -697,7 +697,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 bbjCEdit.setHighlightOnFocus(highlight.highlight);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textHighlight = highlight;
@@ -710,7 +710,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 bbjCEdit.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -722,7 +722,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 bbjCEdit.setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
