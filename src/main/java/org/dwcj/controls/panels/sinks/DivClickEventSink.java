@@ -30,7 +30,7 @@ public final class DivClickEventSink {
                     "onEvent");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
     @SuppressWarnings("java:S1172")

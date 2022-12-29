@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -65,7 +66,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             bbjEditBox = (BBjEditBox) this.ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         
     }
@@ -103,7 +104,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 return bbjEditBox.getPassHomeDelete();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.homeDelete;
@@ -114,7 +115,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 return bbjEditBox.getSelectedText();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -130,7 +131,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 return bbjEditBox.getSelection().toArray().toString();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -144,7 +145,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
                 return bbjEditBox.isPasswordVisible();
             }
             catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.passwordVisible;
@@ -165,7 +166,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
                 bbjEditBox.setMaxLength(length);
             }
             catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.maxLength = length;
@@ -178,7 +179,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
                 bbjEditBox.setPassHomeDelete(pass);
             }
             catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.homeDelete = pass;
@@ -191,7 +192,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
                 bbjEditBox.setPasswordVisible(visible);
             }
             catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.passwordVisible = visible;
@@ -208,7 +209,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             return bbjEditBox.isEditable();
         }
         catch(BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this.readOnly;
     }
@@ -219,7 +220,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             bbjEditBox.setEditable(editable);
         }
         catch(BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -230,7 +231,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 bbjEditBox.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -242,7 +243,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 bbjEditBox.setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -255,7 +256,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 bbjEditBox.isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -267,7 +268,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 bbjEditBox.setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;
@@ -286,7 +287,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try {
                 bbjEditBox.setAlignment(alignment.textPosition);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;
@@ -305,7 +306,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
             try{
                 bbjEditBox.setHighlightOnFocus(highlight.highlight);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textHighlight = highlight;

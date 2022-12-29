@@ -378,7 +378,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setRestore(restore);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.restore = restore;
@@ -394,7 +394,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         try {
             return bbjInputE.isEditable();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this.readOnly;
     }
@@ -403,7 +403,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         try {
             bbjInputE.setEditable(editable);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -414,7 +414,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try{
                 bbjInputE.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -426,7 +426,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try{
                 bbjInputE.setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -439,7 +439,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try{
                 bbjInputE.isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -451,7 +451,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try{
                 bbjInputE.setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;
@@ -469,7 +469,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setAlignment(alignment.textPosition);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;
@@ -488,7 +488,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try{
                 bbjInputE.setHighlightOnFocus(highlight.highlight);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textHighlight = highlight;

@@ -26,7 +26,7 @@ public final class HtmlContainerNativeJavascriptEventSink {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(htmlv);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_NATIVE_JAVASCRIPT, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

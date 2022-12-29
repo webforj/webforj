@@ -1,5 +1,6 @@
 package org.dwcj.controls;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Control;
@@ -65,7 +66,7 @@ public abstract class AbstractControl implements Control {
             try {
                 return ctrl.getAttribute("id");
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         } else if (!(this.Id.equals(""))) {
             return this.Id;
@@ -79,7 +80,7 @@ public abstract class AbstractControl implements Control {
             try {
                 this.ctrl.setAttribute("id", id);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.Id = id;

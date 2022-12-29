@@ -27,7 +27,7 @@ public class TextComboBoxCloseEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -42,7 +42,7 @@ public class TextComboBoxCloseEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

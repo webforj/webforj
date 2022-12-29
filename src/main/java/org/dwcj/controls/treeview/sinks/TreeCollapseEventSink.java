@@ -27,7 +27,7 @@ public class TreeCollapseEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "collapseEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

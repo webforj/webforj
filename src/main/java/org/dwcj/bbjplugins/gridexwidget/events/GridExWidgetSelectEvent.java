@@ -2,6 +2,7 @@ package org.dwcj.bbjplugins.gridexwidget.events;
 
 import com.basiscomponents.db.ResultSet;
 
+import org.dwcj.Environment;
 import org.dwcj.bbjplugins.gridexwidget.GridExWidget;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.interfaces.ControlEvent;
@@ -20,7 +21,7 @@ public final class GridExWidgetSelectEvent implements ControlEvent {
         try {
             selectionTmp = ResultSet.fromJson(eventString);
         } catch (IOException|ParseException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         selection = selectionTmp;
     }

@@ -23,7 +23,7 @@ public final class GridExWidgetSelectEventSink {
             bbjctrl=ControlAccessor.getDefault().getBBjControl(grid);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_GRID_SELECT_ROW, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent", "::BBjGridExWidgetSelectEventProxy.bbj::BBjGridExWidgetSelectEventProxy"), "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

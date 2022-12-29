@@ -29,7 +29,7 @@ public class TextComboBoxOpenEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -44,7 +44,7 @@ public class TextComboBoxOpenEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

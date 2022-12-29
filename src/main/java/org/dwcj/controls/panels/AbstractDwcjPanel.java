@@ -3,6 +3,7 @@ package org.dwcj.controls.panels;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractControl;
@@ -27,7 +28,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
             try {
                 ControlAccessor.getDefault().create(c,this);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -52,7 +53,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
             try {
                 wnd.setStyle(property, value);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -64,7 +65,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
             try {
                 wnd.addStyle(selector);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -76,7 +77,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
             try {
                 wnd.removeStyle(selector);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;

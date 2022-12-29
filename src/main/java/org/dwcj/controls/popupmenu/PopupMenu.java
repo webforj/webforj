@@ -332,7 +332,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.show(control, x, y);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -340,7 +340,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.show(context, id, x, y);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

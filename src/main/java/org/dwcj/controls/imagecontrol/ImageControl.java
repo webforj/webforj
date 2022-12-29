@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjImage;
 import com.basis.bbj.proxies.sysgui.BBjImageCtrl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -22,7 +23,7 @@ public final class ImageControl extends AbstractDwcControl {
             bbjImageControl = (BBjImageCtrl) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -30,7 +31,7 @@ public final class ImageControl extends AbstractDwcControl {
         try {
             return (Image) bbjImageControl.getImage();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -47,7 +48,7 @@ public final class ImageControl extends AbstractDwcControl {
         try {
             bbjImageControl.setImage((BBjImage) image);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

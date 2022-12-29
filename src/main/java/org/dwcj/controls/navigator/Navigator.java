@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjNavigator;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.resource.RecordSet;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.navigator.events.NavigatorFirstEvent;
@@ -45,7 +46,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
             catchUp();
             bbjNavigator = (BBjNavigator) ctrl;
         } catch (Exception e)  {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -53,7 +54,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         try {
             return (RecordSet) bbjNavigator.getTargetRecordSet();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -63,7 +64,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         try {
             return bbjNavigator.isEditable();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -73,7 +74,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
         try {
             bbjNavigator.setEditable(editable);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }

@@ -33,7 +33,7 @@ public class SliderOnControlScrollEventSink {
                                    "onEvent");
 
         } catch(Exception e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

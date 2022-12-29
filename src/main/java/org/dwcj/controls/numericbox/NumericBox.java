@@ -381,7 +381,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setDotCharacter(dot);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.dotChar = dot;
@@ -401,7 +401,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setEditString(edit.getBytes());
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.editString = edit;
@@ -418,7 +418,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setHighlight(highlight);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.highlight = highlight;
@@ -435,7 +435,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setInsertMode(insert);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.insertMode = insert;
@@ -452,7 +452,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setLength(len);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.length = len;
@@ -469,7 +469,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setMargin(marginWidth);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.margin = marginWidth;
@@ -486,7 +486,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setMask(mask);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.mask = mask;
@@ -503,7 +503,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setNegateable(negatable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.negatable = negatable;
@@ -520,7 +520,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setPassEnter(pass);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.pEnter = pass;
@@ -537,7 +537,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setPassEnter(pass);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.pTab = pass;
@@ -554,7 +554,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setRestore(String.valueOf(restore));
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.restore = restore;
@@ -571,7 +571,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setUseEditCommas(useCommas);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.commas = useCommas;
@@ -589,7 +589,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setValue(BasisNumber.createBasisNumber(value));
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.value = value;
@@ -609,7 +609,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 return numBox.isEditable();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -626,7 +626,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 numBox.setEditable(editable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -638,7 +638,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try{
                 numBox.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -650,7 +650,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try{
                 numBox.setFocusable(focusable);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -663,7 +663,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try{
                 numBox.isTabTraversable();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -675,7 +675,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try{
                 numBox.setTabTraversable(traverse);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traverse;
@@ -693,7 +693,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try{
                 numBox.setHighlightOnFocus(highlight.highlight);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textHighlight = highlight;
@@ -711,7 +711,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try{
                 numBox.setAlignment(alignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;

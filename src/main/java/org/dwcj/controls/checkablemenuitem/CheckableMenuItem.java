@@ -1,5 +1,6 @@
 package org.dwcj.controls.checkablemenuitem;
 
+import org.dwcj.Environment;
 import org.dwcj.controls.menuitem.MenuItem;
 
 import com.basis.bbj.proxies.sysgui.BBjCheckableMenuItem;
@@ -13,7 +14,7 @@ public class CheckableMenuItem extends MenuItem {
         try {
             bbjCheckableMenuItem.setSelected(selected);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
 
