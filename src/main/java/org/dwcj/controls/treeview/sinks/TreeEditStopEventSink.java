@@ -27,7 +27,7 @@ public class TreeEditStopEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editStopEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.listbox.events.ListBoxDoubleClickEvent;
 import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
@@ -67,7 +68,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             populate();
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -121,7 +122,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                 cb.removeAllItems();
                 cb.insertItems(0, data2);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
     }
@@ -134,7 +135,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 bbjListBox.deselectAll();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -145,7 +146,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 bbjListBox.deselectIndex(index);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -180,7 +181,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                 BBjListBox cb = (BBjListBox) ctrl;
                 return cb.getItemAt(idx);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -192,7 +193,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                 try{
                     bbjListBox.getItemCount();
                 } catch(BBjException e){
-                    e.printStackTrace();
+                    Environment.logError(e);
                 }
             }
             return this;
@@ -208,7 +209,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try {
                 return bbjListBox.getMultipleSelection();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -225,7 +226,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                 String value = bbjListBox.getSelectedItem();
                 return new SimpleEntry<>(getEntryByValue(value), value);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -262,7 +263,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                     }
                 }
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
             return map;
         }
@@ -330,7 +331,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).removeAllItems();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -341,7 +342,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).removeItemAt(idx);
             }catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -352,7 +353,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).selectIndex(idx);
             }catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -364,7 +365,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try {
                 bbjListBox.setMultipleSelection(multipleSelection);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.multipleSelection = multipleSelection;
@@ -377,7 +378,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).setTextAt(idx, text);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -549,7 +550,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 return ((BBjListBox) this.ctrl).isEditable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -561,7 +562,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).setEditable(editable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
             return this;
         }
@@ -577,7 +578,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                 return ((BBjListBox) this.ctrl).isFocusable();
             }
             catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -589,7 +590,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -608,7 +609,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.mouseWheelCondition = condition;
@@ -622,7 +623,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 return ((BBjListBox) this.ctrl).isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -634,7 +635,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;
@@ -653,7 +654,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
             try{
                 ((BBjListBox) this.ctrl).setAlignment(alignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;

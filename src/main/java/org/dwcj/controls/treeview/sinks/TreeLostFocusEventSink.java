@@ -26,7 +26,7 @@ public class TreeLostFocusEventSink {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(tree);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LOST_FOCUS, Environment.getInstance().getDwcjHelper().getEventProxy(this, "lostFocusEvent"), "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

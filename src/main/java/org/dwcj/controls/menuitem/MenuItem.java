@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import java.nio.charset.StandardCharsets;
 
+import org.dwcj.Environment;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.popupmenu.PopupMenu;
 
@@ -25,7 +26,7 @@ public class MenuItem extends AbstractDwcControl {
         try {
             return (Menu) bbjMenuItem.getParentMenu();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -34,7 +35,7 @@ public class MenuItem extends AbstractDwcControl {
         try {
             return (PopupMenu) bbjMenuItem.getParentPopupMenu();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -43,7 +44,7 @@ public class MenuItem extends AbstractDwcControl {
         try {
             bbjMenuItem.setAccelerator(accel.getBytes(StandardCharsets.UTF_8));
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

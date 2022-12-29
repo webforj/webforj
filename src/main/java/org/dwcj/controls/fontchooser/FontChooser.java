@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjFont;
 import com.basis.bbj.proxies.sysgui.BBjFontChooser;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.fontchooser.events.FontChooserApproveEvent;
@@ -37,7 +38,7 @@ public final class FontChooser extends AbstractDwcControl {
             bbjFontChooser = (BBjFontChooser) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -45,7 +46,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.approveSelection();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -54,7 +55,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.cancelSelection();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -63,7 +64,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             return bbjFontChooser.getApproveButtonText();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return "";
         }
     }
@@ -72,7 +73,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             return bbjFontChooser.getCancelButtonText();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return "";
         }
     }
@@ -81,7 +82,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             return bbjFontChooser.getControlButtonsAreShown();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return false;
         }
     }
@@ -90,7 +91,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             return bbjFontChooser.getFontsScaled();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return false;
         }
     }
@@ -99,7 +100,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             return bbjFontChooser.getPreviewMessage();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return "";
         }
     }
@@ -108,7 +109,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             return (Font) bbjFontChooser.getSelectedFont();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -117,7 +118,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.setApproveButtonText(text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -126,7 +127,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.setCancelButtonText(text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -135,7 +136,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.setControlButtonsAreShown(show);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -144,7 +145,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.setFontsScaled(scale);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -153,7 +154,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.setPreviewMessage(message);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -162,7 +163,7 @@ public final class FontChooser extends AbstractDwcControl {
         try {
             bbjFontChooser.setSelectedFont((BBjFont) font);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }

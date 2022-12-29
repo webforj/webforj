@@ -3,6 +3,7 @@ package org.dwcj.controls.progressbar;
 import com.basis.bbj.proxies.sysgui.BBjProgressBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -33,7 +34,7 @@ public final class ProgressBar extends AbstractDwcControl {
             bbjProgressBar = (BBjProgressBar) ctrl;
             catchUp();
         } catch (Exception e)  {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -46,7 +47,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 return bbjProgressBar.getMaximum();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.maximum;
@@ -61,7 +62,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 return bbjProgressBar.getMinimum();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.minimum;
@@ -77,7 +78,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 return bbjProgressBar.getOrientation();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.orientation;
@@ -87,12 +88,13 @@ public final class ProgressBar extends AbstractDwcControl {
      * This method returns the text of aProgressBar control.
      * @return Returns the text (label) of the progress bar control.
      */
+    @Override
     public String getText() {
         if(this.ctrl != null){
             try {
                 return bbjProgressBar.getText();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.text;
@@ -107,7 +109,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 return bbjProgressBar.getValue();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.value;
@@ -122,7 +124,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 return bbjProgressBar.isIndeterminate();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.indeterminate;
@@ -137,7 +139,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 return bbjProgressBar.isStringPainted();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
         }
         }
         return this.stringPainted;
@@ -153,7 +155,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setIndeterminate(indeterminate);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -169,7 +171,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setMaximum(maximum);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.maximum = maximum;
@@ -186,7 +188,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setMinimum(minimum);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.minimum = minimum;
@@ -203,7 +205,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setOrientation(orientation);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.orientation = orientation;
@@ -220,7 +222,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setStringPainted(stringPainted);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.stringPainted = stringPainted;
@@ -237,7 +239,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setText(text);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.text = text;
@@ -254,7 +256,7 @@ public final class ProgressBar extends AbstractDwcControl {
             try {
                 bbjProgressBar.setValue(value);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.value = value;

@@ -467,7 +467,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 return ((BBjListEdit) this.ctrl).isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -479,7 +479,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;
@@ -500,7 +500,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).setAlignment(textAlignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = textAlignment;

@@ -29,7 +29,7 @@ public final class FontChooserChangeEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         
     }

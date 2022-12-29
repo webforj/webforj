@@ -4,6 +4,7 @@ import org.dwcj.controls.listbox.ListBox;
 import org.dwcj.interfaces.ControlEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class ListBoxSelectEvent implements ControlEvent {
 
@@ -17,7 +18,7 @@ public final class ListBoxSelectEvent implements ControlEvent {
     }
 
     public void addKey(Object key) { keys.add(key); }
-    public ArrayList<Object> getKeys() { return keys; }
+    public List<Object> getKeys() { return keys; }
 
     @Override
     public ListBox getControl() { return control; }

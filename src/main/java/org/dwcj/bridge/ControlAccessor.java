@@ -2,6 +2,7 @@ package org.dwcj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 
+import org.dwcj.Environment;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
@@ -28,8 +29,8 @@ public abstract class ControlAccessor {
         }
         try {
             Class.forName(AbstractDwcjPanel.class.getName(), true, AbstractDwcjPanel.class.getClassLoader());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            Environment.logError(e);
         }
         return accessor;
     }

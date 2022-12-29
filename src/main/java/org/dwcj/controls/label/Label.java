@@ -50,7 +50,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 return bbjStaticText.getBottomMargin();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.margins[2];
@@ -61,7 +61,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 return bbjStaticText.getLeftMargin();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.margins[3];
@@ -72,7 +72,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 return bbjStaticText.getLineWrap();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.lineWrap;
@@ -83,7 +83,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 return bbjStaticText.getRightMargin();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.margins[1];
@@ -94,7 +94,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 return bbjStaticText.getTopMargin();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.margins[0];
@@ -105,7 +105,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 bbjStaticText.setBottomMargin(margin);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.margins[2] = margin;
@@ -117,7 +117,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 bbjStaticText.setLeftMargin(margin);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.margins[3] = margin;
@@ -129,7 +129,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 bbjStaticText.setLineWrap(wrap);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.lineWrap = wrap;
@@ -141,7 +141,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 bbjStaticText.setRightMargin(margin);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.margins[1] = margin;
@@ -153,7 +153,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 bbjStaticText.setTopMargin(margin);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.margins[0] = margin;
@@ -173,7 +173,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
             try{
                 ((BBjStaticText) ctrl).setAlignment(alignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;

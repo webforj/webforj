@@ -29,7 +29,7 @@ public final class ListBoxSelectEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -46,7 +46,7 @@ public final class ListBoxSelectEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

@@ -6,6 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.App;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.combobox.events.ComboBoxChangeEvent;
 import org.dwcj.controls.combobox.events.ComboBoxCloseEvent;
@@ -86,7 +87,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             populate();
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
 
     }
@@ -143,7 +144,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
                 cb.removeAllItems();
                 cb.insertItems(0, data2);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
     }
@@ -176,7 +177,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).closeList();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -187,7 +188,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).deselect();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -216,7 +217,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
                 BBjListButton cb = (BBjListButton) ctrl;
                 return cb.getItemAt(idx);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -227,7 +228,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 return ((BBjListButton) ctrl).getSelectedIndex();
             }catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -246,7 +247,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
                 }
             }
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return new SimpleEntry<>(null,null);
     }
@@ -256,7 +257,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 return ((BBjListButton) ctrl).getItemCount();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -270,7 +271,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         try {
             bbjListButton.openList();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -361,7 +362,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).removeAllItems();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -372,7 +373,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).removeItemAt(index);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -383,7 +384,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).selectIndex(index);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -394,7 +395,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setMaximumRowCount(max);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.maxRowCount = max;
@@ -409,7 +410,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setTextAt(idx, text);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -422,7 +423,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 return ((BBjListButton) this.ctrl).isEditable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -434,7 +435,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setEditable(readOnly);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.readOnly = readOnly;
@@ -447,7 +448,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 return ((BBjListButton) this.ctrl).isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -459,7 +460,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -477,7 +478,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.mouseWheelCondition = condition;
@@ -491,7 +492,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 return ((BBjListButton) this.ctrl).isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -503,7 +504,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;
@@ -521,7 +522,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
             try{
                 ((BBjListButton) this.ctrl).setAlignment(textAlignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = textAlignment;

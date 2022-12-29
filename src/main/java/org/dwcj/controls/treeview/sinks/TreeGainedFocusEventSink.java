@@ -28,7 +28,7 @@ public class TreeGainedFocusEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "gainedFocusEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
