@@ -1,19 +1,25 @@
 package org.dwcj.bbjplugins.thread;
 
-import com.basis.bbj.proxies.event.BBjCustomEvent;
 import org.dwcj.Environment;
+import org.dwcj.bbjplugins.thread.sinks.BBjThreadProxyFinishedEventSink;
+import org.dwcj.bbjplugins.thread.sinks.BBjThreadProxyUpdateEventSink;
 import org.dwcj.bridge.IDwcjBBjBridge;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class BBjThreadProxy {
+public final class BBjThreadProxy {
 
     private final IDwcjBBjBridge dwcjHelper = Environment.getInstance().getDwcjHelper();
 
     private final Object classInstance;
-    private final ArrayList<Consumer<BBjThreadProxy>> finishedConsumerList = new ArrayList<>();
-    private final ArrayList<Consumer<BBjThreadProxy>> updateConsumerList = new ArrayList<>();
+
+    private BBjThreadProxyFinishedEventSink finishedEventThreadProxy;
+    private BBjThreadProxyUpdateEventSink updateEventThreadProxy;
+
+    public Object getBBjThreadInstance() {
+        return classInstance;
+    }
 
     private BBjThreadProxy(){
             classInstance=null;
@@ -37,21 +43,24 @@ public class BBjThreadProxy {
     }
 
     public void onFinished(Consumer<BBjThreadProxy> c) {
-        if (finishedConsumerList.isEmpty()){
-            ArrayList<Object> arglist = new ArrayList<>();
-            arglist.add(12350);
-            arglist.add(  Environment.getInstance().getDwcjHelper().getEventProxy(this, "finishedEvent"));
-            arglist.add( "onEvent");
-            dwcjHelper.invokeMethod(classInstance,"setCallback",arglist);
+
+        if (this.finishedEventThreadProxy == null) {
+            this.finishedEventThreadProxy = new BBjThreadProxyFinishedEventSink(this);
         }
-        finishedConsumerList.add(c);
+
+        this.finishedEventThreadProxy.addCallback(c);
     }
 
-    public void finishedEvent(BBjCustomEvent ev){//NOSONAR
-        for (Consumer<BBjThreadProxy> consumer : finishedConsumerList) {
-            consumer.accept(this);
+
+    public void onUpdate(Consumer<BBjThreadProxy> c) {
+
+        if (this.updateEventThreadProxy == null) {
+            this.updateEventThreadProxy = new BBjThreadProxyUpdateEventSink(this);
         }
+
+        this.updateEventThreadProxy.addCallback(c);
     }
+
 
     public void start() {
         dwcjHelper.invokeMethod(classInstance,"start",null);
@@ -61,20 +70,4 @@ public class BBjThreadProxy {
         dwcjHelper.invokeMethod(classInstance,"kill",null);
     }
 
-    public void onUpdate(Consumer<BBjThreadProxy> c) {
-        if (updateConsumerList.isEmpty()){
-            ArrayList<Object> arglist = new ArrayList<>();
-            arglist.add(12352);
-            arglist.add(  Environment.getInstance().getDwcjHelper().getEventProxy(this, "updateEvent"));
-            arglist.add( "onEvent");
-            dwcjHelper.invokeMethod(classInstance,"setCallback",arglist);
-        }
-        updateConsumerList.add(c);
-    }
-
-    public void updateEvent(BBjCustomEvent ev){//NOSONAR
-        for (Consumer<BBjThreadProxy> consumer : updateConsumerList) {
-            consumer.accept(this);
-        }
-    }
 }
