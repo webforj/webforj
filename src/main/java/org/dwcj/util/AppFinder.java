@@ -41,9 +41,8 @@ public class AppFinder {
     public Set<String> getAppImplmentations() {
 
         if (this.cpEntriesToCheck != null) {
-            Iterator<String> it = cpEntriesToCheck.iterator();
-            while (it.hasNext()) {
-                process(it.next());
+            for (String s : cpEntriesToCheck) {
+                process(s);
             }
         }
         return this.appImplmentations;
@@ -77,21 +76,19 @@ public class AppFinder {
                 return;
             }
 
-            for (int i = 0; i < myFiles.length; i++) {
-                File myFile = myFiles[i];
+            for (File myFile : myFiles) {
                 if (myFile.isDirectory()) {
-                    myDirectories.add(myFiles[i]);
+                    myDirectories.add(myFile);
                 } else {
                     if (myFile.getName().endsWith(".class")) {
-                        String className = getClassName(curFile +((curFile.isBlank()) ? "" : File.separator) + myFile.getName());
+                        String className = getClassName(curFile + ((curFile.isBlank()) ? "" : File.separator) + myFile.getName());
                         checkClass(className);
                     }
                 }
             }
 
-            for (Iterator i = myDirectories.iterator(); i.hasNext(); ) {
-                processFile(base, curFile + ((curFile.isBlank())?"":File.separator) +
-                        ((File)i.next()).getName());
+            for (Object myDirectory : myDirectories) {
+                processFile(base, curFile + ((curFile.isBlank()) ? "" : File.separator) + ((File) myDirectory).getName());
             }
         }
     }
@@ -103,7 +100,7 @@ public class AppFinder {
     }
 
     private void processJar(ZipFile file) {
-        Enumeration files = file.entries();
+        Enumeration files = file.entries(); //NOSONAR
 
         while (files.hasMoreElements()) {
             Object tfile = files.nextElement();
