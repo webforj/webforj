@@ -48,7 +48,7 @@ public final class DateEditBoxEditModifyEventSink {
                     "onEvent");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjPopupMenu;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -24,7 +25,7 @@ public final class MenuButton extends AbstractDwcControl {
             catchUp();
             bbjMenuButton = (BBjMenuButton) ctrl;
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -32,7 +33,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             return (PopupMenu) bbjMenuButton.addPopupMenu();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -41,7 +42,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.clearImageSize();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -49,7 +50,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             return bbjMenuButton.getDisableOnClick();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -58,7 +59,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             return (PopupMenu) bbjMenuButton.getPopupMenu();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -67,7 +68,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             return bbjMenuButton.getImageFile();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -76,7 +77,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             return bbjMenuButton.isDropdownMenuVisible();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -85,7 +86,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.removeDropdownMenu();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -93,7 +94,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.setDisableOnClick(disable);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -101,7 +102,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.setDropdownMenu((BBjPopupMenu) popupMenu);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -109,7 +110,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.setDropdownMenuVisible(visible);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -117,7 +118,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.setImageFile(file);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -125,7 +126,7 @@ public final class MenuButton extends AbstractDwcControl {
         try {
             bbjMenuButton.setImageSize(new BasisNumber(height), new BasisNumber(width));
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

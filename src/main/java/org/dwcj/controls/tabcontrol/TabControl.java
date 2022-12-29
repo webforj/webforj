@@ -1,6 +1,7 @@
 package org.dwcj.controls.tabcontrol;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -23,7 +24,7 @@ public final class TabControl extends AbstractDwcControl {
             ctrl = w.addTabCtrl(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             catchUp();
         } catch (Exception e)  {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

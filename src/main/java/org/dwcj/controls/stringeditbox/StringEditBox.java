@@ -486,7 +486,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     public StringEditBox setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
-                bbjInputE.setHighlightOnFocus(highlight.highlight);
+                bbjInputE.setHighlightOnFocus(highlight.highlightType);
             } catch (BBjException e){
                 Environment.logError(e);
             }

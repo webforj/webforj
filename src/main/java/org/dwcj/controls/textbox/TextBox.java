@@ -304,7 +304,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     public TextBox setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
-                bbjEditBox.setHighlightOnFocus(highlight.highlight);
+                bbjEditBox.setHighlightOnFocus(highlight.highlightType);
             } catch (BBjException e){
                 Environment.logError(e);
             }

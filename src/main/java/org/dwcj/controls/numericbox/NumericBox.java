@@ -691,7 +691,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     public NumericBox setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
-                numBox.setHighlightOnFocus(highlight.highlight);
+                numBox.setHighlightOnFocus(highlight.highlightType);
             } catch (BBjException e){
                 Environment.logError(e);
             }

@@ -55,7 +55,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.addExpandableNode(childID, parentID, text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -63,7 +63,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.addNode(childID, parentID, text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -71,7 +71,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.clearImageSize();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -79,7 +79,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getChildAt(parentID, index);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -88,7 +88,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getIndexOfChild(parentID);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -97,7 +97,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getParentNode(childID);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -106,7 +106,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getRoot();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -115,7 +115,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.insertExpandableNode(childID, parentID, text, index);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -123,7 +123,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.insertNode(childID, parentID, text, index);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -131,7 +131,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.isNodeLeaf(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -140,7 +140,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.removeDescendants(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -148,7 +148,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.removeNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -156,7 +156,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setRoot(id, text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -164,7 +164,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.collapseNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -172,7 +172,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.collapseTreeFromNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -180,7 +180,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.expandNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -188,7 +188,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.expandTreeFromNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -196,7 +196,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getCollapsedNode();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -205,7 +205,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getExpandedNode();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -214,7 +214,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getExpandedNodes();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return new ArrayList<>();
     }
@@ -223,7 +223,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.isNodeExpandable(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -232,7 +232,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.isNodeExpanded(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -241,7 +241,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getNodeText(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return "";
     }
@@ -250,7 +250,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setNodeText(id, text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -258,7 +258,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.editNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -266,7 +266,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.endEdit();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -274,7 +274,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.isNodeEditable(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -283,7 +283,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.isTreeEditable();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -292,7 +292,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setNodeEditable(id, editable);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -300,7 +300,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setTreeEditable(editable);
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -308,7 +308,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.clearNodeIcon(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -316,7 +316,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.clearNodeSelectedIcon(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -324,7 +324,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setCollapsedIcon((BBjImage) icon.getFile());
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -332,7 +332,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setExpandedIcon((BBjImage) icon.getFile());
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -340,7 +340,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setLeafIcon((BBjImage) icon.getFile());
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -348,7 +348,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setNodeIcon(id, (BBjImage) icon.getFile());
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -356,7 +356,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setNodeSelectedIcon(id, (BBjImage) icon.getFile());
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -364,7 +364,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setSelectedIcon((BBjImage) icon.getFile());
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -372,7 +372,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.deselectAll();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -380,7 +380,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.deselectChildren(parentID);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -388,7 +388,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.deselectNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -396,7 +396,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getSelectedNode();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return 0;
     }
@@ -405,7 +405,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getSelectedNodes();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return new ArrayList<>();
     }
@@ -418,7 +418,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.isNodeSelected(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -431,7 +431,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.selectChildren(parentID);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -439,7 +439,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.selectNode(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -447,7 +447,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setNodeVisible(id);
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -463,7 +463,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getToolTipText(id);
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return "";
     }
@@ -472,7 +472,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setToolTipText(id, text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -484,7 +484,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getDragType(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return "";
     }
@@ -493,7 +493,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             return tree.getDropTypes(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return new ArrayList<>();
     }
@@ -506,7 +506,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setDragType(id, type);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -514,7 +514,7 @@ public final class TreeView extends AbstractDwcControl {
         try {
             tree.setDropTypes(id, (BBjVector) types);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

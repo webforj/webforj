@@ -24,7 +24,7 @@ public class CheckableMenuItem extends MenuItem {
         try {
             return bbjCheckableMenuItem.isSelected();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return false;
         }
     }

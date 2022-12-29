@@ -116,7 +116,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getBeep();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.beep;
@@ -132,7 +132,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getCaretPosition();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.caretPos;
@@ -144,7 +144,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return new String(bbjDateEditBox.getEditString(), "UTF_8");
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.editString;
@@ -159,7 +159,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             return bbjDateEditBox.getError();
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         } 
         return null;
     }
@@ -169,7 +169,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getHighlight();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return highlight;
@@ -180,7 +180,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getInsertMode();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.insert;
@@ -191,7 +191,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getLength();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.length;
@@ -209,7 +209,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getMargin();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.margin;
@@ -220,7 +220,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getMask();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.mask;
@@ -231,7 +231,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getPassEnter();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.pEnter;
@@ -242,7 +242,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getPassTab();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.pTab;
@@ -253,7 +253,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getPlusMinus();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.plusMinus;
@@ -264,7 +264,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getRestore();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.restore;
@@ -275,7 +275,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.getShowWeeks();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.showWeeks;
@@ -286,7 +286,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             return bbjDateEditBox.getTodayColor().toString();
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         } 
         return "r=255,g=0,b=0";
     }
@@ -296,7 +296,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             return bbjDateEditBox.getValue().toString();
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         } 
         return "2459909";
     }
@@ -306,7 +306,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             return bbjDateEditBox.getWeekdayColor().toString();
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         } 
         return "r=0,g=0,b=255";
     }
@@ -316,7 +316,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             return bbjDateEditBox.getWeekendColor().toString();
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         } 
         return "r=0,g=128,b=0";
     }
@@ -332,7 +332,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.isValid();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return true;
@@ -343,7 +343,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.restore();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -354,7 +354,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.selectAll();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this;
@@ -375,7 +375,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
                 App.consoleLog(this.beep.toString());
                 bbjDateEditBox.setBeep(beep);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -388,7 +388,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setCalendarSize(width, height);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -400,7 +400,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setCaretPosition(position);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
 
         }
@@ -415,7 +415,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setEditString(edit.getBytes());
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -427,7 +427,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setHighlight(highlight);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -440,7 +440,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setInsertMode(insert);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -452,7 +452,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setLength(length);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -473,7 +473,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setMargin(marginWidth);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -485,7 +485,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setMask(mask);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -497,7 +497,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setPassEnter(pass);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -509,7 +509,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setPassTab(pass);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -521,7 +521,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
             bbjDateEditBox.setRestore(restore);
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         }
         return this; 
@@ -533,7 +533,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setPlusMinus(plusMinus);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -545,7 +545,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setShowWeeks(showWeeks);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this; 
@@ -558,7 +558,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             bbjDateEditBox.setTodayColor((BBjColor)color);
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this; 
     }
@@ -570,7 +570,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try{
             bbjDateEditBox.setValue((BBjNumber)value);
         } catch(BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -582,7 +582,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             bbjDateEditBox.setWeekdayColor((BBjColor)color);
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this; 
     }
@@ -593,7 +593,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         try {
             bbjDateEditBox.setWeekendColor((BBjColor)color);
         } catch (BBjException e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this; 
     }
@@ -610,7 +610,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjDateEditBox.isEditable();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             } 
         }
         return this.readOnly;
@@ -622,7 +622,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjDateEditBox.setEditable(editable);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.readOnly = editable;
@@ -635,7 +635,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjDateEditBox.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -647,7 +647,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjDateEditBox.setFocusable(focusable);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -660,7 +660,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjDateEditBox.isTabTraversable();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -672,7 +672,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjDateEditBox.setTabTraversable(traverse);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traverse;
@@ -688,9 +688,9 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     public DateEditBox setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
-                bbjDateEditBox.setHighlightOnFocus(highlight.highlight);
+                bbjDateEditBox.setHighlightOnFocus(highlight.highlightType);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textHighlight = highlight;
@@ -708,7 +708,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjDateEditBox.setAlignment(alignment.textPosition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;

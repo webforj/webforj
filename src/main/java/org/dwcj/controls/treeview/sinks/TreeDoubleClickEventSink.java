@@ -28,7 +28,7 @@ public class TreeDoubleClickEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

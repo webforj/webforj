@@ -28,7 +28,7 @@ public class TreeExpandEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "expandEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
