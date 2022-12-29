@@ -190,7 +190,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
         if(this.ctrl != null){
             return bbjSlider.getOrientation();
         }
-        if(this.horizontal){
+        if(Boolean.TRUE.equals(this.horizontal)){
             return 0;
         }
         return 1;
