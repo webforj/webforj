@@ -11,6 +11,10 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 
+/**
+ * A Namespace is a shared object space, like a singleton.
+ * Depending on its type it's shared gloablly across all clients, a family of clients started by the same parent, or has a private name.
+ */
 public abstract class StandardNamespace implements Namespace, CanLock {
 
     protected BBjNamespace ns;
@@ -91,23 +95,40 @@ public abstract class StandardNamespace implements Namespace, CanLock {
 
     }
 
-    public StandardNamespace onChange(Consumer<NamespaceEvent> c){
-        new NamespaceEventSink(ns,true,c);
+    /**
+     * Register a callback that is called whenever anything inside this namespace changes
+     * @param consumer the consumer to notify
+     * @return
+     */
+    public StandardNamespace onChange(Consumer<NamespaceEvent> consumer){
+        new NamespaceEventSink(ns,true,consumer);
         return this;
     }
-
-    public StandardNamespace onAccess(Consumer<NamespaceEvent> c) {
-        new NamespaceEventSink(ns,false,c);
+    /**
+     * Register a callback that is called whenever anything inside this namespace is being written, regardless if it was a change
+     * @param consumer the consumer to notify
+     * @return
+     */
+    public StandardNamespace onAccess(Consumer<NamespaceEvent> consumer) {
+        new NamespaceEventSink(ns,false,consumer);
         return this;
     }
-
-    public StandardNamespace onVariableChange(String key, Consumer<NamespaceEvent> c){
-        new NamespaceEventSink(ns,key,true,c);
+    /**
+     * Register a callback that is called whenever a specific variable inside this namespace changes
+     * @param consumer the consumer to notify
+     * @return
+     */
+    public StandardNamespace onVariableChange(String key, Consumer<NamespaceEvent> consumer){
+        new NamespaceEventSink(ns,key,true,consumer);
         return this;
     }
-
-    public StandardNamespace onVariableAccess(String key, Consumer<NamespaceEvent> c) {
-        new NamespaceEventSink(ns, key, false,c);
+    /**
+     * Register a callback that is called whenever a specific variable inside this namespace was written, regardless if it changed its value
+     * @param consumer the consumer to notify
+     * @return
+     */
+    public StandardNamespace onVariableAccess(String key, Consumer<NamespaceEvent> consumer) {
+        new NamespaceEventSink(ns, key, false,consumer);
         return this;
     }
 

@@ -1,6 +1,6 @@
 package org.dwcj.environment.namespace.events;
 
-public class NamespaceEvent {
+public final class NamespaceEvent {
 
     private final String namespaceName;
     private final String variableName;

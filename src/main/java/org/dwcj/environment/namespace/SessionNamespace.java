@@ -4,14 +4,16 @@ import com.basis.bbj.proxies.BBjObjectTable;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
-import org.dwcj.interfaces.HasStyle;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class SessionNamespace implements Namespace
+/**
+ * A session namespace is a singleton that only exists within the current application server thread.
+ */
+public final class SessionNamespace implements Namespace
 {
     private BBjObjectTable otable = Environment.getInstance().getBBjAPI().getObjectTable();
 

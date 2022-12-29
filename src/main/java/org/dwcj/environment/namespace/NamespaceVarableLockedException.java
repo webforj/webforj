@@ -1,4 +1,4 @@
 package org.dwcj.environment.namespace;
 
-public class NamespaceVarableLockedException extends Throwable {
+public final class NamespaceVarableLockedException extends Exception {
 }

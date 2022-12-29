@@ -2,7 +2,10 @@ package org.dwcj.environment.namespace;
 
 import org.dwcj.Environment;
 
-public class GroupNamespace extends StandardNamespace implements Namespace
+/**
+ * A Group Namespace is shared between all application server threads started from the same parent.
+ */
+public final class GroupNamespace extends StandardNamespace implements Namespace
 {
 
     public GroupNamespace() {

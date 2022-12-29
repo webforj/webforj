@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
-public class NamespaceEventSink {
+public final class NamespaceEventSink {
 
     private static final HashMap<String,ArrayList<Consumer<NamespaceEvent>>> variableAccessTargets = new HashMap<>();
     private static final HashMap<String,ArrayList<Consumer<NamespaceEvent>>> variableChangeTargets = new HashMap<>();
