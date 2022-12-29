@@ -17,6 +17,7 @@ public final class NamespaceEventSink {
     private static final HashMap<String,ArrayList<Consumer<NamespaceEvent>>> variableChangeTargets = new HashMap<>();
     private static final HashMap<String,ArrayList<Consumer<NamespaceEvent>>> namespaceAccessTargets = new HashMap<>();
     private static final HashMap<String,ArrayList<Consumer<NamespaceEvent>>> namespaceChangeTargets = new HashMap<>();
+    public static final String ON_EVENT = "onEvent";
 
 
     public NamespaceEventSink(BBjNamespace ns, Boolean fChangeOnly, Consumer<NamespaceEvent> consumer) {
@@ -34,7 +35,7 @@ public final class NamespaceEventSink {
                 //namespace events
                 if (Boolean.TRUE.equals(fChangeOnly)) {
                     try {
-                        ns.setCallbackForNamespaceChange(Environment.getInstance().getDwcjHelper().getEventProxy(this, "onNsChange"), "onEvent");
+                        ns.setCallbackForNamespaceChange(Environment.getInstance().getDwcjHelper().getEventProxy(this, "onNsChange"), ON_EVENT);
                         ArrayList<Consumer<NamespaceEvent>> consumerlist = namespaceChangeTargets.computeIfAbsent(nsname, k -> new ArrayList<>());
                         consumerlist.add(consumer);
                     } catch (BBjException e) {
@@ -42,7 +43,7 @@ public final class NamespaceEventSink {
                     }
                 } else {
                     try {
-                        ns.setCallbackForNamespace(Environment.getInstance().getDwcjHelper().getEventProxy(this, "onNsAccess"), "onEvent");
+                        ns.setCallbackForNamespace(Environment.getInstance().getDwcjHelper().getEventProxy(this, "onNsAccess"), ON_EVENT);
                         ArrayList<Consumer<NamespaceEvent>> consumerlist = namespaceAccessTargets.computeIfAbsent(nsname, k -> new ArrayList<>());
                         consumerlist.add(consumer);
                     } catch (BBjException e) {
@@ -55,7 +56,7 @@ public final class NamespaceEventSink {
                 //namespace variable events
                 if (Boolean.TRUE.equals(fChangeOnly)) {
                     try {
-                        ns.setCallbackForVariableChange(key, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onVarChange"), "onEvent");
+                        ns.setCallbackForVariableChange(key, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onVarChange"), ON_EVENT);
                         ArrayList<Consumer<NamespaceEvent>> consumerlist = variableChangeTargets.computeIfAbsent(nsname + "\0" + key, k -> new ArrayList<>());
                         consumerlist.add(consumer);
                     } catch (BBjException e) {
@@ -63,7 +64,7 @@ public final class NamespaceEventSink {
                     }
                 } else {
                     try {
-                        ns.setCallbackForVariable(key, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onVarAccess"), "onEvent");
+                        ns.setCallbackForVariable(key, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onVarAccess"), ON_EVENT);
                         ArrayList<Consumer<NamespaceEvent>> consumerlist = variableAccessTargets.computeIfAbsent(nsname + "\0" + key, k -> new ArrayList<>());
                         consumerlist.add(consumer);
                     } catch (BBjException e) {
