@@ -17,7 +17,7 @@ public abstract class App {
         try {
             run();
         } catch (DwcAppInitializeException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -30,7 +30,7 @@ public abstract class App {
 
             Environment.getInstance().getSysGui().executeScript("console.log(\"" + output + "\")");
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -39,7 +39,7 @@ public abstract class App {
 
             Environment.getInstance().getSysGui().executeScript("console.error(\"" + output + "\")");
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

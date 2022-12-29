@@ -8,6 +8,7 @@ import com.basis.util.common.BasisNumber;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.numericbox.events.NumericBoxEditModifyEvent;
@@ -81,7 +82,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             numBox = (BBjInputN) this.ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -107,7 +108,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 return numBox.getCommaCharacter();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.commaChar;
@@ -122,7 +123,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 return numBox.getDotCharacter();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.dotChar;
@@ -137,7 +138,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 return numBox.getEditString().toString();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.editString;
@@ -152,7 +153,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             try {
                 return numBox.getError();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -160,14 +161,14 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
     /**
      * Returns whether the text in the NumericBox control is highlighted when focus is gained from tabbing into the control.
-     * @returnReturns whether the text in the control is highlighted (false = Not highlighted, true = highlighted).
+     * @returns Returns whether the text in the control is highlighted (false = Not highlighted, true = highlighted).
      */
     public Boolean isHighlight() {
         if(this.ctrl != null){
             try {
                 return numBox.getHighlight();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.highlight;
@@ -494,7 +495,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
     /**
      * Sets whether the NumericBox control accepts negative values. Negative values are initially accepted.
-     * @param negateable - Specifies whether the BBjInputN will accept negative values (false = Negative values are not accepted, true = Negative values are accepted).
+     * @param negatable - Specifies whether the BBjInputN will accept negative values (false = Negative values are not accepted, true = Negative values are accepted).
      * @return Returns this
      */
     public NumericBox setNegatable(boolean negatable) {

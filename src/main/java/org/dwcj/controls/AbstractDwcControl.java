@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.dwcj.Environment;
 import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasComputedStyle;
 import org.dwcj.interfaces.HasControlText;
@@ -83,7 +84,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             return ctrl.getAttribute(attribute);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         //fall back to the internal list
         return attributes.get(attribute);
@@ -100,7 +101,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             ctrl.setAttribute(attribute, value);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         attributes.put(attribute, value);
         return this;
@@ -112,7 +113,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             return ctrl.getText();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return text;
     }
@@ -123,7 +124,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
             try {
                 ctrl.setText(text);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         } 
         if (text != null){
@@ -140,7 +141,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             ctrl.getComputedStyle(property);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -150,7 +151,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             ctrl.addStyle(selector);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.cssClasses.add(selector);
         return this;
@@ -161,7 +162,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             ctrl.removeStyle(selector);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.cssClasses.remove(selector);
         return this;
@@ -172,7 +173,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (ctrl != null) try {
             ctrl.setStyle(property, value);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.styles.put(property, value);
         return this;
@@ -184,7 +185,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (this.ctrl != null) try {
             return ctrl.isEnabled();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return enabled;
     }
@@ -194,7 +195,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (this.ctrl != null) try {
             ctrl.setEnabled(enabled);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.enabled = enabled;
         return this;
@@ -205,7 +206,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (this.ctrl != null) try {
             return ctrl.getToolTipText();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return tooltipText;
     }
@@ -215,7 +216,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (this.ctrl != null) try {
             ctrl.setToolTipText(text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.tooltipText = text;
         return this;
@@ -227,7 +228,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (this.ctrl != null) try {
             return ctrl.isVisible();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return visible;
     }
@@ -237,7 +238,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         if (this.ctrl != null) try {
             ctrl.setVisible(visible);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.visible = visible;
         return this;
@@ -303,7 +304,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
                     //noop
             }
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.theme = theme;
     }
@@ -337,7 +338,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
                     //noop
             }
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.expanse = expanse;
     }
@@ -355,6 +356,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
      * @throws IllegalAccessException - thrown if an attempt is made to call this method more than once
      */
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    @Override
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
@@ -384,33 +386,25 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         }
         
         if (!this.attributes.isEmpty()) {
-            Iterator<String> it = this.attributes.keySet().iterator();
-            while (it.hasNext()) {
-                String key = it.next();
-                this.setAttribute(key, this.attributes.get(key));
+            for (Map.Entry<String,String> entry : this.attributes.entrySet()) {
+                this.setAttribute(entry.getKey(), entry.getValue());
             }
         }
 
         if (!this.styles.isEmpty()) {
-            Iterator<String> it = this.styles.keySet().iterator();
-            while (it.hasNext()) {
-                String key = it.next();
-                this.setStyle(key, this.styles.get(key));
+            for (Map.Entry<String,String> entry : this.styles.entrySet()) {
+                this.setStyle(entry.getKey(), entry.getValue());
             }
         }
 
         if (!this.cssClasses.isEmpty()) {
-            Iterator<String> it = this.cssClasses.iterator();
-            while (it.hasNext()) {
-                String cl = it.next();
+            for (String cl : this.cssClasses) {
                 this.addClassName(cl);
             }
         }
 
         if (!this.userData.isEmpty()) {
-            Iterator<String> it = this.cssClasses.iterator();
-            while (it.hasNext()) {
-                String cl = it.next();
+            for (String cl : this.cssClasses) {
                 this.setUserData(cl, this.userData.get(cl));
             }
         }

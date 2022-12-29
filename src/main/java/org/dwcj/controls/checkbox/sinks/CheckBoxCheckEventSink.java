@@ -35,7 +35,7 @@ public final class CheckBoxCheckEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
                     ON_EVENT);
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -53,7 +53,7 @@ public final class CheckBoxCheckEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
                     ON_EVENT);
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

@@ -14,7 +14,6 @@ public final class Environment {
     private final BBjSysGui sysgui;
     private final IDwcjBBjBridge helper;
 
-
     private Environment(BBjAPI api, IDwcjBBjBridge helper) throws BBjException {
         this.api = api;
         this.sysgui = api.openSysGui("X0");
@@ -44,6 +43,27 @@ public final class Environment {
 
     public IDwcjBBjBridge getDwcjHelper() {
         return helper;
+    }
+
+
+    /*
+    LOGGING: for now we rely on BBj's redirection of err and out into its own logging.
+    In the future we will definitely want to allow more granular debug options
+    and the use of custom loggers that fit a customer's environment
+    Bear with us and consider this a basic solution for the time being. WIP
+     */
+
+    public static void logError(String message, Exception e) {
+        System.err.println(message); //NOSONAR
+        e.printStackTrace(); //NOSONAR
+    }
+
+    public static void logError(Exception e) {
+        e.printStackTrace(); //NOSONAR
+    }
+
+    public static void logError(String message) {
+        System.err.println(message); //NOSONAR
     }
 
 }

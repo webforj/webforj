@@ -1,6 +1,7 @@
 package org.dwcj.models;
 
 import org.apache.commons.io.IOUtils;
+import org.dwcj.Environment;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -18,7 +19,7 @@ public class Icon {
         } catch (MalformedURLException e) {
             this.file = new File(file);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -34,7 +35,7 @@ public class Icon {
         try {
             this.file = new File(new URL(url).toURI());
         } catch (URISyntaxException | MalformedURLException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -45,7 +46,7 @@ public class Icon {
         try (OutputStream outputStream = new FileOutputStream(this.file)) {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }

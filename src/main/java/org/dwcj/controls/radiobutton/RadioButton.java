@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.App;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -58,7 +59,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             bbjRadioButton = (BBjRadioButton) ctrl;
             catchUp();
         } catch (Exception e)  {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -66,7 +67,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
      * register an event callback for a checkOn or checkOff event
      *
      * @param callback A method to receive the onCheck event
-     * @return
+     * @return the control itself
      */
     public RadioButton onChange(Consumer<RadioButtonCheckEvent> callback) {
         if(this.ctrl != null){

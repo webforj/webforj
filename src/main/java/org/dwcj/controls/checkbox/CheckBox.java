@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.checkbox.events.CheckBoxChangeEvent;
@@ -89,7 +90,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags);
             this.catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -97,7 +98,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
      * register an event callback for a checkOn or checkOff event
      *
      * @param callback A method to receive the onChange event
-     * @return
+     * @return the control itself
      */
     public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
         if(this.ctrl != null){
@@ -130,7 +131,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 ((BBjCheckBox) this.ctrl).setHorizontalTextPosition(position.position);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.horizontalTextPosition = position;
@@ -148,7 +149,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 return ((BBjCheckBox) this.ctrl).isSelected();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -159,7 +160,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 ((BBjCheckBox) this.ctrl).setSelected(checked);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.checked = checked;
@@ -265,7 +266,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try{
                 return ((BBjCheckBox) ctrl).isEditable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -274,7 +275,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     /**
      * this method sets whether the CheckBox can be edited. True is editable, false is uneditable.
      * 
-     * @param editable
+     * @param editable if true the control is editable
      * @return this
      */
     @Override
@@ -283,7 +284,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 ((BBjCheckBox) this.ctrl).setEditable(editable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.readOnly = editable;
