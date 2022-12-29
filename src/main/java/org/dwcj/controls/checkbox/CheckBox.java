@@ -297,7 +297,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try{
                 return ((BBjCheckBox) ctrl).isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -309,7 +309,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 ((BBjCheckBox) this.ctrl).setFocusable(focusable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -323,7 +323,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try{
                 return ((BBjCheckBox) ctrl).isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -335,7 +335,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 ((BBjCheckBox) this.ctrl).setTabTraversable(traversable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;
@@ -354,7 +354,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try {
                 ((BBjCheckBox) this.ctrl).setAlignment(alignment.textPosition);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.textAlignment = alignment;
@@ -394,7 +394,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
             try{
                 ((BBjCheckBox) ctrl).setHorizontalTextPosition(horizontalTextPosition.position);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
             this.setHorizontalTextPosition(this.horizontalTextPosition);
         }

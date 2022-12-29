@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.button.events.ButtonClickEvent;
@@ -110,7 +111,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText(), flags);
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -144,7 +145,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try {
                 ((BBjButton) ctrl).getDisableOnClick();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.disableOnClick;
@@ -160,7 +161,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try {
                 ((BBjButton) ctrl).setDisableOnClick(disable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.disableOnClick = disable;
@@ -182,7 +183,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).setVerticalAlignment(alignment.alignment);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.verticalAlignment = alignment;
@@ -287,7 +288,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -299,7 +300,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -313,7 +314,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -325,7 +326,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
             try{
                 ((BBjButton) ctrl).setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;

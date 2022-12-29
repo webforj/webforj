@@ -235,7 +235,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.injectUrl(url);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.injectURL = url;
@@ -247,7 +247,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.injectUrl(url, top);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.injectURL = url;
@@ -260,7 +260,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.print();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -271,7 +271,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.setAutoNavigate(autoNavigate);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.autoNavigate = autoNavigate;
@@ -291,7 +291,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.setUrl(url);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.url = url;
@@ -303,7 +303,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.setUrl(url, reload);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.url = url;
@@ -347,7 +347,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try{
                 bbjHtmlView.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -359,7 +359,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try{
                 bbjHtmlView.setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -373,7 +373,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try{
                 bbjHtmlView.isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -385,7 +385,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try{
                 bbjHtmlView.setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;

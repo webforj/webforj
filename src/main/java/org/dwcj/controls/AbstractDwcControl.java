@@ -365,7 +365,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
             try {
                 ctrl.setText(this.text);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         
@@ -381,7 +381,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
             try{
                 ctrl.setToolTipText(this.tooltipText);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         
