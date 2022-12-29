@@ -25,7 +25,7 @@ public final class ButtonClickEventSink {
         BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH,
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");
 
@@ -43,7 +43,7 @@ public final class ButtonClickEventSink {
         BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH,
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");
 

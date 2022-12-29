@@ -140,7 +140,6 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
      * @return Boolean value 
      */
     public Boolean isDisableOnClick() {
-        //todo: why could an exception be thrown?
         if(this.ctrl != null){
             try {
                 ((BBjButton) ctrl).getDisableOnClick();

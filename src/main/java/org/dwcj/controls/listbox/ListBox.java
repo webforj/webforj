@@ -373,7 +373,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     }
 
     public ListBox setTextAt(Integer idx, String text){
-        this.textAt = new SimpleEntry<Integer,String>(idx, text);
+        this.textAt = new SimpleEntry<>(idx, text);
         if(this.ctrl != null){
             try{
                 ((BBjListBox) this.ctrl).setTextAt(idx, text);
