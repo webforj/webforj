@@ -55,7 +55,7 @@ public final class Environment {
 
     public static void logError(String message, Exception e) {
         System.err.println(message); //NOSONAR
-        e.printStackTrace();
+        e.printStackTrace(); //NOSONAR
     }
 
     public static void logError(Exception e) {
