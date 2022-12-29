@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjHtmlEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -34,7 +35,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
             bbjHtmlEdit = (BBjHtmlEdit) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -46,7 +47,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getAllToolbarStyles();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return new ArrayList<>();
         }
     }
@@ -60,7 +61,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getAvailableSpellCheckLanguages();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return new ArrayList<>();
         }
     }
@@ -74,7 +75,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getAvailableStates();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return new ArrayList<>();
         }
     }
@@ -89,7 +90,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getBasicToolbar();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return false;
         }
     }
@@ -103,7 +104,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getBasicToolbarStyles();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return new ArrayList<>();
         }
     }
@@ -117,7 +118,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getClientType();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -130,7 +131,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getClientVersion();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -151,7 +152,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getLocales();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return new ArrayList<>();
         }
     }
@@ -164,7 +165,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getPlainText();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -184,7 +185,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
 
     /**
      * This method returns the Boolean value of a specified state in the HtmlEdit toolbar.
-     * @param String specifying one of the state names from HTMLEdit::getAvailableStates
+     * @param state specifying one of the state names from HTMLEdit::getAvailableStates
      * @return Boolean value of the specified state in the HtmlEdit toolbar.
      */
     public boolean getState(String state) {
@@ -249,7 +250,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
 
     /**
      * Sets the text of an HtmlEdit control
-     * @param locale - A String representing the text you wish to set.
+     * @param text - A String representing the text you wish to set.
      * @return Returns this
      */
     public HtmlEdit setPlainText(String text) {
@@ -292,7 +293,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
 
     /**
      * Sets the spell check language for this HtmlEdit control.
-     * @param langeuage - String representing the desired language for spell checking
+     * @param language - String representing the desired language for spell checking
      * @return Returns this
      */
     public HtmlEdit setSpellCheckLanguage(String language) {

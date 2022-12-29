@@ -1,6 +1,7 @@
 package org.dwcj.controls.openfiledialog;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -22,7 +23,7 @@ public final class OpenFileDialog extends AbstractDwcControl {
             ctrl = w.addFileChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "");
             catchUp();
         } catch (Exception e)  {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

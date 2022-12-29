@@ -24,7 +24,7 @@ public final class HtmlContainerPageLoadedEventSink {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(htmlv);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_PAGE_LOADED, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         this.container = htmlv;
 

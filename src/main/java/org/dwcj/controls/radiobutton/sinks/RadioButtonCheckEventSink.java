@@ -38,7 +38,7 @@ public final class RadioButtonCheckEventSink {
                                    ON_EVENT);
 
         } catch(Exception e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
     
@@ -57,7 +57,7 @@ public final class RadioButtonCheckEventSink {
                                    ON_EVENT);
 
         } catch(Exception e){
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

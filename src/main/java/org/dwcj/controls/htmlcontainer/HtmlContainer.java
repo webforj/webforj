@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.App;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
@@ -31,9 +32,9 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
 
     private BBjHtmlView bbjHtmlView;
 
-    private ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
+    private final ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
     private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
-    private ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
+    private final ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
     private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;
 
     private String asyncScript = "";
@@ -67,7 +68,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             bbjHtmlView = (BBjHtmlView) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -107,7 +108,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.executeAsyncScript(script);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.asyncScript = script;
@@ -118,7 +119,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.executeScript(script);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.executeScript = script;
@@ -130,7 +131,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.getAutoNavigate();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.autoNavigate;
@@ -141,7 +142,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.getClientType();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -152,7 +153,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.getClientVersion();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -163,7 +164,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return (Image) bbjHtmlView.getImage();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -175,7 +176,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.getText();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return super.getText();
@@ -186,7 +187,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.getUrl();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }    
         }
         return this.url;
@@ -197,7 +198,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 return bbjHtmlView.getUserAgent();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.userAgent;
@@ -209,7 +210,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.injectScript(script);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.injectScript = script;
@@ -221,7 +222,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             try {
                 bbjHtmlView.injectScript(script,top);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.injectScript = script;
@@ -329,7 +330,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
 
     /**
      * register a callback method to be called from JavaScript with basisDispatchNativeEvent
-     * see https://documentation.basis.com/BASISHelp/WebHelp/bbjevents/BBjNativeJavaScriptEvent/BBjNativeJavaScriptEvent.htm
+     * see <a href="https://documentation.basis.com/BASISHelp/WebHelp/bbjevents/BBjNativeJavaScriptEvent/BBjNativeJavaScriptEvent.htm">BBjNativeJavaScriptEvent</a>
      * @param callback the callback method
      * @return the control itself
      */

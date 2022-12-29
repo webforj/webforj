@@ -41,7 +41,7 @@ public class WelcomeApp extends App {
 
 
         ArrayList<String> cplist = null;
-        AppFinder af = null;
+        AppFinder af;
         Set<String> applist = null;
 
         try {
@@ -83,9 +83,7 @@ public class WelcomeApp extends App {
             tbl.setStyle("grid-template-columns", "5fr 1fr");
             tbl.setStyle("gap", "20px");
 
-            Iterator<String> it = applist.iterator();
-            while (it.hasNext()) {
-                String app = it.next();
+            for (String app : applist) {
                 Label classNameLabel = new Label(app);
                 tbl.add(classNameLabel);
 
@@ -109,7 +107,7 @@ public class WelcomeApp extends App {
         try {
             Class.forName(className).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
             msgbox("cannot launch app!",0,"Error");
         } finally {
             panel.setVisible(false);

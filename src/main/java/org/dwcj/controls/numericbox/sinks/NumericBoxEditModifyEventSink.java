@@ -31,7 +31,7 @@ public class NumericBoxEditModifyEventSink {
                     "onEvent");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -49,7 +49,7 @@ public class NumericBoxEditModifyEventSink {
                     "onEvent");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

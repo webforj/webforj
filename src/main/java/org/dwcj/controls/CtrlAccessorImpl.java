@@ -2,6 +2,7 @@ package org.dwcj.controls;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
+import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
@@ -36,13 +37,12 @@ final class CtrlAccessorImpl extends ControlAccessor {
 
         if (caller.startsWith("org.dwcj.")) {
             try {
-                Method m = null;
+                Method m;
                 m = ctrl.getClass().getDeclaredMethod("create", Class.forName("org.dwcj.controls.panels.AbstractDwcjPanel"));
                 m.setAccessible(true);
                 m.invoke(ctrl,panel);
             } catch (Exception e) {
-                App.consoleLog("Cannot invoke create method - Error :"+e.getMessage());
-                e.printStackTrace();
+                Environment.logError(e);
             }
             return;
         }
