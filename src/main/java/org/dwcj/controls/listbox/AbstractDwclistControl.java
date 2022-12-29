@@ -13,10 +13,6 @@ public abstract class AbstractDwclistControl extends AbstractDwcControl {
     protected BBjVector data2 = new BBjVector();
     protected Map<Object, String> values = new HashMap<>();
 
-
-
-    
-
     protected abstract void populate();
 
 }

@@ -31,7 +31,7 @@ public final class CheckBoxCheckEventSink {
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
                     ON_EVENT);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON, √‚
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
                     ON_EVENT);
         } catch (Exception e) {
