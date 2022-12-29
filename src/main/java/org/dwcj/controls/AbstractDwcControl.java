@@ -386,14 +386,14 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         }
         
         if (!this.attributes.isEmpty()) {
-            for (String key : this.attributes.keySet()) {
-                this.setAttribute(key, this.attributes.get(key));
+            for (Map.Entry<String,String> entry : this.attributes.entrySet()) {
+                this.setAttribute(entry.getKey(), entry.getValue());
             }
         }
 
         if (!this.styles.isEmpty()) {
-            for (String key : this.styles.keySet()) {
-                this.setStyle(key, this.styles.get(key));
+            for (Map.Entry<String,String> entry : this.styles.entrySet()) {
+                this.setStyle(entry.getKey(), entry.getValue());
             }
         }
 
