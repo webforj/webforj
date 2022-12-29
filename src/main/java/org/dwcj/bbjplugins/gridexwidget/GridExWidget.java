@@ -29,7 +29,7 @@ public final class GridExWidget extends AbstractDwcControl {
             super.ctrl = Environment.getInstance().getDwcjHelper().createWidget("::BBjGridExWidget/BBjGridExWidget.bbj::BBjGridExWidget", cw);
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
             App.consoleLog(e.getMessage());
         }
     }

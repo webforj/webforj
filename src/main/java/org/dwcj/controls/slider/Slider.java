@@ -3,6 +3,7 @@ package org.dwcj.controls.slider;
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -100,7 +101,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getInverted();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.inverted;
@@ -115,7 +116,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getLabels();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return new HashMap<>();
@@ -130,7 +131,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getMajorTickSpacing();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.majorTickSpacing;
@@ -145,7 +146,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getMaximum();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.maximum;
@@ -160,7 +161,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getMinimum();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.minimum;
@@ -175,7 +176,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getMinorTickSpacing();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.minorTickSpacing;
@@ -204,7 +205,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getPaintLabels();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.paintLabels;
@@ -219,7 +220,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getPaintTicks();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.paintTicks;
@@ -234,7 +235,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getSnapToTicks();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.snapToTicks;
@@ -249,7 +250,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 return bbjSlider.getValue();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.value;
@@ -265,7 +266,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setInverted(inverted);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.inverted = inverted;
@@ -282,7 +283,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setLabels(labels);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -298,7 +299,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setMajorTickSpacing(tick);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.majorTickSpacing = tick;
@@ -315,7 +316,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setMaximum(maximum);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.maximum = maximum;
@@ -332,7 +333,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setMinimum(minimum);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.minimum = minimum;
@@ -349,7 +350,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setMinorTickSpacing(tick);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.minorTickSpacing = tick;
@@ -366,7 +367,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setPaintLabels(paint);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.paintLabels = paint;
@@ -383,7 +384,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setPaintTicks(paint);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.paintTicks = paint;
@@ -400,7 +401,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setSnapToTicks(snap);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.snapToTicks = snap;
@@ -417,7 +418,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try {
                 bbjSlider.setValue(value);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.value = value;
@@ -432,7 +433,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try{
                 bbjSlider.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -444,7 +445,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try{
                 bbjSlider.setFocusable(focusable);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -457,7 +458,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try{
                 bbjSlider.isTabTraversable();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -469,7 +470,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try{
                 bbjSlider.setTabTraversable(traverse);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traverse;
@@ -488,7 +489,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             try{
                 bbjSlider.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;

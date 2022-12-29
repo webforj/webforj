@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import org.dwcj.App;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.dateeditbox.events.DateEditBoxEditModifyEvent;
@@ -79,7 +80,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
             bbjDateEditBox = (BBjInputD) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

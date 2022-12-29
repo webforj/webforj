@@ -740,7 +740,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 bbjCEdit.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.mouseWheelCondition = condition;
@@ -843,7 +843,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 bbjCEdit.isTabTraversable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -855,7 +855,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try{
                 bbjCEdit.setTabTraversable(traversable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traversable;

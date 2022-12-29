@@ -3,6 +3,7 @@ package org.dwcj.controls.textcombobox;
 import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.listbox.AbstractDwclistControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -86,7 +87,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             populate();
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -133,7 +134,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
                 cb.removeAllItems();
                 cb.insertItems(0, data2);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
     }
@@ -149,7 +150,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 bbjListEdit.closeList();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -160,7 +161,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 bbjListEdit.deselect();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -175,7 +176,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 return bbjListEdit.getEditText();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.editText;
@@ -193,7 +194,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 return bbjListEdit.getItemCount();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
 
         }
@@ -205,7 +206,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 return bbjListEdit.getSelectedIndex();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return null;
@@ -220,7 +221,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
                 }
             }
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return new SimpleEntry<>(null,null);
     }
@@ -231,7 +232,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 bbjListEdit.openList();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -242,7 +243,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 bbjListEdit.removeAllItems();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -253,7 +254,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).select(indexStart, indexEnd);
             } catch( BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -265,7 +266,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).selectIndex(index);
             } catch( BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -278,7 +279,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 bbjListEdit.setEditText(text);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -306,7 +307,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try {
                 bbjListEdit.setMaximumRowCount(max);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -318,7 +319,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).setTextAt(idx, text);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -398,7 +399,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 return ((BBjListEdit) this.ctrl).isEditable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -410,7 +411,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).setEditable(readOnly);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.readOnly = readOnly;
@@ -423,7 +424,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 return ((BBjListEdit) this.ctrl).isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -435,7 +436,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).setFocusable(focusable);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -453,7 +454,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
             try{
                 ((BBjListEdit) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;

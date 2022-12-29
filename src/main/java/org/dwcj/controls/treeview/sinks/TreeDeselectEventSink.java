@@ -27,7 +27,7 @@ public final class TreeDeselectEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "deselectEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

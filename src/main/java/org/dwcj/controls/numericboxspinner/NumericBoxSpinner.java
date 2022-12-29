@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjInputNSpinner;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.numericbox.NumericBox;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -32,7 +33,7 @@ public final class NumericBoxSpinner extends NumericBox implements HasMouseWheel
             this.numBox = (BBjInputNSpinner) this.ctrl;
             super.catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
     
@@ -48,7 +49,7 @@ public final class NumericBoxSpinner extends NumericBox implements HasMouseWheel
             try{
                 numBoxS.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;

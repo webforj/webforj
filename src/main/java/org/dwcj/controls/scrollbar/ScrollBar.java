@@ -3,6 +3,7 @@ package org.dwcj.controls.scrollbar;
 import com.basis.bbj.proxies.sysgui.BBjScrollBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -60,7 +61,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             return bbjScrollBar.getBlockIncrement();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return -1;
     }
@@ -69,7 +70,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             return bbjScrollBar.getScrollMaximum();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return -1;
     }
@@ -78,7 +79,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             return bbjScrollBar.getScrollMinimum();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return -1;
     }
@@ -87,7 +88,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             return bbjScrollBar.getScrollPosition();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return -1;
     }
@@ -96,7 +97,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             return bbjScrollBar.getScrollProp();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return -1;
     }
@@ -107,7 +108,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             bbjScrollBar.setBlockIncrement(block);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -116,7 +117,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             bbjScrollBar.setScrollPosition(pos);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -125,7 +126,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             bbjScrollBar.setScrollProp(prop);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -134,7 +135,7 @@ public final class ScrollBar extends AbstractDwcControl {
         try {
             bbjScrollBar.setScrollRange(min, max);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }

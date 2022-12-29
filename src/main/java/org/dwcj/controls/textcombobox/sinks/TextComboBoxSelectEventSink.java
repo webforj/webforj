@@ -44,7 +44,7 @@ public final class TextComboBoxSelectEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
