@@ -257,7 +257,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try{
                 bbjInputE.setCaretPosition(position);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.caretPos = position;
@@ -269,7 +269,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setEditString(edit.getBytes(StandardCharsets.UTF_8));
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.editString = edit;
@@ -281,7 +281,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setHighlight(highlight);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.highlight = highlight;
@@ -293,7 +293,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setInsertMode(insert);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.insert = insert;
@@ -305,7 +305,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setLength(len);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.length = len;
@@ -317,7 +317,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setMargin(marginWidth);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.margin = marginWidth;
@@ -342,7 +342,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setPadCharacter(pad);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.pad = pad;
@@ -354,7 +354,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setPassEnter(pass);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.passEnter = pass;
@@ -366,7 +366,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
             try {
                 bbjInputE.setPassTab(pass);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.passTab = pass;

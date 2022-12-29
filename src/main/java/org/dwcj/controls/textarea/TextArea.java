@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -77,7 +78,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             bbjCEdit = (BBjCEdit) ctrl;
             catchUp();
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -105,7 +106,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
             try {
                 bbjCEdit.addParagraph(index, paragraph);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;

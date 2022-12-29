@@ -178,7 +178,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getSpellCheckLanguage();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return null;
         }
     }
@@ -192,7 +192,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.getState(state);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return false;
         }
     }
@@ -205,7 +205,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             return bbjHtmlEdit.isSpellChecked();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
             return false;
         }
     }
@@ -219,7 +219,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             bbjHtmlEdit.setBasicToolbar(basicToolbar);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -233,7 +233,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -257,7 +257,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             bbjHtmlEdit.setPlainText(text);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -272,7 +272,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             bbjHtmlEdit.setState(state, value);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -286,7 +286,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             bbjHtmlEdit.setSpellChecked(spellChecked);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -300,7 +300,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
         try {
             bbjHtmlEdit.setSpellCheckLanguage(language);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -313,7 +313,7 @@ public final  class HtmlEdit extends AbstractDwcControl implements Focusable, Ta
             try{
                 return bbjHtmlEdit.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;

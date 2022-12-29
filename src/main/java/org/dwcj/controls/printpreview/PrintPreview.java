@@ -2,6 +2,7 @@ package org.dwcj.controls.printpreview;
 
 import com.basis.bbj.proxies.sysgui.BBjPrintPreview;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
@@ -20,7 +21,7 @@ public final class PrintPreview extends AbstractDwcControl {
             catchUp();
             bbjPrintPreview = (BBjPrintPreview) ctrl;
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

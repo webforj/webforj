@@ -170,7 +170,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return bbjPopupMenu.getName();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -179,7 +179,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return bbjPopupMenu.getUserData();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -188,7 +188,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.hide();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -196,7 +196,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return (CheckableMenuItem) bbjPopupMenu.insertCheckableMenuItem(index, id, title);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -205,7 +205,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return (CheckableMenuItem) bbjPopupMenu.insertCheckableMenuItem(index, id, title, checked);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -214,7 +214,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -223,7 +223,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title, action);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -232,7 +232,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title, checkable, checked);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -241,7 +241,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return (MenuItem) bbjPopupMenu.insertMenuItem(index, id, title, checkable, checked, action);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return null;
     }
@@ -250,7 +250,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.insertSeparator(index);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -259,7 +259,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             return bbjPopupMenu.isVisible();
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return false;
     }
@@ -268,7 +268,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.putClientProperty(key, value);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -276,7 +276,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.removeMenuItem((BBjMenuItem) item);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -284,7 +284,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.removeMenuItem(id);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -292,7 +292,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.removeMenuItemAt(index);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -300,7 +300,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.removeSeparator(index);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -313,7 +313,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.setName(name);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }
@@ -322,7 +322,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
         try {
             bbjPopupMenu.setUserData(object);
         } catch (BBjException e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         return this;
     }

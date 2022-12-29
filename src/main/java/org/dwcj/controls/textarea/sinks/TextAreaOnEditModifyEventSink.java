@@ -30,7 +30,7 @@ public final class TextAreaOnEditModifyEventSink {
                     "onEvent");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 
@@ -48,7 +48,7 @@ public final class TextAreaOnEditModifyEventSink {
                     "onEvent");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
     }
 

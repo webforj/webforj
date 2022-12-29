@@ -87,7 +87,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjRadioButton.getID();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         App.consoleError("ID cannot be fetched as control does not yet exist. Please add control to a window first");
@@ -110,7 +110,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjRadioButton.setHorizontalTextPosition(position.position);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.horizontalTextPosition = position;
@@ -123,7 +123,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjRadioButton.isSelected();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return false;
@@ -135,7 +135,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjRadioButton.setSelected(selected);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -150,7 +150,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try {
                 return bbjRadioButton.isEditable();
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.readOnly;
@@ -162,7 +162,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try {
                 bbjRadioButton.setEditable(editable);
             } catch (BBjException e) {
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this;
@@ -174,7 +174,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjRadioButton.isFocusable();
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.focusable;
@@ -186,7 +186,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjRadioButton.setFocusable(focusable);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.focusable = focusable;
@@ -199,7 +199,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjRadioButton.isTabTraversable();
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         return this.tabTraversable;
@@ -211,7 +211,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjRadioButton.setTabTraversable(traverse);
             } catch (BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
         }
         this.tabTraversable = traverse;
@@ -306,7 +306,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
             try{
                 bbjRadioButton.setHorizontalTextPosition(horizontalTextPosition.position);
             } catch(BBjException e){
-                e.printStackTrace();
+                Environment.logError(e);
             }
             this.setHorizontalTextPosition(this.horizontalTextPosition);
         }

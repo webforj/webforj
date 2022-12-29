@@ -30,7 +30,7 @@ public class NavFirstEventSink {
                     Environment.getInstance().getDwcjHelper().getEventProxy(this,"navFirstEvent"),
                     "onEvent");
         } catch (Exception e) {
-            e.printStackTrace();
+            Environment.logError(e);
         }
         
     }
