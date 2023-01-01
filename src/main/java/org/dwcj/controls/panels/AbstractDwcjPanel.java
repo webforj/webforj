@@ -9,12 +9,16 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
 
+import java.util.ArrayList;
+
 /**
  * the base class for all panel implementations
  */
 public abstract class AbstractDwcjPanel extends AbstractDwcControl {
 
     protected BBjWindow wnd;
+
+    protected ArrayList<AbstractControl> controls = new ArrayList<>();
 
     /**
      * Used to add controls to a panel. Multiple controls can be passed to this
@@ -27,6 +31,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
         for(AbstractControl c: ctrl){
             try {
                 ControlAccessor.getDefault().create(c,this);
+                controls.add(c);
             } catch (IllegalAccessException e) {
                 Environment.logError(e);
             }

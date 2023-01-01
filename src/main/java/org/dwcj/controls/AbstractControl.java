@@ -44,7 +44,7 @@ public abstract class AbstractControl implements Control {
      * using the
      * Panel::add(Control) method, instead of this
      * 
-     * @param p
+     * @param p the panel to add this control on
      */
     protected void create(AbstractDwcjPanel p) {
     }
@@ -124,5 +124,15 @@ public abstract class AbstractControl implements Control {
         }
 
         this.caughtUp = true;
+    }
+
+    public void destroy(){
+        try {
+            if (ctrl != null && !ctrl.isDestroyed()){
+                ctrl.destroy();
+            }
+        } catch (BBjException e) {
+            Environment.logError(e);
+        }
     }
 }
