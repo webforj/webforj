@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -52,7 +53,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     protected Boolean pTab = false;
     protected float restore = 0;
     protected Boolean commas = false;
-    protected float value = 0;
+    protected BigDecimal value = BigDecimal.valueOf(0);
 
     
 
@@ -161,7 +162,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
     /**
      * Returns whether the text in the NumericBox control is highlighted when focus is gained from tabbing into the control.
-     * @returns Returns whether the text in the control is highlighted (false = Not highlighted, true = highlighted).
+     * @return Returns whether the text in the control is highlighted (false = Not highlighted, true = highlighted).
      */
     public Boolean isHighlight() {
         if(this.ctrl != null){
@@ -313,10 +314,10 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * Returns the value of the contents of the NumericBox control.
      * @return Returns the value of the contents of the control.
      */
-    public float getValue() {
+    public BigDecimal getValue() {
         if(this.ctrl != null){
             try {
-                return numBox.getValue().floatValue();
+                return numBox.getValue().toBigDecimal();
             } catch (BBjException e) {
                 Environment.logError(e);
             }
@@ -584,7 +585,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param value - Specifies the value to be set in the control.
      * @return Returns this
      */
-    public NumericBox setValue(float value) {
+    public NumericBox setValue(BigDecimal value) {
         if(this.ctrl != null){
             try {
                 numBox.setValue(BasisNumber.createBasisNumber(value));
@@ -596,8 +597,15 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
         return this;
     }
 
+    public NumericBox setValue(float value){
+        setValue(BigDecimal.valueOf(value));
+        return this;
+    }
 
-
+    public NumericBox setValue(int value){
+        setValue(BigDecimal.valueOf(value));
+        return this;
+    }
 
     /**
      * Returns whether the text in the NumericBox control can be edited.
@@ -857,11 +865,9 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
             this.setUseEditCommas(this.commas);
         }
 
-        if(this.value != 0){
+        if(this.value.equals(BigDecimal.valueOf(0))){
             this.setValue(this.value);
         }
-
-        
 
         if(Boolean.TRUE.equals(this.readOnly)){
             this.setReadOnly(this.readOnly);
