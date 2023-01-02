@@ -111,7 +111,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 Environment.logError(e);
             }
         }
-        this.asyncScript = script;
+        this.asyncScript = script; // BUG: only one script is remembered!
     }
 
     public Object executeScript(String script) {
@@ -122,7 +122,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 Environment.logError(e);
             }
         }
-        this.executeScript = script;
+        this.executeScript = script;  // BUG: only one script is remembered!
         return null;
     }
 
