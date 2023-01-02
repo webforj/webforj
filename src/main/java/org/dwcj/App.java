@@ -152,4 +152,13 @@ public abstract class App {
 
     }
 
+
+    public static void injectStyle(String style){
+        try {
+            Environment.getInstance().getBBjAPI().getWebManager().injectStyle(style,false);
+        } catch (BBjException e) {
+            Environment.logError(e);
+        }
+    }
+
 }
