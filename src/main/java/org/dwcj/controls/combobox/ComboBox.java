@@ -409,7 +409,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return ((BBjListButton) this.ctrl).isEditable();
+                return !((BBjListButton) this.ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }

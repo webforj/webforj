@@ -547,7 +547,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return ((BBjListBox) this.ctrl).isEditable();
+                return !((BBjListBox) this.ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }
@@ -559,7 +559,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     public ListBox setReadOnly(Boolean editable){
         if(this.ctrl != null){
             try{
-                ((BBjListBox) this.ctrl).setEditable(editable);
+                ((BBjListBox) this.ctrl).setEditable(!editable);
             } catch(BBjException e){
                 Environment.logError(e);
             }

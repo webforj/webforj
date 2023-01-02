@@ -608,7 +608,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try {
-                return bbjDateEditBox.isEditable();
+                return !bbjDateEditBox.isEditable();
             } catch (BBjException e){
                 Environment.logError(e);
             } 
@@ -620,7 +620,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     public DateEditBox setReadOnly(Boolean editable){
         if(this.ctrl != null){
             try {
-                bbjDateEditBox.setEditable(editable);
+                bbjDateEditBox.setEditable(!editable);
             } catch (BBjException e){
                 Environment.logError(e);
             }

@@ -148,7 +148,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     public Boolean isReadOnly() {
         if(this.ctrl != null){
             try {
-                return bbjRadioButton.isEditable();
+                return !bbjRadioButton.isEditable();
             } catch (BBjException e) {
                 Environment.logError(e);
             }
@@ -160,7 +160,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     public RadioButton setReadOnly(Boolean editable) {
         if(this.ctrl != null){
             try {
-                bbjRadioButton.setEditable(editable);
+                bbjRadioButton.setEditable(!editable);
             } catch (BBjException e) {
                 Environment.logError(e);
             }
