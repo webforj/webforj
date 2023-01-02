@@ -264,7 +264,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     public Boolean isReadOnly() {
         if(this.ctrl != null){
             try{
-                return ((BBjCheckBox) ctrl).isEditable();
+                return !((BBjCheckBox) ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }
@@ -282,7 +282,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     public CheckBox setReadOnly(Boolean editable) {
         if(this.ctrl != null){
             try {
-                ((BBjCheckBox) this.ctrl).setEditable(editable);
+                ((BBjCheckBox) this.ctrl).setEditable(!editable);
             } catch (BBjException e) {
                 Environment.logError(e);
             }

@@ -659,7 +659,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return bbjCEdit.isEditable();
+                return !bbjCEdit.isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }
@@ -676,7 +676,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
     public TextArea setReadOnly(Boolean editable) {
         if(this.ctrl != null){
             try {
-                bbjCEdit.setEditable(editable);
+                bbjCEdit.setEditable(!editable);
             } catch (BBjException e) {
                 Environment.logError(e);
             }

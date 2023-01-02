@@ -138,11 +138,11 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
     @Override
     public String getComputedStyle(String property){
         if (ctrl != null) try {
-            ctrl.getComputedStyle(property);
+            return ctrl.getComputedStyle(property);
         } catch (BBjException e) {
             Environment.logError(e);
         }
-        return null;
+        return "";
     }
 
     @Override

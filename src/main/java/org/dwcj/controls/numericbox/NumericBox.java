@@ -607,7 +607,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     public Boolean isReadOnly() {
         if(this.ctrl != null){
             try {
-                return numBox.isEditable();
+                return !numBox.isEditable();
             } catch (BBjException e) {
                 Environment.logError(e);
             }
@@ -624,7 +624,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     public NumericBox setReadOnly(Boolean editable) {
         if(this.ctrl != null){
             try {
-                numBox.setEditable(editable);
+                numBox.setEditable(!editable);
             } catch (BBjException e) {
                 Environment.logError(e);
             }

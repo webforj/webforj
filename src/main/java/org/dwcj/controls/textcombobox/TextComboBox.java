@@ -397,7 +397,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return ((BBjListEdit) this.ctrl).isEditable();
+                return !((BBjListEdit) this.ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }
