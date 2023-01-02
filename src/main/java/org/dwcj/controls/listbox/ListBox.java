@@ -188,7 +188,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     }
     
     
-        public ListBox getItemCount() {
+        public Integer getItemCount() {
             if(this.ctrl != null){
                 try{
                     bbjListBox.getItemCount();
@@ -196,12 +196,11 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                     Environment.logError(e);
                 }
             }
-            return this;
+            return null;
         }
 
     /**
      * Returns true or false based on the ListBox allows selection of multiple items
-     * @param N/A
      * @return boolean
      */
     public Boolean isMultipleSelection() {
