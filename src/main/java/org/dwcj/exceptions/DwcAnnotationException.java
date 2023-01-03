@@ -1,14 +1,8 @@
 package org.dwcj.exceptions;
 
-/**
- * This class is used for reporting errors that occur during DWC application
- * initialization phase.
- * 
- * @author Stephan Wald, Hyyan Abo Fakher
- */
-public final class DwcAppInitializeException extends DwcException {
+public class DwcAnnotationException extends DwcException {
 
-    private static final String DEFAULT_MESSAGE = "DWC application initialization failed.";
+    private static final String DEFAULT_MESSAGE = "Failed to process DWC annotation";
 
     /**
      * Constructs a new exception with the specified detail message and
@@ -25,7 +19,7 @@ public final class DwcAppInitializeException extends DwcException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcAppInitializeException(String message, Throwable cause) {
+    public DwcAnnotationException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -41,7 +35,7 @@ public final class DwcAppInitializeException extends DwcException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcAppInitializeException(Throwable e) {
+    public DwcAnnotationException(Throwable e) {
         super(DEFAULT_MESSAGE, e);
     }
 
@@ -53,14 +47,15 @@ public final class DwcAppInitializeException extends DwcException {
      * @param e the detail message. The detail message is saved for later
      *          retrieval by the {@link #getMessage()} method.
      */
-    public DwcAppInitializeException(String e) {
+    public DwcAnnotationException(String e) {
         super(e);
     }
 
     /**
      * Constructs a new exception with the specified detail message.
      */
-    public DwcAppInitializeException() {
+    public DwcAnnotationException() {
         super(DEFAULT_MESSAGE);
     }
+
 }
