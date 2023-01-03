@@ -353,61 +353,47 @@ public abstract class App {
    * @throws DwcAnnotationException
    */
   private void processAnnotations() throws DwcAnnotationException {
-    // process AppTitle annotation
-    AppTitle appTitle = this.getClass().getAnnotation(AppTitle.class);
-    if (appTitle != null) {
-      try {
+    try {
+      Class<? extends App> klass = this.getClass();
+
+      // process AppTitle annotation
+      AppTitle appTitle = klass.getAnnotation(AppTitle.class);
+      if (appTitle != null) {
         setTitle(appTitle.value());
-      } catch (DwcException e) {
-        throw new DwcAnnotationException("Failed to process AppTitle annotation.", e);
       }
-    }
 
-    // process AppDarkTheme annotation
-    AppDarkTheme appDarkTheme = this.getClass().getAnnotation(AppDarkTheme.class);
-    if (appDarkTheme != null) {
-      try {
+      // process AppDarkTheme annotation
+      AppDarkTheme appDarkTheme = klass.getAnnotation(AppDarkTheme.class);
+      if (appDarkTheme != null) {
         setDarkTheme(appDarkTheme.value());
-      } catch (DwcException e) {
-        throw new DwcAnnotationException("Failed to process AppDarkTheme annotation.", e);
       }
-    }
 
-    // process AppLightTheme annotation
-    AppTheme appLightTheme = this.getClass().getAnnotation(AppTheme.class);
-    if (appLightTheme != null) {
-      try {
+      // process AppLightTheme annotation
+      AppTheme appLightTheme = klass.getAnnotation(AppTheme.class);
+      if (appLightTheme != null) {
         setLightTheme(appLightTheme.value());
-      } catch (DwcException e) {
-        throw new DwcAnnotationException("Failed to process AppTheme annotation.", e);
       }
-    }
 
-    // process AppTheme annotation
-    AppTheme appTheme = this.getClass().getAnnotation(AppTheme.class);
-    if (appTheme != null) {
-      try {
+      // process AppTheme annotation
+      AppTheme appTheme = klass.getAnnotation(AppTheme.class);
+      if (appTheme != null) {
         setTheme(appTheme.value());
-      } catch (DwcException e) {
-        throw new DwcAnnotationException("Failed to process AppTheme annotation.", e);
       }
-    }
 
-    // process AppMeta annotation
-    AppMeta[] appMeta = this.getClass().getAnnotationsByType(AppMeta.class);
-    if (appMeta != null) {
-      for (AppMeta meta : appMeta) {
-        try {
+      // process AppMeta annotation
+      AppMeta[] appMeta = klass.getAnnotationsByType(AppMeta.class);
+      if (appMeta != null) {
+        for (AppMeta meta : appMeta) {
           HashMap<String, String> attributes = new HashMap<>();
           for (MetaAttribute attribute : meta.attributes()) {
             attributes.put(attribute.name(), attribute.value());
           }
 
           setMeta(meta.name(), meta.content(), attributes);
-        } catch (DwcException e) {
-          throw new DwcAnnotationException("Failed to process AppMeta annotation.", e);
         }
       }
+    } catch (DwcException e) {
+      throw new DwcAnnotationException("Failed to process application annotations.", e);
     }
   }
 }
