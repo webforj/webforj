@@ -234,6 +234,21 @@ public abstract class App {
   }
 
   /**
+   * Set a meta tag
+   * 
+   * @param name    The name of the meta tag
+   * @param content The content of the meta tag
+   * @throws DwcException
+   */
+  public void setMeta(String name, String content) throws DwcException {
+    try {
+      Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
+    }
+  }
+
+  /**
    * Set an attribute on the document
    * 
    * @param name     The name of the attribute
@@ -311,21 +326,6 @@ public abstract class App {
    */
   public String getAttribute(String name) throws DwcException {
     return getAttribute(name, "");
-  }
-
-  /**
-   * Set a meta tag
-   * 
-   * @param name    The name of the meta tag
-   * @param content The content of the meta tag
-   * @throws DwcException
-   */
-  public void setMeta(String name, String content) throws DwcException {
-    try {
-      Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content);
-    } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
-    }
   }
 
   /**
