@@ -24,6 +24,28 @@ import org.dwcj.exceptions.DwcException;
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
 
+  /**
+   * An enum for the default application themes
+   * 
+   * @see App#setTheme(Theme)
+   */
+  public enum Theme {
+    LIGHT("light"),
+    DARK("dark"),
+    DARK_PURE("dark-pure"),
+    SYSTEM("system");
+
+    private String value;
+
+    private Theme(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
+  }
+
   protected App() {
     preRun();
     try {
@@ -88,6 +110,18 @@ public abstract class App {
     } catch (BBjException e) {
       throw new DwcException("Failed to set theme.", e);
     }
+  }
+
+  /**
+   * Set the application theme
+   * 
+   * @param theme The theme to set
+   * @throws DwcException
+   * 
+   * @see Theme
+   */
+  public void setTheme(Theme theme) throws DwcException {
+    setTheme(theme.getValue());
   }
 
   /**
