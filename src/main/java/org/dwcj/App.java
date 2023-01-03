@@ -3,6 +3,7 @@ package org.dwcj;
 import com.basis.startup.type.BBjException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.dwcj.annotations.AppDarkTheme;
 import org.dwcj.annotations.AppMeta;
@@ -172,11 +173,11 @@ public abstract class App {
    * @param attributes A map of attributes to set
    * @throws DwcException
    */
-  public void setMeta(String name, String content, HashMap<String, String> attributes) throws DwcException {
+  public void setMeta(String name, String content, Map<String, String> attributes) throws DwcException {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e);
+      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
     }
   }
 
@@ -192,7 +193,7 @@ public abstract class App {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e);
+      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
     }
   }
 
@@ -207,7 +208,7 @@ public abstract class App {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e);
+      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
     }
   }
 
