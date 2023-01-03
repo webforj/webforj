@@ -5,11 +5,13 @@ import com.basis.startup.type.BBjException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dwcj.annotations.AppAttribute;
 import org.dwcj.annotations.AppDarkTheme;
+import org.dwcj.annotations.AppLightTheme;
 import org.dwcj.annotations.AppMeta;
 import org.dwcj.annotations.AppTheme;
 import org.dwcj.annotations.AppTitle;
-import org.dwcj.annotations.MetaAttribute;
+import org.dwcj.annotations.Attribute;
 import org.dwcj.environment.namespace.*;
 import org.dwcj.exceptions.DwcAnnotationException;
 import org.dwcj.exceptions.DwcAppInitializeException;
@@ -232,6 +234,86 @@ public abstract class App {
   }
 
   /**
+   * Set an attribute on the document
+   * 
+   * @param name     The name of the attribute
+   * @param value    The value of the attribute
+   * @param selector By default, setAttribute applies to the <a href=
+   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
+   *                 element on
+   *                 the web page. If a selector is specified, it selects a
+   *                 descendant element within the document to set this attribute.
+   *                 If a specified <a href=
+   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
+   *                 doesn't return any elements, the
+   *                 default document element is used.
+   * @throws DwcException
+   */
+  public void setAttribute(String name, String value, String selector) throws DwcException {
+    try {
+      Environment.getInstance().getBBjAPI().getWebManager().setAttribute(name, value, selector);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to set attribute.", e);
+    }
+  }
+
+  /**
+   * Set an attribute on the document
+   * 
+   * @param name  The name of the attribute
+   * @param value The value of the attribute
+   * @throws DwcException
+   */
+  public void setAttribute(String name, String value) throws DwcException {
+    setAttribute(name, value, "");
+  }
+
+  /**
+   * Set an attribute on the document
+   * 
+   * @param name The name of the attribute
+   * @throws DwcException
+   */
+  public void setAttribute(String name) throws DwcException {
+    setAttribute(name, name, "");
+  }
+
+  /**
+   * Get an attribute from the document
+   * 
+   * @param name     The name of the attribute
+   * @param selector By default, setAttribute applies to the <a href=
+   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
+   *                 element on
+   *                 the web page. If a selector is specified, it selects a
+   *                 descendant element within the document to set this attribute.
+   *                 If a specified <a href=
+   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
+   *                 doesn't return any elements, the
+   *                 default document element is used.
+   * @return The attribute value
+   * @throws DwcException
+   */
+  public String getAttribute(String name, String selector) throws DwcException {
+    try {
+      return Environment.getInstance().getBBjAPI().getWebManager().getAttribute(name, selector);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to get attribute.", e);
+    }
+  }
+
+  /**
+   * Get an attribute from the document
+   * 
+   * @param name The name of the attribute
+   * @return The attribute value
+   * @throws DwcException
+   */
+  public String getAttribute(String name) throws DwcException {
+    return getAttribute(name, "");
+  }
+
+  /**
    * Set a meta tag
    * 
    * @param name    The name of the meta tag
@@ -396,6 +478,12 @@ public abstract class App {
         setTitle(appTitle.value());
       }
 
+      // process AppAttribute annotation
+      AppAttribute[] appAttributes = klass.getAnnotationsByType(AppAttribute.class);
+      for (AppAttribute appAttribute : appAttributes) {
+        setAttribute(appAttribute.name(), appAttribute.value(), appAttribute.selector());
+      }
+
       // process AppDarkTheme annotation
       AppDarkTheme appDarkTheme = klass.getAnnotation(AppDarkTheme.class);
       if (appDarkTheme != null) {
@@ -403,7 +491,7 @@ public abstract class App {
       }
 
       // process AppLightTheme annotation
-      AppTheme appLightTheme = klass.getAnnotation(AppTheme.class);
+      AppLightTheme appLightTheme = klass.getAnnotation(AppLightTheme.class);
       if (appLightTheme != null) {
         setLightTheme(appLightTheme.value());
       }
@@ -419,7 +507,7 @@ public abstract class App {
       if (appMeta != null) {
         for (AppMeta meta : appMeta) {
           HashMap<String, String> attributes = new HashMap<>();
-          for (MetaAttribute attribute : meta.attributes()) {
+          for (Attribute attribute : meta.attributes()) {
             attributes.put(attribute.name(), attribute.value());
           }
 

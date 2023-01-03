@@ -8,20 +8,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to set the default dark theme name to use when the
- * application theme is set to "system" and the system is in dark mode, the
- * default value is "dark"
+ * Annotates a class to set the name of the default dark theme to be used by the
+ * application when the used theme is "system".
+ * 
+ * The annotation can be used on the class level only and the class must extend
+ * `org.dwcj.App` in order for the annotation to be processed.
  * 
  * <pre>
- * &#064;AppDarkTheme("dark")
- * public class MyApplication extends App {
- *   &#064;Override
- *   public void run() throws DwcException {
- *     msgbox("this is a test");
- *   }
+ * {@code
+ * &#64;AppDarkTheme("dark")
  * }
  * </pre>
  * 
+ * @see AppTheme
+ * @see AppLightTheme
+ *
  * @author Hyyan Abo Fakher
  */
 @Retention(RetentionPolicy.RUNTIME)

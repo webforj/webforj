@@ -9,32 +9,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is used to set the meta tags of the app. It can be used
+ * Annotates a class to set the meta tags of the app. It can be used
  * multiple times to set multiple meta tags. The attributes of the meta tag can
- * be set using the {@link MetaAttribute} annotation. The attributes can be
+ * be set using the {@link Attribute} annotation. The attributes can be
  * repeated multiple times to set multiple attributes but the attributes are
  * optional.
  * 
- * <p>
- * Example:
+ * The annotation can be used on the class level only and the class must extend
+ * `org.dwcj.App` in order for the annotation to be processed.
  * 
  * <pre>
  * {@code
- * &#64;AppMeta(name = "author", content = "Hyyan Abo Fakher")
- * &#64;AppMeta(name = "description", content = "This is a test app")
- * &#64;AppMeta(name = "keywords", content = "test, app")
- * &#64;AppMeta(name="viewport", content="width=device-width,initial-scale=1,user-scalable=no")
- * &#64;AppMeta(name = "custom name", content = "custom content", attributes = {
- *   &#64;MetaAttribute(name = "custom-attribute", value = "custom attribute value"),
- *   &#64;MetaAttribute(name = "custom-attribute2", value = "custom attribute value2")
- * })
+ * &#64;AppMeta(name = "description", content = "My App")
+ * &#64;AppMeta(name = "keywords", content = "My, App, Java")
+ * &#64;AppMeta(name = "theme-color", content = "#000000", attributes = {
+ *  &#64;Attribute(name = "media", value = "(prefers-color-scheme: dark)"),
+ *  &#64;Attribute(name = "name", value = "theme-color") })
  * </pre>
+ * 
+ * @see AppMetas
+ * @see Attribute
  * 
  * @author Hyyan Abo Fakher
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(AppMetaRepeatable.class)
+@Repeatable(AppMetas.class)
 @Inherited
 @Documented
 public @interface AppMeta {
@@ -45,5 +45,5 @@ public @interface AppMeta {
   String content();
 
   /** The attributes of the meta tag */
-  MetaAttribute[] attributes() default {};
+  Attribute[] attributes() default {};
 }
