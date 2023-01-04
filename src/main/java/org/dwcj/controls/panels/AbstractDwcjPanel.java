@@ -3,11 +3,15 @@ package org.dwcj.controls.panels;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import org.dwcj.App;
 import org.dwcj.Environment;
+import org.dwcj.annotations.AnnotationProcessor;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.exceptions.DwcAnnotationException;
 
 /**
  * the base class for all panel implementations
@@ -26,8 +30,10 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
     public AbstractDwcjPanel add(AbstractControl ...ctrl) {
         for(AbstractControl c: ctrl){
             try {
+                AnnotationProcessor processor = new AnnotationProcessor();
+                processor.processControlAnnotations(c);
                 ControlAccessor.getDefault().create(c,this);
-            } catch (IllegalAccessException e) {
+            } catch (IllegalAccessException | DwcAnnotationException e) {
                 Environment.logError(e);
             }
         }

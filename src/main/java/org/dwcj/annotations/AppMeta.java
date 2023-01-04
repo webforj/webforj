@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(AppMetas.class)
+@Repeatable(AppMeta.Container.class)
 @Inherited
 @Documented
 public @interface AppMeta {
@@ -46,4 +46,12 @@ public @interface AppMeta {
 
   /** The attributes of the meta tag */
   Attribute[] attributes() default {};
+
+  @Target(ElementType.TYPE)
+  @Retention(RetentionPolicy.RUNTIME)
+  @Inherited
+  @Documented
+  public @interface Container {
+    AppMeta[] value();
+  }
 }
