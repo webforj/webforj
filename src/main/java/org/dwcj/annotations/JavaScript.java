@@ -45,8 +45,6 @@ public @interface JavaScript {
    * A set of <a href=
    * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script">attributes</a>
    * to be added to the script element.
-   * Attributes can be specified either as a string in the format
-   * "attr=value,attr=value" or as a HashMap containing key/value pairs.
    */
   Attribute[] attributes() default {};
 

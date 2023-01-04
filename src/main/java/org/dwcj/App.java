@@ -538,6 +538,59 @@ public abstract class App {
   }
 
   /**
+   * Inject a link into the page
+   * 
+   * @param url        The URL of the link
+   * @param top        Whether to inject the link at the top of the page
+   * @param attributes A map of attributes to set
+   * @throws DwcException
+   */
+  public static void addLink(String url, boolean top, Map<String, String> attributes) throws DwcException {
+    try {
+      Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to add link.", e); // NOSONAR
+    }
+  }
+
+  /**
+   * Inject a link into the page
+   * 
+   * @param url        The URL of the link
+   * @param top        Whether to inject the link at the top of the page
+   * @param attributes A map of attributes to set (comma separated)
+   * @throws DwcException
+   */
+  public static void addLink(String url, boolean top, String attributes) throws DwcException {
+    try {
+      Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to add link.", e); // NOSONAR
+    }
+  }
+
+  /**
+   * Inject a link into the page
+   * 
+   * @param url The URL of the link
+   * @param top Whether to inject the link at the top of the page
+   * @throws DwcException
+   */
+  public static void addLink(String url, boolean top) throws DwcException {
+    addLink(url, top, "");
+  }
+
+  /**
+   * Inject a link into the page
+   * 
+   * @param url The URL of the link
+   * @throws DwcException
+   */
+  public static void addLink(String url) throws DwcException {
+    addLink(url, false, "");
+  }
+
+  /**
    * Log a String to the browser console (console.out)
    * 
    * @param output The message to log

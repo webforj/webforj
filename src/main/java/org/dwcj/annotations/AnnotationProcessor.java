@@ -28,10 +28,10 @@ public final class AnnotationProcessor {
    */
   public void processAppAnnotations(App app, RunningPhase phase) throws DwcAnnotationException {
     try {
-
       if (phase == RunningPhase.PRE_RUN) {
         processAppAttribute(app);
         processAppMeta(app);
+        processLink(app);
         processStyleSheet(app);
         processInlineStyleSheet(app);
         processJavaScript(app);
@@ -59,6 +59,7 @@ public final class AnnotationProcessor {
    */
   public void processControlAnnotations(AbstractControl control) throws DwcAnnotationException {
     try {
+      processLink(control);
       processStyleSheet(control);
       processInlineStyleSheet(control);
       processJavaScript(control);
@@ -251,6 +252,30 @@ public final class AnnotationProcessor {
         }
 
         App.addInlineJavaScript(content, inlineJavaScript.top(), attributes);
+      }
+    }
+  }
+
+  /**
+   * Process the Link annotation
+   * 
+   * @param clazz The class to process
+   * @throws DwcException
+   */
+  private void processLink(Object clazz) throws DwcException {
+    Link[] links = clazz.getClass().getAnnotationsByType(Link.class);
+    if (links != null) {
+      for (Link link : links) {
+        HashMap<String, String> attributes = new HashMap<>();
+        for (Attribute attribute : link.attributes()) {
+          attributes.put(attribute.name(), attribute.value());
+        }
+
+        if (link.id() != null && !link.id().isEmpty()) {
+          attributes.put("id", link.id());
+        }
+
+        App.addLink(link.url(), link.top(), attributes);
       }
     }
   }
