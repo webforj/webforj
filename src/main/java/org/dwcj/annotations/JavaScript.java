@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 @Repeatable(JavaScript.Container.class)
 @Inherited
 @Documented
-@java.lang.SuppressWarnings("java:S2786")
+@java.lang.SuppressWarnings("squid:S2786")
 public @interface JavaScript {
 
   /** A unique resource id. Can be used to avoid duplications */
