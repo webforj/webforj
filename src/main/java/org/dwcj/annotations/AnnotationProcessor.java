@@ -13,9 +13,9 @@ import org.dwcj.util.Assets;
  * 
  * @author Hyyan Abo Fakher
  */
-final public class AnnotationProcessor {
+public final class AnnotationProcessor {
 
-  public static enum RunningPhase {
+  public enum RunningPhase {
     PRE_RUN, POST_RUN
   }
 

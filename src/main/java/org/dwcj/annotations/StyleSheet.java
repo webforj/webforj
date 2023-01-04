@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
 @Repeatable(StyleSheet.Container.class)
 @Inherited
 @Documented
+@java.lang.SuppressWarnings("java:S2786")
 public @interface StyleSheet {
 
   /** A unique resource id. Can be used to avoid duplications */

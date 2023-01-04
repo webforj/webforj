@@ -14,6 +14,10 @@ import org.dwcj.Environment;
  * @author Hyyan Abo Fakher
  */
 public class Assets {
+
+  private Assets() {
+  }
+
   /**
    * Get the content of a resource as a String
    * 
@@ -31,27 +35,7 @@ public class Assets {
         return reader.lines().collect(Collectors.joining(System.lineSeparator()));
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(e); // NOSONAR
     }
-  }
-
-  /**
-   * Check if the given url is an external url
-   * 
-   * @param url The url to check
-   * @return True if the url is external, false otherwise
-   */
-  public static boolean isExternalURL(String url) {
-    return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//");
-  }
-
-  /**
-   * Check if the given url is an internal url
-   * 
-   * @param url The url to check
-   * @return True if the url is internal, false otherwise
-   */
-  public static boolean isInternalURL(String url) {
-    return !isExternalURL(url);
   }
 }
