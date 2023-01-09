@@ -278,6 +278,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
      */
     public ListBox setItems(Map<Object, String> values) {
         this.values = values;
+        data2.clear();
         Iterator<Object> it = values.keySet().iterator();
         while (it.hasNext()) {
             data2.add(values.get(it.next()));

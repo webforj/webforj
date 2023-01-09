@@ -77,7 +77,6 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
         if(this.ctrl != null){
             if(this.onScriptLoadedSink == null){
                 this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);
-                App.consoleLog(":)");
             }
             this.onScriptLoadedSink.addCallback(callback);
         }
