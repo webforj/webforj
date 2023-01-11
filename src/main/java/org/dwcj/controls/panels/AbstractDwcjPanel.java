@@ -13,12 +13,16 @@ import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.exceptions.DwcAnnotationException;
 
+import java.util.ArrayList;
+
 /**
  * the base class for all panel implementations
  */
 public abstract class AbstractDwcjPanel extends AbstractDwcControl {
 
     protected BBjWindow wnd;
+
+    protected ArrayList<AbstractControl> controls = new ArrayList<>();
 
     /**
      * Used to add controls to a panel. Multiple controls can be passed to this
@@ -33,6 +37,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
                 AnnotationProcessor processor = new AnnotationProcessor();
                 processor.processControlAnnotations(c);
                 ControlAccessor.getDefault().create(c,this);
+                controls.add(c);
             } catch (IllegalAccessException | DwcAnnotationException e) {
                 Environment.logError(e);
             }
