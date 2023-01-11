@@ -1,14 +1,23 @@
 package org.dwcj.exceptions;
 
 /**
- * This class is used for reporting errors that occur during DWC application
- * initialization phase.
+ * This class is used for reporting DWC application level exceptions
  * 
- * @author Stephan Wald, Hyyan Abo Fakher
+ * @author Hyyan Abo Fakher
  */
-public final class DwcAppInitializeException extends DwcException {
+public class DwcException extends Exception {
 
-    private static final String DEFAULT_MESSAGE = "DWC application initialization failed.";
+    /**
+     * Constructs a new exception with the specified detail message. The
+     * cause is not initialized, and may subsequently be initialized by
+     * a call to {@link #initCause}.
+     *
+     * @param message the detail message. The detail message is saved for
+     *                later retrieval by the {@link #getMessage()} method.
+     */
+    public DwcException(String message) {
+        super(message);
+    }
 
     /**
      * Constructs a new exception with the specified detail message and
@@ -25,7 +34,7 @@ public final class DwcAppInitializeException extends DwcException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcAppInitializeException(String message, Throwable cause) {
+    public DwcException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -41,26 +50,24 @@ public final class DwcAppInitializeException extends DwcException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcAppInitializeException(Throwable e) {
-        super(DEFAULT_MESSAGE, e);
+    public DwcException(Throwable cause) {
+        super(cause);
     }
 
     /**
-     * Constructs a new exception with the specified detail message. The cause is
-     * not initialized, and may subsequently be initialized by a call to
-     * {@link #initCause}.
+     * Constructs a new DWC exception based on the passed exception.
      *
-     * @param e the detail message. The detail message is saved for later
-     *          retrieval by the {@link #getMessage()} method.
+     * @param e the exception to be wrapped
      */
-    public DwcAppInitializeException(String e) {
+    public DwcException(Exception e) {
         super(e);
     }
 
     /**
-     * Constructs a new exception with the specified detail message.
+     * Constructs a new exception with {@code null} as its detail message.
+     * The cause is not initialized, and may subsequently be initialized by a
+     * call to {@link #initCause}.
      */
-    public DwcAppInitializeException() {
-        super(DEFAULT_MESSAGE);
+    public DwcException() {
     }
 }
