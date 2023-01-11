@@ -153,6 +153,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      */
     public ComboBox setItems(Map<Object, String> values) {
         this.values = values;
+        data2.clear();
         Iterator<Object> it = values.keySet().iterator();
         while (it.hasNext()) {
             data2.add(values.get(it.next()));
@@ -269,6 +270,19 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+
+    /**
+     * closes the ComboBox dropdown list
+     * @return ComboBox - returns this
+     */
+    public ComboBox close() {
+        try {
+            bbjListButton.closeList();
+        } catch (BBjException e) {
+            Environment.logError(e);
+        }
+        return this;
+    }
 
 
     /**
@@ -409,7 +423,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return ((BBjListButton) this.ctrl).isEditable();
+                return !((BBjListButton) this.ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }

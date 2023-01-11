@@ -20,7 +20,7 @@ public abstract class App {
 
   /**
    * An enum for the default application themes
-   * 
+   *
    * @see App#setTheme(Theme)
    */
   public enum Theme {
@@ -54,7 +54,7 @@ public abstract class App {
 
   /**
    * Set the application title
-   * 
+   *
    * @param title The title to set
    * @throws DwcException
    */
@@ -68,7 +68,7 @@ public abstract class App {
 
   /**
    * Get the application title
-   * 
+   *
    * @return The title
    * @throws DwcException
    */
@@ -82,8 +82,8 @@ public abstract class App {
 
   /**
    * Get the registered DWC application name
-   * 
-   * @param name The name to set
+   *
+   * @return the application name
    * @throws DwcException
    */
   public static String getApplicationName() throws DwcException {
@@ -96,7 +96,7 @@ public abstract class App {
 
   /**
    * Set the application theme
-   * 
+   *
    * @param theme The theme to set
    * @throws DwcException
    */
@@ -110,10 +110,10 @@ public abstract class App {
 
   /**
    * Set the application theme
-   * 
+   *
    * @param theme The theme to set
    * @throws DwcException
-   * 
+   *
    * @see Theme
    */
   public static void setTheme(Theme theme) throws DwcException {
@@ -122,7 +122,7 @@ public abstract class App {
 
   /**
    * Get the application theme
-   * 
+   *
    * @return The theme
    * @throws DwcException
    */
@@ -137,7 +137,7 @@ public abstract class App {
   /**
    * Set the name of the dark theme to use for the application.
    * The dark theme setting is used when the application theme is set to "system".
-   * 
+   *
    * @param darkTheme The dark theme to set
    * @throws DwcException
    */
@@ -151,7 +151,7 @@ public abstract class App {
 
   /**
    * Get the name of the dark theme
-   * 
+   *
    * @return The dark theme
    * @throws DwcException
    */
@@ -167,7 +167,7 @@ public abstract class App {
    * Set the name of the light theme to use for the application.
    * The light theme setting is used when the application theme is set to
    * "system".
-   * 
+   *
    * @param lightTheme The light theme to set
    * @throws DwcException
    */
@@ -182,7 +182,7 @@ public abstract class App {
 
   /**
    * Get the name of the light theme to use for the application.
-   * 
+   *
    * @return The light theme
    * @throws DwcException
    */
@@ -197,7 +197,7 @@ public abstract class App {
 
   /**
    * Set a meta tag
-   * 
+   *
    * @param name       The name of the meta tag
    * @param content    The content of the meta tag
    * @param attributes A map of attributes to set
@@ -213,7 +213,7 @@ public abstract class App {
 
   /**
    * Set a meta tag
-   * 
+   *
    * @param name       The name of the meta tag
    * @param content    The content of the meta tag
    * @param attributes A map of attributes to set (comma separated)
@@ -229,7 +229,7 @@ public abstract class App {
 
   /**
    * Set a meta tag
-   * 
+   *
    * @param name    The name of the meta tag
    * @param content The content of the meta tag
    * @throws DwcException
@@ -244,7 +244,7 @@ public abstract class App {
 
   /**
    * Set an attribute on the document
-   * 
+   *
    * @param name     The name of the attribute
    * @param value    The value of the attribute
    * @param selector By default, setAttribute applies to the <a href=
@@ -268,7 +268,7 @@ public abstract class App {
 
   /**
    * Set an attribute on the document
-   * 
+   *
    * @param name  The name of the attribute
    * @param value The value of the attribute
    * @throws DwcException
@@ -279,7 +279,7 @@ public abstract class App {
 
   /**
    * Set an attribute on the document
-   * 
+   *
    * @param name The name of the attribute
    * @throws DwcException
    */
@@ -289,7 +289,7 @@ public abstract class App {
 
   /**
    * Get an attribute from the document
-   * 
+   *
    * @param name     The name of the attribute
    * @param selector By default, setAttribute applies to the <a href=
    *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
@@ -313,7 +313,7 @@ public abstract class App {
 
   /**
    * Get an attribute from the document
-   * 
+   *
    * @param name The name of the attribute
    * @return The attribute value
    * @throws DwcException
@@ -324,7 +324,7 @@ public abstract class App {
 
   /**
    * Inject a stylesheet into the page
-   * 
+   *
    * @param url        The URL of the stylesheet
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
@@ -340,7 +340,7 @@ public abstract class App {
 
   /**
    * Inject a stylesheet into the page
-   * 
+   *
    * @param url        The URL of the stylesheet
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
@@ -356,7 +356,7 @@ public abstract class App {
 
   /**
    * Inject a stylesheet into the page
-   * 
+   *
    * @param url The URL of the stylesheet
    * @param top Whether to inject the stylesheet at the top of the page
    * @throws DwcException
@@ -367,7 +367,7 @@ public abstract class App {
 
   /**
    * Inject a stylesheet into the page
-   * 
+   *
    * @param url The URL of the stylesheet
    * @throws DwcException
    */
@@ -377,7 +377,7 @@ public abstract class App {
 
   /**
    * Inject an inline stylesheet into the page
-   * 
+   *
    * @param css        The CSS to inject
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
@@ -393,7 +393,7 @@ public abstract class App {
 
   /**
    * Inject an inline stylesheet into the page
-   * 
+   *
    * @param css        The CSS to inject
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
@@ -409,7 +409,7 @@ public abstract class App {
 
   /**
    * Inject an inline stylesheet into the page
-   * 
+   *
    * @param css The CSS to inject
    * @param top Whether to inject the stylesheet at the top of the page
    * @throws DwcException
@@ -420,7 +420,7 @@ public abstract class App {
 
   /**
    * Inject an inline stylesheet into the page
-   * 
+   *
    * @param css The CSS to inject
    * @throws DwcException
    */
@@ -431,7 +431,7 @@ public abstract class App {
 
   /**
    * Inject a script into the page
-   * 
+   *
    * @param url        The URL of the script
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
@@ -447,7 +447,7 @@ public abstract class App {
 
   /**
    * Inject a script into the page
-   * 
+   *
    * @param url        The URL of the script
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
@@ -463,7 +463,7 @@ public abstract class App {
 
   /**
    * Inject a script into the page
-   * 
+   *
    * @param url The URL of the script
    * @param top Whether to inject the script at the top of the page
    * @throws DwcException
@@ -475,7 +475,7 @@ public abstract class App {
 
   /**
    * Inject a script into the page
-   * 
+   *
    * @param url The URL of the script
    * @throws DwcException
    */
@@ -485,7 +485,7 @@ public abstract class App {
 
   /**
    * Inject an inline script into the page
-   * 
+   *
    * @param script     The script to inject
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
@@ -502,7 +502,7 @@ public abstract class App {
 
   /**
    * Inject an inline script into the page
-   * 
+   *
    * @param script     The script to inject
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
@@ -518,7 +518,7 @@ public abstract class App {
 
   /**
    * Inject an inline script into the page
-   * 
+   *
    * @param script The script to inject
    * @param top    Whether to inject the script at the top of the page
    * @throws DwcException
@@ -529,7 +529,7 @@ public abstract class App {
 
   /**
    * Inject an inline script into the page
-   * 
+   *
    * @param script The script to inject
    * @throws DwcException
    */
@@ -539,7 +539,7 @@ public abstract class App {
 
   /**
    * Inject a link into the page
-   * 
+   *
    * @param url        The URL of the link
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set
@@ -555,7 +555,7 @@ public abstract class App {
 
   /**
    * Inject a link into the page
-   * 
+   *
    * @param url        The URL of the link
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set (comma separated)
@@ -571,7 +571,7 @@ public abstract class App {
 
   /**
    * Inject a link into the page
-   * 
+   *
    * @param url The URL of the link
    * @param top Whether to inject the link at the top of the page
    * @throws DwcException
@@ -582,7 +582,7 @@ public abstract class App {
 
   /**
    * Inject a link into the page
-   * 
+   *
    * @param url The URL of the link
    * @throws DwcException
    */
@@ -592,7 +592,7 @@ public abstract class App {
 
   /**
    * Log a String to the browser console (console.out)
-   * 
+   *
    * @param output The message to log
    */
   public static void consoleLog(String output) {
@@ -615,7 +615,7 @@ public abstract class App {
 
   /**
    * Shows a message box
-   * 
+   *
    * @param alert The message to show
    * @return
    */
@@ -646,7 +646,7 @@ public abstract class App {
 
   /**
    * Show or hide a busy indicator overlay
-   * 
+   *
    * @param busy A boolean value true=show false=hide
    */
   public static void busy(boolean busy) {
@@ -662,7 +662,7 @@ public abstract class App {
 
   /**
    * show the busy indicator with the text passed to this method
-   * 
+   *
    * @param busyText the text to show
    */
   public static void busy(String busyText) {
@@ -696,7 +696,7 @@ public abstract class App {
 
   /**
    * Override this method to implement your app behavior
-   * 
+   *
    * @throws DwcAppInitializeException
    */
   public abstract void run() throws DwcException;

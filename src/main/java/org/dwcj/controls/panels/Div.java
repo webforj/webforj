@@ -8,6 +8,7 @@ import org.dwcj.controls.panels.events.DivClickEvent;
 import org.dwcj.controls.panels.sinks.DivClickEventSink;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -16,9 +17,10 @@ import java.util.function.Consumer;
  */
 public class Div extends AbstractDwcjPanel {
 
-    private ArrayList<AbstractControl> controls = new ArrayList<>();
+
     private DivClickEventSink divClickEventSink;
 
+    private final ArrayList<AbstractControl> catchUpControls = new ArrayList<>();
     
     @Override
     protected void create(AbstractDwcjPanel p) {
@@ -37,9 +39,9 @@ public class Div extends AbstractDwcjPanel {
 
     /**
      * Used to add controls to a panel. Multiple controls can be passed to this
-     * function, and will be added in the order the arguments are passed 
+     * function, and will be added in the order the arguments are passed
      * (arg0 added first, arg1 second, etc...)
-     * @param ctrl the control(s) to be added
+     * @param control the control(s) to be added
      * @return the panel itself
      */
     @Override
@@ -48,15 +50,14 @@ public class Div extends AbstractDwcjPanel {
             for(AbstractControl c: control){
                 try {
                     ControlAccessor.getDefault().create(c,this);
+                    controls.add(c);
                 } catch (IllegalAccessException e) {
                     Environment.logError(e);
                 }
             }
         }
         else{
-            for(AbstractControl c: control){
-                this.controls.add(c);
-            }
+            Collections.addAll(this.catchUpControls, control);
         }
         return this;
     }
@@ -135,9 +136,21 @@ public class Div extends AbstractDwcjPanel {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
-        while(!this.controls.isEmpty()){
-            this.add(controls.remove(0));
+        while(!this.catchUpControls.isEmpty()){
+            this.add(catchUpControls.remove(0));
         }
+
+    }
+
+    /**
+     * removes and destroys all controls within the Div
+     */
+    protected void clear(){
+        for (AbstractControl control : this.controls) {
+            control.destroy();
+        }
+        controls.clear();
+
 
     }
 

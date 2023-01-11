@@ -62,7 +62,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
     @Override
     public Boolean isReadOnly() {
         try {
-            return bbjNavigator.isEditable();
+            return !bbjNavigator.isEditable();
         } catch (BBjException e) {
             Environment.logError(e);
         }
@@ -72,7 +72,7 @@ public final class Navigator extends AbstractDwcControl implements HasReadOnly{
     @Override
     public Navigator setReadOnly(Boolean editable) {
         try {
-            bbjNavigator.setEditable(editable);
+            bbjNavigator.setEditable(!editable);
         } catch (BBjException e) {
             Environment.logError(e);
         }

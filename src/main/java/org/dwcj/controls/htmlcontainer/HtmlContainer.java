@@ -77,7 +77,6 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
         if(this.ctrl != null){
             if(this.onScriptLoadedSink == null){
                 this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);
-                App.consoleLog(":)");
             }
             this.onScriptLoadedSink.addCallback(callback);
         }
@@ -111,7 +110,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 Environment.logError(e);
             }
         }
-        this.asyncScript = script;
+        this.asyncScript = script; // BUG: only one script is remembered!
     }
 
     public Object executeScript(String script) {
@@ -122,7 +121,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
                 Environment.logError(e);
             }
         }
-        this.executeScript = script;
+        this.executeScript = script;  // BUG: only one script is remembered!
         return null;
     }
 

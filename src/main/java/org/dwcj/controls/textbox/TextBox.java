@@ -206,7 +206,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     @Override
     public Boolean isReadOnly(){
         try{
-            return bbjEditBox.isEditable();
+            return !bbjEditBox.isEditable();
         }
         catch(BBjException e){
             Environment.logError(e);
@@ -217,7 +217,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
     @Override
     public TextBox setReadOnly(Boolean editable){
         try{
-            bbjEditBox.setEditable(editable);
+            bbjEditBox.setEditable(!editable);
         }
         catch(BBjException e){
             Environment.logError(e);

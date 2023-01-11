@@ -188,7 +188,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     }
     
     
-        public ListBox getItemCount() {
+        public Integer getItemCount() {
             if(this.ctrl != null){
                 try{
                     bbjListBox.getItemCount();
@@ -196,12 +196,11 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
                     Environment.logError(e);
                 }
             }
-            return this;
+            return null;
         }
 
     /**
      * Returns true or false based on the ListBox allows selection of multiple items
-     * @param N/A
      * @return boolean
      */
     public Boolean isMultipleSelection() {
@@ -279,6 +278,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
      */
     public ListBox setItems(Map<Object, String> values) {
         this.values = values;
+        data2.clear();
         Iterator<Object> it = values.keySet().iterator();
         while (it.hasNext()) {
             data2.add(values.get(it.next()));
@@ -548,7 +548,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return ((BBjListBox) this.ctrl).isEditable();
+                return !((BBjListBox) this.ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }
@@ -560,7 +560,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     public ListBox setReadOnly(Boolean editable){
         if(this.ctrl != null){
             try{
-                ((BBjListBox) this.ctrl).setEditable(editable);
+                ((BBjListBox) this.ctrl).setEditable(!editable);
             } catch(BBjException e){
                 Environment.logError(e);
             }

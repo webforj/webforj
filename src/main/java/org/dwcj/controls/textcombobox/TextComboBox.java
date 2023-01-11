@@ -293,6 +293,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
      */
     public TextComboBox setItems(Map<Object, String> values) {
         this.values = values;
+        data2.clear();
         Iterator<Object> it = values.keySet().iterator();
         while (it.hasNext()) {
             data2.add(values.get(it.next()));
@@ -397,7 +398,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     public Boolean isReadOnly(){
         if(this.ctrl != null){
             try{
-                return ((BBjListEdit) this.ctrl).isEditable();
+                return !((BBjListEdit) this.ctrl).isEditable();
             } catch(BBjException e){
                 Environment.logError(e);
             }

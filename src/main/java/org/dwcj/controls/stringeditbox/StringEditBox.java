@@ -392,7 +392,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     @Override
     public Boolean isReadOnly() {
         try {
-            return bbjInputE.isEditable();
+            return !bbjInputE.isEditable();
         } catch (BBjException e) {
             Environment.logError(e);
         }
@@ -401,7 +401,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     @Override
     public StringEditBox setReadOnly(Boolean editable) {
         try {
-            bbjInputE.setEditable(editable);
+            bbjInputE.setEditable(!editable);
         } catch (BBjException e) {
             Environment.logError(e);
         }
