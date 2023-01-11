@@ -11,7 +11,7 @@ public final class HtmlContainerJavascriptEvent implements ControlEvent {
 
     private final Map<String,String> eventMap;
 
-    public HtmlContainerJavascriptEvent(HtmlContainer h, Map eventMap) { //NOSONAR
+    public HtmlContainerJavascriptEvent(HtmlContainer h, Map<String,String> eventMap) {
         this.control = h;
         this.eventMap = eventMap;
     }
