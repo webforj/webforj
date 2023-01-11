@@ -9,7 +9,7 @@ public final class HtmlContainerJavascriptEvent implements ControlEvent {
 
     private final HtmlContainer control;
 
-    private final Map<Object,Object> eventMap;
+    private final Map<String,String> eventMap;
 
     public HtmlContainerJavascriptEvent(HtmlContainer h, Map eventMap) { //NOSONAR
         this.control = h;
@@ -21,7 +21,7 @@ public final class HtmlContainerJavascriptEvent implements ControlEvent {
         return control;
     }
 
-    public Map<Object,Object> getEventMap() {
+    public Map<String,String> getEventMap() {
         return eventMap;
     }
 }
