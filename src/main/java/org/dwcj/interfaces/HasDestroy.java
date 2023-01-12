@@ -3,7 +3,7 @@ package org.dwcj.interfaces;
 public interface HasDestroy {
 
     /**
-     * Destroy the control and removes it from the panel
+     * Destroy the control and remove it from the panel
      */
     public void destroy();
 
