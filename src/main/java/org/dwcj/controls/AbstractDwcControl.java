@@ -419,5 +419,17 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
 
     }
 
+    @Override
+    public void destroy(){
+        this.destroyed = true;
+        try {
+            if (ctrl != null && !ctrl.isDestroyed()){
+                ctrl.destroy();
+            }
+        } catch (BBjException e) {
+            Environment.logError(e);
+        }
+    }
+
 
 }
