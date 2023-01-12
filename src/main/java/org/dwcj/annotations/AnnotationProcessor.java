@@ -89,9 +89,11 @@ public final class AnnotationProcessor {
    * @throws DwcException
    */
   private void processAppAttribute(Object clazz) throws DwcException {
-    AppAttribute appAttribute = clazz.getClass().getAnnotation(AppAttribute.class);
-    if (appAttribute != null) {
-      App.setAttribute(appAttribute.name(), appAttribute.value());
+    AppAttribute[] appAttributes = clazz.getClass().getAnnotationsByType(AppAttribute.class);
+    if (appAttributes != null) {
+      for (AppAttribute appAttribute : appAttributes) {
+        App.setAttribute(appAttribute.name(), appAttribute.value(), appAttribute.selector());
+      }
     }
   }
 
