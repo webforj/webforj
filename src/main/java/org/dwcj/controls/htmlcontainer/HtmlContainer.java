@@ -36,6 +36,8 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
     private final ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
     private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;
+    private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> javascriptEvents = new ArrayList<>();
+    private HtmlContainerNativeJavascriptEventSink javascriptEventSink = null;
 
     private String asyncScript = "";
     private String executeScript = "";
@@ -334,7 +336,15 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
      * @return the control itself
      */
     public HtmlContainer onJavascriptEvent(Consumer<HtmlContainerJavascriptEvent> callback) {
-        new HtmlContainerNativeJavascriptEventSink(this, callback);
+        if(this.ctrl != null){
+            if(this.javascriptEventSink == null){
+                this.javascriptEventSink = new HtmlContainerNativeJavascriptEventSink(this);
+            }
+            this.javascriptEventSink.addCallback(callback);
+        }
+        else{
+            this.javascriptEvents.add(callback);
+        }
         return this;
     }
 
@@ -465,6 +475,13 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
             this.onScriptFailedSink = new HtmlContainerOnScriptFailedEventSink(this);
             while(!this.scriptFailedEvents.isEmpty()){
                 this.onScriptFailedSink.addCallback(this.scriptFailedEvents.remove(0));
+            }
+        }
+        
+        if(!this.javascriptEvents.isEmpty()){
+            this.javascriptEventSink = new HtmlContainerNativeJavascriptEventSink(this);
+            while(!this.javascriptEvents.isEmpty()){
+                this.javascriptEventSink.addCallback(this.javascriptEvents.remove(0));
             }
         }
 

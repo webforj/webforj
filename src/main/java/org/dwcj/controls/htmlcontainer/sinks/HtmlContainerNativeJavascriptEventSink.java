@@ -9,16 +9,18 @@ import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 public final class HtmlContainerNativeJavascriptEventSink {
 
 
-    private final Consumer<HtmlContainerJavascriptEvent> target;
+    private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> targets;
     private final HtmlContainer container;
 
-    public HtmlContainerNativeJavascriptEventSink(HtmlContainer htmlv, Consumer<HtmlContainerJavascriptEvent> target) {
-        this.target = target;
+    public HtmlContainerNativeJavascriptEventSink(HtmlContainer htmlv) {
+        this.targets = new ArrayList<>();
         this.container = htmlv;
 
         BBjControl bbjctrl;
@@ -38,6 +40,12 @@ public final class HtmlContainerNativeJavascriptEventSink {
             dwcEv = new HtmlContainerJavascriptEvent(container, null);
             App.consoleError("Error: could not determine JS event map!");
         }
-        target.accept(dwcEv);
+        Iterator<Consumer<HtmlContainerJavascriptEvent>> it = targets.iterator();
+        while (it.hasNext())
+            it.next().accept(dwcEv);
+    }
+
+    public void addCallback(Consumer<HtmlContainerJavascriptEvent> callback) {
+        targets.add(callback);
     }
 }
