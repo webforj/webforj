@@ -3,13 +3,13 @@ package org.dwcj.interfaces;
 public interface HasDestroy {
 
     /**
-     * Overridden in various controls to implement destruction of a control, or prevent its addition to a panel
+     * Destroy the control and removes it from the panel
      */
     public void destroy();
 
     /**
-     * Returns whether or not the control is flagged for deletion
-     * @return True if the control will be deleted, false otherwise
+     * Returns whether or not the control is destroyed
+     * @return True if the control will is destroyed, false otherwise
      */
     public Boolean isDestroyed();
 }
