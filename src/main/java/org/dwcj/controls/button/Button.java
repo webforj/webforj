@@ -381,10 +381,8 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
 
         if(!this.callbacks.isEmpty()){
             this.buttonClickEventSink = new ButtonClickEventSink(this);
-            try{
-                ((BBjButton) ctrl).setVerticalAlignment(this.verticalAlignment.alignment);
-            } catch(BBjException e){
-                Environment.logError(e);
+            while(!this.callbacks.isEmpty()){
+                this.buttonClickEventSink.addCallback(this.callbacks.remove(0));
             }
         }
 
