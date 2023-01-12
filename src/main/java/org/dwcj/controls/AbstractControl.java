@@ -4,6 +4,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Control;
+import org.dwcj.interfaces.HasDestroy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ import com.basis.startup.type.BBjException;
  * for the implemented interface methods. Extended by AbstractDwcControl.
  */
 
-public abstract class AbstractControl implements Control {
+public abstract class AbstractControl implements Control, HasDestroy {
 
     /*
      * Underlying BBj control
@@ -34,6 +35,12 @@ public abstract class AbstractControl implements Control {
      * the function.
      */
     private Boolean caughtUp = false;
+
+    /*
+     * Used to track whether or not the control that has been flagged
+     * for destruction
+     */
+    protected Boolean destroyed = false;
 
     static {
         ControlAccessor.setDefault(new CtrlAccessorImpl());
@@ -126,13 +133,13 @@ public abstract class AbstractControl implements Control {
         this.caughtUp = true;
     }
 
+    @Override
     public void destroy(){
-        try {
-            if (ctrl != null && !ctrl.isDestroyed()){
-                ctrl.destroy();
-            }
-        } catch (BBjException e) {
-            Environment.logError(e);
-        }
+        this.destroyed = true;
+    }
+
+    @Override
+    public Boolean isDestroyed(){
+        return this.destroyed;
     }
 }

@@ -37,13 +37,15 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
      */
     public AbstractDwcjPanel add(AbstractControl... ctrl) {
         for (AbstractControl c : ctrl) {
-            try {
-                AnnotationProcessor processor = new AnnotationProcessor();
-                processor.processControlAnnotations(c);
-                ControlAccessor.getDefault().create(c, this);
-                controls.add(c);
-            } catch (IllegalAccessException | DwcAnnotationException e) {
-                Environment.logError(e);
+            if(Boolean.FALSE.equals(c.isDestroyed())){
+                try {
+                    AnnotationProcessor processor = new AnnotationProcessor();
+                    processor.processControlAnnotations(c);
+                    ControlAccessor.getDefault().create(c, this);
+                    controls.add(c);
+                } catch (IllegalAccessException | DwcAnnotationException e) {
+                    Environment.logError(e);
+                }
             }
         }
         return this;

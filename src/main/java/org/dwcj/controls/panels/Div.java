@@ -46,8 +46,8 @@ public class Div extends AbstractDwcjPanel {
      */
     @Override
     public Div add(AbstractControl ...control){
-        if(this.ctrl != null){
-            for(AbstractControl c: control){
+        for(AbstractControl c: control){
+            if(this.ctrl != null && Boolean.FALSE.equals(c.isDestroyed())){
                 try {
                     ControlAccessor.getDefault().create(c,this);
                     controls.add(c);
@@ -55,9 +55,11 @@ public class Div extends AbstractDwcjPanel {
                     Environment.logError(e);
                 }
             }
-        }
-        else{
-            Collections.addAll(this.catchUpControls, control);
+            else{
+                if(Boolean.FALSE.equals(c.isDestroyed())){
+                    this.catchUpControls.add(c);
+                }
+            }
         }
         return this;
     }
