@@ -8,6 +8,7 @@ import org.dwcj.annotations.AnnotationProcessor;
 import org.dwcj.environment.namespace.*;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.exceptions.DwcException;
+import org.dwcj.exceptions.DwcRuntimeException;
 
 /**
  * This is the central class representing an app. In order to implement an app,
@@ -56,13 +57,13 @@ public abstract class App {
    * Set the application title
    *
    * @param title The title to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setTitle(String title) throws DwcException {
+  public static void setTitle(String title) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setTitle(title);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set title.", e);
+      throw new DwcRuntimeException("Failed to set title.", e);
     }
   }
 
@@ -70,13 +71,13 @@ public abstract class App {
    * Get the application title
    *
    * @return The title
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static String getTitle() throws DwcException {
+  public static String getTitle() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getTitle();
     } catch (BBjException e) {
-      throw new DwcException("Failed to get title.", e);
+      throw new DwcRuntimeException("Failed to get title.", e);
     }
   }
 
@@ -84,13 +85,13 @@ public abstract class App {
    * Get the registered DWC application name
    *
    * @return the application name
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static String getApplicationName() throws DwcException {
+  public static String getApplicationName() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getApplicationName();
     } catch (BBjException e) {
-      throw new DwcException("Failed to get application name.", e);
+      throw new DwcRuntimeException("Failed to get application name.", e);
     }
   }
 
@@ -98,13 +99,13 @@ public abstract class App {
    * Set the application theme
    *
    * @param theme The theme to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setTheme(String theme) throws DwcException {
+  public static void setTheme(String theme) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setTheme(theme);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set theme.", e);
+      throw new DwcRuntimeException("Failed to set theme.", e);
     }
   }
 
@@ -112,11 +113,11 @@ public abstract class App {
    * Set the application theme
    *
    * @param theme The theme to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    *
    * @see Theme
    */
-  public static void setTheme(Theme theme) throws DwcException {
+  public static void setTheme(Theme theme) {
     setTheme(theme.getValue());
   }
 
@@ -124,13 +125,13 @@ public abstract class App {
    * Get the application theme
    *
    * @return The theme
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static String getTheme() throws DwcException {
+  public static String getTheme() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getTheme();
     } catch (BBjException e) {
-      throw new DwcException("Failed to get theme.", e);
+      throw new DwcRuntimeException("Failed to get theme.", e);
     }
   }
 
@@ -139,13 +140,13 @@ public abstract class App {
    * The dark theme setting is used when the application theme is set to "system".
    *
    * @param darkTheme The dark theme to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setDarkTheme(String darkTheme) throws DwcException {
+  public static void setDarkTheme(String darkTheme) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setDarkTheme(darkTheme);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set dark theme.", e);
+      throw new DwcRuntimeException("Failed to set dark theme.", e);
     }
   }
 
@@ -153,13 +154,13 @@ public abstract class App {
    * Get the name of the dark theme
    *
    * @return The dark theme
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static String getDarkTheme() throws DwcException {
+  public static String getDarkTheme() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getDarkTheme();
     } catch (BBjException e) {
-      throw new DwcException("Failed to get dark theme.", e);
+      throw new DwcRuntimeException("Failed to get dark theme.", e);
     }
   }
 
@@ -169,14 +170,14 @@ public abstract class App {
    * "system".
    *
    * @param lightTheme The light theme to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
 
-  public static void setLightTheme(String lightTheme) throws DwcException {
+  public static void setLightTheme(String lightTheme) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setLightTheme(lightTheme);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set light theme.", e);
+      throw new DwcRuntimeException("Failed to set light theme.", e);
     }
   }
 
@@ -184,14 +185,14 @@ public abstract class App {
    * Get the name of the light theme to use for the application.
    *
    * @return The light theme
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
 
-  public static String getLightTheme() throws DwcException {
+  public static String getLightTheme() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getLightTheme();
     } catch (BBjException e) {
-      throw new DwcException("Failed to get light theme.", e);
+      throw new DwcRuntimeException("Failed to get light theme.", e);
     }
   }
 
@@ -201,13 +202,13 @@ public abstract class App {
    * @param name       The name of the meta tag
    * @param content    The content of the meta tag
    * @param attributes A map of attributes to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setMeta(String name, String content, Map<String, String> attributes) throws DwcException {
+  public static void setMeta(String name, String content, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
   }
 
@@ -217,13 +218,13 @@ public abstract class App {
    * @param name       The name of the meta tag
    * @param content    The content of the meta tag
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setMeta(String name, String content, String attributes) throws DwcException {
+  public static void setMeta(String name, String content, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
   }
 
@@ -232,13 +233,13 @@ public abstract class App {
    *
    * @param name    The name of the meta tag
    * @param content The content of the meta tag
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setMeta(String name, String content) throws DwcException {
+  public static void setMeta(String name, String content) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set meta tag.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
   }
 
@@ -256,13 +257,13 @@ public abstract class App {
    *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
    *                 doesn't return any elements, the
    *                 default document element is used.
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setAttribute(String name, String value, String selector) throws DwcException {
+  public static void setAttribute(String name, String value, String selector) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setAttribute(name, value, selector);
     } catch (BBjException e) {
-      throw new DwcException("Failed to set attribute.", e);
+      throw new DwcRuntimeException("Failed to set attribute.", e);
     }
   }
 
@@ -271,9 +272,9 @@ public abstract class App {
    *
    * @param name  The name of the attribute
    * @param value The value of the attribute
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setAttribute(String name, String value) throws DwcException {
+  public static void setAttribute(String name, String value) {
     setAttribute(name, value, "");
   }
 
@@ -281,9 +282,9 @@ public abstract class App {
    * Set an attribute on the document
    *
    * @param name The name of the attribute
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void setAttribute(String name) throws DwcException {
+  public static void setAttribute(String name) {
     setAttribute(name, name, "");
   }
 
@@ -301,13 +302,13 @@ public abstract class App {
    *                 doesn't return any elements, the
    *                 default document element is used.
    * @return The attribute value
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static String getAttribute(String name, String selector) throws DwcException {
+  public static String getAttribute(String name, String selector) {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getAttribute(name, selector);
     } catch (BBjException e) {
-      throw new DwcException("Failed to get attribute.", e);
+      throw new DwcRuntimeException("Failed to get attribute.", e);
     }
   }
 
@@ -316,9 +317,9 @@ public abstract class App {
    *
    * @param name The name of the attribute
    * @return The attribute value
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static String getAttribute(String name) throws DwcException {
+  public static String getAttribute(String name) {
     return getAttribute(name, "");
   }
 
@@ -328,13 +329,13 @@ public abstract class App {
    * @param url        The URL of the stylesheet
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addStyleSheet(String url, boolean top, Map<String, String> attributes) throws DwcException {
+  public static void addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add stylesheet.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
   }
 
@@ -344,13 +345,13 @@ public abstract class App {
    * @param url        The URL of the stylesheet
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addStyleSheet(String url, boolean top, String attributes) throws DwcException {
+  public static void addStyleSheet(String url, boolean top, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add stylesheet.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
   }
 
@@ -359,9 +360,9 @@ public abstract class App {
    *
    * @param url The URL of the stylesheet
    * @param top Whether to inject the stylesheet at the top of the page
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addStyleSheet(String url, boolean top) throws DwcException {
+  public static void addStyleSheet(String url, boolean top) {
     addStyleSheet(url, top, "");
   }
 
@@ -369,9 +370,9 @@ public abstract class App {
    * Inject a stylesheet into the page
    *
    * @param url The URL of the stylesheet
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addStyleSheet(String url) throws DwcException {
+  public static void addStyleSheet(String url) {
     addStyleSheet(url, false, "");
   }
 
@@ -381,13 +382,13 @@ public abstract class App {
    * @param css        The CSS to inject
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) throws DwcException {
+  public static void addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add inline stylesheet.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
   }
 
@@ -397,13 +398,13 @@ public abstract class App {
    * @param css        The CSS to inject
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineStyleSheet(String css, boolean top, String attributes) throws DwcException {
+  public static void addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add inline stylesheet.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
   }
 
@@ -412,9 +413,9 @@ public abstract class App {
    *
    * @param css The CSS to inject
    * @param top Whether to inject the stylesheet at the top of the page
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineStyleSheet(String css, boolean top) throws DwcException {
+  public static void addInlineStyleSheet(String css, boolean top) {
     addInlineStyleSheet(css, top, "");
   }
 
@@ -422,10 +423,10 @@ public abstract class App {
    * Inject an inline stylesheet into the page
    *
    * @param css The CSS to inject
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
 
-  public static void addInlineStyleSheet(String css) throws DwcException {
+  public static void addInlineStyleSheet(String css) {
     addInlineStyleSheet(css, false, "");
   }
 
@@ -435,13 +436,13 @@ public abstract class App {
    * @param url        The URL of the script
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addJavaScript(String url, boolean top, Map<String, String> attributes) throws DwcException {
+  public static void addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add script.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
     }
   }
 
@@ -451,13 +452,13 @@ public abstract class App {
    * @param url        The URL of the script
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addJavaScript(String url, boolean top, String attributes) throws DwcException {
+  public static void addJavaScript(String url, boolean top, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add script.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
     }
   }
 
@@ -466,10 +467,10 @@ public abstract class App {
    *
    * @param url The URL of the script
    * @param top Whether to inject the script at the top of the page
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
 
-  public static void addJavaScript(String url, boolean top) throws DwcException {
+  public static void addJavaScript(String url, boolean top) {
     addJavaScript(url, top, "");
   }
 
@@ -477,9 +478,9 @@ public abstract class App {
    * Inject a script into the page
    *
    * @param url The URL of the script
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addJavaScript(String url) throws DwcException {
+  public static void addJavaScript(String url) {
     addJavaScript(url, false, "");
   }
 
@@ -489,14 +490,13 @@ public abstract class App {
    * @param script     The script to inject
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineJavaScript(String script, boolean top, Map<String, String> attributes)
-      throws DwcException {
+  public static void addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add inline script.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
   }
 
@@ -506,13 +506,13 @@ public abstract class App {
    * @param script     The script to inject
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineJavaScript(String script, boolean top, String attributes) throws DwcException {
+  public static void addInlineJavaScript(String script, boolean top, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add inline script.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
   }
 
@@ -521,9 +521,9 @@ public abstract class App {
    *
    * @param script The script to inject
    * @param top    Whether to inject the script at the top of the page
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineJavaScript(String script, boolean top) throws DwcException {
+  public static void addInlineJavaScript(String script, boolean top) {
     addInlineJavaScript(script, top, "");
   }
 
@@ -531,9 +531,9 @@ public abstract class App {
    * Inject an inline script into the page
    *
    * @param script The script to inject
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addInlineJavaScript(String script) throws DwcException {
+  public static void addInlineJavaScript(String script) {
     addInlineJavaScript(script, false, "");
   }
 
@@ -543,13 +543,13 @@ public abstract class App {
    * @param url        The URL of the link
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addLink(String url, boolean top, Map<String, String> attributes) throws DwcException {
+  public static void addLink(String url, boolean top, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add link.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
     }
   }
 
@@ -559,13 +559,13 @@ public abstract class App {
    * @param url        The URL of the link
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addLink(String url, boolean top, String attributes) throws DwcException {
+  public static void addLink(String url, boolean top, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcException("Failed to add link.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
     }
   }
 
@@ -574,9 +574,9 @@ public abstract class App {
    *
    * @param url The URL of the link
    * @param top Whether to inject the link at the top of the page
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addLink(String url, boolean top) throws DwcException {
+  public static void addLink(String url, boolean top) {
     addLink(url, top, "");
   }
 
@@ -584,9 +584,9 @@ public abstract class App {
    * Inject a link into the page
    *
    * @param url The URL of the link
-   * @throws DwcException
+   * @throws DwcRuntimeException
    */
-  public static void addLink(String url) throws DwcException {
+  public static void addLink(String url) {
     addLink(url, false, "");
   }
 

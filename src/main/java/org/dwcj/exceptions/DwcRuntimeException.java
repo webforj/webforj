@@ -1,13 +1,23 @@
 package org.dwcj.exceptions;
 
 /**
- * This class is used for reporting DWC annotation level exceptions
+ * This class is used for reporting DWC runtime application level exceptions
  * 
  * @author Hyyan Abo Fakher
  */
-public class DwcAnnotationException extends DwcRuntimeException {
+public class DwcRuntimeException extends RuntimeException {
 
-    private static final String DEFAULT_MESSAGE = "Failed to process DWC annotation";
+    /**
+     * Constructs a new exception with the specified detail message. The
+     * cause is not initialized, and may subsequently be initialized by
+     * a call to {@link #initCause}.
+     *
+     * @param message the detail message. The detail message is saved for
+     *                later retrieval by the {@link #getMessage()} method.
+     */
+    public DwcRuntimeException(String message) {
+        super(message);
+    }
 
     /**
      * Constructs a new exception with the specified detail message and
@@ -24,7 +34,7 @@ public class DwcAnnotationException extends DwcRuntimeException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcAnnotationException(String message, Throwable cause) {
+    public DwcRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -40,26 +50,24 @@ public class DwcAnnotationException extends DwcRuntimeException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcAnnotationException(Throwable e) {
-        super(DEFAULT_MESSAGE, e);
+    public DwcRuntimeException(Throwable cause) {
+        super(cause);
     }
 
     /**
-     * Constructs a new exception with the specified detail message. The cause is
-     * not initialized, and may subsequently be initialized by a call to
-     * {@link #initCause}.
+     * Constructs a new DWC exception based on the passed exception.
      *
-     * @param e the detail message. The detail message is saved for later
-     *          retrieval by the {@link #getMessage()} method.
+     * @param e the exception to be wrapped
      */
-    public DwcAnnotationException(String e) {
+    public DwcRuntimeException(Exception e) {
         super(e);
     }
 
     /**
-     * Constructs a new exception with the specified detail message.
+     * Constructs a new exception with {@code null} as its detail message.
+     * The cause is not initialized, and may subsequently be initialized by a
+     * call to {@link #initCause}.
      */
-    public DwcAnnotationException() {
-        super(DEFAULT_MESSAGE);
+    public DwcRuntimeException() {
     }
 }
