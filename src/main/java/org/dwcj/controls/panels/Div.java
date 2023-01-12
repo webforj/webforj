@@ -44,29 +44,6 @@ public class Div extends AbstractDwcjPanel {
      * @param control the control(s) to be added
      * @return the panel itself
      */
-    // @Override
-    // public Div add(AbstractControl ...control){
-    //     if(this.ctrl != null){
-    //         for(AbstractControl c: control){
-    //             if(Boolean.FALSE.equals(c.isDestroyed())){
-    //                 try {
-    //                     ControlAccessor.getDefault().create(c,this);
-    //                     controls.add(c);
-    //                 } catch (IllegalAccessException e) {
-    //                     Environment.logError(e);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     else{
-    //         for(AbstractControl c: control){
-    //             if(Boolean.FALSE.equals(c.isDestroyed())){
-    //                 this.catchUpControls.add(c);
-    //             }
-    //         }
-    //     }
-    //     return this;
-    // }
     @Override
     public Div add(AbstractControl ...control){
         for(AbstractControl c: control){
