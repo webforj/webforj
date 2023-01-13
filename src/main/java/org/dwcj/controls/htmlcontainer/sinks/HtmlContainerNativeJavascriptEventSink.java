@@ -8,6 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ public final class HtmlContainerNativeJavascriptEventSink {
         BBjControl bbjctrl;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(htmlv);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_NATIVE_JAVASCRIPT, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
+            bbjctrl.setCallback(SysGuiEventConstants.ON_NATIVE_JAVASCRIPT, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
         } catch (Exception e) {
             Environment.logError(e);
         }
