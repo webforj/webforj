@@ -7,16 +7,19 @@ import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerPageLoadedEvent;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 public final class HtmlContainerPageLoadedEventSink {
 
-    private final Consumer<HtmlContainerPageLoadedEvent> target;
+    private final ArrayList<Consumer<HtmlContainerPageLoadedEvent>> targets;
     private final HtmlContainer container;
 
     @SuppressWarnings({"static-access"})
-    public HtmlContainerPageLoadedEventSink(HtmlContainer htmlv, Consumer<HtmlContainerPageLoadedEvent> target) {
-        this.target = target;
+    public HtmlContainerPageLoadedEventSink(HtmlContainer htmlv) {
+        this.targets = new ArrayList<>();
+        this.container = htmlv;
 
         BBjControl bbjctrl = null;
 
@@ -26,13 +29,18 @@ public final class HtmlContainerPageLoadedEventSink {
         } catch (Exception e) {
             Environment.logError(e);
         }
-        this.container = htmlv;
 
     }
 
     public void onEvent(BBjPageLoadedEvent ev) { //NOSONAR
         HtmlContainerPageLoadedEvent dwcEv = new HtmlContainerPageLoadedEvent(container);
-        target.accept(dwcEv);
+        Iterator<Consumer<HtmlContainerPageLoadedEvent>> it = targets.iterator();
+        while (it.hasNext())
+            it.next().accept(dwcEv);
+    }
+
+    public void addCallback(Consumer<HtmlContainerPageLoadedEvent> callback) {
+        targets.add(callback);
     }
 
 
