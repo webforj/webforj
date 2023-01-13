@@ -6,6 +6,8 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerOnScriptFailedEvent;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,7 +20,6 @@ public class HtmlContainerOnScriptFailedEventSink {
     private ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> targets;
     private final HtmlContainer htmlContainer;
 
-    @SuppressWarnings({"static-access"})
     public HtmlContainerOnScriptFailedEventSink(HtmlContainer container) {
 
         this.targets = new ArrayList<>();
@@ -27,7 +28,7 @@ public class HtmlContainerOnScriptFailedEventSink {
         BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(container);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_SCRIPT_FAILED,
+            bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_FAILED,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptFailedEvent"),
                     "onEvent");
 

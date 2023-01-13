@@ -2,6 +2,8 @@ package org.dwcj.controls.htmlcontainer.sinks;
 
 import com.basis.bbj.proxies.event.BBjScriptLoadedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
+
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
@@ -17,7 +19,6 @@ public class HtmlContainerOnScriptLoadedEventSink {
     private ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> targets;
     private final HtmlContainer htmlContainer;
 
-    @SuppressWarnings({"static-access"})
     public HtmlContainerOnScriptLoadedEventSink(HtmlContainer container) {
 
         this.targets = new ArrayList<>();
@@ -26,7 +27,7 @@ public class HtmlContainerOnScriptLoadedEventSink {
         BBjControl bbjctrl = null;
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(container);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_SCRIPT_LOADED,
+            bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_LOADED,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptLoadedEvent"),
                     "onEvent");
 
