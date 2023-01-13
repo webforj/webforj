@@ -6,6 +6,7 @@ import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.events.DivClickEvent;
 import org.dwcj.controls.panels.sinks.DivClickEventSink;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,8 +26,16 @@ public class Div extends AbstractDwcjPanel {
     @Override
     protected void create(AbstractDwcjPanel p) {
         BBjWindow w = p.getBBjWindow();
-        try {
-            byte[] flags = new byte[]{(byte) 0x00, (byte) 0x10, (byte) 0x88, (byte) 0x00};
+        try {             
+            byte finalFlag = 0x00;
+            if(Boolean.FALSE.equals(this.isVisible())){
+                finalFlag += (byte) 0x10;
+
+            }
+            if(Boolean.FALSE.equals(this.isEnabled())){
+                finalFlag += (byte) 0x20;
+            }
+            byte[] flags = new byte[]{(byte) 0x00, (byte) 0x10, (byte) 0x88, finalFlag};
             //todo honor visible flag if set before addition to panel
             wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "", flags, Environment.getInstance().getSysGui().getAvailableContext());
             ctrl = wnd;

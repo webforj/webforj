@@ -16,9 +16,19 @@ public class AppPanel extends AbstractDwcjPanel {
     public AppPanel() throws DwcAppInitializeException {
 
         try {
+            // this.setVisible(false);
+            byte finalFlag = (byte) 0x88;
+            if(Boolean.FALSE.equals(this.isVisible())){
+                finalFlag += (byte) 0x10;
+
+            }
+            if(Boolean.FALSE.equals(this.isEnabled())){
+                finalFlag += (byte) 0x20;
+            }
+            byte[] flags = new byte[]{(byte) 0x01, (byte) 0x11, (byte) 0x10, finalFlag};
             BasisNumber b1 = BasisNumber.createBasisNumber(1);
             BasisNumber ctx = BasisNumber.createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
-            wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", Ints.toByteArray(0x01111088));
+            wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", flags);
             ctrl = wnd;
         } catch (NumberFormatException | BBjException e) {
             Environment.logError(e);
