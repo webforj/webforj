@@ -19,11 +19,11 @@ public final class ProgressBar extends AbstractDwcControl {
     private Boolean indeterminate = false;
     private Integer maximum = 100;
     private Integer minimum = 0;
-    /* 0 for horizontal, 1 for vertical */
-    private Integer orientation = 0;
     private Boolean stringPainted = true;
     private String text = "0%";
     private Integer value = 0;
+    private Theme theme = Theme.DEFAULT;
+
 
 
     @Override
@@ -66,22 +66,6 @@ public final class ProgressBar extends AbstractDwcControl {
             }
         }
         return this.minimum;
-    }
-
-
-    /**
-     * This method returns the orientation of the ProgressBar control.
-     * @return Returns 0 if horizontal, 1 if vertical.
-     */
-    public Integer getOrientation() {
-        if(this.ctrl != null){
-            try {
-                return bbjProgressBar.getOrientation();
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        return this.orientation;
     }
 
     /**
@@ -196,23 +180,6 @@ public final class ProgressBar extends AbstractDwcControl {
     }
 
     /**
-     * This method sets the orientation of the ProgressBar control to HORIZONTAL or VERTICAL.
-     * @param orientation - Specifies the orientation as HORIZONTAL or VERTICAL.
-     * @return Returns this
-     */
-    public ProgressBar setOrientation(Integer orientation) {
-        if(this.ctrl != null){
-            try {
-                bbjProgressBar.setOrientation(orientation);
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        this.orientation = orientation;
-        return this;
-    }
-
-    /**
      * This method determines whether the ProgressBar control will show a label.
      * @param stringPainted - Specifies whether the progress bar should display a label (false = Not painted, 1 = Painted)
      * @return Returns this
@@ -226,23 +193,6 @@ public final class ProgressBar extends AbstractDwcControl {
             }
         }
         this.stringPainted = stringPainted;
-        return this;
-    }
-
-    /**
-     * This method sets the text (label) of a ProgressBar control.
-     * @param text - Specifies the text to be displayed on the BBjProgressBar. If text is set to "", the progress bar will display percentage complete in the format "XX%".
-     * @return Returns this
-     */
-    public ProgressBar setProgressBarText(String text) {
-        if(this.ctrl != null){
-            try {
-                bbjProgressBar.setText(text);
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        this.text = text;
         return this;
     }
 
@@ -263,6 +213,25 @@ public final class ProgressBar extends AbstractDwcControl {
         return this;
     }
 
+
+    /**
+     * Returns the current theme of the progress bar
+     * @return Theme enum value
+     */
+    public Theme getTheme(){
+        return this.theme;
+    }
+
+    /**
+     * Sets the theme of the progress bar from accepted themes. Use ProgressBar.Theme.<value> to
+     * set a theme for the control
+     * @param theme ProgressBar.Theme value
+     * @return The object itself
+     */
+    public ProgressBar setTheme(Theme theme){
+        super.setControlTheme(theme);
+        return this;
+    }
 
 
     @Override
@@ -338,10 +307,6 @@ public final class ProgressBar extends AbstractDwcControl {
             this.setMinimum(this.minimum);
         }
 
-        if(this.orientation != 0){
-            this.setOrientation(this.orientation);
-        }
-
         if(Boolean.FALSE.equals(this.stringPainted)){
             this.setStringPainted(this.stringPainted);
         }
@@ -352,6 +317,10 @@ public final class ProgressBar extends AbstractDwcControl {
 
         if(this.value != 0){
             this.setValue(this.value);
+        }
+
+        if(this.theme != Theme.DEFAULT){
+            this.setTheme(this.theme);
         }
 
     }
