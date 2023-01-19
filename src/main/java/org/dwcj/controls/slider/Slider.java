@@ -3,6 +3,8 @@ package org.dwcj.controls.slider;
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
@@ -32,7 +34,6 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     private SliderOnControlScrollEventSink scrollEventSink;
     
     private Boolean horizontal = true;
-    private Boolean inverted = false;
     private Integer majorTickSpacing = 1;
     private Integer minorTickSpacing = 1;
     private Integer maximum = 100;
@@ -74,6 +75,11 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     }
 
+    /**
+     * Sets a callback to fire when the slider control is scrolled.
+     * @param callback Function written with behavior to be executed when the event is fired
+     * @return The object itself
+     */
     public Slider onScroll(Consumer<SliderOnControlScrollEvent> callback) {
         if(this.ctrl != null){
             if(this.scrollEventSink == null){
@@ -85,26 +91,6 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             this.callbacks.add(callback);
         }
         return this;
-    }
-
-    /*
-     * ==I tested the set method and no inversion happens, but this method does properly return the Boolean value
-     * if it's been changed== -MH
-     */
-
-    /**
-     * This method gets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
-     * @return Returns whether the control orientation is inverted.
-     */
-    public Boolean isInverted() {
-        if(this.ctrl != null){
-            try {
-                return bbjSlider.getInverted();
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        return this.inverted;
     }
 
     /**
@@ -184,7 +170,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method returns the orientation of the ProgressBar control.
-     * @return Returns the orientation of the control (false = HORIZONTAL, true = VERTICAL).
+     * @return Returns the orientation of the control (false(0) = HORIZONTAL, true(1) = VERTICAL).
      */
     public Integer getOrientation() {
         if(this.ctrl != null){
@@ -254,23 +240,6 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             }
         }
         return this.value;
-    }
-
-    /**
-     * This method sets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
-     * @param inverted - Specifies whether the slider orientation is inverted.
-     * @return Returns this
-     */
-    public Slider setInverted(Boolean inverted) {
-        if(this.ctrl != null){
-            try {
-                bbjSlider.setInverted(inverted);
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        this.inverted = inverted;
-        return this;
     }
 
     /**
@@ -573,11 +542,6 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             while(!this.callbacks.isEmpty()){
                 this.scrollEventSink.addCallback(this.callbacks.remove(0));
             }
-        }
-
-
-        if(Boolean.TRUE.equals(this.inverted)){
-            this.setInverted(this.inverted);
         }
 
         if(this.majorTickSpacing != 1){
