@@ -467,7 +467,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     @Override
     public Slider setText(String text) {
-        super.setText(text);
+        //does nothing for this control
         return this;
     }
 
