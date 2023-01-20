@@ -40,4 +40,8 @@ public interface Control {
      */
     public Control setUserData(String key, Object data);
 
+    public Boolean isAttached(){
+
+    }
+
 }

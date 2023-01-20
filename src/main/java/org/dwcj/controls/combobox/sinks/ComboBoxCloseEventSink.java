@@ -6,6 +6,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.combobox.ComboBox;
 import org.dwcj.controls.combobox.events.ComboBoxCloseEvent;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public class ComboBoxCloseEventSink {
 
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
+            bbjctrl.setCallback(SysGuiEventConstants.ON_LIST_CLOSE,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
                     "onEvent");
         } catch (Exception e) {

@@ -573,7 +573,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
 
     @Override
     protected void catchUp() throws IllegalAccessException {
-        if (Boolean.TRUE.equals(this.getControlAdded())) throw new IllegalAccessException("catchUp cannot be called twice");
+        if (Boolean.TRUE.equals(this.isAttached())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         

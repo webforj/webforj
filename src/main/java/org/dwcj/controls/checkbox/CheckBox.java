@@ -375,7 +375,7 @@ public final class CheckBox extends AbstractDwcControl implements HasReadOnly, F
     @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-        if (Boolean.TRUE.equals(this.getControlAdded())) throw new IllegalAccessException("catchUp cannot be called twice");
+        if (Boolean.TRUE.equals(this.isAttached())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
         
         if(this.checked != null){

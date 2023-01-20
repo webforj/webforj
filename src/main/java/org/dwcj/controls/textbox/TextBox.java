@@ -386,7 +386,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
 
     @Override
     protected void catchUp() throws IllegalAccessException {
-        if (Boolean.TRUE.equals(this.getControlAdded())) throw new IllegalAccessException("catchUp cannot be called twice");
+        if (Boolean.TRUE.equals(this.isAttached())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
