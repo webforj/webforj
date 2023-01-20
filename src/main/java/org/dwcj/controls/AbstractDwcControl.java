@@ -117,6 +117,10 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
         return text;
     }
 
+    /**
+     * Sets the text to be displayed in a control-specific way.
+     * @return The object itself
+     */
     @Override
     public AbstractDwcControl setText(String text) {
         if (ctrl != null){
@@ -357,7 +361,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     @Override
     protected void catchUp() throws IllegalAccessException {
-        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
+        if (Boolean.TRUE.equals(this.getControlAdded())) throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
         
         if (!this.text.isEmpty()) {

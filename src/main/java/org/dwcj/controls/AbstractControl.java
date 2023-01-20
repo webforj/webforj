@@ -34,7 +34,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
      * Used by catchUp() method to ensure a single execution of
      * the function.
      */
-    private Boolean caughtUp = false;
+    private Boolean controlAdded = false;
 
     /*
      * Used to track whether or not the control that has been flagged
@@ -103,8 +103,8 @@ public abstract class AbstractControl implements Control, HasDestroy {
         return this;
     }
 
-    public Boolean getCaughtUp() {
-        return this.caughtUp;
+    public Boolean getControlAdded() {
+        return this.controlAdded;
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
 
-        if (Boolean.TRUE.equals(this.caughtUp)){
+        if (Boolean.TRUE.equals(this.controlAdded)){
             throw new IllegalAccessException("catchUp cannot be called twice");
         } 
 
@@ -130,7 +130,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
             this.setId(this.elementId);
         }
 
-        this.caughtUp = true;
+        this.controlAdded = true;
     }
 
     @Override
