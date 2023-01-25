@@ -131,7 +131,7 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resource-plugins</artifactId>
+                    <artifactId>maven-resources-plugins</artifactId>
                     <version>3.3.0</version>
                 </plugin>
                 <plugin>
