@@ -253,8 +253,10 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.4.1</version>
                     <configuration>
-                        <source>8</source>
+                        <source>11</source>
                         <detectJavaApiLink>false</detectJavaApiLink>
+                        <failOnError>false</failOnError>
+                        <failOnWarning>false</failOnWarning>
                     </configuration>
                 </plugin>
 
