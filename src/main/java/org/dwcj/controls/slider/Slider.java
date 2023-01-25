@@ -365,7 +365,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
      */
     public Slider setOrientation(Orientation orientation){
         if(this.ctrl != null){
-            this.setAttribute("orientation", orientation.orientation);
+            this.setAttribute("orientation", orientation.value);
         }
         this.orientation=orientation;
         return this;
