@@ -2,7 +2,6 @@ package org.dwcj.controls.panels;
 
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import com.google.common.primitives.Ints;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcAppInitializeException;
 
@@ -18,7 +17,7 @@ public class AppPanel extends AbstractDwcjPanel {
         try {
             BasisNumber b1 = BasisNumber.createBasisNumber(1);
             BasisNumber ctx = BasisNumber.createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
-            wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", Ints.toByteArray(0x01111088));
+            wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", AppPanel.getByteArray(0x01111088));
             ctrl = wnd;
         } catch (NumberFormatException | BBjException e) {
             Environment.logError(e);
@@ -26,6 +25,19 @@ public class AppPanel extends AbstractDwcjPanel {
         }
 
     }
+
+
+    /**
+     * create a Byte Array out of an Integer
+     * @param val the integer value to convert
+     * @return a byte array representing that integer
+     */
+    private static byte[] getByteArray(int val) {
+        return new byte[] {
+                (byte)(val>>24), (byte)(val>>16), (byte)(val>>8), (byte)val
+        };
+    }
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         //empty, needs override
