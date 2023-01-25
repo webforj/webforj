@@ -32,10 +32,10 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     public enum Orientation{
         HORIZONTAL("horizontal"), VERTICAL("vertical");
 
-        public final String orientation;
+        public final String value;
 
-        private Orientation(String orientation){
-            this.orientation = orientation;
+        private Orientation(String value){
+            this.value = value;
         }
     }
 
