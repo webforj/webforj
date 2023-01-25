@@ -186,12 +186,12 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugins</artifactId>
+                    <artifactId>maven-clean-plugin</artifactId>
                     <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugins</artifactId>
+                    <artifactId>maven-source-plugin</artifactId>
                     <version>3.2.1</version>
                 </plugin>
                 <plugin>
