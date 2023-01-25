@@ -1,6 +1,6 @@
 package org.dwcj.models;
 
-import org.apache.commons.io.IOUtils;
+//import org.apache.commons.io.IOUtils;
 import org.dwcj.Environment;
 
 import java.io.*;
@@ -44,7 +44,7 @@ public class Icon {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(resource);
         try (OutputStream outputStream = new FileOutputStream(this.file)) {
-            IOUtils.copy(inputStream, outputStream);
+            //IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             Environment.logError(e);
         }
