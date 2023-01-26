@@ -4,14 +4,28 @@
 
     <groupId>org</groupId>
     <artifactId>dwcj</artifactId>
-    <version>0.010alpha-SNAPSHOT</version>
+    <version>0.011alpha-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>dwcj</name>
+    <description>Program that allows implementation of an API layer 
+    enabling the developer to build application software for the BBj 
+    ecosystem by using Java or other JVM languages like Kotlin instead 
+    of the BBj Business Basic syntax built into the BBj product.
+    </description>
     <url>https://dwcj.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <developers>
+        <developer>
+            <name>Stephan Wald</name>
+            <email>swald@basis.cloud</email>
+            <organization>BASIS Europe Distribution GmbH</organization>
+            <organizationUrl>https://www.basis-europe.eu/en/</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:git://github.com/DwcJava/engine.git</connection>
