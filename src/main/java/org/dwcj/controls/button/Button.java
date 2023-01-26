@@ -71,7 +71,10 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     private ArrayList<Consumer<ButtonClickEvent>> callbacks = new ArrayList<>();
     private ButtonClickEventSink buttonClickEventSink;
     private Boolean disableOnClick = false;
-    TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
+
+    private Expanse expanse = null;
+    private Theme theme = Theme.DEFAULT;
+    private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
     
     
     
@@ -168,7 +171,10 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     }
 
 
-
+    /**
+     * Accessor for the vertical alignment of text within the button
+     * @return Enum value of text's vertical alignment
+     */
     public TextVerticalAlignment getVerticalAlignment(){
         if(this.ctrl != null){
             return this.verticalAlignment;
@@ -176,7 +182,11 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
         return this.verticalAlignment;
     }
 
-
+    /**
+     * Mutator for the vertical alignment of text within the button
+     * @return The Button itself
+     * @param Button TextVerticalAlignment enum value
+     */
     public Button setVerticalAlignment(TextVerticalAlignment alignment){
         if(this.ctrl != null){
             try{
@@ -188,7 +198,6 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
         this.verticalAlignment = alignment;
         return this;
     }
-
 
 
     /*=====================================================================================
@@ -262,11 +271,37 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     * =====================================================================================
     */
 
+    /**
+     * Accessor to return the button object's current expanse
+     * @return Expanse enum from the button class
+     */
+    public Expanse getExpanse(){
+        return this.expanse;
+    }
+
+    /**
+     * Mutator to change the expanse of a button that requires a specific button enum value
+     * @param expanse button expanse enum value
+     * @return The button object itself
+     */
     public Button setExpanse(Expanse expanse) {
             super.setControlExpanse(expanse);
             return this;
     }
 
+    /**
+     * Accessor to return the button object's current theme
+     * @return Expanse enum from the button class
+     */
+    public Theme getTheme(){
+        return this.theme;
+    }
+
+    /**
+     * Mutator to change the theme of a button that requires a specific button enum value
+     * @param theme button theme enum value
+     * @return The button object itself
+     */
     public Button setTheme(Theme theme) {
             super.setControlTheme(theme);
             return this;
@@ -351,24 +386,14 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
         return this;
     }
 
-
-
-
     /*=====================================================================================
     * Finally, override the catchUp() method - this is done by calling the super method,
     * and then catching up any control-specific member variables and/or interface 
     * variables for this control.
     * =====================================================================================
     */
-
+    
     @Override
-    /*=====================================================================================
-    * Finally, override the catchUp() method - this is done by calling the super method,
-    * and then catching up any control-specific member variables and/or interface 
-    * variables for this control.
-    * =====================================================================================
-    */
-
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
         if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
@@ -396,6 +421,14 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
 
         if(this.textAlignment != Alignment.MIDDLE){
             this.setTextAlignment(this.textAlignment);
+        }
+
+        if(this.expanse != null){
+            this.setExpanse(this.expanse);
+        }
+
+        if(this.theme != Theme.DEFAULT){
+            this.setTheme(this.theme);
         }
 
     }
