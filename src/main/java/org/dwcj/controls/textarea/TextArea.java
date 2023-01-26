@@ -4,8 +4,6 @@ import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
@@ -21,6 +19,7 @@ import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 

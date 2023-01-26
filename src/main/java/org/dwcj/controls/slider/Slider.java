@@ -3,6 +3,7 @@ package org.dwcj.controls.slider;
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
@@ -28,10 +29,20 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
         DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
     }
     
+    public enum Orientation{
+        HORIZONTAL("horizontal"), VERTICAL("vertical");
+
+        public final String value;
+
+        private Orientation(String value){
+            this.value = value;
+        }
+    }
+
     private ArrayList<Consumer<SliderOnControlScrollEvent>> callbacks = new ArrayList<>();
     private SliderOnControlScrollEventSink scrollEventSink;
     
-    private Boolean horizontal = true;
+    private Orientation orientation = Orientation.HORIZONTAL;
     private Boolean inverted = false;
     private Integer majorTickSpacing = 1;
     private Integer minorTickSpacing = 1;
@@ -44,11 +55,6 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     
     public Slider(){
-        this(true);
-    }
-
-    public Slider(Boolean horizontal){ 
-        this.horizontal = horizontal; 
         this.focusable = true;
         this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
         this.tabTraversable = true;
@@ -60,20 +66,20 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-            if (Boolean.TRUE.equals(horizontal)){
-                ctrl = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
-            }
-            else{
-                ctrl = w.addVerticalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
-            }
-                bbjSlider = (BBjSlider) ctrl;
-                catchUp();
+            ctrl = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250, BASISNUMBER_250, flags);
+            bbjSlider = (BBjSlider) ctrl;
+            catchUp();
         } catch (Exception e) {
             Environment.logError(e);
         }
 
     }
 
+    /**
+     * Sets a callback to fire when the slider control is scrolled.
+     * @param callback Function written with behavior to be executed when the event is fired
+     * @return The object itself
+     */
     public Slider onScroll(Consumer<SliderOnControlScrollEvent> callback) {
         if(this.ctrl != null){
             if(this.scrollEventSink == null){
@@ -86,11 +92,6 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
         }
         return this;
     }
-
-    /*
-     * ==I tested the set method and no inversion happens, but this method does properly return the Boolean value
-     * if it's been changed== -MH
-     */
 
     /**
      * This method gets the orientation of the ProgressBar control. By default, the minimum value of a vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider, the minimum value is to the left and the maximum value is to the right. The orientation reverses for inverted sliders.
@@ -184,13 +185,13 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method returns the orientation of the ProgressBar control.
-     * @return Returns the orientation of the control (false = HORIZONTAL, true = VERTICAL).
+     * @return Returns the orientation of the control (0 = HORIZONTAL, 1 = VERTICAL).
      */
     public Integer getOrientation() {
         if(this.ctrl != null){
             return bbjSlider.getOrientation();
         }
-        if(Boolean.TRUE.equals(this.horizontal)){
+        if(this.orientation == Orientation.HORIZONTAL){
             return 0;
         }
         return 1;
@@ -354,6 +355,19 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             }
         }
         this.minorTickSpacing = tick;
+        return this;
+    }
+
+    /**
+     * Will set the slider to vertical if the string "vertical" is passed. Defaults to horizontal for any other string.
+     * @param orientation String "vertical" to set the slider's orientation to vertical, "horizontal" for horizontal(default)
+     * @return The object itself
+     */
+    public Slider setOrientation(Orientation orientation){
+        if(this.ctrl != null){
+            this.setAttribute("orientation", orientation.value);
+        }
+        this.orientation=orientation;
         return this;
     }
 
@@ -612,7 +626,9 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
             this.setValue(this.value);
         }
 
-
+        if(this.orientation != Orientation.HORIZONTAL){
+            this.setOrientation(Orientation.VERTICAL);
+        }
 
         if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);

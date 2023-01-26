@@ -13,20 +13,21 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 public final class Label extends AbstractDwcControl implements TextAlignable {
 
-    private BBjStaticText bbjStaticText;
-
-    private Boolean lineWrap = true;
-
-    /* top, right, bottom, left margins,
-     * used simple array as user will not 
+    /*
+     * top, right, bottom, left margins,
+     * used simple array as user will not
      * have to interact directly with this
      */
-    private Integer[] margins = {0,0,0,0};
 
     public Label() {
         this("");
     }
 
+    /**
+     * Constructor used to give the label initial text
+     * 
+     * @param text String value for initial display text
+     */
     public Label(String text) {
         setText(text);
         this.textAlignment = Alignment.LEFT;
@@ -36,151 +37,32 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
-            byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-            ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
-            bbjStaticText = (BBjStaticText) ctrl;
+            byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+            ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+                    BASISNUMBER_1, getText(), flags);
             catchUp();
         } catch (Exception e) {
             Environment.logError(e);
         }
     }
 
-    public int getBottomMargin(){
-        if(this.ctrl != null){
-            try{
-                return bbjStaticText.getBottomMargin();
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        return this.margins[2];
-    }
-
-    public int getLeftMargin(){
-        if(this.ctrl != null){
-            try{
-                return bbjStaticText.getLeftMargin();
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        return this.margins[3];
-    }
-
-    public boolean isLineWrap(){
-        if(this.ctrl != null){
-            try{
-                return bbjStaticText.getLineWrap();
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        return this.lineWrap;
-    }
-
-    public int getRightMargin(){
-        if(this.ctrl != null){
-            try{
-                return bbjStaticText.getRightMargin();
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        return this.margins[1];
-    }
-
-    public int getTopMargin(){
-        if(this.ctrl != null){
-            try{
-                return bbjStaticText.getTopMargin();
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        return this.margins[0];
-    }
-
-    public Label setBottomMargin(int margin){
-        if(this.ctrl != null){
-            try{
-                bbjStaticText.setBottomMargin(margin);
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        this.margins[2] = margin;
-        return this;
-    }
-    
-    public Label setLeftMargin(int margin){
-        if(this.ctrl != null){
-            try{
-                bbjStaticText.setLeftMargin(margin);
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        this.margins[3] = margin;
-        return this;
-    }
-
-    public Label setLineWrap(boolean wrap){
-        if(this.ctrl != null){
-            try{
-                bbjStaticText.setLineWrap(wrap);
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        this.lineWrap = wrap;
-        return this;
-    }
-
-    public Label setRightMargin(int margin){
-        if(this.ctrl != null){
-            try{
-                bbjStaticText.setRightMargin(margin);
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        this.margins[1] = margin;
-        return this;
-    }
-
-    public Label setTopMargin(int margin){
-        if(this.ctrl != null){
-            try{
-                bbjStaticText.setTopMargin(margin);
-            } catch (BBjException e){
-                Environment.logError(e);
-            }
-        }
-        this.margins[0] = margin;
-        return this;
-    }
-
-
-
     @Override
-    public Alignment getTextAlignment(){
+    public Alignment getTextAlignment() {
         return this.textAlignment;
     }
 
     @Override
-    public Label setTextAlignment(Alignment alignment){
-        if(this.ctrl != null){
-            try{
+    public Label setTextAlignment(Alignment alignment) {
+        if (this.ctrl != null) {
+            try {
                 ((BBjStaticText) ctrl).setAlignment(alignment.textPosition);
-            } catch(BBjException e){
+            } catch (BBjException e) {
                 Environment.logError(e);
             }
         }
         this.textAlignment = alignment;
         return this;
     }
-
-
 
     @Override
     public Label setText(String text) {
@@ -189,11 +71,11 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
     }
 
     @Override
-    public Label setVisible(Boolean visible){
+    public Label setVisible(Boolean visible) {
         super.setVisible(visible);
         return this;
     }
-    
+
     @Override
     public Label setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
@@ -207,13 +89,13 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
     }
 
     @Override
-    public Label setAttribute(String attribute, String value){
+    public Label setAttribute(String attribute, String value) {
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public Label setId(String elementId){
+    public Label setId(String elementId) {
         super.setId(elementId);
         return this;
     }
@@ -223,7 +105,7 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
         super.setStyle(property, value);
         return this;
     }
-    
+
     @Override
     public Label addClassName(String selector) {
         super.addClassName(selector);
@@ -236,34 +118,12 @@ public final class Label extends AbstractDwcControl implements TextAlignable {
         return this;
     }
 
-
     @Override
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
-        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
-        
+        if (Boolean.TRUE.equals(this.getCaughtUp()))
+            throw new IllegalAccessException("catchUp cannot be called twice");
         super.catchUp();
-
-        if(Boolean.TRUE.equals(this.lineWrap)){
-            this.setLineWrap(this.lineWrap);
-        }
-
-
-        if(this.margins[0] != 0){
-            this.setTopMargin(this.margins[0]);
-        }
-        if(this.margins[1] != 0){
-            this.setRightMargin(this.margins[1]);
-        }
-        if(this.margins[2] != 0){
-            this.setBottomMargin(this.margins[2]);
-        }
-        if(this.margins[3] != 0){
-            this.setLeftMargin(this.margins[3]);
-        }
-
     }
-
-
 
 }

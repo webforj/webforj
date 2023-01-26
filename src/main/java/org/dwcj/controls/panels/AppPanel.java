@@ -2,7 +2,6 @@ package org.dwcj.controls.panels;
 
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import com.google.common.primitives.Ints;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcAppInitializeException;
 
@@ -27,6 +26,19 @@ public class AppPanel extends AbstractDwcjPanel {
         }
 
     }
+
+
+    /**
+     * create a Byte Array out of an Integer
+     * @param val the integer value to convert
+     * @return a byte array representing that integer
+     */
+    private static byte[] getByteArray(int val) {
+        return new byte[] {
+                (byte)(val>>24), (byte)(val>>16), (byte)(val>>8), (byte)val
+        };
+    }
+
     @Override
     protected void create(AbstractDwcjPanel p) {
         //empty, needs override

@@ -18,7 +18,6 @@ import org.dwcj.controls.combobox.sinks.ComboBoxSelectEventSink;
 import org.dwcj.controls.listbox.AbstractDwclistControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.interfaces.Focusable;
-import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
@@ -34,7 +33,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class ComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
+public final class ComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
     private BBjListButton bbjListButton;
 
@@ -63,7 +62,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     public ComboBox(){
         this.readOnly = false;
         this.focusable = true;
-        this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
         this.tabTraversable = true;
         this.textAlignment = Alignment.LEFT;
     }
@@ -104,6 +102,15 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+    /**
+     * Allows user to insert an item at a specific index within the comboBox
+     * 
+     * @param key Key for the item to be inserted
+     * @param item Value for the inserted item
+     * @param index Desired index (0 based) for the inserted item
+     * @return ComboBox object itself
+     */
+
     public ComboBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
         data2.add(index, values.get(key));
@@ -111,6 +118,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+    /**
+     * Adds a map of items to the already-existing items within the ComboBox
+     * @param items Map of items to be added
+     * @return The object itself
+     */
     public ComboBox addItems(Map<Object, String> items){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
@@ -121,6 +133,13 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+    /**
+     * Inserts a map of items into the ComboBox at the desired index
+     * 
+     * @param items Map of items to be added
+     * @param index Integer representing the desired 
+     * @return
+     */
     public ComboBox insertItemsAt(Map<Object, String> items, Integer index){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
@@ -163,20 +182,9 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     /**
-     * closes the ComboBox dropwdown list
-     * @return ComboBox - returns this
+     * Deselects any selected items within the ComboBox
+     * @return The object itself
      */
-    public ComboBox closeList(){
-        if(this.ctrl != null){
-            try{
-                ((BBjListButton) this.ctrl).closeList();
-            } catch(BBjException e){
-                Environment.logError(e);
-            }
-        }
-        return this;
-    }
-
     public ComboBox deselect(){
         if(this.ctrl != null){
             try{
@@ -205,6 +213,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return values.get(key);
     }
 
+    /**
+     * Selects the item at the given index (0 based)
+     * @param idx Index of the desired item
+     * @return String value of the selected item
+     */
     public String getItemAt(Integer idx){
         if(this.ctrl != null){
             try{
@@ -217,6 +230,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return null;
     }
 
+    /**
+     * Returns the index (0 based) of the selected item within the ComboBox
+     * @return Integer representing the selected index
+     */
     public Integer getSelectedIndex(){
         if(this.ctrl != null){
             try{
@@ -246,6 +263,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return new SimpleEntry<>(null,null);
     }
 
+    /**
+     * Returns number of items within the ComboBox
+     * @return Integer representing the total number of items
+     */
     public Integer getItemCount(){
         if(this.ctrl != null){
             try{
@@ -306,26 +327,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
 
 
     /**
-     * Register a callback for selecting an item within the box
-     *
-     * @param callback A method to receive the selection event
-     * @return the control itself
+     * Sets the behavior to be executed when the ComboBox control is opened
+     * @param callback A function with the behavior desired on opening a ComboBox
+     * @return The object itself
      */
-    public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
-        if(this.ctrl != null){
-            if(this.changeEventSink == null){
-                this.changeEventSink = new ComboBoxChangeEventSink(this);
-            }
-            this.changeEventSink.addCallback(callback);
-        }
-        else{
-            this.changeEvents.add(callback);
-        }
-        return this;
-    }
-
-
-
     public ComboBox onOpen(Consumer<ComboBoxOpenEvent> callback){
         if(this.ctrl != null){
             if(this.openEventSink == null){
@@ -339,7 +344,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
     
-    
+    /**
+     * Sets the behavior to be executed when the ComboBox control is closed
+     * @param callback A function with the behavior desired on closing a ComboBox
+     * @return The object itself
+     */
     public ComboBox onClose(Consumer<ComboBoxCloseEvent> callback){
         if(this.ctrl != null){
             if(this.closeEventSink == null){
@@ -353,12 +362,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
-
-
-
-
-
-
+    /**
+     * Removed all of the items within a ComboBox
+     * @return The object itself
+     */
     public ComboBox removeAllItems(){
         if(this.ctrl != null){
             try{
@@ -370,6 +377,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+    /**
+     * Removed an item at the given index (0 based) within the ComboBox
+     * @param index Integer for the desired index of the item to be removed
+     * @return The object itself
+     */
     public ComboBox removeItemAt(Integer index){
         if(this.ctrl != null){
             try{
@@ -381,6 +393,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+    /**
+     * Selects the item at the given index within the ComboBox
+     * @param index Integer representing the index of the desired item for selection
+     * @return The object itself
+     */
     public ComboBox selectIndex(Integer index){
         if(this.ctrl != null){
             try{
@@ -392,6 +409,11 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         return this;
     }
 
+    /**
+     * Sets the maximum number of rows allowed within the ComboBox
+     * @param max Integer representing the desired maximum number of rows
+     * @return The object itself
+     */
     public ComboBox setMaximumRowCount(Integer max){
         if(this.ctrl != null){
             try{
@@ -405,7 +427,12 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
 
-
+    /**
+     * Sets the text at one of the specific items at the given index within the ComboBox
+     * @param idx Index of the desired item to have text set
+     * @param text Desired text to be displayed at given index
+     * @return The object itself
+     */
     public ComboBox setTextAt(Integer idx, String text){
         this.textAt = new SimpleEntry<>(idx, text);
         if(this.ctrl != null){
@@ -467,25 +494,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         }
         this.focusable = focusable;
         return this;
-    }
-
-    @Override
-    public MouseWheelCondition getScrollWheelBehavior(){
-            return this.mouseWheelCondition;
-    }
-
-    @Override
-    public ComboBox setScrollWheelBehavior(MouseWheelCondition condition){
-        if(this.ctrl != null){
-            try{
-                ((BBjListButton) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
-            } catch(BBjException e){
-                Environment.logError(e);
-            }
-        }
-        this.mouseWheelCondition = condition;
-        return this;
-
     }
 
     @Override
@@ -656,10 +664,6 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
 
         if(Boolean.FALSE.equals(this.focusable)){
             this.setFocusable(this.focusable);
-        }
-
-        if(this.mouseWheelCondition != MouseWheelCondition.DEFAULT){
-            this.setScrollWheelBehavior(this.mouseWheelCondition);
         }
 
         if(Boolean.FALSE.equals(this.tabTraversable)){
