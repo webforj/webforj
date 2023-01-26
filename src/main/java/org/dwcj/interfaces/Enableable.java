@@ -17,7 +17,7 @@ public interface Enableable {
     /**
      * Set whether the control is to be enabled
      *
-     * @param enabled
+     * @param enabled tells if the control should be enabled (true) or disabled (false)
      * @return the control itself
      */
     public Enableable setEnabled(Boolean enabled);

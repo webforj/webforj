@@ -26,7 +26,7 @@ public interface Control {
     /**
      * Allows user to fetch extraneous, user-included information from the control
      *
-     * @param key
+     * @param key the key of the user data entry
      * @return Desired piece of user data
      */
     public Object getUserData(String key);

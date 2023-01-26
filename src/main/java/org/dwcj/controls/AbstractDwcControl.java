@@ -37,8 +37,19 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
      */
     public static final String STR_EXPANSE = "expanse";
     public static final String STR_THEME = "theme";
+    /**
+     * the BASIS Number 1
+     */
     protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
+    /**
+     * the BASIS Number 25
+     */
+
     protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
+
+    /**
+     * the BASIS Number 250
+     */
     protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
 
     /*=====================================================================================

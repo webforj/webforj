@@ -59,7 +59,6 @@ public interface IDwcjBBjBridge {
     /**
      * create an instance of a BBj-side object instance, mostly custom objects
      * @param classname the method name
-     * @param args the arguments to the constructor as a List
      * @return the object instance
      */
     Object createInstance(String classname);

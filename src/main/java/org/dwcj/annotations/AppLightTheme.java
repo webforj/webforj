@@ -23,12 +23,16 @@ import java.lang.annotation.Target;
  * @see AppTheme
  * @see AppDarkTheme
  * 
- * @Author Hyyan Abo Fakher
+ * @author Hyyan Abo Fakher
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
 @Documented
 public @interface AppLightTheme {
+  /**
+   *
+   * @return The App Light Theme Default
+   */
   String value() default "light";
 }

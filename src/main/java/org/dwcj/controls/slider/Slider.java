@@ -110,7 +110,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method returns the labels from a ProgressBar control.
-     * @return Returns a Java Map<Integer,String> structure, where each Integer key is the slider position of the corresponding String label.
+     * @return Returns a Java Map{@literal <}Integer,String{@literal >} structure, where each Integer key is the slider position of the corresponding String label.
      */
     public Map<Integer,String> getLabels() {
         if(this.ctrl != null){
@@ -276,7 +276,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method sets the custom labels for a ProgressBar control.
-     * @param labels - A Java Map<Integer,String> structure, where the Integer key is the slider position of the corresponding String label.
+     * @param labels - A Java Map{@literal <}Integer,String{@literal >} structure, where the Integer key is the slider position of the corresponding String label.
      * @return Returns this
      */
     public Slider setLabels(Map<Integer,String> labels) {
@@ -292,7 +292,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method sets the major tick spacing for a ProgressBar control.
-     * @param prop - Specifies the major tick spacing.
+     * @param tick - Specifies the major tick spacing.
      * @return Returns this
      */
     public Slider setMajorTickSpacing(Integer tick) {
@@ -309,7 +309,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method sets the maximum value of the ProgressBar control.
-     * @param value - Specifies the maximum value.
+     * @param maximum - Specifies the maximum value.
      * @return Returns this
      */
     public Slider setMaximum(Integer maximum) {
@@ -326,7 +326,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
     /**
      * This method sets the minimum value of the ProgressBar control.
-     * @param value - Specifies the minimum value.
+     * @param minimum - Specifies the minimum value.
      * @return Returns this
      */
     public Slider setMinimum(Integer minimum) {

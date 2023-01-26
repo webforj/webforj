@@ -19,24 +19,28 @@ import com.basis.startup.type.BBjException;
 
 public abstract class AbstractControl implements Control, HasDestroy {
 
-    /*
+    /**
      * Underlying BBj control
      */
     protected BBjControl ctrl;
 
-    /*
+    /**
      * Members responsible for tracking ID attribute and user data
      */
     protected String elementId = "";
+
+    /**
+     * the user data to be saved with the control
+     */
     protected final Map<String, Object> userData = new HashMap<>();
 
-    /*
+    /**
      * Used by catchUp() method to ensure a single execution of
      * the function.
      */
     private Boolean caughtUp = false;
 
-    /*
+    /**
      * Used to track whether or not the control that has been flagged
      * for destruction
      */
@@ -98,11 +102,21 @@ public abstract class AbstractControl implements Control, HasDestroy {
         return this.userData.get(key);
     }
 
+    /**
+     * sace some custom user data with this control
+     * @param key Key of the data
+     * @param data Desired piece of information
+     * @return the control itself
+     */
     public AbstractControl setUserData(String key, Object data) {
         this.userData.put(key, data);
         return this;
     }
 
+    /**
+     *
+     * @return if the control has been added and is caught up
+     */
     public Boolean getCaughtUp() {
         return this.caughtUp;
     }

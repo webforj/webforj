@@ -549,7 +549,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
 
     /**
      * Sets the maximum number of characters allowed in a MultilineEdit control paragraph.
-     * @param limit - Specifies the number of characters to be allowed in a paragraph.
+     * @param size - Specifies the number of characters to be allowed in a paragraph.
      * @return Returns this
      */
     public TextArea setMaxParagraphSize(Integer size) {
@@ -566,7 +566,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
 
     /**
      * This method sets the maximum length of the text in a MultilineEdit control
-     * @param limit - Specifies the maximum length of the text in the control.
+     * @param length - Specifies the maximum length of the text in the control.
      * @return Returns this
      */
     public TextArea setMaxLength(Integer length) {
@@ -634,7 +634,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
 
     /**
      * this method sets the style of wrapping used if the MultilineEdit control is wrapping lines.
-     * @param wrap - Sets the style of wrapping used if the BBjCEdit is wrapping lines (false = Wrap at character boundaries, true = Wrap at word boundaries.)
+     * @param word - Sets the style of wrapping used if the BBjCEdit is wrapping lines (false = Wrap at character boundaries, true = Wrap at word boundaries.)
      * @return Returns this
      */
     public TextArea setWrapStyleWord(Boolean word) {

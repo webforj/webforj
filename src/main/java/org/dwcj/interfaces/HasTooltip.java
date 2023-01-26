@@ -18,7 +18,7 @@ public interface HasTooltip {
     /**
      * Set the tooltip text of the control
      *
-     * @param text
+     * @param tooltipText
      * @return the control itself
      */
     public HasTooltip setTooltipText(String tooltipText);

@@ -25,9 +25,21 @@ public abstract class App {
    * @see App#setTheme(Theme)
    */
   public enum Theme {
+    /**
+     * The Light Theme
+     */
     LIGHT("light"),
+    /**
+     * The Dark Theme
+     */
     DARK("dark"),
+    /**
+     * The Dark Pure Theme
+     */
     DARK_PURE("dark-pure"),
+    /**
+     * The System-set Theme
+     */
     SYSTEM("system");
 
     private String value;
@@ -36,11 +48,18 @@ public abstract class App {
       this.value = value;
     }
 
+    /**
+     *
+     * @return the theme value
+     */
     public String getValue() {
       return value;
     }
   }
 
+  /**
+   * Constructor
+   */
   protected App() {
     preRun();
     try {
@@ -603,7 +622,11 @@ public abstract class App {
       Environment.logError(e);
     }
   }
-
+  /**
+   * Log an Error String to the browser console (console.out)
+   *
+   * @param output The error message to log
+   */
   public static void consoleError(String output) {
     try {
 
@@ -701,6 +724,11 @@ public abstract class App {
    */
   public abstract void run() throws DwcException;
 
+  /**
+   * Access one of the namespaces
+   * @param namespaceType the type of the namespace, PRIVATE, SESSION, GROUP or GLOBAL
+   * @return
+   */
   public static Namespace getNamespace(Namespace.NamespaceType namespaceType) {
     switch (namespaceType) {
       case PRIVATE:

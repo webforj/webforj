@@ -6,7 +6,9 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-
+/**
+ * A utility class to scan and find classes that are Apps, IOW that extend the abstract App class
+ */
 @SuppressWarnings({"java:S3740","java:S3776"}) // allow raw types
 public class AppFinder {
 
@@ -15,6 +17,13 @@ public class AppFinder {
 
     private final List<String> cpEntriesToCheck;
 
+    /**
+     *
+     * Find all App implementations in a list of classpath entries
+     *
+     * @param cpEntriesToCheck the entries in the CP to check
+     * @throws ClassNotFoundException
+     */
     public AppFinder(List<String>cpEntriesToCheck) throws ClassNotFoundException {
         this.cpEntriesToCheck = cpEntriesToCheck;
         appBaseClass = Class.forName("org.dwcj.App");
@@ -38,6 +47,11 @@ public class AppFinder {
         }
     }
 
+    /**
+     * Find all Apps in the Classpath
+     *
+     * @return the classes that extend the abstract App baseclass
+     */
     public Set<String> getAppImplmentations() {
 
         if (this.cpEntriesToCheck != null) {

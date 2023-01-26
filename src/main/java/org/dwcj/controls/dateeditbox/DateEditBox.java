@@ -108,7 +108,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /**
      * This method returns whether the DateEditBox control beeps on invalid input.
      * 
-     * @returns Returns whether the control will beep on invalid input (false = No Beep, true = Beep).
+     * @return Returns whether the control will beep on invalid input (false = No Beep, true = Beep).
      * 
      */
     public Boolean isBeep(){
@@ -125,7 +125,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /**
      * This method returns the caret position in the DateEditBox control.
      * 
-     * @returns Returns the position of the caret in the BBjInputD control.
+     * @return Returns the position of the caret in the BBjInputD control.
      */
     public Integer getCaretPosition(){
         if(this.ctrl != null){
@@ -153,7 +153,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /**
      * This method returns the number of the last error generated in the DateEditBox control.
      * 
-     * @returns Returns the position of the caret in the BBjInputD control.
+     * @return Returns the position of the caret in the BBjInputD control.
      */
     public Integer getError(){
         try {

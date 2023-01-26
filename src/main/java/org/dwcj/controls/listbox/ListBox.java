@@ -239,7 +239,6 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
 
     /**
      * Returns a map of the items that have been selected in the ListBox
-     * @param N/A
      * @return Map of the selected items
      */
     public Map<Object, String> getSelectedItems() {
@@ -267,7 +266,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
 
     /**
      * Allows you to pass in a map of objects which will replace the objects currently in the ListBox
-     * @param values - A map with <Object, String> pairs.
+     * @param values - A map with {@literal <}Object, String{@literal >} pairs.
      * @return ListBox
      */
     public ListBox setItems(Map<Object, String> values) {
@@ -316,7 +315,6 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
 
     /**
      * Sets whether or not it is possible to select multiple items within the box
-     * @param bool - True or false whether or not to allow multiple selection
      * @return boolean
      */
     

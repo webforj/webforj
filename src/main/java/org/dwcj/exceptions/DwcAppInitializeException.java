@@ -36,7 +36,7 @@ public final class DwcAppInitializeException extends DwcException {
      * This constructor is useful for exceptions that are little more than
      * wrappers for other throwables.
      *
-     * @param cause the cause (which is saved for later retrieval by the
+     * @param e the cause (which is saved for later retrieval by the
      *              {@link #getCause()} method). (A {@code null} value is
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)

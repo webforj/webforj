@@ -10,7 +10,7 @@ public interface HasClassName {
     /**
      * Adds a CSS class to the list of CSS classes for the control.
      * 
-     * @param String name of the desired class to be added
+     * @param className of the desired class to be added
      * @return The control itself
      */
     public HasClassName addClassName(String className);
@@ -18,7 +18,7 @@ public interface HasClassName {
     /**
      * Removes a CSS class from the list of CSS classes for the control.
      *
-     * @param String name of the desired class to be removed
+     * @param className of the desired class to be removed
      * @return The control itself
      */
     public HasClassName removeClassName(String className);

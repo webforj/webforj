@@ -16,7 +16,7 @@ public interface HasVisibility {
     /**
      * Set whether the control is visible or invisible
      *
-     * @param visible
+     * @param visible if the control shall be visible or hidden (false)
      * @return the control itself
      */
     public HasVisibility setVisible(Boolean visible);

@@ -19,7 +19,7 @@ public interface HasControlText {
      * set the text of the control
      * Each control implementing this interface has a text property, which might be visible in different ways (caption, title, contents of edit) or sometimes not visible at all
      *
-     * @param text
+     * @param text the text to set
      * @return the control itself
      */
     public HasControlText setText(String text);

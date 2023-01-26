@@ -30,5 +30,9 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface AppDarkTheme {
+  /**
+   *
+   * @return the value for the dark theme
+   */
   String value() default "dark";
 }

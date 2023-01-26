@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  * 
- * @see AppAttributes
- * @Author Hyyan Abo Fakher
+ * @see AppAttribute
+ * @author Hyyan Abo Fakher
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -31,10 +31,15 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface AppAttribute {
-  /** The name of the attribute */
+  /**
+   * @return The name of the attribute
+   * */
   String name();
 
-  /** The value of the attribute */
+  /**
+   *
+    * @return The value of the attribute
+   */
   String value();
 
   /**
@@ -47,14 +52,23 @@ public @interface AppAttribute {
    * "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
    * doesn't return any elements, the
    * default document element is used.
+   *
+   * @return the selector
    */
   String selector() default "";
 
+  /**
+   * Container Interface
+   */
   @Target(ElementType.TYPE)
   @Retention(RetentionPolicy.RUNTIME)
   @Inherited
   @Documented
   public @interface Container {
+    /**
+     *
+     * @return the app attribute value
+     */
     AppAttribute[] value();
   }
 }
