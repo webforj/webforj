@@ -120,6 +120,11 @@ public final class TabControl extends AbstractDwcControl {
         return this;
     }
 
+    /**
+     * Add a tab to the tab control
+     * @param text the text to display on the tab control
+     * @return
+     */
     public TabControl addTab(String text){
         try {
             this.tabCtrl.addTab(text,-1);
@@ -128,6 +133,39 @@ public final class TabControl extends AbstractDwcControl {
         }
         return this;
     }
+
+    /**
+     * Add a tab and add a Div to it.
+     * Important: The DIV has to exist on the parent panel, you need to call "add" before passing it to the tab control.
+     * @param text The text for the tab
+     * @param panel the panel to attach to the tab
+     * @return the Tab Control object
+     */
+    public TabControl addTab(String text, Div panel) {
+        try {
+            this.tabCtrl.addTab(text,PanelAccessor.getDefault().getBBjWindow(panel));
+        } catch (BBjException | IllegalAccessException e) {
+            Environment.logError(e);
+        }
+        return this;
+    }
+
+    /**
+     * Put a DIV under an existing tab
+     * Important: The DIV has to exist on the parent panel, you need to call "add" before passing it to the tab control.
+     * @param index the zero-based index of the tab
+     * @param panel the DIV panel to put under the tab
+     * @return the Tab Control object itself
+     */
+    public TabControl setPanelAt(int index, Div panel) {
+        try {
+            this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
+        } catch (BBjException | IllegalAccessException e) {
+            Environment.logError(e);
+        }
+        return this;
+    }
+
 
     /**
      * register an event callback for the click event
