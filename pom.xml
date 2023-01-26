@@ -4,7 +4,7 @@
 
     <groupId>org</groupId>
     <artifactId>dwcj</artifactId>
-    <version>0.010alpha</version>
+    <version>0.011alpha-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>dwcj</name>
     <description>Program that allows implementation of an API layer 
