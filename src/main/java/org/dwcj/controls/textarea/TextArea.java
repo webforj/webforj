@@ -114,8 +114,8 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
     
     /**
      * Appends text to the end of a paragraph in the MultilineEdit control
-     * @param index - Specifies the 0-based index of the paragraph to append the text to.
-     * @param test - Specifies the text to be appended to the end of the paragraph.
+     * @param parNum - Specifies the 0-based index of the paragraph to append the text to.
+     * @param text - Specifies the text to be appended to the end of the paragraph.
      * @return Returns this
      */
     public TextArea appendToParagraph(Integer parNum, String text) {
