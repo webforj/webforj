@@ -2,6 +2,8 @@ package org.dwcj.bbjplugins.gridexwidget;
 
 import com.basis.bbj.proxies.sysgui.BBjChildWindow;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjVector;
+import com.basiscomponents.db.DataRow;
 import com.basiscomponents.db.ResultSet;
 import org.dwcj.App;
 import org.dwcj.Environment;
@@ -12,6 +14,7 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 @SuppressWarnings("java:S3740")
@@ -43,6 +46,98 @@ public final class GridExWidget extends AbstractDwcControl {
         args.add(rs);
         Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setData", args);
         return this;
+    }
+
+    public GridExWidget setData(ResultSet rs, int render, Boolean addAll) {
+        ArrayList args = new ArrayList();
+        args.add(rs);
+        args.add(render);
+        args.add(addAll);
+
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setData", args);
+
+        return this;
+    }
+
+    public BBjVector getSelectedRows() {
+        BBjVector rows = null;
+
+        Object object = Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "getSelectedRows", null);
+        if (object != null) rows = (BBjVector) object;
+
+        return rows;
+    }
+
+    public DataRow getSelectedRow() {
+        DataRow dr = null;
+
+        BBjVector rows = getSelectedRows();
+        if (rows != null && rows.size() > 0) {
+            Object row = rows.get(0);
+
+            Object rowAsDataRow = Environment.getInstance().getDwcjHelper().invokeMethod(row, "asDataRow", null);
+            if (rowAsDataRow != null) dr = (DataRow) rowAsDataRow;
+        }
+
+        return dr;
+    }
+
+    public void deselectAll() {
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "deselectAll", null);
+    }
+
+    public Object addColumn(String field, String label, int type) {
+        ArrayList args = new ArrayList();
+        args.add(field);
+        args.add(label);
+        args.add(type);
+
+        return Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "addColumn", args);
+    }
+
+    public Object addColumnGroup(String id, String label, List<String> columns, Boolean marryChildren, String cssClass) {
+        BBjVector vector = new BBjVector();
+        for (String column : columns) {
+            vector.addItem(column);
+        }
+
+        ArrayList args = new ArrayList();
+        args.add(id);
+        args.add(label);
+        args.add(vector);
+        args.add(marryChildren);
+        args.add(cssClass);
+
+        return Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "addColumnGroup", args);
+    }
+
+    public Object addRow(DataRow row) {
+        ArrayList args = new ArrayList();
+        args.add(row);
+
+        return Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "addRow", args);
+    }
+
+    public Object updateRow(DataRow row) {
+        ArrayList args = new ArrayList();
+        args.add(row);
+
+        return Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "updateRow", args);
+    }
+
+    public Object removeRow(DataRow row) {
+        ArrayList args = new ArrayList();
+        args.add(row);
+
+        return Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "removeRow", args);
+    }
+
+    public void setFitToGrid() {
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setFitToGrid", null);
+    }
+
+    public void autoSizeColumns() {
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "autoSizeColumns", null);
     }
 
     /**
