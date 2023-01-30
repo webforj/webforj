@@ -264,7 +264,7 @@
                         <source>11</source>
                         <detectJavaApiLink>false</detectJavaApiLink>
                         <failOnError>false</failOnError>
-                        <failOnWarning>false</failOnWarning>
+                        <failOnWarnings>false</failOnWarnings>
                     </configuration>
                 </plugin>
 
