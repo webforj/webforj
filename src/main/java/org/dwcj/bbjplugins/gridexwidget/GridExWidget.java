@@ -140,6 +140,22 @@ public final class GridExWidget extends AbstractDwcControl {
         Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "autoSizeColumns", null);
     }
 
+    public void setColumnAlignment(String field, int alignment) {
+        ArrayList args = new ArrayList();
+        args.add(field);
+        args.add(alignment);
+
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setColumnAlignment", args);
+    }
+
+    public void setColumnMask(String field, String mask) {
+        ArrayList args = new ArrayList();
+        args.add(field);
+        args.add(mask);
+
+        Environment.getInstance().getDwcjHelper().invokeMethod(ctrl, "setColumnMask", args);
+    }
+
     /**
      * Register an event callback to be executed when the user selects a row in the grid
      *
