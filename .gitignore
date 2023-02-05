@@ -37,3 +37,4 @@ bbj/.project
 bbj/.metadata/resourcesModel.json
 
 /src/main/java/fiddle/
+/src/main/resources/bbj/BBjGridExWidgetEventProxies.bbj

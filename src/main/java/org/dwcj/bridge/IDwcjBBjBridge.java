@@ -66,4 +66,6 @@ public interface IDwcjBBjBridge {
 
 
     ArrayList<BBjVar> call(String pgm, ArrayList<BBjVar> args);
+
+    String getWorkingDirectory();
 }

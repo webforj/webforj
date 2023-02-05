@@ -141,4 +141,8 @@ class public DwcjHelper implements IDwcjBBjBridge
         methodret ret!
     methodend
 
+    method public String getWorkingDirectory()
+        methodret DIR("")
+    methodend
+
 classend
