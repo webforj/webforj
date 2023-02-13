@@ -57,7 +57,7 @@
         <profile>
             <id>winbbxlib</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
 
             <properties>
@@ -67,7 +67,7 @@
         <profile>
             <id>winbbjlib</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
 
             <properties>
