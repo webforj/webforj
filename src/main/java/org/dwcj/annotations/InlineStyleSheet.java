@@ -49,6 +49,12 @@ public @interface InlineStyleSheet {
   boolean top() default false;
 
   /**
+   * A boolean value specifying whether this style is to be injected into the
+   * current window of the page only once.
+   */
+  boolean once () default false;
+
+  /**
    * A set of <a href=
    * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style">attributes</a>
    * to be added to the style element.

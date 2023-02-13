@@ -1,9 +1,9 @@
 package org.dwcj.annotations;
 
 import java.util.HashMap;
-
 import org.dwcj.App;
 import org.dwcj.controls.AbstractControl;
+import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcAnnotationException;
 import org.dwcj.exceptions.DwcException;
 import org.dwcj.util.Assets;
@@ -189,22 +189,35 @@ public final class AnnotationProcessor {
   private void processInlineStyleSheet(Object clazz) throws DwcException {
     InlineStyleSheet[] inlineStyleSheets = clazz.getClass().getAnnotationsByType(InlineStyleSheet.class);
     if (inlineStyleSheets != null) {
-      for (InlineStyleSheet inlineStyleSheet : inlineStyleSheets) {
+      for (InlineStyleSheet sheet : inlineStyleSheets) {
         HashMap<String, String> attributes = new HashMap<>();
-        for (Attribute attribute : inlineStyleSheet.attributes()) {
+        for (Attribute attribute : sheet.attributes()) {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (inlineStyleSheet.id() != null && !inlineStyleSheet.id().isEmpty()) {
-          attributes.put("id", inlineStyleSheet.id());
+        boolean hasId = sheet.id() != null && !sheet.id().isEmpty();
+        String key = "dwcj::styles::" + sheet.id();
+        boolean isTracked = ObjectTable.contains(key);
+
+        if (hasId) {
+          if (isTracked) {
+            continue;
+          }
+
+          attributes.put("id", sheet.id());
+
+          if (sheet.once()) {
+            attributes.put("bbj-once", "");
+            ObjectTable.put(key, true);
+          }
         }
 
-        String content = inlineStyleSheet.value();
-        if (inlineStyleSheet.local()) {
+        String content = sheet.value();
+        if (sheet.local()) {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineStyleSheet(content, inlineStyleSheet.top(), attributes);
+        App.addInlineStyleSheet(content, sheet.top(), attributes);
       }
     }
   }

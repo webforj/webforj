@@ -57,7 +57,7 @@
         <profile>
             <id>winbbxlib</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
 
             <properties>
@@ -67,7 +67,7 @@
         <profile>
             <id>winbbjlib</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
 
             <properties>
@@ -164,6 +164,12 @@
             <version>5.3.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>        
     </dependencies>
 
     <build>
