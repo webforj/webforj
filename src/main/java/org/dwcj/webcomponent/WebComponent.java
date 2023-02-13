@@ -26,7 +26,6 @@ import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.controls.toast.Toast;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcControlDestroyed;
 import org.dwcj.exceptions.DwcRuntimeException;
@@ -81,7 +80,7 @@ public abstract class WebComponent extends AbstractControl {
   /**
    * Create a new instance of the web component.
    */
-  public WebComponent() {
+  protected WebComponent() {
     super();
     
     hv = new HtmlContainer("");
@@ -687,12 +686,12 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     // assign a uuid to the control
-    String uuid = UUID.randomUUID().toString().substring(0, 8);
-    controls.put(control, new SimpleEntry<>(uuid, false));
+    String newUuid = UUID.randomUUID().toString().substring(0, 8);
+    controls.put(control, new SimpleEntry<>(newUuid, false));
 
     // add wc-link attribute to the control to link it to the web component
     if (control instanceof AbstractDwcControl) {
-      ((AbstractDwcControl) control).setAttribute("wc-link", uuid);
+      ((AbstractDwcControl) control).setAttribute("wc-link", newUuid);
     }
 
     if (control instanceof WebComponent) {
@@ -703,7 +702,7 @@ public abstract class WebComponent extends AbstractControl {
         MethodType mt = MethodType.methodType(HtmlContainer.class);
         method = lookup.findVirtual(control.getClass(), "getHtmlContainer", mt);
         HtmlContainer container = (HtmlContainer) method.invoke(control);
-        container.setAttribute("wc-link", uuid);
+        container.setAttribute("wc-link", newUuid);
       } catch (Throwable e) {
         // pass
         Environment.logError("Failed to set web component attribute. " + e.getMessage());
@@ -719,7 +718,7 @@ public abstract class WebComponent extends AbstractControl {
 
     // move the control to the web component in the client side
     StringBuilder js = new StringBuilder();
-    js.append("const selector='[wc-link=\"").append(uuid).append("\"]';")
+    js.append("const selector='[wc-link=\"").append(newUuid).append("\"]';")
         .append("const control = document.querySelector(selector);")
         .append("if(control)")
         .append(" component.appendChild(control);")
@@ -727,7 +726,7 @@ public abstract class WebComponent extends AbstractControl {
 
     invokeAsync("Function", js.toString());
 
-    return uuid;
+    return newUuid;
   }
 
   /**
@@ -801,7 +800,7 @@ public abstract class WebComponent extends AbstractControl {
     rawSlots.put(slot, value);
 
     String selector = "";
-    if (slot != "__EMPTY_SLOT__") {
+    if (!slot.equals("__EMPTY_SLOT__")) {
       selector += "[slot='" + slot + "'][dwcj-slot='" + getUUID() + "']";
     } else {
       selector += "[dwcj-default-slot='true'][dwcj-slot='" + getUUID() + "']";
@@ -859,7 +858,7 @@ public abstract class WebComponent extends AbstractControl {
 
       // attach the panel in the client side
       String selector = "";
-      if (slot != "__EMPTY_SLOT__") {
+      if (!slot.equals("__EMPTY_SLOT__")) {
         selector += "[slot='" + slot + "'][dwcj-slot='" + getUUID() + "']";
       } else {
         selector += "[dwcj-default-slot='true'][dwcj-slot='" + getUUID() + "']";
@@ -989,7 +988,7 @@ public abstract class WebComponent extends AbstractControl {
     // mark the panel with the slot name and the web component uuid
     // to be able to find it in the client side
     panel.setAttribute("dwcj-slot", getUUID());
-    if (slot != "__EMPTY_SLOT__") {
+    if (!slot.equals("__EMPTY_SLOT__")) {
       // assign the slot name to the panel
       panel.setAttribute("slot", slot);
     } else {
@@ -1008,7 +1007,7 @@ public abstract class WebComponent extends AbstractControl {
 
     // attach the panel in the client side
     String selector = "";
-    if (slot != "__EMPTY_SLOT__") {
+    if (!slot.equals("__EMPTY_SLOT__")) {
       selector += "[slot='" + slot + "'][dwcj-slot='" + getUUID() + "']";
     } else {
       selector += "[dwcj-default-slot='true'][dwcj-slot='" + getUUID() + "']";
@@ -1077,7 +1076,7 @@ public abstract class WebComponent extends AbstractControl {
       // so we just change the attribute values without reaching the DOM
       // TODO: reimplement this when BBjControl.removeAttributes() is implemented
       // Even though if the panel is destroyed. we should remove the attributes
-      if (slot != "__EMPTY_SLOT__") {
+      if (!slot.equals("__EMPTY_SLOT__")) {
         panelToRemove.setAttribute("slot", "__detached__");
       } else {
         panelToRemove.setAttribute("dwcj-default-slot", "false");
@@ -1458,6 +1457,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param panel the parent panel
    * @throws DwcControlDestroyed if the web component is destroyed
    */
+  @Override
   protected void create(AbstractDwcjPanel panel) {
     assertNotDestroyed();
 
