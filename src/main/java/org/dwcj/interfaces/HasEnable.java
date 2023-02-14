@@ -6,7 +6,7 @@ package org.dwcj.interfaces;
  * determines whether or not a control can be 
  * disabled after being rendered to the page
  */
-public interface Enableable {
+public interface HasEnable {
     
     /**
      *
@@ -20,5 +20,5 @@ public interface Enableable {
      * @param enabled
      * @return the control itself
      */
-    public Enableable setEnabled(Boolean enabled);
+    public HasEnable setEnabled(Boolean enabled);
 }
