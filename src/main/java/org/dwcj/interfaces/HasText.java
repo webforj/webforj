@@ -6,7 +6,7 @@ package org.dwcj.interfaces;
  * set the text of the control, if applicable, in a way that makes 
  * sense for the specific control itself.
  */
-public interface HasControlText {
+public interface HasText {
 
     /**
      * get the text property of the control
@@ -22,6 +22,6 @@ public interface HasControlText {
      * @param text
      * @return the control itself
      */
-    public HasControlText setText(String text);
+    public HasText setText(String text);
     
 }
