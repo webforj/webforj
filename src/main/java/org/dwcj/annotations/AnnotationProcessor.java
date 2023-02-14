@@ -253,20 +253,37 @@ public final class AnnotationProcessor {
    * @throws DwcException
    */
   private void processInlineJavaScript(Object clazz) throws DwcException {
-    InlineJavaScript[] inlineJavaScripts = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
-    if (inlineJavaScripts != null) {
-      for (InlineJavaScript inlineJavaScript : inlineJavaScripts) {
+    InlineJavaScript[] inlineJavascript = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
+    if (inlineJavascript != null) {
+      for (InlineJavaScript sheet : inlineJavascript) {
         HashMap<String, String> attributes = new HashMap<>();
-        for (Attribute attribute : inlineJavaScript.attributes()) {
+        for (Attribute attribute : sheet.attributes()) {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        String content = inlineJavaScript.value();
-        if (inlineJavaScript.local()) {
+        boolean hasId = sheet.id() != null && !sheet.id().isEmpty();
+        String key = "dwcj::scripts::" + sheet.id();
+        boolean isTracked = ObjectTable.contains(key);
+
+        if (hasId) {
+          if (isTracked) {
+            continue;
+          }
+
+          attributes.put("id", sheet.id());
+
+          if (sheet.once()) {
+            attributes.put("bbj-once", "");
+            ObjectTable.put(key, true);
+          }
+        }
+
+        String content = sheet.value();
+        if (sheet.local()) {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineJavaScript(content, inlineJavaScript.top(), attributes);
+        App.addInlineJavaScript(content, sheet.top(), attributes);
       }
     }
   }
