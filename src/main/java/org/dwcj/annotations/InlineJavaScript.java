@@ -29,7 +29,11 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface InlineJavaScript {
-  /** A unique resource id. Can be used to avoid duplications */
+  
+  /** 
+   * A unique resource id. 
+   * Once the id is set, the resource will be injected only once in the page.
+   **/
   String id() default "";
 
   /**
@@ -42,12 +46,6 @@ public @interface InlineJavaScript {
    * level window of the page.
    */
   boolean top() default false;
-  
-  /**
-   * A boolean value specifying whether this script is to be injected into the
-   * current window of the page only once.
-   */
-  boolean once () default false;
 
   /**
    * A boolean value specifying whether this style is to be injected is in local

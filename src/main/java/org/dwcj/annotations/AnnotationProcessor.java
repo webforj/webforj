@@ -196,7 +196,7 @@ public final class AnnotationProcessor {
         }
 
         boolean hasId = sheet.id() != null && !sheet.id().isEmpty();
-        String key = "dwcj::styles::" + sheet.id();
+        String key = "org.dwcj.annotations.AnnotationProcessor::styles::" + sheet.id();
         boolean isTracked = ObjectTable.contains(key);
 
         if (hasId) {
@@ -207,7 +207,6 @@ public final class AnnotationProcessor {
           attributes.put("id", sheet.id());
 
           if (sheet.once()) {
-            attributes.put("bbj-once", "");
             ObjectTable.put(key, true);
           }
         }
@@ -255,35 +254,31 @@ public final class AnnotationProcessor {
   private void processInlineJavaScript(Object clazz) throws DwcException {
     InlineJavaScript[] inlineJavascript = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
     if (inlineJavascript != null) {
-      for (InlineJavaScript sheet : inlineJavascript) {
+      for (InlineJavaScript script : inlineJavascript) {
         HashMap<String, String> attributes = new HashMap<>();
-        for (Attribute attribute : sheet.attributes()) {
+        for (Attribute attribute : script.attributes()) {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        boolean hasId = sheet.id() != null && !sheet.id().isEmpty();
-        String key = "dwcj::scripts::" + sheet.id();
-        boolean isTracked = ObjectTable.contains(key);
-
+        boolean hasId = script.id() != null && !script.id().isEmpty();
         if (hasId) {
+          String key = "org.dwcj.annotations.AnnotationProcessor::scripts::" + script.id();
+          boolean isTracked = ObjectTable.contains(key);
+          
           if (isTracked) {
             continue;
           }
 
-          attributes.put("id", sheet.id());
-
-          if (sheet.once()) {
-            attributes.put("bbj-once", "");
-            ObjectTable.put(key, true);
-          }
+          attributes.put("id", script.id());
+          ObjectTable.put(key, true);
         }
 
-        String content = sheet.value();
-        if (sheet.local()) {
+        String content = script.value();
+        if (script.local()) {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineJavaScript(content, sheet.top(), attributes);
+        App.addInlineJavaScript(content, script.top(), attributes);
       }
     }
   }
