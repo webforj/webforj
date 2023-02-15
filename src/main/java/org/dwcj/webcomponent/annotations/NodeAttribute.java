@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The NodeAttribute annotation is used to set attributes on the web component 
+ * The NodeAttribute annotation is used to set attributes on the web component
  * upon creation.
  * 
  * For example, the following annotation will set the "disabled" attribute to
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * @NodeAttribute(name = "disabled", value = "true")
+ * &#64;NodeAttribute(name = "disabled", value = "true")
  * }
  * </pre>
  * 
@@ -29,25 +29,36 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface NodeAttribute {
-  /** 
-   * The name of the attribute 
+  /**
+   * The name of the attribute
    * 
    * @return the name of the attribute
    **/
   String name();
 
-  /** 
-   * The value of the attribute 
+  /**
+   * The value of the attribute
    * 
    * @return the value of the attribute
    **/
   String value() default "";
 
+  /**
+   * The container annotation for {@link NodeAttribute} annotation.
+   * 
+   * @see NodeAttribute
+   * @author Hyyan Abo Fakher
+   */
   @Target(ElementType.TYPE)
   @Retention(RetentionPolicy.RUNTIME)
   @Inherited
   @Documented
   public @interface Container {
+    /**
+     * An array of {@link NodeAttribute} annotations.
+     * 
+     * @return an array of {@link NodeAttribute} annotations
+     */
     NodeAttribute[] value();
   }
 }
