@@ -4,7 +4,6 @@ import com.basis.bbj.proxies.sysgui.BBjTabCtrl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
@@ -14,7 +13,6 @@ import org.dwcj.controls.tabcontrol.events.TabSelectEvent;
 import org.dwcj.controls.tabcontrol.sinks.TabSelectEventSink;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
@@ -22,7 +20,6 @@ public final class TabControl extends AbstractDwcControl {
 
     private TabSelectEventSink tabSelectEventSink;
     private ArrayList<Consumer<TabSelectEvent>> callbacks = new ArrayList<>();
-    // private LinkedHashMap<String, Object> tabs = new LinkedHashMap<>();
     private ArrayList<SimpleEntry<String, Object>> tabs = new ArrayList<>();
     private Theme theme = Theme.DEFAULT;
     private Expanse expanse = null;
