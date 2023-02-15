@@ -1,28 +1,31 @@
 package org.dwcj.controls.tabcontrol;
 
-import com.basis.bbj.funcs.Env;
 import com.basis.bbj.proxies.sysgui.BBjTabCtrl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+
+import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.button.Button;
-import org.dwcj.controls.button.events.ButtonClickEvent;
-import org.dwcj.controls.button.sinks.ButtonClickEventSink;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.controls.tabcontrol.events.TabSelectEvent;
 import org.dwcj.controls.tabcontrol.sinks.TabSelectEventSink;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
 public final class TabControl extends AbstractDwcControl {
 
     private TabSelectEventSink tabSelectEventSink;
     private ArrayList<Consumer<TabSelectEvent>> callbacks = new ArrayList<>();
-
+    // private LinkedHashMap<String, Object> tabs = new LinkedHashMap<>();
+    private ArrayList<SimpleEntry<String, Object>> tabs = new ArrayList<>();
+    private Theme theme = Theme.DEFAULT;
+    private Expanse expanse = null;
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
@@ -75,12 +78,8 @@ public final class TabControl extends AbstractDwcControl {
 
     @Override
     public TabControl setAttribute(String attribute, String value){
-        try {
-            ctrl.setAttribute(attribute, value);
-        } catch (BBjException e) {
-            Environment.logError(e);
-        }
-        return this;
+      super.setAttribute(attribute, value);
+      return this;
     }
 
     @Override
@@ -126,11 +125,14 @@ public final class TabControl extends AbstractDwcControl {
      * @return
      */
     public TabControl addTab(String text){
-        try {
-            this.tabCtrl.addTab(text,-1);
-        } catch (BBjException e) {
-            Environment.logError(e);
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.addTab(text,-1);
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
         }
+        this.tabs.add(new SimpleEntry<>(text, -1));
         return this;
     }
 
@@ -142,11 +144,14 @@ public final class TabControl extends AbstractDwcControl {
      * @return the Tab Control object
      */
     public TabControl addTab(String text, Div panel) {
-        try {
-            this.tabCtrl.addTab(text,PanelAccessor.getDefault().getBBjWindow(panel));
-        } catch (BBjException | IllegalAccessException e) {
-            Environment.logError(e);
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.addTab(text,PanelAccessor.getDefault().getBBjWindow(panel));
+            } catch (BBjException | IllegalAccessException e) {
+                Environment.logError(e);
+            }
         }
+        this.tabs.add(new SimpleEntry<>(text, panel));
         return this;
     }
 
@@ -158,11 +163,14 @@ public final class TabControl extends AbstractDwcControl {
      * @return the Tab Control object itself
      */
     public TabControl setPanelAt(int index, Div panel) {
-        try {
-            this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
-        } catch (BBjException | IllegalAccessException e) {
-            Environment.logError(e);
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
+            } catch (BBjException | IllegalAccessException e) {
+                Environment.logError(e);
+            }
         }
+        this.tabs.get(index).setValue(panel);
         return this;
     }
 
@@ -185,6 +193,50 @@ public final class TabControl extends AbstractDwcControl {
             this.callbacks.add(callback);
         }
         return this;
+    }
+
+
+    @Override
+    @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+    protected void catchUp() throws IllegalAccessException {
+        if (Boolean.TRUE.equals(this.getCaughtUp())) throw new IllegalAccessException("catchUp cannot be called twice");
+        
+        super.catchUp();
+
+
+        if(!this.callbacks.isEmpty()){
+            this.tabSelectEventSink = new TabSelectEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.tabSelectEventSink.addCallback(this.callbacks.remove(0));
+            }
+        }
+
+        /* Reimplemented logic instead of calling method to avoid duplicate tabs being added */
+        tabs.forEach(n -> {
+            if((Integer) n.getValue() == -1){
+                try {
+                    this.tabCtrl.addTab(n.getKey(), -1);
+                } catch (BBjException e) {
+                    Environment.logError(e);
+                }
+            } 
+            else{
+                try {
+                    this.tabCtrl.addTab(n.getKey(), PanelAccessor.getDefault().getBBjWindow((Div) n.getValue()));
+                } catch (BBjException | IllegalAccessException e) {
+                    Environment.logError(e);
+                }
+            }
+        });
+
+        if(this.expanse != null){
+            this.setExpanse(this.expanse);
+        }
+
+        if(this.theme != Theme.DEFAULT){
+            this.setTheme(this.theme);
+        }
+
     }
 
 }
