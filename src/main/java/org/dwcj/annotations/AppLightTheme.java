@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;AppLightTheme("light")
+ * @AppLightTheme("light")
  * }
  * </pre>
  * 
@@ -30,5 +30,10 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface AppLightTheme {
+  /**
+   * The name of the default light theme to be used by the application
+   * 
+   * @return the name of the default light theme
+   */
   String value() default "light";
 }

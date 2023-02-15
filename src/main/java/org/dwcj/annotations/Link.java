@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
- * &#64;Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)
+ * @Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
+ * @Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)
  * }
  * </pre>
  * 
@@ -31,15 +31,25 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Link {
 
-  /** A unique resource id. Can be used to avoid duplications */
+  /**
+   * A unique resource id. Can be used to avoid duplications
+   * 
+   * @return the id of the resource
+   **/
   String id() default "";
 
-  /** A link URL to be injected into this web page as a link element.. */
+  /**
+   * A link URL to be injected into this web page as a link element..
+   * 
+   * @return the link URL
+   **/
   String url();
 
   /**
    * A boolean value specifying whether this link is to be injected into the head
    * (true) or body (false) section.
+   * 
+   * @return true if the link is to be injected into the head section
    */
   boolean top() default true;
 
@@ -51,15 +61,27 @@ public @interface Link {
    * element. Attributes can be
    * specified either as a string in the format "attr=value,attr=value" or as a
    * HashMap containing key/value pairs.
+   * 
+   * @return the attributes of the link element
    */
   Attribute[] attributes() default {};
 
+  /**
+   * A container for multiple {@link Link} annotations.
+   * 
+   * @see Link
+   * @author Hyyan Abo Fakher
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @Inherited
   @Documented
   public @interface Container {
-    /** A list of style sheets to inject in the app */
+    /**
+     * The multiple {@link Link} annotations.
+     * 
+     * @return the multiple {@link Link} annotations
+     */
     Link[] value();
   }
 }

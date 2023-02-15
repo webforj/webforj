@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;NodeName("my-component")
+ * @NodeName("my-component")
  * }
  * </pre>
  * 

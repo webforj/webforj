@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;NodeAttribute(name = "disabled", value = "true")
+ * @NodeAttribute(name = "disabled", value = "true")
  * }
  * </pre>
  * 
@@ -29,10 +29,18 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface NodeAttribute {
-  /** The name of the attribute */
+  /** 
+   * The name of the attribute 
+   * 
+   * @return the name of the attribute
+   **/
   String name();
 
-  /** The value of the attribute */
+  /** 
+   * The value of the attribute 
+   * 
+   * @return the value of the attribute
+   **/
   String value() default "";
 
   @Target(ElementType.TYPE)

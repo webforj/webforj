@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;AppTitle("My App")
+ * @AppTitle("My App")
  * }
  * </pre>
  * 
@@ -28,6 +28,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface AppTitle {
 
-    /** The title of the app */
+    /** 
+     * The title of the app
+     * 
+     * @return the title of the app
+     **/
     String value();
 }

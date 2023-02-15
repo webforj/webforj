@@ -14,8 +14,8 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;JavaScript(url = "http://www.example.com/script.js")
- * &#64;JavaScript(url = "http://www.example.com/script.js", top = true)
+ * @JavaScript(url = "http://www.example.com/script.js")
+ * @JavaScript(url = "http://www.example.com/script.js", top = true)
  * }
  * </pre>
  * 
@@ -29,12 +29,18 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JavaScript {
 
-  /** A JavaScript URL to be injected into this web page as a script element. */
+  /**
+   * A JavaScript URL to be injected into this web page as a script element.
+   * 
+   * @return the JavaScript URL
+   **/
   String url();
 
   /**
    * A boolean value specifying whether this script is to be injected into the top
    * level window of the page.
+   * 
+   * @return true if the script is to be injected into the top level window
    */
   boolean top() default false;
 
@@ -42,17 +48,28 @@ public @interface JavaScript {
    * A set of <a href=
    * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script">attributes</a>
    * to be added to the script element.
+   * 
+   * @return the attributes
    */
   Attribute[] attributes() default {};
 
+  /**
+   * A container for {@link JavaScript} annotations.
+   * 
+   * @see JavaScript
+   * @author Hyyan Abo Fakher
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @Inherited
   @Documented
   public @interface Container {
 
-    /** A list of JavaScripts to inject in the app */
+    /**
+     * A set of {@link JavaScript} annotations.
+     * 
+     * @return the set of {@link JavaScript} annotations
+     */
     JavaScript[] value();
   }
-
 }
