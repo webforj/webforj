@@ -20,7 +20,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.annotations.InlineStyleSheet;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
@@ -50,8 +49,8 @@ import org.dwcj.webcomponent.events.EventListener;
  * use the {@link NodeAttribute} and {@link NodeProperty} annotations.
  * 
  * To include assets (JavaScript, CSS, etc.) for the web component, the class
- * can be annotated with assets annotations like the {@link JavaScript} and
- * {@link InlineStyleSheet} annotations or by using the {@link org.dwcj.App}
+ * can be annotated with assets annotations like the {@link org.dwcj.annotations.JavaScript} and
+ * {@link org.dwcj.annotations.InlineStyleSheet} annotations or by using the {@link org.dwcj.App}
  * class API.
  * 
  * @author Hyyan Abo Fakher
@@ -1255,6 +1254,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param value the value of the property
    * 
    * @throws DwcControlDestroyed if the web component is destroyed
+
    */
   protected void setComponentProperty(String name, Object value) {
     invokeAsync("this", name, value);
