@@ -29,9 +29,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JavaScript {
 
-  /** A unique resource id. Can be used to avoid duplications */
-  String id() default "";
-
   /** A JavaScript URL to be injected into this web page as a script element. */
   String url();
 

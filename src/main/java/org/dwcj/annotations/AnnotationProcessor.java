@@ -171,10 +171,16 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (sheet.id() != null && !sheet.id().isEmpty()) {
-          attributes.put("id", sheet.id());
+        String key = "org.dwcj.annotations.AnnotationProcessor::styles::" + sheet.url();
+        if (sheet.top()) {
+          key += "::top";
         }
 
+        if(ObjectTable.contains(key)) {
+          continue;
+        }
+
+        ObjectTable.put(key, true);
         App.addStyleSheet(sheet.url(), sheet.top(), attributes);
       }
     }
@@ -196,7 +202,7 @@ public final class AnnotationProcessor {
         }
 
         boolean hasId = sheet.id() != null && !sheet.id().isEmpty();
-        String key = "org.dwcj.annotations.AnnotationProcessor::styles::" + sheet.id();
+        String key = "org.dwcj.annotations.AnnotationProcessor::inlineStyles::" + sheet.id();
         boolean isTracked = ObjectTable.contains(key);
 
         if (hasId) {
@@ -236,10 +242,16 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (script.id() != null && !script.id().isEmpty()) {
-          attributes.put("id", script.id());
+        String key = "org.dwcj.annotations.AnnotationProcessor::scripts::" + script.url();
+        if (script.top()) {
+          key += "::top";
         }
 
+        if (ObjectTable.contains(key)) {
+          continue;
+        }
+
+        ObjectTable.put(key, true);
         App.addJavaScript(script.url(), script.top(), attributes);
       }
     }
@@ -262,9 +274,9 @@ public final class AnnotationProcessor {
 
         boolean hasId = script.id() != null && !script.id().isEmpty();
         if (hasId) {
-          String key = "org.dwcj.annotations.AnnotationProcessor::scripts::" + script.id();
+          String key = "org.dwcj.annotations.AnnotationProcessor::inlineScripts::" + script.id();
           boolean isTracked = ObjectTable.contains(key);
-          
+
           if (isTracked) {
             continue;
           }

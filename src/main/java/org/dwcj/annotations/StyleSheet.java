@@ -29,9 +29,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface StyleSheet {
 
-  /** A unique resource id. Can be used to avoid duplications */
-  String id() default "";
-
   /** A CSS URL to be injected into this web page as a style element. */
   String url();
 
