@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy JavaDoc 🚀
+      - name: Deploy JavaDoc
         uses: MathieuSoysal/Javadoc-publisher.yml@v2.3.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
