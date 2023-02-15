@@ -1466,7 +1466,7 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     // attach the stylesheets
-    String key = "org.dwcj.webcomponent::stylesheets";
+    String key = "org.dwcj.WebComponent::styles";
     boolean attached = ObjectTable.contains(key);
     if (!attached) {
       App.addInlineStyleSheet(getStylesheets(), false, "id=wc-styles");
