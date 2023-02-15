@@ -29,6 +29,12 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface InlineJavaScript {
+  
+  /** 
+   * A unique resource id. 
+   * Once the id is set, the resource will be injected only once in the page.
+   **/
+  String id() default "";
 
   /**
    * A JavaScript content to be injected into this web page as a script element.

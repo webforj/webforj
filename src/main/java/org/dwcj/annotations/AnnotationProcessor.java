@@ -1,9 +1,9 @@
 package org.dwcj.annotations;
 
 import java.util.HashMap;
-
 import org.dwcj.App;
 import org.dwcj.controls.AbstractControl;
+import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcAnnotationException;
 import org.dwcj.exceptions.DwcException;
 import org.dwcj.util.Assets;
@@ -171,10 +171,16 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (sheet.id() != null && !sheet.id().isEmpty()) {
-          attributes.put("id", sheet.id());
+        String key = "org.dwcj.annotations.AnnotationProcessor::styles::" + sheet.url();
+        if (sheet.top()) {
+          key += "::top";
         }
 
+        if(ObjectTable.contains(key)) {
+          continue;
+        }
+
+        ObjectTable.put(key, true);
         App.addStyleSheet(sheet.url(), sheet.top(), attributes);
       }
     }
@@ -189,22 +195,34 @@ public final class AnnotationProcessor {
   private void processInlineStyleSheet(Object clazz) throws DwcException {
     InlineStyleSheet[] inlineStyleSheets = clazz.getClass().getAnnotationsByType(InlineStyleSheet.class);
     if (inlineStyleSheets != null) {
-      for (InlineStyleSheet inlineStyleSheet : inlineStyleSheets) {
+      for (InlineStyleSheet sheet : inlineStyleSheets) {
         HashMap<String, String> attributes = new HashMap<>();
-        for (Attribute attribute : inlineStyleSheet.attributes()) {
+        for (Attribute attribute : sheet.attributes()) {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (inlineStyleSheet.id() != null && !inlineStyleSheet.id().isEmpty()) {
-          attributes.put("id", inlineStyleSheet.id());
+        boolean hasId = sheet.id() != null && !sheet.id().isEmpty();
+        String key = "org.dwcj.annotations.AnnotationProcessor::inlineStyles::" + sheet.id();
+        boolean isTracked = ObjectTable.contains(key);
+
+        if (hasId) {
+          if (isTracked) {
+            continue;
+          }
+
+          attributes.put("id", sheet.id());
+
+          if (sheet.once()) {
+            ObjectTable.put(key, true);
+          }
         }
 
-        String content = inlineStyleSheet.value();
-        if (inlineStyleSheet.local()) {
+        String content = sheet.value();
+        if (sheet.local()) {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineStyleSheet(content, inlineStyleSheet.top(), attributes);
+        App.addInlineStyleSheet(content, sheet.top(), attributes);
       }
     }
   }
@@ -224,10 +242,16 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (script.id() != null && !script.id().isEmpty()) {
-          attributes.put("id", script.id());
+        String key = "org.dwcj.annotations.AnnotationProcessor::scripts::" + script.url();
+        if (script.top()) {
+          key += "::top";
         }
 
+        if (ObjectTable.contains(key)) {
+          continue;
+        }
+
+        ObjectTable.put(key, true);
         App.addJavaScript(script.url(), script.top(), attributes);
       }
     }
@@ -240,20 +264,33 @@ public final class AnnotationProcessor {
    * @throws DwcException
    */
   private void processInlineJavaScript(Object clazz) throws DwcException {
-    InlineJavaScript[] inlineJavaScripts = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
-    if (inlineJavaScripts != null) {
-      for (InlineJavaScript inlineJavaScript : inlineJavaScripts) {
+    InlineJavaScript[] inlineJavascript = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
+    if (inlineJavascript != null) {
+      for (InlineJavaScript script : inlineJavascript) {
         HashMap<String, String> attributes = new HashMap<>();
-        for (Attribute attribute : inlineJavaScript.attributes()) {
+        for (Attribute attribute : script.attributes()) {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        String content = inlineJavaScript.value();
-        if (inlineJavaScript.local()) {
+        boolean hasId = script.id() != null && !script.id().isEmpty();
+        if (hasId) {
+          String key = "org.dwcj.annotations.AnnotationProcessor::inlineScripts::" + script.id();
+          boolean isTracked = ObjectTable.contains(key);
+
+          if (isTracked) {
+            continue;
+          }
+
+          attributes.put("id", script.id());
+          ObjectTable.put(key, true);
+        }
+
+        String content = script.value();
+        if (script.local()) {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineJavaScript(content, inlineJavaScript.top(), attributes);
+        App.addInlineJavaScript(content, script.top(), attributes);
       }
     }
   }

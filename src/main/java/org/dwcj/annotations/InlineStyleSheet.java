@@ -30,14 +30,23 @@ import java.lang.annotation.Target;
 @Documented
 public @interface InlineStyleSheet {
 
-  /** A unique resource id. Can be used to avoid duplications */
+  /**
+   * A unique resource id.
+   * 
+   * Giving the resources the same id will cause them to be bundled together.
+   * Bundling here means that the resources will be injected in the same style
+   * element in the page.
+   * 
+   * If you want to inject the resource only once then use the {@link #once()}
+   * attribute.
+   **/
   String id() default "";
 
   /** A CSS content to be injected into this web page as a style element. */
   String value();
 
   /**
-   * A boolean value specifying whether this style is to be injected is in local
+   * A boolean value specifying whether this style is to be injected is in a local
    * file.
    */
   boolean local() default false;
@@ -47,6 +56,16 @@ public @interface InlineStyleSheet {
    * level window of the page.
    */
   boolean top() default false;
+
+  /**
+   * A boolean value specifying whether this style is to be injected into the
+   * current page only once.
+   * 
+   * This can be useful when creating a custom component that comes with its own
+   * style sheet. Multiple instances of the component can be used but the style
+   * sheet should be injected only once.
+   */
+  boolean once() default false;
 
   /**
    * A set of <a href=
