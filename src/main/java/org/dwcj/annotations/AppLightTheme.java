@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * @see AppTheme
  * @see AppDarkTheme
  * 
- * @Author Hyyan Abo Fakher
+ * @author Hyyan Abo Fakher
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
