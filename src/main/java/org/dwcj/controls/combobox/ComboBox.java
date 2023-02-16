@@ -55,8 +55,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     private ComboBoxOpenEventSink openEventSink;
     private ArrayList<Consumer<ComboBoxCloseEvent>> closeEvents = new ArrayList<>();
     private ComboBoxCloseEventSink closeEventSink;
+
     private Integer maxRowCount;
     private SimpleEntry<Integer, String> textAt = null;
+    private Integer selected = null;
 
 
     public ComboBox(){
@@ -406,6 +408,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
                 Environment.logError(e);
             }
         }
+        this.selected = index;
         return this;
     }
 
@@ -672,6 +675,10 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
 
         if(this.textAlignment != Alignment.LEFT){
             this.setTextAlignment(this.textAlignment);
+        }
+
+        if(this.selected != null){
+            this.selectIndex(this.selected);
         }
 
     }
