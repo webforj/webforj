@@ -29,7 +29,14 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
    * The drawer placement.
    */
   public enum DrawerPlacement {
-    RIGHT("right"), LEFT("left"), HIDDEN("hidden");
+    /** The drawer is placed on the right side. */
+    RIGHT("right"),
+
+    /** The drawer is placed on the left side. */
+    LEFT("left"),
+
+    /** The drawer is hidden. */
+    HIDDEN("hidden");
 
     /** The drawer placement value. */
     private final String value;
@@ -197,7 +204,6 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   /**
    * Get the header panel instance.
    * 
-   * @param drawer the drawer panel
    * @return the app layout
    */
   public Div getHeader() {
@@ -219,7 +225,6 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   /**
    * Get the drawer panel instance.
    * 
-   * @param drawer the drawer panel
    * @return the app layout
    */
   public Div getDrawer() {
@@ -241,7 +246,6 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   /**
    * Get the content panel instance.
    * 
-   * @param drawer the drawer panel
    * @return the app layout
    */
   public Div getContent() {
@@ -263,7 +267,6 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   /**
    * Get the footer panel instance.
    * 
-   * @param drawer the drawer panel
    * @return the app layout
    */
   public Div getFooter() {

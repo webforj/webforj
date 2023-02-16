@@ -22,10 +22,14 @@ import java.lang.annotation.Target;
  * 
  * When working with expressions keep the following points in mind:
  * <ul>
- *  <li>Expressions are evaluated in the context of the web component instance</li>
- *  <li>If the expression must return a value and has the word return in it, then we will assume it is a multi-line expression and will not wrap it.</li>
- *  <li>If the expression must return a value and does not have the word return in it, then we will insert the return statement and the ";".</li>
- *  <li>If the expression has many lines, then you will need to provide the ";"" at the end of each line and also provide the return statement.</li>
+ * <li>Expressions are evaluated in the context of the web component
+ * instance</li>
+ * <li>If the expression must return a value and has the word return in it, then
+ * we will assume it is a multi-line expression and will not wrap it.</li>
+ * <li>If the expression must return a value and does not have the word return
+ * in it, then we will insert the return statement and the ";".</li>
+ * <li>If the expression has many lines, then you will need to provide the ";""
+ * at the end of each line and also provide the return statement.</li>
  * </ul>
  * 
  * <a href=
@@ -44,7 +48,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;EventExpressions(preventDefault = "if (component.value == 'test') return true;")
+ * @EventExpressions(preventDefault = "if (component.value == 'test') return true;")
  * }
  * </pre>
  * 
@@ -55,7 +59,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;EventExpressions(detail = "event.detail.value = event.target.value;")
+ * @EventExpressions(detail = "event.detail.value = event.target.value;")
  * }
  * </pre>
  * 
@@ -66,7 +70,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;EventExpressions(filter = "event.target.isSameNode(component)")
+ * @EventExpressions(filter = "event.target.isSameNode(component)")
  * }
  * </pre>
  * 
@@ -78,18 +82,38 @@ import java.lang.annotation.Target;
 @Documented
 public @interface EventExpressions {
 
-  /** The filter expression to check if the event should be fired. */
+  /**
+   * The filter expression to check if the event should be fired.
+   * 
+   * @return the filter expression
+   */
   String filter() default "";
 
-  /** The data builder expression to build the event detail. */
+  /**
+   * The data builder expression to build the event detail.
+   * 
+   * @return the data builder expression
+   **/
   String detail() default "";
 
-  /** The prevent default expression. */
+  /**
+   * The prevent default expression.
+   * 
+   * @return the prevent default expression
+   **/
   String preventDefault() default "";
 
-  /** The stop propagation expression. */
+  /**
+   * The stop propagation expression.
+   * 
+   * @return the stop propagation expression
+   **/
   String stopPropagation() default "";
 
-  /** The stop immediate propagation expression. */
+  /**
+   * The stop immediate propagation expression.
+   * 
+   * @return the stop immediate propagation expression
+   **/
   String stopImmediatePropagation() default "";
 }

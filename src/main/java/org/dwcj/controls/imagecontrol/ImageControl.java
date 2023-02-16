@@ -10,7 +10,6 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
-import org.dwcj.util.files.FileLoader;
 
 import java.awt.*;
 import java.io.IOException;

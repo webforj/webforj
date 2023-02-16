@@ -14,9 +14,9 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;InlineJavaScript(value = "alert('Hello World!');")
- * &#64;InlineJavaScript(value = "alert('Hello World!');", top = true)
- * &#64;InlineJavaScript(value = "js/script.js", local = true)
+ * @InlineJavaScript(value = "alert('Hello World!');")
+ * @InlineJavaScript(value = "alert('Hello World!');", top = true)
+ * @InlineJavaScript(value = "js/script.js", local = true)
  * }
  * </pre>
  * 
@@ -29,27 +29,35 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface InlineJavaScript {
-  
-  /** 
-   * A unique resource id. 
+
+  /**
+   * A unique resource id.
    * Once the id is set, the resource will be injected only once in the page.
+   * 
+   * @return the unique resource id
    **/
   String id() default "";
 
   /**
    * A JavaScript content to be injected into this web page as a script element.
+   * 
+   * @return the JavaScript content
    */
   String value();
 
   /**
    * A boolean value specifying whether this script is to be injected into the top
    * level window of the page.
+   * 
+   * @return true if the script is to be injected into the top level window of the
    */
   boolean top() default false;
 
   /**
-   * A boolean value specifying whether this style is to be injected is in local
+   * A boolean value specifying whether this script is to be injected is in local
    * file.
+   * 
+   * @return true if the script is to be injected is in local file
    */
   boolean local() default false;
 
@@ -59,16 +67,28 @@ public @interface InlineJavaScript {
    * to be added to the script element.
    * Attributes can be specified either as a string in the format
    * "attr=value,attr=value" or as a HashMap containing key/value pairs.
+   * 
+   * @return the attributes to be added to the script element
    */
   Attribute[] attributes() default {};
 
+  /**
+   * A container for multiple {@link InlineJavaScript} annotations.
+   * 
+   * @see InlineJavaScript
+   * @author Hyyan Abo Fakher
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @Inherited
   @Documented
   public @interface Container {
 
-    /** A list of inline JavaScripts to inject in the app */
+    /**
+     * The multiple {@link InlineJavaScript} annotations.
+     * 
+     * @return the multiple {@link InlineJavaScript} annotations
+     */
     InlineJavaScript[] value();
   }
 }

@@ -14,8 +14,8 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css")
- * &#64;StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)
+ * @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css")
+ * @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)
  * }
  * </pre>
  * 
@@ -29,12 +29,18 @@ import java.lang.annotation.Target;
 @Documented
 public @interface StyleSheet {
 
-  /** A CSS URL to be injected into this web page as a style element. */
+  /**
+   * A CSS URL to be injected into this web page as a style element.
+   * 
+   * @return the CSS URL
+   **/
   String url();
 
   /**
    * A boolean value specifying whether this style is to be injected into the top
    * level window of the page.
+   * 
+   * @return true if the style is to be injected into the top level window
    */
   boolean top() default false;
 
@@ -42,15 +48,27 @@ public @interface StyleSheet {
    * A set of <a href=
    * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style">attributes</a>
    * to be added to the style element.
+   * 
+   * @return the attributes
    */
   Attribute[] attributes() default {};
 
+  /**
+   * A container for {@link StyleSheet} annotations.
+   * 
+   * @see StyleSheet
+   * @author Hyyan Abo Fakher
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @Inherited
   @Documented
   public @interface Container {
-    /** A list of style sheets to inject in the app */
+    /**
+     * The array of {@link StyleSheet} annotations.
+     * 
+     * @return the array of {@link StyleSheet} annotations
+     */
     StyleSheet[] value();
   }
 }

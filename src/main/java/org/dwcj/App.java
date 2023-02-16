@@ -57,7 +57,7 @@ public abstract class App {
    * Set the application title
    *
    * @param title The title to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the title
    */
   public static void setTitle(String title) {
     try {
@@ -71,7 +71,7 @@ public abstract class App {
    * Get the application title
    *
    * @return The title
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the title
    */
   public static String getTitle() {
     try {
@@ -85,7 +85,7 @@ public abstract class App {
    * Get the registered DWC application name
    *
    * @return the application name
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the application name
    */
   public static String getApplicationName() {
     try {
@@ -99,7 +99,7 @@ public abstract class App {
    * Set the application theme
    *
    * @param theme The theme to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the theme
    */
   public static void setTheme(String theme) {
     try {
@@ -113,7 +113,7 @@ public abstract class App {
    * Set the application theme
    *
    * @param theme The theme to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the theme
    *
    * @see Theme
    */
@@ -125,7 +125,7 @@ public abstract class App {
    * Get the application theme
    *
    * @return The theme
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the theme
    */
   public static String getTheme() {
     try {
@@ -140,7 +140,7 @@ public abstract class App {
    * The dark theme setting is used when the application theme is set to "system".
    *
    * @param darkTheme The dark theme to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the dark theme
    */
   public static void setDarkTheme(String darkTheme) {
     try {
@@ -154,7 +154,7 @@ public abstract class App {
    * Get the name of the dark theme
    *
    * @return The dark theme
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the dark theme
    */
   public static String getDarkTheme() {
     try {
@@ -170,7 +170,7 @@ public abstract class App {
    * "system".
    *
    * @param lightTheme The light theme to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the light theme
    */
 
   public static void setLightTheme(String lightTheme) {
@@ -185,7 +185,7 @@ public abstract class App {
    * Get the name of the light theme to use for the application.
    *
    * @return The light theme
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the light theme
    */
 
   public static String getLightTheme() {
@@ -202,7 +202,7 @@ public abstract class App {
    * @param name       The name of the meta tag
    * @param content    The content of the meta tag
    * @param attributes A map of attributes to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the meta tag
    */
   public static void setMeta(String name, String content, Map<String, String> attributes) {
     try {
@@ -218,7 +218,7 @@ public abstract class App {
    * @param name       The name of the meta tag
    * @param content    The content of the meta tag
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the meta tag
    */
   public static void setMeta(String name, String content, String attributes) {
     try {
@@ -233,7 +233,7 @@ public abstract class App {
    *
    * @param name    The name of the meta tag
    * @param content The content of the meta tag
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the meta tag
    */
   public static void setMeta(String name, String content) {
     try {
@@ -257,7 +257,7 @@ public abstract class App {
    *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
    *                 doesn't return any elements, the
    *                 default document element is used.
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the attribute
    */
   public static void setAttribute(String name, String value, String selector) {
     try {
@@ -272,7 +272,7 @@ public abstract class App {
    *
    * @param name  The name of the attribute
    * @param value The value of the attribute
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the attribute
    */
   public static void setAttribute(String name, String value) {
     setAttribute(name, value, "");
@@ -282,7 +282,7 @@ public abstract class App {
    * Set an attribute on the document
    *
    * @param name The name of the attribute
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to set the attribute
    */
   public static void setAttribute(String name) {
     setAttribute(name, name, "");
@@ -302,7 +302,7 @@ public abstract class App {
    *                 doesn't return any elements, the
    *                 default document element is used.
    * @return The attribute value
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the attribute
    */
   public static String getAttribute(String name, String selector) {
     try {
@@ -317,7 +317,7 @@ public abstract class App {
    *
    * @param name The name of the attribute
    * @return The attribute value
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to get the attribute
    */
   public static String getAttribute(String name) {
     return getAttribute(name, "");
@@ -329,7 +329,7 @@ public abstract class App {
    * @param url        The URL of the stylesheet
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -345,7 +345,7 @@ public abstract class App {
    * @param url        The URL of the stylesheet
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addStyleSheet(String url, boolean top, String attributes) {
     try {
@@ -360,7 +360,7 @@ public abstract class App {
    *
    * @param url The URL of the stylesheet
    * @param top Whether to inject the stylesheet at the top of the page
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addStyleSheet(String url, boolean top) {
     addStyleSheet(url, top, "");
@@ -370,7 +370,7 @@ public abstract class App {
    * Inject a stylesheet into the page
    *
    * @param url The URL of the stylesheet
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addStyleSheet(String url) {
     addStyleSheet(url, false, "");
@@ -382,7 +382,7 @@ public abstract class App {
    * @param css        The CSS to inject
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
@@ -398,7 +398,7 @@ public abstract class App {
    * @param css        The CSS to inject
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
@@ -413,7 +413,7 @@ public abstract class App {
    *
    * @param css The CSS to inject
    * @param top Whether to inject the stylesheet at the top of the page
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
   public static void addInlineStyleSheet(String css, boolean top) {
     addInlineStyleSheet(css, top, "");
@@ -423,7 +423,7 @@ public abstract class App {
    * Inject an inline stylesheet into the page
    *
    * @param css The CSS to inject
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the stylesheet
    */
 
   public static void addInlineStyleSheet(String css) {
@@ -436,7 +436,7 @@ public abstract class App {
    * @param url        The URL of the script
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -452,7 +452,7 @@ public abstract class App {
    * @param url        The URL of the script
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addJavaScript(String url, boolean top, String attributes) {
     try {
@@ -467,7 +467,7 @@ public abstract class App {
    *
    * @param url The URL of the script
    * @param top Whether to inject the script at the top of the page
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
 
   public static void addJavaScript(String url, boolean top) {
@@ -478,7 +478,7 @@ public abstract class App {
    * Inject a script into the page
    *
    * @param url The URL of the script
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addJavaScript(String url) {
     addJavaScript(url, false, "");
@@ -490,7 +490,7 @@ public abstract class App {
    * @param script     The script to inject
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
@@ -506,7 +506,7 @@ public abstract class App {
    * @param script     The script to inject
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addInlineJavaScript(String script, boolean top, String attributes) {
     try {
@@ -521,7 +521,7 @@ public abstract class App {
    *
    * @param script The script to inject
    * @param top    Whether to inject the script at the top of the page
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addInlineJavaScript(String script, boolean top) {
     addInlineJavaScript(script, top, "");
@@ -531,7 +531,7 @@ public abstract class App {
    * Inject an inline script into the page
    *
    * @param script The script to inject
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the script
    */
   public static void addInlineJavaScript(String script) {
     addInlineJavaScript(script, false, "");
@@ -543,7 +543,7 @@ public abstract class App {
    * @param url        The URL of the link
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the link
    */
   public static void addLink(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -559,7 +559,7 @@ public abstract class App {
    * @param url        The URL of the link
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the link
    */
   public static void addLink(String url, boolean top, String attributes) {
     try {
@@ -574,7 +574,7 @@ public abstract class App {
    *
    * @param url The URL of the link
    * @param top Whether to inject the link at the top of the page
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the link
    */
   public static void addLink(String url, boolean top) {
     addLink(url, top, "");
@@ -584,7 +584,7 @@ public abstract class App {
    * Inject a link into the page
    *
    * @param url The URL of the link
-   * @throws DwcRuntimeException
+   * @throws DwcRuntimeException if failed to add the link
    */
   public static void addLink(String url) {
     addLink(url, false, "");

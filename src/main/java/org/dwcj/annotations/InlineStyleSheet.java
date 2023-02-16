@@ -14,9 +14,9 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;InlineStyleSheet(value = "body {background-color: red;}")
- * &#64;InlineStyleSheet(value = "body {background-color: red;}", top = true)
- * &#64;InlineStyleSheet(value = "css/style.css", local = true)
+ * @InlineStyleSheet(value = "body {background-color: red;}")
+ * @InlineStyleSheet(value = "body {background-color: red;}", top = true)
+ * @InlineStyleSheet(value = "css/style.css", local = true)
  * }
  * </pre>
  * 
@@ -39,21 +39,31 @@ public @interface InlineStyleSheet {
    * 
    * If you want to inject the resource only once then use the {@link #once()}
    * attribute.
+   * 
+   * @return the unique resource id
    **/
   String id() default "";
 
-  /** A CSS content to be injected into this web page as a style element. */
+  /** 
+   * A CSS content to be injected into this web page as a style element.
+   * 
+   * @return the CSS content
+   **/
   String value();
 
   /**
    * A boolean value specifying whether this style is to be injected is in a local
    * file.
+   * 
+   * @return true if the style is to be injected is in local file
    */
   boolean local() default false;
 
   /**
    * A boolean value specifying whether this style is to be injected into the top
    * level window of the page.
+   * 
+   * @return true if the style is to be injected into the top level window
    */
   boolean top() default false;
 
@@ -64,6 +74,8 @@ public @interface InlineStyleSheet {
    * This can be useful when creating a custom component that comes with its own
    * style sheet. Multiple instances of the component can be used but the style
    * sheet should be injected only once.
+   * 
+   * @return true if the style is to be injected into the current page only once
    */
   boolean once() default false;
 
@@ -73,9 +85,17 @@ public @interface InlineStyleSheet {
    * to be added to the style element.
    * Attributes can be specified either as a string in the format
    * "attr=value,attr=value" or as a HashMap containing key/value pairs.
+   * 
+   * @return the attributes
    */
   Attribute[] attributes() default {};
 
+  /**
+   * A container for multiple {@link InlineStyleSheet} annotations.
+   * 
+   * @see InlineStyleSheet
+   * @author Hyyan Abo Fakher
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @Inherited

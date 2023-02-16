@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;NodeProperty(name = "disabled", value = "true")
+ * @NodeProperty(name = "disabled", value = "true")
  * }
  * </pre>
  * 
@@ -29,17 +29,36 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface NodeProperty {
-  /** The name of the attribute */
+  /**
+   * The name of the property to set on the web component.
+   * 
+   * @return the name of the property
+   **/
   String name();
 
-  /** The value of the attribute */
+  /**
+   * The value of the property to set on the web component.
+   * 
+   * @return the value of the property
+   **/
   String value() default "";
 
+  /**
+   * A container for the {@link NodeProperty} annotation.
+   * 
+   * @see NodeProperty
+   * @author Hyyan Abo Fakher
+   */
   @Target(ElementType.TYPE)
   @Retention(RetentionPolicy.RUNTIME)
   @Inherited
   @Documented
   public @interface Container {
+    /**
+     * The array of {@link NodeProperty} annotations.
+     * 
+     * @return the array of {@link NodeProperty} annotations
+     */
     NodeProperty[] value();
   }
 }

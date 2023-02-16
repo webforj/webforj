@@ -25,9 +25,22 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * The drawer placement.
    */
   public enum Placement {
-    TOP("top"), TOP_CENTER("top-center"),
-    BOTTOM("bottom"), BOTTOM_CENTER("bottom-center"),
+    /** The drawer will be placed at the top of the viewport. */
+    TOP("top"),
+
+    /** The drawer will be placed at the top center of the viewport. */
+    TOP_CENTER("top-center"),
+
+    /** The drawer will be placed at the bottom of the viewport. */
+    BOTTOM("bottom"),
+
+    /** The drawer will be placed at the bottom center of the viewport. */
+    BOTTOM_CENTER("bottom-center"),
+
+    /** The drawer will be placed at the left of the viewport. */
     LEFT("left"),
+
+    /** The drawer will be placed at the right of the viewport. */
     RIGHT("right");
 
     /** The drawer placement value. */

@@ -17,12 +17,11 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;AppAttribute(name = "first-attr", value = "value1")
- * &#64;AppAttribute(name = "second-attr", value = "value2", selector = "body")
+ * @AppAttribute(name = "first-attr", value = "value1")
+ * @AppAttribute(name = "second-attr", value = "value2", selector = "body")
  * }
  * </pre>
  * 
- * @see AppAttributes
  * @author Hyyan Abo Fakher
  */
 @Target(ElementType.TYPE)
@@ -31,10 +30,18 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface AppAttribute {
-  /** The name of the attribute */
+  /** 
+   * The name of the attribute 
+   * 
+   * @return the name of the attribute 
+   **/
   String name();
 
-  /** The value of the attribute */
+  /** 
+   * The value of the attribute
+   * 
+   * @return the value of the attribute
+   **/
   String value();
 
   /**
@@ -47,14 +54,27 @@ public @interface AppAttribute {
    * "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
    * doesn't return any elements, the
    * default document element is used.
+   * 
+   * @return the selector of the element to set the attribute on
    */
   String selector() default "";
 
+  /**
+   * A container for multiple {@link AppAttribute} annotations.
+   * 
+   * @see AppAttribute
+   * @author Hyyan Abo Fakher
+   */
   @Target(ElementType.TYPE)
   @Retention(RetentionPolicy.RUNTIME)
   @Inherited
   @Documented
   public @interface Container {
+    /**
+     * The array of {@link AppAttribute} annotations.
+     * 
+     * @return the array of {@link AppAttribute} annotations
+     */
     AppAttribute[] value();
   }
 }

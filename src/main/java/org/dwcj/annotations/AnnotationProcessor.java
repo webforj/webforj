@@ -15,8 +15,18 @@ import org.dwcj.util.Assets;
  */
 public final class AnnotationProcessor {
 
+  /**
+   * The running phase of the application
+   */
   public enum RunningPhase {
-    PRE_RUN, POST_RUN
+    /**
+     * The application is running before the run method
+     */
+    PRE_RUN, 
+    /**
+     * The application is running after the run method
+     */
+    POST_RUN
   }
 
   /**
@@ -24,7 +34,7 @@ public final class AnnotationProcessor {
    * 
    * @param app   The application to process
    * @param phase The phase of the application
-   * @throws DwcAnnotationException
+   * @throws DwcAnnotationException If the annotation processing failed
    */
   public void processAppAnnotations(App app, RunningPhase phase) throws DwcAnnotationException {
     try {
@@ -55,7 +65,7 @@ public final class AnnotationProcessor {
    * Process the annotations of the control
    * 
    * @param control The control to process
-   * @throws DwcAnnotationException
+   * @throws DwcAnnotationException If the annotation processing failed
    */
   public void processControlAnnotations(AbstractControl control) throws DwcAnnotationException {
     try {
@@ -73,7 +83,7 @@ public final class AnnotationProcessor {
    * Process the AppTitle annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processAppTitle(Object clazz) throws DwcException {
     AppTitle appTitle = clazz.getClass().getAnnotation(AppTitle.class);
@@ -86,7 +96,7 @@ public final class AnnotationProcessor {
    * Process the AppAttribute annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processAppAttribute(Object clazz) throws DwcException {
     AppAttribute[] appAttributes = clazz.getClass().getAnnotationsByType(AppAttribute.class);
@@ -101,7 +111,7 @@ public final class AnnotationProcessor {
    * Process the AppDarkTheme annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processAppDarkTheme(Object clazz) throws DwcException {
     AppDarkTheme appDarkTheme = clazz.getClass().getAnnotation(AppDarkTheme.class);
@@ -114,7 +124,7 @@ public final class AnnotationProcessor {
    * Process the AppLightTheme annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processAppLightTheme(Object clazz) throws DwcException {
     AppLightTheme appLightTheme = clazz.getClass().getAnnotation(AppLightTheme.class);
@@ -127,7 +137,7 @@ public final class AnnotationProcessor {
    * Process the AppTheme annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processAppTheme(Object clazz) throws DwcException {
     AppTheme appTheme = clazz.getClass().getAnnotation(AppTheme.class);
@@ -140,7 +150,7 @@ public final class AnnotationProcessor {
    * Process the AppMeta annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processAppMeta(Object clazz) throws DwcException {
     AppMeta[] appMeta = clazz.getClass().getAnnotationsByType(AppMeta.class);
@@ -160,7 +170,7 @@ public final class AnnotationProcessor {
    * Process the StyleSheet annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processStyleSheet(Object clazz) throws DwcException {
     StyleSheet[] styleSheet = clazz.getClass().getAnnotationsByType(StyleSheet.class);
@@ -190,7 +200,7 @@ public final class AnnotationProcessor {
    * Process the InlineStyleSheet annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processInlineStyleSheet(Object clazz) throws DwcException {
     InlineStyleSheet[] inlineStyleSheets = clazz.getClass().getAnnotationsByType(InlineStyleSheet.class);
@@ -231,7 +241,7 @@ public final class AnnotationProcessor {
    * Process the JavaScript annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processJavaScript(Object clazz) throws DwcException {
     JavaScript[] javaScript = clazz.getClass().getAnnotationsByType(JavaScript.class);
@@ -261,7 +271,7 @@ public final class AnnotationProcessor {
    * Process the InlineJavaScript annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processInlineJavaScript(Object clazz) throws DwcException {
     InlineJavaScript[] inlineJavascript = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
@@ -299,7 +309,7 @@ public final class AnnotationProcessor {
    * Process the Link annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException
+   * @throws DwcException If the annotation processing failed
    */
   private void processLink(Object clazz) throws DwcException {
     Link[] links = clazz.getClass().getAnnotationsByType(Link.class);

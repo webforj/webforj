@@ -23,8 +23,13 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * The dialog alignments
    */
   public enum Alignment {
+    /** The dialog will be aligned to the bottom of the screen. */
     BOTTOM("bottom"),
+
+    /** The dialog will be aligned to the center of the screen. */
     CENTER("center"),
+
+    /** The dialog will be aligned to the top of the screen. */
     TOP("top");
 
     private final String value;
@@ -71,12 +76,25 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * The dialog themes
    */
   public enum Theme {
+    /** The dialog will be themed as a danger dialog. */
     DANGER("danger"),
+
+    /** The dialog will be themed as a default dialog. */
     DEFAULT("default"),
+
+    /** The dialog will be themed as a gray dialog. */
     GRAY("gray"),
+
+    /** The dialog will be themed as an info dialog. */
     INFO("info"),
+
+    /** The dialog will be themed as a primary dialog. */
     PRIMARY("primary"),
+
+    /** The dialog will be themed as a success dialog. */
     SUCCESS("success"),
+
+    /** The dialog will be themed as a warning dialog. */
     WARNING("warning");
 
     private final String value;

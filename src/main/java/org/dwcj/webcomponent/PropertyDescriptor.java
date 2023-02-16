@@ -28,6 +28,7 @@ package org.dwcj.webcomponent;
  *     return get(SIZE);
  *   }
  * }
+ * }
  * </pre>
  *
  * @param <T> the type of the property

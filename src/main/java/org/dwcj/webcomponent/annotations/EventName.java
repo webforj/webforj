@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * 
  * <pre>
  * {@code
- * &#64;EventName("click")
+ * @EventName("click")
  * }
  * </pre>
  * 
@@ -27,6 +27,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface EventName {
 
-  /** The name of the dom event as defined in the web component. */
+  /**
+   * The name of the dom event as defined in the web component.
+   * 
+   * @return the name of the dom event
+   **/
   String value();
 }
