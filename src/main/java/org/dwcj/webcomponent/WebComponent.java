@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dwcj.App;
 import org.dwcj.Environment;
+import org.dwcj.annotations.InlineStyleSheet;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
@@ -49,8 +50,8 @@ import org.dwcj.webcomponent.events.EventListener;
  * use the {@link NodeAttribute} and {@link NodeProperty} annotations.
  * 
  * To include assets (JavaScript, CSS, etc.) for the web component, the class
- * can be annotated with assets annotations like the {@link org.dwcj.annotations.JavaScript} and
- * {@link org.dwcj.annotations.InlineStyleSheet} annotations or by using the {@link org.dwcj.App}
+ * can be annotated with assets annotations like the {@link JavaScript} and
+ * {@link InlineStyleSheet} annotations or by using the {@link org.dwcj.App}
  * class API.
  * 
  * @author Hyyan Abo Fakher
@@ -81,10 +82,10 @@ public abstract class WebComponent extends AbstractControl {
    */
   protected WebComponent() {
     super();
-    
+
     hv = new HtmlContainer("");
     hv.setAttribute("dwcj-hv", getUUID());
-    hv.setAttribute("dwc-remove", "true");
+    hv.setAttribute("bbj-remove", "true");
     hv.setAttribute(getComponentTagName(), "");
     hv.setTabTraversable(false);
     hv.setFocusable(false);
@@ -186,7 +187,7 @@ public abstract class WebComponent extends AbstractControl {
    * Get the events dispatcher of the web component.
    * 
    * @return the event dispatcher
-   * @see EventDispatcher
+   * @See {@link EventDispatcher}
    */
   protected EventDispatcher getEventDispatcher() {
     return dispatcher;
@@ -273,20 +274,24 @@ public abstract class WebComponent extends AbstractControl {
    * <li>
    * <b>Method name</b> - The name of a method on the web component.
    * for example:
+   * 
    * <pre>
    * {@code
    * invokeAsync("myComponentMethod", "arg1", "arg2");
    * }
    * </pre>
+   * 
    * <li>
    * <b>This</b> - The web component instance.
    * The method can be use to set a property on the web component.
    * for example:
+   * 
    * <pre>
    * {@code
    * invokeAsync("this", "value", "new value");
    * }
    * </pre>
+   * 
    * </li>
    * 
    * <li>
@@ -311,6 +316,7 @@ public abstract class WebComponent extends AbstractControl {
    * </ul>
    * 
    * For example:
+   * 
    * <pre>
    * {@code
    * invokeAsync("Function", "alert(component.value)");
@@ -321,6 +327,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param method the method name
    * @param args   the method arguments
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected void invokeAsync(String method, Object... args) {
@@ -330,9 +337,10 @@ public abstract class WebComponent extends AbstractControl {
   /**
    * Alias for {@link #invokeAsync(String, Object...)}
    * 
-   * @param functionName the method name
+   * @param method the method name
    * @param args   the method arguments
    * 
+   * @return The web component
    * @throws DwcControlDestroyed if the web component is destroyed
    * @see #invokeAsync(String, Object...)
    */
@@ -345,6 +353,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param expression the expression to execute
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    * @see #invokeAsync(String, Object...)
    */
@@ -364,6 +373,7 @@ public abstract class WebComponent extends AbstractControl {
    * <li>
    * <b>Method name</b> - The name of a method on the web component.
    * for example:
+   * 
    * <pre>
    * {@code
    * String value = invoke("myComponentMethod", "arg1", "arg2");
@@ -375,12 +385,14 @@ public abstract class WebComponent extends AbstractControl {
    * Depending on the number of arguments, the method can be used to get a
    * property or set a property on the web component.
    * for example:
+   * 
    * <pre>
    * {@code
    * String value = invoke("this", "value");
    * invoke("this", "value", "new value");
    * }
    * </pre>
+   * 
    * </li>
    * 
    * <li>
@@ -405,6 +417,7 @@ public abstract class WebComponent extends AbstractControl {
    * </ul>
    * 
    * For example:
+   * 
    * <pre>
    * {@code
    * String value = invoke("Function", "component.value");
@@ -425,7 +438,7 @@ public abstract class WebComponent extends AbstractControl {
   /**
    * Alias for {@link #invoke(String, Object...)}
    * 
-   * @param functionName the method name
+   * @param method the method name
    * @param args   the method arguments
    * 
    * @return The result of the method
@@ -464,6 +477,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param eventClass the event class
    * @param listener   the event listener
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected <K extends Event<?>> void addEventListener(
@@ -611,6 +625,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param eventClass the event class
    * @param listener   the event listener
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
@@ -720,7 +735,8 @@ public abstract class WebComponent extends AbstractControl {
    * The method will remove the given DWCJ control from the web component
    * and destroy it.
    * 
-   * @param uuid the uuid of the control to remove
+   * @param String the uuid of the control to remove
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected void removeControl(String uuid) {
@@ -770,7 +786,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param slot  the slot name
    * @param value the raw slot value
-   * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    */
@@ -825,7 +841,8 @@ public abstract class WebComponent extends AbstractControl {
    * The method will remove the given slot from the web component.
    * 
    * @param slot the slot name
-   * 
+   * @param html the html content
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    */
@@ -867,6 +884,8 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * The method will remove the default slot from the web component.
    * 
+   * @param html the html content
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    */
@@ -878,7 +897,7 @@ public abstract class WebComponent extends AbstractControl {
    * Set a default raw slot value (the html content).
    * 
    * @param value the raw slot value
-   * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    * @see #addRawSlot(String, String)
@@ -936,6 +955,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param destroy if true, and the slot is assigned to another panel, the old
    *                panel will be destroyed (removed from the DOM)
    * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    */
@@ -944,6 +964,10 @@ public abstract class WebComponent extends AbstractControl {
 
     if (rawSlots.containsKey(slot)) {
       throw new IllegalArgumentException("The slot " + slot + " is already defined as a raw slot");
+    }
+
+    if (panel.isDestroyed()) {
+      throw new IllegalArgumentException("Unable to attach a destroyed panel to the slot [" + slot + "]");
     }
 
     if (slots.containsKey(slot)) {
@@ -959,11 +983,11 @@ public abstract class WebComponent extends AbstractControl {
     // Start tracking the slot
     slots.put(slot, new SimpleEntry<>(panel, false));
 
-    // dwc-remove is a special attribute in DWC.
+    // bbj-remove is a special attribute in DWC.
     // If the child element isn't contained in the specified parent, go ahead and
     // remove it anyway if either the child or actual parent contains the attribute
-    // "dwc-remove".
-    panel.setAttribute("dwc-remove", "true");
+    // "bbj-remove".
+    panel.setAttribute("bbj-remove", "true");
 
     // mark the panel with the slot name and the web component uuid
     // to be able to find it in the client side
@@ -1002,6 +1026,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param slot  the slot name
    * @param panel the panel to attach
    * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #addSlot(String, AbstractDwcjPanel, boolean)
@@ -1015,6 +1040,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param panel the panel to attach
    * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #addSlot(String, AbstractDwcjPanel, boolean)
@@ -1034,6 +1060,7 @@ public abstract class WebComponent extends AbstractControl {
    *                if false , the panel will be hidden without removing it from
    *                the DOM and then it is up to developer to destroy it later.
    * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    */
@@ -1073,7 +1100,7 @@ public abstract class WebComponent extends AbstractControl {
    * Detach a slot from the web component.
    * 
    * @param slot the slot name
-   * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #removeSlot(String, boolean)
@@ -1085,6 +1112,7 @@ public abstract class WebComponent extends AbstractControl {
   /**
    * Detach the default slot from the web component.
    * 
+   * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #removeSlot(String, boolean)
@@ -1163,7 +1191,9 @@ public abstract class WebComponent extends AbstractControl {
    * @param name  the name of the attribute
    * @param value the value of the attribute
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
+   * @see #setComponentAttribute(String, String, boolean)
    */
   protected void setComponentAttribute(String name, String value) {
     invokeAsync("setAttribute", name, value);
@@ -1175,6 +1205,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param name the name and the value of the attribute
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    * @see #setComponentAttribute(String, String)
    */
@@ -1253,8 +1284,9 @@ public abstract class WebComponent extends AbstractControl {
    * @param name  the name of the property
    * @param value the value of the property
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
-
+   * @see #setComponentProperty(String, Object, boolean)
    */
   protected void setComponentProperty(String name, Object value) {
     invokeAsync("this", name, value);
@@ -1266,6 +1298,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param name the name and the value of the property
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    * @see #setComponentProperty(String, Object)
    */
@@ -1339,6 +1372,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param property the property
    * @param value    the value of the property
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    * @see #setComponentProperty(String, Object)
    * @see #setComponentAttribute(String, String)
@@ -1361,6 +1395,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param <V>      the type of the property
    * @param property the property
    * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    * @see #set(PropertyDescriptor, Object)
    */
@@ -1372,7 +1407,7 @@ public abstract class WebComponent extends AbstractControl {
    * Add a class name to the web component
    * 
    * @param className the class name
-   * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected void addComponentClassName(String className) {
@@ -1383,7 +1418,7 @@ public abstract class WebComponent extends AbstractControl {
    * Remove a class name from the web component
    * 
    * @param className the class name
-   * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected void removeComponentClassName(String className) {
@@ -1395,7 +1430,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param name  the name of the style
    * @param value the value of the style
-   * 
+   * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   protected void setComponentStyle(String name, String value) {
