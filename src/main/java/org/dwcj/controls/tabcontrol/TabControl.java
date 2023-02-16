@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjTabCtrl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
@@ -20,9 +21,10 @@ public final class TabControl extends AbstractDwcControl {
 
     private TabSelectEventSink tabSelectEventSink;
     private ArrayList<Consumer<TabSelectEvent>> callbacks = new ArrayList<>();
-    private ArrayList<SimpleEntry<String, Object>> tabs = new ArrayList<>();
+    private ArrayList<SimpleEntry<String, Div>> tabs = new ArrayList<>();
     private Theme theme = Theme.DEFAULT;
     private Expanse expanse = null;
+    private AbstractDwcjPanel parentPanel;
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
@@ -38,6 +40,7 @@ public final class TabControl extends AbstractDwcControl {
     protected void create(AbstractDwcjPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            parentPanel = p;
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             tabCtrl = w.addTabCtrl(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             ctrl = tabCtrl;
@@ -47,6 +50,144 @@ public final class TabControl extends AbstractDwcControl {
         }
     }
 
+
+       /**
+     * Add a tab to the tab control
+     * @param text the text to display on the tab control
+     * @return
+     */
+    public TabControl addTab(String text){
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.addTab(text,-1);
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        
+        boolean duplicate = false;
+        for(SimpleEntry<String, Div> tab : this.tabs){
+            if(tab.getKey().equals(text)){
+                duplicate = true;
+                break;
+            }
+        }
+
+        if(!duplicate){
+            this.tabs.add(new SimpleEntry<>(text, null));
+        }
+
+        return this;
+    }
+
+    /**
+     * Add a tab and add a Div to it.
+     * Important: The DIV has to exist on the parent panel, you need to call "add" before passing it to the tab control.
+     * @param text The text for the tab
+     * @param panel the panel to attach to the tab
+     * @return the Tab Control object
+     */
+    public TabControl addTab(String text, Div panel) {
+        if(this.ctrl != null){
+            try {
+                parentPanel.add(panel);
+                this.tabCtrl.addTab(text,PanelAccessor.getDefault().getBBjWindow(panel));
+            } catch (BBjException | IllegalAccessException e) {
+                Environment.logError(e);
+            }
+        }
+
+        boolean duplicate = false;
+        for(SimpleEntry<String, Div> tab : this.tabs){
+            if(tab.getKey().equals(text)){
+                duplicate = true;
+                break;
+            }
+        }
+
+        if(!duplicate){
+            this.tabs.add(new SimpleEntry<>(text, panel));
+        }
+        return this;
+    }
+
+    public SimpleEntry<String, Div> getTabAt(int index){
+        return this.tabs.get(index);
+    }
+
+    // public Div getTitleAt(int index){
+    //     // if(this.ctrl != null){
+    //     //     try {
+    //     //         return (Div) this.tabCtrl.getControlAt(index);
+    //     //     } catch (BBjException e) {
+    //     //         Environment.logError(e);
+    //     //     }
+    //     // }
+    //     return (Div) this.tabs.get(index).getValue();
+    // }
+
+    // public Div getPanelAt(int index){
+    //     // if(this.ctrl != null){
+    //     //     try {
+    //     //         return (Div) this.tabCtrl.getControlAt(index);
+    //     //     } catch (BBjException e) {
+    //     //         Environment.logError(e);
+    //     //     }
+    //     // }
+    //     return (Div) this.tabs.get(index).getValue();
+    // }
+
+    /**
+     * Put a DIV under an existing tab
+     * Important: The DIV has to exist on the parent panel, you need to call "add" before passing it to the tab control.
+     * @param index the zero-based index of the tab
+     * @param panel the DIV panel to put under the tab
+     * @return the Tab Control object itself
+     */
+    public TabControl setPanelAt(int index, Div panel) {
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
+            } catch (BBjException | IllegalAccessException e) {
+                Environment.logError(e);
+            }
+        }
+        this.tabs.get(index).setValue(panel);
+        return this;
+    }
+
+    public TabControl removeTab(int index){
+        if(this.ctrl != null){
+            try{
+                this.tabCtrl.removeTab(index);
+            } catch(BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.tabs.remove(index);
+        return this;
+    }
+
+
+    /**
+     * register an event callback for the click event
+     *
+     * @param callback A method to receive the click event
+     * @return the control itself
+     */
+
+    public TabControl onTabSelect(Consumer<TabSelectEvent> callback) {
+        if(this.ctrl != null){
+            if(this.tabSelectEventSink == null){
+                this.tabSelectEventSink = new TabSelectEventSink(this);
+            }
+            this.tabSelectEventSink.addCallback(callback);
+        }
+        else{
+            this.callbacks.add(callback);
+        }
+        return this;
+    }
 
 
     @Override
@@ -116,81 +257,7 @@ public final class TabControl extends AbstractDwcControl {
         return this;
     }
 
-    /**
-     * Add a tab to the tab control
-     * @param text the text to display on the tab control
-     * @return
-     */
-    public TabControl addTab(String text){
-        if(this.ctrl != null){
-            try {
-                this.tabCtrl.addTab(text,-1);
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        this.tabs.add(new SimpleEntry<>(text, -1));
-        return this;
-    }
-
-    /**
-     * Add a tab and add a Div to it.
-     * Important: The DIV has to exist on the parent panel, you need to call "add" before passing it to the tab control.
-     * @param text The text for the tab
-     * @param panel the panel to attach to the tab
-     * @return the Tab Control object
-     */
-    public TabControl addTab(String text, Div panel) {
-        if(this.ctrl != null){
-            try {
-                this.tabCtrl.addTab(text,PanelAccessor.getDefault().getBBjWindow(panel));
-            } catch (BBjException | IllegalAccessException e) {
-                Environment.logError(e);
-            }
-        }
-        this.tabs.add(new SimpleEntry<>(text, panel));
-        return this;
-    }
-
-    /**
-     * Put a DIV under an existing tab
-     * Important: The DIV has to exist on the parent panel, you need to call "add" before passing it to the tab control.
-     * @param index the zero-based index of the tab
-     * @param panel the DIV panel to put under the tab
-     * @return the Tab Control object itself
-     */
-    public TabControl setPanelAt(int index, Div panel) {
-        if(this.ctrl != null){
-            try {
-                this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
-            } catch (BBjException | IllegalAccessException e) {
-                Environment.logError(e);
-            }
-        }
-        this.tabs.get(index).setValue(panel);
-        return this;
-    }
-
-
-    /**
-     * register an event callback for the click event
-     *
-     * @param callback A method to receive the click event
-     * @return the control itself
-     */
-
-    public TabControl onTabSelect(Consumer<TabSelectEvent> callback) {
-        if(this.ctrl != null){
-            if(this.tabSelectEventSink == null){
-                this.tabSelectEventSink = new TabSelectEventSink(this);
-            }
-            this.tabSelectEventSink.addCallback(callback);
-        }
-        else{
-            this.callbacks.add(callback);
-        }
-        return this;
-    }
+ 
 
 
     @Override
@@ -210,19 +277,11 @@ public final class TabControl extends AbstractDwcControl {
 
         /* Reimplemented logic instead of calling method to avoid duplicate tabs being added */
         tabs.forEach(n -> {
-            if((Integer) n.getValue() == -1){
-                try {
-                    this.tabCtrl.addTab(n.getKey(), -1);
-                } catch (BBjException e) {
-                    Environment.logError(e);
-                }
+            if(n.getValue() == null){
+                this.addTab(n.getKey());
             } 
             else{
-                try {
-                    this.tabCtrl.addTab(n.getKey(), PanelAccessor.getDefault().getBBjWindow((Div) n.getValue()));
-                } catch (BBjException | IllegalAccessException e) {
-                    Environment.logError(e);
-                }
+                this.addTab(n.getKey(), n.getValue());
             }
         });
 

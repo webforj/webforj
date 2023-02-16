@@ -1,0 +1,33 @@
+body,html {overflow: hidden}
+
+.logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--bbj-space-m) 0;
+    margin-bottom: var(--bbj-space-m);
+    border-bottom: thin solid var(--bbj-color-default) !important;
+}
+
+.logo img {
+    max-width: 100px;
+    border-radius: 10px;
+}
+
+.bbj-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--bbj-space-m);
+    padding: 0 var(--bbj-space-m);
+}
+
+
+.headerTitle{
+    display: block;
+    font-size: 1.25em;
+    margin-top: 0.83em;
+    margin-bottom: 0.83em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+}
