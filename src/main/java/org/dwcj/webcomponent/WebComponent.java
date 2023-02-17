@@ -573,10 +573,19 @@ public abstract class WebComponent extends AbstractControl {
 
       // apply a data builder if one is provided to the event listener config
       if (detail != null && !detail.isEmpty()) {
+        // allow the detail to be modified
+        js.append("Object.defineProperty(event, 'detail', {")
+            .append("writable: true,")
+            .append("configurable: true,")
+            .append("enumerable: true,")
+            .append("value: event.detail")
+            .append("});");
+
         js.append("const detailBuilder = new Function('event', 'component','hv', \\`")
             .append(wrap.apply(detail))
             .append("\\`);") // end of function
-            .append("const eventData = detailBuilder(event, component, hv);");
+            .append("const eventData = detailBuilder(event, component, hv);")
+            .append("event.detail = eventData;");
       }
 
       // stringifyEvent
