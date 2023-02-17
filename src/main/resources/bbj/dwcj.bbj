@@ -60,11 +60,12 @@ dwcj_error:
         sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
 
 
-        s! = e!.getStackTrace()
-        for i=s!.length-1 to 0 step -1
-            el! = s![i]
-            c! = el!.getClassName()
-            if c!.startsWith("com.basis.") OR c!.startsWith("jdk.internal.reflect.DelegatingConstructorAccessorImpl") OR c!.startsWith("java") OR c!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
+        str! = e!.getStackTrace()
+        for i=str!.length-1 to 0 step -1
+            el! = str![i]
+            cl! = el!.getClassName()
+            //filter out internal stuff
+            if cl!startsWith("com.basis.") OR cl!startsWith("jdk.internal.reflect.DelegatingConstructorAccessorImpl") OR cl!startsWith("java") OR cl!startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
                 continue
             fi
             sg!.executeScript("console.log('"+str(el!)+"');")
