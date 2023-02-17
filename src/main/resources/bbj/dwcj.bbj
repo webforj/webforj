@@ -33,7 +33,8 @@ fi
 h! = new ::DwcjHelper.bbj::DwcjHelper() 
 Environment.init(BBjAPI(), h!)
 
-app! = eval("new "+class$+"()",err=class_not_found)
+Class.forName(class$,err=class_not_found)
+app! = eval("new "+class$+"()",err=dwcj_error)
 
 process_events,err=ErrTrap
 
@@ -47,6 +48,32 @@ class_not_found:
         a=msgbox("Class "+class$+" not found!",0,"Error")
     fi
 release
+
+dwcj_error:
+    if DEBUG then
+        a=msgbox("An error has occured!",0,"Error")
+    else
+
+        e! = bbjapi().getLastJavaException()
+        sg! = BBjAPI().openSysGui("X0")
+        sg!.executeScript("console.log('Error Details:');")
+        sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
+
+
+        s! = e!.getStackTrace()
+        for i=s!.length-1 to 0 step -1
+            el! = s![i]
+            c! = el!.getClassName()
+            if c!.startsWith("com.basis.") OR c!.startsWith("jdk.internal.reflect.DelegatingConstructorAccessorImpl") OR c!.startsWith("java") OR c!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
+                continue
+            fi
+            sg!.executeScript("console.log('"+str(el!)+"');")
+        next
+
+        a=msgbox("An error has occured! Debug information can be found in the browser console.",0,"Error")
+    fi
+release
+
 
 determineClasspathEntries:
         admin! = new Admin()
