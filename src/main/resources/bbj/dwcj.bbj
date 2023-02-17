@@ -8,6 +8,9 @@ SETERR ErrTrap
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
 
+debug = 0
+debug=NUM(STBL("DEBUG",err=*next),err=*next)
+
 class$=""
 
 if class$="" then
@@ -30,14 +33,20 @@ fi
 h! = new ::DwcjHelper.bbj::DwcjHelper() 
 Environment.init(BBjAPI(), h!)
 
-app! = eval("new "+class$+"()")
+app! = eval("new "+class$+"()",err=class_not_found)
 
 process_events,err=ErrTrap
 
 terminate:
     release
     
-
+class_not_found:
+    if DEBUG then
+        a=msgbox("Class not found!",0,"Error")
+    else
+        a=msgbox("Class "+class$+" not found!",0,"Error")
+    fi
+release
 
 determineClasspathEntries:
         admin! = new Admin()
