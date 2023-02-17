@@ -43,15 +43,15 @@ terminate:
     
 class_not_found:
     if DEBUG then
-        a=msgbox("Class not found!",0,"Error")
+        a=msgbox("Class not found!",64,"Error")
     else
-        a=msgbox("Class "+class$+" not found!",0,"Error")
+        a=msgbox("Class "+class$+" not found!",64,"Error")
     fi
 release
 
 dwcj_error:
     if DEBUG then
-        a=msgbox("An error has occured!",0,"Error")
+        a=msgbox("An error has occured!",48,"Error")
     else
 
         e! = bbjapi().getLastJavaException()
@@ -60,18 +60,18 @@ dwcj_error:
         sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
 
 
-        str! = e!.getStackTrace()
-        for i=str!.length-1 to 0 step -1
-            el! = str![i]
+        st! = e!.getStackTrace()
+        for i=st!.length-1 to 0 step -1
+            el! = st![i]
             cl! = el!.getClassName()
-            //filter out internal stuff
-            if cl!startsWith("com.basis.") OR cl!startsWith("jdk.internal.reflect.DelegatingConstructorAccessorImpl") OR cl!startsWith("java") OR cl!startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
+            rem filter out internal stuff
+            if cl!.startsWith("com.basis.") OR cl!.startsWith("jdk.internal.reflect.DelegatingConstructorAccessorImpl") OR cl!.startsWith("java") OR cl!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
                 continue
             fi
             sg!.executeScript("console.log('"+str(el!)+"');")
         next
 
-        a=msgbox("An error has occured! Debug information can be found in the browser console.",0,"Error")
+        a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
     fi
 release
 
