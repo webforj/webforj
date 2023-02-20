@@ -19,12 +19,20 @@ import java.util.function.Consumer;
 
 public final class TabControl extends AbstractDwcControl {
 
+    /**Event sink for selection of a tab */
     private TabSelectEventSink tabSelectEventSink;
+    /**List of all callbacks to be added to the tab */
     private ArrayList<Consumer<TabSelectEvent>> callbacks = new ArrayList<>();
+    /**List of tabs associated with the control */
     private ArrayList<SimpleEntry<String, Div>> tabs = new ArrayList<>();
+    /**The tab control's theme */
     private Theme theme = Theme.DEFAULT;
+    /**The tab control's expanse */
     private Expanse expanse = null;
+    /**The panel which the tab control belongs to */
     private AbstractDwcjPanel parentPanel;
+    /**The currently selected tab */
+    private int selected = 0;
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
@@ -51,7 +59,7 @@ public final class TabControl extends AbstractDwcControl {
     }
 
 
-       /**
+    /**
      * Add a tab to the tab control
      * @param text the text to display on the tab control
      * @return
@@ -79,6 +87,8 @@ public final class TabControl extends AbstractDwcControl {
 
         return this;
     }
+
+
 
     /**
      * Add a tab and add a Div to it.
@@ -115,27 +125,33 @@ public final class TabControl extends AbstractDwcControl {
         return this.tabs.get(index);
     }
 
-    // public Div getTitleAt(int index){
-    //     // if(this.ctrl != null){
-    //     //     try {
-    //     //         return (Div) this.tabCtrl.getControlAt(index);
-    //     //     } catch (BBjException e) {
-    //     //         Environment.logError(e);
-    //     //     }
-    //     // }
-    //     return (Div) this.tabs.get(index).getValue();
-    // }
+    /**
+     * Removes a tab from the tab control based on its index
+     * @param index Index of the tab designated for removal
+     * @return The control itself
+     */
+    public TabControl removeTab(int index){
+        if(this.ctrl != null){
+            try{
+                App.consoleLog(String.valueOf(this.tabCtrl.getNumTabs()));
+            } catch(BBjException e){
+                Environment.logError(e);
+            }
+            try{
+                this.tabCtrl.removeTab(index);
+            } catch(BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.tabs.remove(index);
+        return this;
+    }
+    
+    public ArrayList<SimpleEntry<String, Div>> getTabs(){
+        return this.tabs;
+    }
 
-    // public Div getPanelAt(int index){
-    //     // if(this.ctrl != null){
-    //     //     try {
-    //     //         return (Div) this.tabCtrl.getControlAt(index);
-    //     //     } catch (BBjException e) {
-    //     //         Environment.logError(e);
-    //     //     }
-    //     // }
-    //     return (Div) this.tabs.get(index).getValue();
-    // }
+
 
     /**
      * Put a DIV under an existing tab
@@ -156,17 +172,23 @@ public final class TabControl extends AbstractDwcControl {
         return this;
     }
 
-    public TabControl removeTab(int index){
+    /**
+     * Designates which of the tabs should be selected
+     * @param index Index of tab designated for selection
+     * @return The control itself
+     */
+    public TabControl selectIndex(int index){
         if(this.ctrl != null){
             try{
-                this.tabCtrl.removeTab(index);
+                this.tabCtrl.setSelectedIndex(index);
             } catch(BBjException e){
                 Environment.logError(e);
             }
         }
-        this.tabs.remove(index);
+        this.selected = index;
         return this;
     }
+
 
 
     /**
@@ -267,7 +289,6 @@ public final class TabControl extends AbstractDwcControl {
         
         super.catchUp();
 
-
         if(!this.callbacks.isEmpty()){
             this.tabSelectEventSink = new TabSelectEventSink(this);
             while(!this.callbacks.isEmpty()){
@@ -291,6 +312,10 @@ public final class TabControl extends AbstractDwcControl {
 
         if(this.theme != Theme.DEFAULT){
             this.setTheme(this.theme);
+        }
+
+        if(this.selected != 0){
+            this.selectIndex(this.selected);
         }
 
     }
