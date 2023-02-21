@@ -32,10 +32,15 @@ class public BBjEventProxy implements EventProxy
             wend
 
             m!.setAccessible(BBjAPI.TRUE)
-            m!.invoke(o!,ev!)
 
-            rem this was the original invocation (keeping for reference):
-            rem eval("o!."+#method!+"(ev!)")
+            rem invoke destroy the stack trace!
+            rem m!.invoke(o!,ev!)
+
+            rem eval retains the stack trace in case of an error:
+            eval("o!."+#method!+"(ev!)")
+
+            methodret
+
     methodend
 
 classend

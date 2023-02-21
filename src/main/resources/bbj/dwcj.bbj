@@ -4,12 +4,15 @@ use ::admin.bbj::Admin
 use ::admin.bbj::UserCredentials
 
 SETESC EscTrap
-SETERR ErrTrap
+SETERR dwcj_error
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
 
-debug = 0
-debug=NUM(STBL("DEBUG",err=*next),err=*next)
+DEBUG = 0
+DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
+
+dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
+
 
 class$=""
 
@@ -36,45 +39,11 @@ Environment.init(BBjAPI(), h!)
 Class.forName(class$,err=class_not_found)
 app! = eval("new "+class$+"()",err=dwcj_error)
 
-process_events,err=ErrTrap
+process_events,err=dwcj_error
 
 terminate:
     release
     
-class_not_found:
-    if DEBUG then
-        a=msgbox("Class not found!",64,"Error")
-    else
-        a=msgbox("Class "+class$+" not found!",64,"Error")
-    fi
-release
-
-dwcj_error:
-    if DEBUG then
-        a=msgbox("An error has occured!",48,"Error")
-    else
-
-        e! = bbjapi().getLastJavaException()
-        sg! = BBjAPI().openSysGui("X0")
-        sg!.executeScript("console.log('Error Details:');")
-        sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
-
-
-        st! = e!.getStackTrace()
-        for i=st!.length-1 to 0 step -1
-            el! = st![i]
-            cl! = el!.getClassName()
-            rem filter out internal stuff
-            if cl!.startsWith("com.basis.") OR cl!.startsWith("jdk.internal.reflect.DelegatingConstructorAccessorImpl") OR cl!.startsWith("java") OR cl!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
-                continue
-            fi
-            sg!.executeScript("console.log('"+str(el!)+"');")
-        next
-
-        a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
-    fi
-release
-
 
 determineClasspathEntries:
         admin! = new Admin()
@@ -120,3 +89,37 @@ ErrTrap:
         app!.cleanup()
     fi
 RELEASE
+
+class_not_found:
+    if DEBUG=0 then
+        a=msgbox("Class not found!",64,"Error")
+    else
+        a=msgbox("Class "+class$+" not found!",64,"Error")
+    fi
+release
+
+dwcj_error:
+    if DEBUG=0 then
+        a=msgbox("An error has occured!",48,"Error")
+    else
+
+        e! = bbjapi().getLastJavaException()
+        sg! = BBjAPI().openSysGui("X0")
+        sg!.executeScript("console.log('Error Details:');")
+        sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
+
+
+        st! = e!.getStackTrace()
+        for i=st!.length-1 to 0 step -1
+            el! = st![i]
+            cl! = el!.getClassName()
+            rem filter out internal stuff
+            if cl!.startsWith("com.basis.") OR cl!.startsWith("jdk.internal.reflect") OR cl!.startsWith("java") OR cl!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
+                continue
+            fi
+            sg!.executeScript("console.log('"+str(el!)+"');")
+        next
+
+        a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
+    fi
+release
