@@ -16,9 +16,18 @@ dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
 
 class$=""
 
-if class$="" then
-    class$=argv(1,err=*next)
-fi
+rem evaluate arguments
+for i=1 to 10
+    tmp$=argv(i,err=*break)
+    if cvs(tmp$,4)="DEBUG" then
+        DEBUG=1
+        continue
+    fi
+    if len(tmp$)>6 and tmp$(1,6)="class=" then
+        class$=tmp$(7)
+        continue
+    fi
+next
 
 if class$="" then
     class$=STBL("DWCJCLASSNAME",err=*next)
