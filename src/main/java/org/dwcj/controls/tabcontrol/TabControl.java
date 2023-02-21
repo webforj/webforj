@@ -33,6 +33,8 @@ public final class TabControl extends AbstractDwcControl {
     private AbstractDwcjPanel parentPanel;
     /**The currently selected tab */
     private int selected = 0;
+    /**Number of tabs in the control */
+    private int tabNum = 0;
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
@@ -65,6 +67,7 @@ public final class TabControl extends AbstractDwcControl {
      * @return
      */
     public TabControl addTab(String text){
+
         if(this.ctrl != null){
             try {
                 this.tabCtrl.addTab(text,-1);
@@ -72,19 +75,8 @@ public final class TabControl extends AbstractDwcControl {
                 Environment.logError(e);
             }
         }
-        
-        boolean duplicate = false;
-        for(SimpleEntry<String, Div> tab : this.tabs){
-            if(tab.getKey().equals(text)){
-                duplicate = true;
-                break;
-            }
-        }
-
-        if(!duplicate){
-            this.tabs.add(new SimpleEntry<>(text, null));
-        }
-
+        this.tabs.add(new SimpleEntry<>(text, null));
+        tabNum++;
         return this;
     }
 
@@ -106,23 +98,69 @@ public final class TabControl extends AbstractDwcControl {
                 Environment.logError(e);
             }
         }
-
-        boolean duplicate = false;
-        for(SimpleEntry<String, Div> tab : this.tabs){
-            if(tab.getKey().equals(text)){
-                duplicate = true;
-                break;
-            }
-        }
-
-        if(!duplicate){
-            this.tabs.add(new SimpleEntry<>(text, panel));
-        }
+        this.tabs.add(new SimpleEntry<>(text, panel));
+        tabNum++;
         return this;
     }
 
     public SimpleEntry<String, Div> getTabAt(int index){
         return this.tabs.get(index);
+    }
+
+    /**
+     * Gets the number of tabs in the tab control
+     * @return The number of tabs
+     */
+    public int getNumTabs(){
+        if(this.ctrl != null){
+            try {
+                return this.tabCtrl.getNumTabs();
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        return this.tabs.size();
+    }
+
+    /**
+     * Inserts a tab without an associated Div at a specific index
+     * 
+     * @param index Desired index for the new tab
+     * @param title Title for the new tab
+     * @return The control itself
+     */
+    public TabControl insertTab(int index, String text){
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.insertTab(index, text, -1);
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        this.tabs.add(index, new SimpleEntry<>(text, null));
+        tabNum++;
+        return this;
+    }
+
+    /**
+     * Inserts a tab with an associated Div at a specific index
+     * 
+     * @param index Desired index for the new tab
+     * @param title Title for the new tab
+     * @param panel Div to be associated with the new tab
+     * @return The control itself
+     */
+    public TabControl insertTab(int index, String text, Div panel){
+        if(this.ctrl != null){
+            try {
+                this.tabCtrl.insertTab(index, text, PanelAccessor.getDefault().getBBjWindow(panel));
+            } catch (BBjException | IllegalAccessException e) {
+                Environment.logError(e);
+            }
+        }
+        this.tabs.add(index, new SimpleEntry<>(text, panel));
+        tabNum++;
+        return this;
     }
 
     /**
@@ -144,6 +182,7 @@ public final class TabControl extends AbstractDwcControl {
             }
         }
         this.tabs.remove(index);
+        tabNum--;
         return this;
     }
     
