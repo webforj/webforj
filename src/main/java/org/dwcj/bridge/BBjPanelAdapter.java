@@ -3,6 +3,7 @@ package org.dwcj.bridge;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 import org.dwcj.Environment;
+import org.dwcj.annotations.AnnotationProcessor;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.AbstractDwcjPanel;
 
@@ -29,6 +30,8 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
     public AbstractDwcjPanel add(AbstractControl ...ctrl) {
         for(AbstractControl c: ctrl){
             try {
+                AnnotationProcessor processor = new AnnotationProcessor();
+                processor.processControlAnnotations(c);
                 ControlAccessor.getDefault().create(c,this);
             } catch (IllegalAccessException e) {
                 Environment.logError(e);
