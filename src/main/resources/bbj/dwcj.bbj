@@ -2,6 +2,8 @@ use org.dwcj.Environment
 
 use ::admin.bbj::Admin
 use ::admin.bbj::UserCredentials
+use java.io.StringWriter
+use java.io.PrintWriter
 
 SETESC EscTrap
 SETERR dwcj_error
@@ -111,24 +113,34 @@ dwcj_error:
     if DEBUG=0 then
         a=msgbox("An error has occured!",48,"Error")
     else
-
+        error$ = ""
         e! = bbjapi().getLastJavaException()
         sg! = BBjAPI().openSysGui("X0")
-        sg!.executeScript("console.log('Error Details:');")
-        sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
-
+        error$ = str(e!.getMessage()) + "\n"
 
         st! = e!.getStackTrace()
-        for i=st!.length-1 to 0 step -1
-            el! = st![i]
-            cl! = el!.getClassName()
-            rem filter out internal stuff
-            if cl!.startsWith("com.basis.") OR cl!.startsWith("jdk.internal.reflect") OR cl!.startsWith("java") OR cl!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
-                continue
-            fi
-            sg!.executeScript("console.log('"+str(el!)+"');")
-        next
+        sw! = new StringWriter()
+        pw! = new PrintWriter(sw!)
+        e!.printStackTrace(pw!)
+        script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
+        script!= script! + "console.log(`%c" + sw!.toString() + "`, 'color:#ff564d;font-size: 12px;');"
 
-        a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
+        sg!.executeScript(script!)
+
+        rem sg!.executeScript("console.log('Error Details:');")
+        rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
+
+        rem st! = e!.getStackTrace()
+        rem for i=st!.length-1 to 0 step -1
+        rem     el! = st![i]
+        rem     cl! = el!.getClassName()
+        rem     rem filter out internal stuff
+        rem     if cl!.startsWith("com.basis.") OR cl!.startsWith("jdk.internal.reflect") OR cl!.startsWith("java") OR cl!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
+        rem         continue
+        rem     fi
+        rem     sg!.executeScript("console.log('"+str(el!)+"');")
+        rem next
+
+        rem a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
     fi
 release
