@@ -53,45 +53,6 @@
     </distributionManagement>
 
     <profiles>
-        <!-- default build profile, active by default -->
-        <profile>
-            <id>winbbxlib</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-
-            <properties>
-                <jar-directory>C:/bbx/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>winbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <properties>
-                <jar-directory>C:/bbj/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>unixbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jar-directory>/opt/bbj/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>macbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jar-directory>/Users/beff/bbx/lib</jar-directory>
-            </properties>
-        </profile>
         <profile>
             <id>perform-release</id>
             <build>
@@ -135,27 +96,35 @@
 
     </profiles>
 
+
+    <!--
+    to install the bbj lib dependencies locally, execute the following three lines in your
+    local <bbx>/lib directory:
+
+mvn install:install-file -Dfile=BBjStartup.jar -DgroupId=com.basis.lib -DartifactId=BBjStartup -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=BBj.jar -DgroupId=com.basis.lib -DartifactId=BBj -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=BBjUtil.jar -DgroupId=com.basis.lib -DartifactId=BBjUtil -Dversion=1.0 -Dpackaging=jar
+
+    -->
+
     <dependencies>
         <dependency>
             <groupId>com.basis.lib</groupId>
-            <artifactId>BBj.jar</artifactId>
-            <scope>system</scope>
+            <artifactId>BBj</artifactId>
+            <scope>provided</scope>
             <version>1.0</version>
-            <systemPath>${jar-directory}/BBj.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.basis.lib</groupId>
-            <artifactId>BBjStartup.jar</artifactId>
-            <scope>system</scope>
+            <artifactId>BBjStartup</artifactId>
+            <scope>provided</scope>
             <version>1.0</version>
-            <systemPath>${jar-directory}/BBjStartup.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.basis.lib</groupId>
-            <artifactId>BBjUtil.jar</artifactId>
-            <scope>system</scope>
+            <artifactId>BBjUtil</artifactId>
+            <scope>provided</scope>
             <version>1.0</version>
-            <systemPath>${jar-directory}/BBjUtil.jar</systemPath>
         </dependency>
 
         <dependency>

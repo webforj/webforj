@@ -50,45 +50,7 @@
     </distributionManagement>
 
     <profiles>
-        <!-- default build profile, active by default -->
-        <profile>
-            <id>winbbxlib</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
 
-            <properties>
-                <jar-directory>C:/bbx/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>winbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <properties>
-                <jar-directory>C:/bbj/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>unixbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jar-directory>/opt/bbj/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>macbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jar-directory>/Users/beff/bbx/lib</jar-directory>
-            </properties>
-        </profile>
         <profile>
             <id>perform-release</id>
             <build>
