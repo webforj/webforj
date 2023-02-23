@@ -130,17 +130,6 @@ dwcj_error:
         rem sg!.executeScript("console.log('Error Details:');")
         rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
 
-        rem st! = e!.getStackTrace()
-        rem for i=st!.length-1 to 0 step -1
-        rem     el! = st![i]
-        rem     cl! = el!.getClassName()
-        rem     rem filter out internal stuff
-        rem     if cl!.startsWith("com.basis.") OR cl!.startsWith("jdk.internal.reflect") OR cl!.startsWith("java") OR cl!.startsWith("jdk.internal.reflect.GeneratedConstructorAccessor") then
-        rem         continue
-        rem     fi
-        rem     sg!.executeScript("console.log('"+str(el!)+"');")
-        rem next
-
         rem a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
     fi
 release
