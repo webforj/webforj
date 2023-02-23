@@ -2,17 +2,34 @@ use org.dwcj.Environment
 
 use ::admin.bbj::Admin
 use ::admin.bbj::UserCredentials
+use java.io.StringWriter
+use java.io.PrintWriter
 
 SETESC EscTrap
-SETERR ErrTrap
+SETERR dwcj_error
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
 
+DEBUG = 0
+DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
+
+dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
+
+
 class$=""
 
-if class$="" then
-    class$=argv(1,err=*next)
-fi
+rem evaluate arguments
+for i=1 to 10
+    tmp$=argv(i,err=*break)
+    if cvs(tmp$,4)="DEBUG" then
+        DEBUG=1
+        continue
+    fi
+    if len(tmp$)>6 and tmp$(1,6)="class=" then
+        class$=tmp$(7)
+        continue
+    fi
+next
 
 if class$="" then
     class$=STBL("DWCJCLASSNAME",err=*next)
@@ -30,14 +47,14 @@ fi
 h! = new ::DwcjHelper.bbj::DwcjHelper() 
 Environment.init(BBjAPI(), h!)
 
-app! = eval("new "+class$+"()")
+Class.forName(class$,err=class_not_found)
+app! = eval("new "+class$+"()",err=dwcj_error)
 
-process_events,err=ErrTrap
+process_events,err=dwcj_error
 
 terminate:
     release
     
-
 
 determineClasspathEntries:
         admin! = new Admin()
@@ -83,3 +100,36 @@ ErrTrap:
         app!.cleanup()
     fi
 RELEASE
+
+class_not_found:
+    if DEBUG=0 then
+        a=msgbox("Class not found!",64,"Error")
+    else
+        a=msgbox("Class "+class$+" not found!",64,"Error")
+    fi
+release
+
+dwcj_error:
+    if DEBUG=0 then
+        a=msgbox("An error has occured!",48,"Error")
+    else
+        error$ = ""
+        e! = bbjapi().getLastJavaException()
+        sg! = BBjAPI().openSysGui("X0")
+        error$ = str(e!.getMessage()) + "\n"
+
+        st! = e!.getStackTrace()
+        sw! = new StringWriter()
+        pw! = new PrintWriter(sw!)
+        e!.printStackTrace(pw!)
+        script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
+        script!= script! + "console.log(`%c" + sw!.toString() + "`, 'color:#ff564d;font-size: 12px;');"
+
+        sg!.executeScript(script!)
+
+        rem sg!.executeScript("console.log('Error Details:');")
+        rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
+
+        rem a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
+    fi
+release
