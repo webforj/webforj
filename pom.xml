@@ -49,6 +49,7 @@
         <module>dwcj-engine</module>
         <module>dwcj-markdown-widget</module>
         <module>dwcj-code-widget</module>
+        <module>dwcj-terminal-widget</module>
     </modules>
 
 
