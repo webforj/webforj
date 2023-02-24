@@ -4,9 +4,21 @@ Java API for BBj DWC Dynamic Web Client
 
 ## Setup Instructions
 
-1. Download and Install BBj 22.12 or higher, on OpenJDK11
-2. Clone this project
-3. Add a custom classpath with
+1. Download and Install BBj 22.13 or higher, on OpenJDK17
+
+2. Installation of needed deps
+To install the bbj lib dependencies locally, execute the following three lines in your
+local `<bbx>/lib directory`:
+
+```shell
+mvn install:install-file -Dfile=BBjStartup.jar -DgroupId=com.basis.lib -DartifactId=BBjStartup -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=BBj.jar -DgroupId=com.basis.lib -DartifactId=BBj -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=BBjUtil.jar -DgroupId=com.basis.lib -DartifactId=BBjUtil -Dversion=1.0 -Dpackaging=jar
+```
+
+3. Clone this project
+
+4. Add a custom classpath with
 
 * if you're developing inside the framework: the compiled class files in the target/classes folder
 * if you're developing with the framework: the dwcj.jar (it builds with Maven)
@@ -40,7 +52,19 @@ in config.bbj: SET DWCJCLASSNAME=your.class.name.Here
 
 OR
 
-as first program arg in EM (just the classname)
+as first program arg in EM ("class=full.package.and.Classname")
+
+## Debugging
+
+To get comprehensive debug output, either add
+
+SET DEBUG=1
+
+to your <bbxdir>/cfg/config.bbx, or add
+
+DEBUG
+
+as a program argument to the app deployment.
 
 ## Javadoc
 
@@ -48,12 +72,3 @@ The Javadoc of the engine can be found here:
 
 https://dwcjava.github.io/engine/
 
-## Installation of needed deps
-To install the bbj lib dependencies locally, execute the following three lines in your
-local `<bbx>/lib directory`:
-
-```shell
-mvn install:install-file -Dfile=BBjStartup.jar -DgroupId=com.basis.lib -DartifactId=BBjStartup -Dversion=1.0 -Dpackaging=jar
-mvn install:install-file -Dfile=BBj.jar -DgroupId=com.basis.lib -DartifactId=BBj -Dversion=1.0 -Dpackaging=jar
-mvn install:install-file -Dfile=BBjUtil.jar -DgroupId=com.basis.lib -DartifactId=BBjUtil -Dversion=1.0 -Dpackaging=jar
-```
