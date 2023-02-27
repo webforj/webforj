@@ -21,20 +21,21 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-/dwcj.iml
+replay_pid*
+
+**/target
 /.idea
-/.gitignore
-/target
-/.classpath
 /.project
+/.classpath
+/dwcj-engine/src/main/java/org/sample
+
 /.settings/org.eclipse.core.resources.prefs
 /.settings/org.eclipse.jdt.core.prefs
 /.settings/org.eclipse.m2e.core.prefs
+
 bbj/.bdtPath
 bbj/.buildpath
 bbj/.project
-.DS_Store
-bbj/.metadata/resourcesModel.json
 
-/src/main/java/fiddle/
-/src/main/resources/bbj/BBjGridExWidgetEventProxies.bbj
+.DS_Store
+

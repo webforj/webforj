@@ -2,16 +2,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org</groupId>
-    <artifactId>dwcj</artifactId>
-    <version>0.011alpha-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <groupId>org.dwcj</groupId>
+    <artifactId>dwcj-project</artifactId>
+    <version>0.12.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
     <name>dwcj</name>
-    <description>Program that allows implementation of an API layer 
-    enabling the developer to build application software for the BBj 
-    ecosystem by using Java or other JVM languages like Kotlin instead 
-    of the BBj Business Basic syntax built into the BBj product.
+    <description>Program that allows implementation of an API layer
+        enabling the developer to build application software for the BBj
+        ecosystem by using Java or other JVM languages like Kotlin instead
+        of the BBj Business Basic syntax built into the BBj product.
     </description>
+
     <url>https://dwcj.org</url>
 
     <properties>
@@ -41,136 +44,30 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
-    <profiles>
-        <!-- default build profile, active by default -->
-        <profile>
-            <id>winbbxlib</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+    <modules>
+        <module>dwcj-engine</module>
+        <module>dwcj-widgets</module>
+    </modules>
 
-            <properties>
-                <jar-directory>C:/bbx/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>winbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
 
-            <properties>
-                <jar-directory>C:/bbj/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>unixbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jar-directory>/opt/bbj/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>macbbjlib</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <jar-directory>/Users/beff/bbx/lib</jar-directory>
-            </properties>
-        </profile>
-        <profile>
-            <id>perform-release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.9.2</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.10.1</version>
+            </dependency>
+        </dependencies>
 
-    </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.basis.lib</groupId>
-            <artifactId>BBj.jar</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${jar-directory}/BBj.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.basis.lib</groupId>
-            <artifactId>BBjStartup.jar</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${jar-directory}/BBjStartup.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.basis.lib</groupId>
-            <artifactId>BBjUtil.jar</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${jar-directory}/BBjUtil.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.3.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
-        </dependency>        
-    </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
@@ -227,7 +124,6 @@
                     <version>3.0.0-M8</version>
                 </plugin>
 
-                <!-- Set a JDK compiler level -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -260,7 +156,6 @@
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
                     <version>1.6.7</version>
-                    <extensions>true</extensions>
                     <configuration>
                         <serverId>ossrh</serverId>
                         <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
@@ -269,6 +164,57 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>perform-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>
