@@ -27,6 +27,7 @@ replay_pid*
 /.idea
 /.project
 /.classpath
+/dwcj-engine/src/main/java/org/sample
 
 /.settings/org.eclipse.core.resources.prefs
 /.settings/org.eclipse.jdt.core.prefs
