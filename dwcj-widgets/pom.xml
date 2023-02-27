@@ -9,11 +9,11 @@
         <version>0.12.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>dwcj-addons</artifactId>
+    <artifactId>dwcj-widgets</artifactId>
     <packaging>pom</packaging>
-    <name>dwcj-addons</name>
+    <name>dwcj-widgets</name>
     <description>
-        Addons for the dwcj-engine
+        Widgets for the dwcj-engine
     </description>
 
     <modules>

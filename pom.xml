@@ -47,7 +47,7 @@
 
     <modules>
         <module>dwcj-engine</module>
-        <module>dwcj-addons</module>
+        <module>dwcj-widgets</module>
     </modules>
 
 
