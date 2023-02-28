@@ -20,6 +20,7 @@
         <module>dwcj-code-widget</module>
         <module>dwcj-markdown-widget</module>
         <module>dwcj-terminal-widget</module>
+        <module>dwcj-googlecharts-widget</module>
     </modules>
 
     <dependencies>
