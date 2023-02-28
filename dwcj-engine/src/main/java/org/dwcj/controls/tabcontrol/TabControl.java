@@ -66,7 +66,7 @@ public final class TabControl extends AbstractDwcControl {
      * @param text the text to display on the tab control
      * @return
      */
-    public TabControl addTab(String text){
+    public TabControl add(String text){
 
         if(this.ctrl != null){
             try {
@@ -89,7 +89,7 @@ public final class TabControl extends AbstractDwcControl {
      * @param panel the panel to attach to the tab
      * @return the Tab Control object
      */
-    public TabControl addTab(String text, Div panel) {
+    public TabControl add(String text, Div panel) {
         if(this.ctrl != null){
             try {
                 parentPanel.add(panel);
@@ -103,15 +103,29 @@ public final class TabControl extends AbstractDwcControl {
         return this;
     }
 
-    public SimpleEntry<String, Div> getTabAt(int index){
-        return this.tabs.get(index);
+    /**
+     * Returns the title of the tab at the given index
+     * @param index Desired index number
+     * @return The title of the tab
+     */
+    public String getTitleAt(int index){
+        return this.tabs.get(index).getKey();
+    }
+    
+    /**
+     * Returns the Div of the tab at the given index
+     * @param index Desired index number
+     * @return The Div of the tab
+     */
+    public Div getPanelAt(int index){
+        return this.tabs.get(index).getValue();
     }
 
     /**
      * Gets the number of tabs in the tab control
      * @return The number of tabs
      */
-    public int getNumTabs(){
+    public int getTabCount(){
         if(this.ctrl != null){
             try {
                 return this.tabCtrl.getNumTabs();
@@ -129,7 +143,7 @@ public final class TabControl extends AbstractDwcControl {
      * @param title Title for the new tab
      * @return The control itself
      */
-    public TabControl insertTab(int index, String text){
+    public TabControl insert(int index, String text){
         if(this.ctrl != null){
             try {
                 this.tabCtrl.insertTab(index, text, -1);
@@ -150,7 +164,7 @@ public final class TabControl extends AbstractDwcControl {
      * @param panel Div to be associated with the new tab
      * @return The control itself
      */
-    public TabControl insertTab(int index, String text, Div panel){
+    public TabControl insert(int index, String text, Div panel){
         if(this.ctrl != null){
             try {
                 this.tabCtrl.insertTab(index, text, PanelAccessor.getDefault().getBBjWindow(panel));
@@ -168,7 +182,7 @@ public final class TabControl extends AbstractDwcControl {
      * @param index Index of the tab designated for removal
      * @return The control itself
      */
-    public TabControl removeTab(int index){
+    public TabControl remove(int index){
         if(this.ctrl != null){
             try{
                 App.consoleLog(String.valueOf(this.tabCtrl.getNumTabs()));
@@ -237,7 +251,7 @@ public final class TabControl extends AbstractDwcControl {
      * @return the control itself
      */
 
-    public TabControl onTabSelect(Consumer<TabSelectEvent> callback) {
+    public TabControl onSelect(Consumer<TabSelectEvent> callback) {
         if(this.ctrl != null){
             if(this.tabSelectEventSink == null){
                 this.tabSelectEventSink = new TabSelectEventSink(this);
@@ -338,10 +352,10 @@ public final class TabControl extends AbstractDwcControl {
         /* Reimplemented logic instead of calling method to avoid duplicate tabs being added */
         tabs.forEach(n -> {
             if(n.getValue() == null){
-                this.addTab(n.getKey());
+                this.add(n.getKey());
             } 
             else{
-                this.addTab(n.getKey(), n.getValue());
+                this.add(n.getKey(), n.getValue());
             }
         });
 
