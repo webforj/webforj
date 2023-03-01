@@ -100,6 +100,19 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
 
   }
 
+  /**
+   * Executes a script in the context of the currently loaded page without waiting
+   * for the result.
+   * 
+   * If the control is not yet attache to panel, the control will queue the script
+   * and execute it when the control is
+   * attached to a panel. The result of the script will be null in this case.
+   * 
+   * It is recommended to invoke this method only after the control has been
+   * attached to a panel.
+   * 
+   * @param script The script to execute
+   */
   public void executeAsyncScript(String script) {
     if (this.ctrl != null) {
       try {
@@ -112,6 +125,20 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     this.executeAsyncScript.add(script);
   }
 
+  /**
+   * Executes a script in the context of the currently loaded page and returns the
+   * result.
+   * 
+   * If the control is not yet attache to panel, the control will queue the script
+   * and execute it when the control is
+   * attached to a panel. The result of the script will be null in this case.
+   * 
+   * It is recommended to invoke this method only after the control has been
+   * attached to a panel.
+   * 
+   * @param script The script to execute
+   * @return The result of the script
+   */
   public Object executeScript(String script) {
     if (this.ctrl != null) {
       try {
