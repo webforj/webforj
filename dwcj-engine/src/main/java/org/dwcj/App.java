@@ -591,6 +591,36 @@ public abstract class App {
   }
 
   /**
+   * Execute a script in the browser and return the result
+   * 
+   * @param script The script to execute
+   * @return The result of the script
+   * @throws DwcException If dwcj fails to execute the script
+   */
+  public static Object executeJs(String script) throws DwcException {
+    try {
+      return Environment.getInstance().getSysGui().executeScript(script);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to execute script.", e); // NOSONAR
+    }
+  }
+
+  /**
+   * Execute a script in the browser without waiting for the result
+   * 
+   * @param script The script to execute
+   * @return The result of the script
+   * @throws DwcException If dwcj fails to execute the script
+   */
+  public static void executeAsyncJs(String script) throws DwcException {
+    try {
+      Environment.getInstance().getSysGui().executeAsyncScript(script);
+    } catch (BBjException e) {
+      throw new DwcException("Failed to execute async script.", e); // NOSONAR
+    }
+  }
+
+  /**
    * Log a String to the browser console (console.out)
    *
    * @param output The message to log
