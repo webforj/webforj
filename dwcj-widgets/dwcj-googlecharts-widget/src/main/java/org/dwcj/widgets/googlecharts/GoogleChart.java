@@ -10,7 +10,6 @@ import org.dwcj.webcomponent.WebComponent;
 import org.dwcj.webcomponent.annotations.NodeName;
 import org.dwcj.webcomponent.events.EventListener;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -270,6 +269,8 @@ public final class GoogleChart extends WebComponent implements HasStyle {
     sb.append("return"); // Return nothing to avoid auto warning.
 
     executeAsyncExpression(sb.toString());
+
+    
   }
 
   /**
