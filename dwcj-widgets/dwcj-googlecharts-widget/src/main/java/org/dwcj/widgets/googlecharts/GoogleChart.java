@@ -210,10 +210,10 @@ public final class GoogleChart extends WebComponent implements HasStyle {
      **/
     WORDTREE("wordtree");
 
-    private final String type;
+    private final String chartType;
 
     Type(String type) {
-      this.type = type;
+      this.chartType = type;
     }
 
     /**
@@ -222,7 +222,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
      * @return The value of the type.
      */
     public String getValue() {
-      return type;
+      return chartType;
     }
 
     /**
@@ -233,7 +233,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
      */
     public static Type fromValue(String type) {
       for (Type t : Type.values()) {
-        if (t.type.equalsIgnoreCase(type)) {
+        if (t.chartType.equalsIgnoreCase(type)) {
           return t;
         }
       }
@@ -246,7 +246,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
      */
     @Override
     public String toString() {
-      return type;
+      return chartType;
     }
   }
 
