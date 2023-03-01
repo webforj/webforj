@@ -604,6 +604,16 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
+   * Alias for {@link #addDrawerOpenedListener(EventListener)}.
+   * 
+   * @param listener the listener
+   * @return the app layout
+   */
+  public AppLayout onDrawerOpen(EventListener<AppLayoutDrawerOpenedEvent> listener) {
+    return addDrawerOpenedListener(listener);
+  }
+
+  /**
    * Remove a listener for the drawer opened event.
    * 
    * @param listener the listener
@@ -623,6 +633,16 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   public AppLayout addDrawerClosedListener(EventListener<AppLayoutDrawerClosedEvent> listener) {
     addEventListener(AppLayoutDrawerClosedEvent.class, listener);
     return this;
+  }
+
+  /**
+   * Alias for {@link #addDrawerClosedListener(EventListener)}.
+   * 
+   * @param listener the listener
+   * @return the app layout
+   */
+  public AppLayout onDrawerClose(EventListener<AppLayoutDrawerClosedEvent> listener) {
+    return addDrawerClosedListener(listener);
   }
 
   /**

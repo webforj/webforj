@@ -2,7 +2,6 @@ package org.dwcj.controls.dialog;
 
 import org.dwcj.controls.dialog.events.DialogClosedEvent;
 import org.dwcj.controls.dialog.events.DialogOpenedEvent;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;
@@ -677,6 +676,16 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
+   * Alias for {@link #addOpenedListener(EventListener)}.
+   * 
+   * @param listener the listener
+   * @return the dialog
+   */
+  public Dialog onOpen(EventListener<DialogOpenedEvent> listener) {
+    return addOpenedListener(listener);
+  }
+
+  /**
    * Remove a listener for the opened event
    * 
    * @param listener the listener
@@ -696,6 +705,16 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   public Dialog addClosedListener(EventListener<DialogClosedEvent> listener) {
     addEventListener(DialogClosedEvent.class, listener);
     return this;
+  }
+
+  /**
+   * Alias for {@link #addClosedListener(EventListener)}.
+   * 
+   * @param listener the listener
+   * @return the dialog
+   */
+  public Dialog onClose(EventListener<DialogClosedEvent> listener) {
+    return addClosedListener(listener);
   }
 
   /**

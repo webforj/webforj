@@ -307,6 +307,16 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
+   * Alias for {@link #addOpenedListener(EventListener)}.
+   * 
+   * @param listener the listener
+   * @return the drawer
+   */
+  public Drawer onOpen(EventListener<DrawerOpenedEvent> listener) {
+    return addOpenedListener(listener);
+  }
+
+  /**
    * Remove Drawer opened listener.
    * 
    * @param listener the listener
@@ -326,6 +336,16 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
   public Drawer addClosedListener(EventListener<DrawerClosedEvent> listener) {
     addEventListener(DrawerClosedEvent.class, listener);
     return this;
+  }
+
+  /**
+   * Alias for {@link #addClosedListener(EventListener)}.
+   * 
+   * @param listener the listener
+   * @return the drawer
+   */
+  public Drawer onClose(EventListener<DrawerClosedEvent> listener) {
+    return addClosedListener(listener);
   }
 
   /**
