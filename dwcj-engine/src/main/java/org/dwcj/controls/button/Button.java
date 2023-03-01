@@ -9,7 +9,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.button.events.ButtonClickEvent;
 import org.dwcj.controls.button.sinks.ButtonClickEventSink;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.interfaces.TextAlignable;
@@ -106,7 +106,7 @@ public final class Button extends AbstractDwcControl implements Focusable,  TabT
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

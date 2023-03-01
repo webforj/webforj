@@ -1,12 +1,12 @@
 package org.dwcj.bridge;
 
 import org.dwcj.Environment;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 /**
- * This class implements the accessor to BBj specifics in the AbstractDwcjPanel-derived set of panel class
+ * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel class
  * it's not for customer use, only for use in the "friend" classes
  * Pattern see Tulach, p.75ff
  */
@@ -26,7 +26,7 @@ public abstract class PanelAccessor {
             return a;
         }
         try {
-            Class.forName(AbstractDwcjPanel.class.getName(), true, AbstractDwcjPanel.class.getClassLoader());
+            Class.forName(AbstractPanel.class.getName(), true, AbstractPanel.class.getClassLoader());
         } catch (Exception e) {
             Environment.logError(e);
         }
@@ -52,7 +52,7 @@ public abstract class PanelAccessor {
      * @return the BBjWindow object behind the panel
      * @throws IllegalAccessException
      */
-    public abstract BBjWindow getBBjWindow(AbstractDwcjPanel panel) throws IllegalAccessException;
+    public abstract BBjWindow getBBjWindow(AbstractPanel panel) throws IllegalAccessException;
 
 }
 

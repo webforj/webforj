@@ -8,7 +8,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.controls.tabcontrol.events.TabSelectEvent;
 import org.dwcj.controls.tabcontrol.sinks.TabSelectEventSink;
@@ -30,7 +30,7 @@ public final class TabControl extends AbstractDwcControl {
     /**The tab control's expanse */
     private Expanse expanse = null;
     /**The panel which the tab control belongs to */
-    private AbstractDwcjPanel parentPanel;
+    private AbstractPanel parentPanel;
     /**The currently selected tab */
     private int selected = 0;
     /**Number of tabs in the control */
@@ -47,7 +47,7 @@ public final class TabControl extends AbstractDwcControl {
     protected BBjTabCtrl tabCtrl;
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             parentPanel = p;

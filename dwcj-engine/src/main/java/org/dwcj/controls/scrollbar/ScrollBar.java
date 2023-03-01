@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.scrollbar.events.ScrollbarMoveEvent;
 import org.dwcj.controls.scrollbar.sinks.ScrollbarMoveEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -26,7 +26,7 @@ public final class ScrollBar extends AbstractDwcControl {
     public ScrollBar(boolean horizontal) { this.horizontal = horizontal; }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

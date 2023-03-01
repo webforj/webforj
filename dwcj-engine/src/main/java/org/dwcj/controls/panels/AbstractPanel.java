@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * the base class for all panel implementations
  */
-public abstract class AbstractDwcjPanel extends AbstractDwcControl {
+public abstract class AbstractPanel extends AbstractDwcControl {
 
     protected BBjWindow wnd;
 
@@ -35,7 +35,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
      * @param ctrl the control(s) to be added
      * @return the panel itself
      */
-    public AbstractDwcjPanel add(AbstractControl... ctrl) {
+    public AbstractPanel add(AbstractControl... ctrl) {
         for (AbstractControl c : ctrl) {
             if(Boolean.FALSE.equals(c.isDestroyed())){
                 try {
@@ -66,7 +66,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
     }
 
     @Override
-    public AbstractDwcjPanel setStyle(String property, String value) {
+    public AbstractPanel setStyle(String property, String value) {
         styles.put(property, value);
 
         if (this.wnd != null) {
@@ -76,7 +76,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
     }
 
     @Override
-    public AbstractDwcjPanel addClassName(String selector) {
+    public AbstractPanel addClassName(String selector) {
         cssClasses.add(selector);
 
         if (this.wnd != null) {
@@ -90,7 +90,7 @@ public abstract class AbstractDwcjPanel extends AbstractDwcControl {
     }
 
     @Override
-    public AbstractDwcjPanel removeClassName(String selector) {
+    public AbstractPanel removeClassName(String selector) {
         if (this.wnd != null) {
             try {
                 wnd.removePanelStyle(selector);

@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.textarea.events.TextAreaOnEditModifyEvent;
 import org.dwcj.controls.textarea.sinks.TextAreaOnEditModifyEventSink;
 import org.dwcj.interfaces.Focusable;
@@ -69,7 +69,7 @@ public final class TextArea extends AbstractDwcControl implements HasReadOnly, T
 
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

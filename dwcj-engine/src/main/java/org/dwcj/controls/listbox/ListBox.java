@@ -10,7 +10,7 @@ import org.dwcj.controls.listbox.events.ListBoxDoubleClickEvent;
 import org.dwcj.controls.listbox.events.ListBoxSelectEvent;
 import org.dwcj.controls.listbox.sinks.ListBoxDoubleClickEventSink;
 import org.dwcj.controls.listbox.sinks.ListBoxSelectEventSink;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.HasReadOnly;
@@ -50,7 +50,7 @@ public final class ListBox extends AbstractDwclistControl implements Scrollable,
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());          

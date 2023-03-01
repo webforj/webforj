@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.textbox.events.TextBoxEditModifyEvent;
 import org.dwcj.controls.textbox.sinks.TextBoxEditModifyEventSink;
 import org.dwcj.interfaces.Focusable;
@@ -58,7 +58,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
 
     
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

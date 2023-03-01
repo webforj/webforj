@@ -16,7 +16,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.dateeditbox.events.DateEditBoxEditModifyEvent;
 import org.dwcj.controls.dateeditbox.sinks.DateEditBoxEditModifyEventSink;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
@@ -72,7 +72,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
     
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

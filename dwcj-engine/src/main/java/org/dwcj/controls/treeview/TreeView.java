@@ -8,7 +8,7 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.treeview.events.TreeCollapseEvent;
 import org.dwcj.controls.treeview.events.TreeDeselectEvent;
 import org.dwcj.controls.treeview.events.TreeDoubleClickedEvent;
@@ -40,7 +40,7 @@ public final class TreeView extends AbstractDwcControl {
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away

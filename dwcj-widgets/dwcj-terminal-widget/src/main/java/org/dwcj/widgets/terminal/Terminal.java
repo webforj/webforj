@@ -2,7 +2,7 @@ package org.dwcj.widgets.terminal;
 
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.widgets.terminal.events.TerminalKeyEvent;
 
@@ -21,7 +21,7 @@ public class Terminal extends Div {
     private final ArrayList<Consumer<TerminalKeyEvent>> callbacks = new ArrayList<>();
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         super.create(p);
 
         hv = new HtmlContainer("<div id='"+uuid+"'></div>");

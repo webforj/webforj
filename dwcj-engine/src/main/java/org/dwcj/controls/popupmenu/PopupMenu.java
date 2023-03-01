@@ -10,7 +10,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.controls.menuitem.MenuItem;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.HasPopupMenu;
 
 public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
@@ -18,7 +18,7 @@ public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
     private BBjPopupMenu bbjPopupMenu;
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try{
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = (BBjControl) w.addPopupMenu();

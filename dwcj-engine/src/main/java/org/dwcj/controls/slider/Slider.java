@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.slider.events.SliderOnControlScrollEvent;
 import org.dwcj.controls.slider.sinks.SliderOnControlScrollEventSink;
 import org.dwcj.interfaces.Focusable;
@@ -61,7 +61,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

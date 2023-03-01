@@ -5,13 +5,13 @@ import org.dwcj.App;
 import org.dwcj.bridge.PanelAccessor;
 
 /**
- * This class implements the accessor to BBj specifics in the AbstractDwcjPanel-derived set of panel class
+ * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel class
  * Pattern see Tulach, p.75ff
  */
 final class PanelAccessorImpl extends PanelAccessor {
 
     @Override
-    public BBjWindow getBBjWindow(AbstractDwcjPanel panel) throws IllegalAccessException {
+    public BBjWindow getBBjWindow(AbstractPanel panel) throws IllegalAccessException {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         String caller = stack[2].getClassName();

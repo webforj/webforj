@@ -13,7 +13,7 @@ import org.dwcj.controls.fontchooser.events.FontChooserChangeEvent;
 import org.dwcj.controls.fontchooser.sinks.FontChooserApproveEventSink;
 import org.dwcj.controls.fontchooser.sinks.FontChooserCancelEventSink;
 import org.dwcj.controls.fontchooser.sinks.FontChooserChangeEventSink;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -30,7 +30,7 @@ public final class FontChooser extends AbstractDwcControl {
     private BBjFontChooser bbjFontChooser;
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visbility flag

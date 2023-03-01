@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.listbox.AbstractDwclistControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.textcombobox.events.TextComboBoxChangeEvent;
 import org.dwcj.controls.textcombobox.events.TextComboBoxCloseEvent;
 import org.dwcj.controls.textcombobox.events.TextComboBoxEditModifyEvent;
@@ -74,7 +74,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

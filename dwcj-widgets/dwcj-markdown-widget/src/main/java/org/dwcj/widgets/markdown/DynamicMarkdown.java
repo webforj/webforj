@@ -2,7 +2,7 @@ package org.dwcj.widgets.markdown;
 
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.label.Label;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.interfaces.Control;
 
@@ -19,7 +19,7 @@ public class DynamicMarkdown extends Div {
     private final ArrayList<Control> ctrlList = new ArrayList<>();
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         super.create(p);
     }
 
