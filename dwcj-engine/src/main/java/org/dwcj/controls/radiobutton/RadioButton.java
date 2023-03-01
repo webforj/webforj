@@ -8,7 +8,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.radiobutton.events.RadioButtonCheckEvent;
 import org.dwcj.controls.radiobutton.sinks.RadioButtonCheckEventSink;
 import org.dwcj.interfaces.Focusable;
@@ -51,7 +51,7 @@ public final class RadioButton extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

@@ -8,7 +8,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.stringeditbox.events.StringEditBoxEditModifyEvent;
 import org.dwcj.controls.stringeditbox.sinks.StringEditBoxEditModifyEventSink;
 import org.dwcj.interfaces.Focusable;
@@ -67,7 +67,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     }
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

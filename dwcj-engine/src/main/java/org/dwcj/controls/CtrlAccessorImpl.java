@@ -4,13 +4,13 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 
 import java.lang.reflect.Method;
 
 /**
  * This class implements the accessor to BBj specifics in the
- * AbstractDwcjPanel-derived set of panel class
+ * AbstractPanel-derived set of panel class
  * Pattern see Tulach, p.75ff
  */
 final class CtrlAccessorImpl extends ControlAccessor {
@@ -31,7 +31,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
 
     @Override
     @SuppressWarnings("java:S3011") // allow increasing acessibility
-    public void create(AbstractControl ctrl, AbstractDwcjPanel panel) throws IllegalAccessException {
+    public void create(AbstractControl ctrl, AbstractPanel panel) throws IllegalAccessException {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         String caller = stack[2].getClassName();
@@ -46,7 +46,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
                         if (method.getName().equals("create") &&
                                 method.getParameterCount() == 1 &&
                                 method.getParameterTypes()[0]
-                                        .equals(Class.forName("org.dwcj.controls.panels.AbstractDwcjPanel"))) {
+                                        .equals(Class.forName("org.dwcj.controls.panels.AbstractPanel"))) {
                             method.setAccessible(true);
                             method.invoke(ctrl, panel);
                             found = true;

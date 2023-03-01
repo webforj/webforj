@@ -6,7 +6,7 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.environment.namespace.SessionNamespace;
 
@@ -29,7 +29,7 @@ public class Markdown extends Div {
     private HashSet<String> prism_loaded;
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
         super.create(p);
 
         prism_loaded = (HashSet<String>) ns.get("PRISM_LOADED");

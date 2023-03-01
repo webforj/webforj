@@ -25,7 +25,7 @@ import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.htmlcontainer.events.HtmlContainerJavascriptEvent;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcControlDestroyed;
 import org.dwcj.exceptions.DwcRuntimeException;
@@ -65,7 +65,7 @@ public abstract class WebComponent extends AbstractControl {
   private final ArrayList<String> registeredClientEvents = new ArrayList<>();
   private final HashMap<String, Class<? extends Event<?>>> clientEventMap = new HashMap<>();
   private final Map<String, String> rawSlots = new HashMap<>();
-  private final Map<String, Entry<AbstractDwcjPanel, Boolean>> slots = new HashMap<>();
+  private final Map<String, Entry<AbstractPanel, Boolean>> slots = new HashMap<>();
   private final Map<AbstractControl, Entry<String, Boolean>> controls = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final Function<String, String> wrap = (body) -> {
@@ -75,7 +75,7 @@ public abstract class WebComponent extends AbstractControl {
 
     return body;
   };
-  private AbstractDwcjPanel panel;
+  private AbstractPanel panel;
 
   /**
    * Create a new instance of the web component.
@@ -146,7 +146,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param panel the panel that the web component is attached to
    * @throws DwcControlDestroyed if the web component is destroyed
    */
-  protected void onAttach(AbstractDwcjPanel panel) {
+  protected void onAttach(AbstractPanel panel) {
     assertNotDestroyed();
   }
 
@@ -157,11 +157,11 @@ public abstract class WebComponent extends AbstractControl {
    * @param panel the panel that the web component is detached from
    * @throws DwcControlDestroyed if the web component is destroyed
    */
-  protected void onFlush(AbstractDwcjPanel panel) {
+  protected void onFlush(AbstractPanel panel) {
     assertNotDestroyed();
 
-    for (Map.Entry<String, Entry<AbstractDwcjPanel, Boolean>> entry : slots.entrySet()) {
-      AbstractDwcjPanel slotPanel = entry.getValue().getKey();
+    for (Map.Entry<String, Entry<AbstractPanel, Boolean>> entry : slots.entrySet()) {
+      AbstractPanel slotPanel = entry.getValue().getKey();
       if (slotPanel != null) {
         slotPanel.setVisible(true);
       }
@@ -175,7 +175,7 @@ public abstract class WebComponent extends AbstractControl {
    * @return the panel instance or null if the web component is not attached to
    *         any panel or destroyed
    */
-  protected AbstractDwcjPanel getPanel() {
+  protected AbstractPanel getPanel() {
     if (!isDestroyed()) {
       return panel;
     }
@@ -923,7 +923,7 @@ public abstract class WebComponent extends AbstractControl {
    * @return the slot panel
    * @throws DwcControlDestroyed if the web component is destroyed
    */
-  protected AbstractDwcjPanel getSlot(String slot) {
+  protected AbstractPanel getSlot(String slot) {
     if (isDestroyed()) {
       return null;
     }
@@ -941,7 +941,7 @@ public abstract class WebComponent extends AbstractControl {
    * @return the default slot panel
    * @throws DwcControlDestroyed if the web component is destroyed
    */
-  protected AbstractDwcjPanel getSlot() {
+  protected AbstractPanel getSlot() {
     return getSlot("__EMPTY_SLOT__");
   }
 
@@ -968,7 +968,7 @@ public abstract class WebComponent extends AbstractControl {
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    */
-  protected void addSlot(String slot, AbstractDwcjPanel panel, boolean destroy) {
+  protected void addSlot(String slot, AbstractPanel panel, boolean destroy) {
     assertNotDestroyed();
 
     if (rawSlots.containsKey(slot)) {
@@ -980,8 +980,8 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     if (slots.containsKey(slot)) {
-      Entry<AbstractDwcjPanel, Boolean> entry = slots.get(slot);
-      AbstractDwcjPanel oldPanel = entry.getKey();
+      Entry<AbstractPanel, Boolean> entry = slots.get(slot);
+      AbstractPanel oldPanel = entry.getKey();
 
       // if the new panel is different from the old one, detach the old one
       if (!oldPanel.equals(panel)) {
@@ -1038,9 +1038,9 @@ public abstract class WebComponent extends AbstractControl {
    * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
-   * @see #addSlot(String, AbstractDwcjPanel, boolean)
+   * @see #addSlot(String, AbstractPanel, boolean)
    */
-  protected void addSlot(String slot, AbstractDwcjPanel panel) {
+  protected void addSlot(String slot, AbstractPanel panel) {
     addSlot(slot, panel, true);
   }
 
@@ -1052,9 +1052,9 @@ public abstract class WebComponent extends AbstractControl {
    * @return the web component
    * @throws DwcControlDestroyed      if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
-   * @see #addSlot(String, AbstractDwcjPanel, boolean)
+   * @see #addSlot(String, AbstractPanel, boolean)
    */
-  protected void addSlot(AbstractDwcjPanel panel) {
+  protected void addSlot(AbstractPanel panel) {
     addSlot("__EMPTY_SLOT__", panel);
   }
 
@@ -1081,8 +1081,8 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     if (slots.containsKey(slot)) {
-      Entry<AbstractDwcjPanel, Boolean> entry = slots.get(slot);
-      AbstractDwcjPanel panelToRemove = entry.getKey();
+      Entry<AbstractPanel, Boolean> entry = slots.get(slot);
+      AbstractPanel panelToRemove = entry.getKey();
 
       // remove the slot attributes from the panel
       // Currently, BBjControl.removeAttributes() is not implemented
@@ -1471,7 +1471,7 @@ public abstract class WebComponent extends AbstractControl {
    * @throws DwcControlDestroyed if the web component is destroyed
    */
   @Override
-  protected void create(AbstractDwcjPanel panel) {
+  protected void create(AbstractPanel panel) {
     assertNotDestroyed();
 
     if (isAttached()) {
@@ -1493,8 +1493,8 @@ public abstract class WebComponent extends AbstractControl {
     panel.add(hv);
 
     // loop over the slots and add them to the web component panel
-    for (Map.Entry<String, Entry<AbstractDwcjPanel, Boolean>> entry : slots.entrySet()) {
-      AbstractDwcjPanel slotPanel = entry.getValue().getKey();
+    for (Map.Entry<String, Entry<AbstractPanel, Boolean>> entry : slots.entrySet()) {
+      AbstractPanel slotPanel = entry.getValue().getKey();
       boolean isAttached = entry.getValue().getValue();
 
       if (slotPanel != null && !isAttached) {

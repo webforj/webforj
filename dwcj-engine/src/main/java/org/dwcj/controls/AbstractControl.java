@@ -2,7 +2,7 @@ package org.dwcj.controls;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.Control;
 import org.dwcj.interfaces.HasDestroy;
 
@@ -53,7 +53,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
      * 
      * @param p the panel to add this control on
      */
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
     }
 
     /**

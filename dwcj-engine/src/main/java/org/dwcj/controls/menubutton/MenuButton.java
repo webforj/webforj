@@ -8,7 +8,7 @@ import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.popupmenu.PopupMenu;
 
 public final class MenuButton extends AbstractDwcControl {
@@ -16,7 +16,7 @@ public final class MenuButton extends AbstractDwcControl {
     private BBjMenuButton bbjMenuButton;
 
     @Override
-    protected void create(AbstractDwcjPanel p) {
+    protected void create(AbstractPanel p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

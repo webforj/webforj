@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.annotations.AnnotationProcessor;
 import org.dwcj.controls.AbstractControl;
-import org.dwcj.controls.panels.AbstractDwcjPanel;
+import org.dwcj.controls.panels.AbstractPanel;
 
 /**
  * ********** IMPORTANT: ****************+
@@ -13,7 +13,7 @@ import org.dwcj.controls.panels.AbstractDwcjPanel;
  * The BBjPanelAdapter converts a BBjWindow into an AbstractDwcPanel so that DWCJ Controls can
  * be added to code that is written in the BBj language.
  */
-public class BBjPanelAdapter extends AbstractDwcjPanel {
+public class BBjPanelAdapter extends AbstractPanel {
 
     public BBjPanelAdapter(BBjWindow w){
         this.wnd = w;
@@ -27,7 +27,7 @@ public class BBjPanelAdapter extends AbstractDwcjPanel {
      * @return the panel itself
      */
     @Override
-    public AbstractDwcjPanel add(AbstractControl ...ctrl) {
+    public AbstractPanel add(AbstractControl ...ctrl) {
         for(AbstractControl c: ctrl){
             try {
                 AnnotationProcessor processor = new AnnotationProcessor();
