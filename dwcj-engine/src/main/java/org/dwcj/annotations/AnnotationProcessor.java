@@ -22,7 +22,7 @@ public final class AnnotationProcessor {
     /**
      * The application is running before the run method
      */
-    PRE_RUN, 
+    PRE_RUN,
     /**
      * The application is running after the run method
      */
@@ -88,7 +88,7 @@ public final class AnnotationProcessor {
   private void processAppTitle(Object clazz) throws DwcException {
     AppTitle appTitle = clazz.getClass().getAnnotation(AppTitle.class);
     if (appTitle != null) {
-      App.setTitle(appTitle.value());
+      App.getPage().setTitle(appTitle.value());
     }
   }
 
@@ -102,7 +102,7 @@ public final class AnnotationProcessor {
     AppAttribute[] appAttributes = clazz.getClass().getAnnotationsByType(AppAttribute.class);
     if (appAttributes != null) {
       for (AppAttribute appAttribute : appAttributes) {
-        App.setAttribute(appAttribute.name(), appAttribute.value(), appAttribute.selector());
+        App.getPage().setAttribute(appAttribute.name(), appAttribute.value(), appAttribute.selector());
       }
     }
   }
@@ -161,7 +161,7 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        App.setMeta(meta.name(), meta.content(), attributes);
+        App.getPage().setMeta(meta.name(), meta.content(), attributes);
       }
     }
   }
@@ -186,12 +186,12 @@ public final class AnnotationProcessor {
           key += "::top";
         }
 
-        if(ObjectTable.contains(key)) {
+        if (ObjectTable.contains(key)) {
           continue;
         }
 
         ObjectTable.put(key, true);
-        App.addStyleSheet(sheet.url(), sheet.top(), attributes);
+        App.getPage().addStyleSheet(sheet.url(), sheet.top(), attributes);
       }
     }
   }
@@ -232,7 +232,7 @@ public final class AnnotationProcessor {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineStyleSheet(content, sheet.top(), attributes);
+        App.getPage().addInlineStyleSheet(content, sheet.top(), attributes);
       }
     }
   }
@@ -262,7 +262,7 @@ public final class AnnotationProcessor {
         }
 
         ObjectTable.put(key, true);
-        App.addJavaScript(script.url(), script.top(), attributes);
+        App.getPage().addJavaScript(script.url(), script.top(), attributes);
       }
     }
   }
@@ -300,7 +300,7 @@ public final class AnnotationProcessor {
           content = Assets.contentOf(content);
         }
 
-        App.addInlineJavaScript(content, script.top(), attributes);
+        App.getPage().addInlineJavaScript(content, script.top(), attributes);
       }
     }
   }
@@ -324,7 +324,7 @@ public final class AnnotationProcessor {
           attributes.put("id", link.id());
         }
 
-        App.addLink(link.url(), link.top(), attributes);
+        App.getPage().addLink(link.url(), link.top(), attributes);
       }
     }
   }
