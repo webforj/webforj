@@ -2,8 +2,6 @@ package org.dwcj;
 
 import com.basis.startup.type.BBjException;
 
-import java.util.ArrayList;
-
 import org.dwcj.annotations.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.*;
