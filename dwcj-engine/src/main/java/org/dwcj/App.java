@@ -3,6 +3,7 @@ package org.dwcj;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.annotations.AnnotationProcessor;
+import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.*;
 import org.dwcj.exceptions.DwcAppInitializeException;
 import org.dwcj.exceptions.DwcException;
@@ -58,20 +59,6 @@ public abstract class App {
    */
   public static Page getPage() {
     return Page.getInstance();
-  }
-
-  /**
-   * Get the registered DWC application name
-   *
-   * @return the application name
-   * @throws DwcRuntimeException if failed to get the application name
-   */
-  public static String getApplicationName() {
-    try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getApplicationName();
-    } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get application name.", e);
-    }
   }
 
   /**
@@ -172,6 +159,70 @@ public abstract class App {
       return Environment.getInstance().getBBjAPI().getWebManager().getLightTheme();
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to get light theme.", e);
+    }
+  }
+
+  /**
+   * Get the registered DWC application name
+   *
+   * @return the application name
+   * @throws DwcRuntimeException if failed to get the application name
+   */
+  public static String getApplicationName() {
+    try {
+      return Environment.getInstance().getBBjAPI().getWebManager().getApplicationName();
+    } catch (BBjException e) {
+      throw new DwcRuntimeException("Failed to get application name.", e);
+    }
+  }
+
+  /**
+   * Get the application protocol
+   * 
+   * @return The application protocol
+   */
+  public static String getProtocol() {
+    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+
+    return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
+  }
+
+  /**
+   * Get the application host
+   * 
+   * @return The application host
+   */
+  public static String getHost() {
+    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+
+    return (String) helper.invokeMethod(instance, "getWebServerHost", null);
+  }
+
+  /**
+   * Get the application port
+   * 
+   * @return The application port
+   */
+  public static String getPort() {
+    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+
+    return (String) helper.invokeMethod(instance, "getWebServerPort", null);
+  }
+
+  /**
+   * Get the application URL
+   * 
+   * @return The application URL
+   * @throws DwcRuntimeException if failed to get the application URL
+   */
+  public static String getUrl() {
+    try {
+      return Environment.getInstance().getBBjAPI().getWebManager().getUrl();
+    } catch (BBjException e) {
+      throw new DwcRuntimeException("Failed to get application URL.", e);
     }
   }
 
