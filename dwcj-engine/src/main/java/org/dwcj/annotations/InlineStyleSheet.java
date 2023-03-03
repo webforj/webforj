@@ -52,14 +52,6 @@ public @interface InlineStyleSheet {
   String value();
 
   /**
-   * A boolean value specifying whether this style is to be injected is in a local
-   * file.
-   * 
-   * @return true if the style is to be injected is in local file
-   */
-  boolean local() default false;
-
-  /**
    * A boolean value specifying whether this style is to be injected into the top
    * level window of the page.
    * 

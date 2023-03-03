@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.dwcj.exceptions.DwcException;
 import org.dwcj.exceptions.DwcRuntimeException;
+import org.dwcj.util.Assets;
 
 import com.basis.startup.type.BBjException;
 
@@ -219,7 +220,11 @@ public final class Page {
    */
   public Page addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
+          url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -239,7 +244,11 @@ public final class Page {
    */
   public Page addStyleSheet(String url, boolean top, String attributes) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
+          url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -284,6 +293,9 @@ public final class Page {
    */
   public Page addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isContextURL(css))
+        css = Assets.contentOf(Assets.resolveContextURL(css));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
@@ -304,6 +316,9 @@ public final class Page {
    */
   public Page addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
+      if (Assets.isContextURL(css))
+        css = Assets.contentOf(Assets.resolveContextURL(css));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
@@ -350,6 +365,9 @@ public final class Page {
    */
   public Page addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
@@ -370,6 +388,9 @@ public final class Page {
    */
   public Page addJavaScript(String url, boolean top, String attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
@@ -416,6 +437,9 @@ public final class Page {
    */
   public Page addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isContextURL(script))
+        script = Assets.contentOf(Assets.resolveContextURL(script));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
@@ -436,6 +460,9 @@ public final class Page {
    */
   public Page addInlineJavaScript(String script, boolean top, String attributes) {
     try {
+      if (Assets.isContextURL(script))
+        script = Assets.contentOf(Assets.resolveContextURL(script));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
@@ -481,6 +508,9 @@ public final class Page {
    */
   public Page addLink(String url, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
@@ -501,6 +531,9 @@ public final class Page {
    */
   public Page addLink(String url, boolean top, String attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
