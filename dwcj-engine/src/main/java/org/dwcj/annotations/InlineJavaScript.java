@@ -54,14 +54,6 @@ public @interface InlineJavaScript {
   boolean top() default false;
 
   /**
-   * A boolean value specifying whether this script is to be injected is in local
-   * file.
-   * 
-   * @return true if the script is to be injected is in local file
-   */
-  boolean local() default false;
-
-  /**
    * A set of <a href=
    * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script">attributes</a>
    * to be added to the script element.

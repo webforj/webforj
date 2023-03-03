@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.dwcj.exceptions.DwcException;
 import org.dwcj.exceptions.DwcRuntimeException;
+import org.dwcj.util.Assets;
 
 import com.basis.startup.type.BBjException;
 
@@ -210,7 +211,9 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url        The URL of the stylesheet
+   * @param url        The URL of the stylesheet. The url will be resolved
+   *                   as a web server url if it starts with the
+   *                   <code>webserver://</code>
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
    * 
@@ -219,7 +222,11 @@ public final class Page {
    */
   public Page addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
+          url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -230,7 +237,9 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url        The URL of the stylesheet
+   * @param url        The URL of the stylesheet. The url will be resolved
+   *                   as a web server url if it starts with the
+   *                   <code>webserver://</code>
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
    * 
@@ -239,7 +248,11 @@ public final class Page {
    */
   public Page addStyleSheet(String url, boolean top, String attributes) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
+          url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -250,7 +263,9 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url The URL of the stylesheet
+   * @param url The URL of the stylesheet. The url will be resolved
+   *            as a web server url if it starts with the
+   *            <code>webserver://</code>
    * @param top Whether to inject the stylesheet at the top of the page
    * 
    * @return The current page instance
@@ -263,7 +278,9 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url The URL of the stylesheet
+   * @param url The URL of the stylesheet. The url will be resolved
+   *            as a web server url if it starts with the
+   *            <code>webserver://</code>
    * 
    * @return The current page instance
    * @throws DwcRuntimeException if failed to add the stylesheet
@@ -275,7 +292,10 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css        The CSS to inject
+   * @param css        The CSS to inject. If a url is provided and starts with
+   *                   <code>context://</code> then the url will be resolved
+   *                   as a context url which points to the root of the
+   *                   resources folder of your application
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
    * 
@@ -284,6 +304,9 @@ public final class Page {
    */
   public Page addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isContextURL(css))
+        css = Assets.contentOf(Assets.resolveContextURL(css));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
@@ -295,7 +318,10 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css        The CSS to inject
+   * @param css        The CSS to inject. If a url is provided and starts with
+   *                   <code>context://</code> then the url will be resolved
+   *                   as a context url which points to the root of the
+   *                   resources folder of your application
    * @param top        Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
    * 
@@ -304,6 +330,9 @@ public final class Page {
    */
   public Page addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
+      if (Assets.isContextURL(css))
+        css = Assets.contentOf(Assets.resolveContextURL(css));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
@@ -315,7 +344,10 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css The CSS to inject
+   * @param css The CSS to inject. If a url is provided and starts with
+   *            <code>context://</code> then the url will be resolved
+   *            as a context url which points to the root of the
+   *            resources folder of your application
    * @param top Whether to inject the stylesheet at the top of the page
    * 
    * @return The current page instance
@@ -328,7 +360,10 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css The CSS to inject
+   * @param css The CSS to inject. If a url is provided and starts with
+   *            <code>context://</code> then the url will be resolved
+   *            as a context url which points to the root of the
+   *            resources folder of your application
    * 
    * @return The current page instance
    * @throws DwcRuntimeException if failed to add the stylesheet
@@ -341,7 +376,9 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url        The URL of the script
+   * @param url        The URL of the script. The url will be resolved
+   *                   as a web server url if it starts with the
+   *                   <code>webserver://</code>
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
    * 
@@ -350,6 +387,9 @@ public final class Page {
    */
   public Page addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
@@ -361,7 +401,9 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url        The URL of the script
+   * @param url        The URL of the script. The url will be resolved
+   *                   as a web server url if it starts with the
+   *                   <code>webserver://</code>
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
    * 
@@ -370,6 +412,9 @@ public final class Page {
    */
   public Page addJavaScript(String url, boolean top, String attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
@@ -381,7 +426,9 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url The URL of the script
+   * @param url The URL of the script.The url will be resolved
+   *            as a web server url if it starts with the
+   *            <code>webserver://</code>
    * @param top Whether to inject the script at the top of the page
    * 
    * @return The current page instance
@@ -395,7 +442,9 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url The URL of the script
+   * @param url The URL of the script. The url will be resolved
+   *            as a web server url if it starts with the
+   *            <code>webserver://</code>
    * 
    * @return The current page instance
    * @throws DwcRuntimeException if failed to add the script
@@ -407,7 +456,10 @@ public final class Page {
   /**
    * Inject an inline script into the page
    *
-   * @param script     The script to inject
+   * @param script     The script to inject. If a url is provided and starts with
+   *                   <code>context://</code> then the url will be resolved
+   *                   as a context url which points to the root of the
+   *                   resources folder of your application
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
    * 
@@ -416,6 +468,9 @@ public final class Page {
    */
   public Page addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isContextURL(script))
+        script = Assets.contentOf(Assets.resolveContextURL(script));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
@@ -427,7 +482,10 @@ public final class Page {
   /**
    * Inject an inline script into the page
    *
-   * @param script     The script to inject
+   * @param script     The script to inject. If a url is provided and starts with
+   *                   <code>context://</code> then the url will be resolved
+   *                   as a context url which points to the root of the
+   *                   resources folder of your application
    * @param top        Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
    * 
@@ -436,6 +494,9 @@ public final class Page {
    */
   public Page addInlineJavaScript(String script, boolean top, String attributes) {
     try {
+      if (Assets.isContextURL(script))
+        script = Assets.contentOf(Assets.resolveContextURL(script));
+
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
@@ -447,7 +508,10 @@ public final class Page {
   /**
    * Inject an inline script into the page
    *
-   * @param script The script to inject
+   * @param script The script to inject. If a url is provided and starts with
+   *               <code>context://</code> then the url will be resolved
+   *               as a context url which points to the root of the
+   *               resources folder of your application
    * @param top    Whether to inject the script at the top of the page
    * 
    * @return The current page instance
@@ -460,7 +524,10 @@ public final class Page {
   /**
    * Inject an inline script into the page
    *
-   * @param script The script to inject
+   * @param script The script to inject. If a url is provided and starts with
+   *               <code>context://</code> then the url will be resolved
+   *               as a context url which points to the root of the
+   *               resources folder of your application
    * 
    * @return The current page instance
    * @throws DwcRuntimeException if failed to add the script
@@ -472,7 +539,9 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url        The URL of the link
+   * @param url        The URL of the link. The url will be resolved
+   *                   as a web server url if it starts with the
+   *                   <code>webserver://</code>
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set
    * 
@@ -481,6 +550,9 @@ public final class Page {
    */
   public Page addLink(String url, boolean top, Map<String, String> attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
@@ -492,7 +564,9 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url        The URL of the link
+   * @param url        The URL of the link. The url will be resolved
+   *                   as a web server url if it starts with the
+   *                   <code>webserver://</code>
    * @param top        Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set (comma separated)
    * 
@@ -501,6 +575,9 @@ public final class Page {
    */
   public Page addLink(String url, boolean top, String attributes) {
     try {
+      if (Assets.isWebServerURL(url))
+        url = Assets.resolveWebServerURL(url);
+
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
@@ -512,7 +589,9 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url The URL of the link
+   * @param url The URL of the link. The url will be resolved
+   *            as a web server url if it starts with the
+   *            <code>webserver://</code>
    * @param top Whether to inject the link at the top of the page
    * 
    * @return The current page instance
@@ -525,7 +604,9 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url The URL of the link
+   * @param url The URL of the link.The url will be resolved
+   *            as a web server url if it starts with the
+   *            <code>webserver://</code>
    * 
    * @return The current page instance
    * @throws DwcRuntimeException if failed to add the link

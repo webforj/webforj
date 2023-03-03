@@ -34,7 +34,7 @@ public @interface StyleSheet {
    * 
    * @return the CSS URL
    **/
-  String url();
+  String value();
 
   /**
    * A boolean value specifying whether this style is to be injected into the top

@@ -6,7 +6,6 @@ import org.dwcj.controls.AbstractControl;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcAnnotationException;
 import org.dwcj.exceptions.DwcException;
-import org.dwcj.util.Assets;
 
 /**
  * Annotation processor for the application and controls annotations
@@ -181,7 +180,7 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        String key = "org.dwcj.annotations.AnnotationProcessor::styles::" + sheet.url();
+        String key = "org.dwcj.annotations.AnnotationProcessor::styles::" + sheet.value();
         if (sheet.top()) {
           key += "::top";
         }
@@ -191,7 +190,7 @@ public final class AnnotationProcessor {
         }
 
         ObjectTable.put(key, true);
-        App.getPage().addStyleSheet(sheet.url(), sheet.top(), attributes);
+        App.getPage().addStyleSheet(sheet.value(), sheet.top(), attributes);
       }
     }
   }
@@ -227,12 +226,7 @@ public final class AnnotationProcessor {
           }
         }
 
-        String content = sheet.value();
-        if (sheet.local()) {
-          content = Assets.contentOf(content);
-        }
-
-        App.getPage().addInlineStyleSheet(content, sheet.top(), attributes);
+        App.getPage().addInlineStyleSheet(sheet.value(), sheet.top(), attributes);
       }
     }
   }
@@ -252,7 +246,7 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        String key = "org.dwcj.annotations.AnnotationProcessor::scripts::" + script.url();
+        String key = "org.dwcj.annotations.AnnotationProcessor::scripts::" + script.value();
         if (script.top()) {
           key += "::top";
         }
@@ -262,7 +256,7 @@ public final class AnnotationProcessor {
         }
 
         ObjectTable.put(key, true);
-        App.getPage().addJavaScript(script.url(), script.top(), attributes);
+        App.getPage().addJavaScript(script.value(), script.top(), attributes);
       }
     }
   }
@@ -295,12 +289,7 @@ public final class AnnotationProcessor {
           ObjectTable.put(key, true);
         }
 
-        String content = script.value();
-        if (script.local()) {
-          content = Assets.contentOf(content);
-        }
-
-        App.getPage().addInlineJavaScript(content, script.top(), attributes);
+        App.getPage().addInlineJavaScript(script.value(), script.top(), attributes);
       }
     }
   }
