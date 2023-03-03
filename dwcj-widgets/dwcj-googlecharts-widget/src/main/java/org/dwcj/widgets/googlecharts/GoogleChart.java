@@ -1,7 +1,7 @@
 package org.dwcj.widgets.googlecharts;
 
 import org.dwcj.annotations.Attribute;
-import org.dwcj.annotations.InlineJavaScript;
+import org.dwcj.annotations.JavaScript;
 import org.dwcj.widgets.googlecharts.events.GoogleChartReadyEvent;
 import org.dwcj.widgets.googlecharts.events.GoogleChartSelectedEvent;
 import org.dwcj.interfaces.HasStyle;
@@ -25,7 +25,7 @@ import com.google.gson.JsonObject;
  * @author Hyyan Abo Fakher
  */
 @NodeName("google-chart")
-@InlineJavaScript(id = "google-chart", value = "import c from 'https://cdn.jsdelivr.net/npm/@google-web-components/google-chart@5.0.3/+esm';", attributes = {
+@JavaScript(value = "https://cdn.jsdelivr.net/npm/@google-web-components/google-chart@5.0.3/+esm", attributes = {
     @Attribute(name = "type", value = "module")
 })
 public final class GoogleChart extends WebComponent implements HasStyle {
@@ -270,7 +270,6 @@ public final class GoogleChart extends WebComponent implements HasStyle {
 
     executeAsyncExpression(sb.toString());
 
-    
   }
 
   /**
