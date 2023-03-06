@@ -1,6 +1,7 @@
 package org.dwcj.widgets.youtube;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.dwcj.annotations.InlineStyleSheet;
 import org.dwcj.controls.panels.AbstractPanel;
@@ -21,7 +22,7 @@ import org.dwcj.webcomponent.annotations.NodeName;
  * <pre>
  * {@code
  * Youtube youtube = new Youtube();
- * youtube.setId("youtube-video-id");
+ * youtube.setVideoId("youtube-video-id");
  * youtube.setAutoPlay(true);
  * youtube.setLoop(true);
  * youtube.setControls(false);
@@ -117,7 +118,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
   // Properties
   // @see https://developers.google.com/youtube/player_parameters#Parameters
   private final PropertyDescriptor<String> SRC = PropertyDescriptor.property("src", "");
-  private String id = "";
+  private String videoId = "";
   private boolean autoplay = false;
   private String captionLanguage = "en";
   private boolean showCaption = false;
@@ -151,7 +152,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    */
   public Youtube(String id) {
     this();
-    this.setId(id);
+    this.setVideoId(id);
   }
 
   /**
@@ -160,8 +161,8 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * @param id the id of the youtube video
    * @return the youtube component
    */
-  public Youtube setId(String id) {
-    this.id = id;
+  public Youtube setVideoId(String id) {
+    this.videoId = id;
     this.updateSrc();
     return this;
   }
@@ -171,8 +172,8 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * 
    * @return the id of the youtube video
    */
-  public String getId() {
-    return this.id;
+  public String getVideoId() {
+    return this.videoId;
   }
 
   /**
@@ -206,10 +207,10 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php"> ISO 639-1
    * two-letter language code.</a>
    * 
-   * If you use this option and also set the {@link #setShowCaption(Boolean)
+   * If you use this option and also set the {@link #setCaption(Boolean)
    * showCaption } then the player will show captions in the specified language
    * when the player loads.
-   * If you do not also set the {@link #setShowCaption(Boolean) showCaption }
+   * If you do not also set the {@link #setCaption(Boolean) showCaption }
    * option, then captions will not
    * display by default, but will display in the specified language if the user
    * opts to turn captions on.
@@ -239,7 +240,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * @param showCaption the load caption property
    * @return the youtube component
    */
-  public Youtube setShowCaption(Boolean showCaption) {
+  public Youtube setCaption(Boolean showCaption) {
     this.showCaption = showCaption;
     this.updateSrc();
     return this;
@@ -250,7 +251,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * 
    * @return true if the load caption is enabled, false otherwise
    */
-  public Boolean isShowCaption() {
+  public Boolean isCaption() {
     return this.showCaption;
   }
 
@@ -260,7 +261,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * @param controls when true, the player controls are shown, hidden otherwise.
    * @return the youtube component
    */
-  public Youtube setShowControls(Boolean controls) {
+  public Youtube setControls(Boolean controls) {
     this.controls = controls;
     this.updateSrc();
     return this;
@@ -271,7 +272,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * 
    * @return true if the controls are shown, false otherwise
    */
-  public Boolean isShowControls() {
+  public Boolean isControls() {
     return this.controls;
   }
 
@@ -381,7 +382,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * @return the youtube component
    */
   public Youtube setShowAnnotations(Boolean showAnnotations) {
-    this.showAnnotations = showAnnotations ? 1 : 3;
+    this.showAnnotations = Boolean.TRUE.equals(showAnnotations) ? 1 : 3;
     this.updateSrc();
     return this;
   }
@@ -600,7 +601,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    * @return the URL of the video
    */
   public String getURL() {
-    String url = "https://www.youtube.com/embed/" + this.id;
+    String url = "https://www.youtube.com/embed/" + this.videoId;
     HashMap<String, String> params = new HashMap<String, String>();
 
     params.put("autoplay", this.autoplay ? "1" : "0");
@@ -643,11 +644,12 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
     }
 
     if (!params.isEmpty()) {
-      url += "?";
-      for (String key : params.keySet()) {
-        url += key + "=" + params.get(key) + "&";
+      StringBuilder builder = new StringBuilder(url + "?");
+      for (Map.Entry<String, String> entry : params.entrySet()) {
+        builder.append(entry.getKey() + "=" + entry.getValue() + "&");
       }
-      url = url.substring(0, url.length() - 1);
+
+      url = builder.toString();
     }
 
     return url;
@@ -695,7 +697,7 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
     if (!isAttached())
       return;
 
-    if (this.isShowControls()) {
+    if (Boolean.TRUE.equals(isControls())) {
       setComponentStyle("pointer-events", "auto");
     } else {
       setComponentStyle("pointer-events", "none");
