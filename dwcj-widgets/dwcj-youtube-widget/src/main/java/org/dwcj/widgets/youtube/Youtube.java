@@ -6,9 +6,11 @@ import java.util.Map;
 import org.dwcj.annotations.InlineStyleSheet;
 import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.HasAttribute;
+import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;
 import org.dwcj.webcomponent.PropertyDescriptor;
 import org.dwcj.webcomponent.WebComponent;
+import org.dwcj.webcomponent.annotations.HtmlViewAttribute;
 import org.dwcj.webcomponent.annotations.NodeAttribute;
 import org.dwcj.webcomponent.annotations.NodeName;
 
@@ -32,20 +34,21 @@ import org.dwcj.webcomponent.annotations.NodeName;
  * 
  * @author Hyyan Abo Fakher
  */
+@HtmlViewAttribute(name = "dwcj-youtube-container")
 @NodeName("iframe")
-@NodeAttribute(name = "youtube-widget")
+@NodeAttribute(name = "dwcj-youtube")
 @NodeAttribute(name = "frameborder", value = "0")
 @NodeAttribute(name = "allow", value = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share")
 @NodeAttribute(name = "allowfullscreen", value = "true")
 @InlineStyleSheet(id = "dwcj-youtube-widget", once = true, value = /* css */ """
-    .dwcj-ytw-container {
+    [dwcj-youtube-container] {
       width: 100%;
       /* Keep it the right aspect-ratio */
       aspect-ratio: 16/9;
       overflow: hidden !important;
     }
 
-    .dwcj-ytw-container iframe {
+    [dwcj-youtube-container] iframe {
       /* Extend it beyond the viewport... */
       width: 300%;
       height: 100%;
@@ -53,7 +56,7 @@ import org.dwcj.webcomponent.annotations.NodeName;
       margin-left: -100%;
     }
     """)
-public class Youtube extends WebComponent implements HasStyle, HasAttribute {
+public class Youtube extends WebComponent implements HasClassName, HasStyle, HasAttribute {
 
   /** The type of the content that will load in the player. */
   public enum ListType {
@@ -142,7 +145,6 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
    */
   public Youtube() {
     super();
-    getHtmlContainer().addClassName("dwcj-ytw-container");
   }
 
   /**
@@ -653,6 +655,24 @@ public class Youtube extends WebComponent implements HasStyle, HasAttribute {
     }
 
     return url;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Youtube addClassName(String className) {
+    addComponentClassName(className);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Youtube removeClassName(String className) {
+    removeComponentClassName(className);
+    return this;
   }
 
   /**
