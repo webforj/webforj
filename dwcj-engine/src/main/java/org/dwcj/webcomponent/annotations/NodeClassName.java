@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The NodeClass annotation is used to set css classes on the web component
+ * The NodeClassName annotation is used to set css classes on the web component
  * upon creation.
  * 
  * For example, the following annotation will set the class "my-class" on the
@@ -25,19 +25,19 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(NodeClass.Container.class)
+@Repeatable(NodeClassName.Container.class)
 @Inherited
 @Documented
-public @interface NodeClass {
+public @interface NodeClassName {
   /**
    * An array of class names to be added to node.
    **/
   String[] value() default {};
 
   /**
-   * The container annotation for {@link NodeClass} annotation.
+   * The container annotation for {@link NodeClassName} annotation.
    * 
-   * @see NodeClass
+   * @see NodeClassName
    * @author Hyyan Abo Fakher
    */
   @Target(ElementType.TYPE)
@@ -46,10 +46,10 @@ public @interface NodeClass {
   @Documented
   public @interface Container {
     /**
-     * An array of {@link NodeClass} annotations.
+     * An array of {@link NodeClassName} annotations.
      * 
-     * @return an array of {@link NodeClass} annotations
+     * @return an array of {@link NodeClassName} annotations
      */
-    NodeClass[] value();
+    NodeClassName[] value();
   }
 }

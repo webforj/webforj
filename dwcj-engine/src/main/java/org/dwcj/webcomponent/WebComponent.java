@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,11 +32,11 @@ import org.dwcj.exceptions.DwcControlDestroyed;
 import org.dwcj.exceptions.DwcRuntimeException;
 
 import org.dwcj.webcomponent.annotations.NodeAttribute;
-import org.dwcj.webcomponent.annotations.NodeClass;
+import org.dwcj.webcomponent.annotations.NodeClassName;
 import org.dwcj.webcomponent.annotations.EventExpressions;
 import org.dwcj.webcomponent.annotations.EventName;
 import org.dwcj.webcomponent.annotations.HtmlViewAttribute;
-import org.dwcj.webcomponent.annotations.HtmlViewClass;
+import org.dwcj.webcomponent.annotations.HtmlViewClassName;
 import org.dwcj.webcomponent.annotations.NodeName;
 import org.dwcj.webcomponent.annotations.NodeProperty;
 import org.dwcj.webcomponent.events.Event;
@@ -244,17 +245,15 @@ public abstract class WebComponent extends AbstractControl {
     String name = getComponentTagName();
 
     // parse NodeClass annotations
-    NodeClass[] classes = getClass().getAnnotationsByType(NodeClass.class);
+    NodeClassName[] classes = getClass().getAnnotationsByType(NodeClassName.class);
     ArrayList<String> args = new ArrayList<>();
     // value is an array of strings
-    for (NodeClass c : classes) {
-      for (String s : c.value()) {
-        args.add(s);
-      }
+    for (NodeClassName c : classes) {
+      args.addAll(Arrays.asList(c.value()));
     }
 
-    if (args.size() > 0) {
-      addComponentClassName((String[]) args.toArray(new String[args.size()]));
+    if (!args.isEmpty()) {
+      addComponentClassName(args.toArray(new String[args.size()]));
     }
 
     // parse NodeProperty annotations
@@ -1502,9 +1501,9 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     // parse HtmlViewClass annotations
-    HtmlViewClass[] classes = getClass().getAnnotationsByType(HtmlViewClass.class);
+    HtmlViewClassName[] classes = getClass().getAnnotationsByType(HtmlViewClassName.class);
     // value is an array of strings
-    for (HtmlViewClass c : classes) {
+    for (HtmlViewClassName c : classes) {
       for (String s : c.value()) {
         hv.addClassName(s);
       }

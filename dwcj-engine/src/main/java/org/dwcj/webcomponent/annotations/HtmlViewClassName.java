@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The HtmlViewClass annotation is used to set css classes on the html view
+ * The HtmlViewClassName annotation is used to set css classes on the html view
  * hosting the web component upon creation.
  * 
  * For example, the following annotation will set the class "my-class" on the
@@ -25,19 +25,19 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(HtmlViewClass.Container.class)
+@Repeatable(HtmlViewClassName.Container.class)
 @Inherited
 @Documented
-public @interface HtmlViewClass {
+public @interface HtmlViewClassName {
   /**
    * An array of class names to be added to html view hosting the a node.
    **/
   String[] value() default {};
 
   /**
-   * The container annotation for {@link HtmlViewClass} annotation.
+   * The container annotation for {@link HtmlViewClassName} annotation.
    * 
-   * @see HtmlViewClass
+   * @see HtmlViewClassName
    * @author Hyyan Abo Fakher
    */
   @Target(ElementType.TYPE)
@@ -46,10 +46,10 @@ public @interface HtmlViewClass {
   @Documented
   public @interface Container {
     /**
-     * An array of {@link HtmlViewClass} annotations.
+     * An array of {@link HtmlViewClassName} annotations.
      * 
-     * @return an array of {@link HtmlViewClass} annotations
+     * @return an array of {@link HtmlViewClassName} annotations
      */
-    HtmlViewClass[] value();
+    HtmlViewClassName[] value();
   }
 }
