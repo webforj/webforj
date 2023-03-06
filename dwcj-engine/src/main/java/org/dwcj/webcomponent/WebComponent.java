@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,8 +32,11 @@ import org.dwcj.exceptions.DwcControlDestroyed;
 import org.dwcj.exceptions.DwcRuntimeException;
 
 import org.dwcj.webcomponent.annotations.NodeAttribute;
+import org.dwcj.webcomponent.annotations.NodeClassName;
 import org.dwcj.webcomponent.annotations.EventExpressions;
 import org.dwcj.webcomponent.annotations.EventName;
+import org.dwcj.webcomponent.annotations.HtmlViewAttribute;
+import org.dwcj.webcomponent.annotations.HtmlViewClassName;
 import org.dwcj.webcomponent.annotations.NodeName;
 import org.dwcj.webcomponent.annotations.NodeProperty;
 import org.dwcj.webcomponent.events.Event;
@@ -240,17 +244,29 @@ public abstract class WebComponent extends AbstractControl {
 
     String name = getComponentTagName();
 
-    // parse NodeAttribute annotations
-    NodeAttribute[] attrs = getClass().getAnnotationsByType(NodeAttribute.class);
-    StringBuilder attr = new StringBuilder();
-    for (NodeAttribute a : attrs) {
-      attr.append(" ").append(a.name()).append("=\"").append(a.value()).append("\"");
+    // parse NodeClass annotations
+    NodeClassName[] classes = getClass().getAnnotationsByType(NodeClassName.class);
+    ArrayList<String> args = new ArrayList<>();
+    // value is an array of strings
+    for (NodeClassName c : classes) {
+      args.addAll(Arrays.asList(c.value()));
+    }
+
+    if (!args.isEmpty()) {
+      addComponentClassName(args.toArray(new String[args.size()]));
     }
 
     // parse NodeProperty annotations
     NodeProperty[] props = getClass().getAnnotationsByType(NodeProperty.class);
     for (NodeProperty p : props) {
       setComponentProperty(p.name(), p.value());
+    }
+
+    // parse NodeAttribute annotations
+    NodeAttribute[] attrs = getClass().getAnnotationsByType(NodeAttribute.class);
+    StringBuilder attr = new StringBuilder();
+    for (NodeAttribute a : attrs) {
+      attr.append(" ").append(a.name()).append("=\"").append(a.value()).append("\"");
     }
 
     attr.append(" dwcj-component=\"").append(getUUID()).append("\"");
@@ -1419,8 +1435,8 @@ public abstract class WebComponent extends AbstractControl {
    * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
-  protected void addComponentClassName(String className) {
-    invokeAsync("classList.add", className);
+  protected void addComponentClassName(String... className) {
+    invokeAsync("classList.add", (Object[]) className);
   }
 
   /**
@@ -1430,8 +1446,8 @@ public abstract class WebComponent extends AbstractControl {
    * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
    */
-  protected void removeComponentClassName(String className) {
-    invokeAsync("classList.remove", className);
+  protected void removeComponentClassName(String... className) {
+    invokeAsync("classList.remove", (Object[]) className);
   }
 
   /**
@@ -1476,6 +1492,21 @@ public abstract class WebComponent extends AbstractControl {
 
     if (isAttached()) {
       return;
+    }
+
+    // parse HtmlViewAttribute annotations
+    HtmlViewAttribute[] attrs = getClass().getAnnotationsByType(HtmlViewAttribute.class);
+    for (HtmlViewAttribute attr : attrs) {
+      hv.setAttribute(attr.name(), attr.value());
+    }
+
+    // parse HtmlViewClass annotations
+    HtmlViewClassName[] classes = getClass().getAnnotationsByType(HtmlViewClassName.class);
+    // value is an array of strings
+    for (HtmlViewClassName c : classes) {
+      for (String s : c.value()) {
+        hv.addClassName(s);
+      }
     }
 
     // attach the stylesheets
