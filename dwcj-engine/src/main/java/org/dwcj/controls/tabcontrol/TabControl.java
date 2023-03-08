@@ -112,6 +112,13 @@ public final class TabControl extends AbstractDwcControl {
      * @return The title of the tab
      */
     public String getTitleAt(int index) {
+        if(this.ctrl != null){
+            try {
+                return this.tabCtrl.getTitleAt(index);
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
         return this.tabs.get(index).getKey();
     }
 
@@ -122,6 +129,13 @@ public final class TabControl extends AbstractDwcControl {
      * @return The Div of the tab
      */
     public Div getPanelAt(int index) {
+        if(this.ctrl != null){
+            try {
+                return (Div) this.tabCtrl.getControlAt(index);
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
         return this.tabs.get(index).getValue();
     }
 
@@ -155,8 +169,9 @@ public final class TabControl extends AbstractDwcControl {
             } catch (BBjException e) {
                 Environment.logError(e);
             }
+        } else{
+            this.tabs.add(index, new SimpleEntry<>(text, null));
         }
-        this.tabs.add(index, new SimpleEntry<>(text, null));
         return this;
     }
 
@@ -171,12 +186,14 @@ public final class TabControl extends AbstractDwcControl {
     public TabControl insert(int index, String text, Div panel) {
         if (this.ctrl != null) {
             try {
+                parentPanel.add(panel);
                 this.tabCtrl.insertTab(index, text, PanelAccessor.getDefault().getBBjWindow(panel));
             } catch (BBjException | IllegalAccessException e) {
                 Environment.logError(e);
             }
+        } else{
+            this.tabs.add(index, new SimpleEntry<>(text, panel));
         }
-        this.tabs.add(index, new SimpleEntry<>(text, panel));
         return this;
     }
 
@@ -189,22 +206,14 @@ public final class TabControl extends AbstractDwcControl {
     public TabControl remove(int index) {
         if (this.ctrl != null) {
             try {
-                App.consoleLog(String.valueOf(this.tabCtrl.getNumTabs()));
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-            try {
                 this.tabCtrl.removeTab(index);
             } catch (BBjException e) {
                 Environment.logError(e);
             }
+        } else{
+            this.tabs.remove(index);
         }
-        this.tabs.remove(index);
         return this;
-    }
-
-    public ArrayList<SimpleEntry<String, Div>> getTabs() {
-        return this.tabs;
     }
 
     /**
@@ -219,12 +228,14 @@ public final class TabControl extends AbstractDwcControl {
     public TabControl setPanelAt(int index, Div panel) {
         if (this.ctrl != null) {
             try {
+                parentPanel.add(panel);
                 this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
             } catch (BBjException | IllegalAccessException e) {
                 Environment.logError(e);
             }
+        } else{
+            this.tabs.get(index).setValue(panel);
         }
-        this.tabs.get(index).setValue(panel);
         return this;
     }
 
