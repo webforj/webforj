@@ -1,35 +1,35 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.dwcj</groupId>
-        <artifactId>dwcj-project</artifactId>
-        <version>0.12.0-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.dwcj</groupId>
+    <artifactId>dwcj-project</artifactId>
+    <version>0.12.0-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>dwcj-widgets</artifactId>
-    <packaging>pom</packaging>
-    <name>dwcj-widgets</name>
-    <description>
+  <artifactId>dwcj-widgets</artifactId>
+  <packaging>pom</packaging>
+  <name>dwcj-widgets</name>
+  <description>
         Widgets for the dwcj-engine
     </description>
 
-    <modules>
-        <module>dwcj-code-widget</module>
-        <module>dwcj-markdown-widget</module>
-        <module>dwcj-terminal-widget</module>
-        <module>dwcj-googlecharts-widget</module>
-        <module>dwcj-youtube-widget</module>
-    </modules>
+  <modules>
+    <module>dwcj-code-widget</module>
+    <module>dwcj-markdown-widget</module>
+    <module>dwcj-terminal-widget</module>
+    <module>dwcj-googlecharts-widget</module>
+    <module>dwcj-youtube-widget</module>
+  </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.dwcj</groupId>
-            <artifactId>dwcj-engine</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.dwcj</groupId>
+      <artifactId>dwcj-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>
