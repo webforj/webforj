@@ -123,23 +123,6 @@ public final class TabControl extends AbstractDwcControl {
     }
 
     /**
-     * Returns the Div of the tab at the given index
-     * 
-     * @param index Desired index number
-     * @return The Div of the tab
-     */
-    public Div getPanelAt(int index) {
-        if(this.ctrl != null){
-            try {
-                return (Div) this.tabCtrl.getControlAt(index);
-            } catch (BBjException e) {
-                Environment.logError(e);
-            }
-        }
-        return this.tabs.get(index).getValue();
-    }
-
-    /**
      * Gets the number of tabs in the tab control
      * 
      * @return The number of tabs
