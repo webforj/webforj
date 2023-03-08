@@ -151,8 +151,9 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
             ctrl.addStyle(selector);
         } catch (BBjException e) {
             Environment.logError(e);
+        } else {
+            this.cssClasses.add(selector);
         }
-        this.cssClasses.add(selector);
         return this;
     }
 
