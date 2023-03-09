@@ -1,5 +1,6 @@
 package org.dwcj.widgets.googlecharts;
 
+import org.dwcj.App;
 import org.dwcj.annotations.Attribute;
 import org.dwcj.annotations.JavaScript;
 import org.dwcj.widgets.googlecharts.events.GoogleChartReadyEvent;
@@ -256,20 +257,16 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   private final PropertyDescriptor<JsonObject> OPTIONS = PropertyDescriptor.property("options", null);
   private final PropertyDescriptor<JsonArray> SELECTION = PropertyDescriptor.property("selection", null);
 
+  private EventListener<GoogleChartReadyEvent> firstRenderListener;
+
   /**
    * Create a new GoogleChart.
    */
   public GoogleChart() {
     setStyle("overflow", "hidden");
 
-    // Auto resize the chart when the window is resized.
-    StringBuilder sb = new StringBuilder();
-    sb.append("component.__dwcj_handleResize__ = () => component.redraw();");
-    sb.append("window.addEventListener('resize', component.__dwcj_handleResize__);");
-    sb.append("return"); // Return nothing to avoid auto warning.
-
-    executeAsyncExpression(sb.toString());
-
+    this.firstRenderListener = this::handleFirstRender;
+    addReadyListener(this.firstRenderListener);
   }
 
   /**
@@ -577,5 +574,22 @@ public final class GoogleChart extends WebComponent implements HasStyle {
     }
 
     super.destroy();
+  }
+
+  private void handleFirstRender(GoogleChartReadyEvent event) {
+    // add a window resize listener
+    StringBuilder sb = new StringBuilder();
+    sb.append("if (component && component.__dwcj_handleResize__) {");
+    sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
+    sb.append("}");
+    sb.append("component.__dwcj_handleResize__ = function() {");
+    sb.append("  component.redraw();");
+    sb.append("};");
+    sb.append("window.addEventListener('resize', component.__dwcj_handleResize__);");
+    sb.append("return"); // to avoid auto wrapping
+    executeAsyncExpression(sb.toString());
+
+    removeReadyListener(this.firstRenderListener);
+    executeAsyncExpression("component.redraw();");
   }
 }
