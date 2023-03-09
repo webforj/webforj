@@ -101,8 +101,9 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
             ctrl.setAttribute(attribute, value);
         } catch (BBjException e) {
             Environment.logError(e);
+        } else{
+            attributes.put(attribute, value);
         }
-        attributes.put(attribute, value);
         return this;
     }
 
@@ -174,8 +175,9 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
             ctrl.setStyle(property, value);
         } catch (BBjException e) {
             Environment.logError(e);
+        } else{
+            this.styles.put(property, value);
         }
-        this.styles.put(property, value);
         return this;
     }
 
