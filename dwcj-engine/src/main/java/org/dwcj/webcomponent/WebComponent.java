@@ -479,25 +479,6 @@ public abstract class WebComponent extends AbstractControl {
   }
 
   /**
-   * Get the event name for the given event class.
-   * 
-   * @param eventClass the event class
-   * @return the event name
-   */
-  private String getEventName(Class<? extends Event<?>> eventClass) {
-    String eventName = null;
-
-    if (eventClass.isAnnotationPresent(EventName.class)) {
-      eventName = eventClass.getAnnotation(EventName.class).value();
-    } else {
-      throw new DwcRuntimeException(
-          "The event class must be annotated with @NodeEvent");
-    }
-
-    return eventName;
-  }
-
-  /**
    * Add an event listener.
    * 
    * Event listeners are instances of {@link EventListener} that are invoked when
@@ -1687,6 +1668,25 @@ public abstract class WebComponent extends AbstractControl {
         eventDispatcher.dispatchEvent(event);
       }
     }
+  }
+
+  /**
+   * Get the event name for the given event class.
+   * 
+   * @param eventClass the event class
+   * @return the event name
+   */
+  private String getEventName(Class<? extends Event<?>> eventClass) {
+    String eventName = null;
+
+    if (eventClass.isAnnotationPresent(EventName.class)) {
+      eventName = eventClass.getAnnotation(EventName.class).value();
+    } else {
+      throw new DwcRuntimeException(
+          "The event class must be annotated with @NodeEvent");
+    }
+
+    return eventName;
   }
 
   /**
