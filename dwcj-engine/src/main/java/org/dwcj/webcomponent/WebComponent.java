@@ -495,6 +495,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
+   * @throws DwcRuntimeException if the event class is not annotated with @EventName
    */
   protected <K extends Event<?>> void addEventListener(
       Class<K> eventClass,
@@ -644,6 +645,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
+   * @throws DwcRuntimeException if the event class is not annotated with @EventName
    */
   protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
       EventListener<K> listener) {
@@ -1675,6 +1677,7 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param eventClass the event class
    * @return the event name
+   * @throws DwcRuntimeException if the event class is not annotated with @EventName
    */
   private String getEventName(Class<? extends Event<?>> eventClass) {
     String eventName = null;
