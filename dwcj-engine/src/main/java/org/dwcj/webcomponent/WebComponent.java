@@ -479,6 +479,25 @@ public abstract class WebComponent extends AbstractControl {
   }
 
   /**
+   * Get the event name for the given event class.
+   * 
+   * @param eventClass the event class
+   * @return the event name
+   */
+  private String getEventName(Class<? extends Event<?>> eventClass) {
+    String eventName = null;
+
+    if (eventClass.isAnnotationPresent(EventName.class)) {
+      eventName = eventClass.getAnnotation(EventName.class).value();
+    } else {
+      throw new DwcRuntimeException(
+          "The event class must be annotated with @NodeEvent");
+    }
+
+    return eventName;
+  }
+
+  /**
    * Add an event listener.
    * 
    * Event listeners are instances of {@link EventListener} that are invoked when
@@ -501,22 +520,14 @@ public abstract class WebComponent extends AbstractControl {
       EventListener<K> listener) {
     assertNotDestroyed();
 
-    String eventName = null;
-
-    if (eventClass.isAnnotationPresent(EventName.class)) {
-      eventName = eventClass.getAnnotation(EventName.class).value();
-    } else {
-      throw new DwcRuntimeException(
-          "The event class must be annotated with @NodeEvent");
-    }
-
+    String eventName = getEventName(eventClass);
     dispatcher.addEventListener(eventClass, listener);
     clientEventMap.put(eventName, eventClass);
 
     // register the event on the client side
     if (!registeredClientEvents.contains(eventName)) {
       StringBuilder js = new StringBuilder();
-      js.append("new Function('event', `")
+      js.append("component['__" + eventName + "Listener__']  = new Function('event', `")
           .append("const hv = document.querySelector('[dwcj-hv=\"").append(getUUID()).append("\"]');")
           .append("const component = hv.querySelector('[dwcj-component=\"").append(getUUID()).append("\"]');")
           .append("if(!hv || !hv.basisDispatchCustomEvent) return;")
@@ -656,7 +667,23 @@ public abstract class WebComponent extends AbstractControl {
   protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
       EventListener<K> listener) {
     assertNotDestroyed();
+
+    String eventName = getEventName(eventClass);
+
+    clientEventMap.remove(eventName);
+    registeredClientEvents.remove(eventName);
     dispatcher.removeEventListener(eventClass, listener);
+
+    boolean shouldReachClient = dispatcher.getListenersCount(eventClass) == 0;
+
+    if (shouldReachClient) {
+      invokeAsync(
+          "removeEventListener",
+          eventName,
+          new JsRawParam("component['__" + eventName + "Listener__']"));
+
+      executeAsyncExpression("delete component['__" + eventName + "Listener__']");
+    }
   }
 
   /**
