@@ -5,6 +5,7 @@ import org.dwcj.controls.applayout.events.AppLayoutDrawerOpenedEvent;
 
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;
+import org.dwcj.interfaces.HasVisibility;
 import org.dwcj.controls.panels.Div;
 import org.dwcj.webcomponent.PropertyDescriptor;
 import org.dwcj.webcomponent.WebComponent;
@@ -23,7 +24,7 @@ import org.dwcj.webcomponent.events.EventListener;
  */
 @NodeName("bbj-app-layout")
 @NodeAttribute(name = "fit-viewport")
-public class AppLayout extends WebComponent implements HasClassName, HasStyle {
+public class AppLayout extends WebComponent implements HasClassName, HasStyle, HasVisibility {
 
   /**
    * The drawer placement.
@@ -176,6 +177,8 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   private final PropertyDescriptor<Boolean> HEADER_FIXED = PropertyDescriptor.property("headerFixed", true);
   private final PropertyDescriptor<Boolean> HEADER_OFFSCREEN = PropertyDescriptor.property("headerOffscreen", true);
   private final PropertyDescriptor<Boolean> HEADER_REVEAL = PropertyDescriptor.property("headerReveal", false);
+
+  private boolean visible = true;
 
   /**
    * Instantiates a new app layout.
@@ -590,6 +593,23 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle {
   public AppLayout setStyle(String property, String value) {
     setComponentStyle(property, value);
     return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Boolean isVisible() {
+    return visible;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public AppLayout setVisible(Boolean visible) {
+    this.visible = visible;
+    return setStyle("visibility", Boolean.TRUE.equals(visible) ? "visible" : "hidden");
   }
 
   /**
