@@ -2,7 +2,7 @@ package org.dwcj.controls.applayout;
 
 import org.dwcj.controls.applayout.events.AppLayoutDrawerClosedEvent;
 import org.dwcj.controls.applayout.events.AppLayoutDrawerOpenedEvent;
-
+import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;
 import org.dwcj.interfaces.HasVisibility;
@@ -24,7 +24,7 @@ import org.dwcj.webcomponent.events.EventListener;
  */
 @NodeName("bbj-app-layout")
 @NodeAttribute(name = "fit-viewport")
-public class AppLayout extends WebComponent implements HasClassName, HasStyle, HasVisibility {
+public class AppLayout extends WebComponent implements HasClassName, HasStyle, HasVisibility, HasAttribute {
 
   /**
    * The drawer placement.
@@ -592,6 +592,23 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
   @Override
   public AppLayout setStyle(String property, String value) {
     setComponentStyle(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getAttribute(String attribute) {
+    return getComponentAttribute(attribute);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public HasAttribute setAttribute(String attribute, String value) {
+    setComponentAttribute(attribute, value);
     return this;
   }
 
