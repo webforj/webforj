@@ -1,6 +1,5 @@
 package org.dwcj.widgets.googlecharts;
 
-import org.dwcj.App;
 import org.dwcj.annotations.Attribute;
 import org.dwcj.annotations.JavaScript;
 import org.dwcj.widgets.googlecharts.events.GoogleChartReadyEvent;
@@ -582,14 +581,12 @@ public final class GoogleChart extends WebComponent implements HasStyle {
     sb.append("if (component && component.__dwcj_handleResize__) {");
     sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
     sb.append("}");
-    sb.append("component.__dwcj_handleResize__ = function() {");
-    sb.append("  component.redraw();");
-    sb.append("};");
+    sb.append("component.__dwcj_handleResize__ = () => component.redraw();");
     sb.append("window.addEventListener('resize', component.__dwcj_handleResize__);");
     sb.append("return"); // to avoid auto wrapping
     executeAsyncExpression(sb.toString());
 
     removeReadyListener(this.firstRenderListener);
-    executeAsyncExpression("component.redraw();");
+    executeAsyncExpression("requestAnimationFrame(() => component.redraw());");
   }
 }
