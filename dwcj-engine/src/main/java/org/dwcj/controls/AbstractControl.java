@@ -51,9 +51,9 @@ public abstract class AbstractControl implements Control, HasDestroy {
      * using the
      * Panel::add(Control) method, instead of this
      * 
-     * @param p the panel to add this control on
+     * @param panel the panel to add this control on
      */
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractPanel panel) {
     }
 
     /**
