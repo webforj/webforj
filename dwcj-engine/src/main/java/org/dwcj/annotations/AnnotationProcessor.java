@@ -313,7 +313,7 @@ public final class AnnotationProcessor {
           attributes.put("id", link.id());
         }
 
-        App.getPage().addLink(link.url(), link.top(), attributes);
+        App.getPage().addLink(link.value(), link.top(), attributes);
       }
     }
   }

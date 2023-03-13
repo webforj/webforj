@@ -43,7 +43,7 @@ public @interface Link {
    * 
    * @return the link URL
    **/
-  String url();
+  String value();
 
   /**
    * A boolean value specifying whether this link is to be injected into the head
