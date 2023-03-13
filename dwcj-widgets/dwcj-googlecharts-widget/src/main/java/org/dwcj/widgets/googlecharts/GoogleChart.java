@@ -2,6 +2,7 @@ package org.dwcj.widgets.googlecharts;
 
 import org.dwcj.annotations.Attribute;
 import org.dwcj.annotations.JavaScript;
+import org.dwcj.annotations.Link;
 import org.dwcj.widgets.googlecharts.events.GoogleChartReadyEvent;
 import org.dwcj.widgets.googlecharts.events.GoogleChartSelectedEvent;
 import org.dwcj.interfaces.HasStyle;
@@ -25,6 +26,13 @@ import com.google.gson.JsonObject;
  * @author Hyyan Abo Fakher
  */
 @NodeName("google-chart")
+@Link(value = "https://www.gstatic.com", id = "gstatic-preconnect", attributes = {
+    @Attribute(name = "rel", value = "preconnect"),
+    @Attribute(name = "crossorigin", value = "")
+})
+@Link(value = "https://www.gstatic.com", id = "gstatic-dns-prefetch", attributes = {
+    @Attribute(name = "rel", value = "dns-prefetch")
+})
 @JavaScript(value = "https://cdn.jsdelivr.net/npm/@google-web-components/google-chart@5.0.3/+esm", attributes = {
     @Attribute(name = "type", value = "module")
 })
