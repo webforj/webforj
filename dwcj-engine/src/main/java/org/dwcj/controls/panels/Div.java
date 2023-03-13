@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 public class Div extends AbstractPanel {
 
 
+    private ArrayList<Consumer<DivClickEvent>> callbacks = new ArrayList<>();
     private DivClickEventSink divClickEventSink;
 
     private final ArrayList<AbstractControl> catchUpControls = new ArrayList<>();
@@ -83,9 +84,17 @@ public class Div extends AbstractPanel {
      * @return the control itself
      */
     public Div onClick(Consumer<DivClickEvent> callback) {
-        if (this.divClickEventSink ==null)
-            this.divClickEventSink = new DivClickEventSink(this, callback);
-        else this.divClickEventSink.addCallback(callback);
+        if(this.ctrl != null){
+            if (this.divClickEventSink == null){
+                this.divClickEventSink = new DivClickEventSink(this, callback);
+            }
+            else{
+                this.divClickEventSink.addCallback(callback);
+            }
+        }
+        else {
+            this.callbacks.add(callback);
+        }
         return this;
     }
 
@@ -152,6 +161,13 @@ public class Div extends AbstractPanel {
 
         while(!this.catchUpControls.isEmpty()){
             this.add(catchUpControls.remove(0));
+        }
+
+        if(!this.callbacks.isEmpty()){
+            this.divClickEventSink = new DivClickEventSink(this);
+            while(!this.callbacks.isEmpty()){
+                this.divClickEventSink.addCallback(this.callbacks.remove(0));
+            }
         }
 
     }
