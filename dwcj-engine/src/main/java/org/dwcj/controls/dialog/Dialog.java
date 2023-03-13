@@ -148,7 +148,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   private final PropertyDescriptor<Boolean> BACKDROP = PropertyDescriptor.property("backdrop", true);
   private final PropertyDescriptor<Boolean> BLURRED = PropertyDescriptor.property("blurred", false);
   private final PropertyDescriptor<String> BREAKPOINT = PropertyDescriptor.property("breakpoint", "");
-  private final PropertyDescriptor<Boolean> CANCEL_ON_ESC_KEY = PropertyDescriptor.property("cancelOnEscKey", true);
+  private final PropertyDescriptor<Boolean> CANCEL_ON_ESC_KEY = PropertyDescriptor.property("cancelOnEscKey", false);
   private final PropertyDescriptor<Boolean> CANCEL_ON_OUTSIDE_CLICK = PropertyDescriptor
       .property("cancelOnOutsideClick", true);
   private final PropertyDescriptor<Boolean> FULLSCREEN = PropertyDescriptor.property("fullscreen", false);
