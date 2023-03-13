@@ -226,6 +226,7 @@ public final class TextBox extends AbstractDwcControl implements HasReadOnly, Fo
                 Environment.logError(e);
             }
         }
+        this.readOnly = editable;
         return this;
     }
 
