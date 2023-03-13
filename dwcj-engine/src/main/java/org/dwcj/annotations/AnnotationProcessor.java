@@ -309,10 +309,17 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        if (link.id() != null && !link.id().isEmpty()) {
-          attributes.put("id", link.id());
+        String id = link.id() != null && !link.id().isEmpty() ? link.id() : link.value();
+        String key = "org.dwcj.annotations.AnnotationProcessor::links::" + id;
+        if (link.top()) {
+          key += "::top";
         }
 
+        if (ObjectTable.contains(key)) {
+          continue;
+        }
+
+        ObjectTable.put(key, true);
         App.getPage().addLink(link.value(), link.top(), attributes);
       }
     }
