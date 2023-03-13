@@ -33,6 +33,23 @@ public final class DivClickEventSink {
             Environment.logError(e);
         }
     }
+    
+    public DivClickEventSink(Div div) {
+        this.targets = new ArrayList<>();
+        this.div = div;
+
+        BBjControl bbjctrl = null;
+        try {
+            bbjctrl = ControlAccessor.getDefault().getBBjControl(div);
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_MOUSE_DOWN,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
+                    "onEvent");
+
+        } catch (Exception e) {
+            Environment.logError(e);
+        }
+    }
+
     @SuppressWarnings("java:S1172")
     public void pushEvent(BBjMouseDownEvent ev) { //NOSONAR
         DivClickEvent dwcEv = new DivClickEvent(this.div);
