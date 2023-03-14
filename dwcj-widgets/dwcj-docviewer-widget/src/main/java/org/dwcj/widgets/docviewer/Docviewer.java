@@ -36,10 +36,17 @@ public class Docviewer extends AbstractControl {
         htmlView.setStyle(property, value);
     }
 
+     /**
+      * open: open a document directly from a phyiscal file on disk
+      * 
+      * @param String filePathString : the path to the sourcefile that should be opened
+      * 
+      * The approrpiate viewer will be determined as of the extention of the name
+      */
     public void open(String filePathString) {
 
         String extension = getExtension(filePathString);
-        
+
         // filePathString = filePathString.replaceAll("\\", "/");
         App.consoleLog(extension);
         Path filePath = Paths.get(filePathString.substring(filePathString.lastIndexOf("/") + 1));
@@ -89,8 +96,16 @@ public class Docviewer extends AbstractControl {
 
     }
 
+    /**
+     * openBlob: open a document directly from a blob in memory
+     * 
+     * @param String blob : the document as binary string
+     * @param String name : the file name under which the file should be served
+     * 
+     * The approrpiate viewer will be determined as of the extention of the name
+     *                  
+     */
     public void openBlob(String blob, String name) {
-        
 
         try {
             Path tempD = Files.createTempDirectory("__fviewer");
@@ -104,7 +119,7 @@ public class Docviewer extends AbstractControl {
             byte[] strToBytes = blob.getBytes();
             outputStream.write(strToBytes);
             outputStream.close();
-           
+
             open(path);
         } catch (IOException ex) {
             App.consoleLog(ex.toString());
