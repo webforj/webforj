@@ -115,13 +115,11 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
    * @param script The script to execute
    */
   public void executeAsyncScript(String script) {
-    App.consoleLog("hi there");
     if (this.ctrl != null) {
       try {
         bbjHtmlView.executeAsyncScript(script);
       } catch (BBjException e) {
         Environment.logError(e);
-        App.consoleLog(e.getMessage());
       }
     }
 
