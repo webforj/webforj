@@ -1,4 +1,3 @@
     note: no deploy with JDK 17, you need this:
-    export JDK_JAVA_OPTIONS='--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED'
     see https://issues.sonatype.org/browse/NEXUS-27902
     then do an mvm clean deploy -P perform-release in a terminal window

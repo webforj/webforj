@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjHtmlView;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
+import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.controls.AbstractDwcControl;
@@ -114,11 +115,13 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
    * @param script The script to execute
    */
   public void executeAsyncScript(String script) {
+    App.consoleLog("hi there");
     if (this.ctrl != null) {
       try {
         bbjHtmlView.executeAsyncScript(script);
       } catch (BBjException e) {
         Environment.logError(e);
+        App.consoleLog(e.getMessage());
       }
     }
 
