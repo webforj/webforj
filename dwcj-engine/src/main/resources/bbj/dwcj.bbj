@@ -116,17 +116,21 @@ dwcj_error:
         error$ = ""
         e! = bbjapi().getLastJavaException()
         sg! = BBjAPI().openSysGui("X0")
-        error$ = str(e!.getMessage()) + "\n"
-
-        st! = e!.getStackTrace()
-        sw! = new StringWriter()
-        pw! = new PrintWriter(sw!)
-        e!.printStackTrace(pw!)
-        script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
-        script!= script! + "console.log(`%c" + sw!.toString() + "`, 'color:#ff564d;font-size: 12px;');"
-
-        sg!.executeScript(script!)
-
+        if e! <> null() then
+            error$ = str(e!.getMessage()) + "\n"
+            st! = e!.getStackTrace()
+            sw! = new StringWriter()
+            pw! = new PrintWriter(sw!)
+            e!.printStackTrace(pw!)
+            script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
+            script!= script! + "console.log(`%c" + sw!.toString() + "`, 'color:#ff564d;font-size: 12px;');"
+            sg!.executeScript(script!)
+        else
+            error$=errmes(-1)
+            script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
+            script!= script! + "console.log(`%c" + error$ + "`, 'color:#ff564d;font-size: 12px;');"
+            sg!.executeScript(script!)
+        fi
         rem sg!.executeScript("console.log('Error Details:');")
         rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
 
