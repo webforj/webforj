@@ -53,7 +53,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
      * 
      * @param panel the panel to add this control on
      */
-    abstract protected void create(AbstractPanel panel);
+    protected abstract void create(AbstractPanel panel);
 
     /**
      * This method returns the underlying original BBj control
