@@ -95,6 +95,7 @@ public class BBjPanelAdapter extends AbstractPanel {
         return this;
     }
 
-
-
+    @Override
+    protected void create(AbstractPanel p) {
+    }
 }

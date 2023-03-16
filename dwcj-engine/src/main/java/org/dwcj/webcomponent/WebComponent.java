@@ -1528,7 +1528,6 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     this.panel = panel;
-    super.create(panel);
 
     hv.setText(getView());
     panel.add(hv);
