@@ -744,9 +744,9 @@ public abstract class WebComponent extends AbstractControl {
     String newUuid = UUID.randomUUID().toString().substring(0, 8);
     controls.put(control, new SimpleEntry<>(newUuid, false));
 
-    // add wc-link attribute to the control to link it to the web component
+    // add dwcj-refer attribute to the control to link it to the web component
     if (control instanceof AbstractDwcControl) {
-      ((AbstractDwcControl) control).setAttribute("wc-link", newUuid);
+      ((AbstractDwcControl) control).setAttribute("dwcj-refer", newUuid);
     }
 
     if (control instanceof WebComponent) {
@@ -757,7 +757,7 @@ public abstract class WebComponent extends AbstractControl {
         MethodType mt = MethodType.methodType(HtmlContainer.class);
         method = lookup.findVirtual(control.getClass(), "getHtmlContainer", mt);
         HtmlContainer container = (HtmlContainer) method.invoke(control);
-        container.setAttribute("wc-link", newUuid);
+        container.setAttribute("dwcj-refer", newUuid);
       } catch (Throwable e) {
         // pass
         Environment.logError("Failed to set web component attribute. " + e.getMessage());
@@ -773,7 +773,7 @@ public abstract class WebComponent extends AbstractControl {
 
     // move the control to the web component in the client side
     StringBuilder js = new StringBuilder();
-    js.append("const selector='[wc-link=\"").append(newUuid).append("\"]';")
+    js.append("const selector='[dwcj-refer=\"").append(newUuid).append("\"]';")
         .append("const control = document.querySelector(selector);")
         .append("if(control)")
         .append(" component.appendChild(control);")
