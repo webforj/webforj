@@ -53,8 +53,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
      * 
      * @param panel the panel to add this control on
      */
-    protected void create(AbstractPanel panel) {
-    }
+    protected abstract void create(AbstractPanel panel);
 
     /**
      * This method returns the underlying original BBj control
@@ -122,9 +121,9 @@ public abstract class AbstractControl implements Control, HasDestroy {
     @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
     protected void catchUp() throws IllegalAccessException {
 
-        if (Boolean.TRUE.equals(this.caughtUp)){
+        if (Boolean.TRUE.equals(this.caughtUp)) {
             throw new IllegalAccessException("catchUp cannot be called twice");
-        } 
+        }
 
         if (!(this.elementId.equals(""))) {
             this.setId(this.elementId);
@@ -134,12 +133,12 @@ public abstract class AbstractControl implements Control, HasDestroy {
     }
 
     @Override
-    public void destroy(){
+    public void destroy() {
         this.destroyed = true;
     }
 
     @Override
-    public Boolean isDestroyed(){
+    public Boolean isDestroyed() {
         return this.destroyed;
     }
 }

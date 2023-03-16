@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.dwcj.Environment;
 import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.popupmenu.PopupMenu;
 
 public class MenuItem extends AbstractDwcControl {
@@ -110,6 +111,11 @@ public class MenuItem extends AbstractDwcControl {
     public MenuItem setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
+    }
+
+    @Override
+    protected void create(AbstractPanel panel) {
+        throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 
 }

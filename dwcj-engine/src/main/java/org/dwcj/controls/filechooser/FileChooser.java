@@ -1,6 +1,7 @@
 package org.dwcj.controls.filechooser;
 
 import org.dwcj.controls.AbstractDwcControl;
+import org.dwcj.controls.panels.AbstractPanel;
 
 public class FileChooser extends AbstractDwcControl {
 
@@ -56,6 +57,11 @@ public class FileChooser extends AbstractDwcControl {
     public FileChooser removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
+    }
+
+    @Override
+    protected void create(AbstractPanel panel) {
+        throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 
 }
