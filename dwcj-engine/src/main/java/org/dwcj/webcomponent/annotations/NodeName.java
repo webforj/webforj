@@ -23,9 +23,11 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  * 
+ * If the value of this annotation is not defined, then the HTMLContainer will
+ * will be used as the root.
+ * 
  * @author Hyyan Abo Fakher
  */
-
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -33,5 +35,5 @@ import java.lang.annotation.Target;
 public @interface NodeName {
 
   /** The tag name of the web component */
-  String value();
+  String value() default "";
 }

@@ -87,13 +87,17 @@ public abstract class WebComponent extends AbstractControl {
   protected WebComponent() {
     super();
 
-    hv = new HtmlContainer("");
-    hv.setAttribute("dwcj-hv", getUUID());
-    hv.setAttribute("bbj-remove", "true");
-    hv.setAttribute(getComponentTagName(), "");
+    hv = new HtmlContainer();
     hv.setTabTraversable(false);
     hv.setFocusable(false);
     hv.onJavascriptEvent(this::handleJavascriptEvents);
+    hv.setAttribute("dwcj-hv", getUUID());
+    hv.setAttribute("bbj-remove", "true");
+
+    String name = getComponentTagName();
+    if (name.length() > 0 && name.contains("-")) {
+      hv.setAttribute(name, "");
+    }
   }
 
   /**
@@ -262,20 +266,34 @@ public abstract class WebComponent extends AbstractControl {
       setComponentProperty(p.name(), p.value());
     }
 
-    // parse NodeAttribute annotations
-    NodeAttribute[] attrs = getClass().getAnnotationsByType(NodeAttribute.class);
-    StringBuilder attr = new StringBuilder();
-    for (NodeAttribute a : attrs) {
-      attr.append(" ").append(a.name()).append("=\"").append(a.value()).append("\"");
+    // tag name is empty, the we use the the html container as the root element
+    if (name.trim().length() == 0) {
+      hv.setAttribute("dwcj-component", getUUID());
+
+      NodeAttribute[] attrs = getClass().getAnnotationsByType(NodeAttribute.class);
+      for (NodeAttribute a : attrs) {
+        hv.setAttribute(a.name(), a.value());
+      }
+
+      return "";
     }
+    // if the tag name is defined then we use as root element
+    else {
+      // parse NodeAttribute annotations
+      NodeAttribute[] attrs = getClass().getAnnotationsByType(NodeAttribute.class);
+      StringBuilder attr = new StringBuilder();
+      for (NodeAttribute a : attrs) {
+        attr.append(" ").append(a.name()).append("=\"").append(a.value()).append("\"");
+      }
 
-    attr.append(" dwcj-component=\"").append(getUUID()).append("\"");
+      attr.append(" dwcj-component=\"").append(getUUID()).append("\"");
 
-    StringBuilder view = new StringBuilder();
-    view.append("<").append(name).append(attr).append(">")
-        .append("</").append(name).append(">");
+      StringBuilder view = new StringBuilder();
+      view.append("<").append(name).append(attr).append(">")
+          .append("</").append(name).append(">");
 
-    return view.toString();
+      return view.toString();
+    }
   }
 
   /**
@@ -495,7 +513,8 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
-   * @throws DwcRuntimeException if the event class is not annotated with @EventName
+   * @throws DwcRuntimeException if the event class is not annotated
+   *                             with @EventName
    */
   protected <K extends Event<?>> void addEventListener(
       Class<K> eventClass,
@@ -645,7 +664,8 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @return the web component
    * @throws DwcControlDestroyed if the web component is destroyed
-   * @throws DwcRuntimeException if the event class is not annotated with @EventName
+   * @throws DwcRuntimeException if the event class is not annotated
+   *                             with @EventName
    */
   protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
       EventListener<K> listener) {
@@ -1676,7 +1696,8 @@ public abstract class WebComponent extends AbstractControl {
    * 
    * @param eventClass the event class
    * @return the event name
-   * @throws DwcRuntimeException if the event class is not annotated with @EventName
+   * @throws DwcRuntimeException if the event class is not annotated
+   *                             with @EventName
    */
   private String getEventName(Class<? extends Event<?>> eventClass) {
     String eventName = null;
@@ -1685,7 +1706,7 @@ public abstract class WebComponent extends AbstractControl {
       eventName = eventClass.getAnnotation(EventName.class).value();
     } else {
       throw new DwcRuntimeException(
-          "The event class must be annotated with @NodeEvent");
+          "The event class must be annotated with @EventName");
     }
 
     return eventName;
