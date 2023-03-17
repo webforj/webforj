@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -74,7 +74,7 @@ public abstract class WebComponent extends AbstractControl {
   private final Map<String, Entry<AbstractPanel, Boolean>> slots = new HashMap<>();
   private final Map<AbstractControl, Entry<String, Boolean>> controls = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private final Function<String, String> encode = (value) -> {
+  private final UnaryOperator<String> encode = (value) -> {
     return Base64.getEncoder().encodeToString(String.valueOf(value).getBytes());
   };
   private AbstractPanel panel;
