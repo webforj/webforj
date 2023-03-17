@@ -19,7 +19,7 @@ public final class Page {
 
   private static final Page pageInstance = new Page();
   private final UnaryOperator<String> minifyCss = (css) -> css.replaceAll("/\\*(?:.|[\\n\\r])*?\\*/", "")
-      .replaceAll("[\\n\\r]+", "").replaceAll("\\s{2,}", " ").replaceAll("\\s?([:,;{}])\\s?", "$1");
+      .replaceAll("[\\n\\r]+", "").replaceAll("\\s{2,}", " ").replaceAll("\\s?([:,;{}])\\s?", "$1"); // NOSONAR
 
   private Page() {
   }
