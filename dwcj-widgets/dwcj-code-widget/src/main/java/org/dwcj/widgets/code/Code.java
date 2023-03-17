@@ -3,7 +3,7 @@ package org.dwcj.widgets.code;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.panels.Div;
-import org.dwcj.environment.namespace.SessionNamespace;
+import org.dwcj.environment.ObjectTable;
 
 import java.util.HashSet;
 
@@ -17,8 +17,6 @@ public class Code  extends Div {
     public static final String PRISM_TB_CSS = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css";
     public static final String PRISM_CLIPBOARD_URL = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js";
 
-    private SessionNamespace ns = new SessionNamespace();
-
     private HtmlContainer hv;
 
     private String language;
@@ -29,10 +27,11 @@ public class Code  extends Div {
     protected void create(AbstractPanel p) {
         super.create(p);
 
-        prism_loaded = (HashSet<String>) ns.get("PRISM_LOADED");
-        if (prism_loaded == null){
+        if (!ObjectTable.contains("PRISM_LOADED")){
             prism_loaded = new HashSet<>();
-            ns.put("PRISM_LOADED", prism_loaded);
+            ObjectTable.put("PRISM_LOADED", prism_loaded);
+        } else {
+            prism_loaded = (HashSet<String>) ObjectTable.get("PRISM_LOADED");
         }
 
 

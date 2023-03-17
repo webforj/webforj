@@ -8,7 +8,7 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;
 import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.controls.panels.Div;
-import org.dwcj.environment.namespace.SessionNamespace;
+import org.dwcj.environment.ObjectTable;
 
 import java.util.HashSet;
 
@@ -24,19 +24,19 @@ public class Markdown extends Div {
 
     private final HashSet<String> loadedLangs = new HashSet<>();
     private boolean clipboardButtonLoaded=false;
-
-    private SessionNamespace ns = new SessionNamespace();
     private HashSet<String> prism_loaded;
 
     @Override
     protected void create(AbstractPanel p) {
         super.create(p);
 
-        prism_loaded = (HashSet<String>) ns.get("PRISM_LOADED");
-        if (prism_loaded == null){
+        if (!ObjectTable.contains("PRISM_LOADED")){
             prism_loaded = new HashSet<>();
-            ns.put("PRISM_LOADED", prism_loaded);
+            ObjectTable.put("PRISM_LOADED", prism_loaded);
+        } else {
+            prism_loaded = (HashSet<String>) ObjectTable.get("PRISM_LOADED");
         }
+
 
         hv = new HtmlContainer();
         add(hv);

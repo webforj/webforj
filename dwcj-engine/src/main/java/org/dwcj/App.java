@@ -341,8 +341,6 @@ public abstract class App {
     switch (namespaceType) {
       case PRIVATE:
         throw new IllegalArgumentException("PRIVATE namespaces have a prefix and a name!");
-      case SESSION:
-        return new SessionNamespace();
       case GROUP:
         return new GroupNamespace();
       case GLOBAL:
