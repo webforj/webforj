@@ -4,8 +4,6 @@ import java.util.HashMap;
 import org.dwcj.App;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.environment.ObjectTable;
-import org.dwcj.exceptions.DwcAnnotationException;
-import org.dwcj.exceptions.DwcException;
 
 /**
  * Annotation processor for the application and controls annotations
@@ -33,30 +31,24 @@ public final class AnnotationProcessor {
    * 
    * @param app   The application to process
    * @param phase The phase of the application
-   * @throws DwcAnnotationException If the annotation processing failed
    */
-  public void processAppAnnotations(App app, RunningPhase phase) throws DwcAnnotationException {
-    try {
-      if (phase == RunningPhase.PRE_RUN) {
-        processAppAttribute(app);
-        processAppMeta(app);
-        processLink(app);
-        processStyleSheet(app);
-        processInlineStyleSheet(app);
-        processJavaScript(app);
-        processInlineJavaScript(app);
-        processAppDarkTheme(app);
-        processAppLightTheme(app);
-        processAppTheme(app);
-      }
+  public void processAppAnnotations(App app, RunningPhase phase) {
+    if (phase == RunningPhase.PRE_RUN) {
+      processAppAttribute(app);
+      processAppMeta(app);
+      processLink(app);
+      processStyleSheet(app);
+      processInlineStyleSheet(app);
+      processJavaScript(app);
+      processInlineJavaScript(app);
+      processAppDarkTheme(app);
+      processAppLightTheme(app);
+      processAppTheme(app);
+    }
 
-      if (phase == RunningPhase.POST_RUN) {
-        // we don't need panels to override the app title
-        processAppTitle(app);
-      }
-
-    } catch (DwcException e) {
-      throw new DwcAnnotationException("Failed to process app annotations", e);
+    if (phase == RunningPhase.POST_RUN) {
+      // we don't need panels to override the app title
+      processAppTitle(app);
     }
   }
 
@@ -64,27 +56,21 @@ public final class AnnotationProcessor {
    * Process the annotations of the control
    * 
    * @param control The control to process
-   * @throws DwcAnnotationException If the annotation processing failed
    */
-  public void processControlAnnotations(AbstractControl control) throws DwcAnnotationException {
-    try {
-      processLink(control);
-      processStyleSheet(control);
-      processInlineStyleSheet(control);
-      processJavaScript(control);
-      processInlineJavaScript(control);
-    } catch (DwcException e) {
-      throw new DwcAnnotationException("Failed to process control annotations", e);
-    }
+  public void processControlAnnotations(AbstractControl control) {
+    processLink(control);
+    processStyleSheet(control);
+    processInlineStyleSheet(control);
+    processJavaScript(control);
+    processInlineJavaScript(control);
   }
 
   /**
    * Process the AppTitle annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processAppTitle(Object clazz) throws DwcException {
+  private void processAppTitle(Object clazz) {
     AppTitle appTitle = clazz.getClass().getAnnotation(AppTitle.class);
     if (appTitle != null) {
       App.getPage().setTitle(appTitle.value());
@@ -95,9 +81,8 @@ public final class AnnotationProcessor {
    * Process the AppAttribute annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processAppAttribute(Object clazz) throws DwcException {
+  private void processAppAttribute(Object clazz) {
     AppAttribute[] appAttributes = clazz.getClass().getAnnotationsByType(AppAttribute.class);
     if (appAttributes != null) {
       for (AppAttribute appAttribute : appAttributes) {
@@ -110,9 +95,8 @@ public final class AnnotationProcessor {
    * Process the AppDarkTheme annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processAppDarkTheme(Object clazz) throws DwcException {
+  private void processAppDarkTheme(Object clazz) {
     AppDarkTheme appDarkTheme = clazz.getClass().getAnnotation(AppDarkTheme.class);
     if (appDarkTheme != null) {
       App.setDarkTheme(appDarkTheme.value());
@@ -123,9 +107,8 @@ public final class AnnotationProcessor {
    * Process the AppLightTheme annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processAppLightTheme(Object clazz) throws DwcException {
+  private void processAppLightTheme(Object clazz) {
     AppLightTheme appLightTheme = clazz.getClass().getAnnotation(AppLightTheme.class);
     if (appLightTheme != null) {
       App.setLightTheme(appLightTheme.value());
@@ -136,9 +119,8 @@ public final class AnnotationProcessor {
    * Process the AppTheme annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processAppTheme(Object clazz) throws DwcException {
+  private void processAppTheme(Object clazz) {
     AppTheme appTheme = clazz.getClass().getAnnotation(AppTheme.class);
     if (appTheme != null) {
       App.setTheme(appTheme.value());
@@ -149,9 +131,8 @@ public final class AnnotationProcessor {
    * Process the AppMeta annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processAppMeta(Object clazz) throws DwcException {
+  private void processAppMeta(Object clazz) {
     AppMeta[] appMeta = clazz.getClass().getAnnotationsByType(AppMeta.class);
     if (appMeta != null) {
       for (AppMeta meta : appMeta) {
@@ -169,9 +150,8 @@ public final class AnnotationProcessor {
    * Process the StyleSheet annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processStyleSheet(Object clazz) throws DwcException {
+  private void processStyleSheet(Object clazz) {
     StyleSheet[] styleSheet = clazz.getClass().getAnnotationsByType(StyleSheet.class);
     if (styleSheet != null) {
       for (StyleSheet sheet : styleSheet) {
@@ -199,9 +179,8 @@ public final class AnnotationProcessor {
    * Process the InlineStyleSheet annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processInlineStyleSheet(Object clazz) throws DwcException {
+  private void processInlineStyleSheet(Object clazz) {
     InlineStyleSheet[] inlineStyleSheets = clazz.getClass().getAnnotationsByType(InlineStyleSheet.class);
     if (inlineStyleSheets != null) {
       for (InlineStyleSheet sheet : inlineStyleSheets) {
@@ -235,9 +214,8 @@ public final class AnnotationProcessor {
    * Process the JavaScript annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processJavaScript(Object clazz) throws DwcException {
+  private void processJavaScript(Object clazz) {
     JavaScript[] javaScript = clazz.getClass().getAnnotationsByType(JavaScript.class);
     if (javaScript != null) {
       for (JavaScript script : javaScript) {
@@ -265,9 +243,8 @@ public final class AnnotationProcessor {
    * Process the InlineJavaScript annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processInlineJavaScript(Object clazz) throws DwcException {
+  private void processInlineJavaScript(Object clazz) {
     InlineJavaScript[] inlineJavascript = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
     if (inlineJavascript != null) {
       for (InlineJavaScript script : inlineJavascript) {
@@ -298,9 +275,8 @@ public final class AnnotationProcessor {
    * Process the Link annotation
    * 
    * @param clazz The class to process
-   * @throws DwcException If the annotation processing failed
    */
-  private void processLink(Object clazz) throws DwcException {
+  private void processLink(Object clazz) {
     Link[] links = clazz.getClass().getAnnotationsByType(Link.class);
     if (links != null) {
       for (Link link : links) {
