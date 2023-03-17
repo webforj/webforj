@@ -1,6 +1,9 @@
 package org.dwcj.environment;
 
 import com.basis.startup.type.BBjException;
+
+import java.util.NoSuchElementException;
+
 import org.dwcj.Environment;
 
 /**
@@ -32,15 +35,14 @@ public final class ObjectTable {
    * 
    * @param key the key of the variable to access
    * @return the contents of the field
+   * @throws NoSuchElementException in case the object table entry does not exist
    */
   public static Object get(String key) {
     try {
       return Environment.getInstance().getBBjAPI().getObjectTable().get(key);
     } catch (BBjException e) {
-      Environment.logError(e);
+      throw new NoSuchElementException("Element " + key + " does not exist!");
     }
-
-    return key;
   }
 
   /**
