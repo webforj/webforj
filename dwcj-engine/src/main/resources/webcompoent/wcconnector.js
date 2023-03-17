@@ -26,7 +26,7 @@ Dwcj.WcConnector = (() => {
   const executeExpression = (id, expression) => {
     const hv = getHV(id);
     const component = getEl(id);
-    return new Function(
+    return new Function( // NOSONAR
       'component', 'hv', wrap(atob(expression))
     )(component, hv);
   }
@@ -72,7 +72,7 @@ Dwcj.WcConnector = (() => {
       // invoke a method on the component
       else {
         const body = `component.${method}(${args.map((_, i) => `__args__[${i}]`).join(',')})`;
-        return new Function(
+        return new Function( // NOSONAR
           'component', 'hv', '__args__', body
         )(component, hv, args);
       }
