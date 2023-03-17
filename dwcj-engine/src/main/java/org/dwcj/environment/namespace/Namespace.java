@@ -6,7 +6,7 @@ import java.util.Set;
 public interface Namespace {
 
     public enum NamespaceType {
-        SESSION, GROUP, GLOBAL, PRIVATE;
+        GROUP, GLOBAL, PRIVATE;
     }
 
     /**
