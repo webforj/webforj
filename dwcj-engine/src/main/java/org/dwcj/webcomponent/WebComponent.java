@@ -1508,7 +1508,7 @@ public abstract class WebComponent extends AbstractControl {
         js.append(String.valueOf(args[0]));
       } else if (len == 2) {
         // set property
-        js.append("'" + String.valueOf(args[0]) + "',").append(new Gson().toJson(args[1]));
+        js.append("'" + args[0] + "',").append(new Gson().toJson(args[1]));
       }
     }
 
