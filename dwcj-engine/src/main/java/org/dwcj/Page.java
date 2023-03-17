@@ -3,6 +3,7 @@ package org.dwcj;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
+import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcException;
 import org.dwcj.exceptions.DwcRuntimeException;
 import org.dwcj.util.Assets;
@@ -17,7 +18,6 @@ import com.basis.startup.type.BBjException;
  */
 public final class Page {
 
-  private static final Page pageInstance = new Page();
   private final UnaryOperator<String> minifyCss = (css) -> css.replaceAll("/\\*(?:.|[\\n\\r])*?\\*/", "")
       .replaceAll("[\\n\\r]+", "").replaceAll("\\s{2,}", " ").replaceAll("\\s?([:,;{}])\\s?", "$1"); // NOSONAR
 
@@ -30,7 +30,15 @@ public final class Page {
    * @return the current page instance
    */
   public static Page getInstance() {
-    return pageInstance;
+    String key = "dwcj.page.instance";
+    if (ObjectTable.contains(key)) {
+      return (Page) ObjectTable.get(key);
+    }
+
+    Page instance = new Page();
+    ObjectTable.put(key, instance);
+
+    return instance;
   }
 
   /**
