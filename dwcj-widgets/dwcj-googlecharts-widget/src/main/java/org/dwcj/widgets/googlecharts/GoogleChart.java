@@ -569,7 +569,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    */
   @Override
   public void destroy() {
-    if (!this.isDestroyed()) {
+    if (!super.isDestroyed()) {
       // clean the window resize listener
       StringBuilder sb = new StringBuilder();
       sb.append("if (component && component.__dwcj_handleResize__) {");
