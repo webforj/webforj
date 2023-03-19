@@ -52,8 +52,12 @@ public final class ObjectTable {
    * @return true if the object table contains the key
    */
   public static boolean contains(String key) {
-    Object value = get(key);
-    return value != null;
+    try {
+      ObjectTable.get(key);
+      return true;
+    } catch (NoSuchElementException e) {
+      return false;
+    }
   }
 
   /**
