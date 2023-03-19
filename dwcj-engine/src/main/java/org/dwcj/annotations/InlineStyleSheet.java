@@ -69,7 +69,7 @@ public @interface InlineStyleSheet {
    * 
    * @return true if the style is to be injected into the current page only once
    */
-  boolean once() default false;
+  boolean once() default true;
 
   /**
    * A set of <a href=
