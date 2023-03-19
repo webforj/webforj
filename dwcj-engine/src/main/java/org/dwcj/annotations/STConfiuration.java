@@ -9,8 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to define the configuration to manipulate the global
- * {@link org.dwcj.environment.StringTable}. 
+ * An annotation to manipulate the global
+ * {@link org.dwcj.environment.StringTable}.
  * 
  * <p>
  * The configuration is a key/value pair that will be passed to the global
