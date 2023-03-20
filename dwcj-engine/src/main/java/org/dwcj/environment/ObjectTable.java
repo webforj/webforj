@@ -53,8 +53,8 @@ public final class ObjectTable {
    */
   public static boolean contains(String key) {
     try {
-      ObjectTable.get(key);
-      return true;
+      Object result = ObjectTable.get(key);
+      return result != null;
     } catch (NoSuchElementException e) {
       return false;
     }
