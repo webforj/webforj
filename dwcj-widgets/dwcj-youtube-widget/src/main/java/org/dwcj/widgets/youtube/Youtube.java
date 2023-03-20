@@ -688,6 +688,14 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
    * {@inheritDoc}
    */
   @Override
+  public String getStyle(String property) {
+    return getComponentStyle(property);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public String getAttribute(String attribute) {
     return getComponentAttribute(attribute);
   }

@@ -501,6 +501,14 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getStyle(String property) {
+    return getComponentStyle(property);
+  }
+
+  /**
    * Add a listener for the selected event.
    * 
    * @param listener the listener

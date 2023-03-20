@@ -599,6 +599,14 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * {@inheritDoc}
    */
   @Override
+  public String getStyle(String property) {
+    return getComponentStyle(property);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public String getAttribute(String attribute) {
     return getComponentAttribute(attribute);
   }
