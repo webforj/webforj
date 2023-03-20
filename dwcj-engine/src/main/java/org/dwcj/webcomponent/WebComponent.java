@@ -1398,6 +1398,18 @@ public abstract class WebComponent extends AbstractControl {
   }
 
   /**
+   * Remove a style of the web component
+   * 
+   * @param name the name of the style
+   * @return the web component
+   * 
+   * @throws DwcControlDestroyed if the web component is destroyed
+   */
+  protected void removeComponentStyle(String name) {
+    invokeAsync("style.removeProperty", name);
+  }
+
+  /**
    * Create the control.
    * 
    * This method is called by the framework when the control is added to a panel.
