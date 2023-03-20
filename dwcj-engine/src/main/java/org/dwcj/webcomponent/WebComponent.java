@@ -1392,7 +1392,7 @@ public abstract class WebComponent extends AbstractControl {
    * @return the value of the style or null if the web component is destroyed or
    *         if the component is not attached to the DOM.
    */
-  protected String getComponentComputedStyle(String name) {
+  protected String getComponentStyle(String name) {
     Object result = executeExpression("window.getComputedStyle(component).getPropertyValue(\\'" + name + "\\')");
     return String.valueOf(result);
   }

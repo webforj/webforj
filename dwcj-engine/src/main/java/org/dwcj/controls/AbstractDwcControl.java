@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.dwcj.Environment;
 import org.dwcj.interfaces.HasAttribute;
-import org.dwcj.interfaces.HasComputedStyle;
 import org.dwcj.interfaces.HasText;
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;
@@ -28,7 +27,7 @@ import org.dwcj.interfaces.HasVisibility;
  * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
  * default behaviors for the implemented interface methods. 
  */
-public abstract class AbstractDwcControl extends AbstractControl implements HasAttribute, HasText, HasComputedStyle, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility{
+public abstract class AbstractDwcControl extends AbstractControl implements HasAttribute, HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility{
 
 
     /*=====================================================================================
@@ -137,7 +136,7 @@ public abstract class AbstractDwcControl extends AbstractControl implements HasA
     }
 
     @Override
-    public String getComputedStyle(String property){
+    public String getStyle(String property){
         if (ctrl != null) try {
             return ctrl.getComputedStyle(property);
         } catch (BBjException e) {
