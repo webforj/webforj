@@ -1159,6 +1159,17 @@ public abstract class WebComponent extends AbstractControl {
   }
 
   /**
+   * Remove an attribute of the web component
+   * 
+   * @param name the name of the attribute
+   * @throws DwcControlDestroyed if the web component is destroyed
+   */
+  protected void removeComponentAttribute(String name) {
+    invokeAsync("removeAttribute", name);
+    attributes.remove(name);
+  }
+
+  /**
    * Get a property of the web component.
    * 
    * @param name         the name of the property
