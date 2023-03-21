@@ -499,6 +499,15 @@ public final class GoogleChart extends WebComponent implements HasStyle {
     setComponentStyle(property, value);
     return this;
   }
+ 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public GoogleChart removeStyle(String property) {
+    removeComponentStyle(property);
+    return this;
+  }
 
   /**
    * {@inheritDoc}

@@ -18,19 +18,19 @@
       <groupId>com.basis.lib</groupId>
       <artifactId>BBj</artifactId>
       <scope>provided</scope>
-      <version>1.0</version>
+      <version>23.00</version>
     </dependency>
     <dependency>
       <groupId>com.basis.lib</groupId>
       <artifactId>BBjStartup</artifactId>
       <scope>provided</scope>
-      <version>1.0</version>
+      <version>23.00</version>
     </dependency>
     <dependency>
       <groupId>com.basis.lib</groupId>
       <artifactId>BBjUtil</artifactId>
       <scope>provided</scope>
-      <version>1.0</version>
+      <version>23.00</version>
     </dependency>
 
     <dependency>

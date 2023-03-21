@@ -29,4 +29,14 @@ public interface HasStyle {
    * @return String containing all computed styles
    */
   public String getStyle(String property);
+
+   /**
+   * Removes a CSS property to a specific value.
+   * 
+   * @param property The CSS property to be changed
+   * @param value    The value to be assigned to the CSS property
+   * 
+   * @return The control itself
+   */
+  public HasStyle removeStyle(String property);
 }
