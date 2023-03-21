@@ -668,6 +668,15 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * {@inheritDoc}
    */
   @Override
+  public Dialog removeStyle(String property) {
+    removeComponentStyle(property);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public String getStyle(String property) {
     return getComponentStyle(property);
   }

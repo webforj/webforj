@@ -590,6 +590,15 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * {@inheritDoc}
    */
   @Override
+  public AppLayout removeStyle(String property) {
+    removeComponentStyle(property);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public AppLayout setStyle(String property, String value) {
     setComponentStyle(property, value);
     return this;
@@ -617,6 +626,15 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
   @Override
   public HasAttribute setAttribute(String attribute, String value) {
     setComponentAttribute(attribute, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public HasAttribute removeAttribute(String attribute) {
+    removeComponentAttribute(attribute);
     return this;
   }
 

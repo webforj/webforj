@@ -22,4 +22,12 @@ public interface HasAttribute {
      * @return the control itself
      */
     public HasAttribute setAttribute(String attribute, String value);
+    
+    /**
+     * removes an attribute
+     *
+     * @param attribute the key/name of the attribute
+     * @return the control itself
+     */
+    public HasAttribute removeAttribute(String attribute);
 }
