@@ -30,11 +30,8 @@ public interface HasStyle {
    */
   public String getStyle(String property);
 
-    /**
+   /**
    * Removes a CSS property to a specific value.
-   * 
-   * This method is intended to be used to modify a single CSS property of a
-   * control.
    * 
    * @param property The CSS property to be changed
    * @param value    The value to be assigned to the CSS property
