@@ -122,14 +122,10 @@ dwcj_error:
             sw! = new StringWriter()
             pw! = new PrintWriter(sw!)
             e!.printStackTrace(pw!)
-            script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
-            script!= script! + "console.log(`%c" + sw!.toString() + "`, 'color:#ff564d;font-size: 12px;');"
-            sg!.executeScript(script!)
+            sg!.executeScript("console.error(`" + sw!.toString() + "`);")
         else
             error$=errmes(-1)
-            script!= "console.log('%cExpcetion caught:', 'background: black; color:white; font-size: 13px;');"
-            script!= script! + "console.log(`%c" + error$ + "`, 'color:#ff564d;font-size: 12px;');"
-            sg!.executeScript(script!)
+            sg!.executeScript("console.error(`" + error$ + "`);")
         fi
         rem sg!.executeScript("console.log('Error Details:');")
         rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
