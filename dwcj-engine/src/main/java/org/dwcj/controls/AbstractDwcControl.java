@@ -236,7 +236,7 @@ public abstract class AbstractDwcControl extends AbstractControl
     if (ctrl != null) {
       try {
         // Current BBj implementation does not have a remove style method
-        ctrl.unsetStyle(property);
+        ctrl.removeStyle(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -257,7 +257,7 @@ public abstract class AbstractDwcControl extends AbstractControl
   public AbstractDwcControl addClassName(String selector) {
     if (ctrl != null) {
       try {
-        ctrl.addStyle(selector);
+        ctrl.addClass(selector);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -278,7 +278,7 @@ public abstract class AbstractDwcControl extends AbstractControl
   public AbstractDwcControl removeClassName(String selector) {
     if (ctrl != null) {
       try {
-        ctrl.removeStyle(selector);
+        ctrl.removeClass(selector);
       } catch (BBjException e) {
         Environment.logError(e);
       }
