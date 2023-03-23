@@ -4,16 +4,16 @@ Java API for BBj DWC Dynamic Web Client
 
 ## Setup Instructions
 
-1. Download and Install BBj 22.13 or higher, on OpenJDK17
+1. Download and Install BBj 23.00 or higher, on OpenJDK17
 
 2. Installation of needed deps
 To install the bbj lib dependencies locally, execute the following three lines in your
 local `<bbx>/lib directory`:
 
 ```shell
-mvn install:install-file -Dfile=BBjStartup.jar -DgroupId=com.basis.lib -DartifactId=BBjStartup -Dversion=1.0 -Dpackaging=jar
-mvn install:install-file -Dfile=BBj.jar -DgroupId=com.basis.lib -DartifactId=BBj -Dversion=1.0 -Dpackaging=jar
-mvn install:install-file -Dfile=BBjUtil.jar -DgroupId=com.basis.lib -DartifactId=BBjUtil -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=BBjStartup.jar -DgroupId=com.basis.lib -DartifactId=BBjStartup -Dversion=23.00 -Dpackaging=jar
+mvn install:install-file -Dfile=BBj.jar -DgroupId=com.basis.lib -DartifactId=BBj -Dversion=23.00 -Dpackaging=jar
+mvn install:install-file -Dfile=BBjUtil.jar -DgroupId=com.basis.lib -DartifactId=BBjUtil -Dversion=23.00 -Dpackaging=jar
 ```
 
 3. Clone this project
