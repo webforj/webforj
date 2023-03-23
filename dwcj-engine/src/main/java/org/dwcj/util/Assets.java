@@ -91,7 +91,7 @@ public class Assets {
 
     String fullURL = getWebServerFilesUrl() +
         App.getApplicationName() + "/" +
-        url.toLowerCase().replace("webserver://", "").trim();
+        url.replaceAll("(?i)webserver://", "").trim();
 
     return fullURL.replaceAll("(?<!\\w+:/?)//+", "/");
   }
@@ -118,6 +118,6 @@ public class Assets {
     if (!isContextURL(url))
       throw new IllegalArgumentException("URL does not being the \"context://\" protocol: " + url);
 
-    return url.toLowerCase().replace("context://", "").trim();
+    return url.replaceAll("(?i)context://", "").trim();
   }
 }
