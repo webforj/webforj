@@ -49,14 +49,15 @@ public abstract class AbstractDwcControl extends AbstractControl
   private Boolean enabled = true;
   private String tooltipText = "";
 
-  private final Map<String, String> addAttributes = new HashMap<>();
-  private final List<String> addCssClasses = new ArrayList<>();
-  private final Map<String, String> addStyles = new HashMap<>();
-
-  private final List<String> removeAttributes = new ArrayList<>();
+  private final Map<String, String> styles = new HashMap<>();
   private final List<String> removeStyles = new ArrayList<>();
+  
+  private final List<String> cssClasses = new ArrayList<>();
   private final List<String> removeCssClasses = new ArrayList<>();
-
+  
+  private final Map<String, String> attributes = new HashMap<>();
+  private final List<String> removeAttributes = new ArrayList<>();
+  
   /*
    * =============================================================================
    * Theme and Expanse variables which need to be enumerated in their respective
@@ -98,7 +99,7 @@ public abstract class AbstractDwcControl extends AbstractControl
     }
     // fall back to the internal list - will not return attributes that are added by
     // default
-    return addAttributes.get(attribute);
+    return attributes.get(attribute);
   }
 
   /**
@@ -117,7 +118,7 @@ public abstract class AbstractDwcControl extends AbstractControl
         Environment.logError(e);
       }
     } else {
-      addAttributes.put(attribute, value);
+      attributes.put(attribute, value);
       removeAttributes.remove(attribute);
     }
     return this;
@@ -139,7 +140,7 @@ public abstract class AbstractDwcControl extends AbstractControl
       }
     } else {
       removeAttributes.add(attribute);
-      addAttributes.remove(attribute);
+      attributes.remove(attribute);
     }
     return this;
   }
@@ -184,13 +185,27 @@ public abstract class AbstractDwcControl extends AbstractControl
   }
 
   /**
-   * Gets the style value for the input property for the control
-   * 
-   * @param property The desired property
-   * @return Style value of given property
+   * {@inheritDoc}
    */
   @Override
   public String getStyle(String property) {
+    if (ctrl != null) {
+      try {
+        return ctrl.getStyle(property);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    // fall back to the internal list - will not return styles that are added by
+    // default
+    return styles.get(property);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedStyle(String property) {
     if (ctrl != null) {
       try {
         return ctrl.getComputedStyle(property);
@@ -200,15 +215,11 @@ public abstract class AbstractDwcControl extends AbstractControl
     }
     // fall back to the internal list - will not return styles that are added by
     // default
-    return addStyles.get(property);
+    return styles.get(property);
   }
 
   /**
-   * Sets the style value for the input property for the control
-   * 
-   * @param property The desired style property
-   * @param property The desired value for given property
-   * @return The control itself
+   * {@inheritDoc}
    */
   @Override
   public AbstractDwcControl setStyle(String property, String value) {
@@ -219,17 +230,14 @@ public abstract class AbstractDwcControl extends AbstractControl
         Environment.logError(e);
       }
     } else {
-      this.addStyles.put(property, value);
+      this.styles.put(property, value);
       this.removeStyles.remove(property);
     }
     return this;
   }
 
   /**
-   * Removes the style value for the input property for the control
-   * 
-   * @param property The desired style property to be removed
-   * @return The control itself
+   * {@inheritDoc}
    */
   @Override
   public AbstractDwcControl removeStyle(String property) {
@@ -241,7 +249,7 @@ public abstract class AbstractDwcControl extends AbstractControl
         Environment.logError(e);
       }
     } else {
-      this.addStyles.remove(property);
+      this.styles.remove(property);
       this.removeStyles.add(property);
     }
     return this;
@@ -262,7 +270,7 @@ public abstract class AbstractDwcControl extends AbstractControl
         Environment.logError(e);
       }
     } else {
-      this.addCssClasses.add(selector);
+      this.cssClasses.add(selector);
       this.removeCssClasses.remove(selector);
     }
     return this;
@@ -284,7 +292,7 @@ public abstract class AbstractDwcControl extends AbstractControl
       }
     } else {
       this.removeCssClasses.add(selector);
-      this.addCssClasses.remove(selector);
+      this.cssClasses.remove(selector);
     }
     return this;
   }
@@ -536,8 +544,8 @@ public abstract class AbstractDwcControl extends AbstractControl
       }
     }
 
-    if (!this.addAttributes.isEmpty()) {
-      for (Map.Entry<String, String> entry : this.addAttributes.entrySet()) {
+    if (!this.attributes.isEmpty()) {
+      for (Map.Entry<String, String> entry : this.attributes.entrySet()) {
         this.setAttribute(entry.getKey(), entry.getValue());
       }
     }
@@ -548,8 +556,8 @@ public abstract class AbstractDwcControl extends AbstractControl
       }
     }
 
-    if (!this.addStyles.isEmpty()) {
-      for (Map.Entry<String, String> entry : this.addStyles.entrySet()) {
+    if (!this.styles.isEmpty()) {
+      for (Map.Entry<String, String> entry : this.styles.entrySet()) {
         this.setStyle(entry.getKey(), entry.getValue());
       }
     }
@@ -560,8 +568,8 @@ public abstract class AbstractDwcControl extends AbstractControl
       }
     }
 
-    if (!this.addCssClasses.isEmpty()) {
-      for (String cl : this.addCssClasses) {
+    if (!this.cssClasses.isEmpty()) {
+      for (String cl : this.cssClasses) {
         this.addClassName(cl);
       }
     }

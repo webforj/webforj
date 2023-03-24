@@ -680,6 +680,14 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   public String getStyle(String property) {
     return getComponentStyle(property);
   }
+    
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedStyle(String property) {
+    return getComponentComputedStyle(property);
+  }
 
   /**
    * Add a listener for the opened event

@@ -313,6 +313,14 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedStyle(String property) {
+    return getComponentComputedStyle(property);
+  }
+
+  /**
    * Add Drawer opened listener.
    * 
    * @param listener the listener

@@ -12,79 +12,87 @@ import org.dwcj.exceptions.DwcAppInitializeException;
  */
 public class AppPanel extends AbstractPanel {
 
-    public AppPanel() throws DwcAppInitializeException {
+  public AppPanel() throws DwcAppInitializeException {
 
-        try {
-            byte[] flags = new byte[]{(byte) 0x01, (byte) 0x11, (byte) 0x10, (byte)0x88};
-            BasisNumber b1 = BasisNumber.createBasisNumber(1);
-            BasisNumber ctx = BasisNumber.createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
-            wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", flags);
-            ctrl = wnd;
-        } catch (NumberFormatException | BBjException e) {
-            Environment.logError(e);
-            throw new DwcAppInitializeException(e);
-        }
-
+    try {
+      byte[] flags = new byte[] { (byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x88 };
+      BasisNumber b1 = BasisNumber.createBasisNumber(1);
+      BasisNumber ctx = BasisNumber.createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
+      wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", flags);
+      ctrl = wnd;
+    } catch (NumberFormatException | BBjException e) {
+      Environment.logError(e);
+      throw new DwcAppInitializeException(e);
     }
 
-    @Override
-    protected void create(AbstractPanel p) {
-        //empty, needs override
-    }
+  }
 
-    @Override
-    public AppPanel setStyle(String property, String value) {
-        wnd.setPanelStyle(property, value);
-        return this;
-    }
+  @Override
+  protected void create(AbstractPanel p) {
+    // empty, needs override
+  }
 
+  @Override
+  public String getStyle(String property) {
+    return wnd.getPanelStyle(property);
+  }
 
+  @Override
+  public String getComputedStyle(String property) {
+    return wnd.getPanelStyle(property);
+  }
+  
+  @Override
+  public AppPanel setStyle(String property, String value) {
+    wnd.setPanelStyle(property, value);
+    return this;
+  }
 
-    @Override
-    public AppPanel setText(String text) {
-        super.setText(text);
-        return this;
-    }
+  @Override
+  public AppPanel setText(String text) {
+    super.setText(text);
+    return this;
+  }
 
-    @Override
-    public AppPanel setVisible(Boolean visible){
-        super.setVisible(visible);
-        return this;
-    }
-    
-    @Override
-    public AppPanel setEnabled(Boolean enabled) {
-        super.setEnabled(enabled);
-        return this;
-    }
+  @Override
+  public AppPanel setVisible(Boolean visible) {
+    super.setVisible(visible);
+    return this;
+  }
 
-    @Override
-    public AppPanel setTooltipText(String text) {
-        super.setTooltipText(text);
-        return this;
-    }
+  @Override
+  public AppPanel setEnabled(Boolean enabled) {
+    super.setEnabled(enabled);
+    return this;
+  }
 
-    @Override
-    public AppPanel setAttribute(String attribute, String value){
-        super.setAttribute(attribute, value);
-        return this;
-    }
+  @Override
+  public AppPanel setTooltipText(String text) {
+    super.setTooltipText(text);
+    return this;
+  }
 
-    @Override
-    public AppPanel setId(String elementId){
-        super.setId(elementId);
-        return this;
-    }
-    
-    @Override
-    public AppPanel addClassName(String selector) {
-        super.addClassName(selector);
-        return this;
-    }
+  @Override
+  public AppPanel setAttribute(String attribute, String value) {
+    super.setAttribute(attribute, value);
+    return this;
+  }
 
-    @Override
-    public AppPanel removeClassName(String selector) {
-        super.removeClassName(selector);
-        return this;
-    }
+  @Override
+  public AppPanel setId(String elementId) {
+    super.setId(elementId);
+    return this;
+  }
+
+  @Override
+  public AppPanel addClassName(String selector) {
+    super.addClassName(selector);
+    return this;
+  }
+
+  @Override
+  public AppPanel removeClassName(String selector) {
+    super.removeClassName(selector);
+    return this;
+  }
 }
