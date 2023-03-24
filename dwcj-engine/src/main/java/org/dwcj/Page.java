@@ -659,4 +659,15 @@ public final class Page {
 
     return this;
   }
+
+  /**
+   * Reload the page in the browser
+   * 
+   * @return The current page instance
+   * @throws DwcRuntimeException If dwcj fails to execute the script to reload the
+   *                             page
+   */
+  public Page reload() {
+    return executeAsyncJs("window.location.reload();");
+  }
 }
