@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.function.UnaryOperator;
 
 import org.dwcj.environment.ObjectTable;
-import org.dwcj.exceptions.DwcException;
 import org.dwcj.exceptions.DwcRuntimeException;
 import org.dwcj.util.Assets;
 
