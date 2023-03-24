@@ -631,13 +631,13 @@ public final class Page {
    * 
    * @param script The script to execute
    * @return The result of the script
-   * @throws DwcException If dwcj fails to execute the script
+   * @throws DwcRuntimeException If dwcj fails to execute the script
    */
-  public Object executeJs(String script) throws DwcException {
+  public Object executeJs(String script) {
     try {
       return Environment.getInstance().getSysGui().executeScript(script);
     } catch (BBjException e) {
-      throw new DwcException("Failed to execute script.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to execute script.", e); // NOSONAR
     }
   }
 
@@ -648,13 +648,13 @@ public final class Page {
    * @return The result of the script
    * 
    * @return The current page instance
-   * @throws DwcException If dwcj fails to execute the script
+   * @throws DwcRuntimeException If dwcj fails to execute the script
    */
-  public Page executeAsyncJs(String script) throws DwcException {
+  public Page executeAsyncJs(String script) {
     try {
       Environment.getInstance().getSysGui().executeAsyncScript(script);
     } catch (BBjException e) {
-      throw new DwcException("Failed to execute async script.", e); // NOSONAR
+      throw new DwcRuntimeException("Failed to execute async script.", e); // NOSONAR
     }
 
     return this;
