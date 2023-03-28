@@ -1,9 +1,11 @@
 package org.dwcj.annotations;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import org.dwcj.App;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.environment.ObjectTable;
+import org.dwcj.environment.StringTable;
 
 /**
  * Annotation processor for the application and controls annotations
@@ -34,6 +36,7 @@ public final class AnnotationProcessor {
    */
   public void processAppAnnotations(App app, RunningPhase phase) {
     if (phase == RunningPhase.PRE_RUN) {
+      processConfiguration(app, RunningPhase.PRE_RUN);
       processAppAttribute(app);
       processAppMeta(app);
       processLink(app);
@@ -58,6 +61,7 @@ public final class AnnotationProcessor {
    * @param control The control to process
    */
   public void processControlAnnotations(AbstractControl control) {
+    processConfiguration(control, RunningPhase.POST_RUN);
     processLink(control);
     processStyleSheet(control);
     processInlineStyleSheet(control);
@@ -297,6 +301,40 @@ public final class AnnotationProcessor {
 
         ObjectTable.put(key, true);
         App.getPage().addLink(link.value(), link.top(), attributes);
+      }
+    }
+  }
+
+  /**
+   * Process the Configuration annotation
+   * 
+   * @param clazz The class to process
+   * @param phase The phase to process
+   */
+  private void processConfiguration(Object clazz, RunningPhase phase) {
+    STConfiuration[] configurations = clazz.getClass().getAnnotationsByType(STConfiuration.class);
+    if (configurations != null) {
+      for (STConfiuration configuration : configurations) {
+        String key = configuration.key();
+
+        // don't allow controls to override application level configurations
+        if (phase == RunningPhase.POST_RUN && StringTable.contains(key)) {
+          continue;
+        }
+
+        // make sure application level configurations are not cleared
+        if (phase == RunningPhase.PRE_RUN && StringTable.contains(key)) {
+
+          // is blacklisted ?
+          String[] blackList = new String[] { "DEBUG" };
+          if (Arrays.asList(blackList).contains(key)) {
+            continue;
+          }
+
+          StringTable.clear(key);
+        }
+
+        StringTable.put(key, configuration.value());
       }
     }
   }

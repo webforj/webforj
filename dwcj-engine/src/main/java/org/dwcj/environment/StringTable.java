@@ -8,16 +8,16 @@ import java.util.NoSuchElementException;
 /**
  * Provides access to the STBL String Table.
  * 
- * The TBL String Table is persistent, and global scope in this thread
+ * The STBL String Table is persistent, and global scope in this thread
  * Values can be changed programmatically or set in the config file, e.g.:
  * 
  * <pre>
  * SET COMPANY=Acme
  * </pre>
  * 
- * . Then you can access the value with
+ * Then you can access the value with
  * 
- * {@code String val = org.dwcj.environment.StringTable.get("COMPANY")}
+ * {@code String val = StringTable.get("COMPANY")}
  */
 public final class StringTable {
 
@@ -25,6 +25,21 @@ public final class StringTable {
    * private constructor to prevent instantiation
    */
   private StringTable() {
+  }
+
+  /**
+   * Checks if the string table contains a key
+   * 
+   * @param key the key of the variable to check
+   * @return true if the string table contains the key
+   */
+  public static boolean contains(String key) {
+    try {
+      StringTable.get(key);
+      return true;
+    } catch (NoSuchElementException e) {
+      return false;
+    }
   }
 
   /**
