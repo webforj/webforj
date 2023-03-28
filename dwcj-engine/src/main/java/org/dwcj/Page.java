@@ -1,7 +1,6 @@
 package org.dwcj;
 
 import java.util.Map;
-import java.util.function.UnaryOperator;
 
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcRuntimeException;
@@ -16,9 +15,6 @@ import com.basis.startup.type.BBjException;
  * @author Hyyan Abo Fakher
  */
 public final class Page {
-
-  private final UnaryOperator<String> minifyCss = (css) -> css.replaceAll("/\\*(?:.|[\\n\\r])*?\\*/", "")
-      .replaceAll("[\\n\\r]+", "").replaceAll("\\s{2,}", " ").replaceAll("\\s?([:,;{}])\\s?", "$1"); // NOSONAR
 
   private Page() {
   }
@@ -317,7 +313,7 @@ public final class Page {
       if (Assets.isContextURL(css))
         css = Assets.contentOf(Assets.resolveContextURL(css));
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyle(minifyCss.apply(css), top, attributes);
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -343,7 +339,7 @@ public final class Page {
       if (Assets.isContextURL(css))
         css = Assets.contentOf(Assets.resolveContextURL(css));
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyle(minifyCss.apply(css), top, attributes);
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
