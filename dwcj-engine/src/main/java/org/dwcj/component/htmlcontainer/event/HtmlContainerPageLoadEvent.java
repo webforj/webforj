@@ -3,11 +3,11 @@ package org.dwcj.component.htmlcontainer.event;
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 
-public final class HtmlContainerPageLoadedEvent implements ComponentEvent {
+public final class HtmlContainerPageLoadEvent implements ComponentEvent {
 
     private final HtmlContainer control;
 
-    public HtmlContainerPageLoadedEvent(HtmlContainer h) {
+    public HtmlContainerPageLoadEvent(HtmlContainer h) {
         this.control = h;
     }
 

@@ -6,18 +6,18 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class HtmlContainerPageLoadedEventSink {
+public final class HtmlContainerPageLoadEventSink {
 
-    private final ArrayList<Consumer<HtmlContainerPageLoadedEvent>> targets;
+    private final ArrayList<Consumer<HtmlContainerPageLoadEvent>> targets;
     private final HtmlContainer container;
 
-    public HtmlContainerPageLoadedEventSink(HtmlContainer htmlv) {
+    public HtmlContainerPageLoadEventSink(HtmlContainer htmlv) {
         this.targets = new ArrayList<>();
         this.container = htmlv;
 
@@ -33,13 +33,13 @@ public final class HtmlContainerPageLoadedEventSink {
     }
 
     public void onEvent(BBjPageLoadedEvent ev) { //NOSONAR
-        HtmlContainerPageLoadedEvent dwcEv = new HtmlContainerPageLoadedEvent(container);
-        Iterator<Consumer<HtmlContainerPageLoadedEvent>> it = targets.iterator();
+        HtmlContainerPageLoadEvent dwcEv = new HtmlContainerPageLoadEvent(container);
+        Iterator<Consumer<HtmlContainerPageLoadEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<HtmlContainerPageLoadedEvent> callback) {
+    public void addCallback(Consumer<HtmlContainerPageLoadEvent> callback) {
         targets.add(callback);
     }
 

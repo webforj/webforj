@@ -3,11 +3,11 @@ package org.dwcj.component.htmlcontainer.event;
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 
-public class HtmlContainerScriptLoadedEvent implements ComponentEvent {
+public class HtmlContainerScriptFailEvent implements ComponentEvent {
     
     private final HtmlContainer control;
 
-    public HtmlContainerScriptLoadedEvent(HtmlContainer cHtmlContainer) {
+    public HtmlContainerScriptFailEvent(HtmlContainer cHtmlContainer) {
         this.control = cHtmlContainer;
     }
 
@@ -21,7 +21,7 @@ public class HtmlContainerScriptLoadedEvent implements ComponentEvent {
     }
 
     public String toString() {
-        return "Event: HtmlContainer Script Loaded";
+        return "Event: HtmlContainer Script Failed";
     }
 
 }

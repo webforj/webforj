@@ -8,18 +8,18 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class HtmlContainerScriptLoadedEventSink {
+public class HtmlContainerScriptLoadEventSink {
 
-    private ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> targets;
+    private ArrayList<Consumer<HtmlContainerScriptLoadEvent>> targets;
     private final HtmlContainer htmlContainer;
 
-    public HtmlContainerScriptLoadedEventSink(HtmlContainer container) {
+    public HtmlContainerScriptLoadEventSink(HtmlContainer container) {
 
         this.targets = new ArrayList<>();
         this.htmlContainer = container;
@@ -37,13 +37,13 @@ public class HtmlContainerScriptLoadedEventSink {
     }
 
     public void scriptLoadedEvent(BBjScriptLoadedEvent ev) { // NOSONAR
-        HtmlContainerScriptLoadedEvent dwcEv = new HtmlContainerScriptLoadedEvent(this.htmlContainer);
-        Iterator<Consumer<HtmlContainerScriptLoadedEvent>> it = targets.iterator();
+        HtmlContainerScriptLoadEvent dwcEv = new HtmlContainerScriptLoadEvent(this.htmlContainer);
+        Iterator<Consumer<HtmlContainerScriptLoadEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
     
-    public void addCallback(Consumer<HtmlContainerScriptLoadedEvent> callback) {
+    public void addCallback(Consumer<HtmlContainerScriptLoadEvent> callback) {
         targets.add(callback);
     }
 }

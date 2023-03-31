@@ -11,13 +11,13 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
-import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailedEventSink;
-import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadedEventSink;
-import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadedEventSink;
+import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailEventSink;
+import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadEventSink;
+import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -32,14 +32,14 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
 
   private BBjHtmlView bbjHtmlView;
 
-  private final ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
-  private HtmlContainerScriptLoadedEventSink onScriptLoadedSink = null;
-  private final ArrayList<Consumer<HtmlContainerScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
-  private HtmlContainerScriptFailedEventSink onScriptFailedSink = null;
+  private final ArrayList<Consumer<HtmlContainerScriptLoadEvent>> scriptLoadedEvents = new ArrayList<>();
+  private HtmlContainerScriptLoadEventSink onScriptLoadSink = null;
+  private final ArrayList<Consumer<HtmlContainerScriptFailEvent>> scriptFailedEvents = new ArrayList<>();
+  private HtmlContainerScriptFailEventSink onScriptFailSink = null;
   private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> javascriptEvents = new ArrayList<>();
   private HtmlContainerNativeJavascriptEventSink javascriptEventSink = null;
-  private final ArrayList<Consumer<HtmlContainerPageLoadedEvent>> pageLoadedEvents = new ArrayList<>();
-  private HtmlContainerPageLoadedEventSink pageLoadedEventSink = null;
+  private final ArrayList<Consumer<HtmlContainerPageLoadEvent>> pageLoadedEvents = new ArrayList<>();
+  private HtmlContainerPageLoadEventSink pageLoadEventSink = null;
 
   private ArrayList<String> executeScript = new ArrayList<>();
   private ArrayList<String> executeAsyncScript = new ArrayList<>();
@@ -75,12 +75,12 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
     }
   }
 
-  public HtmlContainer onScriptLoaded(Consumer<HtmlContainerScriptLoadedEvent> callback) {
+  public HtmlContainer onScriptLoad(Consumer<HtmlContainerScriptLoadEvent> callback) {
     if (this.ctrl != null) {
-      if (this.onScriptLoadedSink == null) {
-        this.onScriptLoadedSink = new HtmlContainerScriptLoadedEventSink(this);
+      if (this.onScriptLoadSink == null) {
+        this.onScriptLoadSink = new HtmlContainerScriptLoadEventSink(this);
       }
-      this.onScriptLoadedSink.addCallback(callback);
+      this.onScriptLoadSink.addCallback(callback);
     } else {
       this.scriptLoadedEvents.add(callback);
     }
@@ -88,12 +88,12 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
 
   }
 
-  public HtmlContainer onScriptFailed(Consumer<HtmlContainerScriptFailedEvent> callback) {
+  public HtmlContainer onScriptFail(Consumer<HtmlContainerScriptFailEvent> callback) {
     if (this.ctrl != null) {
-      if (this.onScriptFailedSink == null) {
-        this.onScriptFailedSink = new HtmlContainerScriptFailedEventSink(this);
+      if (this.onScriptFailSink == null) {
+        this.onScriptFailSink = new HtmlContainerScriptFailEventSink(this);
       }
-      this.onScriptFailedSink.addCallback(callback);
+      this.onScriptFailSink.addCallback(callback);
     } else {
       this.scriptFailedEvents.add(callback);
     }
@@ -351,12 +351,12 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
    * @param callback the callback method
    * @return the control itself
    */
-  public HtmlContainer onPageLoaded(Consumer<HtmlContainerPageLoadedEvent> callback) {
+  public HtmlContainer onPageLoad(Consumer<HtmlContainerPageLoadEvent> callback) {
     if (this.ctrl != null) {
-      if (this.pageLoadedEventSink == null) {
-        this.pageLoadedEventSink = new HtmlContainerPageLoadedEventSink(this);
+      if (this.pageLoadEventSink == null) {
+        this.pageLoadEventSink = new HtmlContainerPageLoadEventSink(this);
       }
-      this.pageLoadedEventSink.addCallback(callback);
+      this.pageLoadEventSink.addCallback(callback);
     } else {
       this.pageLoadedEvents.add(callback);
     }
@@ -496,16 +496,16 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
     super.catchUp();
 
     if (!this.scriptLoadedEvents.isEmpty()) {
-      this.onScriptLoadedSink = new HtmlContainerScriptLoadedEventSink(this);
+      this.onScriptLoadSink = new HtmlContainerScriptLoadEventSink(this);
       while (!this.scriptLoadedEvents.isEmpty()) {
-        this.onScriptLoadedSink.addCallback(this.scriptLoadedEvents.remove(0));
+        this.onScriptLoadSink.addCallback(this.scriptLoadedEvents.remove(0));
       }
     }
 
     if (!this.scriptFailedEvents.isEmpty()) {
-      this.onScriptFailedSink = new HtmlContainerScriptFailedEventSink(this);
+      this.onScriptFailSink = new HtmlContainerScriptFailEventSink(this);
       while (!this.scriptFailedEvents.isEmpty()) {
-        this.onScriptFailedSink.addCallback(this.scriptFailedEvents.remove(0));
+        this.onScriptFailSink.addCallback(this.scriptFailedEvents.remove(0));
       }
     }
 
@@ -517,9 +517,9 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
     }
 
     if (!this.pageLoadedEvents.isEmpty()) {
-      this.pageLoadedEventSink = new HtmlContainerPageLoadedEventSink(this);
+      this.pageLoadEventSink = new HtmlContainerPageLoadEventSink(this);
       while (!this.pageLoadedEvents.isEmpty()) {
-        this.pageLoadedEventSink.addCallback(this.pageLoadedEvents.remove(0));
+        this.pageLoadEventSink.addCallback(this.pageLoadedEvents.remove(0));
       }
     }
 
