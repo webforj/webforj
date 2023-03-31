@@ -5,7 +5,7 @@ package org.dwcj.exceptions;
  * 
  * @author Hyyan Abo Fakher
  */
-public class DwcControlDestroyed extends DwcRuntimeException {
+public class ComponentDestroyed extends DwcRuntimeException {
     /**
      * Constructs a new exception with the specified detail message. The
      * cause is not initialized, and may subsequently be initialized by
@@ -14,7 +14,7 @@ public class DwcControlDestroyed extends DwcRuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public DwcControlDestroyed(String message) {
+    public ComponentDestroyed(String message) {
         super(message);
     }
 
@@ -33,7 +33,7 @@ public class DwcControlDestroyed extends DwcRuntimeException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcControlDestroyed(String message, Throwable cause) {
+    public ComponentDestroyed(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -49,7 +49,7 @@ public class DwcControlDestroyed extends DwcRuntimeException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcControlDestroyed(Throwable cause) {
+    public ComponentDestroyed(Throwable cause) {
         super(cause);
     }
 
@@ -58,7 +58,7 @@ public class DwcControlDestroyed extends DwcRuntimeException {
      *
      * @param e the exception to be wrapped
      */
-    public DwcControlDestroyed(Exception e) {
+    public ComponentDestroyed(Exception e) {
         super(e);
     }
 
@@ -67,6 +67,6 @@ public class DwcControlDestroyed extends DwcRuntimeException {
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
-    public DwcControlDestroyed() {
+    public ComponentDestroyed() {
     }
 }
