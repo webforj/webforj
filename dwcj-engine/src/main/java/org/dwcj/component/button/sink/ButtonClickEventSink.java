@@ -3,7 +3,7 @@ package org.dwcj.component.button.sink;
 import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 
@@ -24,7 +24,7 @@ public final class ButtonClickEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");
@@ -42,7 +42,7 @@ public final class ButtonClickEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");

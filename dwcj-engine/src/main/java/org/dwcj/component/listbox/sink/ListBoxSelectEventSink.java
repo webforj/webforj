@@ -3,7 +3,7 @@ package org.dwcj.component.listbox.sink;
 import com.basis.bbj.proxies.event.BBjListClickEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.listbox.ListBox;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 
@@ -24,7 +24,7 @@ public final class ListBoxSelectEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(listBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLICK,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");
@@ -41,7 +41,7 @@ public final class ListBoxSelectEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(listBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLICK,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");

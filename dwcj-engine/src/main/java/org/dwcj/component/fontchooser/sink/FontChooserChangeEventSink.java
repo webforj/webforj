@@ -3,7 +3,7 @@ package org.dwcj.component.fontchooser.sink;
 import com.basis.bbj.proxies.event.BBjFileChooserChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.fontchooser.FontChooser;
 import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
 
@@ -24,7 +24,7 @@ public final class FontChooserChangeEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(fc);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(fc);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_FILECHOOSER_CHANGE,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
                     "onEvent");

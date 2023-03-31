@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjControlScrollEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.slider.Slider;
 import org.dwcj.component.slider.event.SliderScrollEvent;
 
@@ -27,7 +27,7 @@ public class SliderScrollEventSink {
         this.slider = slide;
 
         try{
-            bbjControl = ControlAccessor.getDefault().getBBjControl(slide);
+            bbjControl = ComponentAccessor.getDefault().getBBjControl(slide);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CONTROL_SCROLL,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "onScrollEvent"),
                                    "onEvent");

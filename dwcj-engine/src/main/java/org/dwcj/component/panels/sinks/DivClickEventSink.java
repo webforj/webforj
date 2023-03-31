@@ -3,7 +3,7 @@ package org.dwcj.component.panels.sinks;
 import com.basis.bbj.proxies.event.BBjMouseDownEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.panels.Div;
 import org.dwcj.component.panels.events.DivClickEvent;
 
@@ -24,7 +24,7 @@ public final class DivClickEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(div);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(div);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_MOUSE_DOWN,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");
@@ -40,7 +40,7 @@ public final class DivClickEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(div);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(div);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_MOUSE_DOWN,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");

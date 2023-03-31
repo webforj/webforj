@@ -3,7 +3,7 @@ package org.dwcj.component;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.panels.AbstractPanel;
 
 import java.lang.reflect.Method;
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  * AbstractPanel-derived set of panel class
  * Pattern see Tulach, p.75ff
  */
-final class ComponentAccessorImpl extends ControlAccessor {
+final class ComponentAccessorImpl extends ComponentAccessor {
 
     public static final String YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD = ": You're not allowed to access this method!";
 

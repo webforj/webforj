@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.event.BBjCheckOnEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.radiobutton.RadioButton;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 
@@ -29,7 +29,7 @@ public final class RadioButtonCheckEventSink {
         this.radioButton = rb;
 
         try{
-            bbjControl = ControlAccessor.getDefault().getBBjControl(rb);
+            bbjControl = ComponentAccessor.getDefault().getBBjControl(rb);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
                                    ON_EVENT);
@@ -48,7 +48,7 @@ public final class RadioButtonCheckEventSink {
         this.radioButton = rb;
 
         try{
-            bbjControl = ControlAccessor.getDefault().getBBjControl(rb);
+            bbjControl = ComponentAccessor.getDefault().getBBjControl(rb);
             bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
                                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
                                    ON_EVENT);

@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjCheckOffEvent;
 import com.basis.bbj.proxies.event.BBjCheckOnEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.checkbox.CheckBox;
 import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
 
@@ -27,7 +27,7 @@ public final class CheckBoxCheckEventSink {
         this.checkBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
                     ON_EVENT);
@@ -45,7 +45,7 @@ public final class CheckBoxCheckEventSink {
         this.checkBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
                     ON_EVENT);

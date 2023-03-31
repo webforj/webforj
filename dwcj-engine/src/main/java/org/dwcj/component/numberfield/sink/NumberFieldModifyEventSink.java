@@ -3,7 +3,7 @@ package org.dwcj.component.numberfield.sink;
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 
@@ -25,7 +25,7 @@ public class NumberFieldModifyEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(numBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");
@@ -43,7 +43,7 @@ public class NumberFieldModifyEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(numBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");

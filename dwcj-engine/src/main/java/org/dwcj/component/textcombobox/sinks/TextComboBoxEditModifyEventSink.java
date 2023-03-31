@@ -3,7 +3,7 @@ package org.dwcj.component.textcombobox.sinks;
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.textcombobox.TextComboBox;
 import org.dwcj.component.textcombobox.events.TextComboBoxEditModifyEvent;
 
@@ -23,7 +23,7 @@ public class TextComboBoxEditModifyEventSink {
         this.textComboBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");
@@ -38,7 +38,7 @@ public class TextComboBoxEditModifyEventSink {
         this.textComboBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");

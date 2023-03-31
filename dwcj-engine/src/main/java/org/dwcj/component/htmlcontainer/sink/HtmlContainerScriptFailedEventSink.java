@@ -3,7 +3,7 @@ package org.dwcj.component.htmlcontainer.sink;
 import com.basis.bbj.proxies.event.BBjScriptFailedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
 
@@ -28,7 +28,7 @@ public class HtmlContainerScriptFailedEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(container);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
             bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_FAILED,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptFailedEvent"),
                     "onEvent");

@@ -3,7 +3,7 @@ package org.dwcj.component.tree.sink;
 import com.basis.bbj.proxies.event.BBjTreeNodeEditStoppedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tree.TreeView;
 import org.dwcj.component.tree.event.TreeEditStoppedEvent;
 
@@ -22,7 +22,7 @@ public class TreeEditStopEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(tree);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TREE_EDIT_STOP,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editStopEvent"),
                     "onEvent");

@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.panels.events.DivClickEvent;
 import org.dwcj.component.panels.sinks.DivClickEventSink;
@@ -63,7 +63,7 @@ public class Div extends AbstractPanel {
         try {
           AnnotationProcessor processor = new AnnotationProcessor();
           processor.processControlAnnotations(c);
-          ControlAccessor.getDefault().create(c, this);
+          ComponentAccessor.getDefault().create(c, this);
           controls.add(c);
         } catch (IllegalAccessException e) {
           Environment.logError(e);

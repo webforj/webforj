@@ -6,7 +6,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
 
@@ -26,7 +26,7 @@ public class HtmlContainerScriptLoadedEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(container);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
             bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_LOADED,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptLoadedEvent"),
                     "onEvent");

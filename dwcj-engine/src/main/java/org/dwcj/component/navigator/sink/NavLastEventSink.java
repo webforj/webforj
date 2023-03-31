@@ -3,7 +3,7 @@ package org.dwcj.component.navigator.sink;
 import com.basis.bbj.proxies.event.BBjNavigatorMoveLastEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.navigator.Navigator;
 import org.dwcj.component.navigator.event.NavigatorLastEvent;
 
@@ -26,7 +26,7 @@ public class NavLastEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(ng);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(ng);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_NAV_FIRST,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this,"navLastEvent"),
                     "onEvent");

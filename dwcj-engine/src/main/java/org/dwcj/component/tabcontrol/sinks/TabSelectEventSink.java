@@ -6,7 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tabcontrol.TabControl;
 import org.dwcj.component.tabcontrol.events.TabSelectEvent;
 
@@ -27,7 +27,7 @@ public final class TabSelectEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(btn);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TAB_SELECT, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");
@@ -45,7 +45,7 @@ public final class TabSelectEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(tabControl);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tabControl);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
                     "onEvent");

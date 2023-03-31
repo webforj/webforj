@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.listbox.ListBox;
 import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 
@@ -24,7 +24,7 @@ public class ListBoxDoubleClickEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(listBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_DOUBLE_CLICK,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
                     "onEvent");
@@ -41,7 +41,7 @@ public class ListBoxDoubleClickEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(listBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_DOUBLE_CLICK,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
                     "onEvent");

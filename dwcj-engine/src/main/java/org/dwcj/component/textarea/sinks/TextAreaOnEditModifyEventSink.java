@@ -3,7 +3,7 @@ package org.dwcj.component.textarea.sinks;
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.textarea.TextArea;
 import org.dwcj.component.textarea.events.TextAreaOnEditModifyEvent;
 
@@ -24,7 +24,7 @@ public final class TextAreaOnEditModifyEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(txtArea);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(txtArea);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");
@@ -42,7 +42,7 @@ public final class TextAreaOnEditModifyEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(txtArea);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(txtArea);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");

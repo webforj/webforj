@@ -3,7 +3,7 @@ package org.dwcj.component.fontchooser.sink;
 import com.basis.bbj.proxies.event.BBjFileChooserCancelEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.fontchooser.FontChooser;
 import org.dwcj.component.fontchooser.event.FontChooserCancelEvent;
 
@@ -24,7 +24,7 @@ public final class FontChooserCancelEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(fc);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(fc);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_FILECHOOSER_CANCEL,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "cancelEvent"),
                     "onEvent");

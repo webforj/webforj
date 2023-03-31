@@ -3,7 +3,7 @@ package org.dwcj.component.textfield.sink;
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.textfield.TextField;
 import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 
@@ -25,7 +25,7 @@ public class TextFieldModifyEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(stringBox);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(stringBox);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
                     "onEvent");

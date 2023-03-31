@@ -3,7 +3,7 @@ package org.dwcj.component.choicebox.sink;
 import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.choicebox.ComboBox;
 import org.dwcj.component.choicebox.event.ChoiceBoxSelectEvent;
 
@@ -24,7 +24,7 @@ public final class ChoiceBoxSelectEventSink {
         this.comboBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");
@@ -39,7 +39,7 @@ public final class ChoiceBoxSelectEventSink {
         this.comboBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
                     "onEvent");

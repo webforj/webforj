@@ -3,7 +3,7 @@ package org.dwcj.component.textcombobox.sinks;
 import com.basis.bbj.proxies.event.BBjListCloseEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.textcombobox.TextComboBox;
 import org.dwcj.component.textcombobox.events.TextComboBoxCloseEvent;
 
@@ -22,7 +22,7 @@ public class TextComboBoxCloseEventSink {
         this.textComboBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
                     "onEvent");
@@ -37,7 +37,7 @@ public class TextComboBoxCloseEventSink {
         this.textComboBox = cb;
 
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(cb);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
                     "onEvent");

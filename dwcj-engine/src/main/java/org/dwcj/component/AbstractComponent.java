@@ -1,7 +1,7 @@
 package org.dwcj.component;
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Control;
 import org.dwcj.interfaces.HasDestroy;
@@ -43,7 +43,7 @@ public abstract class AbstractComponent implements Control, HasDestroy {
     protected Boolean destroyed = false;
 
     static {
-        ControlAccessor.setDefault(new ComponentAccessorImpl());
+        ComponentAccessor.setDefault(new ComponentAccessorImpl());
     }
 
     /**

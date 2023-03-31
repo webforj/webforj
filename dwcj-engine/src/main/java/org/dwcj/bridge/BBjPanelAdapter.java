@@ -32,7 +32,7 @@ public class BBjPanelAdapter extends AbstractPanel {
             try {
                 AnnotationProcessor processor = new AnnotationProcessor();
                 processor.processControlAnnotations(c);
-                ControlAccessor.getDefault().create(c,this);
+                ComponentAccessor.getDefault().create(c,this);
             } catch (IllegalAccessException e) {
                 Environment.logError(e);
             }

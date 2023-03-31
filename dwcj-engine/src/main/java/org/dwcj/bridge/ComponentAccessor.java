@@ -11,10 +11,10 @@ import org.dwcj.component.panels.AbstractPanel;
  * it's not for customer use, only for use in the "friend" classes
  * Pattern see Tulach, p.75ff
  */
-public abstract class ControlAccessor {
-    private static ControlAccessor accessor;
+public abstract class ComponentAccessor {
+    private static ComponentAccessor accessor;
 
-    protected ControlAccessor() {
+    protected ComponentAccessor() {
     }
 
     /**
@@ -22,8 +22,8 @@ public abstract class ControlAccessor {
      *
      * @return - the accessor
      */
-    public static ControlAccessor getDefault() {
-        ControlAccessor a = accessor;
+    public static ComponentAccessor getDefault() {
+        ComponentAccessor a = accessor;
         if (a != null) {
             return a;
         }
@@ -40,11 +40,11 @@ public abstract class ControlAccessor {
      *
      * @param accessor - the accessor instance
      */
-    public static void setDefault(ControlAccessor accessor) {
-        if (ControlAccessor.accessor != null) {
+    public static void setDefault(ComponentAccessor accessor) {
+        if (ComponentAccessor.accessor != null) {
             throw new IllegalStateException();
         }
-        ControlAccessor.accessor = accessor;
+        ComponentAccessor.accessor = accessor;
     }
 
     /**

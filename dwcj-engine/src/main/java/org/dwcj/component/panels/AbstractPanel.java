@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.AbstractDwcComponent;
@@ -41,7 +41,7 @@ public abstract class AbstractPanel extends AbstractDwcComponent {
         try {
           AnnotationProcessor processor = new AnnotationProcessor();
           processor.processControlAnnotations(c);
-          ControlAccessor.getDefault().create(c, this);
+          ComponentAccessor.getDefault().create(c, this);
           controls.add(c);
         } catch (IllegalAccessException | DwcAnnotationException e) {
           Environment.logError(e);

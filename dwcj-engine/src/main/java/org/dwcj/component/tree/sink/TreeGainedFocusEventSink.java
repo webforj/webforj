@@ -3,7 +3,7 @@ package org.dwcj.component.tree.sink;
 import com.basis.bbj.proxies.event.BBjGainedFocusEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ControlAccessor;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tree.TreeView;
 import org.dwcj.component.tree.event.TreeGainedFocusEvent;
 
@@ -23,7 +23,7 @@ public class TreeGainedFocusEventSink {
 
         BBjControl bbjctrl = null;
         try {
-            bbjctrl = ControlAccessor.getDefault().getBBjControl(tree);
+            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_GAINED_FOCUS,
                     Environment.getInstance().getDwcjHelper().getEventProxy(this, "gainedFocusEvent"),
                     "onEvent");
