@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
@@ -24,7 +24,7 @@ import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class DateField extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
+public final class DateField extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
     
     private BBjInputD bbjDateEditBox;
 

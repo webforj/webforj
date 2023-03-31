@@ -3,10 +3,10 @@ package org.dwcj.component.colorchooser;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 
-public final class ColorChooser extends AbstractDwcControl {
+public final class ColorChooser extends AbstractDwcComponent {
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL

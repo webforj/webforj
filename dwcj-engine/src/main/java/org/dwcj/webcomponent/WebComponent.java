@@ -25,7 +25,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.panels.AbstractPanel;
@@ -635,8 +635,8 @@ public abstract class WebComponent extends AbstractComponent {
     controls.put(control, new SimpleEntry<>(newUuid, false));
 
     // add dwcj-ctrl attribute to the control to link it to the web component
-    if (control instanceof AbstractDwcControl) {
-      ((AbstractDwcControl) control).setAttribute("dwcj-ctrl", newUuid);
+    if (control instanceof AbstractDwcComponent) {
+      ((AbstractDwcComponent) control).setAttribute("dwcj-ctrl", newUuid);
     }
 
     if (control instanceof WebComponent) {

@@ -7,13 +7,13 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.component.menuitem.MenuItem;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.HasPopupMenu;
 
-public class PopupMenu extends AbstractDwcControl implements HasPopupMenu {
+public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu {
 
     private BBjPopupMenu bbjPopupMenu;
 

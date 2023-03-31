@@ -7,11 +7,11 @@ import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.popupmenu.PopupMenu;
 
-public final class MenuButton extends AbstractDwcControl {
+public final class MenuButton extends AbstractDwcComponent {
 
     private BBjMenuButton bbjMenuButton;
 

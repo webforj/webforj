@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.textarea.events.TextAreaOnEditModifyEvent;
 import org.dwcj.component.textarea.sinks.TextAreaOnEditModifyEventSink;
@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class TextArea extends AbstractDwcControl implements HasReadOnly, TextHighlightable, Focusable, HasMouseWheelCondition, Scrollable, TabTraversable {
+public final class TextArea extends AbstractDwcComponent implements HasReadOnly, TextHighlightable, Focusable, HasMouseWheelCondition, Scrollable, TabTraversable {
 
     private BBjCEdit bbjCEdit;
 

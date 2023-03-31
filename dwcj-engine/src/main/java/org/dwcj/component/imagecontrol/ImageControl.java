@@ -8,14 +8,14 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.Base64;
 
-public final class ImageControl extends AbstractDwcControl {
+public final class ImageControl extends AbstractDwcComponent {
 
     private BBjImageCtrl bbjImageControl;
 

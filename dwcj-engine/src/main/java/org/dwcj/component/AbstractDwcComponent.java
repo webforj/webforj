@@ -25,7 +25,7 @@ import org.dwcj.interfaces.HasVisibility;
  * and implements
  * default behaviors for the implemented interface methods.
  */
-public abstract class AbstractDwcControl extends AbstractComponent
+public abstract class AbstractDwcComponent extends AbstractComponent
     implements HasAttribute, HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility {
 
   /*
@@ -110,7 +110,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return the control itself
    */
   @Override
-  public AbstractDwcControl setAttribute(String attribute, String value) {
+  public AbstractDwcComponent setAttribute(String attribute, String value) {
     if (ctrl != null) {
       try {
         ctrl.setAttribute(attribute, value);
@@ -131,7 +131,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return the control itself
    */
   @Override
-  public AbstractDwcControl removeAttribute(String attribute) {
+  public AbstractDwcComponent removeAttribute(String attribute) {
     if (ctrl != null) {
       try {
         ctrl.removeAttribute(attribute);
@@ -168,7 +168,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return the control itself
    */
   @Override
-  public AbstractDwcControl setText(String text) {
+  public AbstractDwcComponent setText(String text) {
     if (ctrl != null) {
       try {
         ctrl.setText(text);
@@ -222,7 +222,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * {@inheritDoc}
    */
   @Override
-  public AbstractDwcControl setStyle(String property, String value) {
+  public AbstractDwcComponent setStyle(String property, String value) {
     if (ctrl != null) {
       try {
         ctrl.setStyle(property, value);
@@ -240,7 +240,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * {@inheritDoc}
    */
   @Override
-  public AbstractDwcControl removeStyle(String property) {
+  public AbstractDwcComponent removeStyle(String property) {
     if (ctrl != null) {
       try {
         // Current BBj implementation does not have a remove style method
@@ -262,7 +262,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return The control itself
    */
   @Override
-  public AbstractDwcControl addClassName(String selector) {
+  public AbstractDwcComponent addClassName(String selector) {
     if (ctrl != null) {
       try {
         ctrl.addClass(selector);
@@ -283,7 +283,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return The control itself
    */
   @Override
-  public AbstractDwcControl removeClassName(String selector) {
+  public AbstractDwcComponent removeClassName(String selector) {
     if (ctrl != null) {
       try {
         ctrl.removeClass(selector);
@@ -320,7 +320,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return The control itself
    */
   @Override
-  public AbstractDwcControl setEnabled(Boolean enabled) {
+  public AbstractDwcComponent setEnabled(Boolean enabled) {
     if (this.ctrl != null)
       try {
         ctrl.setEnabled(enabled);
@@ -354,7 +354,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return The control itself
    */
   @Override
-  public AbstractDwcControl setTooltipText(String text) {
+  public AbstractDwcComponent setTooltipText(String text) {
     if (this.ctrl != null)
       try {
         ctrl.setToolTipText(text);
@@ -388,7 +388,7 @@ public abstract class AbstractDwcControl extends AbstractComponent
    * @return The control itself
    */
   @Override
-  public AbstractDwcControl setVisible(Boolean visible) {
+  public AbstractDwcComponent setVisible(Boolean visible) {
     if (this.ctrl != null)
       try {
         ctrl.setVisible(visible);

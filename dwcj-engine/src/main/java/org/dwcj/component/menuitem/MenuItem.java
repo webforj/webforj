@@ -7,11 +7,11 @@ import com.basis.startup.type.BBjException;
 import java.nio.charset.StandardCharsets;
 
 import org.dwcj.Environment;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.popupmenu.PopupMenu;
 
-public class MenuItem extends AbstractDwcControl {
+public class MenuItem extends AbstractDwcComponent {
 
     private BBjMenuItem bbjMenuItem;
 

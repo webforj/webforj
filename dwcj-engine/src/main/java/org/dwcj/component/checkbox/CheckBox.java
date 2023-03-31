@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
 import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
 import org.dwcj.component.panels.AbstractPanel;
@@ -19,7 +19,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class CheckBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+public final class CheckBox extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
 
     /*=====================================================================================

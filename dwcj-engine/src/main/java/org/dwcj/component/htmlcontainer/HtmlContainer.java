@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcControl implements Focusable, TabTraversable {
+public final class HtmlContainer extends AbstractDwcComponent implements Focusable, TabTraversable {
 
   private BBjHtmlView bbjHtmlView;
 

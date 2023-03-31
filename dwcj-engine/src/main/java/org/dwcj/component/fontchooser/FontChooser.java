@@ -6,7 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.fontchooser.event.FontChooserApproveEvent;
 import org.dwcj.component.fontchooser.event.FontChooserCancelEvent;
 import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
@@ -19,7 +19,7 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 
-public final class FontChooser extends AbstractDwcControl {
+public final class FontChooser extends AbstractDwcComponent {
 
     private FontChooserApproveEventSink fontChooserApproveEventSink;
 

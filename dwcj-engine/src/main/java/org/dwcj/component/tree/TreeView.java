@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.tree.event.TreeCollapseEvent;
 import org.dwcj.component.tree.event.TreeDeselectEvent;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class TreeView extends AbstractDwcControl {
+public final class TreeView extends AbstractDwcComponent {
 
     private BBjTree tree;
 

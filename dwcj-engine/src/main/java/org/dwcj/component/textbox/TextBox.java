@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.textbox.events.TextBoxEditModifyEvent;
 import org.dwcj.component.textbox.sinks.TextBoxEditModifyEventSink;
@@ -21,7 +21,7 @@ import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 
-public final class TextBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+public final class TextBox extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
     private BBjEditBox bbjEditBox;
 

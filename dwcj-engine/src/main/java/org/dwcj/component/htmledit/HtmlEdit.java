@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.TabTraversable;
@@ -15,7 +15,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public final  class HtmlEdit extends AbstractDwcControl implements Focusable, TabTraversable {
+public final  class HtmlEdit extends AbstractDwcComponent implements Focusable, TabTraversable {
 
     private BBjHtmlEdit bbjHtmlEdit;
 

@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
@@ -19,7 +19,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class RadioButton extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable {
+public final class RadioButton extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable {
 
   private BBjRadioButton bbjRadioButton;
 

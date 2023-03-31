@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.slider.event.SliderScrollEvent;
 import org.dwcj.component.slider.sink.SliderScrollEventSink;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public final class Slider extends AbstractDwcControl implements Focusable, HasMouseWheelCondition, TabTraversable {
+public final class Slider extends AbstractDwcComponent implements Focusable, HasMouseWheelCondition, TabTraversable {
 
     private BBjSlider bbjSlider;
 

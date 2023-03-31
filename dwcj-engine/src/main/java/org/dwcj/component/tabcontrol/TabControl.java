@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.panels.Div;
 import org.dwcj.component.tabcontrol.events.TabSelectEvent;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class TabControl extends AbstractDwcControl {
+public final class TabControl extends AbstractDwcComponent {
 
     /** Event sink for selection of a tab */
     private TabSelectEventSink tabSelectEventSink;

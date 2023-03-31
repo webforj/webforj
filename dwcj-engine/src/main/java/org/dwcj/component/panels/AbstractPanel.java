@@ -8,7 +8,7 @@ import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.exceptions.DwcAnnotationException;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * the base class for all panel implementations
  */
-public abstract class AbstractPanel extends AbstractDwcControl {
+public abstract class AbstractPanel extends AbstractDwcComponent {
 
   protected BBjWindow wnd;
 

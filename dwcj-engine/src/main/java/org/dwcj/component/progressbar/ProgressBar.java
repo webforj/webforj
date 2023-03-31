@@ -5,10 +5,10 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 
-public final class ProgressBar extends AbstractDwcControl {
+public final class ProgressBar extends AbstractDwcComponent {
 
     private BBjProgressBar bbjProgressBar;
 

@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractDwcControl;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
@@ -23,7 +23,7 @@ import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 
-public class NumberField extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable{
+public class NumberField extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable{
 
     protected BBjInputN numBox;
 
