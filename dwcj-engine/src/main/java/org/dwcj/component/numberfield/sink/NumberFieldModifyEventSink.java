@@ -12,13 +12,13 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 
-public class NumericBoxEditModifyEventSink {
+public class NumberFieldModifyEventSink {
 
     private ArrayList<Consumer<NumberFieldModifyEvent>> targets;
     private final NumberField numericBox;
     
     @SuppressWarnings({"static-access"})
-    public NumericBoxEditModifyEventSink(NumberField numBox) {
+    public NumberFieldModifyEventSink(NumberField numBox) {
 
         this.targets = new ArrayList<>();
         this.numericBox = numBox;
@@ -35,7 +35,7 @@ public class NumericBoxEditModifyEventSink {
         }
     }
 
-    public NumericBoxEditModifyEventSink(NumberField numBox, Consumer<NumberFieldModifyEvent> callback) {
+    public NumberFieldModifyEventSink(NumberField numBox, Consumer<NumberFieldModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);

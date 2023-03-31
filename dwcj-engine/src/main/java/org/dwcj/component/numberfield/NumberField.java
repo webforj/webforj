@@ -13,7 +13,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
-import org.dwcj.component.numberfield.sink.NumericBoxEditModifyEventSink;
+import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
@@ -37,7 +37,7 @@ public class NumberField extends AbstractDwcControl implements HasReadOnly, Focu
 
 
     protected ArrayList<Consumer<NumberFieldModifyEvent>> callbacks = new ArrayList<>();
-    protected NumericBoxEditModifyEventSink editModifyEventSink;
+    protected NumberFieldModifyEventSink editModifyEventSink;
 
 
     protected String commaChar = ",";
@@ -90,7 +90,7 @@ public class NumberField extends AbstractDwcControl implements HasReadOnly, Focu
     public NumberField onEditModify(Consumer<NumberFieldModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
-                this.editModifyEventSink = new NumericBoxEditModifyEventSink(this);
+                this.editModifyEventSink = new NumberFieldModifyEventSink(this);
             }
             this.editModifyEventSink.addCallback(callback);
         }
@@ -806,7 +806,7 @@ public class NumberField extends AbstractDwcControl implements HasReadOnly, Focu
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
-            this.editModifyEventSink = new NumericBoxEditModifyEventSink(this);
+            this.editModifyEventSink = new NumberFieldModifyEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.editModifyEventSink.addCallback(this.callbacks.remove(0));
             }
