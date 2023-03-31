@@ -8,7 +8,7 @@ import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.panels.AppPanel;
 import org.dwcj.component.panels.Div;
-import org.dwcj.exceptions.AppInitializeException;
+import org.dwcj.exceptions.DwcjAppInitializeException;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -18,7 +18,7 @@ public class WelcomeApp extends App {
     private AppPanel panel;
 
     @Override
-    public void run() throws AppInitializeException {
+    public void run() throws DwcjAppInitializeException {
         panel = new AppPanel();
         panel.setStyle("display","inline-grid");
         panel.setStyle("gap","20px");

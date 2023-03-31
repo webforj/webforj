@@ -1,14 +1,22 @@
 package org.dwcj.exceptions;
 
 /**
- * This class is used for reporting errors that occur during DWC application
- * initialization phase.
+ * This class is used for reporting exceptions when DWC control is destroyed
  * 
- * @author Stephan Wald, Hyyan Abo Fakher
+ * @author Hyyan Abo Fakher
  */
-public final class AppInitializeException extends DwcjException {
-
-    private static final String DEFAULT_MESSAGE = "DWC application initialization failed.";
+public class DwcjComponentDestroyed extends DwcjRuntimeException {
+    /**
+     * Constructs a new exception with the specified detail message. The
+     * cause is not initialized, and may subsequently be initialized by
+     * a call to {@link #initCause}.
+     *
+     * @param message the detail message. The detail message is saved for
+     *                later retrieval by the {@link #getMessage()} method.
+     */
+    public DwcjComponentDestroyed(String message) {
+        super(message);
+    }
 
     /**
      * Constructs a new exception with the specified detail message and
@@ -25,7 +33,7 @@ public final class AppInitializeException extends DwcjException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public AppInitializeException(String message, Throwable cause) {
+    public DwcjComponentDestroyed(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -41,26 +49,24 @@ public final class AppInitializeException extends DwcjException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public AppInitializeException(Throwable e) {
-        super(DEFAULT_MESSAGE, e);
+    public DwcjComponentDestroyed(Throwable cause) {
+        super(cause);
     }
 
     /**
-     * Constructs a new exception with the specified detail message. The cause is
-     * not initialized, and may subsequently be initialized by a call to
-     * {@link #initCause}.
+     * Constructs a new DWC exception based on the passed exception.
      *
-     * @param e the detail message. The detail message is saved for later
-     *          retrieval by the {@link #getMessage()} method.
+     * @param e the exception to be wrapped
      */
-    public AppInitializeException(String e) {
+    public DwcjComponentDestroyed(Exception e) {
         super(e);
     }
 
     /**
-     * Constructs a new exception with the specified detail message.
+     * Constructs a new exception with {@code null} as its detail message.
+     * The cause is not initialized, and may subsequently be initialized by a
+     * call to {@link #initCause}.
      */
-    public AppInitializeException() {
-        super(DEFAULT_MESSAGE);
+    public DwcjComponentDestroyed() {
     }
 }
