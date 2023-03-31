@@ -1,4 +1,4 @@
-package org.dwcj.component.htmlcontainer.sinks;
+package org.dwcj.component.htmlcontainer.sink;
 
 import com.basis.bbj.proxies.event.BBjScriptFailedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
