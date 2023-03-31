@@ -7,7 +7,7 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.exceptions.DwcAnnotationException;
 
@@ -23,7 +23,7 @@ public abstract class AbstractPanel extends AbstractDwcControl {
 
   protected BBjWindow wnd;
 
-  protected ArrayList<AbstractControl> controls = new ArrayList<>();
+  protected ArrayList<AbstractComponent> controls = new ArrayList<>();
   private final HashSet<String> cssClasses = new HashSet<>();
   private final Map<String, String> styles = new HashMap<>();
 
@@ -35,8 +35,8 @@ public abstract class AbstractPanel extends AbstractDwcControl {
    * @param ctrl the control(s) to be added
    * @return the panel itself
    */
-  public AbstractPanel add(AbstractControl... ctrl) {
-    for (AbstractControl c : ctrl) {
+  public AbstractPanel add(AbstractComponent... ctrl) {
+    for (AbstractComponent c : ctrl) {
       if (Boolean.FALSE.equals(c.isDestroyed())) {
         try {
           AnnotationProcessor processor = new AnnotationProcessor();

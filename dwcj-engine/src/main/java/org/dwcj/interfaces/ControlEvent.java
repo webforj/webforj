@@ -1,6 +1,6 @@
 package org.dwcj.interfaces;
 
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 
 /**
  * Base interface for DWC control events
@@ -11,5 +11,5 @@ public interface ControlEvent {
      *
      * @return the control that triggered the event
      */
-    AbstractControl getControl();
+    AbstractComponent getControl();
 }

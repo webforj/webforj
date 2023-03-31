@@ -18,7 +18,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
     public static final String YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD = ": You're not allowed to access this method!";
 
     @Override
-    public BBjControl getBBjControl(AbstractControl ctrl) throws IllegalAccessException {
+    public BBjControl getBBjControl(AbstractComponent ctrl) throws IllegalAccessException {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         String caller = stack[2].getClassName();
@@ -31,7 +31,7 @@ final class CtrlAccessorImpl extends ControlAccessor {
 
     @Override
     @SuppressWarnings("java:S3011") // allow increasing acessibility
-    public void create(AbstractControl ctrl, AbstractPanel panel) throws IllegalAccessException {
+    public void create(AbstractComponent ctrl, AbstractPanel panel) throws IllegalAccessException {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         String caller = stack[2].getClassName();

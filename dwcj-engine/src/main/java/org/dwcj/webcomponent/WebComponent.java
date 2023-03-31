@@ -24,7 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.annotation.InlineStyleSheet;
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
@@ -62,7 +62,7 @@ import org.dwcj.webcomponent.events.EventListener;
  * 
  * @author Hyyan Abo Fakher
  */
-public abstract class WebComponent extends AbstractControl {
+public abstract class WebComponent extends AbstractComponent {
   private final HtmlContainer hv;
   private final String uuid = UUID.randomUUID().toString().substring(0, 8);
   private final Map<String, Object> properties = new HashMap<>();
@@ -72,7 +72,7 @@ public abstract class WebComponent extends AbstractControl {
   private final HashMap<String, Class<? extends Event<?>>> clientEventMap = new HashMap<>();
   private final Map<String, String> rawSlots = new HashMap<>();
   private final Map<String, Entry<AbstractPanel, Boolean>> slots = new HashMap<>();
-  private final Map<AbstractControl, Entry<String, Boolean>> controls = new HashMap<>();
+  private final Map<AbstractComponent, Entry<String, Boolean>> controls = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final UnaryOperator<String> encode = (value) -> {
     return Base64.getEncoder().encodeToString(String.valueOf(value).getBytes());
@@ -585,7 +585,7 @@ public abstract class WebComponent extends AbstractControl {
    * @param uuid the uuid of the control to get
    * @return the control
    */
-  protected AbstractControl getControl(String uuid) {
+  protected AbstractComponent getControl(String uuid) {
     return controls.entrySet().stream()
         .filter(e -> e.getValue().getKey().equals(uuid))
         .map(e -> e.getKey())
@@ -611,7 +611,7 @@ public abstract class WebComponent extends AbstractControl {
    *                                  web component itself or the control is
    *                                  destroyed.
    */
-  protected String addControl(AbstractControl control) {
+  protected String addControl(AbstractComponent control) {
     assertNotDestroyed();
 
     if (control == null) {
@@ -688,7 +688,7 @@ public abstract class WebComponent extends AbstractControl {
     assertNotDestroyed();
 
     if (uuid != null) {
-      AbstractControl control = getControl(uuid);
+      AbstractComponent control = getControl(uuid);
       if (control != null) {
         controls.remove(control);
         control.destroy();
@@ -1491,8 +1491,8 @@ public abstract class WebComponent extends AbstractControl {
     }
 
     // loop over the controls and add them to the web component panel
-    for (Entry<AbstractControl, Entry<String, Boolean>> entry : controls.entrySet()) {
-      AbstractControl control = entry.getKey();
+    for (Entry<AbstractComponent, Entry<String, Boolean>> entry : controls.entrySet()) {
+      AbstractComponent control = entry.getKey();
       boolean isAttached = entry.getValue().getValue();
 
       if (control != null && !isAttached) {

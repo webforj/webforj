@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.panels.AbstractPanel;
 
 /**
@@ -27,8 +27,8 @@ public class BBjPanelAdapter extends AbstractPanel {
      * @return the panel itself
      */
     @Override
-    public AbstractPanel add(AbstractControl ...ctrl) {
-        for(AbstractControl c: ctrl){
+    public AbstractPanel add(AbstractComponent ...ctrl) {
+        for(AbstractComponent c: ctrl){
             try {
                 AnnotationProcessor processor = new AnnotationProcessor();
                 processor.processControlAnnotations(c);

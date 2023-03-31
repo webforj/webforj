@@ -1,6 +1,6 @@
 package org.dwcj.component.flexlayout;
 
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 
 /**
  * A builder for {@link FlexLayout}.
@@ -14,7 +14,7 @@ public final class FlexLayoutBuilder {
   private FlexDirection direction = null;
   private FlexJustifyContent justifyContent = null;
   private FlexWrap wrap = null;
-  private AbstractControl[] children = null;
+  private AbstractComponent[] children = null;
 
   @FunctionalInterface
   interface Builder {
@@ -252,7 +252,7 @@ public final class FlexLayoutBuilder {
    * 
    * @param control the controls
    */
-  public FlexLayoutBuilder(AbstractControl... control) {
+  public FlexLayoutBuilder(AbstractComponent... control) {
     children = control;
   }
 

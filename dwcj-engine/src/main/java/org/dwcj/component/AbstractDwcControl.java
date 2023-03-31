@@ -25,7 +25,7 @@ import org.dwcj.interfaces.HasVisibility;
  * and implements
  * default behaviors for the implemented interface methods.
  */
-public abstract class AbstractDwcControl extends AbstractControl
+public abstract class AbstractDwcControl extends AbstractComponent
     implements HasAttribute, HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility {
 
   /*

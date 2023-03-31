@@ -3,7 +3,7 @@ package org.dwcj.webcomponent.events;
 import java.util.EventObject;
 import java.util.Map;
 
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.interfaces.Control;
 import org.dwcj.interfaces.ControlEvent;
 
@@ -56,7 +56,7 @@ public class Event<T extends Control> extends EventObject implements ControlEven
    * @return the control
    */
   @Override
-  public AbstractControl getControl() {
-    return (AbstractControl) getSource();
+  public AbstractComponent getControl() {
+    return (AbstractComponent) getSource();
   }
 }

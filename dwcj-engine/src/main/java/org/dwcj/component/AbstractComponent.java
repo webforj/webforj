@@ -17,7 +17,7 @@ import com.basis.startup.type.BBjException;
  * for the implemented interface methods. Extended by AbstractDwcControl.
  */
 
-public abstract class AbstractControl implements Control, HasDestroy {
+public abstract class AbstractComponent implements Control, HasDestroy {
 
     /*
      * Underlying BBj control
@@ -81,7 +81,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
     }
 
     @Override
-    public AbstractControl setId(String elementId) {
+    public AbstractComponent setId(String elementId) {
         if (this.ctrl != null) {
             try {
                 this.ctrl.setAttribute("id", elementId);
@@ -97,7 +97,7 @@ public abstract class AbstractControl implements Control, HasDestroy {
         return this.userData.get(key);
     }
 
-    public AbstractControl setUserData(String key, Object data) {
+    public AbstractComponent setUserData(String key, Object data) {
         this.userData.put(key, data);
         return this;
     }

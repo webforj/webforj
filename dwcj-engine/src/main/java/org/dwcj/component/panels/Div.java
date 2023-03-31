@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.panels.events.DivClickEvent;
 import org.dwcj.component.panels.sinks.DivClickEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -22,7 +22,7 @@ public class Div extends AbstractPanel {
   private ArrayList<Consumer<DivClickEvent>> callbacks = new ArrayList<>();
   private DivClickEventSink divClickEventSink;
 
-  private final ArrayList<AbstractControl> catchUpControls = new ArrayList<>();
+  private final ArrayList<AbstractComponent> catchUpControls = new ArrayList<>();
 
   @Override
   protected void create(AbstractPanel p) {
@@ -57,8 +57,8 @@ public class Div extends AbstractPanel {
    * @return the panel itself
    */
   @Override
-  public Div add(AbstractControl... control) {
-    for (AbstractControl c : control) {
+  public Div add(AbstractComponent... control) {
+    for (AbstractComponent c : control) {
       if (this.ctrl != null && Boolean.FALSE.equals(c.isDestroyed())) {
         try {
           AnnotationProcessor processor = new AnnotationProcessor();
@@ -174,7 +174,7 @@ public class Div extends AbstractPanel {
    * removes and destroys all controls within the Div
    */
   protected void clear() {
-    for (AbstractControl control : this.controls) {
+    for (AbstractComponent control : this.controls) {
       control.destroy();
     }
     controls.clear();

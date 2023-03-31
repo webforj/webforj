@@ -1,6 +1,6 @@
 package org.dwcj.widgets.markdown;
 
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.panels.Div;
@@ -58,9 +58,9 @@ public class DynamicMarkdown extends Div {
                     continue;
                 }
 
-                AbstractControl ctrl;
+                AbstractComponent ctrl;
                 try {
-                    ctrl = (AbstractControl) c.getDeclaredConstructor().newInstance();
+                    ctrl = (AbstractComponent) c.getDeclaredConstructor().newInstance();
                 } catch (Exception ex) {
                     Label lbl = new Label("Class " + l + " cannot be instantiated! Is this a DWCJ control class?");
                     lbl.setStyle("color", "red");

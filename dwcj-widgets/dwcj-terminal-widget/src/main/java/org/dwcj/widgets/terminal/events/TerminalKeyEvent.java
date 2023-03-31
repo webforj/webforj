@@ -1,7 +1,7 @@
 package org.dwcj.widgets.terminal.events;
 
 import org.dwcj.widgets.terminal.Terminal;
-import org.dwcj.component.AbstractControl;
+import org.dwcj.component.AbstractComponent;
 import org.dwcj.interfaces.ControlEvent;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public final class TerminalKeyEvent implements ControlEvent,TerminalKey {
     }
 
     @Override
-    public AbstractControl getControl() {
+    public AbstractComponent getControl() {
         return ctrl;
     }
 
