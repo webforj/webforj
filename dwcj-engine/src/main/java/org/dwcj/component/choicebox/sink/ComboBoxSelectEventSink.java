@@ -1,4 +1,4 @@
-package org.dwcj.component.choicebox.sinks;
+package org.dwcj.component.choicebox.sink;
 
 import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
