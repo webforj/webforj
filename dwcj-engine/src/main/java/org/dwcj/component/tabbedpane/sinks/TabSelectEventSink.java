@@ -1,4 +1,4 @@
-package org.dwcj.component.tabcontrol.sinks;
+package org.dwcj.component.tabbedpane.sinks;
 
 
 import com.basis.bbj.proxies.event.BBjTabSelectedEvent;
@@ -7,8 +7,8 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.tabcontrol.TabControl;
-import org.dwcj.component.tabcontrol.events.TabSelectEvent;
+import org.dwcj.component.tabbedpane.TabControl;
+import org.dwcj.component.tabbedpane.events.TabSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
