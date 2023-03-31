@@ -14,7 +14,7 @@ import org.dwcj.webcomponent.events.Event;
  */
 @EventName(value = "bbj-drawer-opened")
 @EventExpressions(filter = "event.target.isSameNode(component)")
-public final class AppLayoutDrawerOpenedEvent extends Event<AppLayout> {
+public final class AppLayoutDrawerOpenEvent extends Event<AppLayout> {
 
   /**
    * Creates a new event.
@@ -22,7 +22,7 @@ public final class AppLayoutDrawerOpenedEvent extends Event<AppLayout> {
    * @param target the target of the event
    * @param detail the detail of the event
    */
-  public AppLayoutDrawerOpenedEvent(AppLayout target, Map<String, Object> detail) {
+  public AppLayoutDrawerOpenEvent(AppLayout target, Map<String, Object> detail) {
     super(target, detail);
   }
 }
