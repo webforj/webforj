@@ -1,6 +1,6 @@
-package org.dwcj.component.treeview.events;
+package org.dwcj.component.tree.events;
 
-import org.dwcj.component.treeview.TreeView;
+import org.dwcj.component.tree.TreeView;
 import org.dwcj.interfaces.ControlEvent;
 
 public class TreeLostFocusEvent implements ControlEvent {

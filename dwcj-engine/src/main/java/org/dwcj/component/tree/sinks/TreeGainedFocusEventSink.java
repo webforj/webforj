@@ -1,11 +1,11 @@
-package org.dwcj.component.treeview.sinks;
+package org.dwcj.component.tree.sinks;
 
 import com.basis.bbj.proxies.event.BBjGainedFocusEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.component.treeview.TreeView;
-import org.dwcj.component.treeview.events.TreeGainedFocusEvent;
+import org.dwcj.component.tree.TreeView;
+import org.dwcj.component.tree.events.TreeGainedFocusEvent;
 
 import java.util.function.Consumer;
 
