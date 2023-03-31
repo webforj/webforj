@@ -1,4 +1,4 @@
-package org.dwcj.component.button.sinks;
+package org.dwcj.component.button.sink;
 
 import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
