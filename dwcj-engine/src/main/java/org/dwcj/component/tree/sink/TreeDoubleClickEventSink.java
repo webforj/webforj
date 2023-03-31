@@ -5,19 +5,19 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.component.tree.event.TreeDoubleClickedEvent;
+import org.dwcj.component.tree.event.TreeDoubleClickEvent;
 
 import java.util.function.Consumer;
 
 public class TreeDoubleClickEventSink {
 
-    private final Consumer<TreeDoubleClickedEvent> target;
+    private final Consumer<TreeDoubleClickEvent> target;
 
     private final TreeView tree;
 
 
     @SuppressWarnings({"static-access"})
-    public TreeDoubleClickEventSink(TreeView tree, Consumer<TreeDoubleClickedEvent> target) {
+    public TreeDoubleClickEventSink(TreeView tree, Consumer<TreeDoubleClickEvent> target) {
         this.target = target;
         this.tree = tree;
 
@@ -33,7 +33,7 @@ public class TreeDoubleClickEventSink {
     }
 
     public void doubleClickEvent(BBjTreeMouseDoubleClickEvent ev) { //NOSONAR
-        TreeDoubleClickedEvent dwcEv = new TreeDoubleClickedEvent(this.tree);
+        TreeDoubleClickEvent dwcEv = new TreeDoubleClickEvent(this.tree);
         target.accept(dwcEv);
     }
 }

@@ -3,10 +3,10 @@ package org.dwcj.component.tree.event;
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.tree.TreeView;
 
-public class TreeExpandedEvent implements ComponentEvent {
+public class TreeEditStopEvent implements ComponentEvent {
     private final TreeView control;
 
-    public TreeExpandedEvent(TreeView cTree) {
+    public TreeEditStopEvent(TreeView cTree) {
         this.control = cTree;
     }
 
@@ -15,5 +15,5 @@ public class TreeExpandedEvent implements ComponentEvent {
         return control;
     }
 
-    public String toString() { return "Event: TreeExpanded"; }
+    public String toString() { return "Event: TreeEditStopped"; }
 }

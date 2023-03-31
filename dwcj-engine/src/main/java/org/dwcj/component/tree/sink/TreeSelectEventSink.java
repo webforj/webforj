@@ -5,19 +5,19 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.component.tree.event.TreeSelectedEvent;
+import org.dwcj.component.tree.event.TreeSelectEvent;
 
 import java.util.function.Consumer;
 
 public final class TreeSelectEventSink {
 
-    private final Consumer<TreeSelectedEvent> target;
+    private final Consumer<TreeSelectEvent> target;
 
     private final TreeView tree;
 
 
     @SuppressWarnings({"static-access"})
-    public TreeSelectEventSink(TreeView tree, Consumer<TreeSelectedEvent> target) {
+    public TreeSelectEventSink(TreeView tree, Consumer<TreeSelectEvent> target) {
         this.target = target;
         this.tree = tree;
 
@@ -33,7 +33,7 @@ public final class TreeSelectEventSink {
     }
 
     public void selectEvent(BBjTreeNodeSelectedEvent ev) { // NOSONAR
-        TreeSelectedEvent dwcEv = new TreeSelectedEvent(this.tree);
+        TreeSelectEvent dwcEv = new TreeSelectEvent(this.tree);
         target.accept(dwcEv);
     }
 }

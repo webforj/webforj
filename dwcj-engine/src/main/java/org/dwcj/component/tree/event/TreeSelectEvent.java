@@ -3,10 +3,10 @@ package org.dwcj.component.tree.event;
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.tree.TreeView;
 
-public class TreeGainedFocusEvent implements ComponentEvent {
+public class TreeSelectEvent implements ComponentEvent {
     private final TreeView control;
 
-    public TreeGainedFocusEvent(TreeView cTree) {
+    public TreeSelectEvent(TreeView cTree) {
         this.control = cTree;
     }
 
@@ -14,4 +14,6 @@ public class TreeGainedFocusEvent implements ComponentEvent {
     public TreeView getControl() {
         return control;
     }
+
+    public String toString() { return "Event: TreeSelected";}
 }

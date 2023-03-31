@@ -5,19 +5,19 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.component.tree.event.TreeExpandedEvent;
+import org.dwcj.component.tree.event.TreeExpandEvent;
 
 import java.util.function.Consumer;
 
 public class TreeExpandEventSink {
 
-    private final Consumer<TreeExpandedEvent> target;
+    private final Consumer<TreeExpandEvent> target;
 
     private final TreeView tree;
 
 
     @SuppressWarnings({"static-access"})
-    public TreeExpandEventSink(TreeView tree, Consumer<TreeExpandedEvent> target) {
+    public TreeExpandEventSink(TreeView tree, Consumer<TreeExpandEvent> target) {
         this.target = target;
         this.tree = tree;
 
@@ -33,7 +33,7 @@ public class TreeExpandEventSink {
     }
 
     public void expandEvent(BBjTreeNodeExpandedEvent ev) { //NOSONAR
-        TreeExpandedEvent dwcEv = new TreeExpandedEvent(this.tree);
+        TreeExpandEvent dwcEv = new TreeExpandEvent(this.tree);
         target.accept(dwcEv);
     }
 }

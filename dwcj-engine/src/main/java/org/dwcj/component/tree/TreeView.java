@@ -11,19 +11,19 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.tree.event.TreeCollapseEvent;
 import org.dwcj.component.tree.event.TreeDeselectEvent;
-import org.dwcj.component.tree.event.TreeDoubleClickedEvent;
-import org.dwcj.component.tree.event.TreeEditStoppedEvent;
-import org.dwcj.component.tree.event.TreeExpandedEvent;
-import org.dwcj.component.tree.event.TreeGainedFocusEvent;
-import org.dwcj.component.tree.event.TreeLostFocusEvent;
-import org.dwcj.component.tree.event.TreeSelectedEvent;
+import org.dwcj.component.tree.event.TreeDoubleClickEvent;
+import org.dwcj.component.tree.event.TreeEditStopEvent;
+import org.dwcj.component.tree.event.TreeExpandEvent;
+import org.dwcj.component.tree.event.TreeFocusEvent;
+import org.dwcj.component.tree.event.TreeBlurEvent;
+import org.dwcj.component.tree.event.TreeSelectEvent;
 import org.dwcj.component.tree.sink.TreeCollapseEventSink;
 import org.dwcj.component.tree.sink.TreeDeselectEventSink;
 import org.dwcj.component.tree.sink.TreeDoubleClickEventSink;
 import org.dwcj.component.tree.sink.TreeEditStopEventSink;
 import org.dwcj.component.tree.sink.TreeExpandEventSink;
-import org.dwcj.component.tree.sink.TreeGainedFocusEventSink;
-import org.dwcj.component.tree.sink.TreeLostFocusEventSink;
+import org.dwcj.component.tree.sink.TreeFocusEventSink;
+import org.dwcj.component.tree.sink.TreeBlurEventSink;
 import org.dwcj.component.tree.sink.TreeSelectEventSink;
 import org.dwcj.models.Icon;
 
@@ -519,17 +519,17 @@ public final class TreeView extends AbstractDwcComponent {
         }
     }
 
-    public TreeView onGainedFocus(Consumer<TreeGainedFocusEvent> callback) {
-        new TreeGainedFocusEventSink(this,callback);
+    public TreeView onFocus(Consumer<TreeFocusEvent> callback) {
+        new TreeFocusEventSink(this,callback);
         return this;
     }
 
-    public TreeView onLostFocus(Consumer<TreeLostFocusEvent> callback) {
-        new TreeLostFocusEventSink(this,callback);
+    public TreeView onBlur(Consumer<TreeBlurEvent> callback) {
+        new TreeBlurEventSink(this,callback);
         return this;
     }
 
-    public TreeView onSelect(Consumer<TreeSelectedEvent> callback) {
+    public TreeView onSelect(Consumer<TreeSelectEvent> callback) {
         new TreeSelectEventSink(this,callback);
         return this;
     }
@@ -539,7 +539,7 @@ public final class TreeView extends AbstractDwcComponent {
         return this;
     }
 
-    public TreeView onExpand(Consumer<TreeExpandedEvent> callback) {
+    public TreeView onExpand(Consumer<TreeExpandEvent> callback) {
         new TreeExpandEventSink(this, callback);
         return this;
     }
@@ -549,12 +549,12 @@ public final class TreeView extends AbstractDwcComponent {
         return this;
     }
 
-    public TreeView onEditStopped(Consumer<TreeEditStoppedEvent> callback) {
+    public TreeView onEditStop(Consumer<TreeEditStopEvent> callback) {
         new TreeEditStopEventSink(this,callback);
         return this;
     }
 
-    public TreeView onDoubleClick(Consumer<TreeDoubleClickedEvent> callback) {
+    public TreeView onDoubleClick(Consumer<TreeDoubleClickEvent> callback) {
         new TreeDoubleClickEventSink(this, callback);
         return this;
     }

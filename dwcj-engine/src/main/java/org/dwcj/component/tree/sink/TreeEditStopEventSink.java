@@ -5,18 +5,18 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.component.tree.event.TreeEditStoppedEvent;
+import org.dwcj.component.tree.event.TreeEditStopEvent;
 
 import java.util.function.Consumer;
 
 public class TreeEditStopEventSink {
 
-    private final Consumer<TreeEditStoppedEvent> target;
+    private final Consumer<TreeEditStopEvent> target;
 
     private final TreeView tree;
 
     @SuppressWarnings({"static-access"})
-    public TreeEditStopEventSink(TreeView tree, Consumer<TreeEditStoppedEvent> target) {
+    public TreeEditStopEventSink(TreeView tree, Consumer<TreeEditStopEvent> target) {
         this.target = target;
         this.tree = tree;
 
@@ -32,7 +32,7 @@ public class TreeEditStopEventSink {
     }
 
     public void editStopEvent(BBjTreeNodeEditStoppedEvent ev) { //NOSONAR
-        TreeEditStoppedEvent dwcEv = new TreeEditStoppedEvent(this.tree);
+        TreeEditStopEvent dwcEv = new TreeEditStopEvent(this.tree);
         target.accept(dwcEv);
     }
 }
