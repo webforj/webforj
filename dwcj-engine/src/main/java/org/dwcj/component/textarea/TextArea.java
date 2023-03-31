@@ -15,7 +15,7 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.textarea.event.TextAreaModifyEvent;
-import org.dwcj.component.textarea.sink.TextAreaOnEditModifyEventSink;
+import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     }
 
     private ArrayList<Consumer<TextAreaModifyEvent>> callbacks = new ArrayList<>();
-    private TextAreaOnEditModifyEventSink editModifyEventSink;
+    private TextAreaModifyEventSink editModifyEventSink;
 
 
     private Boolean hScroll = false;
@@ -84,7 +84,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     public TextArea onEditModify(Consumer<TextAreaModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
-                this.editModifyEventSink = new TextAreaOnEditModifyEventSink(this);
+                this.editModifyEventSink = new TextAreaModifyEventSink(this);
             }
             this.editModifyEventSink.addCallback(callback);
         }
@@ -942,7 +942,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
-            this.editModifyEventSink = new TextAreaOnEditModifyEventSink(this);
+            this.editModifyEventSink = new TextAreaModifyEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.editModifyEventSink.addCallback(this.callbacks.remove(0));
             }

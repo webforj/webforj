@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class TextAreaOnEditModifyEventSink {
+public final class TextAreaModifyEventSink {
 
     private ArrayList<Consumer<TextAreaModifyEvent>> targets;
     private final TextArea multilineEdit;
 
     @SuppressWarnings({"static-access"})
-    public TextAreaOnEditModifyEventSink(TextArea txtArea) {
+    public TextAreaModifyEventSink(TextArea txtArea) {
 
         this.targets = new ArrayList<>();
         this.multilineEdit = txtArea;
@@ -34,7 +34,7 @@ public final class TextAreaOnEditModifyEventSink {
         }
     }
 
-    public TextAreaOnEditModifyEventSink(TextArea txtArea, Consumer<TextAreaModifyEvent> callback) {
+    public TextAreaModifyEventSink(TextArea txtArea, Consumer<TextAreaModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
