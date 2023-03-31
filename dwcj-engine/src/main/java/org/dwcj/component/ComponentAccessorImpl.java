@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  * AbstractPanel-derived set of panel class
  * Pattern see Tulach, p.75ff
  */
-final class CtrlAccessorImpl extends ControlAccessor {
+final class ComponentAccessorImpl extends ControlAccessor {
 
     public static final String YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD = ": You're not allowed to access this method!";
 

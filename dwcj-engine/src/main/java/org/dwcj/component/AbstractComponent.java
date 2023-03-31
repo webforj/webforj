@@ -43,7 +43,7 @@ public abstract class AbstractComponent implements Control, HasDestroy {
     protected Boolean destroyed = false;
 
     static {
-        ControlAccessor.setDefault(new CtrlAccessorImpl());
+        ControlAccessor.setDefault(new ComponentAccessorImpl());
     }
 
     /**
