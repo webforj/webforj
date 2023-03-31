@@ -4,7 +4,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.component.button.Button;
-import org.dwcj.component.button.events.ButtonClickEvent;
+import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.panels.AppPanel;
 import org.dwcj.component.panels.Div;

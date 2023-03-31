@@ -1,4 +1,4 @@
-package org.dwcj.component.button.events;
+package org.dwcj.component.button.event;
 
 import org.dwcj.component.button.Button;
 import org.dwcj.interfaces.ControlEvent;

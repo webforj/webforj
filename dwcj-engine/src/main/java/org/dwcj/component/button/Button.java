@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
-import org.dwcj.component.button.events.ButtonClickEvent;
+import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sinks.ButtonClickEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
