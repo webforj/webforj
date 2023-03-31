@@ -1,4 +1,4 @@
-package org.dwcj.component.field.sinks;
+package org.dwcj.component.field.sink;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
