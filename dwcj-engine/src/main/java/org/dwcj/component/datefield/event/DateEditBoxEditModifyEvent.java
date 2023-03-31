@@ -1,4 +1,4 @@
-package org.dwcj.component.datefield.events;
+package org.dwcj.component.datefield.event;
 
 import org.dwcj.component.datefield.DateEditBox;
 import org.dwcj.interfaces.ControlEvent;
