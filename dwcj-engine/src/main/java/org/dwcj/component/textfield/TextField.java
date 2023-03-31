@@ -9,7 +9,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.textfield.event.StringEditBoxEditModifyEvent;
+import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 import org.dwcj.component.textfield.sink.StringEditBoxEditModifyEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
@@ -36,7 +36,7 @@ public final class TextField extends AbstractDwcControl implements HasReadOnly, 
     }
     
 
-    private ArrayList<Consumer<StringEditBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    private ArrayList<Consumer<TextFieldModifyEvent>> callbacks = new ArrayList<>();
     private StringEditBoxEditModifyEventSink editModifyEventSink;
     
     private Integer caretPos = 1;
@@ -79,7 +79,7 @@ public final class TextField extends AbstractDwcControl implements HasReadOnly, 
         }
     }
 
-    public TextField onEditModify(Consumer<StringEditBoxEditModifyEvent> callback){
+    public TextField onEditModify(Consumer<TextFieldModifyEvent> callback){
 
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){

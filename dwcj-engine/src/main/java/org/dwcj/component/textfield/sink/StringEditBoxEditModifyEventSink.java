@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.textfield.TextField;
-import org.dwcj.component.textfield.event.StringEditBoxEditModifyEvent;
+import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class StringEditBoxEditModifyEventSink {
     
-    private ArrayList<Consumer<StringEditBoxEditModifyEvent>> targets;
+    private ArrayList<Consumer<TextFieldModifyEvent>> targets;
     private final TextField stringEditBox;
 
 
@@ -37,13 +37,13 @@ public class StringEditBoxEditModifyEventSink {
 
 
     public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        StringEditBoxEditModifyEvent dwcEv = new StringEditBoxEditModifyEvent(this.stringEditBox);
-        Iterator<Consumer<StringEditBoxEditModifyEvent>> it = targets.iterator();
+        TextFieldModifyEvent dwcEv = new TextFieldModifyEvent(this.stringEditBox);
+        Iterator<Consumer<TextFieldModifyEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<StringEditBoxEditModifyEvent> callback) {
+    public void addCallback(Consumer<TextFieldModifyEvent> callback) {
         targets.add(callback);
     }
 
