@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class TextComboBoxEditModifyEventSink {
+public class ComboBoxEditModifyEventSink {
     
     private ArrayList<Consumer<ComboBoxEditModifyEvent>> targets = new ArrayList<>();
     private final ComboBox textComboBox;
@@ -19,7 +19,7 @@ public class TextComboBoxEditModifyEventSink {
 
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxEditModifyEventSink(ComboBox cb) {
+    public ComboBoxEditModifyEventSink(ComboBox cb) {
         this.textComboBox = cb;
 
         try {
@@ -33,7 +33,7 @@ public class TextComboBoxEditModifyEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxEditModifyEventSink(ComboBox cb, Consumer<ComboBoxEditModifyEvent> callback) {
+    public ComboBoxEditModifyEventSink(ComboBox cb, Consumer<ComboBoxEditModifyEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 

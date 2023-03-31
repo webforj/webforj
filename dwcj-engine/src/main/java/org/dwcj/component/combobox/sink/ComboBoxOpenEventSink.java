@@ -1,30 +1,32 @@
 package org.dwcj.component.combobox.sink;
 
-import com.basis.bbj.proxies.event.BBjListCloseEvent;
+import com.basis.bbj.proxies.event.BBjListOpenEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.combobox.ComboBox;
-import org.dwcj.component.combobox.event.ComboBoxCloseEvent;
+import org.dwcj.component.combobox.event.ComboBoxOpenEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class TextComboBoxCloseEventSink {
-    
-    private ArrayList<Consumer<ComboBoxCloseEvent>> targets = new ArrayList<>();
+
+
+public class ComboBoxOpenEventSink {
+
+    private ArrayList<Consumer<ComboBoxOpenEvent>> targets = new ArrayList<>();
     private final ComboBox textComboBox;
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxCloseEventSink(ComboBox cb) {
+    public ComboBoxOpenEventSink(ComboBox cb) {
         this.textComboBox = cb;
 
         try {
             bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
                     "onEvent");
         } catch (Exception e) {
             Environment.logError(e);
@@ -32,14 +34,14 @@ public class TextComboBoxCloseEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxCloseEventSink(ComboBox cb, Consumer<ComboBoxCloseEvent> callback) {
+    public ComboBoxOpenEventSink(ComboBox cb, Consumer<ComboBoxOpenEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 
         try {
             bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
                     "onEvent");
         } catch (Exception e) {
             Environment.logError(e);
@@ -47,15 +49,13 @@ public class TextComboBoxCloseEventSink {
     }
 
     @SuppressWarnings("java.S1172")
-    public void closeEvent(BBjListCloseEvent ev) { //NOSONAR
-        ComboBoxCloseEvent dwcEv = new ComboBoxCloseEvent(this.textComboBox);
-        Iterator<Consumer<ComboBoxCloseEvent>> it = targets.iterator();
+    public void openEvent(BBjListOpenEvent ev) { //NOSONAR
+        ComboBoxOpenEvent dwcEv = new ComboBoxOpenEvent(this.textComboBox);
+        Iterator<Consumer<ComboBoxOpenEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<ComboBoxCloseEvent> callback) { targets.add(callback); }
-
-
-
+    public void addCallback(Consumer<ComboBoxOpenEvent> callback) { targets.add(callback); }
+    
 }

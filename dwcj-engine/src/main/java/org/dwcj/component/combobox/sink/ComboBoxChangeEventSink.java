@@ -1,11 +1,11 @@
 package org.dwcj.component.combobox.sink;
 
-import com.basis.bbj.proxies.event.BBjListOpenEvent;
+import com.basis.bbj.proxies.event.BBjListChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.combobox.ComboBox;
-import org.dwcj.component.combobox.event.ComboBoxOpenEvent;
+import org.dwcj.component.combobox.event.ComboBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,20 +13,22 @@ import java.util.function.Consumer;
 
 
 
-public class TextComboBoxOpenEventSink {
+public class ComboBoxChangeEventSink {
 
-    private ArrayList<Consumer<ComboBoxOpenEvent>> targets = new ArrayList<>();
+    private ArrayList<Consumer<ComboBoxChangeEvent>> targets = new ArrayList<>();
+
     private final ComboBox textComboBox;
+
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxOpenEventSink(ComboBox cb) {
+    public ComboBoxChangeEventSink(ComboBox cb) {
         this.textComboBox = cb;
 
         try {
             bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CHANGE,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
                     "onEvent");
         } catch (Exception e) {
             Environment.logError(e);
@@ -34,14 +36,14 @@ public class TextComboBoxOpenEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxOpenEventSink(ComboBox cb, Consumer<ComboBoxOpenEvent> callback) {
+    public ComboBoxChangeEventSink(ComboBox cb, Consumer<ComboBoxChangeEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 
         try {
             bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"),
+            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CHANGE,
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
                     "onEvent");
         } catch (Exception e) {
             Environment.logError(e);
@@ -49,13 +51,13 @@ public class TextComboBoxOpenEventSink {
     }
 
     @SuppressWarnings("java.S1172")
-    public void openEvent(BBjListOpenEvent ev) { //NOSONAR
-        ComboBoxOpenEvent dwcEv = new ComboBoxOpenEvent(this.textComboBox);
-        Iterator<Consumer<ComboBoxOpenEvent>> it = targets.iterator();
+    public void changeEvent(BBjListChangeEvent ev) { //NOSONAR
+        ComboBoxChangeEvent dwcEv = new ComboBoxChangeEvent(this.textComboBox);
+        Iterator<Consumer<ComboBoxChangeEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<ComboBoxOpenEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<ComboBoxChangeEvent> callback) { targets.add(callback); }
     
 }
