@@ -16,7 +16,7 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.field.event.FieldModifyEvent;
-import org.dwcj.component.field.sink.TextBoxEditModifyEventSink;
+import org.dwcj.component.field.sink.FieldModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -35,7 +35,7 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
     }
 
     private ArrayList<Consumer<FieldModifyEvent>> callbacks = new ArrayList<>();
-    private TextBoxEditModifyEventSink editModifyEventSink;
+    private FieldModifyEventSink editModifyEventSink;
 
     private Integer maxLength = 2147483647;
     private Boolean homeDelete = false;
@@ -75,7 +75,7 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
     public TextBox onEditModify(Consumer<FieldModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
-                this.editModifyEventSink = new TextBoxEditModifyEventSink(this);
+                this.editModifyEventSink = new FieldModifyEventSink(this);
             }
             this.editModifyEventSink.addCallback(callback);
         }
@@ -395,7 +395,7 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
-            this.editModifyEventSink = new TextBoxEditModifyEventSink(this);
+            this.editModifyEventSink = new FieldModifyEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.editModifyEventSink.addCallback(this.callbacks.remove(0));
             }

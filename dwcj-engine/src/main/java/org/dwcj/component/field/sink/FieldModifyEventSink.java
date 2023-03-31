@@ -12,13 +12,13 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 
-public class TextBoxEditModifyEventSink {
+public class FieldModifyEventSink {
     
     private ArrayList<Consumer<FieldModifyEvent>> targets;
     private final TextBox textBox;
 
     @SuppressWarnings({"static-access"})
-    public TextBoxEditModifyEventSink(TextBox tBox) {
+    public FieldModifyEventSink(TextBox tBox) {
 
         this.targets = new ArrayList<>();
         this.textBox = tBox;
