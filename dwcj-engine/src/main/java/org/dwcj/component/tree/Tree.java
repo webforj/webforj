@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class TreeView extends AbstractDwcComponent {
+public final class Tree extends AbstractDwcComponent {
 
     private BBjTree tree;
 
@@ -519,42 +519,42 @@ public final class TreeView extends AbstractDwcComponent {
         }
     }
 
-    public TreeView onFocus(Consumer<TreeFocusEvent> callback) {
+    public Tree onFocus(Consumer<TreeFocusEvent> callback) {
         new TreeFocusEventSink(this,callback);
         return this;
     }
 
-    public TreeView onBlur(Consumer<TreeBlurEvent> callback) {
+    public Tree onBlur(Consumer<TreeBlurEvent> callback) {
         new TreeBlurEventSink(this,callback);
         return this;
     }
 
-    public TreeView onSelect(Consumer<TreeSelectEvent> callback) {
+    public Tree onSelect(Consumer<TreeSelectEvent> callback) {
         new TreeSelectEventSink(this,callback);
         return this;
     }
 
-    public TreeView onDeselect(Consumer<TreeDeselectEvent> callback) {
+    public Tree onDeselect(Consumer<TreeDeselectEvent> callback) {
         new TreeDeselectEventSink(this, callback);
         return this;
     }
 
-    public TreeView onExpand(Consumer<TreeExpandEvent> callback) {
+    public Tree onExpand(Consumer<TreeExpandEvent> callback) {
         new TreeExpandEventSink(this, callback);
         return this;
     }
 
-    public TreeView onCollapse(Consumer<TreeCollapseEvent> callback) {
+    public Tree onCollapse(Consumer<TreeCollapseEvent> callback) {
         new TreeCollapseEventSink(this,callback);
         return this;
     }
 
-    public TreeView onEditStop(Consumer<TreeEditStopEvent> callback) {
+    public Tree onEditStop(Consumer<TreeEditStopEvent> callback) {
         new TreeEditStopEventSink(this,callback);
         return this;
     }
 
-    public TreeView onDoubleClick(Consumer<TreeDoubleClickEvent> callback) {
+    public Tree onDoubleClick(Consumer<TreeDoubleClickEvent> callback) {
         new TreeDoubleClickEventSink(this, callback);
         return this;
     }
@@ -563,55 +563,55 @@ public final class TreeView extends AbstractDwcComponent {
 
 
     @Override
-    public TreeView setText(String text) {
+    public Tree setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public TreeView setVisible(Boolean visible){
+    public Tree setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public TreeView setEnabled(Boolean enabled) {
+    public Tree setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public TreeView setTooltipText(String text) {
+    public Tree setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public TreeView setAttribute(String attribute, String value){
+    public Tree setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public TreeView setId(String elementId){
+    public Tree setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public TreeView setStyle(String property, String value) {
+    public Tree setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public TreeView addClassName(String selector) {
+    public Tree addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TreeView removeClassName(String selector) {
+    public Tree removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -619,7 +619,7 @@ public final class TreeView extends AbstractDwcComponent {
 
 
 
-    public TreeView setExpanse(Expanse expanse) {
+    public Tree setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }

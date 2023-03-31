@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjTreeNodeDeselectedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.tree.TreeView;
+import org.dwcj.component.tree.Tree;
 import org.dwcj.component.tree.event.TreeDeselectEvent;
 
 import java.util.function.Consumer;
@@ -13,10 +13,10 @@ public final class TreeDeselectEventSink {
 
     private final Consumer<TreeDeselectEvent> target;
 
-    private final TreeView tree;
+    private final Tree tree;
 
     @SuppressWarnings({"static-access"})
-    public TreeDeselectEventSink(TreeView tree, Consumer<TreeDeselectEvent> target) {
+    public TreeDeselectEventSink(Tree tree, Consumer<TreeDeselectEvent> target) {
         this.target = target;
         this.tree = tree;
 

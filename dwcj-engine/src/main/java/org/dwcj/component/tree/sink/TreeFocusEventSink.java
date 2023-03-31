@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjGainedFocusEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.tree.TreeView;
+import org.dwcj.component.tree.Tree;
 import org.dwcj.component.tree.event.TreeFocusEvent;
 
 import java.util.function.Consumer;
@@ -13,11 +13,11 @@ public class TreeFocusEventSink {
 
     private final Consumer<TreeFocusEvent> target;
 
-    private final TreeView tree;
+    private final Tree tree;
 
 
     @SuppressWarnings({"static-access"})
-    public TreeFocusEventSink(TreeView tree, Consumer<TreeFocusEvent> target) {
+    public TreeFocusEventSink(Tree tree, Consumer<TreeFocusEvent> target) {
         this.target = target;
         this.tree = tree;
 

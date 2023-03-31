@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjLostFocusEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.tree.TreeView;
+import org.dwcj.component.tree.Tree;
 import org.dwcj.component.tree.event.TreeBlurEvent;
 
 import java.util.function.Consumer;
@@ -13,11 +13,11 @@ public class TreeBlurEventSink {
 
     private final Consumer<TreeBlurEvent> target;
 
-    private final TreeView tree;
+    private final Tree tree;
 
 
     @SuppressWarnings({"static-access"})
-    public TreeBlurEventSink(TreeView tree, Consumer<TreeBlurEvent> target) {
+    public TreeBlurEventSink(Tree tree, Consumer<TreeBlurEvent> target) {
         this.target = target;
         this.tree = tree;
 

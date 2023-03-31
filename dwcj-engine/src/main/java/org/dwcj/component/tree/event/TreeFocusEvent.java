@@ -1,17 +1,17 @@
 package org.dwcj.component.tree.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.tree.TreeView;
+import org.dwcj.component.tree.Tree;
 
 public class TreeFocusEvent implements ComponentEvent {
-    private final TreeView control;
+    private final Tree control;
 
-    public TreeFocusEvent(TreeView cTree) {
+    public TreeFocusEvent(Tree cTree) {
         this.control = cTree;
     }
 
     @Override
-    public TreeView getControl() {
+    public Tree getControl() {
         return control;
     }
 }

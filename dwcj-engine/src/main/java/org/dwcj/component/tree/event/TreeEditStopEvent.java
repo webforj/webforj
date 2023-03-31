@@ -1,17 +1,17 @@
 package org.dwcj.component.tree.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.tree.TreeView;
+import org.dwcj.component.tree.Tree;
 
 public class TreeEditStopEvent implements ComponentEvent {
-    private final TreeView control;
+    private final Tree control;
 
-    public TreeEditStopEvent(TreeView cTree) {
+    public TreeEditStopEvent(Tree cTree) {
         this.control = cTree;
     }
 
     @Override
-    public TreeView getControl() {
+    public Tree getControl() {
         return control;
     }
 
