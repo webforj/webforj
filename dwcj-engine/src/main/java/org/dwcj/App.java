@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.*;
-import org.dwcj.exceptions.DwcAppInitializeException;
+import org.dwcj.exceptions.AppInitializeException;
 import org.dwcj.exceptions.DwcException;
 import org.dwcj.exceptions.DwcRuntimeException;
 
@@ -333,7 +333,7 @@ public abstract class App {
   /**
    * Override this method to implement your app behavior
    *
-   * @throws DwcAppInitializeException
+   * @throws AppInitializeException
    */
   public abstract void run() throws DwcException;
 

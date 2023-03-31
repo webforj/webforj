@@ -6,7 +6,7 @@ package org.dwcj.exceptions;
  * 
  * @author Stephan Wald, Hyyan Abo Fakher
  */
-public final class DwcAppInitializeException extends DwcException {
+public final class AppInitializeException extends DwcException {
 
     private static final String DEFAULT_MESSAGE = "DWC application initialization failed.";
 
@@ -25,7 +25,7 @@ public final class DwcAppInitializeException extends DwcException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcAppInitializeException(String message, Throwable cause) {
+    public AppInitializeException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -41,7 +41,7 @@ public final class DwcAppInitializeException extends DwcException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcAppInitializeException(Throwable e) {
+    public AppInitializeException(Throwable e) {
         super(DEFAULT_MESSAGE, e);
     }
 
@@ -53,14 +53,14 @@ public final class DwcAppInitializeException extends DwcException {
      * @param e the detail message. The detail message is saved for later
      *          retrieval by the {@link #getMessage()} method.
      */
-    public DwcAppInitializeException(String e) {
+    public AppInitializeException(String e) {
         super(e);
     }
 
     /**
      * Constructs a new exception with the specified detail message.
      */
-    public DwcAppInitializeException() {
+    public AppInitializeException() {
         super(DEFAULT_MESSAGE);
     }
 }

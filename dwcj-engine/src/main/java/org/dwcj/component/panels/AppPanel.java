@@ -3,7 +3,7 @@ package org.dwcj.component.panels;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
-import org.dwcj.exceptions.DwcAppInitializeException;
+import org.dwcj.exceptions.AppInitializeException;
 
 /**
  * AppPanel is the core main application panel.
@@ -12,7 +12,7 @@ import org.dwcj.exceptions.DwcAppInitializeException;
  */
 public class AppPanel extends AbstractPanel {
 
-  public AppPanel() throws DwcAppInitializeException {
+  public AppPanel() throws AppInitializeException {
 
     try {
       byte[] flags = new byte[] { (byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x88 };
@@ -22,7 +22,7 @@ public class AppPanel extends AbstractPanel {
       ctrl = wnd;
     } catch (NumberFormatException | BBjException e) {
       Environment.logError(e);
-      throw new DwcAppInitializeException(e);
+      throw new AppInitializeException(e);
     }
 
   }
