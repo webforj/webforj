@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.datefield.DateField;
-import org.dwcj.component.datefield.event.DateEditBoxEditModifyEvent;
+import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class DateEditBoxEditModifyEventSink {
 
-    private ArrayList<Consumer<DateEditBoxEditModifyEvent>> targets;
+    private ArrayList<Consumer<DateFieldModifyEvent>> targets;
     private final DateField dateEditBox;
 
     @SuppressWarnings({"static-access"})
@@ -34,7 +34,7 @@ public final class DateEditBoxEditModifyEventSink {
         }
     }
 
-    public DateEditBoxEditModifyEventSink(DateField dateBox, Consumer<DateEditBoxEditModifyEvent> callback) {
+    public DateEditBoxEditModifyEventSink(DateField dateBox, Consumer<DateFieldModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
@@ -53,13 +53,13 @@ public final class DateEditBoxEditModifyEventSink {
     }
 
     public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        DateEditBoxEditModifyEvent dwcEv = new DateEditBoxEditModifyEvent(this.dateEditBox);
-        Iterator<Consumer<DateEditBoxEditModifyEvent>> it = targets.iterator();
+        DateFieldModifyEvent dwcEv = new DateFieldModifyEvent(this.dateEditBox);
+        Iterator<Consumer<DateFieldModifyEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<DateEditBoxEditModifyEvent> callback) {
+    public void addCallback(Consumer<DateFieldModifyEvent> callback) {
         targets.add(callback);
     }
 }

@@ -14,7 +14,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
-import org.dwcj.component.datefield.event.DateEditBoxEditModifyEvent;
+import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 import org.dwcj.component.datefield.sink.DateEditBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
@@ -36,7 +36,7 @@ public final class DateField extends AbstractDwcControl implements HasReadOnly, 
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
-    private ArrayList<Consumer<DateEditBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    private ArrayList<Consumer<DateFieldModifyEvent>> callbacks = new ArrayList<>();
     private DateEditBoxEditModifyEventSink editModifyEventSink;
 
     private Boolean beep = false;
@@ -84,7 +84,7 @@ public final class DateField extends AbstractDwcControl implements HasReadOnly, 
         }
     }
 
-    public DateField onEditModify(Consumer<DateEditBoxEditModifyEvent> callback){
+    public DateField onEditModify(Consumer<DateFieldModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new DateEditBoxEditModifyEventSink(this);
