@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class TabControl extends AbstractDwcComponent {
+public final class TabbedPane extends AbstractDwcComponent {
 
     /** Event sink for selection of a tab */
     private TabSelectEventSink tabSelectEventSink;
@@ -65,7 +65,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param text the text to display on the tab control
      * @return
      */
-    public TabControl add(String text) {
+    public TabbedPane add(String text) {
 
         if (this.ctrl != null) {
             try {
@@ -89,7 +89,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param panel the panel to attach to the tab
      * @return the Tab Control object
      */
-    public TabControl add(String text, Div panel) {
+    public TabbedPane add(String text, Div panel) {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
@@ -144,7 +144,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param title Title for the new tab
      * @return The control itself
      */
-    public TabControl insert(int index, String text) {
+    public TabbedPane insert(int index, String text) {
         if (this.ctrl != null) {
             try {
                 this.tabCtrl.insertTab(index, text, -1);
@@ -165,7 +165,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param panel Div to be associated with the new tab
      * @return The control itself
      */
-    public TabControl insert(int index, String text, Div panel) {
+    public TabbedPane insert(int index, String text, Div panel) {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
@@ -185,7 +185,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param index Index of the tab designated for removal
      * @return The control itself
      */
-    public TabControl remove(int index) {
+    public TabbedPane remove(int index) {
         if (this.ctrl != null) {
             try {
                 this.tabCtrl.removeTab(index);
@@ -207,7 +207,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param panel the DIV panel to put under the tab
      * @return the Tab Control object itself
      */
-    public TabControl setPanelAt(int index, Div panel) {
+    public TabbedPane setPanelAt(int index, Div panel) {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
@@ -227,7 +227,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @param index Index of tab designated for selection
      * @return The control itself
      */
-    public TabControl selectIndex(int index) {
+    public TabbedPane selectIndex(int index) {
         if (this.ctrl != null) {
             try {
                 this.tabCtrl.setSelectedIndex(index);
@@ -246,7 +246,7 @@ public final class TabControl extends AbstractDwcComponent {
      * @return the control itself
      */
 
-    public TabControl onSelect(Consumer<TabSelectEvent> callback) {
+    public TabbedPane onSelect(Consumer<TabSelectEvent> callback) {
         if (this.ctrl != null) {
             if (this.tabSelectEventSink == null) {
                 this.tabSelectEventSink = new TabSelectEventSink(this);
@@ -259,65 +259,65 @@ public final class TabControl extends AbstractDwcComponent {
     }
 
     @Override
-    public TabControl setText(String text) {
+    public TabbedPane setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public TabControl setVisible(Boolean visible) {
+    public TabbedPane setVisible(Boolean visible) {
         super.setVisible(visible);
         return this;
     }
 
     @Override
-    public TabControl setEnabled(Boolean enabled) {
+    public TabbedPane setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public TabControl setTooltipText(String text) {
+    public TabbedPane setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public TabControl setAttribute(String attribute, String value) {
+    public TabbedPane setAttribute(String attribute, String value) {
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public TabControl setId(String elementId) {
+    public TabbedPane setId(String elementId) {
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public TabControl setStyle(String property, String value) {
+    public TabbedPane setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
 
     @Override
-    public TabControl addClassName(String selector) {
+    public TabbedPane addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TabControl removeClassName(String selector) {
+    public TabbedPane removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
 
-    public TabControl setExpanse(Expanse expanse) {
+    public TabbedPane setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
-    public TabControl setTheme(Theme theme) {
+    public TabbedPane setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }

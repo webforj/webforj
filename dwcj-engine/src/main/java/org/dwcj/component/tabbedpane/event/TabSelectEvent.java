@@ -1,21 +1,21 @@
 package org.dwcj.component.tabbedpane.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.tabbedpane.TabControl;
+import org.dwcj.component.tabbedpane.TabbedPane;
 
 public final class TabSelectEvent implements ComponentEvent {
-    private final TabControl control;
+    private final TabbedPane control;
     private final int index;
     private final String title;
 
-    public TabSelectEvent(TabControl tabControl, int index, String title) {
+    public TabSelectEvent(TabbedPane tabControl, int index, String title) {
         this.control = tabControl;
         this.index = index;
         this.title = title;
     }
 
     @Override
-    public TabControl getControl() {
+    public TabbedPane getControl() {
         return control;
     }
 

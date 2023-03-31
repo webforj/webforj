@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.tabbedpane.TabControl;
+import org.dwcj.component.tabbedpane.TabbedPane;
 import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 
 import java.util.ArrayList;
@@ -17,10 +17,10 @@ import java.util.function.Consumer;
 public final class TabSelectEventSink {
 
     private ArrayList<Consumer<TabSelectEvent>> targets;
-    private final TabControl tabControl;
+    private final TabbedPane tabControl;
 
     @SuppressWarnings({"static-access"})
-    public TabSelectEventSink(TabControl btn) {
+    public TabSelectEventSink(TabbedPane btn) {
 
         this.targets = new ArrayList<>();
         this.tabControl = btn;
@@ -37,7 +37,7 @@ public final class TabSelectEventSink {
         }
     }
 
-    public TabSelectEventSink(TabControl tabControl, Consumer<TabSelectEvent> callback) {
+    public TabSelectEventSink(TabbedPane tabControl, Consumer<TabSelectEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
