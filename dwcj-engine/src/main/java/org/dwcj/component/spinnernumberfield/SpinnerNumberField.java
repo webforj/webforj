@@ -11,7 +11,7 @@ import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class NumericBoxSpinner extends NumberField implements HasMouseWheelCondition {
+public final class SpinnerNumberField extends NumberField implements HasMouseWheelCondition {
 
     private BBjInputNSpinner numBoxS;
 
@@ -19,7 +19,7 @@ public final class NumericBoxSpinner extends NumberField implements HasMouseWhee
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL
     }
 
-    public NumericBoxSpinner(){
+    public SpinnerNumberField(){
         this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     }
 
@@ -44,7 +44,7 @@ public final class NumericBoxSpinner extends NumberField implements HasMouseWhee
     }
 
     @Override
-    public NumericBoxSpinner setScrollWheelBehavior(MouseWheelCondition condition){
+    public SpinnerNumberField setScrollWheelBehavior(MouseWheelCondition condition){
         if(this.ctrl != null){
             try{
                 numBoxS.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
