@@ -2,7 +2,7 @@ package org.dwcj.widgets.terminal.events;
 
 import org.dwcj.widgets.terminal.Terminal;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.interfaces.ComponentEvent;
+import org.dwcj.component.ComponentEvent;
 
 import java.util.Map;
 

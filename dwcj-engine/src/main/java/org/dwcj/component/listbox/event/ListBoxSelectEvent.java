@@ -1,7 +1,7 @@
 package org.dwcj.component.listbox.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.listbox.ListBox;
-import org.dwcj.interfaces.ComponentEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,8 +4,8 @@ import java.util.EventObject;
 import java.util.Map;
 
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.interfaces.Component;
-import org.dwcj.interfaces.ComponentEvent;
+import org.dwcj.component.Component;
+import org.dwcj.component.ComponentEvent;
 
 /**
  * This class is the base class for all events fired by the controls.

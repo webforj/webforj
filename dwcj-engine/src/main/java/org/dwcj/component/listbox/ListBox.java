@@ -6,17 +6,17 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.component.Focusable;
+import org.dwcj.component.HasMouseWheelCondition;
+import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.Scrollable;
+import org.dwcj.component.TabTraversable;
+import org.dwcj.component.TextAlignable;
 import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
 import org.dwcj.component.listbox.sink.ListBoxSelectEventSink;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Focusable;
-import org.dwcj.interfaces.HasMouseWheelCondition;
-import org.dwcj.interfaces.HasReadOnly;
-import org.dwcj.interfaces.Scrollable;
-import org.dwcj.interfaces.TabTraversable;
-import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.*;

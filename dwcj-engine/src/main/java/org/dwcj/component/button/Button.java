@@ -7,12 +7,12 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.Focusable;
+import org.dwcj.component.TabTraversable;
+import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Focusable;
-import org.dwcj.interfaces.TabTraversable;
-import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;

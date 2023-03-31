@@ -1,6 +1,4 @@
-package org.dwcj.interfaces;
-
-import org.dwcj.component.AbstractComponent;
+package org.dwcj.component;
 
 /**
  * Base interface for DWC control events

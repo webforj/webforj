@@ -1,4 +1,4 @@
-package org.dwcj.interfaces;
+package org.dwcj.component;
 
 /**
  * Interface which facilitates implementation of methods to

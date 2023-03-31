@@ -1,7 +1,7 @@
 package org.dwcj.component.numberfield.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.numberfield.NumberField;
-import org.dwcj.interfaces.ComponentEvent;
 
 public class NumberFieldModifyEvent implements ComponentEvent {
 

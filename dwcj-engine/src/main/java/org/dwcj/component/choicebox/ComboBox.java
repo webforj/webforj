@@ -7,6 +7,10 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.component.Focusable;
+import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.TabTraversable;
+import org.dwcj.component.TextAlignable;
 import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxCloseEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxOpenEvent;
@@ -17,10 +21,6 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Focusable;
-import org.dwcj.interfaces.HasReadOnly;
-import org.dwcj.interfaces.TabTraversable;
-import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.AbstractMap.SimpleEntry;

@@ -8,6 +8,8 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.Focusable;
+import org.dwcj.component.TabTraversable;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
@@ -17,8 +19,6 @@ import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailedEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadedEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadedEventSink;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Focusable;
-import org.dwcj.interfaces.TabTraversable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.awt.*;

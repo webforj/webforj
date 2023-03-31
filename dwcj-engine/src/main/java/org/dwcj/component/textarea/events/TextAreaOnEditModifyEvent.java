@@ -1,7 +1,7 @@
 package org.dwcj.component.textarea.events;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.textarea.TextArea;
-import org.dwcj.interfaces.ComponentEvent;
 
 public final class TextAreaOnEditModifyEvent implements ComponentEvent {
     private final TextArea control;

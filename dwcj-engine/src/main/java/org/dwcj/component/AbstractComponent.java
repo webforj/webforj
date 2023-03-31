@@ -3,8 +3,6 @@ package org.dwcj.component;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Component;
-import org.dwcj.interfaces.HasDestroy;
 
 import java.util.HashMap;
 import java.util.Map;

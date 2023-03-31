@@ -1,7 +1,7 @@
 package org.dwcj.component.navigator.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.navigator.Navigator;
-import org.dwcj.interfaces.ComponentEvent;
 
 public final class NavigatorLastEvent implements ComponentEvent {
 

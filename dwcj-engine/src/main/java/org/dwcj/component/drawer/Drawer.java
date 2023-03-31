@@ -1,10 +1,10 @@
 package org.dwcj.component.drawer;
 
+import org.dwcj.component.HasClassName;
+import org.dwcj.component.HasStyle;
 import org.dwcj.component.drawer.event.DrawerClosedEvent;
 import org.dwcj.component.drawer.event.DrawerOpenedEvent;
 import org.dwcj.component.panels.Div;
-import org.dwcj.interfaces.HasClassName;
-import org.dwcj.interfaces.HasStyle;
 import org.dwcj.webcomponent.PropertyDescriptor;
 import org.dwcj.webcomponent.WebComponent;
 import org.dwcj.webcomponent.annotations.NodeName;

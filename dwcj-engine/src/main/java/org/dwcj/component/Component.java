@@ -1,4 +1,4 @@
-package org.dwcj.interfaces;
+package org.dwcj.component;
 
 /**
  * Interface used to include all common properties of new controls/components

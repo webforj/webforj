@@ -1,10 +1,10 @@
 package org.dwcj.component.dialog;
 
+import org.dwcj.component.HasClassName;
+import org.dwcj.component.HasStyle;
 import org.dwcj.component.dialog.event.DialogClosedEvent;
 import org.dwcj.component.dialog.event.DialogOpenedEvent;
 import org.dwcj.component.panels.Div;
-import org.dwcj.interfaces.HasClassName;
-import org.dwcj.interfaces.HasStyle;
 import org.dwcj.webcomponent.PropertyDescriptor;
 import org.dwcj.webcomponent.WebComponent;
 import org.dwcj.webcomponent.annotations.NodeName;

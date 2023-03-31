@@ -1,7 +1,7 @@
 package org.dwcj.component.tabcontrol.events;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.tabcontrol.TabControl;
-import org.dwcj.interfaces.ComponentEvent;
 
 public final class TabSelectEvent implements ComponentEvent {
     private final TabControl control;

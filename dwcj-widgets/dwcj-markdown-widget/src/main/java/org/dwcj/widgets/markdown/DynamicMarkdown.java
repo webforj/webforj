@@ -1,10 +1,10 @@
 package org.dwcj.widgets.markdown;
 
 import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.panels.Div;
-import org.dwcj.interfaces.Component;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,7 +1,7 @@
 package org.dwcj.component.tree.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.interfaces.ComponentEvent;
 
 public class TreeExpandedEvent implements ComponentEvent {
     private final TreeView control;

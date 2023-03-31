@@ -1,4 +1,4 @@
-package org.dwcj.interfaces;
+package org.dwcj.component;
 
 /**
  * Interface facilitating implementation of behavior to modify a specific

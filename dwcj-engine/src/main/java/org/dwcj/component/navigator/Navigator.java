@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.navigator.event.NavigatorFirstEvent;
 import org.dwcj.component.navigator.event.NavigatorLastEvent;
 import org.dwcj.component.navigator.event.NavigatorNextEvent;
@@ -16,7 +17,6 @@ import org.dwcj.component.navigator.sink.NavLastEventSink;
 import org.dwcj.component.navigator.sink.NavNextEventSink;
 import org.dwcj.component.navigator.sink.NavPreviousEventSink;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.HasReadOnly;
 
 import java.util.function.Consumer;
 

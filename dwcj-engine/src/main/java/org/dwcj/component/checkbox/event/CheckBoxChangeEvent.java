@@ -1,7 +1,7 @@
 package org.dwcj.component.checkbox.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.checkbox.CheckBox;
-import org.dwcj.interfaces.ComponentEvent;
 
 public final class CheckBoxChangeEvent implements ComponentEvent {
 

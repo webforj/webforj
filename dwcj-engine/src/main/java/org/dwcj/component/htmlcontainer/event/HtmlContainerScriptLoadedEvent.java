@@ -1,7 +1,7 @@
 package org.dwcj.component.htmlcontainer.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.interfaces.ComponentEvent;
 
 public class HtmlContainerScriptLoadedEvent implements ComponentEvent {
     

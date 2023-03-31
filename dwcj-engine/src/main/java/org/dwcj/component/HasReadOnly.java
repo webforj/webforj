@@ -1,4 +1,4 @@
-package org.dwcj.interfaces;
+package org.dwcj.component;
 
 /**
  * Facilitates implementation of methods which allow for the toggle of

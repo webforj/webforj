@@ -7,8 +7,8 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.TextAlignable;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 public final class Label extends AbstractDwcComponent implements TextAlignable {

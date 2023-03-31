@@ -1,7 +1,7 @@
 package org.dwcj.component.datefield.event;
 
+import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.datefield.DateField;
-import org.dwcj.interfaces.ComponentEvent;
 
 public final class DateFieldModifyEvent implements ComponentEvent {
     private final DateField control;

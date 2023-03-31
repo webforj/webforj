@@ -12,14 +12,14 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.Focusable;
+import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.TabTraversable;
+import org.dwcj.component.TextAlignable;
+import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Focusable;
-import org.dwcj.interfaces.HasReadOnly;
-import org.dwcj.interfaces.TabTraversable;
-import org.dwcj.interfaces.TextAlignable;
-import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 

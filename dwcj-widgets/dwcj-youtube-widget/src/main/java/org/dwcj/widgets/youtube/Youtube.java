@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dwcj.annotation.InlineStyleSheet;
+import org.dwcj.component.HasAttribute;
+import org.dwcj.component.HasClassName;
+import org.dwcj.component.HasStyle;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.HasAttribute;
-import org.dwcj.interfaces.HasClassName;
-import org.dwcj.interfaces.HasStyle;
 import org.dwcj.webcomponent.PropertyDescriptor;
 import org.dwcj.webcomponent.WebComponent;
 import org.dwcj.webcomponent.annotations.HtmlViewAttribute;

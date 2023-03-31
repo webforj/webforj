@@ -1,4 +1,4 @@
-package org.dwcj.interfaces;
+package org.dwcj.component;
 
 /**
  * On applicable controls, helps facilitate underlying BBj popup menu
