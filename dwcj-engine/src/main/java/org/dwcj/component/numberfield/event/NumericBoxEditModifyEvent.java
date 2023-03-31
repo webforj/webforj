@@ -1,4 +1,4 @@
-package org.dwcj.component.numberfield.events;
+package org.dwcj.component.numberfield.event;
 
 import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.interfaces.ControlEvent;

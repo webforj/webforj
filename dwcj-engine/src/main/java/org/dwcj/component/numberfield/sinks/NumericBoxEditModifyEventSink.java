@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.numberfield.NumberField;
-import org.dwcj.component.numberfield.events.NumericBoxEditModifyEvent;
+import org.dwcj.component.numberfield.event.NumericBoxEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
