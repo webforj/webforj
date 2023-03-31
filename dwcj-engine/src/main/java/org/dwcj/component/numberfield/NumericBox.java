@@ -1,4 +1,4 @@
-package org.dwcj.component.numericbox;
+package org.dwcj.component.numberfield;
 
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
-import org.dwcj.component.numericbox.events.NumericBoxEditModifyEvent;
-import org.dwcj.component.numericbox.sinks.NumericBoxEditModifyEventSink;
+import org.dwcj.component.numberfield.events.NumericBoxEditModifyEvent;
+import org.dwcj.component.numberfield.sinks.NumericBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;

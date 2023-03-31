@@ -1,6 +1,6 @@
-package org.dwcj.component.numericbox.events;
+package org.dwcj.component.numberfield.events;
 
-import org.dwcj.component.numericbox.NumericBox;
+import org.dwcj.component.numberfield.NumericBox;
 import org.dwcj.interfaces.ControlEvent;
 
 public class NumericBoxEditModifyEvent implements ControlEvent {

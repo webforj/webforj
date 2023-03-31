@@ -1,11 +1,11 @@
-package org.dwcj.component.numericbox.sinks;
+package org.dwcj.component.numberfield.sinks;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.component.numericbox.NumericBox;
-import org.dwcj.component.numericbox.events.NumericBoxEditModifyEvent;
+import org.dwcj.component.numberfield.NumericBox;
+import org.dwcj.component.numberfield.events.NumericBoxEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

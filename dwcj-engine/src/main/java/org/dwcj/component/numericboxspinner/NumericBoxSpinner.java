@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.numericbox.NumericBox;
+import org.dwcj.component.numberfield.NumericBox;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.util.BBjFunctionalityHelper;
