@@ -6,7 +6,7 @@ import org.dwcj.Environment;
 
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.slider.Slider;
-import org.dwcj.component.slider.event.SliderOnControlScrollEvent;
+import org.dwcj.component.slider.event.SliderScrollEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public class SliderOnControlScrollEventSink {
 
-    private final ArrayList<Consumer<SliderOnControlScrollEvent>> targets = new ArrayList<>();
+    private final ArrayList<Consumer<SliderScrollEvent>> targets = new ArrayList<>();
 
     private final Slider slider;
 
@@ -40,14 +40,14 @@ public class SliderOnControlScrollEventSink {
     @SuppressWarnings("java:S1172")
     public void onScrollEvent(BBjControlScrollEvent ev){ //NOSONAR
 
-        SliderOnControlScrollEvent dwcEv = new SliderOnControlScrollEvent(this.slider);
-        Iterator<Consumer<SliderOnControlScrollEvent>> it = targets.iterator();
+        SliderScrollEvent dwcEv = new SliderScrollEvent(this.slider);
+        Iterator<Consumer<SliderScrollEvent>> it = targets.iterator();
         while(it.hasNext()){
             it.next().accept(dwcEv);
         }
     }
 
-    public void addCallback(Consumer<SliderOnControlScrollEvent> callback){
+    public void addCallback(Consumer<SliderScrollEvent> callback){
         targets.add(callback);
     }
     

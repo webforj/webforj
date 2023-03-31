@@ -8,7 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.slider.event.SliderOnControlScrollEvent;
+import org.dwcj.component.slider.event.SliderScrollEvent;
 import org.dwcj.component.slider.sink.SliderOnControlScrollEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasMouseWheelCondition;
@@ -39,7 +39,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
         }
     }
 
-    private ArrayList<Consumer<SliderOnControlScrollEvent>> callbacks = new ArrayList<>();
+    private ArrayList<Consumer<SliderScrollEvent>> callbacks = new ArrayList<>();
     private SliderOnControlScrollEventSink scrollEventSink;
     
     private Orientation orientation = Orientation.HORIZONTAL;
@@ -80,7 +80,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
      * @param callback Function written with behavior to be executed when the event is fired
      * @return The object itself
      */
-    public Slider onScroll(Consumer<SliderOnControlScrollEvent> callback) {
+    public Slider onScroll(Consumer<SliderScrollEvent> callback) {
         if(this.ctrl != null){
             if(this.scrollEventSink == null){
                 this.scrollEventSink = new SliderOnControlScrollEventSink(this);
