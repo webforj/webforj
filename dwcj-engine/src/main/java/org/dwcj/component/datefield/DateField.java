@@ -24,7 +24,7 @@ import org.dwcj.interfaces.TextAlignable;
 import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class DateEditBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
+public final class DateField extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
     
     private BBjInputD bbjDateEditBox;
 
@@ -58,11 +58,11 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
 
 
 
-    public DateEditBox(){
+    public DateField(){
         this("");
     }
 
-    public DateEditBox(String text) { 
+    public DateField(String text) { 
         setText(text);
         this.readOnly = false;
         this.focusable = true;
@@ -84,7 +84,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         }
     }
 
-    public DateEditBox onEditModify(Consumer<DateEditBoxEditModifyEvent> callback){
+    public DateField onEditModify(Consumer<DateEditBoxEditModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new DateEditBoxEditModifyEventSink(this);
@@ -338,7 +338,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return true;
     }
 
-    public DateEditBox restore(){
+    public DateField restore(){
         if(this.ctrl != null){
             try {
                 bbjDateEditBox.restore();
@@ -349,7 +349,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this;
     }
 
-    public DateEditBox selectAll(){
+    public DateField selectAll(){
         if(this.ctrl != null){
             try {
                 bbjDateEditBox.selectAll();
@@ -367,7 +367,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
 
 
 
-    public DateEditBox setBeep(Boolean beep){
+    public DateField setBeep(Boolean beep){
         App.consoleLog("In Beep");
         this.beep = beep;
         if(this.ctrl != null) {
@@ -381,7 +381,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setCalendarSize(int width, int height){
+    public DateField setCalendarSize(int width, int height){
         this.cWidth = width;
         this.cHeight = height;
         if(this.ctrl != null){
@@ -394,7 +394,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
 
-    public DateEditBox setCaretPosition(int position){
+    public DateField setCaretPosition(int position){
         this.caretPos = position;
         if(this.ctrl != null){
             try {
@@ -409,7 +409,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     
 
     
-    public DateEditBox setEditString(String edit){
+    public DateField setEditString(String edit){
         this.editString = edit;
         if(this.ctrl != null){
             try {
@@ -421,7 +421,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setHighlight(Boolean highlight){
+    public DateField setHighlight(Boolean highlight){
         this.highlight = highlight;
         if(this.ctrl != null){
             try {
@@ -434,7 +434,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
 
-    public DateEditBox setInsertMode(Boolean insert){
+    public DateField setInsertMode(Boolean insert){
         this.insert = insert;
         if(this.ctrl != null){
             try {
@@ -446,7 +446,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
 
-    public DateEditBox setLength(Integer length){
+    public DateField setLength(Integer length){
         this.length = length;
         if(ctrl != null){
             try {
@@ -459,7 +459,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
 
-    public DateEditBox setLocale(String locale){
+    public DateField setLocale(String locale){
         this.locale = locale;
         if(this.ctrl != null){
             bbjDateEditBox.setLocale(locale);
@@ -467,7 +467,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this;
     }
 
-    public DateEditBox setMargin(Integer marginWidth){
+    public DateField setMargin(Integer marginWidth){
         this.margin = marginWidth;
         if(this.ctrl != null){
             try {
@@ -479,7 +479,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setMask(String mask){
+    public DateField setMask(String mask){
         this.mask = mask;
         if(this.ctrl != null){
             try {
@@ -491,7 +491,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setPassEnter(Boolean pass){
+    public DateField setPassEnter(Boolean pass){
         this.pEnter = pass;
         if(this.ctrl != null){
             try {
@@ -503,7 +503,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setPassTab(Boolean pass){
+    public DateField setPassTab(Boolean pass){
         this.pTab = pass;
         if(this.ctrl != null){
             try {
@@ -515,7 +515,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setRestore(String restore){
+    public DateField setRestore(String restore){
         this.restore = restore;
         if(this.ctrl != null){
             try {
@@ -527,7 +527,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setPlusMinus(Boolean plusMinus){
+    public DateField setPlusMinus(Boolean plusMinus){
         this.plusMinus = plusMinus;
         if(ctrl != null){
             try {
@@ -539,7 +539,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
         return this; 
     }
     
-    public DateEditBox setShowWeeks(boolean showWeeks){
+    public DateField setShowWeeks(boolean showWeeks){
         this.showWeeks = showWeeks;
         if(this.ctrl != null){
             try {
@@ -554,7 +554,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /*==Unsure if simply casting this object to BBjColor is acceptable, likely
      * need to control/check input before passing?== -MH
      */
-    public DateEditBox setTodayColor(Object color){
+    public DateField setTodayColor(Object color){
         try {
             bbjDateEditBox.setTodayColor((BBjColor)color);
         } catch (BBjException e){
@@ -566,7 +566,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /*==Unsure if simply casting this object to BBjNumber is acceptable, likely
      * need to control/check input before passing?== -MH
      */
-    public DateEditBox setValue(Object value){
+    public DateField setValue(Object value){
         try{
             bbjDateEditBox.setValue((BBjNumber)value);
         } catch(BBjException e){
@@ -578,7 +578,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /*==Unsure if simply casting this object to BBjColor is acceptable, likely
      * need to control/check input before passing?== -MH
      */
-    public DateEditBox setWeekdayColor(Object color){
+    public DateField setWeekdayColor(Object color){
         try {
             bbjDateEditBox.setWeekdayColor((BBjColor)color);
         } catch (BBjException e){
@@ -589,7 +589,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     /*==Unsure if simply casting this object to BBjColor is acceptable, likely
      * need to control/check input before passing?== -MH
      */
-    public DateEditBox setWeekendColor(Object color){
+    public DateField setWeekendColor(Object color){
         try {
             bbjDateEditBox.setWeekendColor((BBjColor)color);
         } catch (BBjException e){
@@ -617,7 +617,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override
-    public DateEditBox setReadOnly(Boolean editable){
+    public DateField setReadOnly(Boolean editable){
         if(this.ctrl != null){
             try {
                 bbjDateEditBox.setEditable(!editable);
@@ -642,7 +642,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override
-    public DateEditBox setFocusable(Boolean focusable){
+    public DateField setFocusable(Boolean focusable){
         if(this.ctrl != null) {
             try{
                 bbjDateEditBox.setFocusable(focusable);
@@ -667,7 +667,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override
-    public DateEditBox setTabTraversable(Boolean traverse){
+    public DateField setTabTraversable(Boolean traverse){
         if(this.ctrl != null){
             try{
                 bbjDateEditBox.setTabTraversable(traverse);
@@ -685,7 +685,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     } 
 
     @Override
-    public DateEditBox setHighlightOnFocus(Highlight highlight){
+    public DateField setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
                 bbjDateEditBox.setHighlightOnFocus(highlight.highlightType);
@@ -703,7 +703,7 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
     }
 
     @Override 
-    public DateEditBox setTextAlignment(Alignment alignment){
+    public DateField setTextAlignment(Alignment alignment){
         if(this.ctrl != null){
             try{
                 bbjDateEditBox.setAlignment(alignment.textPosition);
@@ -723,55 +723,55 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
 
 
     @Override
-    public DateEditBox setText(String text) {
+    public DateField setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public DateEditBox setVisible(Boolean visible){
+    public DateField setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public DateEditBox setEnabled(Boolean enabled) {
+    public DateField setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public DateEditBox setTooltipText(String text) {
+    public DateField setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public DateEditBox setAttribute(String attribute, String value){
+    public DateField setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public DateEditBox setId(String elementId){
+    public DateField setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public DateEditBox setStyle(String property, String value) {
+    public DateField setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public DateEditBox addClassName(String selector) {
+    public DateField addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public DateEditBox removeClassName(String selector) {
+    public DateField removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -779,12 +779,12 @@ public final class DateEditBox extends AbstractDwcControl implements HasReadOnly
 
 
 
-    public DateEditBox setExpanse(Expanse expanse) {
+    public DateField setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
-    public DateEditBox setTheme(Theme theme) {
+    public DateField setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     } 

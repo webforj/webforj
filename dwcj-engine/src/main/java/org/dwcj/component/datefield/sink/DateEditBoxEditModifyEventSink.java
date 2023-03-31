@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.component.datefield.DateEditBox;
+import org.dwcj.component.datefield.DateField;
 import org.dwcj.component.datefield.event.DateEditBoxEditModifyEvent;
 
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 public final class DateEditBoxEditModifyEventSink {
 
     private ArrayList<Consumer<DateEditBoxEditModifyEvent>> targets;
-    private final DateEditBox dateEditBox;
+    private final DateField dateEditBox;
 
     @SuppressWarnings({"static-access"})
-    public DateEditBoxEditModifyEventSink(DateEditBox dateBox) {
+    public DateEditBoxEditModifyEventSink(DateField dateBox) {
 
         this.targets = new ArrayList<>();
         this.dateEditBox = dateBox;
@@ -34,7 +34,7 @@ public final class DateEditBoxEditModifyEventSink {
         }
     }
 
-    public DateEditBoxEditModifyEventSink(DateEditBox dateBox, Consumer<DateEditBoxEditModifyEvent> callback) {
+    public DateEditBoxEditModifyEventSink(DateField dateBox, Consumer<DateEditBoxEditModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
