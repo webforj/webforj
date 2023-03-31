@@ -14,7 +14,7 @@ import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadedEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailedEventSink;
-import org.dwcj.component.htmlcontainer.sink.HtmlContainerOnScriptLoadedEventSink;
+import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadedEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadedEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
@@ -33,7 +33,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
   private BBjHtmlView bbjHtmlView;
 
   private final ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
-  private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
+  private HtmlContainerScriptLoadedEventSink onScriptLoadedSink = null;
   private final ArrayList<Consumer<HtmlContainerScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
   private HtmlContainerScriptFailedEventSink onScriptFailedSink = null;
   private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> javascriptEvents = new ArrayList<>();
@@ -78,7 +78,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
   public HtmlContainer onScriptLoaded(Consumer<HtmlContainerScriptLoadedEvent> callback) {
     if (this.ctrl != null) {
       if (this.onScriptLoadedSink == null) {
-        this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);
+        this.onScriptLoadedSink = new HtmlContainerScriptLoadedEventSink(this);
       }
       this.onScriptLoadedSink.addCallback(callback);
     } else {
@@ -496,7 +496,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     super.catchUp();
 
     if (!this.scriptLoadedEvents.isEmpty()) {
-      this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);
+      this.onScriptLoadedSink = new HtmlContainerScriptLoadedEventSink(this);
       while (!this.scriptLoadedEvents.isEmpty()) {
         this.onScriptLoadedSink.addCallback(this.scriptLoadedEvents.remove(0));
       }

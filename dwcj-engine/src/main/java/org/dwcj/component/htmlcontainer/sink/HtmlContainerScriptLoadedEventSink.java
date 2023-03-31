@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class HtmlContainerOnScriptLoadedEventSink {
+public class HtmlContainerScriptLoadedEventSink {
 
     private ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> targets;
     private final HtmlContainer htmlContainer;
 
-    public HtmlContainerOnScriptLoadedEventSink(HtmlContainer container) {
+    public HtmlContainerScriptLoadedEventSink(HtmlContainer container) {
 
         this.targets = new ArrayList<>();
         this.htmlContainer = container;
