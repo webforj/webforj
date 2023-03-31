@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.numberfield.NumberField;
-import org.dwcj.component.numberfield.event.NumericBoxEditModifyEvent;
+import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class NumericBoxEditModifyEventSink {
 
-    private ArrayList<Consumer<NumericBoxEditModifyEvent>> targets;
+    private ArrayList<Consumer<NumberFieldModifyEvent>> targets;
     private final NumberField numericBox;
     
     @SuppressWarnings({"static-access"})
@@ -35,7 +35,7 @@ public class NumericBoxEditModifyEventSink {
         }
     }
 
-    public NumericBoxEditModifyEventSink(NumberField numBox, Consumer<NumericBoxEditModifyEvent> callback) {
+    public NumericBoxEditModifyEventSink(NumberField numBox, Consumer<NumberFieldModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
@@ -54,13 +54,13 @@ public class NumericBoxEditModifyEventSink {
     }
 
     public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        NumericBoxEditModifyEvent dwcEv = new NumericBoxEditModifyEvent(this.numericBox);
-        Iterator<Consumer<NumericBoxEditModifyEvent>> it = targets.iterator();
+        NumberFieldModifyEvent dwcEv = new NumberFieldModifyEvent(this.numericBox);
+        Iterator<Consumer<NumberFieldModifyEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<NumericBoxEditModifyEvent> callback) {
+    public void addCallback(Consumer<NumberFieldModifyEvent> callback) {
         targets.add(callback);
     }
 }

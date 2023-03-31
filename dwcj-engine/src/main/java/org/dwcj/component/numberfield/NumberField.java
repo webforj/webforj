@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
-import org.dwcj.component.numberfield.event.NumericBoxEditModifyEvent;
+import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 import org.dwcj.component.numberfield.sink.NumericBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
@@ -36,7 +36,7 @@ public class NumberField extends AbstractDwcControl implements HasReadOnly, Focu
     }
 
 
-    protected ArrayList<Consumer<NumericBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    protected ArrayList<Consumer<NumberFieldModifyEvent>> callbacks = new ArrayList<>();
     protected NumericBoxEditModifyEventSink editModifyEventSink;
 
 
@@ -87,7 +87,7 @@ public class NumberField extends AbstractDwcControl implements HasReadOnly, Focu
         }
     }
 
-    public NumberField onEditModify(Consumer<NumericBoxEditModifyEvent> callback){
+    public NumberField onEditModify(Consumer<NumberFieldModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new NumericBoxEditModifyEventSink(this);

@@ -3,11 +3,11 @@ package org.dwcj.component.numberfield.event;
 import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.interfaces.ControlEvent;
 
-public class NumericBoxEditModifyEvent implements ControlEvent {
+public class NumberFieldModifyEvent implements ControlEvent {
 
     private final NumberField control;
 
-    public NumericBoxEditModifyEvent(NumberField nBox){
+    public NumberFieldModifyEvent(NumberField nBox){
         this.control = nBox;
     }
 
