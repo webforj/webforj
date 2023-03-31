@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class StringEditBoxEditModifyEventSink {
+public class TextFieldModifyEventSink {
     
     private ArrayList<Consumer<TextFieldModifyEvent>> targets;
     private final TextField stringEditBox;
 
 
     @SuppressWarnings({"static-access"})
-    public StringEditBoxEditModifyEventSink(TextField stringBox) {
+    public TextFieldModifyEventSink(TextField stringBox) {
 
         this.targets = new ArrayList<>();
         this.stringEditBox = stringBox;

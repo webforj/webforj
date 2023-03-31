@@ -10,7 +10,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.textfield.event.TextFieldModifyEvent;
-import org.dwcj.component.textfield.sink.StringEditBoxEditModifyEventSink;
+import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
@@ -37,7 +37,7 @@ public final class TextField extends AbstractDwcControl implements HasReadOnly, 
     
 
     private ArrayList<Consumer<TextFieldModifyEvent>> callbacks = new ArrayList<>();
-    private StringEditBoxEditModifyEventSink editModifyEventSink;
+    private TextFieldModifyEventSink editModifyEventSink;
     
     private Integer caretPos = 1;
     private String editString = "";
@@ -83,7 +83,7 @@ public final class TextField extends AbstractDwcControl implements HasReadOnly, 
 
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
-                this.editModifyEventSink = new StringEditBoxEditModifyEventSink(this);
+                this.editModifyEventSink = new TextFieldModifyEventSink(this);
             }
             this.editModifyEventSink.addCallback(callback);
         }
@@ -578,7 +578,7 @@ public final class TextField extends AbstractDwcControl implements HasReadOnly, 
 
         
         if(!this.callbacks.isEmpty()){
-            this.editModifyEventSink = new StringEditBoxEditModifyEventSink(this);
+            this.editModifyEventSink = new TextFieldModifyEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.editModifyEventSink.addCallback(this.callbacks.remove(0));
             }
