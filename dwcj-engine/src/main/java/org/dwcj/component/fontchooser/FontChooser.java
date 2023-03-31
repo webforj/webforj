@@ -10,9 +10,9 @@ import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.fontchooser.event.FontChooserApproveEvent;
 import org.dwcj.component.fontchooser.event.FontChooserCancelEvent;
 import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
-import org.dwcj.component.fontchooser.sinks.FontChooserApproveEventSink;
-import org.dwcj.component.fontchooser.sinks.FontChooserCancelEventSink;
-import org.dwcj.component.fontchooser.sinks.FontChooserChangeEventSink;
+import org.dwcj.component.fontchooser.sink.FontChooserApproveEventSink;
+import org.dwcj.component.fontchooser.sink.FontChooserCancelEventSink;
+import org.dwcj.component.fontchooser.sink.FontChooserChangeEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 
 import java.awt.*;

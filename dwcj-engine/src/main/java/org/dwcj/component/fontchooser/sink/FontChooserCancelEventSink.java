@@ -1,4 +1,4 @@
-package org.dwcj.component.fontchooser.sinks;
+package org.dwcj.component.fontchooser.sink;
 
 import com.basis.bbj.proxies.event.BBjFileChooserCancelEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
