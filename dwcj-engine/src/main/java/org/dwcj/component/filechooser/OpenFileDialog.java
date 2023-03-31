@@ -1,4 +1,4 @@
-package org.dwcj.component.openfiledialog;
+package org.dwcj.component.filechooser;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
