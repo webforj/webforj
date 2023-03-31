@@ -1,4 +1,4 @@
-package org.dwcj.component.listbox.sinks;
+package org.dwcj.component.listbox.sink;
 
 import com.basis.bbj.proxies.event.BBjListClickEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;

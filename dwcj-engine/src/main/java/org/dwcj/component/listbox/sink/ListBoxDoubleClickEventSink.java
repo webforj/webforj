@@ -1,4 +1,4 @@
-package org.dwcj.component.listbox.sinks;
+package org.dwcj.component.listbox.sink;
 
 import java.util.ArrayList;
 import java.util.Iterator;
