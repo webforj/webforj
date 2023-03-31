@@ -1,4 +1,4 @@
-package org.dwcj.component.navigator.events;
+package org.dwcj.component.navigator.event;
 
 import org.dwcj.component.navigator.Navigator;
 import org.dwcj.interfaces.ControlEvent;

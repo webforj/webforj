@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.navigator.Navigator;
-import org.dwcj.component.navigator.events.NavigatorFirstEvent;
+import org.dwcj.component.navigator.event.NavigatorFirstEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
