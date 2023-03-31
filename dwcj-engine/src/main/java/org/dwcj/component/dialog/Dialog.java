@@ -1,7 +1,7 @@
 package org.dwcj.component.dialog;
 
-import org.dwcj.component.dialog.events.DialogClosedEvent;
-import org.dwcj.component.dialog.events.DialogOpenedEvent;
+import org.dwcj.component.dialog.event.DialogClosedEvent;
+import org.dwcj.component.dialog.event.DialogOpenedEvent;
 import org.dwcj.component.panels.Div;
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;
