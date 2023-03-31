@@ -1,4 +1,4 @@
-package org.dwcj.component.slider.events;
+package org.dwcj.component.slider.event;
 
 import org.dwcj.component.slider.Slider;
 import org.dwcj.interfaces.ControlEvent;

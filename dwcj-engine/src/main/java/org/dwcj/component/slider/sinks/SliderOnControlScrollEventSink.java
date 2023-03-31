@@ -6,7 +6,7 @@ import org.dwcj.Environment;
 
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.slider.Slider;
-import org.dwcj.component.slider.events.SliderOnControlScrollEvent;
+import org.dwcj.component.slider.event.SliderOnControlScrollEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
