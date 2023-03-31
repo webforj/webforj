@@ -1,4 +1,4 @@
-package org.dwcj.webcomponent;
+package org.dwcj.component.webcomponent;
 
 /**
  * The PropertyDescriptor class is used to describe a property or an attribute

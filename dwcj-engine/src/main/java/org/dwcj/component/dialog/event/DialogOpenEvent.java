@@ -3,8 +3,8 @@ package org.dwcj.component.dialog.event;
 import java.util.Map;
 
 import org.dwcj.component.dialog.Dialog;
-import org.dwcj.webcomponent.annotations.EventName;
-import org.dwcj.webcomponent.events.Event;
+import org.dwcj.component.webcomponent.annotations.EventName;
+import org.dwcj.component.webcomponent.events.Event;
 
 /**
  * Emitted when the dialog is opened.

@@ -1,4 +1,4 @@
-package org.dwcj.webcomponent.events;
+package org.dwcj.component.webcomponent.events;
 
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;

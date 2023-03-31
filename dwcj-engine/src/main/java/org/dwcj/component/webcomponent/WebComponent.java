@@ -1,4 +1,4 @@
-package org.dwcj.webcomponent;
+package org.dwcj.component.webcomponent;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -29,21 +29,20 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.webcomponent.annotations.EventExpressions;
+import org.dwcj.component.webcomponent.annotations.EventName;
+import org.dwcj.component.webcomponent.annotations.HtmlViewAttribute;
+import org.dwcj.component.webcomponent.annotations.HtmlViewClassName;
+import org.dwcj.component.webcomponent.annotations.NodeAttribute;
+import org.dwcj.component.webcomponent.annotations.NodeClassName;
+import org.dwcj.component.webcomponent.annotations.NodeName;
+import org.dwcj.component.webcomponent.annotations.NodeProperty;
+import org.dwcj.component.webcomponent.events.Event;
+import org.dwcj.component.webcomponent.events.EventDispatcher;
+import org.dwcj.component.webcomponent.events.EventListener;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.ComponentDestroyed;
 import org.dwcj.exceptions.DwcjRuntimeException;
-
-import org.dwcj.webcomponent.annotations.NodeAttribute;
-import org.dwcj.webcomponent.annotations.NodeClassName;
-import org.dwcj.webcomponent.annotations.EventExpressions;
-import org.dwcj.webcomponent.annotations.EventName;
-import org.dwcj.webcomponent.annotations.HtmlViewAttribute;
-import org.dwcj.webcomponent.annotations.HtmlViewClassName;
-import org.dwcj.webcomponent.annotations.NodeName;
-import org.dwcj.webcomponent.annotations.NodeProperty;
-import org.dwcj.webcomponent.events.Event;
-import org.dwcj.webcomponent.events.EventDispatcher;
-import org.dwcj.webcomponent.events.EventListener;
 
 /**
  * The class WebComponent helps to integrate web components into the DWCJ

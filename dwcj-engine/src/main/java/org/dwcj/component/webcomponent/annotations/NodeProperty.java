@@ -1,4 +1,4 @@
-package org.dwcj.webcomponent.annotations;
+package org.dwcj.component.webcomponent.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,15 +9,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The NodeAttribute annotation is used to set attributes on the web component
+ * The NodeProperty annotation is used to set properties on the web component
  * upon creation.
  * 
- * For example, the following annotation will set the "disabled" attribute to
+ * For example, the following annotation will set the "disabled" property to
  * "true" on the web component when it is created.
  * 
  * <pre>
  * {@code
- * &#64;NodeAttribute(name = "disabled", value = "true")
+ * @NodeProperty(name = "disabled", value = "true")
  * }
  * </pre>
  * 
@@ -25,28 +25,28 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(NodeAttribute.Container.class)
+@Repeatable(NodeProperty.Container.class)
 @Inherited
 @Documented
-public @interface NodeAttribute {
+public @interface NodeProperty {
   /**
-   * The name of the attribute
+   * The name of the property to set on the web component.
    * 
-   * @return the name of the attribute
+   * @return the name of the property
    **/
   String name();
 
   /**
-   * The value of the attribute
+   * The value of the property to set on the web component.
    * 
-   * @return the value of the attribute
+   * @return the value of the property
    **/
   String value() default "";
 
   /**
-   * The container annotation for {@link NodeAttribute} annotation.
+   * A container for the {@link NodeProperty} annotation.
    * 
-   * @see NodeAttribute
+   * @see NodeProperty
    * @author Hyyan Abo Fakher
    */
   @Target(ElementType.TYPE)
@@ -55,10 +55,10 @@ public @interface NodeAttribute {
   @Documented
   public @interface Container {
     /**
-     * An array of {@link NodeAttribute} annotations.
+     * The array of {@link NodeProperty} annotations.
      * 
-     * @return an array of {@link NodeAttribute} annotations
+     * @return the array of {@link NodeProperty} annotations
      */
-    NodeAttribute[] value();
+    NodeProperty[] value();
   }
 }

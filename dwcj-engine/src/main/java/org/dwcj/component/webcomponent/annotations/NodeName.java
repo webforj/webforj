@@ -1,4 +1,4 @@
-package org.dwcj.webcomponent.annotations;
+package org.dwcj.component.webcomponent.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * Annotation to define the tag name of the web component node.
  * 
  * This annotation is processed by the
- * {@link org.dwcj.webcomponent.WebComponent}
+ * {@link org.dwcj.component.webcomponent.WebComponent}
  * class to define the tag name of the web component node.
  * 
  * For example, the following annotation will define the "my-component" tag name
