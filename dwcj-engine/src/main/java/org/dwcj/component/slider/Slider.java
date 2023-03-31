@@ -9,7 +9,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.slider.event.SliderScrollEvent;
-import org.dwcj.component.slider.sink.SliderOnControlScrollEventSink;
+import org.dwcj.component.slider.sink.SliderScrollEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.TabTraversable;
@@ -40,7 +40,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     }
 
     private ArrayList<Consumer<SliderScrollEvent>> callbacks = new ArrayList<>();
-    private SliderOnControlScrollEventSink scrollEventSink;
+    private SliderScrollEventSink scrollEventSink;
     
     private Orientation orientation = Orientation.HORIZONTAL;
     private Boolean inverted = false;
@@ -83,7 +83,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
     public Slider onScroll(Consumer<SliderScrollEvent> callback) {
         if(this.ctrl != null){
             if(this.scrollEventSink == null){
-                this.scrollEventSink = new SliderOnControlScrollEventSink(this);
+                this.scrollEventSink = new SliderScrollEventSink(this);
             }
             this.scrollEventSink.addCallback(callback);
         }
@@ -583,7 +583,7 @@ public final class Slider extends AbstractDwcControl implements Focusable, HasMo
 
 
         if(!this.callbacks.isEmpty()){
-            this.scrollEventSink = new SliderOnControlScrollEventSink(this);
+            this.scrollEventSink = new SliderScrollEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.scrollEventSink.addCallback(this.callbacks.remove(0));
             }

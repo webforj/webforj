@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 
 
-public class SliderOnControlScrollEventSink {
+public class SliderScrollEventSink {
 
     private final ArrayList<Consumer<SliderScrollEvent>> targets = new ArrayList<>();
 
@@ -23,7 +23,7 @@ public class SliderOnControlScrollEventSink {
     private BBjControl bbjControl;
 
     @SuppressWarnings({"static-access"})
-    public SliderOnControlScrollEventSink(Slider slide){
+    public SliderScrollEventSink(Slider slide){
         this.slider = slide;
 
         try{
