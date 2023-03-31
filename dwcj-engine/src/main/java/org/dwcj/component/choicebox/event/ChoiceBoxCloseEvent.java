@@ -1,9 +1,9 @@
 package org.dwcj.component.choicebox.event;
 
 import org.dwcj.component.choicebox.ComboBox;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
-public class ChoiceBoxCloseEvent implements ControlEvent{
+public class ChoiceBoxCloseEvent implements ComponentEvent{
     
     private final ComboBox control;
 

@@ -1,9 +1,9 @@
 package org.dwcj.component.radiobutton.event;
 
 import org.dwcj.component.radiobutton.RadioButton;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
-public final class RadioButtonCheckEvent implements ControlEvent {
+public final class RadioButtonCheckEvent implements ComponentEvent {
     
     private final RadioButton control;
 

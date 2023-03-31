@@ -1,9 +1,9 @@
 package org.dwcj.component.textfield.event;
 
 import org.dwcj.component.textfield.TextField;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
-public class TextFieldModifyEvent implements ControlEvent {
+public class TextFieldModifyEvent implements ComponentEvent {
 
     private final TextField control;
 

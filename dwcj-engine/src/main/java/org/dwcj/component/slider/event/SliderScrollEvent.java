@@ -1,9 +1,9 @@
 package org.dwcj.component.slider.event;
 
 import org.dwcj.component.slider.Slider;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
-public class SliderScrollEvent implements ControlEvent {
+public class SliderScrollEvent implements ComponentEvent {
     
     private final Slider control;
 

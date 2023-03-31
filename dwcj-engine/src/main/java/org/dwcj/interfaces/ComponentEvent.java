@@ -5,7 +5,7 @@ import org.dwcj.component.AbstractComponent;
 /**
  * Base interface for DWC control events
  */
-public interface ControlEvent {
+public interface ComponentEvent {
     /**
      * obtain a reference to the control that triggered the event
      *

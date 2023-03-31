@@ -2,11 +2,11 @@ package org.dwcj.widgets.terminal.events;
 
 import org.dwcj.widgets.terminal.Terminal;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
 import java.util.Map;
 
-public final class TerminalKeyEvent implements ControlEvent,TerminalKey {
+public final class TerminalKeyEvent implements ComponentEvent,TerminalKey {
 
     private final Terminal ctrl;
     private final Map<String, String> eventMap;

@@ -1,9 +1,9 @@
 package org.dwcj.component.tree.event;
 
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
-public class TreeEditStoppedEvent implements ControlEvent {
+public class TreeEditStoppedEvent implements ComponentEvent {
     private final TreeView control;
 
     public TreeEditStoppedEvent(TreeView cTree) {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.interfaces.Component;
-import org.dwcj.interfaces.ControlEvent;
+import org.dwcj.interfaces.ComponentEvent;
 
 /**
  * This class is the base class for all events fired by the controls.
@@ -14,7 +14,7 @@ import org.dwcj.interfaces.ControlEvent;
  * 
  * @author Hyyan Abo Fakher
  */
-public class Event<T extends Component> extends EventObject implements ControlEvent {
+public class Event<T extends Component> extends EventObject implements ComponentEvent {
 
   private Map<String, Object> eventMap;
 
