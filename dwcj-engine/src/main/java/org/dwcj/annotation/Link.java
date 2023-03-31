@@ -1,4 +1,4 @@
-package org.dwcj.annotations;
+package org.dwcj.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

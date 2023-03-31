@@ -2,7 +2,7 @@ package org.dwcj;
 
 import com.basis.startup.type.BBjException;
 
-import org.dwcj.annotations.AnnotationProcessor;
+import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.*;
 import org.dwcj.exceptions.DwcAppInitializeException;

@@ -23,7 +23,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.annotations.InlineStyleSheet;
+import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.AbstractDwcControl;
 import org.dwcj.controls.htmlcontainer.HtmlContainer;

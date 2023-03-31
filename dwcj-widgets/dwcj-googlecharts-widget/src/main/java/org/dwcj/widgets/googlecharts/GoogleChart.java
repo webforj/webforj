@@ -1,10 +1,10 @@
 package org.dwcj.widgets.googlecharts;
 
-import org.dwcj.annotations.Attribute;
-import org.dwcj.annotations.JavaScript;
-import org.dwcj.annotations.Link;
 import org.dwcj.widgets.googlecharts.events.GoogleChartReadyEvent;
 import org.dwcj.widgets.googlecharts.events.GoogleChartSelectedEvent;
+import org.dwcj.annotation.Attribute;
+import org.dwcj.annotation.JavaScript;
+import org.dwcj.annotation.Link;
 import org.dwcj.interfaces.HasStyle;
 import org.dwcj.webcomponent.PropertyDescriptor;
 import org.dwcj.webcomponent.WebComponent;

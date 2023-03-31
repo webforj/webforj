@@ -3,7 +3,7 @@ package org.dwcj.widgets.youtube;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dwcj.annotations.InlineStyleSheet;
+import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.controls.panels.AbstractPanel;
 import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasClassName;

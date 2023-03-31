@@ -3,7 +3,7 @@ package org.dwcj.controls.panels;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 import org.dwcj.Environment;
-import org.dwcj.annotations.AnnotationProcessor;
+import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.controls.AbstractControl;
 import org.dwcj.controls.panels.events.DivClickEvent;

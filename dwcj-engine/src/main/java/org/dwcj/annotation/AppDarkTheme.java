@@ -1,4 +1,4 @@
-package org.dwcj.annotations;
+package org.dwcj.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,35 +8,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class to set the theme of the DWC app.
- * The theme name should be one of the following: "system", "light", "dark" or
- * the name of a custom theme.
- * In case the theme is not one of the above, the theme will be set to "light".
+ * Annotates a class to set the name of the default dark theme to be used by the
+ * application when the used theme is "system".
  * 
  * The annotation can be used on the class level only and the class must extend
  * `org.dwcj.App` in order for the annotation to be processed.
  * 
  * <pre>
  * {@code
- * @AppTheme("dark-pure")
+ * @AppDarkTheme("dark")
  * }
  * </pre>
  * 
+ * @see AppTheme
  * @see AppLightTheme
- * @see AppDarkTheme
- * 
+ *
  * @author Hyyan Abo Fakher
  */
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 @Inherited
 @Documented
-public @interface AppTheme {
-
+public @interface AppDarkTheme {
   /**
-   * The theme name
+   * The name of the default dark theme to be used by the application
    * 
-   * @return the theme name
+   * @return the name of the default dark theme
    */
-  String value() default "system";
+  String value() default "dark";
 }

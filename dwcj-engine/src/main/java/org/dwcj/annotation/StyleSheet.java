@@ -1,4 +1,4 @@
-package org.dwcj.annotations;
+package org.dwcj.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,54 +9,54 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class to inject a JavaScript URL into the web page.
+ * Annotates a class to inject a CSS content into the web page.
  * The annotation can be used on the AppLevel or the control level.
  * 
  * <pre>
  * {@code
- * @JavaScript(url = "http://www.example.com/script.js")
- * @JavaScript(url = "http://www.example.com/script.js", top = true)
+ * @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css")
+ * @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)
  * }
  * </pre>
  * 
- * @see InlineJavaScript
+ * @see InlineStyleSheet
  * @author Hyyan Abo Fakher
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(JavaScript.Container.class)
+@Repeatable(StyleSheet.Container.class)
 @Inherited
 @Documented
-public @interface JavaScript {
+public @interface StyleSheet {
 
   /**
-   * A JavaScript URL to be injected into this web page as a script element.
+   * A CSS URL to be injected into this web page as a style element.
    * 
-   * @return the JavaScript URL
+   * @return the CSS URL
    **/
   String value();
 
   /**
-   * A boolean value specifying whether this script is to be injected into the top
+   * A boolean value specifying whether this style is to be injected into the top
    * level window of the page.
    * 
-   * @return true if the script is to be injected into the top level window
+   * @return true if the style is to be injected into the top level window
    */
   boolean top() default false;
 
   /**
    * A set of <a href=
-   * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script">attributes</a>
-   * to be added to the script element.
+   * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style">attributes</a>
+   * to be added to the style element.
    * 
    * @return the attributes
    */
   Attribute[] attributes() default {};
 
   /**
-   * A container for {@link JavaScript} annotations.
+   * A container for {@link StyleSheet} annotations.
    * 
-   * @see JavaScript
+   * @see StyleSheet
    * @author Hyyan Abo Fakher
    */
   @Retention(RetentionPolicy.RUNTIME)
@@ -64,12 +64,11 @@ public @interface JavaScript {
   @Inherited
   @Documented
   public @interface Container {
-
     /**
-     * A set of {@link JavaScript} annotations.
+     * The array of {@link StyleSheet} annotations.
      * 
-     * @return the set of {@link JavaScript} annotations
+     * @return the array of {@link StyleSheet} annotations
      */
-    JavaScript[] value();
+    StyleSheet[] value();
   }
 }
