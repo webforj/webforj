@@ -9,7 +9,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.slider.event.SliderOnControlScrollEvent;
-import org.dwcj.component.slider.sinks.SliderOnControlScrollEventSink;
+import org.dwcj.component.slider.sink.SliderOnControlScrollEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasMouseWheelCondition;
 import org.dwcj.interfaces.TabTraversable;

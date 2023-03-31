@@ -1,4 +1,4 @@
-package org.dwcj.component.slider.sinks;
+package org.dwcj.component.slider.sink;
 
 import com.basis.bbj.proxies.event.BBjControlScrollEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
