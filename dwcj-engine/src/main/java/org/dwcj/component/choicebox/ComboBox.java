@@ -1,4 +1,4 @@
-package org.dwcj.component.combobox;
+package org.dwcj.component.choicebox;
 
 
 import com.basis.bbj.proxies.sysgui.BBjListButton;
@@ -7,14 +7,14 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.combobox.events.ComboBoxChangeEvent;
-import org.dwcj.component.combobox.events.ComboBoxCloseEvent;
-import org.dwcj.component.combobox.events.ComboBoxOpenEvent;
-import org.dwcj.component.combobox.events.ComboBoxSelectEvent;
-import org.dwcj.component.combobox.sinks.ComboBoxChangeEventSink;
-import org.dwcj.component.combobox.sinks.ComboBoxCloseEventSink;
-import org.dwcj.component.combobox.sinks.ComboBoxOpenEventSink;
-import org.dwcj.component.combobox.sinks.ComboBoxSelectEventSink;
+import org.dwcj.component.choicebox.events.ComboBoxChangeEvent;
+import org.dwcj.component.choicebox.events.ComboBoxCloseEvent;
+import org.dwcj.component.choicebox.events.ComboBoxOpenEvent;
+import org.dwcj.component.choicebox.events.ComboBoxSelectEvent;
+import org.dwcj.component.choicebox.sinks.ComboBoxChangeEventSink;
+import org.dwcj.component.choicebox.sinks.ComboBoxCloseEventSink;
+import org.dwcj.component.choicebox.sinks.ComboBoxOpenEventSink;
+import org.dwcj.component.choicebox.sinks.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
