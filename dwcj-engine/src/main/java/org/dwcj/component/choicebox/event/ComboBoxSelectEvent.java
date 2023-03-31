@@ -1,4 +1,4 @@
-package org.dwcj.component.choicebox.events;
+package org.dwcj.component.choicebox.event;
 
 import org.dwcj.component.choicebox.ComboBox;
 import org.dwcj.interfaces.ControlEvent;

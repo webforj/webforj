@@ -7,10 +7,10 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.choicebox.events.ComboBoxChangeEvent;
-import org.dwcj.component.choicebox.events.ComboBoxCloseEvent;
-import org.dwcj.component.choicebox.events.ComboBoxOpenEvent;
-import org.dwcj.component.choicebox.events.ComboBoxSelectEvent;
+import org.dwcj.component.choicebox.event.ComboBoxChangeEvent;
+import org.dwcj.component.choicebox.event.ComboBoxCloseEvent;
+import org.dwcj.component.choicebox.event.ComboBoxOpenEvent;
+import org.dwcj.component.choicebox.event.ComboBoxSelectEvent;
 import org.dwcj.component.choicebox.sinks.ComboBoxChangeEventSink;
 import org.dwcj.component.choicebox.sinks.ComboBoxCloseEventSink;
 import org.dwcj.component.choicebox.sinks.ComboBoxOpenEventSink;
