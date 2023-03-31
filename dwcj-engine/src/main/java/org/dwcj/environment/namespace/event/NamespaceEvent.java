@@ -1,4 +1,4 @@
-package org.dwcj.environment.namespace.events;
+package org.dwcj.environment.namespace.event;
 
 public final class NamespaceEvent {
 

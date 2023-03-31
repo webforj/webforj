@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.event.BBjNamespaceEvent;
 import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.environment.namespace.events.NamespaceEvent;
+import org.dwcj.environment.namespace.event.NamespaceEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
