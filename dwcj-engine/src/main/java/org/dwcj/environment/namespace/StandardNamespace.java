@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 
 import org.dwcj.environment.namespace.event.NamespaceEvent;
-import org.dwcj.environment.namespace.sinks.NamespaceEventSink;
+import org.dwcj.environment.namespace.sink.NamespaceEventSink;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;

@@ -1,4 +1,4 @@
-package org.dwcj.environment.namespace.sinks;
+package org.dwcj.environment.namespace.sink;
 
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.bbj.proxies.event.BBjNamespaceEvent;
