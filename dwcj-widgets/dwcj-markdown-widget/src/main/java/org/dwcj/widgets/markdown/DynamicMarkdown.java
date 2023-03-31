@@ -1,9 +1,9 @@
 package org.dwcj.widgets.markdown;
 
-import org.dwcj.controls.AbstractControl;
-import org.dwcj.controls.label.Label;
-import org.dwcj.controls.panels.AbstractPanel;
-import org.dwcj.controls.panels.Div;
+import org.dwcj.component.AbstractControl;
+import org.dwcj.component.label.Label;
+import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.panels.Div;
 import org.dwcj.interfaces.Control;
 
 import java.io.IOException;

@@ -3,7 +3,7 @@ package org.dwcj.webcomponent.events;
 import java.util.EventObject;
 import java.util.Map;
 
-import org.dwcj.controls.AbstractControl;
+import org.dwcj.component.AbstractControl;
 import org.dwcj.interfaces.Control;
 import org.dwcj.interfaces.ControlEvent;
 

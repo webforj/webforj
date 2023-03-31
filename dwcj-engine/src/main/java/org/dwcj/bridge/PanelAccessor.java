@@ -1,7 +1,7 @@
 package org.dwcj.bridge;
 
 import org.dwcj.Environment;
-import org.dwcj.controls.panels.AbstractPanel;
+import org.dwcj.component.panels.AbstractPanel;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 

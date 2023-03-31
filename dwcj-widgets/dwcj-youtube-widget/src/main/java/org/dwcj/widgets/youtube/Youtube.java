@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dwcj.annotation.InlineStyleSheet;
-import org.dwcj.controls.panels.AbstractPanel;
+import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;

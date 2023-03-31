@@ -3,7 +3,7 @@ package org.dwcj.annotation;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.dwcj.App;
-import org.dwcj.controls.AbstractControl;
+import org.dwcj.component.AbstractControl;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
 

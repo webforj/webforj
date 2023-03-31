@@ -1,7 +1,7 @@
 package org.dwcj.widgets.terminal.events;
 
-import org.dwcj.controls.AbstractControl;
 import org.dwcj.widgets.terminal.Terminal;
+import org.dwcj.component.AbstractControl;
 import org.dwcj.interfaces.ControlEvent;
 
 import java.util.Map;
