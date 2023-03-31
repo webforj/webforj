@@ -1,4 +1,4 @@
-package org.dwcj.component.tree.sinks;
+package org.dwcj.component.tree.sink;
 
 import com.basis.bbj.proxies.event.BBjTreeNodeCollapsedEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
