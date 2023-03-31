@@ -1,11 +1,11 @@
-package org.dwcj.component.textcombobox.sinks;
+package org.dwcj.component.combobox.sinks;
 
 import com.basis.bbj.proxies.event.BBjListChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.textcombobox.TextComboBox;
-import org.dwcj.component.textcombobox.events.TextComboBoxChangeEvent;
+import org.dwcj.component.combobox.TextComboBox;
+import org.dwcj.component.combobox.events.TextComboBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

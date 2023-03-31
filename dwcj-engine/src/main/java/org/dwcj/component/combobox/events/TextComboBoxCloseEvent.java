@@ -1,6 +1,6 @@
-package org.dwcj.component.textcombobox.events;
+package org.dwcj.component.combobox.events;
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.textcombobox.TextComboBox;
+import org.dwcj.component.combobox.TextComboBox;
 
 public class TextComboBoxCloseEvent implements ComponentEvent{
     

@@ -1,4 +1,4 @@
-package org.dwcj.component.textcombobox;
+package org.dwcj.component.combobox;
 
 import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -10,18 +10,18 @@ import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
+import org.dwcj.component.combobox.events.TextComboBoxChangeEvent;
+import org.dwcj.component.combobox.events.TextComboBoxCloseEvent;
+import org.dwcj.component.combobox.events.TextComboBoxEditModifyEvent;
+import org.dwcj.component.combobox.events.TextComboBoxOpenEvent;
+import org.dwcj.component.combobox.events.TextComboBoxSelectEvent;
+import org.dwcj.component.combobox.sinks.TextComboBoxChangeEventSink;
+import org.dwcj.component.combobox.sinks.TextComboBoxCloseEventSink;
+import org.dwcj.component.combobox.sinks.TextComboBoxEditModifyEventSink;
+import org.dwcj.component.combobox.sinks.TextComboBoxOpenEventSink;
+import org.dwcj.component.combobox.sinks.TextComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.textcombobox.events.TextComboBoxChangeEvent;
-import org.dwcj.component.textcombobox.events.TextComboBoxCloseEvent;
-import org.dwcj.component.textcombobox.events.TextComboBoxEditModifyEvent;
-import org.dwcj.component.textcombobox.events.TextComboBoxOpenEvent;
-import org.dwcj.component.textcombobox.events.TextComboBoxSelectEvent;
-import org.dwcj.component.textcombobox.sinks.TextComboBoxChangeEventSink;
-import org.dwcj.component.textcombobox.sinks.TextComboBoxCloseEventSink;
-import org.dwcj.component.textcombobox.sinks.TextComboBoxEditModifyEventSink;
-import org.dwcj.component.textcombobox.sinks.TextComboBoxOpenEventSink;
-import org.dwcj.component.textcombobox.sinks.TextComboBoxSelectEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
