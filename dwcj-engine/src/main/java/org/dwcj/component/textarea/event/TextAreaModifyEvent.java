@@ -3,10 +3,10 @@ package org.dwcj.component.textarea.event;
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.textarea.TextArea;
 
-public final class TextAreaOnEditModifyEvent implements ComponentEvent {
+public final class TextAreaModifyEvent implements ComponentEvent {
     private final TextArea control;
 
-    public TextAreaOnEditModifyEvent(TextArea cMultilineEdit) {
+    public TextAreaModifyEvent(TextArea cMultilineEdit) {
         this.control = cMultilineEdit;
     }
 

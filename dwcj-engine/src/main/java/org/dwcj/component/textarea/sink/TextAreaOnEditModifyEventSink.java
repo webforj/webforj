@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.textarea.TextArea;
-import org.dwcj.component.textarea.event.TextAreaOnEditModifyEvent;
+import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class TextAreaOnEditModifyEventSink {
 
-    private ArrayList<Consumer<TextAreaOnEditModifyEvent>> targets;
+    private ArrayList<Consumer<TextAreaModifyEvent>> targets;
     private final TextArea multilineEdit;
 
     @SuppressWarnings({"static-access"})
@@ -34,7 +34,7 @@ public final class TextAreaOnEditModifyEventSink {
         }
     }
 
-    public TextAreaOnEditModifyEventSink(TextArea txtArea, Consumer<TextAreaOnEditModifyEvent> callback) {
+    public TextAreaOnEditModifyEventSink(TextArea txtArea, Consumer<TextAreaModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);
@@ -53,13 +53,13 @@ public final class TextAreaOnEditModifyEventSink {
     }
 
     public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        TextAreaOnEditModifyEvent dwcEv = new TextAreaOnEditModifyEvent(this.multilineEdit);
-        Iterator<Consumer<TextAreaOnEditModifyEvent>> it = targets.iterator();
+        TextAreaModifyEvent dwcEv = new TextAreaModifyEvent(this.multilineEdit);
+        Iterator<Consumer<TextAreaModifyEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<TextAreaOnEditModifyEvent> callback) {
+    public void addCallback(Consumer<TextAreaModifyEvent> callback) {
         targets.add(callback);
     }
 }

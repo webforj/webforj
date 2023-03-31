@@ -14,7 +14,7 @@ import org.dwcj.component.Scrollable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.textarea.event.TextAreaOnEditModifyEvent;
+import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaOnEditModifyEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -35,7 +35,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
-    private ArrayList<Consumer<TextAreaOnEditModifyEvent>> callbacks = new ArrayList<>();
+    private ArrayList<Consumer<TextAreaModifyEvent>> callbacks = new ArrayList<>();
     private TextAreaOnEditModifyEventSink editModifyEventSink;
 
 
@@ -81,7 +81,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
         }
     }
 
-    public TextArea onEditModify(Consumer<TextAreaOnEditModifyEvent> callback){
+    public TextArea onEditModify(Consumer<TextAreaModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new TextAreaOnEditModifyEventSink(this);
