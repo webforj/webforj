@@ -10,7 +10,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerOnScriptLoadedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadedEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerOnScriptFailedEventSink;
@@ -32,7 +32,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
 
   private BBjHtmlView bbjHtmlView;
 
-  private final ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
+  private final ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
   private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
   private final ArrayList<Consumer<HtmlContainerScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
   private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;
@@ -75,7 +75,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     }
   }
 
-  public HtmlContainer onScriptLoaded(Consumer<HtmlContainerOnScriptLoadedEvent> callback) {
+  public HtmlContainer onScriptLoaded(Consumer<HtmlContainerScriptLoadedEvent> callback) {
     if (this.ctrl != null) {
       if (this.onScriptLoadedSink == null) {
         this.onScriptLoadedSink = new HtmlContainerOnScriptLoadedEventSink(this);

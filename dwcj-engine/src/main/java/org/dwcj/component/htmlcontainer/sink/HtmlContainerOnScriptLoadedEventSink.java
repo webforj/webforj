@@ -8,7 +8,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerOnScriptLoadedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public class HtmlContainerOnScriptLoadedEventSink {
 
-    private ArrayList<Consumer<HtmlContainerOnScriptLoadedEvent>> targets;
+    private ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> targets;
     private final HtmlContainer htmlContainer;
 
     public HtmlContainerOnScriptLoadedEventSink(HtmlContainer container) {
@@ -37,13 +37,13 @@ public class HtmlContainerOnScriptLoadedEventSink {
     }
 
     public void scriptLoadedEvent(BBjScriptLoadedEvent ev) { // NOSONAR
-        HtmlContainerOnScriptLoadedEvent dwcEv = new HtmlContainerOnScriptLoadedEvent(this.htmlContainer);
-        Iterator<Consumer<HtmlContainerOnScriptLoadedEvent>> it = targets.iterator();
+        HtmlContainerScriptLoadedEvent dwcEv = new HtmlContainerScriptLoadedEvent(this.htmlContainer);
+        Iterator<Consumer<HtmlContainerScriptLoadedEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
     
-    public void addCallback(Consumer<HtmlContainerOnScriptLoadedEvent> callback) {
+    public void addCallback(Consumer<HtmlContainerScriptLoadedEvent> callback) {
         targets.add(callback);
     }
 }
