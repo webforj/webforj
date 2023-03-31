@@ -4,7 +4,7 @@ import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.panels.Div;
-import org.dwcj.interfaces.Control;
+import org.dwcj.interfaces.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class DynamicMarkdown extends Div {
 
-    private final ArrayList<Control> ctrlList = new ArrayList<>();
+    private final ArrayList<Component> ctrlList = new ArrayList<>();
 
     @Override
     protected void create(AbstractPanel p) {

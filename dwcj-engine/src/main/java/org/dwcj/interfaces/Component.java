@@ -5,7 +5,7 @@ package org.dwcj.interfaces;
  * that will be added to the engine, but exclude some of the more specific 
  * properties not common across every control.
  */
-public interface Control {
+public interface Component {
 
     /**
      * Returns the control's ID
@@ -20,7 +20,7 @@ public interface Control {
      * @param elementId Desired ID designation
      * @return The control itself
      */
-    public Control setId(String elementId);
+    public Component setId(String elementId);
 
 
     /**
@@ -38,6 +38,6 @@ public interface Control {
      * @param data Desired piece of information
      * @return The control itself
      */
-    public Control setUserData(String key, Object data);
+    public Component setUserData(String key, Object data);
 
 }

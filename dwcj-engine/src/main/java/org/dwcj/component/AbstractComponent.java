@@ -3,7 +3,7 @@ package org.dwcj.component;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.interfaces.Control;
+import org.dwcj.interfaces.Component;
 import org.dwcj.interfaces.HasDestroy;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import com.basis.startup.type.BBjException;
  * for the implemented interface methods. Extended by AbstractDwcControl.
  */
 
-public abstract class AbstractComponent implements Control, HasDestroy {
+public abstract class AbstractComponent implements Component, HasDestroy {
 
     /*
      * Underlying BBj control

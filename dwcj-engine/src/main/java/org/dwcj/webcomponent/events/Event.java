@@ -4,7 +4,7 @@ import java.util.EventObject;
 import java.util.Map;
 
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.interfaces.Control;
+import org.dwcj.interfaces.Component;
 import org.dwcj.interfaces.ControlEvent;
 
 /**
@@ -14,7 +14,7 @@ import org.dwcj.interfaces.ControlEvent;
  * 
  * @author Hyyan Abo Fakher
  */
-public class Event<T extends Control> extends EventObject implements ControlEvent {
+public class Event<T extends Component> extends EventObject implements ControlEvent {
 
   private Map<String, Object> eventMap;
 
