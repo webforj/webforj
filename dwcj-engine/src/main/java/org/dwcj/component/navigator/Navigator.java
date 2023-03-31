@@ -11,10 +11,10 @@ import org.dwcj.component.navigator.event.NavigatorFirstEvent;
 import org.dwcj.component.navigator.event.NavigatorLastEvent;
 import org.dwcj.component.navigator.event.NavigatorNextEvent;
 import org.dwcj.component.navigator.event.NavigatorPreviousEvent;
-import org.dwcj.component.navigator.sinks.NavFirstEventSink;
-import org.dwcj.component.navigator.sinks.NavLastEventSink;
-import org.dwcj.component.navigator.sinks.NavNextEventSink;
-import org.dwcj.component.navigator.sinks.NavPreviousEventSink;
+import org.dwcj.component.navigator.sink.NavFirstEventSink;
+import org.dwcj.component.navigator.sink.NavLastEventSink;
+import org.dwcj.component.navigator.sink.NavNextEventSink;
+import org.dwcj.component.navigator.sink.NavPreviousEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.HasReadOnly;
 

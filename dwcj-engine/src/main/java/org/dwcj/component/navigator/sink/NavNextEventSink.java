@@ -1,24 +1,24 @@
-package org.dwcj.component.navigator.sinks;
+package org.dwcj.component.navigator.sink;
 
-import com.basis.bbj.proxies.event.BBjNavigatorMoveFirstEvent;
+import com.basis.bbj.proxies.event.BBjNavigatorMoveNextEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.navigator.Navigator;
-import org.dwcj.component.navigator.event.NavigatorFirstEvent;
+import org.dwcj.component.navigator.event.NavigatorNextEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class NavFirstEventSink {
+public class NavNextEventSink {
 
-    private ArrayList<Consumer<NavigatorFirstEvent>> targets;
+    private ArrayList<Consumer<NavigatorNextEvent>> targets;
 
     private final Navigator navigator;
 
     @SuppressWarnings({"static-access"})
-    public NavFirstEventSink(Navigator ng, Consumer<NavigatorFirstEvent> callback) {
+    public NavNextEventSink(Navigator ng, Consumer<NavigatorNextEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.navigator = ng;
@@ -27,7 +27,7 @@ public class NavFirstEventSink {
         try {
             bbjctrl = ControlAccessor.getDefault().getBBjControl(ng);
             bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_NAV_FIRST,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this,"navFirstEvent"),
+                    Environment.getInstance().getDwcjHelper().getEventProxy(this,"navNextEvent"),
                     "onEvent");
         } catch (Exception e) {
             Environment.logError(e);
@@ -35,12 +35,12 @@ public class NavFirstEventSink {
         
     }
 
-    public void navFirstEvent(BBjNavigatorMoveFirstEvent ev) { //NOSONAR
-        NavigatorFirstEvent dwcEv = new NavigatorFirstEvent(this.navigator);
-        Iterator<Consumer<NavigatorFirstEvent>> it = targets.iterator();
+    public void navNextEvent(BBjNavigatorMoveNextEvent ev) { //NOSONAR
+        NavigatorNextEvent dwcEv = new NavigatorNextEvent(this.navigator);
+        Iterator<Consumer<NavigatorNextEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<NavigatorFirstEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<NavigatorNextEvent> callback) { targets.add(callback); }
 }
