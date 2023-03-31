@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.field.TextBox;
-import org.dwcj.component.field.events.TextBoxEditModifyEvent;
+import org.dwcj.component.field.event.TextBoxEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

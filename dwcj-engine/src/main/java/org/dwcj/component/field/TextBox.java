@@ -15,7 +15,7 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
-import org.dwcj.component.field.events.TextBoxEditModifyEvent;
+import org.dwcj.component.field.event.TextBoxEditModifyEvent;
 import org.dwcj.component.field.sinks.TextBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
