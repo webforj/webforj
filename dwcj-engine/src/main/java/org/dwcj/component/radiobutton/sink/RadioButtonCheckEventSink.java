@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton.sinks;
+package org.dwcj.component.radiobutton.sink;
 
 import com.basis.bbj.proxies.event.BBjCheckOffEvent;
 import com.basis.bbj.proxies.event.BBjCheckOnEvent;

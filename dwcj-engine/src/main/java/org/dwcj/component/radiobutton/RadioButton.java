@@ -10,7 +10,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
-import org.dwcj.component.radiobutton.sinks.RadioButtonCheckEventSink;
+import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
