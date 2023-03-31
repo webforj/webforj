@@ -7,18 +7,18 @@ import org.dwcj.webcomponent.annotations.EventName;
 import org.dwcj.webcomponent.events.Event;
 
 /**
- * Emitted when the dialog is opened.
+ * Emitted when the dialog is closed.
  * 
  * @author Hyyan Abo Fakher
  */
-@EventName("bbj-opened")
-public class DialogOpenedEvent extends Event<Dialog> {
+@EventName("bbj-closed")
+public class DialogCloseEvent extends Event<Dialog> {
 
   /**
    * @param control  the control
    * @param eventMap the event map
    */
-  public DialogOpenedEvent(Dialog control, Map<String, Object> eventMap) {
+  public DialogCloseEvent(Dialog control, Map<String, Object> eventMap) {
     super(control, eventMap);
   }
 }
