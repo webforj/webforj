@@ -669,19 +669,19 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout addDrawerOpenedListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
+  public AppLayout addDrawerOpenListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
     addEventListener(AppLayoutDrawerOpenEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addDrawerOpenedListener(EventListener)}.
+   * Alias for {@link #addDrawerOpenListener(EventListener)}.
    * 
    * @param listener the listener
    * @return the app layout
    */
   public AppLayout onDrawerOpen(EventListener<AppLayoutDrawerOpenEvent> listener) {
-    return addDrawerOpenedListener(listener);
+    return addDrawerOpenListener(listener);
   }
 
   /**
@@ -690,7 +690,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout removeDrawerOpenedListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
+  public AppLayout removeDrawerOpenListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
     removeEventListener(AppLayoutDrawerOpenEvent.class, listener);
     return this;
   }
@@ -701,19 +701,19 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout addDrawerClosedListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
+  public AppLayout addDrawerCloseListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
     addEventListener(AppLayoutDrawerCloseEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addDrawerClosedListener(EventListener)}.
+   * Alias for {@link #addDrawerCloseListener(EventListener)}.
    * 
    * @param listener the listener
    * @return the app layout
    */
   public AppLayout onDrawerClose(EventListener<AppLayoutDrawerCloseEvent> listener) {
-    return addDrawerClosedListener(listener);
+    return addDrawerCloseListener(listener);
   }
 
   /**
@@ -722,7 +722,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout removeDrawerClosedListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
+  public AppLayout removeDrawerCloseListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
     removeEventListener(AppLayoutDrawerCloseEvent.class, listener);
     return this;
   }
