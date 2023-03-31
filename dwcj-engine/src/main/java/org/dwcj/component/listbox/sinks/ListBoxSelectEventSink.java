@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.listbox.ListBox;
-import org.dwcj.component.listbox.events.ListBoxSelectEvent;
+import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

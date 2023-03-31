@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.listbox.ListBox;
-import org.dwcj.component.listbox.events.ListBoxDoubleClickEvent;
+import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 
 import com.basis.bbj.proxies.event.BBjListDoubleClickEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;

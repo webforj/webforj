@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.listbox.events.ListBoxDoubleClickEvent;
-import org.dwcj.component.listbox.events.ListBoxSelectEvent;
+import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
+import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sinks.ListBoxDoubleClickEventSink;
 import org.dwcj.component.listbox.sinks.ListBoxSelectEventSink;
 import org.dwcj.component.panels.AbstractPanel;
