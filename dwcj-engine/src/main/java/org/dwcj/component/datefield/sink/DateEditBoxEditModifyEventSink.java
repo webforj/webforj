@@ -1,11 +1,11 @@
-package org.dwcj.component.datefield.sinks;
+package org.dwcj.component.datefield.sink;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.datefield.DateEditBox;
-import org.dwcj.component.datefield.events.DateEditBoxEditModifyEvent;
+import org.dwcj.component.datefield.event.DateEditBoxEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
