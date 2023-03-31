@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class ComboBoxSelectEventSink {
+public final class ChoiceBoxSelectEventSink {
 
     private ArrayList<Consumer<ChoiceBoxSelectEvent>> targets = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public final class ComboBoxSelectEventSink {
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxSelectEventSink(ComboBox cb) {
+    public ChoiceBoxSelectEventSink(ComboBox cb) {
         this.comboBox = cb;
 
         try {
@@ -34,7 +34,7 @@ public final class ComboBoxSelectEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxSelectEventSink(ComboBox cb, Consumer<ChoiceBoxSelectEvent> callback) {
+    public ChoiceBoxSelectEventSink(ComboBox cb, Consumer<ChoiceBoxSelectEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;
 

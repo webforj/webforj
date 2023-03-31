@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 
 
-public class ComboBoxOpenEventSink {
+public class ChoiceBoxOpenEventSink {
 
     private ArrayList<Consumer<ChoiceBoxOpenEvent>> targets = new ArrayList<>();
     private final ComboBox comboBox;
@@ -21,7 +21,7 @@ public class ComboBoxOpenEventSink {
 
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxOpenEventSink(ComboBox cb) {
+    public ChoiceBoxOpenEventSink(ComboBox cb) {
         this.comboBox = cb;
 
         try {
@@ -35,7 +35,7 @@ public class ComboBoxOpenEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxOpenEventSink(ComboBox cb, Consumer<ChoiceBoxOpenEvent> callback) {
+    public ChoiceBoxOpenEventSink(ComboBox cb, Consumer<ChoiceBoxOpenEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;
 

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class ComboBoxChangeEventSink {
+public class ChoiceBoxChangeEventSink {
 
     private ArrayList<Consumer<ChoiceBoxChangeEvent>> targets;
 
@@ -19,7 +19,7 @@ public class ComboBoxChangeEventSink {
 
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxChangeEventSink(ComboBox cb) {
+    public ChoiceBoxChangeEventSink(ComboBox cb) {
         this.targets = new ArrayList<>();
         this.comboBox = cb;
 
@@ -35,7 +35,7 @@ public class ComboBoxChangeEventSink {
     }
     
     @SuppressWarnings({"static-access"})
-    public ComboBoxChangeEventSink(ComboBox cb, Consumer<ChoiceBoxChangeEvent> callback) {
+    public ChoiceBoxChangeEventSink(ComboBox cb, Consumer<ChoiceBoxChangeEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.comboBox = cb;

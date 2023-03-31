@@ -11,10 +11,10 @@ import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxCloseEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxOpenEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxSelectEvent;
-import org.dwcj.component.choicebox.sink.ComboBoxChangeEventSink;
-import org.dwcj.component.choicebox.sink.ComboBoxCloseEventSink;
-import org.dwcj.component.choicebox.sink.ComboBoxOpenEventSink;
-import org.dwcj.component.choicebox.sink.ComboBoxSelectEventSink;
+import org.dwcj.component.choicebox.sink.ChoiceBoxChangeEventSink;
+import org.dwcj.component.choicebox.sink.ChoiceBoxCloseEventSink;
+import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
+import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
@@ -48,13 +48,13 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     private ArrayList<Consumer<ChoiceBoxChangeEvent>> changeEvents = new ArrayList<>();
-    private ComboBoxChangeEventSink changeEventSink;
+    private ChoiceBoxChangeEventSink changeEventSink;
     private ArrayList<Consumer<ChoiceBoxSelectEvent>> selectEvents = new ArrayList<>();
-    private ComboBoxSelectEventSink selectEventSink;
+    private ChoiceBoxSelectEventSink selectEventSink;
     private ArrayList<Consumer<ChoiceBoxOpenEvent>> openEvents = new ArrayList<>();
-    private ComboBoxOpenEventSink openEventSink;
+    private ChoiceBoxOpenEventSink openEventSink;
     private ArrayList<Consumer<ChoiceBoxCloseEvent>> closeEvents = new ArrayList<>();
-    private ComboBoxCloseEventSink closeEventSink;
+    private ChoiceBoxCloseEventSink closeEventSink;
 
     private Integer maxRowCount;
     private SimpleEntry<Integer, String> textAt = null;
@@ -317,7 +317,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     public ComboBox onSelect(Consumer<ChoiceBoxSelectEvent> callback) {
         if(this.ctrl != null){
             if(this.selectEventSink == null){
-                this.selectEventSink = new ComboBoxSelectEventSink(this);
+                this.selectEventSink = new ChoiceBoxSelectEventSink(this);
             }
             this.selectEventSink.addCallback(callback);
         }
@@ -336,7 +336,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     public ComboBox onOpen(Consumer<ChoiceBoxOpenEvent> callback){
         if(this.ctrl != null){
             if(this.openEventSink == null){
-                this.openEventSink = new ComboBoxOpenEventSink(this);
+                this.openEventSink = new ChoiceBoxOpenEventSink(this);
             }
             this.openEventSink.addCallback(callback);
         }
@@ -354,7 +354,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     public ComboBox onClose(Consumer<ChoiceBoxCloseEvent> callback){
         if(this.ctrl != null){
             if(this.closeEventSink == null){
-                this.closeEventSink = new ComboBoxCloseEventSink(this);
+                this.closeEventSink = new ChoiceBoxCloseEventSink(this);
             }
             this.closeEventSink.addCallback(callback);
         }
@@ -632,25 +632,25 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         }
 
         if(!this.changeEvents.isEmpty()){
-            this.changeEventSink = new ComboBoxChangeEventSink(this);
+            this.changeEventSink = new ChoiceBoxChangeEventSink(this);
             while(!this.changeEvents.isEmpty()){
                 this.changeEventSink.addCallback(this.changeEvents.remove(0));
             }
         }
         if(!this.selectEvents.isEmpty()){
-            this.selectEventSink = new ComboBoxSelectEventSink(this);
+            this.selectEventSink = new ChoiceBoxSelectEventSink(this);
             while(!this.selectEvents.isEmpty()){
                 this.selectEventSink.addCallback(this.selectEvents.remove(0));
             }
         }
         if(!this.openEvents.isEmpty()){
-            this.openEventSink = new ComboBoxOpenEventSink(this);
+            this.openEventSink = new ChoiceBoxOpenEventSink(this);
             while(!this.openEvents.isEmpty()){
                 this.openEventSink.addCallback(this.openEvents.remove(0));
             }
         }
         if(!this.closeEvents.isEmpty()){
-            this.closeEventSink = new ComboBoxCloseEventSink(this);
+            this.closeEventSink = new ChoiceBoxCloseEventSink(this);
             while(!this.closeEvents.isEmpty()){
                 this.closeEventSink.addCallback(this.closeEvents.remove(0));
             }

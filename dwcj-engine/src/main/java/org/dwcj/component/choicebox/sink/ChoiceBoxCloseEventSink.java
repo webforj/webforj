@@ -12,14 +12,14 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 
-public class ComboBoxCloseEventSink {
+public class ChoiceBoxCloseEventSink {
     
     private ArrayList<Consumer<ChoiceBoxCloseEvent>> targets = new ArrayList<>();
     private final ComboBox comboBox;
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxCloseEventSink(ComboBox cb) {
+    public ChoiceBoxCloseEventSink(ComboBox cb) {
         this.comboBox = cb;
 
         try {
@@ -33,7 +33,7 @@ public class ComboBoxCloseEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxCloseEventSink(ComboBox cb, Consumer<ChoiceBoxCloseEvent> callback) {
+    public ChoiceBoxCloseEventSink(ComboBox cb, Consumer<ChoiceBoxCloseEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;
 
