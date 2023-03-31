@@ -1,12 +1,12 @@
-package org.dwcj.component.tree.events;
+package org.dwcj.component.tree.event;
 
 import org.dwcj.component.tree.TreeView;
 import org.dwcj.interfaces.ControlEvent;
 
-public class TreeDoubleClickedEvent implements ControlEvent {
+public class TreeGainedFocusEvent implements ControlEvent {
     private final TreeView control;
 
-    public TreeDoubleClickedEvent(TreeView cTree) {
+    public TreeGainedFocusEvent(TreeView cTree) {
         this.control = cTree;
     }
 
@@ -14,6 +14,4 @@ public class TreeDoubleClickedEvent implements ControlEvent {
     public TreeView getControl() {
         return control;
     }
-
-    public String toString() { return "Event: TreeDoubleClicked"; }
 }

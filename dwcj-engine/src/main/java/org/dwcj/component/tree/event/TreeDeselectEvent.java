@@ -1,12 +1,12 @@
-package org.dwcj.component.tree.events;
+package org.dwcj.component.tree.event;
 
 import org.dwcj.component.tree.TreeView;
 import org.dwcj.interfaces.ControlEvent;
 
-public class TreeEditStoppedEvent implements ControlEvent {
+public class TreeDeselectEvent implements ControlEvent {
     private final TreeView control;
 
-    public TreeEditStoppedEvent(TreeView cTree) {
+    public TreeDeselectEvent(TreeView cTree) {
         this.control = cTree;
     }
 
@@ -15,5 +15,5 @@ public class TreeEditStoppedEvent implements ControlEvent {
         return control;
     }
 
-    public String toString() { return "Event: TreeEditStopped"; }
+    public String toString() { return "Event: TreeDeselected"; }
 }

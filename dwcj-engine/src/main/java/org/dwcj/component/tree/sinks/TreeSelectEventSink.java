@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.tree.TreeView;
-import org.dwcj.component.tree.events.TreeSelectedEvent;
+import org.dwcj.component.tree.event.TreeSelectedEvent;
 
 import java.util.function.Consumer;
 

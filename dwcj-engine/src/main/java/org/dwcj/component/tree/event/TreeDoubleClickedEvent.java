@@ -1,12 +1,12 @@
-package org.dwcj.component.tree.events;
+package org.dwcj.component.tree.event;
 
 import org.dwcj.component.tree.TreeView;
 import org.dwcj.interfaces.ControlEvent;
 
-public class TreeExpandedEvent implements ControlEvent {
+public class TreeDoubleClickedEvent implements ControlEvent {
     private final TreeView control;
 
-    public TreeExpandedEvent(TreeView cTree) {
+    public TreeDoubleClickedEvent(TreeView cTree) {
         this.control = cTree;
     }
 
@@ -15,5 +15,5 @@ public class TreeExpandedEvent implements ControlEvent {
         return control;
     }
 
-    public String toString() { return "Event: TreeExpanded"; }
+    public String toString() { return "Event: TreeDoubleClicked"; }
 }
