@@ -1,4 +1,4 @@
-package org.dwcj.component.checkbox.sinks;
+package org.dwcj.component.checkbox.sink;
 
 import com.basis.bbj.proxies.event.BBjCheckOffEvent;
 import com.basis.bbj.proxies.event.BBjCheckOnEvent;

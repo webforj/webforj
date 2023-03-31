@@ -1,4 +1,4 @@
-package org.dwcj.component.colorpicker;
+package org.dwcj.component.colorchooser;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;

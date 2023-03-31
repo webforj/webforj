@@ -8,7 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
-import org.dwcj.component.checkbox.sinks.CheckBoxCheckEventSink;
+import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
