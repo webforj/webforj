@@ -5,7 +5,7 @@ package org.dwcj.exceptions;
  * 
  * @author Hyyan Abo Fakher
  */
-public class DwcAnnotationException extends DwcRuntimeException {
+public class AnnotationException extends DwcRuntimeException {
 
     private static final String DEFAULT_MESSAGE = "Failed to process DWC annotation";
 
@@ -24,7 +24,7 @@ public class DwcAnnotationException extends DwcRuntimeException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcAnnotationException(String message, Throwable cause) {
+    public AnnotationException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -40,7 +40,7 @@ public class DwcAnnotationException extends DwcRuntimeException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcAnnotationException(Throwable e) {
+    public AnnotationException(Throwable e) {
         super(DEFAULT_MESSAGE, e);
     }
 
@@ -52,14 +52,14 @@ public class DwcAnnotationException extends DwcRuntimeException {
      * @param e the detail message. The detail message is saved for later
      *          retrieval by the {@link #getMessage()} method.
      */
-    public DwcAnnotationException(String e) {
+    public AnnotationException(String e) {
         super(e);
     }
 
     /**
      * Constructs a new exception with the specified detail message.
      */
-    public DwcAnnotationException() {
+    public AnnotationException() {
         super(DEFAULT_MESSAGE);
     }
 }

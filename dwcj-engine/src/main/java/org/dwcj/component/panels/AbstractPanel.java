@@ -9,7 +9,7 @@ import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.exceptions.DwcAnnotationException;
+import org.dwcj.exceptions.AnnotationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public abstract class AbstractPanel extends AbstractDwcComponent {
           processor.processControlAnnotations(c);
           ComponentAccessor.getDefault().create(c, this);
           controls.add(c);
-        } catch (IllegalAccessException | DwcAnnotationException e) {
+        } catch (IllegalAccessException | AnnotationException e) {
           Environment.logError(e);
         }
       }
