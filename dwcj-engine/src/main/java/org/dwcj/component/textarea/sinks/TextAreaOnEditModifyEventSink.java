@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.textarea.TextArea;
-import org.dwcj.component.textarea.events.TextAreaOnEditModifyEvent;
+import org.dwcj.component.textarea.event.TextAreaOnEditModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

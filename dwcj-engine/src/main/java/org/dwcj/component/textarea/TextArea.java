@@ -14,7 +14,7 @@ import org.dwcj.component.Scrollable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.textarea.events.TextAreaOnEditModifyEvent;
+import org.dwcj.component.textarea.event.TextAreaOnEditModifyEvent;
 import org.dwcj.component.textarea.sinks.TextAreaOnEditModifyEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 

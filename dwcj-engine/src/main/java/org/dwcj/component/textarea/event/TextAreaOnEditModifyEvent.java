@@ -1,4 +1,4 @@
-package org.dwcj.component.textarea.events;
+package org.dwcj.component.textarea.event;
 
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.textarea.TextArea;
