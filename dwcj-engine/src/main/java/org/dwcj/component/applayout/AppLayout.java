@@ -1,7 +1,7 @@
 package org.dwcj.component.applayout;
 
-import org.dwcj.component.applayout.events.AppLayoutDrawerClosedEvent;
-import org.dwcj.component.applayout.events.AppLayoutDrawerOpenedEvent;
+import org.dwcj.component.applayout.event.AppLayoutDrawerClosedEvent;
+import org.dwcj.component.applayout.event.AppLayoutDrawerOpenedEvent;
 import org.dwcj.component.panels.Div;
 import org.dwcj.interfaces.HasAttribute;
 import org.dwcj.interfaces.HasClassName;
