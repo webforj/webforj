@@ -1,7 +1,7 @@
 package org.dwcj.component.drawer;
 
-import org.dwcj.component.drawer.events.DrawerClosedEvent;
-import org.dwcj.component.drawer.events.DrawerOpenedEvent;
+import org.dwcj.component.drawer.event.DrawerClosedEvent;
+import org.dwcj.component.drawer.event.DrawerOpenedEvent;
 import org.dwcj.component.panels.Div;
 import org.dwcj.interfaces.HasClassName;
 import org.dwcj.interfaces.HasStyle;

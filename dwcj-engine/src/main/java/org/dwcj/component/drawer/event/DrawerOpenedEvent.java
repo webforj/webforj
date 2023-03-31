@@ -1,4 +1,4 @@
-package org.dwcj.component.drawer.events;
+package org.dwcj.component.drawer.event;
 
 import java.util.Map;
 
@@ -12,9 +12,9 @@ import org.dwcj.webcomponent.events.Event;
  * 
  * @author Hyyan Abo Fakher
  */
-@EventName(value = "bbj-drawer-closed")
+@EventName(value = "bbj-drawer-opened")
 @EventExpressions(filter = "event.target.isSameNode(component)")
-public final class DrawerClosedEvent extends Event<Drawer> {
+public final class DrawerOpenedEvent extends Event<Drawer> {
 
   /**
    * Creates a new event.
@@ -22,7 +22,7 @@ public final class DrawerClosedEvent extends Event<Drawer> {
    * @param target the target of the event
    * @param detail the detail of the event
    */
-  public DrawerClosedEvent(Drawer target, Map<String, Object> detail) {
+  public DrawerOpenedEvent(Drawer target, Map<String, Object> detail) {
     super(target, detail);
   }
 }
