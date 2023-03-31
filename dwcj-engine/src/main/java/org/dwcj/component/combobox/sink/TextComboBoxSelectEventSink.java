@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.combobox.TextComboBox;
+import org.dwcj.component.combobox.ComboBox;
 import org.dwcj.component.combobox.event.TextComboBoxSelectEvent;
 
 import java.util.ArrayList;
@@ -15,12 +15,12 @@ public final class TextComboBoxSelectEventSink {
 
     private ArrayList<Consumer<TextComboBoxSelectEvent>> targets = new ArrayList<>();
 
-    private final TextComboBox textComboBox;
+    private final ComboBox textComboBox;
 
     private BBjControl bbjctrl;
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxSelectEventSink(TextComboBox cb) {
+    public TextComboBoxSelectEventSink(ComboBox cb) {
         this.textComboBox = cb;
 
         try {
@@ -34,7 +34,7 @@ public final class TextComboBoxSelectEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxSelectEventSink(TextComboBox cb, Consumer<TextComboBoxSelectEvent> callback) {
+    public TextComboBoxSelectEventSink(ComboBox cb, Consumer<TextComboBoxSelectEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 

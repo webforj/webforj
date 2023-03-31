@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.combobox.TextComboBox;
+import org.dwcj.component.combobox.ComboBox;
 import org.dwcj.component.combobox.event.TextComboBoxEditModifyEvent;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 public class TextComboBoxEditModifyEventSink {
     
     private ArrayList<Consumer<TextComboBoxEditModifyEvent>> targets = new ArrayList<>();
-    private final TextComboBox textComboBox;
+    private final ComboBox textComboBox;
     private BBjControl bbjctrl;
 
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxEditModifyEventSink(TextComboBox cb) {
+    public TextComboBoxEditModifyEventSink(ComboBox cb) {
         this.textComboBox = cb;
 
         try {
@@ -33,7 +33,7 @@ public class TextComboBoxEditModifyEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxEditModifyEventSink(TextComboBox cb, Consumer<TextComboBoxEditModifyEvent> callback) {
+    public TextComboBoxEditModifyEventSink(ComboBox cb, Consumer<TextComboBoxEditModifyEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 

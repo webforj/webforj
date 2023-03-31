@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 /**
  * ComboBoxEdit Control
  */
-public final class TextComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
+public final class ComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListEdit bbjListEdit;
 
@@ -65,7 +65,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
 
 
-    public TextComboBox(){
+    public ComboBox(){
         this.readOnly = false;
         this.focusable = true;
         this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
@@ -91,21 +91,21 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         }
     }
 
-    public TextComboBox addItem(Object key, String item) {
+    public ComboBox addItem(Object key, String item) {
         this.values.put(key, item);
         data2.add(values.get(key));
         populate();
         return this;
     }
 
-    public TextComboBox insertItemAt(Object key, String item, Integer index){
+    public ComboBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
         data2.add(index, values.get(key));
         populate();
         return this;
     }
 
-    public TextComboBox addItems(Map<Object, String> items){
+    public ComboBox addItems(Map<Object, String> items){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
         while (it.hasNext()) {
@@ -115,7 +115,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox insertItemsAt(Map<Object, String> items, Integer index){
+    public ComboBox insertItemsAt(Map<Object, String> items, Integer index){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
         Integer counter = 0;
@@ -145,7 +145,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
 
 
-    public TextComboBox closeList() {
+    public ComboBox closeList() {
         if(this.ctrl != null){
             try {
                 bbjListEdit.closeList();
@@ -156,7 +156,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox deselect() {
+    public ComboBox deselect() {
         if(this.ctrl != null){
             try {
                 bbjListEdit.deselect();
@@ -227,7 +227,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
 
-    public TextComboBox openList() {
+    public ComboBox openList() {
         if(this.ctrl != null){
             try {
                 bbjListEdit.openList();
@@ -238,7 +238,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox removeAllItems() {
+    public ComboBox removeAllItems() {
         if(this.ctrl != null){
             try {
                 bbjListEdit.removeAllItems();
@@ -249,7 +249,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox select(Integer indexStart, Integer indexEnd){
+    public ComboBox select(Integer indexStart, Integer indexEnd){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).select(indexStart, indexEnd);
@@ -261,7 +261,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
 
-    public TextComboBox selectIndex(Integer index){
+    public ComboBox selectIndex(Integer index){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).selectIndex(index);
@@ -273,7 +273,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
 
-    public TextComboBox setEditText(String text) {
+    public ComboBox setEditText(String text) {
         this.editText = text;
         if(this.ctrl != null){
             try {
@@ -291,7 +291,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
      * @param values A Map object containing the key-value pairs for the list
      * @return the control itself
      */
-    public TextComboBox setItems(Map<Object, String> values) {
+    public ComboBox setItems(Map<Object, String> values) {
         this.values = values;
         data2.clear();
         Iterator<Object> it = values.keySet().iterator();
@@ -302,7 +302,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox setMaximumRowCount(Integer max) {
+    public ComboBox setMaximumRowCount(Integer max) {
         this.maxRowCount = max;
         if(this.ctrl != null){
             try {
@@ -314,7 +314,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox setTextAt(Integer idx, String text){
+    public ComboBox setTextAt(Integer idx, String text){
         this.textAt = new SimpleEntry<>(idx, text);
         if(this.ctrl != null){
             try{
@@ -327,7 +327,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     
-    public TextComboBox onSelect(Consumer<TextComboBoxSelectEvent> callback) {
+    public ComboBox onSelect(Consumer<TextComboBoxSelectEvent> callback) {
         if(this.ctrl != null){
             if(this.selectEventSink == null){
                 this.selectEventSink = new TextComboBoxSelectEventSink(this);
@@ -341,7 +341,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
     
     
-    public TextComboBox onChange(Consumer<TextComboBoxChangeEvent> callback) {
+    public ComboBox onChange(Consumer<TextComboBoxChangeEvent> callback) {
        if(this.ctrl != null){
             if(this.changeEventSink == null){
                 this.changeEventSink = new TextComboBoxChangeEventSink(this);
@@ -354,7 +354,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox onOpen(Consumer<TextComboBoxOpenEvent> callback) {
+    public ComboBox onOpen(Consumer<TextComboBoxOpenEvent> callback) {
         if(this.ctrl != null){
             if(this.openEventSink == null){
                 this.openEventSink = new TextComboBoxOpenEventSink(this);
@@ -367,7 +367,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
     
-    public TextComboBox onClose(Consumer<TextComboBoxCloseEvent> callback) {
+    public ComboBox onClose(Consumer<TextComboBoxCloseEvent> callback) {
         if(this.ctrl != null){
             if(this.closeEventSink == null){
                 this.closeEventSink = new TextComboBoxCloseEventSink(this);
@@ -380,7 +380,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
         return this;
     }
 
-    public TextComboBox onEditModify(Consumer<TextComboBoxEditModifyEvent> callback) {
+    public ComboBox onEditModify(Consumer<TextComboBoxEditModifyEvent> callback) {
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new TextComboBoxEditModifyEventSink(this);
@@ -407,7 +407,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override 
-    public TextComboBox setReadOnly(Boolean readOnly){
+    public ComboBox setReadOnly(Boolean readOnly){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).setEditable(readOnly);
@@ -432,7 +432,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override 
-    public TextComboBox setFocusable(Boolean focusable){
+    public ComboBox setFocusable(Boolean focusable){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).setFocusable(focusable);
@@ -450,7 +450,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override
-    public TextComboBox setScrollWheelBehavior(MouseWheelCondition condition){
+    public ComboBox setScrollWheelBehavior(MouseWheelCondition condition){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
@@ -475,7 +475,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override 
-    public TextComboBox setTabTraversable(Boolean traversable){
+    public ComboBox setTabTraversable(Boolean traversable){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).setTabTraversable(traversable);
@@ -496,7 +496,7 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
     }
 
     @Override
-    public TextComboBox setTextAlignment(Alignment textAlignment){
+    public ComboBox setTextAlignment(Alignment textAlignment){
         if(this.ctrl != null){
             try{
                 ((BBjListEdit) this.ctrl).setAlignment(textAlignment.textPosition);
@@ -512,55 +512,55 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
 
     @Override
-    public TextComboBox setText(String text) {
+    public ComboBox setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public TextComboBox setVisible(Boolean visible){
+    public ComboBox setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public TextComboBox setEnabled(Boolean enabled) {
+    public ComboBox setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public TextComboBox setTooltipText(String text) {
+    public ComboBox setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public TextComboBox setAttribute(String attribute, String value){
+    public ComboBox setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public TextComboBox setId(String elementId){
+    public ComboBox setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public TextComboBox setStyle(String property, String value) {
+    public ComboBox setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public TextComboBox addClassName(String selector) {
+    public ComboBox addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public TextComboBox removeClassName(String selector) {
+    public ComboBox removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -568,12 +568,12 @@ public final class TextComboBox extends AbstractDwclistControl implements HasRea
 
     
 
-    public TextComboBox setExpanse(Expanse expanse) {
+    public ComboBox setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
-    public TextComboBox setTheme(Theme theme) {
+    public ComboBox setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }

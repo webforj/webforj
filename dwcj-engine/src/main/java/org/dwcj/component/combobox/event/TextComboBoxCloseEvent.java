@@ -1,17 +1,17 @@
 package org.dwcj.component.combobox.event;
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.combobox.TextComboBox;
+import org.dwcj.component.combobox.ComboBox;
 
 public class TextComboBoxCloseEvent implements ComponentEvent{
     
-    private final TextComboBox control;
+    private final ComboBox control;
 
-    public TextComboBoxCloseEvent(TextComboBox cTextComboBox) {
+    public TextComboBoxCloseEvent(ComboBox cTextComboBox) {
         this.control = cTextComboBox;
     }
 
     @Override
-    public TextComboBox getControl() { return control; }
+    public ComboBox getControl() { return control; }
 
 
 }

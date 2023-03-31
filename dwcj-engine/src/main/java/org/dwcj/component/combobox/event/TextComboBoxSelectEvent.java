@@ -1,14 +1,14 @@
 package org.dwcj.component.combobox.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.combobox.TextComboBox;
+import org.dwcj.component.combobox.ComboBox;
 
 public class TextComboBoxSelectEvent implements ComponentEvent {
-    private final TextComboBox control;
+    private final ComboBox control;
 
     private Object key;
 
-    public TextComboBoxSelectEvent(TextComboBox tComboBox) {
+    public TextComboBoxSelectEvent(ComboBox tComboBox) {
         this.control = tComboBox;
         this.key = control.getSelectedItem().getKey();
     }
@@ -18,6 +18,6 @@ public class TextComboBoxSelectEvent implements ComponentEvent {
     public Object getKey() { return key; }
 
     @Override
-    public TextComboBox getControl() { return control; }
+    public ComboBox getControl() { return control; }
 
 }
