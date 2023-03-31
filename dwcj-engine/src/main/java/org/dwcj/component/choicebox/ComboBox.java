@@ -7,10 +7,10 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
-import org.dwcj.component.choicebox.event.ComboBoxChangeEvent;
-import org.dwcj.component.choicebox.event.ComboBoxCloseEvent;
-import org.dwcj.component.choicebox.event.ComboBoxOpenEvent;
-import org.dwcj.component.choicebox.event.ComboBoxSelectEvent;
+import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
+import org.dwcj.component.choicebox.event.ChoiceBoxCloseEvent;
+import org.dwcj.component.choicebox.event.ChoiceBoxOpenEvent;
+import org.dwcj.component.choicebox.event.ChoiceBoxSelectEvent;
 import org.dwcj.component.choicebox.sink.ComboBoxChangeEventSink;
 import org.dwcj.component.choicebox.sink.ComboBoxCloseEventSink;
 import org.dwcj.component.choicebox.sink.ComboBoxOpenEventSink;
@@ -47,13 +47,13 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
         OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS
     }
 
-    private ArrayList<Consumer<ComboBoxChangeEvent>> changeEvents = new ArrayList<>();
+    private ArrayList<Consumer<ChoiceBoxChangeEvent>> changeEvents = new ArrayList<>();
     private ComboBoxChangeEventSink changeEventSink;
-    private ArrayList<Consumer<ComboBoxSelectEvent>> selectEvents = new ArrayList<>();
+    private ArrayList<Consumer<ChoiceBoxSelectEvent>> selectEvents = new ArrayList<>();
     private ComboBoxSelectEventSink selectEventSink;
-    private ArrayList<Consumer<ComboBoxOpenEvent>> openEvents = new ArrayList<>();
+    private ArrayList<Consumer<ChoiceBoxOpenEvent>> openEvents = new ArrayList<>();
     private ComboBoxOpenEventSink openEventSink;
-    private ArrayList<Consumer<ComboBoxCloseEvent>> closeEvents = new ArrayList<>();
+    private ArrayList<Consumer<ChoiceBoxCloseEvent>> closeEvents = new ArrayList<>();
     private ComboBoxCloseEventSink closeEventSink;
 
     private Integer maxRowCount;
@@ -314,7 +314,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param callback A method to receive the selection event
      * @return the control itself
      */
-    public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
+    public ComboBox onSelect(Consumer<ChoiceBoxSelectEvent> callback) {
         if(this.ctrl != null){
             if(this.selectEventSink == null){
                 this.selectEventSink = new ComboBoxSelectEventSink(this);
@@ -333,7 +333,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param callback A function with the behavior desired on opening a ComboBox
      * @return The object itself
      */
-    public ComboBox onOpen(Consumer<ComboBoxOpenEvent> callback){
+    public ComboBox onOpen(Consumer<ChoiceBoxOpenEvent> callback){
         if(this.ctrl != null){
             if(this.openEventSink == null){
                 this.openEventSink = new ComboBoxOpenEventSink(this);
@@ -351,7 +351,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param callback A function with the behavior desired on closing a ComboBox
      * @return The object itself
      */
-    public ComboBox onClose(Consumer<ComboBoxCloseEvent> callback){
+    public ComboBox onClose(Consumer<ChoiceBoxCloseEvent> callback){
         if(this.ctrl != null){
             if(this.closeEventSink == null){
                 this.closeEventSink = new ComboBoxCloseEventSink(this);

@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.choicebox.ComboBox;
-import org.dwcj.component.choicebox.event.ComboBoxChangeEvent;
+import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class ComboBoxChangeEventSink {
 
-    private ArrayList<Consumer<ComboBoxChangeEvent>> targets;
+    private ArrayList<Consumer<ChoiceBoxChangeEvent>> targets;
 
     private final ComboBox comboBox;
 
@@ -35,7 +35,7 @@ public class ComboBoxChangeEventSink {
     }
     
     @SuppressWarnings({"static-access"})
-    public ComboBoxChangeEventSink(ComboBox cb, Consumer<ComboBoxChangeEvent> callback) {
+    public ComboBoxChangeEventSink(ComboBox cb, Consumer<ChoiceBoxChangeEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.comboBox = cb;
@@ -52,11 +52,11 @@ public class ComboBoxChangeEventSink {
     }
 
     public void changeEvent(BBjListChangeEvent ev) { // NOSONAR
-        ComboBoxChangeEvent dwcEv = new ComboBoxChangeEvent(this.comboBox);
-        Iterator<Consumer<ComboBoxChangeEvent>> it = targets.iterator();
+        ChoiceBoxChangeEvent dwcEv = new ChoiceBoxChangeEvent(this.comboBox);
+        Iterator<Consumer<ChoiceBoxChangeEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<ComboBoxChangeEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<ChoiceBoxChangeEvent> callback) { targets.add(callback); }
 }

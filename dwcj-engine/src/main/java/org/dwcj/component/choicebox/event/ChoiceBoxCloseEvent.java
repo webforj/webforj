@@ -3,11 +3,11 @@ package org.dwcj.component.choicebox.event;
 import org.dwcj.component.choicebox.ComboBox;
 import org.dwcj.interfaces.ControlEvent;
 
-public class ComboBoxCloseEvent implements ControlEvent{
+public class ChoiceBoxCloseEvent implements ControlEvent{
     
     private final ComboBox control;
 
-    public ComboBoxCloseEvent(ComboBox cComboBox) {
+    public ChoiceBoxCloseEvent(ComboBox cComboBox) {
         this.control = cComboBox;
     }
 

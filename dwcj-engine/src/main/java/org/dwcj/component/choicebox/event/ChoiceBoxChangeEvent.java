@@ -3,12 +3,12 @@ package org.dwcj.component.choicebox.event;
 import org.dwcj.component.choicebox.ComboBox;
 import org.dwcj.interfaces.ControlEvent;
 
-public class ComboBoxOpenEvent implements ControlEvent{
-    
+public final class ChoiceBoxChangeEvent implements ControlEvent {
+
     private final ComboBox control;
 
-    public ComboBoxOpenEvent(ComboBox cComboBox) {
-        this.control = cComboBox;
+    public ChoiceBoxChangeEvent (ComboBox comboBox) {
+        this.control = comboBox;
     }
 
     @Override

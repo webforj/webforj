@@ -3,13 +3,13 @@ package org.dwcj.component.choicebox.event;
 import org.dwcj.component.choicebox.ComboBox;
 import org.dwcj.interfaces.ControlEvent;
 
-public final class ComboBoxSelectEvent implements ControlEvent {
+public final class ChoiceBoxSelectEvent implements ControlEvent {
 
     private final ComboBox control;
 
     private Object key;
 
-    public ComboBoxSelectEvent(ComboBox cComboBox) {
+    public ChoiceBoxSelectEvent(ComboBox cComboBox) {
         this.control = cComboBox;
         this.key = control.getSelectedItem().getKey();
     }

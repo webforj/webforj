@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.choicebox.ComboBox;
-import org.dwcj.component.choicebox.event.ComboBoxSelectEvent;
+import org.dwcj.component.choicebox.event.ChoiceBoxSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class ComboBoxSelectEventSink {
 
-    private ArrayList<Consumer<ComboBoxSelectEvent>> targets = new ArrayList<>();
+    private ArrayList<Consumer<ChoiceBoxSelectEvent>> targets = new ArrayList<>();
 
     private final ComboBox comboBox;
 
@@ -34,7 +34,7 @@ public final class ComboBoxSelectEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public ComboBoxSelectEventSink(ComboBox cb, Consumer<ComboBoxSelectEvent> callback) {
+    public ComboBoxSelectEventSink(ComboBox cb, Consumer<ChoiceBoxSelectEvent> callback) {
         this.targets.add(callback);
         this.comboBox = cb;
 
@@ -50,19 +50,19 @@ public final class ComboBoxSelectEventSink {
 
     @SuppressWarnings("java.S1172")
     public void selectEvent(BBjListSelectEvent ev) { //NOSONAR
-        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.comboBox);
-        Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
+        ChoiceBoxSelectEvent dwcEv = new ChoiceBoxSelectEvent(this.comboBox);
+        Iterator<Consumer<ChoiceBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
     public void doSelect(Object key) {
-        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(comboBox);
+        ChoiceBoxSelectEvent dwcEv = new ChoiceBoxSelectEvent(comboBox);
         dwcEv.setKey(key);
-        Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
+        Iterator<Consumer<ChoiceBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<ComboBoxSelectEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<ChoiceBoxSelectEvent> callback) { targets.add(callback); }
 }
