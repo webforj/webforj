@@ -1,4 +1,4 @@
-package org.dwcj.component.checkbox.events;
+package org.dwcj.component.checkbox.event;
 
 import org.dwcj.component.checkbox.CheckBox;
 import org.dwcj.interfaces.ControlEvent;

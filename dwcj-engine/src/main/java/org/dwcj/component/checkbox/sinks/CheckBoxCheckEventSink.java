@@ -6,7 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.checkbox.CheckBox;
-import org.dwcj.component.checkbox.events.CheckBoxChangeEvent;
+import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
