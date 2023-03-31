@@ -6,7 +6,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
 
-public final class OpenFileDialog extends AbstractDwcControl {
+public final class FileChooser extends AbstractDwcControl {
 
     public enum Theme{
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER,
@@ -32,55 +32,55 @@ public final class OpenFileDialog extends AbstractDwcControl {
 
 
     @Override
-    public OpenFileDialog setText(String text) {
+    public FileChooser setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public OpenFileDialog setVisible(Boolean visible){
+    public FileChooser setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public OpenFileDialog setEnabled(Boolean enabled) {
+    public FileChooser setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public OpenFileDialog setTooltipText(String text) {
+    public FileChooser setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public OpenFileDialog setAttribute(String attribute, String value){
+    public FileChooser setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public OpenFileDialog setId(String elementId){
+    public FileChooser setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public OpenFileDialog setStyle(String property, String value) {
+    public FileChooser setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public OpenFileDialog addClassName(String selector) {
+    public FileChooser addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public OpenFileDialog removeClassName(String selector) {
+    public FileChooser removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -88,7 +88,7 @@ public final class OpenFileDialog extends AbstractDwcControl {
 
 
 
-    public OpenFileDialog setTheme(Theme theme) {
+    public FileChooser setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
