@@ -1,6 +1,6 @@
-package org.dwcj.component.stringeditbox.events;
+package org.dwcj.component.textfield.events;
 
-import org.dwcj.component.stringeditbox.StringEditBox;
+import org.dwcj.component.textfield.StringEditBox;
 import org.dwcj.interfaces.ControlEvent;
 
 public class StringEditBoxEditModifyEvent implements ControlEvent {

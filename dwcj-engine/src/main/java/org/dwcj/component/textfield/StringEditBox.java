@@ -1,4 +1,4 @@
-package org.dwcj.component.stringeditbox;
+package org.dwcj.component.textfield;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.stringeditbox.events.StringEditBoxEditModifyEvent;
-import org.dwcj.component.stringeditbox.sinks.StringEditBoxEditModifyEventSink;
+import org.dwcj.component.textfield.events.StringEditBoxEditModifyEvent;
+import org.dwcj.component.textfield.sinks.StringEditBoxEditModifyEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
 import org.dwcj.interfaces.TabTraversable;
