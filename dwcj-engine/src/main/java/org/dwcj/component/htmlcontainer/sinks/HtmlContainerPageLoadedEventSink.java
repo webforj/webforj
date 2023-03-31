@@ -6,7 +6,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.events.HtmlContainerPageLoadedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadedEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

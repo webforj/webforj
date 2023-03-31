@@ -1,4 +1,4 @@
-package org.dwcj.component.htmlcontainer.events;
+package org.dwcj.component.htmlcontainer.event;
 
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.interfaces.ControlEvent;

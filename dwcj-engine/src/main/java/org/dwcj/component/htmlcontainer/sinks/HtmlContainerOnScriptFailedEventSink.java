@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.events.HtmlContainerOnScriptFailedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerOnScriptFailedEvent;
 
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 

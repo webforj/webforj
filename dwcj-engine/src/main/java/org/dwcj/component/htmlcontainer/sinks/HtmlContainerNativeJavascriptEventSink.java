@@ -7,7 +7,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.events.HtmlContainerJavascriptEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 

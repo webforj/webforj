@@ -27,7 +27,7 @@ import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.component.AbstractControl;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.events.HtmlContainerJavascriptEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcControlDestroyed;

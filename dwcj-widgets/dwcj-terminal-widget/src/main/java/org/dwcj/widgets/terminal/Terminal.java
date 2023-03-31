@@ -1,7 +1,7 @@
 package org.dwcj.widgets.terminal;
 
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.events.HtmlContainerJavascriptEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.panels.Div;
 import org.dwcj.widgets.terminal.events.TerminalKeyEvent;
