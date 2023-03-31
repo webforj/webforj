@@ -5,7 +5,7 @@ package org.dwcj.exceptions;
  * 
  * @author Hyyan Abo Fakher
  */
-public class DwcException extends Exception {
+public class DwcjException extends Exception {
 
     /**
      * Constructs a new exception with the specified detail message. The
@@ -15,7 +15,7 @@ public class DwcException extends Exception {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public DwcException(String message) {
+    public DwcjException(String message) {
         super(message);
     }
 
@@ -34,7 +34,7 @@ public class DwcException extends Exception {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcException(String message, Throwable cause) {
+    public DwcjException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -50,7 +50,7 @@ public class DwcException extends Exception {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcException(Throwable cause) {
+    public DwcjException(Throwable cause) {
         super(cause);
     }
 
@@ -59,7 +59,7 @@ public class DwcException extends Exception {
      *
      * @param e the exception to be wrapped
      */
-    public DwcException(Exception e) {
+    public DwcjException(Exception e) {
         super(e);
     }
 
@@ -68,6 +68,6 @@ public class DwcException extends Exception {
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
-    public DwcException() {
+    public DwcjException() {
     }
 }

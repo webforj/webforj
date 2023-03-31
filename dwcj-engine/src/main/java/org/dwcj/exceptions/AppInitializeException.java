@@ -6,7 +6,7 @@ package org.dwcj.exceptions;
  * 
  * @author Stephan Wald, Hyyan Abo Fakher
  */
-public final class AppInitializeException extends DwcException {
+public final class AppInitializeException extends DwcjException {
 
     private static final String DEFAULT_MESSAGE = "DWC application initialization failed.";
 

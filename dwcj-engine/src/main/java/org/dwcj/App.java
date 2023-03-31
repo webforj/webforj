@@ -6,7 +6,7 @@ import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.*;
 import org.dwcj.exceptions.AppInitializeException;
-import org.dwcj.exceptions.DwcException;
+import org.dwcj.exceptions.DwcjException;
 import org.dwcj.exceptions.DwcRuntimeException;
 
 /**
@@ -47,7 +47,7 @@ public abstract class App {
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
       run();
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
-    } catch (DwcException e) {
+    } catch (DwcjException e) {
       Environment.logError(e);
     }
   }
@@ -335,7 +335,7 @@ public abstract class App {
    *
    * @throws AppInitializeException
    */
-  public abstract void run() throws DwcException;
+  public abstract void run() throws DwcjException;
 
   public static Namespace getNamespace(Namespace.NamespaceType namespaceType) {
     switch (namespaceType) {
