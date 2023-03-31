@@ -5,7 +5,7 @@ package org.dwcj.exceptions;
  * 
  * @author Hyyan Abo Fakher
  */
-public class ComponentDestroyed extends DwcRuntimeException {
+public class ComponentDestroyed extends DwcjRuntimeException {
     /**
      * Constructs a new exception with the specified detail message. The
      * cause is not initialized, and may subsequently be initialized by

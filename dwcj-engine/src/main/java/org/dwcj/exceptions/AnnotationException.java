@@ -5,7 +5,7 @@ package org.dwcj.exceptions;
  * 
  * @author Hyyan Abo Fakher
  */
-public class AnnotationException extends DwcRuntimeException {
+public class AnnotationException extends DwcjRuntimeException {
 
     private static final String DEFAULT_MESSAGE = "Failed to process DWC annotation";
 

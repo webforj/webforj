@@ -31,7 +31,7 @@ import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.ComponentDestroyed;
-import org.dwcj.exceptions.DwcRuntimeException;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 import org.dwcj.webcomponent.annotations.NodeAttribute;
 import org.dwcj.webcomponent.annotations.NodeClassName;
@@ -223,14 +223,14 @@ public abstract class WebComponent extends AbstractComponent {
    * Web component tag name is the defined in the {@link NodeName} annotation.
    * 
    * @return the tag name of the web component
-   * @throws DwcRuntimeException if the web component class is not annotated
+   * @throws DwcjRuntimeException if the web component class is not annotated
    *                             with @NodeName
    */
   protected String getComponentTagName() {
     if (getClass().isAnnotationPresent(NodeName.class)) {
       return getClass().getAnnotation(NodeName.class).value();
     } else {
-      throw new DwcRuntimeException(
+      throw new DwcjRuntimeException(
           "The web component class must be annotated with @NodeName");
     }
   }
@@ -241,7 +241,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the default html view of the web component or empty string if the web
    *         component is destroyed
    * 
-   * @throws DwcRuntimeException if the web component class is not annotated
+   * @throws DwcjRuntimeException if the web component class is not annotated
    *                             with @NodeName
    */
   protected String getView() {
@@ -513,7 +513,7 @@ public abstract class WebComponent extends AbstractComponent {
    * 
    * @return the web component
    * @throws ComponentDestroyed if the web component is destroyed
-   * @throws DwcRuntimeException if the event class is not annotated
+   * @throws DwcjRuntimeException if the event class is not annotated
    *                             with @EventName
    */
   protected <K extends Event<?>> void addEventListener(
@@ -558,7 +558,7 @@ public abstract class WebComponent extends AbstractComponent {
    * 
    * @return the web component
    * @throws ComponentDestroyed if the web component is destroyed
-   * @throws DwcRuntimeException if the event class is not annotated
+   * @throws DwcjRuntimeException if the event class is not annotated
    *                             with @EventName
    */
   protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
@@ -1618,7 +1618,7 @@ public abstract class WebComponent extends AbstractComponent {
    * 
    * @param eventClass the event class
    * @return the event name
-   * @throws DwcRuntimeException if the event class is not annotated
+   * @throws DwcjRuntimeException if the event class is not annotated
    *                             with @EventName
    */
   private String getEventName(Class<? extends Event<?>> eventClass) {
@@ -1627,7 +1627,7 @@ public abstract class WebComponent extends AbstractComponent {
     if (eventClass.isAnnotationPresent(EventName.class)) {
       eventName = eventClass.getAnnotation(EventName.class).value();
     } else {
-      throw new DwcRuntimeException(
+      throw new DwcjRuntimeException(
           "The event class must be annotated with @EventName");
     }
 

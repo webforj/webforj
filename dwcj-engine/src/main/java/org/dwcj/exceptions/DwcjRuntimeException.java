@@ -5,7 +5,7 @@ package org.dwcj.exceptions;
  * 
  * @author Hyyan Abo Fakher
  */
-public class DwcRuntimeException extends RuntimeException {
+public class DwcjRuntimeException extends RuntimeException {
 
     /**
      * Constructs a new exception with the specified detail message. The
@@ -15,7 +15,7 @@ public class DwcRuntimeException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public DwcRuntimeException(String message) {
+    public DwcjRuntimeException(String message) {
         super(message);
     }
 
@@ -34,7 +34,7 @@ public class DwcRuntimeException extends RuntimeException {
      *                permitted, and indicates that the cause is nonexistent or
      *                unknown.)
      */
-    public DwcRuntimeException(String message, Throwable cause) {
+    public DwcjRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -50,7 +50,7 @@ public class DwcRuntimeException extends RuntimeException {
      *              permitted, and indicates that the cause is nonexistent or
      *              unknown.)
      */
-    public DwcRuntimeException(Throwable cause) {
+    public DwcjRuntimeException(Throwable cause) {
         super(cause);
     }
 
@@ -59,7 +59,7 @@ public class DwcRuntimeException extends RuntimeException {
      *
      * @param e the exception to be wrapped
      */
-    public DwcRuntimeException(Exception e) {
+    public DwcjRuntimeException(Exception e) {
         super(e);
     }
 
@@ -68,6 +68,6 @@ public class DwcRuntimeException extends RuntimeException {
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
-    public DwcRuntimeException() {
+    public DwcjRuntimeException() {
     }
 }
