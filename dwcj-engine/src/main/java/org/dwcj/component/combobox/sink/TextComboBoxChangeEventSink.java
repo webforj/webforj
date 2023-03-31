@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.combobox.ComboBox;
-import org.dwcj.component.combobox.event.TextComboBoxChangeEvent;
+import org.dwcj.component.combobox.event.ComboBoxChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public class TextComboBoxChangeEventSink {
 
-    private ArrayList<Consumer<TextComboBoxChangeEvent>> targets = new ArrayList<>();
+    private ArrayList<Consumer<ComboBoxChangeEvent>> targets = new ArrayList<>();
 
     private final ComboBox textComboBox;
 
@@ -36,7 +36,7 @@ public class TextComboBoxChangeEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxChangeEventSink(ComboBox cb, Consumer<TextComboBoxChangeEvent> callback) {
+    public TextComboBoxChangeEventSink(ComboBox cb, Consumer<ComboBoxChangeEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 
@@ -52,12 +52,12 @@ public class TextComboBoxChangeEventSink {
 
     @SuppressWarnings("java.S1172")
     public void changeEvent(BBjListChangeEvent ev) { //NOSONAR
-        TextComboBoxChangeEvent dwcEv = new TextComboBoxChangeEvent(this.textComboBox);
-        Iterator<Consumer<TextComboBoxChangeEvent>> it = targets.iterator();
+        ComboBoxChangeEvent dwcEv = new ComboBoxChangeEvent(this.textComboBox);
+        Iterator<Consumer<ComboBoxChangeEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<TextComboBoxChangeEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<ComboBoxChangeEvent> callback) { targets.add(callback); }
     
 }

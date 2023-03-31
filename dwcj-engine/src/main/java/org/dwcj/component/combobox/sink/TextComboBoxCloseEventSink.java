@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.combobox.ComboBox;
-import org.dwcj.component.combobox.event.TextComboBoxCloseEvent;
+import org.dwcj.component.combobox.event.ComboBoxCloseEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class TextComboBoxCloseEventSink {
     
-    private ArrayList<Consumer<TextComboBoxCloseEvent>> targets = new ArrayList<>();
+    private ArrayList<Consumer<ComboBoxCloseEvent>> targets = new ArrayList<>();
     private final ComboBox textComboBox;
     private BBjControl bbjctrl;
 
@@ -32,7 +32,7 @@ public class TextComboBoxCloseEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxCloseEventSink(ComboBox cb, Consumer<TextComboBoxCloseEvent> callback) {
+    public TextComboBoxCloseEventSink(ComboBox cb, Consumer<ComboBoxCloseEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 
@@ -48,13 +48,13 @@ public class TextComboBoxCloseEventSink {
 
     @SuppressWarnings("java.S1172")
     public void closeEvent(BBjListCloseEvent ev) { //NOSONAR
-        TextComboBoxCloseEvent dwcEv = new TextComboBoxCloseEvent(this.textComboBox);
-        Iterator<Consumer<TextComboBoxCloseEvent>> it = targets.iterator();
+        ComboBoxCloseEvent dwcEv = new ComboBoxCloseEvent(this.textComboBox);
+        Iterator<Consumer<ComboBoxCloseEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<TextComboBoxCloseEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<ComboBoxCloseEvent> callback) { targets.add(callback); }
 
 
 

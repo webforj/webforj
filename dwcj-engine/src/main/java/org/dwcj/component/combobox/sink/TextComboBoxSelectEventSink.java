@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.combobox.ComboBox;
-import org.dwcj.component.combobox.event.TextComboBoxSelectEvent;
+import org.dwcj.component.combobox.event.ComboBoxSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class TextComboBoxSelectEventSink {
 
-    private ArrayList<Consumer<TextComboBoxSelectEvent>> targets = new ArrayList<>();
+    private ArrayList<Consumer<ComboBoxSelectEvent>> targets = new ArrayList<>();
 
     private final ComboBox textComboBox;
 
@@ -34,7 +34,7 @@ public final class TextComboBoxSelectEventSink {
     }
 
     @SuppressWarnings({"static-access"})
-    public TextComboBoxSelectEventSink(ComboBox cb, Consumer<TextComboBoxSelectEvent> callback) {
+    public TextComboBoxSelectEventSink(ComboBox cb, Consumer<ComboBoxSelectEvent> callback) {
         this.targets.add(callback);
         this.textComboBox = cb;
 
@@ -50,19 +50,19 @@ public final class TextComboBoxSelectEventSink {
 
     @SuppressWarnings("java.S1172")
     public void selectEvent(BBjListSelectEvent ev) { //NOSONAR
-        TextComboBoxSelectEvent dwcEv = new TextComboBoxSelectEvent(this.textComboBox);
-        Iterator<Consumer<TextComboBoxSelectEvent>> it = targets.iterator();
+        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.textComboBox);
+        Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
     public void doSelect(Object key) {
-        TextComboBoxSelectEvent dwcEv = new TextComboBoxSelectEvent(this.textComboBox);
+        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.textComboBox);
         dwcEv.setKey(key);
-        Iterator<Consumer<TextComboBoxSelectEvent>> it = targets.iterator();
+        Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<TextComboBoxSelectEvent> callback) { targets.add(callback); }
+    public void addCallback(Consumer<ComboBoxSelectEvent> callback) { targets.add(callback); }
 }
