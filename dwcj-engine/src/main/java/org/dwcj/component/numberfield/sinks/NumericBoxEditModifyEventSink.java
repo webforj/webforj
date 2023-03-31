@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.component.numberfield.NumericBox;
+import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.component.numberfield.events.NumericBoxEditModifyEvent;
 
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ import java.util.function.Consumer;
 public class NumericBoxEditModifyEventSink {
 
     private ArrayList<Consumer<NumericBoxEditModifyEvent>> targets;
-    private final NumericBox numericBox;
+    private final NumberField numericBox;
     
     @SuppressWarnings({"static-access"})
-    public NumericBoxEditModifyEventSink(NumericBox numBox) {
+    public NumericBoxEditModifyEventSink(NumberField numBox) {
 
         this.targets = new ArrayList<>();
         this.numericBox = numBox;
@@ -35,7 +35,7 @@ public class NumericBoxEditModifyEventSink {
         }
     }
 
-    public NumericBoxEditModifyEventSink(NumericBox numBox, Consumer<NumericBoxEditModifyEvent> callback) {
+    public NumericBoxEditModifyEventSink(NumberField numBox, Consumer<NumericBoxEditModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);

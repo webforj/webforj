@@ -23,7 +23,7 @@ import org.dwcj.interfaces.TextHighlightable;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 
-public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable{
+public class NumberField extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable{
 
     protected BBjInputN numBox;
 
@@ -61,7 +61,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
 
 
-    public NumericBox(String text) {
+    public NumberField(String text) {
         setText(text);
         this.readOnly = false;
         this.focusable = true;
@@ -70,7 +70,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
         this.textHighlight = Highlight.HIGHLIGHT_NONE;
     }
 
-    public NumericBox() {
+    public NumberField() {
         this("");
     }
 
@@ -87,7 +87,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
         }
     }
 
-    public NumericBox onEditModify(Consumer<NumericBoxEditModifyEvent> callback){
+    public NumberField onEditModify(Consumer<NumericBoxEditModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new NumericBoxEditModifyEventSink(this);
@@ -344,7 +344,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * This method selects all of the NumericBox control's current contents as if the user highlighted it with the mouse or keyboard.
      * @return Returns this
      */
-    public NumericBox selectAll() {
+    public NumberField selectAll() {
         if(this.ctrl != null){
             try {
                 numBox.selectAll();
@@ -360,7 +360,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param comma - Specifies the character to use for a comma.
      * @return Returns this
      */
-    public NumericBox setCommaCharacter(String comma) {
+    public NumberField setCommaCharacter(String comma) {
         if(this.ctrl != null){
             try {
                 numBox.setCommaCharacter(comma);
@@ -377,7 +377,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param dot - Specifies the character to use, which indicates the decimal point.
      * @return Returns this
      */
-    public NumericBox setDotCharacter(String dot) {
+    public NumberField setDotCharacter(String dot) {
         if(this.ctrl != null){
             try {
                 numBox.setDotCharacter(dot);
@@ -397,7 +397,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param edit - Specifies the EDIT string.
      * @return Returns this
      */
-    public NumericBox setEditString(String edit) {
+    public NumberField setEditString(String edit) {
         if(this.ctrl != null){
             try {
                 numBox.setEditString(edit.getBytes());
@@ -414,7 +414,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param highlight - Specifies whether the text is to be highlighted (false = No highlight, true = Highlight)
      * @return Returns this
      */
-    public NumericBox setHighlight(Boolean highlight) {
+    public NumberField setHighlight(Boolean highlight) {
         if(this.ctrl != null){
             try {
                 numBox.setHighlight(highlight);
@@ -431,7 +431,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param insert - Sets whether the control is in insert mode (false = Not in insert mode, true = In insert mode)
      * @return Returns this
      */
-    public NumericBox setInsertMode(Boolean insert) {
+    public NumberField setInsertMode(Boolean insert) {
         if(this.ctrl != null){
             try {
                 numBox.setInsertMode(insert);
@@ -448,7 +448,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param len - Specifies the length of the text in the control.
      * @return Returns this
      */
-    public NumericBox setLength(Integer len) {
+    public NumberField setLength(Integer len) {
         if(this.ctrl != null){
             try {
                 numBox.setLength(len);
@@ -465,7 +465,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param marginWidth - Width of the left margin.
      * @return Returns this
      */
-    public NumericBox setMargin(Integer marginWidth) {
+    public NumberField setMargin(Integer marginWidth) {
         if(this.ctrl != null){
             try {
                 numBox.setMargin(marginWidth);
@@ -482,7 +482,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param mask - Specifies the mask that provides character-type verification.
      * @return Returns this
      */
-    public NumericBox setMask(String mask) {
+    public NumberField setMask(String mask) {
         if(this.ctrl != null){
             try {
                 numBox.setMask(mask);
@@ -499,7 +499,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param negatable - Specifies whether the BBjInputN will accept negative values (false = Negative values are not accepted, true = Negative values are accepted).
      * @return Returns this
      */
-    public NumericBox setNegatable(boolean negatable) {
+    public NumberField setNegatable(boolean negatable) {
         if(this.ctrl != null){
             try {
                 numBox.setNegateable(negatable);
@@ -516,7 +516,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param pass - Specifies whether to pass the ENTER key to the top-level window (false = Not passed, true = Passed).
      * @return Returns this
      */
-    public NumericBox setPassEnter(Boolean pass) {
+    public NumberField setPassEnter(Boolean pass) {
         if(this.ctrl != null){
             try {
                 numBox.setPassEnter(pass);
@@ -533,7 +533,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param pass - Specifies whether to pass the TAB key notification to the top-level window (false = Not passed, true = Passed).
      * @return Returns this
      */
-    public NumericBox setPassTab(Boolean pass) {
+    public NumberField setPassTab(Boolean pass) {
         if(this.ctrl != null){
             try {
                 numBox.setPassEnter(pass);
@@ -550,7 +550,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param restore - Specifies the restore value.
      * @return Returns this
      */
-    public NumericBox setRestore(float restore) {
+    public NumberField setRestore(float restore) {
         if(this.ctrl != null){
             try {
                 numBox.setRestore(String.valueOf(restore));
@@ -567,7 +567,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param useCommas - Specifies whether to display the comma characters in the mask while in edit mode (false = No display, true = Display)
      * @return Returns this
      */
-    public NumericBox setUseEditCommas(boolean useCommas) {
+    public NumberField setUseEditCommas(boolean useCommas) {
         if(this.ctrl != null){
             try {
                 numBox.setUseEditCommas(useCommas);
@@ -585,7 +585,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @param value - Specifies the value to be set in the control.
      * @return Returns this
      */
-    public NumericBox setValue(BigDecimal value) {
+    public NumberField setValue(BigDecimal value) {
         if(this.ctrl != null){
             try {
                 numBox.setValue(BasisNumber.createBasisNumber(value));
@@ -597,12 +597,12 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
         return this;
     }
 
-    public NumericBox setValue(float value){
+    public NumberField setValue(float value){
         setValue(BigDecimal.valueOf(value));
         return this;
     }
 
-    public NumericBox setValue(int value){
+    public NumberField setValue(int value){
         setValue(BigDecimal.valueOf(value));
         return this;
     }
@@ -629,7 +629,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
      * @return Returns this
      */
     @Override
-    public NumericBox setReadOnly(Boolean editable) {
+    public NumberField setReadOnly(Boolean editable) {
         if(this.ctrl != null){
             try {
                 numBox.setEditable(!editable);
@@ -653,7 +653,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     }
 
     @Override
-    public NumericBox setFocusable(Boolean focusable){
+    public NumberField setFocusable(Boolean focusable){
         if(this.ctrl != null) {
             try{
                 numBox.setFocusable(focusable);
@@ -678,7 +678,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     }
 
     @Override
-    public NumericBox setTabTraversable(Boolean traverse){
+    public NumberField setTabTraversable(Boolean traverse){
         if(this.ctrl != null){
             try{
                 numBox.setTabTraversable(traverse);
@@ -696,7 +696,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     } 
 
     @Override
-    public NumericBox setHighlightOnFocus(Highlight highlight){
+    public NumberField setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
                 numBox.setHighlightOnFocus(highlight.highlightType);
@@ -714,7 +714,7 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
     }
 
     @Override 
-    public NumericBox setTextAlignment(Alignment alignment){
+    public NumberField setTextAlignment(Alignment alignment){
         if(this.ctrl != null){
             try{
                 numBox.setAlignment(alignment.textPosition);
@@ -731,55 +731,55 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
 
     @Override
-    public NumericBox setText(String text) {
+    public NumberField setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public NumericBox setVisible(Boolean visible){
+    public NumberField setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public NumericBox setEnabled(Boolean enabled) {
+    public NumberField setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public NumericBox setTooltipText(String text) {
+    public NumberField setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public NumericBox setAttribute(String attribute, String value){
+    public NumberField setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public NumericBox setId(String elementId){
+    public NumberField setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public NumericBox setStyle(String property, String value) {
+    public NumberField setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public NumericBox addClassName(String selector) {
+    public NumberField addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public NumericBox removeClassName(String selector) {
+    public NumberField removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -787,12 +787,12 @@ public class NumericBox extends AbstractDwcControl implements HasReadOnly, Focus
 
 
 
-    public NumericBox setExpanse(Expanse expanse) {
+    public NumberField setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
-    public NumericBox setTheme(Theme theme) {
+    public NumberField setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }

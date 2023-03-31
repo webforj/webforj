@@ -1,18 +1,18 @@
 package org.dwcj.component.numberfield.events;
 
-import org.dwcj.component.numberfield.NumericBox;
+import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.interfaces.ControlEvent;
 
 public class NumericBoxEditModifyEvent implements ControlEvent {
 
-    private final NumericBox control;
+    private final NumberField control;
 
-    public NumericBoxEditModifyEvent(NumericBox nBox){
+    public NumericBoxEditModifyEvent(NumberField nBox){
         this.control = nBox;
     }
 
     @Override
-    public NumericBox getControl() {
+    public NumberField getControl() {
         return control;
     }
 
