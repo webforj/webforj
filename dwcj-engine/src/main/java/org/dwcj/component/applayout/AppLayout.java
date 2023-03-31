@@ -4,7 +4,7 @@ import org.dwcj.component.HasAttribute;
 import org.dwcj.component.HasClassName;
 import org.dwcj.component.HasStyle;
 import org.dwcj.component.HasVisibility;
-import org.dwcj.component.applayout.event.AppLayoutDrawerClosedEvent;
+import org.dwcj.component.applayout.event.AppLayoutDrawerCloseEvent;
 import org.dwcj.component.applayout.event.AppLayoutDrawerOpenedEvent;
 import org.dwcj.component.panels.Div;
 import org.dwcj.webcomponent.PropertyDescriptor;
@@ -701,8 +701,8 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout addDrawerClosedListener(EventListener<AppLayoutDrawerClosedEvent> listener) {
-    addEventListener(AppLayoutDrawerClosedEvent.class, listener);
+  public AppLayout addDrawerClosedListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
+    addEventListener(AppLayoutDrawerCloseEvent.class, listener);
     return this;
   }
 
@@ -712,7 +712,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout onDrawerClose(EventListener<AppLayoutDrawerClosedEvent> listener) {
+  public AppLayout onDrawerClose(EventListener<AppLayoutDrawerCloseEvent> listener) {
     return addDrawerClosedListener(listener);
   }
 
@@ -722,8 +722,8 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout removeDrawerClosedListener(EventListener<AppLayoutDrawerClosedEvent> listener) {
-    removeEventListener(AppLayoutDrawerClosedEvent.class, listener);
+  public AppLayout removeDrawerClosedListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
+    removeEventListener(AppLayoutDrawerCloseEvent.class, listener);
     return this;
   }
 }

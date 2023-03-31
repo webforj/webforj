@@ -14,7 +14,7 @@ import org.dwcj.webcomponent.events.Event;
  */
 @EventName(value = "bbj-drawer-closed")
 @EventExpressions(filter = "event.target.isSameNode(component)")
-public final class AppLayoutDrawerClosedEvent extends Event<AppLayout> {
+public final class AppLayoutDrawerCloseEvent extends Event<AppLayout> {
 
   /**
    * Creates a new event.
@@ -22,7 +22,7 @@ public final class AppLayoutDrawerClosedEvent extends Event<AppLayout> {
    * @param target the target of the event
    * @param detail the detail of the event
    */
-  public AppLayoutDrawerClosedEvent(AppLayout target, Map<String, Object> detail) {
+  public AppLayoutDrawerCloseEvent(AppLayout target, Map<String, Object> detail) {
     super(target, detail);
   }
 }
