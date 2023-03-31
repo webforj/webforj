@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class ComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+public final class ChoiceBox extends AbstractDwclistControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
     private BBjListButton bbjListButton;
 
@@ -61,7 +61,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     private Integer selected = null;
 
 
-    public ComboBox(){
+    public ChoiceBox(){
         this.readOnly = false;
         this.focusable = true;
         this.tabTraversable = true;
@@ -97,7 +97,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      */
 
 
-    public ComboBox addItem(Object key, String item) {
+    public ChoiceBox addItem(Object key, String item) {
         this.values.put(key, item);
         data2.add(values.get(key));
         populate();
@@ -113,7 +113,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @return ComboBox object itself
      */
 
-    public ComboBox insertItemAt(Object key, String item, Integer index){
+    public ChoiceBox insertItemAt(Object key, String item, Integer index){
         this.values.put(key, item);
         data2.add(index, values.get(key));
         populate();
@@ -125,7 +125,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param items Map of items to be added
      * @return The object itself
      */
-    public ComboBox addItems(Map<Object, String> items){
+    public ChoiceBox addItems(Map<Object, String> items){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
         while (it.hasNext()) {
@@ -142,7 +142,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param index Integer representing the desired 
      * @return
      */
-    public ComboBox insertItemsAt(Map<Object, String> items, Integer index){
+    public ChoiceBox insertItemsAt(Map<Object, String> items, Integer index){
         this.values.putAll(items);
         Iterator<Object> it = items.keySet().iterator();
         Integer counter = 0;
@@ -172,7 +172,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param values A Map object containing the key-value pairs for the list
      * @return the control itself
      */
-    public ComboBox setItems(Map<Object, String> values) {
+    public ChoiceBox setItems(Map<Object, String> values) {
         this.values = values;
         data2.clear();
         Iterator<Object> it = values.keySet().iterator();
@@ -187,7 +187,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * Deselects any selected items within the ComboBox
      * @return The object itself
      */
-    public ComboBox deselect(){
+    public ChoiceBox deselect(){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).deselect();
@@ -284,7 +284,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * opens the ComboBox dropdown list
      * @return ComboBox - returns this
      */
-    public ComboBox open() {
+    public ChoiceBox open() {
         try {
             bbjListButton.openList();
         } catch (BBjException e) {
@@ -298,7 +298,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * closes the ComboBox dropdown list
      * @return ComboBox - returns this
      */
-    public ComboBox close() {
+    public ChoiceBox close() {
         try {
             bbjListButton.closeList();
         } catch (BBjException e) {
@@ -314,7 +314,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param callback A method to receive the selection event
      * @return the control itself
      */
-    public ComboBox onSelect(Consumer<ChoiceBoxSelectEvent> callback) {
+    public ChoiceBox onSelect(Consumer<ChoiceBoxSelectEvent> callback) {
         if(this.ctrl != null){
             if(this.selectEventSink == null){
                 this.selectEventSink = new ChoiceBoxSelectEventSink(this);
@@ -333,7 +333,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param callback A function with the behavior desired on opening a ComboBox
      * @return The object itself
      */
-    public ComboBox onOpen(Consumer<ChoiceBoxOpenEvent> callback){
+    public ChoiceBox onOpen(Consumer<ChoiceBoxOpenEvent> callback){
         if(this.ctrl != null){
             if(this.openEventSink == null){
                 this.openEventSink = new ChoiceBoxOpenEventSink(this);
@@ -351,7 +351,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param callback A function with the behavior desired on closing a ComboBox
      * @return The object itself
      */
-    public ComboBox onClose(Consumer<ChoiceBoxCloseEvent> callback){
+    public ChoiceBox onClose(Consumer<ChoiceBoxCloseEvent> callback){
         if(this.ctrl != null){
             if(this.closeEventSink == null){
                 this.closeEventSink = new ChoiceBoxCloseEventSink(this);
@@ -368,7 +368,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * Removed all of the items within a ComboBox
      * @return The object itself
      */
-    public ComboBox removeAllItems(){
+    public ChoiceBox removeAllItems(){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).removeAllItems();
@@ -384,7 +384,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param index Integer for the desired index of the item to be removed
      * @return The object itself
      */
-    public ComboBox removeItemAt(Integer index){
+    public ChoiceBox removeItemAt(Integer index){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).removeItemAt(index);
@@ -400,7 +400,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param index Integer representing the index of the desired item for selection
      * @return The object itself
      */
-    public ComboBox selectIndex(Integer index){
+    public ChoiceBox selectIndex(Integer index){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).selectIndex(index);
@@ -417,7 +417,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param max Integer representing the desired maximum number of rows
      * @return The object itself
      */
-    public ComboBox setMaximumRowCount(Integer max){
+    public ChoiceBox setMaximumRowCount(Integer max){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).setMaximumRowCount(max);
@@ -436,7 +436,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
      * @param text Desired text to be displayed at given index
      * @return The object itself
      */
-    public ComboBox setTextAt(Integer idx, String text){
+    public ChoiceBox setTextAt(Integer idx, String text){
         this.textAt = new SimpleEntry<>(idx, text);
         if(this.ctrl != null){
             try{
@@ -462,7 +462,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     @Override 
-    public ComboBox setReadOnly(Boolean readOnly){
+    public ChoiceBox setReadOnly(Boolean readOnly){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).setEditable(readOnly);
@@ -487,7 +487,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     @Override 
-    public ComboBox setFocusable(Boolean focusable){
+    public ChoiceBox setFocusable(Boolean focusable){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).setFocusable(focusable);
@@ -512,7 +512,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     @Override 
-    public ComboBox setTabTraversable(Boolean traversable){
+    public ChoiceBox setTabTraversable(Boolean traversable){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).setTabTraversable(traversable);
@@ -530,7 +530,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     @Override
-    public ComboBox setTextAlignment(Alignment textAlignment){
+    public ChoiceBox setTextAlignment(Alignment textAlignment){
         if(this.ctrl != null){
             try{
                 ((BBjListButton) this.ctrl).setAlignment(textAlignment.textPosition);
@@ -546,55 +546,55 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
 
 
     @Override
-    public ComboBox setText(String text) {
+    public ChoiceBox setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public ComboBox setVisible(Boolean visible){
+    public ChoiceBox setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public ComboBox setEnabled(Boolean enabled) {
+    public ChoiceBox setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public ComboBox setTooltipText(String text) {
+    public ChoiceBox setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public ComboBox setAttribute(String attribute, String value){
+    public ChoiceBox setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public ComboBox setId(String elementId){
+    public ChoiceBox setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public ComboBox setStyle(String property, String value) {
+    public ChoiceBox setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public ComboBox addClassName(String selector) {
+    public ChoiceBox addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ComboBox removeClassName(String selector) {
+    public ChoiceBox removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -602,7 +602,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
 
     
 
-    public ComboBox setExpanse(Expanse expanse) {
+    public ChoiceBox setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }

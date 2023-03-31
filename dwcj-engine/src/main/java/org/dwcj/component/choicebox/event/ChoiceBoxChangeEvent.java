@@ -1,16 +1,16 @@
 package org.dwcj.component.choicebox.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.choicebox.ComboBox;
+import org.dwcj.component.choicebox.ChoiceBox;
 
 public final class ChoiceBoxChangeEvent implements ComponentEvent {
 
-    private final ComboBox control;
+    private final ChoiceBox control;
 
-    public ChoiceBoxChangeEvent (ComboBox comboBox) {
+    public ChoiceBoxChangeEvent (ChoiceBox comboBox) {
         this.control = comboBox;
     }
 
     @Override
-    public ComboBox getControl() { return control; }
+    public ChoiceBox getControl() { return control; }
 }

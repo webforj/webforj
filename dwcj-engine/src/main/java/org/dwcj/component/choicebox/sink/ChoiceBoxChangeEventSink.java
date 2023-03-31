@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjListChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.choicebox.ComboBox;
+import org.dwcj.component.choicebox.ChoiceBox;
 import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
 
 import java.util.ArrayList;
@@ -15,11 +15,11 @@ public class ChoiceBoxChangeEventSink {
 
     private ArrayList<Consumer<ChoiceBoxChangeEvent>> targets;
 
-    private final ComboBox comboBox;
+    private final ChoiceBox comboBox;
 
 
     @SuppressWarnings({"static-access"})
-    public ChoiceBoxChangeEventSink(ComboBox cb) {
+    public ChoiceBoxChangeEventSink(ChoiceBox cb) {
         this.targets = new ArrayList<>();
         this.comboBox = cb;
 
@@ -35,7 +35,7 @@ public class ChoiceBoxChangeEventSink {
     }
     
     @SuppressWarnings({"static-access"})
-    public ChoiceBoxChangeEventSink(ComboBox cb, Consumer<ChoiceBoxChangeEvent> callback) {
+    public ChoiceBoxChangeEventSink(ChoiceBox cb, Consumer<ChoiceBoxChangeEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.comboBox = cb;

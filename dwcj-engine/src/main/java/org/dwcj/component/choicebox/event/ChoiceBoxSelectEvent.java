@@ -1,15 +1,15 @@
 package org.dwcj.component.choicebox.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.choicebox.ComboBox;
+import org.dwcj.component.choicebox.ChoiceBox;
 
 public final class ChoiceBoxSelectEvent implements ComponentEvent {
 
-    private final ComboBox control;
+    private final ChoiceBox control;
 
     private Object key;
 
-    public ChoiceBoxSelectEvent(ComboBox cComboBox) {
+    public ChoiceBoxSelectEvent(ChoiceBox cComboBox) {
         this.control = cComboBox;
         this.key = control.getSelectedItem().getKey();
     }
@@ -19,5 +19,5 @@ public final class ChoiceBoxSelectEvent implements ComponentEvent {
     public Object getKey() { return key; }
 
     @Override
-    public ComboBox getControl() { return control; }
+    public ChoiceBox getControl() { return control; }
 }
