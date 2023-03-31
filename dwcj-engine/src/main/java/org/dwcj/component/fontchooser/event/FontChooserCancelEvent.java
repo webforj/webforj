@@ -1,4 +1,4 @@
-package org.dwcj.component.fontchooser.events;
+package org.dwcj.component.fontchooser.event;
 
 import org.dwcj.component.fontchooser.FontChooser;
 import org.dwcj.interfaces.ControlEvent;

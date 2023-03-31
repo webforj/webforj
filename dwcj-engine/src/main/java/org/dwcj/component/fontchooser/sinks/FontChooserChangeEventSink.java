@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.fontchooser.FontChooser;
-import org.dwcj.component.fontchooser.events.FontChooserChangeEvent;
+import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
