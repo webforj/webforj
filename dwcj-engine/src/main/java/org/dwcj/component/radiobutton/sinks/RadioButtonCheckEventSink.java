@@ -7,7 +7,7 @@ import org.dwcj.Environment;
 
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.radiobutton.RadioButton;
-import org.dwcj.component.radiobutton.events.RadioButtonCheckEvent;
+import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
