@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.field.TextBox;
-import org.dwcj.component.field.event.TextBoxEditModifyEvent;
+import org.dwcj.component.field.event.FieldModifyEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class TextBoxEditModifyEventSink {
     
-    private ArrayList<Consumer<TextBoxEditModifyEvent>> targets;
+    private ArrayList<Consumer<FieldModifyEvent>> targets;
     private final TextBox textBox;
 
     @SuppressWarnings({"static-access"})
@@ -36,13 +36,13 @@ public class TextBoxEditModifyEventSink {
     }
 
     public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        TextBoxEditModifyEvent dwcEv = new TextBoxEditModifyEvent(this.textBox);
-        Iterator<Consumer<TextBoxEditModifyEvent>> it = targets.iterator();
+        FieldModifyEvent dwcEv = new FieldModifyEvent(this.textBox);
+        Iterator<Consumer<FieldModifyEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<TextBoxEditModifyEvent> callback) {
+    public void addCallback(Consumer<FieldModifyEvent> callback) {
         targets.add(callback);
     }
 

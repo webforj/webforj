@@ -15,7 +15,7 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
-import org.dwcj.component.field.event.TextBoxEditModifyEvent;
+import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.TextBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -34,7 +34,7 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
         DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
     }
 
-    private ArrayList<Consumer<TextBoxEditModifyEvent>> callbacks = new ArrayList<>();
+    private ArrayList<Consumer<FieldModifyEvent>> callbacks = new ArrayList<>();
     private TextBoxEditModifyEventSink editModifyEventSink;
 
     private Integer maxLength = 2147483647;
@@ -72,7 +72,7 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
     }
 
 
-    public TextBox onEditModify(Consumer<TextBoxEditModifyEvent> callback){
+    public TextBox onEditModify(Consumer<FieldModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
                 this.editModifyEventSink = new TextBoxEditModifyEventSink(this);

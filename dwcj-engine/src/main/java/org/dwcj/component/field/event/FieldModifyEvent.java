@@ -3,11 +3,11 @@ package org.dwcj.component.field.event;
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.field.TextBox;
 
-public class TextBoxEditModifyEvent implements ComponentEvent {
+public class FieldModifyEvent implements ComponentEvent {
 
     private final TextBox control;
 
-    public TextBoxEditModifyEvent(TextBox tBox){
+    public FieldModifyEvent(TextBox tBox){
         this.control = tBox;
     }
 
