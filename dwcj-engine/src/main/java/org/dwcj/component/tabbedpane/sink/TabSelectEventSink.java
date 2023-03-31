@@ -1,4 +1,4 @@
-package org.dwcj.component.tabbedpane.sinks;
+package org.dwcj.component.tabbedpane.sink;
 
 
 import com.basis.bbj.proxies.event.BBjTabSelectedEvent;
