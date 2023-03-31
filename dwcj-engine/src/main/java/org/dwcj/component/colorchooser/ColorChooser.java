@@ -6,7 +6,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
 
-public final class ColorPicker extends AbstractDwcControl {
+public final class ColorChooser extends AbstractDwcControl {
 
     public enum Expanse{
         LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
@@ -31,66 +31,66 @@ public final class ColorPicker extends AbstractDwcControl {
     }
 
     @Override
-    public ColorPicker setText(String text) {
+    public ColorChooser setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public ColorPicker setVisible(Boolean visible){
+    public ColorChooser setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public ColorPicker setEnabled(Boolean enabled) {
+    public ColorChooser setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public ColorPicker setTooltipText(String text) {
+    public ColorChooser setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public ColorPicker setAttribute(String attribute, String value){
+    public ColorChooser setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public ColorPicker setId(String elementId){
+    public ColorChooser setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public ColorPicker setStyle(String property, String value) {
+    public ColorChooser setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public ColorPicker addClassName(String selector) {
+    public ColorChooser addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public ColorPicker removeClassName(String selector) {
+    public ColorChooser removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
 
 
-    public ColorPicker setExpanse(Expanse expanse) {
+    public ColorChooser setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
-    public ColorPicker setTheme(Theme theme) {
+    public ColorChooser setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
