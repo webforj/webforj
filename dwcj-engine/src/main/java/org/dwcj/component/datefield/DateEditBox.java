@@ -1,4 +1,4 @@
-package org.dwcj.component.dateeditbox;
+package org.dwcj.component.datefield;
 
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -14,8 +14,8 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
-import org.dwcj.component.dateeditbox.events.DateEditBoxEditModifyEvent;
-import org.dwcj.component.dateeditbox.sinks.DateEditBoxEditModifyEventSink;
+import org.dwcj.component.datefield.events.DateEditBoxEditModifyEvent;
+import org.dwcj.component.datefield.sinks.DateEditBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
