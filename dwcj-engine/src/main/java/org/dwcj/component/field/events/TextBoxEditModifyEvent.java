@@ -1,7 +1,7 @@
-package org.dwcj.component.textbox.events;
+package org.dwcj.component.field.events;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.textbox.TextBox;
+import org.dwcj.component.field.TextBox;
 
 public class TextBoxEditModifyEvent implements ComponentEvent {
 

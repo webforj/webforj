@@ -1,4 +1,4 @@
-package org.dwcj.component.textbox;
+package org.dwcj.component.field;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -15,9 +15,9 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.field.events.TextBoxEditModifyEvent;
+import org.dwcj.component.field.sinks.TextBoxEditModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.textbox.events.TextBoxEditModifyEvent;
-import org.dwcj.component.textbox.sinks.TextBoxEditModifyEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 
