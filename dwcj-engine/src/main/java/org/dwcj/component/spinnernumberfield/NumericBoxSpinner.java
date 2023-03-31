@@ -1,4 +1,4 @@
-package org.dwcj.component.numericboxspinner;
+package org.dwcj.component.spinnernumberfield;
 
 import com.basis.bbj.proxies.sysgui.BBjInputNSpinner;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
