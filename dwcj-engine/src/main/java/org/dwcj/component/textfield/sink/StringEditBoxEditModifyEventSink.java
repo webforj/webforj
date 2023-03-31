@@ -1,4 +1,4 @@
-package org.dwcj.component.textfield.sinks;
+package org.dwcj.component.textfield.sink;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
