@@ -1,4 +1,4 @@
-package org.dwcj.component.tabbedpane.events;
+package org.dwcj.component.tabbedpane.event;
 
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.tabbedpane.TabControl;

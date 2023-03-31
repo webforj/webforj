@@ -8,7 +8,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.tabbedpane.TabControl;
-import org.dwcj.component.tabbedpane.events.TabSelectEvent;
+import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

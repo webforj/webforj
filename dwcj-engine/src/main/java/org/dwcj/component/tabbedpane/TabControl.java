@@ -9,7 +9,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.panels.Div;
-import org.dwcj.component.tabbedpane.events.TabSelectEvent;
+import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sinks.TabSelectEventSink;
 
 import java.util.ArrayList;
