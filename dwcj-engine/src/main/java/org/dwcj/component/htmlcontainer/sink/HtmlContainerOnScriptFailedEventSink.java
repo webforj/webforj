@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerOnScriptFailedEvent;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
 
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 public class HtmlContainerOnScriptFailedEventSink {
     
-    private ArrayList<Consumer<HtmlContainerOnScriptFailedEvent>> targets;
+    private ArrayList<Consumer<HtmlContainerScriptFailedEvent>> targets;
     private final HtmlContainer htmlContainer;
 
     public HtmlContainerOnScriptFailedEventSink(HtmlContainer container) {
@@ -39,13 +39,13 @@ public class HtmlContainerOnScriptFailedEventSink {
     }
 
     public void scriptFailedEvent(BBjScriptFailedEvent ev) { // NOSONAR
-        HtmlContainerOnScriptFailedEvent dwcEv = new HtmlContainerOnScriptFailedEvent(this.htmlContainer);
-        Iterator<Consumer<HtmlContainerOnScriptFailedEvent>> it = targets.iterator();
+        HtmlContainerScriptFailedEvent dwcEv = new HtmlContainerScriptFailedEvent(this.htmlContainer);
+        Iterator<Consumer<HtmlContainerScriptFailedEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
     
-    public void addCallback(Consumer<HtmlContainerOnScriptFailedEvent> callback) {
+    public void addCallback(Consumer<HtmlContainerScriptFailedEvent> callback) {
         targets.add(callback);
     }
 
