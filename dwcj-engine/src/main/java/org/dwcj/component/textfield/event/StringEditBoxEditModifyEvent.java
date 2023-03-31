@@ -1,4 +1,4 @@
-package org.dwcj.component.textfield.events;
+package org.dwcj.component.textfield.event;
 
 import org.dwcj.component.textfield.StringEditBox;
 import org.dwcj.interfaces.ControlEvent;

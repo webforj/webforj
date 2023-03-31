@@ -9,7 +9,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.textfield.events.StringEditBoxEditModifyEvent;
+import org.dwcj.component.textfield.event.StringEditBoxEditModifyEvent;
 import org.dwcj.component.textfield.sinks.StringEditBoxEditModifyEventSink;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
