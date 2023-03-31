@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class DateEditBoxEditModifyEventSink {
+public final class DateFieldModifyEventSink {
 
     private ArrayList<Consumer<DateFieldModifyEvent>> targets;
     private final DateField dateEditBox;
 
     @SuppressWarnings({"static-access"})
-    public DateEditBoxEditModifyEventSink(DateField dateBox) {
+    public DateFieldModifyEventSink(DateField dateBox) {
 
         this.targets = new ArrayList<>();
         this.dateEditBox = dateBox;
@@ -34,7 +34,7 @@ public final class DateEditBoxEditModifyEventSink {
         }
     }
 
-    public DateEditBoxEditModifyEventSink(DateField dateBox, Consumer<DateFieldModifyEvent> callback) {
+    public DateFieldModifyEventSink(DateField dateBox, Consumer<DateFieldModifyEvent> callback) {
 
         this.targets = new ArrayList<>();
         this.targets.add(callback);

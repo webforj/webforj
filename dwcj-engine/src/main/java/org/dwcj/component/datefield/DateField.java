@@ -15,7 +15,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcControl;
 import org.dwcj.component.datefield.event.DateFieldModifyEvent;
-import org.dwcj.component.datefield.sink.DateEditBoxEditModifyEventSink;
+import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
 import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.interfaces.Focusable;
 import org.dwcj.interfaces.HasReadOnly;
@@ -37,7 +37,7 @@ public final class DateField extends AbstractDwcControl implements HasReadOnly, 
     }
 
     private ArrayList<Consumer<DateFieldModifyEvent>> callbacks = new ArrayList<>();
-    private DateEditBoxEditModifyEventSink editModifyEventSink;
+    private DateFieldModifyEventSink editModifyEventSink;
 
     private Boolean beep = false;
     private Integer cHeight = null;
@@ -87,7 +87,7 @@ public final class DateField extends AbstractDwcControl implements HasReadOnly, 
     public DateField onEditModify(Consumer<DateFieldModifyEvent> callback){
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
-                this.editModifyEventSink = new DateEditBoxEditModifyEventSink(this);
+                this.editModifyEventSink = new DateFieldModifyEventSink(this);
             }
             this.editModifyEventSink.addCallback(callback);
         }
@@ -796,7 +796,7 @@ public final class DateField extends AbstractDwcControl implements HasReadOnly, 
         super.catchUp();
 
         if(!this.callbacks.isEmpty()){
-            this.editModifyEventSink = new DateEditBoxEditModifyEventSink(this);
+            this.editModifyEventSink = new DateFieldModifyEventSink(this);
             while(!this.callbacks.isEmpty()){
                 this.editModifyEventSink.addCallback(this.callbacks.remove(0));
             }
