@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.combobox.TextComboBox;
-import org.dwcj.component.combobox.events.TextComboBoxOpenEvent;
+import org.dwcj.component.combobox.event.TextComboBoxOpenEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

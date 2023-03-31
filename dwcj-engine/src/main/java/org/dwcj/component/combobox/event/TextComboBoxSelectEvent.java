@@ -1,4 +1,4 @@
-package org.dwcj.component.combobox.events;
+package org.dwcj.component.combobox.event;
 
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.combobox.TextComboBox;
