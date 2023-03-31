@@ -16,12 +16,12 @@ import java.util.function.Consumer;
 
 
 
-public class HtmlContainerOnScriptFailedEventSink {
+public class HtmlContainerScriptFailedEventSink {
     
     private ArrayList<Consumer<HtmlContainerScriptFailedEvent>> targets;
     private final HtmlContainer htmlContainer;
 
-    public HtmlContainerOnScriptFailedEventSink(HtmlContainer container) {
+    public HtmlContainerScriptFailedEventSink(HtmlContainer container) {
 
         this.targets = new ArrayList<>();
         this.htmlContainer = container;

@@ -13,7 +13,7 @@ import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailedEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadedEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadedEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
-import org.dwcj.component.htmlcontainer.sink.HtmlContainerOnScriptFailedEventSink;
+import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailedEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerOnScriptLoadedEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadedEventSink;
 import org.dwcj.component.panels.AbstractPanel;
@@ -35,7 +35,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
   private final ArrayList<Consumer<HtmlContainerScriptLoadedEvent>> scriptLoadedEvents = new ArrayList<>();
   private HtmlContainerOnScriptLoadedEventSink onScriptLoadedSink = null;
   private final ArrayList<Consumer<HtmlContainerScriptFailedEvent>> scriptFailedEvents = new ArrayList<>();
-  private HtmlContainerOnScriptFailedEventSink onScriptFailedSink = null;
+  private HtmlContainerScriptFailedEventSink onScriptFailedSink = null;
   private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> javascriptEvents = new ArrayList<>();
   private HtmlContainerNativeJavascriptEventSink javascriptEventSink = null;
   private final ArrayList<Consumer<HtmlContainerPageLoadedEvent>> pageLoadedEvents = new ArrayList<>();
@@ -91,7 +91,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
   public HtmlContainer onScriptFailed(Consumer<HtmlContainerScriptFailedEvent> callback) {
     if (this.ctrl != null) {
       if (this.onScriptFailedSink == null) {
-        this.onScriptFailedSink = new HtmlContainerOnScriptFailedEventSink(this);
+        this.onScriptFailedSink = new HtmlContainerScriptFailedEventSink(this);
       }
       this.onScriptFailedSink.addCallback(callback);
     } else {
@@ -503,7 +503,7 @@ public final class HtmlContainer extends AbstractDwcControl implements Focusable
     }
 
     if (!this.scriptFailedEvents.isEmpty()) {
-      this.onScriptFailedSink = new HtmlContainerOnScriptFailedEventSink(this);
+      this.onScriptFailedSink = new HtmlContainerScriptFailedEventSink(this);
       while (!this.scriptFailedEvents.isEmpty()) {
         this.onScriptFailedSink.addCallback(this.scriptFailedEvents.remove(0));
       }
