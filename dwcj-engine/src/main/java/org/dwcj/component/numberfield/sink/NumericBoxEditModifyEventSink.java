@@ -1,4 +1,4 @@
-package org.dwcj.component.numberfield.sinks;
+package org.dwcj.component.numberfield.sink;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
