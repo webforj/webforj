@@ -1,18 +1,18 @@
 package org.dwcj.component.textfield.event;
 
-import org.dwcj.component.textfield.StringEditBox;
+import org.dwcj.component.textfield.TextField;
 import org.dwcj.interfaces.ControlEvent;
 
 public class StringEditBoxEditModifyEvent implements ControlEvent {
 
-    private final StringEditBox control;
+    private final TextField control;
 
-    public StringEditBoxEditModifyEvent(StringEditBox stringEditBox){
+    public StringEditBoxEditModifyEvent(TextField stringEditBox){
         this.control = stringEditBox;
     }
 
     @Override
-    public StringEditBox getControl() {
+    public TextField getControl() {
         return control;
     }
 

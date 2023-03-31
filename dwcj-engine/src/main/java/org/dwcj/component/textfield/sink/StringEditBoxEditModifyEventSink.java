@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ControlAccessor;
-import org.dwcj.component.textfield.StringEditBox;
+import org.dwcj.component.textfield.TextField;
 import org.dwcj.component.textfield.event.StringEditBoxEditModifyEvent;
 
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import java.util.function.Consumer;
 public class StringEditBoxEditModifyEventSink {
     
     private ArrayList<Consumer<StringEditBoxEditModifyEvent>> targets;
-    private final StringEditBox stringEditBox;
+    private final TextField stringEditBox;
 
 
     @SuppressWarnings({"static-access"})
-    public StringEditBoxEditModifyEventSink(StringEditBox stringBox) {
+    public StringEditBoxEditModifyEventSink(TextField stringBox) {
 
         this.targets = new ArrayList<>();
         this.stringEditBox = stringBox;

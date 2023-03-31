@@ -22,7 +22,7 @@ import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class StringEditBox extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+public final class TextField extends AbstractDwcControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
     
     private BBjInputE bbjInputE;
@@ -53,11 +53,11 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
        
     
     
-    public StringEditBox(){
+    public TextField(){
         this("");
     }
 
-    public StringEditBox(String text) {
+    public TextField(String text) {
         setText(text);
         this.readOnly = false;
         this.focusable = true;
@@ -79,7 +79,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         }
     }
 
-    public StringEditBox onEditModify(Consumer<StringEditBoxEditModifyEvent> callback){
+    public TextField onEditModify(Consumer<StringEditBoxEditModifyEvent> callback){
 
         if(this.ctrl != null){
             if(this.editModifyEventSink == null){
@@ -229,7 +229,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
 
 
 
-    public StringEditBox restore() {
+    public TextField restore() {
         if(this.ctrl != null){
             try {
                 bbjInputE.restore();
@@ -240,7 +240,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox selectAll() {
+    public TextField selectAll() {
         if(this.ctrl != null){
             try {
                 bbjInputE.selectAll();
@@ -252,7 +252,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     }
 
 
-    public StringEditBox setCaretPos(Integer position){
+    public TextField setCaretPos(Integer position){
         if(this.ctrl != null){
             try{
                 bbjInputE.setCaretPosition(position);
@@ -264,7 +264,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setEditString(String edit) {
+    public TextField setEditString(String edit) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setEditString(edit.getBytes(StandardCharsets.UTF_8));
@@ -276,7 +276,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setHighlight(Boolean highlight) {
+    public TextField setHighlight(Boolean highlight) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setHighlight(highlight);
@@ -288,7 +288,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setInsertMode(Boolean insert) {
+    public TextField setInsertMode(Boolean insert) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setInsertMode(insert);
@@ -300,7 +300,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setLength(Integer len) {
+    public TextField setLength(Integer len) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setLength(len);
@@ -312,7 +312,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setMargin(Integer marginWidth) {
+    public TextField setMargin(Integer marginWidth) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setMargin(marginWidth);
@@ -324,7 +324,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setMask(String mask){
+    public TextField setMask(String mask){
         if (ctrl != null){
         try {
             ((BBjInputE)ctrl).setMask(mask);
@@ -337,7 +337,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setPadCharacter(String pad) {
+    public TextField setPadCharacter(String pad) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setPadCharacter(pad);
@@ -349,7 +349,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setPassEnter(Boolean pass) {
+    public TextField setPassEnter(Boolean pass) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setPassEnter(pass);
@@ -361,7 +361,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setPassTab(Boolean pass) {
+    public TextField setPassTab(Boolean pass) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setPassTab(pass);
@@ -373,7 +373,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this;
     }
 
-    public StringEditBox setRestore(String restore) {
+    public TextField setRestore(String restore) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setRestore(restore);
@@ -399,7 +399,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
         return this.readOnly;
     }
     @Override
-    public StringEditBox setReadOnly(Boolean editable) {
+    public TextField setReadOnly(Boolean editable) {
         try {
             bbjInputE.setEditable(!editable);
         } catch (BBjException e) {
@@ -421,7 +421,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     }
 
     @Override 
-    public StringEditBox setFocusable(Boolean focusable){
+    public TextField setFocusable(Boolean focusable){
         if(this.ctrl != null){
             try{
                 bbjInputE.setFocusable(focusable);
@@ -446,7 +446,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     }
 
     @Override
-    public StringEditBox setTabTraversable(Boolean traversable){
+    public TextField setTabTraversable(Boolean traversable){
         if(this.ctrl != null){
             try{
                 bbjInputE.setTabTraversable(traversable);
@@ -464,7 +464,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     }
 
     @Override
-    public StringEditBox setTextAlignment(Alignment alignment) {
+    public TextField setTextAlignment(Alignment alignment) {
         if(this.ctrl != null){
             try {
                 bbjInputE.setAlignment(alignment.textPosition);
@@ -483,7 +483,7 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
     } 
 
     @Override
-    public StringEditBox setHighlightOnFocus(Highlight highlight){
+    public TextField setHighlightOnFocus(Highlight highlight){
         if(this.ctrl != null){
             try{
                 bbjInputE.setHighlightOnFocus(highlight.highlightType);
@@ -498,55 +498,55 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
 
 
     @Override
-    public StringEditBox setText(String text) {
+    public TextField setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public StringEditBox setVisible(Boolean visible){
+    public TextField setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public StringEditBox setEnabled(Boolean enabled) {
+    public TextField setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public StringEditBox setTooltipText(String text) {
+    public TextField setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public StringEditBox setAttribute(String attribute, String value){
+    public TextField setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public StringEditBox setId(String elementId){
+    public TextField setId(String elementId){
         super.setId(elementId);
         return this;
     }
 
     @Override
-    public StringEditBox setStyle(String property, String value) {
+    public TextField setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
     
     @Override
-    public StringEditBox addClassName(String selector) {
+    public TextField addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public StringEditBox removeClassName(String selector) {
+    public TextField removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
@@ -555,13 +555,13 @@ public final class StringEditBox extends AbstractDwcControl implements HasReadOn
 
 
 
-    public StringEditBox setExpanse(Expanse expanse) {
+    public TextField setExpanse(Expanse expanse) {
         super.setControlExpanse(expanse);
         return this;
     }
 
 
-    public StringEditBox setTheme(Theme theme) {
+    public TextField setTheme(Theme theme) {
         super.setControlTheme(theme);
         return this;
     }
