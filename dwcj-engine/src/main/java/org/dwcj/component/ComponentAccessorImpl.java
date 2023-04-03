@@ -46,7 +46,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
                         if (method.getName().equals("create") &&
                                 method.getParameterCount() == 1 &&
                                 method.getParameterTypes()[0]
-                                        .equals(Class.forName("org.dwcj.component.panels.AbstractPanel"))) {
+                                        .equals(Class.forName("org.dwcj.component.window.AbstractWindow"))) {
                             method.setAccessible(true);
                             method.invoke(ctrl, panel);
                             found = true;
