@@ -10,9 +10,9 @@ import org.dwcj.exceptions.DwcjAppInitializeException;
  * It typically occupied the full browser real estate and holds your app
  * that consists of div container panels
  */
-public class AppPanel extends AbstractWindow {
+public class Frame extends AbstractWindow {
 
-  public AppPanel() throws DwcjAppInitializeException {
+  public Frame() throws DwcjAppInitializeException {
 
     try {
       byte[] flags = new byte[] { (byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x88 };
@@ -43,55 +43,55 @@ public class AppPanel extends AbstractWindow {
   }
   
   @Override
-  public AppPanel setStyle(String property, String value) {
+  public Frame setStyle(String property, String value) {
     wnd.setPanelStyle(property, value);
     return this;
   }
 
   @Override
-  public AppPanel setText(String text) {
+  public Frame setText(String text) {
     super.setText(text);
     return this;
   }
 
   @Override
-  public AppPanel setVisible(Boolean visible) {
+  public Frame setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
   @Override
-  public AppPanel setEnabled(Boolean enabled) {
+  public Frame setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
     return this;
   }
 
   @Override
-  public AppPanel setTooltipText(String text) {
+  public Frame setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
   @Override
-  public AppPanel setAttribute(String attribute, String value) {
+  public Frame setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
   @Override
-  public AppPanel setId(String elementId) {
+  public Frame setId(String elementId) {
     super.setId(elementId);
     return this;
   }
 
   @Override
-  public AppPanel addClassName(String selector) {
+  public Frame addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
   @Override
-  public AppPanel removeClassName(String selector) {
+  public Frame removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }

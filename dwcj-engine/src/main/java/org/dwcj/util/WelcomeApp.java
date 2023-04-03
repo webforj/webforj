@@ -6,7 +6,7 @@ import org.dwcj.Environment;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.label.Label;
-import org.dwcj.component.window.AppPanel;
+import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Div;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 
@@ -15,11 +15,11 @@ import java.util.Set;
 
 public class WelcomeApp extends App {
 
-    private AppPanel panel;
+    private Frame panel;
 
     @Override
     public void run() throws DwcjAppInitializeException {
-        panel = new AppPanel();
+        panel = new Frame();
         panel.setStyle("display","inline-grid");
         panel.setStyle("gap","20px");
         panel.setStyle("padding","20px");
