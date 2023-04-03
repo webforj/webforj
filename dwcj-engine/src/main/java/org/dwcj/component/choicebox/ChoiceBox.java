@@ -19,7 +19,7 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxChangeEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxCloseEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
-import org.dwcj.component.listbox.AbstractDwclistControl;
+import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class ChoiceBox extends AbstractDwclistControl implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+public final class ChoiceBox extends AbstractListBox implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
     private BBjListButton bbjListButton;
 

@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractDwclistControl implements Scrollable, HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
+public final class ListBox extends AbstractListBox implements Scrollable, HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListBox bbjListBox;
     

@@ -20,7 +20,7 @@ import org.dwcj.component.combobox.sink.ComboBoxCloseEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxEditModifyEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxOpenEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
-import org.dwcj.component.listbox.AbstractDwclistControl;
+import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 /**
  * ComboBoxEdit Control
  */
-public final class ComboBox extends AbstractDwclistControl implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
+public final class ComboBox extends AbstractListBox implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
     private BBjListEdit bbjListEdit;
 
