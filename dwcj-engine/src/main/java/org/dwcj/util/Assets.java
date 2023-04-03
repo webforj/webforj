@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
-import org.dwcj.exceptions.DwcRuntimeException;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * A helper class to deal with assets in the class path
@@ -28,7 +28,7 @@ public class Assets {
    * @return The content of the resource as a String
    * 
    * @throws IllegalArgumentException if the path is null or empty
-   * @throws DwcRuntimeException      if an error occurred while reading the
+   * @throws DwcjRuntimeException      if an error occurred while reading the
    *                                  resource
    */
   public static String contentOf(String path) {
@@ -42,7 +42,7 @@ public class Assets {
         return reader.lines().collect(Collectors.joining(System.lineSeparator()));
       }
     } catch (IOException e) {
-      throw new DwcRuntimeException(e); // NOSONAR
+      throw new DwcjRuntimeException(e); // NOSONAR
     }
   }
 

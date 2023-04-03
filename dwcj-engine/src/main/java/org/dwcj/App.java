@@ -2,12 +2,12 @@ package org.dwcj;
 
 import com.basis.startup.type.BBjException;
 
-import org.dwcj.annotations.AnnotationProcessor;
+import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.*;
-import org.dwcj.exceptions.DwcAppInitializeException;
-import org.dwcj.exceptions.DwcException;
-import org.dwcj.exceptions.DwcRuntimeException;
+import org.dwcj.exceptions.DwcjAppInitializeException;
+import org.dwcj.exceptions.DwcjException;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * This is the central class representing an app. In order to implement an app,
@@ -47,7 +47,7 @@ public abstract class App {
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
       run();
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
-    } catch (DwcException e) {
+    } catch (DwcjException e) {
       Environment.logError(e);
     }
   }
@@ -65,13 +65,13 @@ public abstract class App {
    * Set the application theme
    *
    * @param theme The theme to set
-   * @throws DwcRuntimeException if failed to set the theme
+   * @throws DwcjRuntimeException if failed to set the theme
    */
   public static void setTheme(String theme) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setTheme(theme);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set theme.", e);
+      throw new DwcjRuntimeException("Failed to set theme.", e);
     }
   }
 
@@ -79,7 +79,7 @@ public abstract class App {
    * Set the application theme
    *
    * @param theme The theme to set
-   * @throws DwcRuntimeException if failed to set the theme
+   * @throws DwcjRuntimeException if failed to set the theme
    *
    * @see Theme
    */
@@ -91,13 +91,13 @@ public abstract class App {
    * Get the application theme
    *
    * @return The theme
-   * @throws DwcRuntimeException if failed to get the theme
+   * @throws DwcjRuntimeException if failed to get the theme
    */
   public static String getTheme() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getTheme();
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get theme.", e);
+      throw new DwcjRuntimeException("Failed to get theme.", e);
     }
   }
 
@@ -106,13 +106,13 @@ public abstract class App {
    * The dark theme setting is used when the application theme is set to "system".
    *
    * @param darkTheme The dark theme to set
-   * @throws DwcRuntimeException if failed to set the dark theme
+   * @throws DwcjRuntimeException if failed to set the dark theme
    */
   public static void setDarkTheme(String darkTheme) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setDarkTheme(darkTheme);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set dark theme.", e);
+      throw new DwcjRuntimeException("Failed to set dark theme.", e);
     }
   }
 
@@ -120,13 +120,13 @@ public abstract class App {
    * Get the name of the dark theme
    *
    * @return The dark theme
-   * @throws DwcRuntimeException if failed to get the dark theme
+   * @throws DwcjRuntimeException if failed to get the dark theme
    */
   public static String getDarkTheme() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getDarkTheme();
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get dark theme.", e);
+      throw new DwcjRuntimeException("Failed to get dark theme.", e);
     }
   }
 
@@ -136,14 +136,14 @@ public abstract class App {
    * "system".
    *
    * @param lightTheme The light theme to set
-   * @throws DwcRuntimeException if failed to set the light theme
+   * @throws DwcjRuntimeException if failed to set the light theme
    */
 
   public static void setLightTheme(String lightTheme) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setLightTheme(lightTheme);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set light theme.", e);
+      throw new DwcjRuntimeException("Failed to set light theme.", e);
     }
   }
 
@@ -151,14 +151,14 @@ public abstract class App {
    * Get the name of the light theme to use for the application.
    *
    * @return The light theme
-   * @throws DwcRuntimeException if failed to get the light theme
+   * @throws DwcjRuntimeException if failed to get the light theme
    */
 
   public static String getLightTheme() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getLightTheme();
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get light theme.", e);
+      throw new DwcjRuntimeException("Failed to get light theme.", e);
     }
   }
 
@@ -166,13 +166,13 @@ public abstract class App {
    * Get the registered DWC application name
    *
    * @return the application name
-   * @throws DwcRuntimeException if failed to get the application name
+   * @throws DwcjRuntimeException if failed to get the application name
    */
   public static String getApplicationName() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getApplicationName();
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get application name.", e);
+      throw new DwcjRuntimeException("Failed to get application name.", e);
     }
   }
 
@@ -216,13 +216,13 @@ public abstract class App {
    * Get the application URL
    * 
    * @return The application URL
-   * @throws DwcRuntimeException if failed to get the application URL
+   * @throws DwcjRuntimeException if failed to get the application URL
    */
   public static String getUrl() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getUrl();
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get application URL.", e);
+      throw new DwcjRuntimeException("Failed to get application URL.", e);
     }
   }
 
@@ -333,9 +333,9 @@ public abstract class App {
   /**
    * Override this method to implement your app behavior
    *
-   * @throws DwcAppInitializeException
+   * @throws DwcjAppInitializeException
    */
-  public abstract void run() throws DwcException;
+  public abstract void run() throws DwcjException;
 
   public static Namespace getNamespace(Namespace.NamespaceType namespaceType) {
     switch (namespaceType) {

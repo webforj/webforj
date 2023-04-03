@@ -3,7 +3,7 @@ package org.dwcj;
 import java.util.Map;
 
 import org.dwcj.environment.ObjectTable;
-import org.dwcj.exceptions.DwcRuntimeException;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.Assets;
 
 import com.basis.startup.type.BBjException;
@@ -41,13 +41,13 @@ public final class Page {
    *
    * @param title The title to set
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the title
+   * @throws DwcjRuntimeException if failed to set the title
    */
   public Page setTitle(String title) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setTitle(title);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set title.", e);
+      throw new DwcjRuntimeException("Failed to set title.", e);
     }
 
     return this;
@@ -57,13 +57,13 @@ public final class Page {
    * Get the application title
    *
    * @return The title
-   * @throws DwcRuntimeException if failed to get the title
+   * @throws DwcjRuntimeException if failed to get the title
    */
   public String getTitle() {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getTitle();
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get title.", e);
+      throw new DwcjRuntimeException("Failed to get title.", e);
     }
   }
 
@@ -75,13 +75,13 @@ public final class Page {
    * @param attributes A map of attributes to set
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the meta tag
+   * @throws DwcjRuntimeException if failed to set the meta tag
    */
   public Page setMeta(String name, String content, Map<String, String> attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set meta tag.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
 
     return this;
@@ -95,13 +95,13 @@ public final class Page {
    * @param attributes A map of attributes to set (comma separated)
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the meta tag
+   * @throws DwcjRuntimeException if failed to set the meta tag
    */
   public Page setMeta(String name, String content, String attributes) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set meta tag.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
 
     return this;
@@ -114,13 +114,13 @@ public final class Page {
    * @param content The content of the meta tag
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the meta tag
+   * @throws DwcjRuntimeException if failed to set the meta tag
    */
   public Page setMeta(String name, String content) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set meta tag.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
 
     return this;
@@ -142,13 +142,13 @@ public final class Page {
    *                 default document element is used.
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the attribute
+   * @throws DwcjRuntimeException if failed to set the attribute
    */
   public Page setAttribute(String name, String value, String selector) {
     try {
       Environment.getInstance().getBBjAPI().getWebManager().setAttribute(name, value, selector);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to set attribute.", e);
+      throw new DwcjRuntimeException("Failed to set attribute.", e);
     }
 
     return this;
@@ -161,7 +161,7 @@ public final class Page {
    * @param value The value of the attribute
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the attribute
+   * @throws DwcjRuntimeException if failed to set the attribute
    */
   public Page setAttribute(String name, String value) {
     return setAttribute(name, value, "");
@@ -173,7 +173,7 @@ public final class Page {
    * @param name The name of the attribute
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to set the attribute
+   * @throws DwcjRuntimeException if failed to set the attribute
    */
   public Page setAttribute(String name) {
     return setAttribute(name, name, "");
@@ -193,13 +193,13 @@ public final class Page {
    *                 doesn't return any elements, the
    *                 default document element is used.
    * @return The attribute value
-   * @throws DwcRuntimeException if failed to get the attribute
+   * @throws DwcjRuntimeException if failed to get the attribute
    */
   public String getAttribute(String name, String selector) {
     try {
       return Environment.getInstance().getBBjAPI().getWebManager().getAttribute(name, selector);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to get attribute.", e);
+      throw new DwcjRuntimeException("Failed to get attribute.", e);
     }
   }
 
@@ -208,7 +208,7 @@ public final class Page {
    *
    * @param name The name of the attribute
    * @return The attribute value
-   * @throws DwcRuntimeException if failed to get the attribute
+   * @throws DwcjRuntimeException if failed to get the attribute
    */
   public String getAttribute(String name) {
     return getAttribute(name, "");
@@ -224,7 +224,7 @@ public final class Page {
    * @param attributes A map of attributes to set
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -234,7 +234,7 @@ public final class Page {
       Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
           url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -250,7 +250,7 @@ public final class Page {
    * @param attributes A map of attributes to set (comma separated)
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url, boolean top, String attributes) {
     try {
@@ -260,7 +260,7 @@ public final class Page {
       Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
           url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add stylesheet.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -275,7 +275,7 @@ public final class Page {
    * @param top Whether to inject the stylesheet at the top of the page
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url, boolean top) {
     return addStyleSheet(url, top, "");
@@ -289,7 +289,7 @@ public final class Page {
    *            <code>webserver://</code>
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url) {
     return addStyleSheet(url, false, "");
@@ -306,7 +306,7 @@ public final class Page {
    * @param attributes A map of attributes to set
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
@@ -315,7 +315,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -332,7 +332,7 @@ public final class Page {
    * @param attributes A map of attributes to set (comma separated)
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
@@ -341,7 +341,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -357,7 +357,7 @@ public final class Page {
    * @param top Whether to inject the stylesheet at the top of the page
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
   public Page addInlineStyleSheet(String css, boolean top) {
     return addInlineStyleSheet(css, top, "");
@@ -372,7 +372,7 @@ public final class Page {
    *            resources folder of your application
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the stylesheet
+   * @throws DwcjRuntimeException if failed to add the stylesheet
    */
 
   public Page addInlineStyleSheet(String css) {
@@ -389,7 +389,7 @@ public final class Page {
    * @param attributes A map of attributes to set
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -398,7 +398,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
 
     return this;
@@ -414,7 +414,7 @@ public final class Page {
    * @param attributes A map of attributes to set (comma separated)
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addJavaScript(String url, boolean top, String attributes) {
     try {
@@ -423,7 +423,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
 
     return this;
@@ -438,7 +438,7 @@ public final class Page {
    * @param top Whether to inject the script at the top of the page
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
 
   public Page addJavaScript(String url, boolean top) {
@@ -453,7 +453,7 @@ public final class Page {
    *            <code>webserver://</code>
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addJavaScript(String url) {
     return addJavaScript(url, false, "");
@@ -470,7 +470,7 @@ public final class Page {
    * @param attributes A map of attributes to set
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
@@ -479,7 +479,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
 
     return this;
@@ -496,7 +496,7 @@ public final class Page {
    * @param attributes A map of attributes to set (comma separated)
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addInlineJavaScript(String script, boolean top, String attributes) {
     try {
@@ -505,7 +505,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add inline script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
 
     return this;
@@ -521,7 +521,7 @@ public final class Page {
    * @param top    Whether to inject the script at the top of the page
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addInlineJavaScript(String script, boolean top) {
     return addInlineJavaScript(script, top, "");
@@ -536,7 +536,7 @@ public final class Page {
    *               resources folder of your application
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the script
+   * @throws DwcjRuntimeException if failed to add the script
    */
   public Page addInlineJavaScript(String script) {
     return addInlineJavaScript(script, false, "");
@@ -552,7 +552,7 @@ public final class Page {
    * @param attributes A map of attributes to set
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the link
+   * @throws DwcjRuntimeException if failed to add the link
    */
   public Page addLink(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -561,7 +561,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
 
     return this;
@@ -577,7 +577,7 @@ public final class Page {
    * @param attributes A map of attributes to set (comma separated)
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the link
+   * @throws DwcjRuntimeException if failed to add the link
    */
   public Page addLink(String url, boolean top, String attributes) {
     try {
@@ -586,7 +586,7 @@ public final class Page {
 
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to add link.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
 
     return this;
@@ -601,7 +601,7 @@ public final class Page {
    * @param top Whether to inject the link at the top of the page
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the link
+   * @throws DwcjRuntimeException if failed to add the link
    */
   public Page addLink(String url, boolean top) {
     return addLink(url, top, "");
@@ -615,7 +615,7 @@ public final class Page {
    *            <code>webserver://</code>
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException if failed to add the link
+   * @throws DwcjRuntimeException if failed to add the link
    */
   public Page addLink(String url) {
     return addLink(url, false, "");
@@ -626,13 +626,13 @@ public final class Page {
    * 
    * @param script The script to execute
    * @return The result of the script
-   * @throws DwcRuntimeException If dwcj fails to execute the script
+   * @throws DwcjRuntimeException If dwcj fails to execute the script
    */
   public Object executeJs(String script) {
     try {
       return Environment.getInstance().getSysGui().executeScript(script);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to execute script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to execute script.", e); // NOSONAR
     }
   }
 
@@ -643,13 +643,13 @@ public final class Page {
    * @return The result of the script
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException If dwcj fails to execute the script
+   * @throws DwcjRuntimeException If dwcj fails to execute the script
    */
   public Page executeAsyncJs(String script) {
     try {
       Environment.getInstance().getSysGui().executeAsyncScript(script);
     } catch (BBjException e) {
-      throw new DwcRuntimeException("Failed to execute async script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to execute async script.", e); // NOSONAR
     }
 
     return this;
@@ -659,7 +659,7 @@ public final class Page {
    * Reload the page in the browser
    * 
    * @return The current page instance
-   * @throws DwcRuntimeException If dwcj fails to execute the script to reload the
+   * @throws DwcjRuntimeException If dwcj fails to execute the script to reload the
    *                             page
    */
   public Page reload() {

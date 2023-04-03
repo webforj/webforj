@@ -3,23 +3,23 @@ package org.dwcj.util;
 import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.controls.button.Button;
-import org.dwcj.controls.button.events.ButtonClickEvent;
-import org.dwcj.controls.label.Label;
-import org.dwcj.controls.panels.AppPanel;
-import org.dwcj.controls.panels.Div;
-import org.dwcj.exceptions.DwcAppInitializeException;
+import org.dwcj.component.button.Button;
+import org.dwcj.component.button.event.ButtonClickEvent;
+import org.dwcj.component.label.Label;
+import org.dwcj.component.window.Frame;
+import org.dwcj.component.window.Panel;
+import org.dwcj.exceptions.DwcjAppInitializeException;
 
 import java.util.ArrayList;
 import java.util.Set;
 
 public class WelcomeApp extends App {
 
-    private AppPanel panel;
+    private Frame panel;
 
     @Override
-    public void run() throws DwcAppInitializeException {
-        panel = new AppPanel();
+    public void run() throws DwcjAppInitializeException {
+        panel = new Frame();
         panel.setStyle("display","inline-grid");
         panel.setStyle("gap","20px");
         panel.setStyle("padding","20px");
@@ -76,7 +76,7 @@ public class WelcomeApp extends App {
         } else {
             panel.add(new Label("<html><h2>The following Apps are available in this Classpath:</h2>"));
 
-            Div tbl = new Div();
+            Panel tbl = new Panel();
             panel.add(tbl);
             tbl.setStyle("display", "inline-grid");
             tbl.setStyle("grid-template-columns", "5fr 1fr");
