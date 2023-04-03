@@ -1,0 +1,35 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.dwcj</groupId>
+    <artifactId>dwcj-project</artifactId>
+    <version>0.16.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dwcj-addons</artifactId>
+  <packaging>pom</packaging>
+  <name>dwcj-addons</name>
+  <description>
+        Addons for dwcj
+    </description>
+
+  <modules>
+    <module>dwcj-code</module>
+    <module>dwcj-markdown</module>
+    <module>dwcj-terminal</module>
+    <module>dwcj-googlecharts</module>
+    <module>dwcj-youtube</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.dwcj</groupId>
+      <artifactId>dwcj-engine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>
