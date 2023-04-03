@@ -1,3 +1,4 @@
     note: no deploy with JDK 17, you need this:
     see https://issues.sonatype.org/browse/NEXUS-27902
-    then do an mvm clean deploy -P perform-release in a terminal window
+
+    then do an "mvn clean deploy -P perform-release" in a terminal window
