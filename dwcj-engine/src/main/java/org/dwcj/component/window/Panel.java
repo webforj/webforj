@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * This class represents a div container, which behaves as a panel and
  * can be styled and hold other divs (panels) and controls
  */
-public class Div extends AbstractWindow {
+public class Panel extends AbstractWindow {
 
   private ArrayList<Consumer<DivClickEvent>> callbacks = new ArrayList<>();
   private DivClickEventSink divClickEventSink;
@@ -57,7 +57,7 @@ public class Div extends AbstractWindow {
    * @return the panel itself
    */
   @Override
-  public Div add(AbstractComponent... control) {
+  public Panel add(AbstractComponent... control) {
     for (AbstractComponent c : control) {
       if (this.ctrl != null && Boolean.FALSE.equals(c.isDestroyed())) {
         try {
@@ -83,7 +83,7 @@ public class Div extends AbstractWindow {
    * @param callback A method to receive the click event
    * @return the control itself
    */
-  public Div onClick(Consumer<DivClickEvent> callback) {
+  public Panel onClick(Consumer<DivClickEvent> callback) {
     if (this.ctrl != null) {
       if (this.divClickEventSink == null) {
         this.divClickEventSink = new DivClickEventSink(this, callback);
@@ -97,55 +97,55 @@ public class Div extends AbstractWindow {
   }
 
   @Override
-  public Div setText(String text) {
+  public Panel setText(String text) {
     super.setText(text);
     return this;
   }
 
   @Override
-  public Div setVisible(Boolean visible) {
+  public Panel setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
   @Override
-  public Div setEnabled(Boolean enabled) {
+  public Panel setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
     return this;
   }
 
   @Override
-  public Div setTooltipText(String text) {
+  public Panel setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
   @Override
-  public Div setAttribute(String attribute, String value) {
+  public Panel setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
   @Override
-  public Div setId(String elementId) {
+  public Panel setId(String elementId) {
     super.setId(elementId);
     return this;
   }
 
   @Override
-  public Div setStyle(String property, String value) {
+  public Panel setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
   @Override
-  public Div addClassName(String selector) {
+  public Panel addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
   @Override
-  public Div removeClassName(String selector) {
+  public Panel removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }

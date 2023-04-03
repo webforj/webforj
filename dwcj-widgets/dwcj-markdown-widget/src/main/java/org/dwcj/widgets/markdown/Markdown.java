@@ -7,12 +7,12 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 import org.dwcj.environment.ObjectTable;
 
 import java.util.HashSet;
 
-public class Markdown extends Div {
+public class Markdown extends Panel {
 
     public static final String PRISM_URL = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js";
     public static final String PRISM_CSS = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css";

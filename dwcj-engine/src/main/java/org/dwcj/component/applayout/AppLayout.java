@@ -11,7 +11,7 @@ import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeAttribute;
 import org.dwcj.component.webcomponent.annotations.NodeName;
 import org.dwcj.component.webcomponent.events.EventListener;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 
 /**
  * AppLayout is a web component that provides a responsive layout for web apps.
@@ -153,10 +153,10 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
   }
 
   // Panels
-  private Div header;
-  private Div drawer;
-  private Div content;
-  private Div footer;
+  private Panel header;
+  private Panel drawer;
+  private Panel content;
+  private Panel footer;
 
   // Property descriptors
   private final PropertyDescriptor<Boolean> DRAWER_OPENED = PropertyDescriptor.property("drawerOpened", false);
@@ -186,10 +186,10 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
   public AppLayout() {
     super();
 
-    this.setHeader(new Div());
-    this.setDrawer(new Div());
-    this.setContent(new Div());
-    this.setFooter(new Div());
+    this.setHeader(new Panel());
+    this.setDrawer(new Panel());
+    this.setContent(new Panel());
+    this.setFooter(new Panel());
   }
 
   /**
@@ -198,7 +198,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param header the header panel
    * @return the app layout
    */
-  public AppLayout setHeader(Div header) {
+  public AppLayout setHeader(Panel header) {
     this.header = header;
     addSlot("header", header);
     return this;
@@ -209,7 +209,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * 
    * @return the app layout
    */
-  public Div getHeader() {
+  public Panel getHeader() {
     return header;
   }
 
@@ -219,7 +219,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param drawer the drawer panel
    * @return the app layout
    */
-  public AppLayout setDrawer(Div drawer) {
+  public AppLayout setDrawer(Panel drawer) {
     this.drawer = drawer;
     addSlot("drawer", drawer);
     return this;
@@ -230,7 +230,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * 
    * @return the app layout
    */
-  public Div getDrawer() {
+  public Panel getDrawer() {
     return drawer;
   }
 
@@ -240,7 +240,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param content the content panel
    * @return the app layout
    */
-  public AppLayout setContent(Div content) {
+  public AppLayout setContent(Panel content) {
     this.content = content;
     addSlot(content);
     return this;
@@ -251,7 +251,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * 
    * @return the app layout
    */
-  public Div getContent() {
+  public Panel getContent() {
     return content;
   }
 
@@ -261,7 +261,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * @param footer the footer panel
    * @return the app layout
    */
-  public AppLayout setFooter(Div footer) {
+  public AppLayout setFooter(Panel footer) {
     this.footer = footer;
     addSlot("footer", footer);
     return this;
@@ -272,7 +272,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
    * 
    * @return the app layout
    */
-  public Div getFooter() {
+  public Panel getFooter() {
     return footer;
   }
 

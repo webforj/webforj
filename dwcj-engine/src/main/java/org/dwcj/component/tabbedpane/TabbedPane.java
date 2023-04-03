@@ -10,7 +10,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sink.TabSelectEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 
 import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
@@ -23,7 +23,7 @@ public final class TabbedPane extends AbstractDwcComponent {
     /** List of all callbacks to be added to the tab */
     private ArrayList<Consumer<TabSelectEvent>> callbacks = new ArrayList<>();
     /** List of tabs associated with the control */
-    private ArrayList<SimpleEntry<String, Div>> tabs = new ArrayList<>();
+    private ArrayList<SimpleEntry<String, Panel>> tabs = new ArrayList<>();
     /** The tab control's theme */
     private Theme theme = Theme.DEFAULT;
     /** The tab control's expanse */
@@ -89,7 +89,7 @@ public final class TabbedPane extends AbstractDwcComponent {
      * @param panel the panel to attach to the tab
      * @return the Tab Control object
      */
-    public TabbedPane add(String text, Div panel) {
+    public TabbedPane add(String text, Panel panel) {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
@@ -165,7 +165,7 @@ public final class TabbedPane extends AbstractDwcComponent {
      * @param panel Div to be associated with the new tab
      * @return The control itself
      */
-    public TabbedPane insert(int index, String text, Div panel) {
+    public TabbedPane insert(int index, String text, Panel panel) {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
@@ -207,7 +207,7 @@ public final class TabbedPane extends AbstractDwcComponent {
      * @param panel the DIV panel to put under the tab
      * @return the Tab Control object itself
      */
-    public TabbedPane setPanelAt(int index, Div panel) {
+    public TabbedPane setPanelAt(int index, Panel panel) {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);

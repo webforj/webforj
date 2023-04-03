@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjMouseDownEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 import org.dwcj.component.window.event.DivClickEvent;
 
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 public final class DivClickEventSink {
 
     private ArrayList<Consumer<DivClickEvent>> targets;
-    private final Div div;
+    private final Panel div;
 
     @SuppressWarnings({"static-access"})
-    public DivClickEventSink(Div div, Consumer<DivClickEvent> callback) {
+    public DivClickEventSink(Panel div, Consumer<DivClickEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.div = div;
@@ -34,7 +34,7 @@ public final class DivClickEventSink {
         }
     }
     
-    public DivClickEventSink(Div div) {
+    public DivClickEventSink(Panel div) {
         this.targets = new ArrayList<>();
         this.div = div;
 

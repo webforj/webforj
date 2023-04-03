@@ -7,7 +7,7 @@ import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.window.Frame;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class WelcomeApp extends App {
         } else {
             panel.add(new Label("<html><h2>The following Apps are available in this Classpath:</h2>"));
 
-            Div tbl = new Div();
+            Panel tbl = new Panel();
             panel.add(tbl);
             tbl.setStyle("display", "inline-grid");
             tbl.setStyle("grid-template-columns", "5fr 1fr");

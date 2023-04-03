@@ -8,7 +8,7 @@ import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeName;
 import org.dwcj.component.webcomponent.events.EventListener;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 
 /**
  * The drawer component allows developers to create a container which slides
@@ -104,7 +104,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    */
   public Drawer() {
     super();
-    setContent(new Div());
+    setContent(new Panel());
   }
 
   /**
@@ -113,7 +113,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @param content The drawer content.
    * @return the drawer
    */
-  public Drawer setContent(Div content) {
+  public Drawer setContent(Panel content) {
     addSlot(content);
     return this;
   }
@@ -123,8 +123,8 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * 
    * @return the drawer content
    */
-  public Div getContent() {
-    return (Div) getSlot();
+  public Panel getContent() {
+    return (Panel) getSlot();
   }
 
   /**

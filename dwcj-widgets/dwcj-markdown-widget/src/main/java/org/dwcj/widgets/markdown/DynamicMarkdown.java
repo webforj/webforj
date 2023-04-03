@@ -4,7 +4,7 @@ import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.Component;
 import org.dwcj.component.label.Label;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class DynamicMarkdown extends Div {
+public class DynamicMarkdown extends Panel {
 
     private final ArrayList<Component> ctrlList = new ArrayList<>();
 

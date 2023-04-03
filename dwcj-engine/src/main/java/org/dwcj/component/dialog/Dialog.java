@@ -8,7 +8,7 @@ import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeName;
 import org.dwcj.component.webcomponent.events.EventListener;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 
 /**
  * A dialog component.
@@ -137,9 +137,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   // Panels
-  private Div header;
-  private Div content;
-  private Div footer;
+  private Panel header;
+  private Panel content;
+  private Panel footer;
 
   // Properties
   private final PropertyDescriptor<String> ALIGNMENT = PropertyDescriptor.property("alignment",
@@ -173,9 +173,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
     // the event listeners
     executeAsyncExpression("document.body.appendChild(component)");
 
-    this.setHeader(new Div());
-    this.setContent(new Div());
-    this.setFooter(new Div());
+    this.setHeader(new Panel());
+    this.setContent(new Panel());
+    this.setFooter(new Panel());
   }
 
   /**
@@ -184,7 +184,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param header the header panel
    * @return the dialog
    */
-  public Dialog setHeader(Div header) {
+  public Dialog setHeader(Panel header) {
     this.header = header;
     addSlot("header", header);
     return this;
@@ -196,7 +196,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param drawer the drawer panel
    * @return the app layout
    */
-  public Div getHeader() {
+  public Panel getHeader() {
     return header;
   }
 
@@ -206,7 +206,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param content the content panel
    * @return the dialog
    */
-  public Dialog setContent(Div content) {
+  public Dialog setContent(Panel content) {
     this.content = content;
     this.content.setStyle("overflow", "auto");
     addSlot("content", content);
@@ -218,7 +218,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * 
    * @return the content panel
    */
-  public Div getContent() {
+  public Panel getContent() {
     return content;
   }
 
@@ -228,7 +228,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param footer the footer panel
    * @return the dialog
    */
-  public Dialog setFooter(Div footer) {
+  public Dialog setFooter(Panel footer) {
     this.footer = footer;
     addSlot("footer", footer);
     return this;
@@ -239,7 +239,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * 
    * @return the footer panel
    */
-  public Div getFooter() {
+  public Panel getFooter() {
     return footer;
   }
 

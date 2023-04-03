@@ -3,14 +3,14 @@ package org.dwcj.widgets.terminal;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 import org.dwcj.widgets.terminal.events.TerminalKeyEvent;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
-public class Terminal extends Div {
+public class Terminal extends Panel {
 
 
     private HtmlContainer hv;

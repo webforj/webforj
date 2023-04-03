@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.HasStyle;
-import org.dwcj.component.window.Div;
+import org.dwcj.component.window.Panel;
 
 /**
  * A flex layout.
@@ -13,7 +13,7 @@ import org.dwcj.component.window.Div;
  *      Complete Guide to Flexbox</a>
  * @author Hyyan Abo Fakher
  */
-public class FlexLayout extends Div {
+public class FlexLayout extends Panel {
   /**
    * Create a new flex layout.
    */
