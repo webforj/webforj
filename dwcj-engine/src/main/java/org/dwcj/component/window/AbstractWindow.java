@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.AbstractDwcComponent;
 
@@ -51,7 +51,7 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
   }
 
   static {
-    PanelAccessor.setDefault(new WindowAccessorImpl());
+    WindowAccessor.setDefault(new WindowAccessorImpl());
   }
 
   /**

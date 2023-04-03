@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjProgressBar;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.window.AbstractWindow;
 
@@ -29,7 +29,7 @@ public final class ProgressBar extends AbstractDwcComponent {
     @Override
     protected void create(AbstractWindow p) {
         try {
-            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
             ctrl = w.addProgressBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             bbjProgressBar = (BBjProgressBar) ctrl;
             catchUp();

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
@@ -60,7 +60,7 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
     @Override
     protected void create(AbstractWindow p) {
         try {
-            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
             bbjEditBox = (BBjEditBox) this.ctrl;

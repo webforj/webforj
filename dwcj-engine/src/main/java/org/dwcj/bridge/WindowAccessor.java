@@ -10,18 +10,18 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
  * it's not for customer use, only for use in the "friend" classes
  * Pattern see Tulach, p.75ff
  */
-public abstract class PanelAccessor {
-    private static PanelAccessor accessor;
+public abstract class WindowAccessor {
+    private static WindowAccessor accessor;
 
-    protected PanelAccessor() {
+    protected WindowAccessor() {
     }
 
     /**
      * get the accessor instance to access the protected methods in the Dwcj Panel instances
      * @return the accessor instance
      */
-    public static PanelAccessor getDefault() {
-        PanelAccessor a = accessor;
+    public static WindowAccessor getDefault() {
+        WindowAccessor a = accessor;
         if (a != null) {
             return a;
         }
@@ -38,11 +38,11 @@ public abstract class PanelAccessor {
      *
      * @param accessor the instance of the accessor implementation
      */
-    public static void setDefault(PanelAccessor accessor) {
-        if (PanelAccessor.accessor != null) {
+    public static void setDefault(WindowAccessor accessor) {
+        if (WindowAccessor.accessor != null) {
             throw new IllegalStateException();
         }
-        PanelAccessor.accessor = accessor;
+        WindowAccessor.accessor = accessor;
     }
 
 

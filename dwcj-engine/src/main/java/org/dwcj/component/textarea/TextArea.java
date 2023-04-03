@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasMouseWheelCondition;
@@ -71,7 +71,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     @Override
     protected void create(AbstractWindow p) {
         try {
-            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addCEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, super.getText(), flags);
             bbjCEdit = (BBjCEdit) ctrl;

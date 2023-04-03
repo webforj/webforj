@@ -2,7 +2,7 @@ package org.dwcj.component.colorchooser;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.window.AbstractWindow;
 
@@ -21,7 +21,7 @@ public final class ColorChooser extends AbstractDwcComponent {
     protected void create(AbstractWindow p) {
 
         try {
-            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away
             ctrl = w.addColorChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1);
             catchUp();

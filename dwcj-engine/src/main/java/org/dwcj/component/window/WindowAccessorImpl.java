@@ -2,13 +2,13 @@ package org.dwcj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.App;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 
 /**
  * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel class
  * Pattern see Tulach, p.75ff
  */
-final class WindowAccessorImpl extends PanelAccessor {
+final class WindowAccessorImpl extends WindowAccessor {
 
     @Override
     public BBjWindow getBBjWindow(AbstractWindow panel) throws IllegalAccessException {

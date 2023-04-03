@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.component.window.AbstractWindow;
@@ -26,7 +26,7 @@ public final class SpinnerNumberField extends NumberField implements HasMouseWhe
     @Override
     protected void create(AbstractWindow p) {
         try {
-            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
             ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, flags);
             numBoxS = (BBjInputNSpinner) this.numBox;

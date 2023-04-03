@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
-import org.dwcj.bridge.PanelAccessor;
+import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sink.TabSelectEventSink;
@@ -46,7 +46,7 @@ public final class TabbedPane extends AbstractDwcComponent {
     @Override
     protected void create(AbstractWindow p) {
         try {
-            BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
+            BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
             parentPanel = p;
             // todo: honor visibility flag, if set before adding the control to the form, so
             // it's created invisibly right away
@@ -93,7 +93,7 @@ public final class TabbedPane extends AbstractDwcComponent {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
-                this.tabCtrl.addTab(text, PanelAccessor.getDefault().getBBjWindow(panel));
+                this.tabCtrl.addTab(text, WindowAccessor.getDefault().getBBjWindow(panel));
             } catch (BBjException | IllegalAccessException e) {
                 Environment.logError(e);
             }
@@ -169,7 +169,7 @@ public final class TabbedPane extends AbstractDwcComponent {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
-                this.tabCtrl.insertTab(index, text, PanelAccessor.getDefault().getBBjWindow(panel));
+                this.tabCtrl.insertTab(index, text, WindowAccessor.getDefault().getBBjWindow(panel));
             } catch (BBjException | IllegalAccessException e) {
                 Environment.logError(e);
             }
@@ -211,7 +211,7 @@ public final class TabbedPane extends AbstractDwcComponent {
         if (this.ctrl != null) {
             try {
                 parentPanel.add(panel);
-                this.tabCtrl.setControlAt(index, PanelAccessor.getDefault().getBBjWindow(panel));
+                this.tabCtrl.setControlAt(index, WindowAccessor.getDefault().getBBjWindow(panel));
             } catch (BBjException | IllegalAccessException e) {
                 Environment.logError(e);
             }
