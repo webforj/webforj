@@ -7,7 +7,7 @@ import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.window.event.WindowClickEvent;
-import org.dwcj.component.window.sink.DivClickEventSink;
+import org.dwcj.component.window.sink.WindowClickEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class Panel extends AbstractWindow {
 
   private ArrayList<Consumer<WindowClickEvent>> callbacks = new ArrayList<>();
-  private DivClickEventSink divClickEventSink;
+  private WindowClickEventSink divClickEventSink;
 
   private final ArrayList<AbstractComponent> catchUpControls = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class Panel extends AbstractWindow {
   public Panel onClick(Consumer<WindowClickEvent> callback) {
     if (this.ctrl != null) {
       if (this.divClickEventSink == null) {
-        this.divClickEventSink = new DivClickEventSink(this, callback);
+        this.divClickEventSink = new WindowClickEventSink(this, callback);
       } else {
         this.divClickEventSink.addCallback(callback);
       }
@@ -162,7 +162,7 @@ public class Panel extends AbstractWindow {
     }
 
     if (!this.callbacks.isEmpty()) {
-      this.divClickEventSink = new DivClickEventSink(this);
+      this.divClickEventSink = new WindowClickEventSink(this);
       while (!this.callbacks.isEmpty()) {
         this.divClickEventSink.addCallback(this.callbacks.remove(0));
       }

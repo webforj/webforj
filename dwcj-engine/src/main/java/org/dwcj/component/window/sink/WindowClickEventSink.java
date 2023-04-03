@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class DivClickEventSink {
+public final class WindowClickEventSink {
 
     private ArrayList<Consumer<WindowClickEvent>> targets;
     private final Panel div;
 
     @SuppressWarnings({"static-access"})
-    public DivClickEventSink(Panel div, Consumer<WindowClickEvent> callback) {
+    public WindowClickEventSink(Panel div, Consumer<WindowClickEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.div = div;
@@ -34,7 +34,7 @@ public final class DivClickEventSink {
         }
     }
     
-    public DivClickEventSink(Panel div) {
+    public WindowClickEventSink(Panel div) {
         this.targets = new ArrayList<>();
         this.div = div;
 
