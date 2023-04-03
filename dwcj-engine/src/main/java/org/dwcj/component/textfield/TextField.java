@@ -13,9 +13,9 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
-import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import com.basis.bbj.proxies.sysgui.BBjInputE;

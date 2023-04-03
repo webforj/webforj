@@ -12,7 +12,7 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;

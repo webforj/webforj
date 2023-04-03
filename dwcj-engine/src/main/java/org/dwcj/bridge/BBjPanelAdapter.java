@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 
 /**
  * ********** IMPORTANT: ****************+

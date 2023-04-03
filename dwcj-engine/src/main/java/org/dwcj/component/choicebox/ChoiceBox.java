@@ -20,7 +20,7 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxCloseEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.AbstractMap.SimpleEntry;

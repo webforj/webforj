@@ -21,7 +21,7 @@ import org.dwcj.component.combobox.sink.ComboBoxEditModifyEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxOpenEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;

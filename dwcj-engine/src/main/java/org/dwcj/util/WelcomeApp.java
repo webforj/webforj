@@ -6,8 +6,8 @@ import org.dwcj.Environment;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.label.Label;
-import org.dwcj.component.panels.AppPanel;
-import org.dwcj.component.panels.Div;
+import org.dwcj.component.window.AppPanel;
+import org.dwcj.component.window.Div;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 
 import org.dwcj.Environment;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 
 /**
  * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel class

@@ -16,7 +16,7 @@ import org.dwcj.component.navigator.sink.NavFirstEventSink;
 import org.dwcj.component.navigator.sink.NavLastEventSink;
 import org.dwcj.component.navigator.sink.NavNextEventSink;
 import org.dwcj.component.navigator.sink.NavPreviousEventSink;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 
 import java.util.function.Consumer;
 

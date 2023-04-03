@@ -7,10 +7,10 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.panels.Div;
 import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sink.TabSelectEventSink;
+import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.Div;
 
 import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;

@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.dwcj.Environment;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.popupmenu.PopupMenu;
+import org.dwcj.component.window.AbstractPanel;
 
 public class MenuItem extends AbstractDwcComponent {
 

@@ -1,4 +1,4 @@
-package org.dwcj.component.panels;
+package org.dwcj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;

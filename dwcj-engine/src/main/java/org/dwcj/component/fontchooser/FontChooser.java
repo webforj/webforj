@@ -13,7 +13,7 @@ import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
 import org.dwcj.component.fontchooser.sink.FontChooserApproveEventSink;
 import org.dwcj.component.fontchooser.sink.FontChooserCancelEventSink;
 import org.dwcj.component.fontchooser.sink.FontChooserChangeEventSink;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 
 import java.awt.*;
 import java.util.function.Consumer;

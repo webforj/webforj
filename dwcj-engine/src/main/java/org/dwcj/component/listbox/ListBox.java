@@ -16,7 +16,7 @@ import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
 import org.dwcj.component.listbox.sink.ListBoxSelectEventSink;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.*;

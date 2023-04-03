@@ -8,7 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.numberfield.NumberField;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 public final class SpinnerNumberField extends NumberField implements HasMouseWheelCondition {

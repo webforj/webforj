@@ -11,9 +11,9 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;

@@ -13,9 +13,9 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.Scrollable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextHighlightable;
-import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;

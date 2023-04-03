@@ -4,11 +4,11 @@ import org.dwcj.component.HasClassName;
 import org.dwcj.component.HasStyle;
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
 import org.dwcj.component.drawer.event.DrawerOpenEvent;
-import org.dwcj.component.panels.Div;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeName;
 import org.dwcj.component.webcomponent.events.EventListener;
+import org.dwcj.component.window.Div;
 
 /**
  * The drawer component allows developers to create a container which slides

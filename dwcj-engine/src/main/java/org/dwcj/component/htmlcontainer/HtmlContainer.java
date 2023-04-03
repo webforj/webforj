@@ -17,8 +17,8 @@ import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadEventSink;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadEventSink;
-import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.awt.*;

@@ -1,4 +1,4 @@
-package org.dwcj.component.panels;
+package org.dwcj.component.window;
 
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;

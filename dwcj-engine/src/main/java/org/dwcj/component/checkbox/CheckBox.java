@@ -13,7 +13,7 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
 import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;

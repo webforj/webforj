@@ -11,7 +11,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasPopupMenu;
 import org.dwcj.component.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.component.menuitem.MenuItem;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 
 public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu {
 

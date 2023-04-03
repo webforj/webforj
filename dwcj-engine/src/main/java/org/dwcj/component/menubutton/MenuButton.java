@@ -8,8 +8,8 @@ import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.panels.AbstractPanel;
 import org.dwcj.component.popupmenu.PopupMenu;
+import org.dwcj.component.window.AbstractPanel;
 
 public final class MenuButton extends AbstractDwcComponent {
 

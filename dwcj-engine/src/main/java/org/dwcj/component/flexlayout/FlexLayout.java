@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.HasStyle;
-import org.dwcj.component.panels.Div;
+import org.dwcj.component.window.Div;
 
 /**
  * A flex layout.

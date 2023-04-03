@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.panels.AbstractPanel;
+import org.dwcj.component.window.AbstractPanel;
 
 import java.lang.reflect.Method;
 

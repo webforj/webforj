@@ -1,8 +1,8 @@
 package org.dwcj.widgets.code;
 
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.panels.AbstractPanel;
-import org.dwcj.component.panels.Div;
+import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.Div;
 import org.dwcj.environment.ObjectTable;
 
 import java.util.HashSet;
