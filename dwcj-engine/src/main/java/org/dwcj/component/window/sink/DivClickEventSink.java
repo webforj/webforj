@@ -1,4 +1,4 @@
-package org.dwcj.component.window.sinks;
+package org.dwcj.component.window.sink;
 
 import com.basis.bbj.proxies.event.BBjMouseDownEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
