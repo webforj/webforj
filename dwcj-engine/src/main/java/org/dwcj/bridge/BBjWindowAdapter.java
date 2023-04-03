@@ -13,9 +13,9 @@ import org.dwcj.component.window.AbstractWindow;
  * The BBjPanelAdapter converts a BBjWindow into an AbstractDwcPanel so that DWCJ Controls can
  * be added to code that is written in the BBj language.
  */
-public class BBjPanelAdapter extends AbstractWindow {
+public class BBjWindowAdapter extends AbstractWindow {
 
-    public BBjPanelAdapter(BBjWindow w){
+    public BBjWindowAdapter(BBjWindow w){
         this.wnd = w;
     }
 
@@ -41,56 +41,56 @@ public class BBjPanelAdapter extends AbstractWindow {
     }
 
     @Override
-    public BBjPanelAdapter setStyle(String property, String value) {
+    public BBjWindowAdapter setStyle(String property, String value) {
         super.setStyle(property, value);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter addClassName(String selector) {
+    public BBjWindowAdapter addClassName(String selector) {
         super.addClassName(selector);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter removeClassName(String selector) {
+    public BBjWindowAdapter removeClassName(String selector) {
         super.removeClassName(selector);
         return this;
     }
 
 
     @Override
-    public BBjPanelAdapter setText(String text) {
+    public BBjWindowAdapter setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter setVisible(Boolean visible){
+    public BBjWindowAdapter setVisible(Boolean visible){
         super.setVisible(visible);
         return this;
     }
     
     @Override
-    public BBjPanelAdapter setEnabled(Boolean enabled) {
+    public BBjWindowAdapter setEnabled(Boolean enabled) {
         super.setEnabled(enabled);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter setTooltipText(String text) {
+    public BBjWindowAdapter setTooltipText(String text) {
         super.setTooltipText(text);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter setAttribute(String attribute, String value){
+    public BBjWindowAdapter setAttribute(String attribute, String value){
         super.setAttribute(attribute, value);
         return this;
     }
 
     @Override
-    public BBjPanelAdapter setId(String elementId){
+    public BBjWindowAdapter setId(String elementId){
         super.setId(elementId);
         return this;
     }
