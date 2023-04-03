@@ -1,4 +1,4 @@
-package org.dwcj.component.window.events;
+package org.dwcj.component.window.event;
 
 import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.window.Div;

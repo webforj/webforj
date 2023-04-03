@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.Div;
-import org.dwcj.component.window.events.DivClickEvent;
+import org.dwcj.component.window.event.DivClickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;

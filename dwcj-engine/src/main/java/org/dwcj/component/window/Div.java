@@ -6,7 +6,7 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.window.events.DivClickEvent;
+import org.dwcj.component.window.event.DivClickEvent;
 import org.dwcj.component.window.sinks.DivClickEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
