@@ -6,7 +6,7 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.window.event.DivClickEvent;
+import org.dwcj.component.window.event.WindowClickEvent;
 import org.dwcj.component.window.sink.DivClickEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  */
 public class Panel extends AbstractWindow {
 
-  private ArrayList<Consumer<DivClickEvent>> callbacks = new ArrayList<>();
+  private ArrayList<Consumer<WindowClickEvent>> callbacks = new ArrayList<>();
   private DivClickEventSink divClickEventSink;
 
   private final ArrayList<AbstractComponent> catchUpControls = new ArrayList<>();
@@ -83,7 +83,7 @@ public class Panel extends AbstractWindow {
    * @param callback A method to receive the click event
    * @return the control itself
    */
-  public Panel onClick(Consumer<DivClickEvent> callback) {
+  public Panel onClick(Consumer<WindowClickEvent> callback) {
     if (this.ctrl != null) {
       if (this.divClickEventSink == null) {
         this.divClickEventSink = new DivClickEventSink(this, callback);

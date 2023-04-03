@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.Panel;
-import org.dwcj.component.window.event.DivClickEvent;
+import org.dwcj.component.window.event.WindowClickEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,11 +13,11 @@ import java.util.function.Consumer;
 
 public final class DivClickEventSink {
 
-    private ArrayList<Consumer<DivClickEvent>> targets;
+    private ArrayList<Consumer<WindowClickEvent>> targets;
     private final Panel div;
 
     @SuppressWarnings({"static-access"})
-    public DivClickEventSink(Panel div, Consumer<DivClickEvent> callback) {
+    public DivClickEventSink(Panel div, Consumer<WindowClickEvent> callback) {
         this.targets = new ArrayList<>();
         this.targets.add(callback);
         this.div = div;
@@ -52,8 +52,8 @@ public final class DivClickEventSink {
 
     @SuppressWarnings("java:S1172")
     public void pushEvent(BBjMouseDownEvent ev) { //NOSONAR
-        DivClickEvent dwcEv = new DivClickEvent(this.div);
-        Iterator<Consumer<DivClickEvent>> it = targets.iterator();
+        WindowClickEvent dwcEv = new WindowClickEvent(this.div);
+        Iterator<Consumer<WindowClickEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
@@ -62,13 +62,13 @@ public final class DivClickEventSink {
      * Clicks the button, for testing purposes
      */
     public void doClick() {
-        DivClickEvent dwcEv = new DivClickEvent(div);
-        Iterator<Consumer<DivClickEvent>> it = targets.iterator();
+        WindowClickEvent dwcEv = new WindowClickEvent(div);
+        Iterator<Consumer<WindowClickEvent>> it = targets.iterator();
         while (it.hasNext())
             it.next().accept(dwcEv);
     }
 
-    public void addCallback(Consumer<DivClickEvent> callback) {
+    public void addCallback(Consumer<WindowClickEvent> callback) {
         targets.add(callback);
     }
 }
