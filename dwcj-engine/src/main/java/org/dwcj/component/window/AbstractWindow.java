@@ -51,7 +51,7 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
   }
 
   static {
-    PanelAccessor.setDefault(new PanelAccessorImpl());
+    PanelAccessor.setDefault(new WindowAccessorImpl());
   }
 
   /**

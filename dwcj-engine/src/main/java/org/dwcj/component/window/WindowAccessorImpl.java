@@ -8,7 +8,7 @@ import org.dwcj.bridge.PanelAccessor;
  * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel class
  * Pattern see Tulach, p.75ff
  */
-final class PanelAccessorImpl extends PanelAccessor {
+final class WindowAccessorImpl extends PanelAccessor {
 
     @Override
     public BBjWindow getBBjWindow(AbstractWindow panel) throws IllegalAccessException {
