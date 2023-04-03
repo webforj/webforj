@@ -24,7 +24,7 @@ import org.dwcj.component.tree.sink.TreeExpandEventSink;
 import org.dwcj.component.tree.sink.TreeFocusEventSink;
 import org.dwcj.component.tree.sink.TreeBlurEventSink;
 import org.dwcj.component.tree.sink.TreeSelectEventSink;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.models.Icon;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public final class Tree extends AbstractDwcComponent {
     }
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away

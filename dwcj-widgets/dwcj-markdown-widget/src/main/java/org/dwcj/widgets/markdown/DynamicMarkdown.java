@@ -3,7 +3,7 @@ package org.dwcj.widgets.markdown;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.Component;
 import org.dwcj.component.label.Label;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.window.Div;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class DynamicMarkdown extends Div {
     private final ArrayList<Component> ctrlList = new ArrayList<>();
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         super.create(p);
     }
 

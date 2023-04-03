@@ -15,7 +15,7 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

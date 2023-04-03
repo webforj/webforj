@@ -2,7 +2,7 @@ package org.dwcj.component;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +51,7 @@ public abstract class AbstractComponent implements Component, HasDestroy {
      * 
      * @param panel the panel to add this control on
      */
-    protected abstract void create(AbstractPanel panel);
+    protected abstract void create(AbstractWindow panel);
 
     /**
      * This method returns the underlying original BBj control

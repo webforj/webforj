@@ -21,7 +21,7 @@ import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 public final class DateField extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
@@ -72,7 +72,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     }
     
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             byte [] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

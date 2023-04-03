@@ -1,7 +1,7 @@
 package org.dwcj.widgets.code;
 
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.window.Div;
 import org.dwcj.environment.ObjectTable;
 
@@ -24,7 +24,7 @@ public class Code  extends Div {
     private HashSet<String> prism_loaded;
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         super.create(p);
 
         if (!ObjectTable.contains("PRISM_LOADED")){

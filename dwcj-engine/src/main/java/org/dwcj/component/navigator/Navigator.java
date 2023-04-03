@@ -16,7 +16,7 @@ import org.dwcj.component.navigator.sink.NavFirstEventSink;
 import org.dwcj.component.navigator.sink.NavLastEventSink;
 import org.dwcj.component.navigator.sink.NavNextEventSink;
 import org.dwcj.component.navigator.sink.NavPreviousEventSink;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 import java.util.function.Consumer;
 
@@ -38,7 +38,7 @@ public final class Navigator extends AbstractDwcComponent implements HasReadOnly
     }
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             //todo: honor visibility flag, if set before adding the control to the form, so it's created invisibly right away

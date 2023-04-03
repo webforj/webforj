@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import org.dwcj.Environment;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.popupmenu.PopupMenu;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 public class MenuItem extends AbstractDwcComponent {
 
@@ -114,7 +114,7 @@ public class MenuItem extends AbstractDwcComponent {
     }
 
     @Override
-    protected void create(AbstractPanel panel) {
+    protected void create(AbstractWindow panel) {
         throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 

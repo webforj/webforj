@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 public final class FileChooser extends AbstractDwcComponent {
 
@@ -15,7 +15,7 @@ public final class FileChooser extends AbstractDwcComponent {
     }
     
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

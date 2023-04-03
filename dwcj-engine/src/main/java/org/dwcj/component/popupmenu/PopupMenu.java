@@ -11,14 +11,14 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasPopupMenu;
 import org.dwcj.component.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.component.menuitem.MenuItem;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu {
 
     private BBjPopupMenu bbjPopupMenu;
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try{
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             ctrl = (BBjControl) w.addPopupMenu();

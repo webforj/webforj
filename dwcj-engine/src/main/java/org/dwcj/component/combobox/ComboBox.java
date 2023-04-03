@@ -21,7 +21,7 @@ import org.dwcj.component.combobox.sink.ComboBoxEditModifyEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxOpenEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public final class ComboBox extends AbstractDwclistControl implements HasReadOnl
     }
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

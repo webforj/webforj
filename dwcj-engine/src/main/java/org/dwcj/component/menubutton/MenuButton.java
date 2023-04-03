@@ -9,14 +9,14 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.popupmenu.PopupMenu;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 public final class MenuButton extends AbstractDwcComponent {
 
     private BBjMenuButton bbjMenuButton;
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

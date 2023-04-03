@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * This class represents a div container, which behaves as a panel and
  * can be styled and hold other divs (panels) and controls
  */
-public class Div extends AbstractPanel {
+public class Div extends AbstractWindow {
 
   private ArrayList<Consumer<DivClickEvent>> callbacks = new ArrayList<>();
   private DivClickEventSink divClickEventSink;
@@ -25,7 +25,7 @@ public class Div extends AbstractPanel {
   private final ArrayList<AbstractComponent> catchUpControls = new ArrayList<>();
 
   @Override
-  protected void create(AbstractPanel p) {
+  protected void create(AbstractWindow p) {
     BBjWindow w = p.getBBjWindow();
     try {
       byte finalFlag = 0x00;

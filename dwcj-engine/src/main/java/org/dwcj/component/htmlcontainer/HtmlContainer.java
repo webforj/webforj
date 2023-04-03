@@ -17,7 +17,7 @@ import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadEventSink;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -61,7 +61,7 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   @Override
-  protected void create(AbstractPanel p) {
+  protected void create(AbstractWindow p) {
     try {
       BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());

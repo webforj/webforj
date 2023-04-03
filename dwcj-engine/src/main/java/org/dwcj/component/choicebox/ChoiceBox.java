@@ -20,7 +20,7 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxCloseEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractDwclistControl;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -69,7 +69,7 @@ public final class ChoiceBox extends AbstractDwclistControl implements HasReadOn
     }
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
 
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);

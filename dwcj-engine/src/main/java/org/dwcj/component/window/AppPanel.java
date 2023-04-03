@@ -10,7 +10,7 @@ import org.dwcj.exceptions.DwcjAppInitializeException;
  * It typically occupied the full browser real estate and holds your app
  * that consists of div container panels
  */
-public class AppPanel extends AbstractPanel {
+public class AppPanel extends AbstractWindow {
 
   public AppPanel() throws DwcjAppInitializeException {
 
@@ -28,7 +28,7 @@ public class AppPanel extends AbstractPanel {
   }
 
   @Override
-  protected void create(AbstractPanel p) {
+  protected void create(AbstractWindow p) {
     // empty, needs override
   }
 

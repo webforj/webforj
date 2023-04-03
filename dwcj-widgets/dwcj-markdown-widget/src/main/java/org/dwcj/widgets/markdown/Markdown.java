@@ -6,7 +6,7 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.window.Div;
 import org.dwcj.environment.ObjectTable;
 
@@ -27,7 +27,7 @@ public class Markdown extends Div {
     private HashSet<String> prism_loaded;
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         super.create(p);
 
         if (!ObjectTable.contains("PRISM_LOADED")){

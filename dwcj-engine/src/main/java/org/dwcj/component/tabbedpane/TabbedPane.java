@@ -9,7 +9,7 @@ import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sink.TabSelectEventSink;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.window.Div;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public final class TabbedPane extends AbstractDwcComponent {
     /** The tab control's expanse */
     private Expanse expanse = null;
     /** The panel which the tab control belongs to */
-    private AbstractPanel parentPanel;
+    private AbstractWindow parentPanel;
     /** The currently selected tab */
     private int selected = 0;
 
@@ -44,7 +44,7 @@ public final class TabbedPane extends AbstractDwcComponent {
     protected BBjTabCtrl tabCtrl;
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             parentPanel = p;

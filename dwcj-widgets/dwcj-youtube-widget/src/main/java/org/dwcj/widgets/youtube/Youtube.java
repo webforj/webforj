@@ -12,7 +12,7 @@ import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.HtmlViewAttribute;
 import org.dwcj.component.webcomponent.annotations.NodeAttribute;
 import org.dwcj.component.webcomponent.annotations.NodeName;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 /**
  * The Youtube component is a component that allows you to embed a youtube
@@ -739,7 +739,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
    * {@inheritDoc}
    */
   @Override
-  protected void onAttach(AbstractPanel panel) {
+  protected void onAttach(AbstractWindow panel) {
     super.onAttach(panel);
     updateSrc();
   }

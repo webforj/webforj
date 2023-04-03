@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * the base class for all panel implementations
  */
-public abstract class AbstractPanel extends AbstractDwcComponent {
+public abstract class AbstractWindow extends AbstractDwcComponent {
 
   protected BBjWindow wnd;
 
@@ -34,7 +34,7 @@ public abstract class AbstractPanel extends AbstractDwcComponent {
    * @param ctrl the control(s) to be added
    * @return the panel itself
    */
-  public AbstractPanel add(AbstractComponent... ctrl) {
+  public AbstractWindow add(AbstractComponent... ctrl) {
     for (AbstractComponent c : ctrl) {
       if (Boolean.FALSE.equals(c.isDestroyed())) {
         try {

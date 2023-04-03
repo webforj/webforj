@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 import java.lang.reflect.Method;
 
@@ -31,7 +31,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
 
     @Override
     @SuppressWarnings("java:S3011") // allow increasing acessibility
-    public void create(AbstractComponent ctrl, AbstractPanel panel) throws IllegalAccessException {
+    public void create(AbstractComponent ctrl, AbstractWindow panel) throws IllegalAccessException {
 
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         String caller = stack[2].getClassName();

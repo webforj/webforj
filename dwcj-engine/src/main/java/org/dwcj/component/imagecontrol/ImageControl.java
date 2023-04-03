@@ -9,7 +9,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.PanelAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.window.AbstractPanel;
+import org.dwcj.component.window.AbstractWindow;
 
 import java.awt.*;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public final class ImageControl extends AbstractDwcComponent {
     private static final String CLEARPIXEL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==";
 
     @Override
-    protected void create(AbstractPanel p) {
+    protected void create(AbstractWindow p) {
         try {
             BBjWindow w = PanelAccessor.getDefault().getBBjWindow(p);
             BBjImage img = Environment.getInstance().getSysGui().getImageManager().loadImageFromBytes(Base64.getDecoder().decode(CLEARPIXEL));
