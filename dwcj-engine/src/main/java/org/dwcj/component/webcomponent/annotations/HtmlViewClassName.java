@@ -12,8 +12,10 @@ import java.lang.annotation.Target;
  * The HtmlViewClassName annotation is used to set css classes on the html view hosting the web
  * component upon creation.
  *
+ * <p>
  * For example, the following annotation will set the class "my-class" on the html view hosting the
  * web component when it is created.
+ * </p>
  *
  * <pre>
  * {@code

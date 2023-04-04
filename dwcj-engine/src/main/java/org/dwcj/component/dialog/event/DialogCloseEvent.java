@@ -1,7 +1,6 @@
 package org.dwcj.component.dialog.event;
 
 import java.util.Map;
-
 import org.dwcj.component.dialog.Dialog;
 import org.dwcj.component.webcomponent.annotations.EventName;
 import org.dwcj.component.webcomponent.events.Event;
@@ -15,6 +14,8 @@ import org.dwcj.component.webcomponent.events.Event;
 public class DialogCloseEvent extends Event<Dialog> {
 
   /**
+   * Creates a new event.
+   *
    * @param control the control
    * @param eventMap the event map
    */

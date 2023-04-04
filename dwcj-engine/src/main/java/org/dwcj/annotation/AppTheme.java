@@ -8,12 +8,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class to set the theme of the DWC app. The theme name should be one of the following:
- * "system", "light", "dark" or the name of a custom theme. In case the theme is not one of the
- * above, the theme will be set to "light".
+ * Annotates a class to set the theme of the app.
+ *
+ * <p>
+ * The theme name should be one of the following: "system", "light", "dark" or the name of a custom
+ * theme. In case the theme is not one of the above, the theme will be set to "light".
  *
  * The annotation can be used on the class level only and the class must extend `org.dwcj.App` in
  * order for the annotation to be processed.
+ * </p>
  *
  * <pre>
  * {@code
@@ -33,7 +36,7 @@ import java.lang.annotation.Target;
 public @interface AppTheme {
 
   /**
-   * The theme name
+   * The theme name.
    *
    * @return the theme name
    */

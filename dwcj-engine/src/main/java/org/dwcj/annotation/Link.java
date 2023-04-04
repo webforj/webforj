@@ -11,13 +11,15 @@ import java.lang.annotation.Target;
 /**
  * Annotates a class to inject a Link into the web page.
  *
+ * <p>
  * The annotation can be used on the class level only and the class must extend `org.dwcj.App` in
  * order for the annotation to be processed.
+ * </p>
  *
  * <pre>
  * {@code
  * &#64;Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
- * @Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)
+ * &#64;Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)
  * }
  * </pre>
  *

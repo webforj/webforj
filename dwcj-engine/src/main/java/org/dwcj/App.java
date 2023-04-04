@@ -1,10 +1,12 @@
 package org.dwcj;
 
 import com.basis.startup.type.BBjException;
-
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
-import org.dwcj.environment.namespace.*;
+import org.dwcj.environment.namespace.GlobalNamespace;
+import org.dwcj.environment.namespace.GroupNamespace;
+import org.dwcj.environment.namespace.Namespace;
+import org.dwcj.environment.namespace.PrivateNamespace;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 import org.dwcj.exceptions.DwcjException;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -18,7 +20,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 public abstract class App {
 
   /**
-   * An enum for the default application themes
+   * An enum for the default application themes.
    *
    * @see App#setTheme(Theme)
    */
@@ -49,7 +51,7 @@ public abstract class App {
   }
 
   /**
-   * Get the current page instance
+   * Get the current page instance.
    *
    * @return the current page instance
    */
@@ -58,7 +60,7 @@ public abstract class App {
   }
 
   /**
-   * Set the application theme
+   * Set the application theme.
    *
    * @param theme The theme to set
    * @throws DwcjRuntimeException if failed to set the theme
@@ -72,7 +74,7 @@ public abstract class App {
   }
 
   /**
-   * Set the application theme
+   * Set the application theme.
    *
    * @param theme The theme to set
    * @throws DwcjRuntimeException if failed to set the theme
@@ -84,7 +86,7 @@ public abstract class App {
   }
 
   /**
-   * Get the application theme
+   * Get the application theme.
    *
    * @return The theme
    * @throws DwcjRuntimeException if failed to get the theme
@@ -113,7 +115,7 @@ public abstract class App {
   }
 
   /**
-   * Get the name of the dark theme
+   * Get the name of the dark theme.
    *
    * @return The dark theme
    * @throws DwcjRuntimeException if failed to get the dark theme
@@ -158,7 +160,7 @@ public abstract class App {
   }
 
   /**
-   * Get the registered DWC application name
+   * Get the registered DWC application name.
    *
    * @return the application name
    * @throws DwcjRuntimeException if failed to get the application name
@@ -172,7 +174,7 @@ public abstract class App {
   }
 
   /**
-   * Get the application protocol
+   * Get the application protocol.
    *
    * @return The application protocol
    */
@@ -184,7 +186,7 @@ public abstract class App {
   }
 
   /**
-   * Get the application host
+   * Get the application host.
    *
    * @return The application host
    */
@@ -196,7 +198,7 @@ public abstract class App {
   }
 
   /**
-   * Get the application port
+   * Get the application port.
    *
    * @return The application port
    */
@@ -208,7 +210,7 @@ public abstract class App {
   }
 
   /**
-   * Get the application URL
+   * Get the application URL.
    *
    * @return The application URL
    * @throws DwcjRuntimeException if failed to get the application URL

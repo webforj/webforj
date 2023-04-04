@@ -12,8 +12,10 @@ import java.lang.annotation.Target;
  * The HtmlViewAttribute annotation is used to set attributes on the html view hosting the web
  * component upon creation.
  *
+ * <p>
  * For example, the following annotation will set the attribute "disabled" with value "true" on the
  * html view hosting the web component when it is created.
+ * </p>
  *
  * <pre>
  * {@code
@@ -30,14 +32,14 @@ import java.lang.annotation.Target;
 @Documented
 public @interface HtmlViewAttribute {
   /**
-   * The name of the attribute
+   * The name of the attribute.
    *
    * @return the name of the attribute
    **/
   String name();
 
   /**
-   * The value of the attribute
+   * The value of the attribute.
    *
    * @return the value of the attribute
    **/

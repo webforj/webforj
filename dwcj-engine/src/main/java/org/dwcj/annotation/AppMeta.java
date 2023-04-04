@@ -9,13 +9,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class to set the meta tags of the app. It can be used multiple times to set multiple
- * meta tags. The attributes of the meta tag can be set using the {@link Attribute} annotation. The
- * attributes can be repeated multiple times to set multiple attributes but the attributes are
- * optional.
+ * Annotates a class to set the meta tags of the app.
+ *
+ * <p>
+ * The annotation can be used multiple times to set multiple meta tags. The attributes of the meta
+ * tag can be set using the {@link Attribute} annotation. The attributes can be repeated multiple
+ * times to set multiple attributes but the attributes are optional.
  *
  * The annotation can be used on the class level only and the class must extend `org.dwcj.App` in
  * order for the annotation to be processed.
+ * </p>
  *
  * <pre>
  * {@code
@@ -23,7 +26,7 @@ import java.lang.annotation.Target;
  * &#64;AppMeta(name = "keywords", content = "My, App, Java")
  * &#64;AppMeta(name = "theme-color", content = "#000000", attributes = {
  *  &#64;Attribute(name = "media", value = "(prefers-color-scheme: dark)"),
- *  @Attribute(name = "name", value = "theme-color")
+ *  &#64;Attribute(name = "name", value = "theme-color")
  * })
  * }
  * </pre>
@@ -38,28 +41,28 @@ import java.lang.annotation.Target;
 @Documented
 public @interface AppMeta {
   /**
-   * The name of the meta tag
+   * The name of the meta tag.
    *
    * @return the name of the meta tag
    **/
   String name();
 
   /**
-   * The content of the meta tag
+   * The content of the meta tag.
    *
    * @return the content of the meta tag
    **/
   String content();
 
   /**
-   * The attributes of the meta tag
+   * The attributes of the meta tag.
    *
    * @return the attributes of the meta tag
    **/
   Attribute[] attributes() default {};
 
   /**
-   * A container for the {@link AppMeta} annotation
+   * A container for the {@link AppMeta} annotation.
    *
    * @see AppMeta
    * @author Hyyan Abo Fakher
@@ -70,7 +73,7 @@ public @interface AppMeta {
   @Documented
   public @interface Container {
     /**
-     * A container for the {@link AppMeta} annotation
+     * A container for the {@link AppMeta} annotation.
      *
      * @return the {@link AppMeta} annotations
      */

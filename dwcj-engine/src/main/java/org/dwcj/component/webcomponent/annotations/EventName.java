@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
 /**
  * Annotation to define a web component DOM event name.
  *
+ * <p>
  * For example, the following annotation will define the "click" event name for the web component.
+ * </p>
  *
  * <pre>
  * {@code

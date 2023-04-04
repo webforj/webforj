@@ -2,7 +2,6 @@ package org.dwcj.component.webcomponent.events;
 
 import java.util.EventObject;
 import java.util.Map;
-
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.Component;
 import org.dwcj.component.ComponentEvent;
@@ -30,9 +29,11 @@ public class Event<T extends Component> extends EventObject implements Component
   }
 
   /**
-   * Get the event map sent by the control
+   * Get the event map sent by the control.
    *
+   * <p>
    * The event map is a serializable map from the original client event sent by the control.
+   * </p>
    *
    * @return the event map
    */

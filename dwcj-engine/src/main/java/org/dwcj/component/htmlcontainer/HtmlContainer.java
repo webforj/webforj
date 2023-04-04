@@ -108,10 +108,12 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   /**
    * Executes a script in the context of the currently loaded page without waiting for the result.
    *
+   * <p>
    * If the control is not yet attache to panel, the control will queue the script and execute it
    * when the control is attached to a panel. The result of the script will be null in this case.
    *
    * It is recommended to invoke this method only after the control has been attached to a panel.
+   * </p>
    *
    * @param script The script to execute
    */
@@ -130,10 +132,12 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   /**
    * Executes a script in the context of the currently loaded page and returns the result.
    *
+   * <p>
    * If the control is not yet attache to panel, the control will queue the script and execute it
    * when the control is attached to a panel. The result of the script will be null in this case.
    *
    * It is recommended to invoke this method only after the control has been attached to a panel.
+   * </p>
    *
    * @param script The script to execute
    * @return The result of the script

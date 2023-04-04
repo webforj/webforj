@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * {@code
  * &#64;InlineStyleSheet(value = "body {background-color: red;}")
  * &#64;InlineStyleSheet(value = "body {background-color: red;}", top = true)
- * @InlineStyleSheet(value = "css/style.css", local = true)
+ * &#64;InlineStyleSheet(value = "css/style.css", local = true)
  * }
  * </pre>
  *
@@ -33,10 +33,12 @@ public @interface InlineStyleSheet {
   /**
    * A unique resource id.
    *
+   * <p>
    * Giving the resources the same id will cause them to be bundled together. Bundling here means
    * that the resources will be injected in the same style element in the page.
    *
    * If you want to inject the resource only once then use the {@link #once()} attribute.
+   * </p>
    *
    * @return the unique resource id
    **/
@@ -61,9 +63,11 @@ public @interface InlineStyleSheet {
    * A boolean value specifying whether this style is to be injected into the current page only
    * once.
    *
+   * <p>
    * This can be useful when creating a custom component that comes with its own style sheet.
    * Multiple instances of the component can be used but the style sheet should be injected only
    * once.
+   * </p>
    *
    * @return true if the style is to be injected into the current page only once
    */
@@ -91,7 +95,7 @@ public @interface InlineStyleSheet {
   @Documented
   public @interface Container {
 
-    /** A list of inline style sheets to inject in the app */
+    /** A list of inline style sheets to inject in the app. */
     InlineStyleSheet[] value();
   }
 }

@@ -10,11 +10,13 @@ import java.lang.annotation.Target;
 /**
  * Annotation to define the tag name of the web component node.
  *
+ * <p>
  * This annotation is processed by the {@link org.dwcj.component.webcomponent.WebComponent} class to
  * define the tag name of the web component node.
  *
  * For example, the following annotation will define the "my-component" tag name for the web
  * component.
+ * </p>
  *
  * <pre>
  * {@code
@@ -33,6 +35,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface NodeName {
 
-  /** The tag name of the web component */
+  /** The tag name of the web component. */
   String value() default "";
 }

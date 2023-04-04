@@ -109,7 +109,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the drawer content
+   * Set the drawer content.
    *
    * @param content The drawer content.
    * @return the drawer

@@ -356,8 +356,10 @@ public class AppLayout extends WebComponent
   /**
    * Set the drawer width.
    *
+   * <p>
    * If the drawer width set in CSS using the `--bbj-app-layout-drawer-width` custom property then
    * this property will be ignored.
+   * </p>
    *
    * @param drawerWidth the drawer width
    * @return the app layout
@@ -399,10 +401,12 @@ public class AppLayout extends WebComponent
   /**
    * Set the drawer breakpoint.
    *
+   * <p>
    * The breakpoint is a media query to control when the drawer will be switched to popover mode.
    * Useful for small screens.
    *
    * By default the drawer popover mode will be enabled when the screen size is `800px` or less.
+   * </p>
    *
    * @param drawerBreakpoint the drawer breakpoint
    * @return the app layout

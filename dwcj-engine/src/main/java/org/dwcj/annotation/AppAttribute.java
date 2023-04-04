@@ -11,8 +11,10 @@ import java.lang.annotation.Target;
 /**
  * Annotates a class to set an attribute on the document element of the web page.
  *
+ * <p>
  * The annotation can be used on the class level only and the class must extend `org.dwcj.App` in
  * order for the annotation to be processed.
+ * </p>
  *
  * <pre>
  * {@code
@@ -30,14 +32,14 @@ import java.lang.annotation.Target;
 @Documented
 public @interface AppAttribute {
   /**
-   * The name of the attribute
+   * The name of the attribute.
    *
    * @return the name of the attribute
    **/
   String name();
 
   /**
-   * The value of the attribute
+   * The value of the attribute.
    *
    * @return the value of the attribute
    **/

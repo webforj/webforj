@@ -19,7 +19,7 @@ import org.dwcj.component.window.Panel;
 public class Dialog extends WebComponent implements HasClassName, HasStyle {
 
   /**
-   * The dialog alignments
+   * The dialog alignments.
    */
   public enum Alignment {
     /** The dialog will be aligned to the bottom of the screen. */
@@ -72,7 +72,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * The dialog themes
+   * The dialog themes.
    */
   public enum Theme {
     /** The dialog will be themed as a danger dialog. */
@@ -203,7 +203,6 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Get the header panel instance.
    *
-   * @param drawer the drawer panel
    * @return the app layout
    */
   public Panel getHeader() {
@@ -278,7 +277,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog autofocus.
    *
+   * <p>
    * When true then automatically focus the first focusable element in the dialog.
+   * </p>
    *
    * @param autofocus the autofocus
    * @return the dialog
@@ -300,7 +301,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog backdrop.
    *
+   * <p>
    * When true then a backdrop will be displayed behind the dialog.
+   * </p>
    *
    * @param backdrop the backdrop
    * @return the dialog
@@ -322,7 +325,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog blurred.
    *
+   * <p>
    * When true then the dialog's backdrop will be blurred.
+   * </p>
    *
    * @param blurred the blurred
    * @return the dialog
@@ -344,9 +349,11 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog breakpoint.
    *
+   * <p>
    * A media query to control when the dialog will automatically flip to the full screen mode.When
    * the media query matches, the dialog will be full screen, otherwise it will be positioned.When
    * the auto full screen is enabled, the dialog cannot be moved or positioned.
+   * </p>
    *
    * @param breakpoint the breakpoint
    * @return the dialog
@@ -368,7 +375,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog cancel on esc key.
    *
+   * <p>
    * When true then the dialog can be cancelled by pressing the esc key.
+   * </p>
    *
    * @param cancelOnEscKey the cancel on esc key
    * @return the dialog
@@ -390,7 +399,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog cancel on outside click.
    *
+   * <p>
    * When true then the dialog can be cancelled by clicking outside of it.
+   * </p>
    *
    * @param cancelOnOutsideClick the cancel on outside click
    * @return the dialog
@@ -426,7 +437,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog fullscreen.
    *
+   * <p>
    * When true then the dialog will be fullscreen.
+   * </p>
    *
    * @param fullscreen the fullscreen
    * @return the dialog
@@ -448,7 +461,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog max height.
    *
+   * <p>
    * The maximum height of the dialog.
+   * </p>
    *
    * @param maxHeight the max height
    * @return the dialog
@@ -470,7 +485,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog max width.
    *
+   * <p>
    * The maximum width of the dialog.
+   * </p>
    *
    * @param maxWidth the max width
    * @return the dialog
@@ -492,7 +509,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Make the dialog moveable.
    *
+   * <p>
    * When true , then the dialog can be dragged to move it.
+   * </p>
    *
    * @param moveable the moveable
    * @return the dialog
@@ -541,7 +560,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * specify the X position for the dialog
+   * specify the X position for the dialog.
    *
    * @param posx the X position
    * @return the dialog
@@ -561,7 +580,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * specify the Y position for the dialog
+   * specify the Y position for the dialog.
    *
    * @param posy the Y position
    * @return the dialog
@@ -604,7 +623,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog snap to edge.
    *
+   * <p>
    * When true ten the dialog cannot be dragged outside the viewport.
+   * </p>
    *
    * @param snapToEdge the snap to edge
    * @return the dialog
@@ -626,7 +647,9 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   /**
    * Set the dialog theme.
    *
+   * <p>
    * The theme name to use for the dialog.
+   * </p>
    *
    * @param theme the theme
    * @return the dialog
@@ -699,7 +722,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Add a listener for the opened event
+   * Add a listener for the opened event.
    *
    * @param listener the listener
    * @return the dialog
@@ -720,7 +743,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Remove a listener for the opened event
+   * Remove a listener for the opened event.
    *
    * @param listener the listener
    * @return the dialog
@@ -731,7 +754,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Add a listener for the closed event
+   * Add a listener for the closed event.
    *
    * @param listener the listener
    * @return the dialog
@@ -752,7 +775,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Remove a listener for the closed event
+   * Remove a listener for the closed event.
    *
    * @param listener the listener
    * @return the dialog

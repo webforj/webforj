@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * {@code
  * &#64;InlineJavaScript(value = "alert('Hello World!');")
  * &#64;InlineJavaScript(value = "alert('Hello World!');", top = true)
- * @InlineJavaScript(value = "js/script.js", local = true)
+ * &#64;InlineJavaScript(value = "js/script.js", local = true)
  * }
  * </pre>
  *

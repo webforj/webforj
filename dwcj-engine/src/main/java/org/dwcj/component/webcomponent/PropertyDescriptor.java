@@ -43,7 +43,7 @@ public class PropertyDescriptor<T> {
   private final boolean isAttribute;
 
   /**
-   * Create a new property descriptor
+   * Create a new property descriptor.
    *
    * @param name the name of the property
    * @param defaultValue the default value of the property
@@ -57,7 +57,7 @@ public class PropertyDescriptor<T> {
   }
 
   /**
-   * Get the name of the property
+   * Get the name of the property.
    *
    * @return the name of the property
    */
@@ -66,7 +66,7 @@ public class PropertyDescriptor<T> {
   }
 
   /**
-   * Get the default value of the property
+   * Get the default value of the property.
    *
    * @return the default value of the property
    */
@@ -75,7 +75,7 @@ public class PropertyDescriptor<T> {
   }
 
   /**
-   * Check if the property descriptor is an attribute
+   * Check if the property descriptor is an attribute.
    *
    * @return true if the property descriptor is an attribute
    */
@@ -84,7 +84,7 @@ public class PropertyDescriptor<T> {
   }
 
   /**
-   * Check if the property descriptor is a property
+   * Check if the property descriptor is a property.
    *
    * @return true if the property descriptor is a property
    */
@@ -93,7 +93,7 @@ public class PropertyDescriptor<T> {
   }
 
   /**
-   * Create a new descriptor for a property
+   * Create a new descriptor for a property.
    *
    * @param name the name of the property
    * @param defaultValue the default value of the property
@@ -105,7 +105,7 @@ public class PropertyDescriptor<T> {
   }
 
   /**
-   * Create a new descriptor for an attribute
+   * Create a new descriptor for an attribute.
    *
    * @param name the name of the attribute
    * @param defaultValue the default value of the attribute

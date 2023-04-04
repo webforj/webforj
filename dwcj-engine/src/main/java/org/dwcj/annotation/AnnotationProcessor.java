@@ -8,28 +8,28 @@ import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
 
 /**
- * Annotation processor for the application and controls annotations
+ * Annotation processor for the application and controls annotations.
  *
  * @author Hyyan Abo Fakher
  */
 public final class AnnotationProcessor {
 
   /**
-   * The running phase of the application
+   * The running phase of the application.
    */
   public enum RunningPhase {
     /**
-     * The application is running before the run method
+     * The application is running before the run method.
      */
     PRE_RUN,
     /**
-     * The application is running after the run method
+     * The application is running after the run method.
      */
     POST_RUN
   }
 
   /**
-   * Process the annotations of the application
+   * Process the annotations of the application.
    *
    * @param app The application to process
    * @param phase The phase of the application
@@ -56,7 +56,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the annotations of the control
+   * Process the annotations of the control.
    *
    * @param control The control to process
    */
@@ -70,7 +70,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppTitle annotation
+   * Process the AppTitle annotation.
    *
    * @param clazz The class to process
    */
@@ -82,7 +82,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppAttribute annotation
+   * Process the AppAttribute annotation.
    *
    * @param clazz The class to process
    */
@@ -97,7 +97,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppDarkTheme annotation
+   * Process the AppDarkTheme annotation.
    *
    * @param clazz The class to process
    */
@@ -109,7 +109,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppLightTheme annotation
+   * Process the AppLightTheme annotation.
    *
    * @param clazz The class to process
    */
@@ -121,7 +121,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppTheme annotation
+   * Process the AppTheme annotation.
    *
    * @param clazz The class to process
    */
@@ -133,7 +133,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppMeta annotation
+   * Process the AppMeta annotation.
    *
    * @param clazz The class to process
    */
@@ -152,7 +152,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the StyleSheet annotation
+   * Process the StyleSheet annotation.
    *
    * @param clazz The class to process
    */
@@ -181,7 +181,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the InlineStyleSheet annotation
+   * Process the InlineStyleSheet annotation.
    *
    * @param clazz The class to process
    */
@@ -217,7 +217,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the JavaScript annotation
+   * Process the JavaScript annotation.
    *
    * @param clazz The class to process
    */
@@ -246,7 +246,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the InlineJavaScript annotation
+   * Process the InlineJavaScript annotation.
    *
    * @param clazz The class to process
    */
@@ -279,7 +279,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the Link annotation
+   * Process the Link annotation.
    *
    * @param clazz The class to process
    */
@@ -309,7 +309,7 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the Configuration annotation
+   * Process the Configuration annotation.
    *
    * @param clazz The class to process
    * @param phase The phase to process

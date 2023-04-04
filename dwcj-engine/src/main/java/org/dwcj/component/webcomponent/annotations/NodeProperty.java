@@ -11,8 +11,10 @@ import java.lang.annotation.Target;
 /**
  * The NodeProperty annotation is used to set properties on the web component upon creation.
  *
+ * <p>
  * For example, the following annotation will set the "disabled" property to "true" on the web
  * component when it is created.
+ * </p>
  *
  * <pre>
  * {@code

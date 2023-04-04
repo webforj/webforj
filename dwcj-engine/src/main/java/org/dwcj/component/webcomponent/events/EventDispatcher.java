@@ -55,7 +55,6 @@ public class EventDispatcher {
   /**
    * Gets the listeners count for the given event class.
    *
-   * @param <T> the generic type
    * @param eventClass the event class
    *
    * @return the listeners count

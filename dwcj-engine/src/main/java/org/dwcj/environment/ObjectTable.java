@@ -1,9 +1,7 @@
 package org.dwcj.environment;
 
 import com.basis.startup.type.BBjException;
-
 import java.util.NoSuchElementException;
-
 import org.dwcj.Environment;
 
 /**
@@ -14,7 +12,7 @@ import org.dwcj.Environment;
 public final class ObjectTable {
 
   /**
-   * private constructor to prevent instantiation
+   * private constructor to prevent instantiation.
    */
   private ObjectTable() {}
 
@@ -44,7 +42,7 @@ public final class ObjectTable {
   }
 
   /**
-   * Checks if the object table contains a key
+   * Checks if the object table contains a key.
    *
    * @param key the key of the variable to check
    * @return true if the object table contains the key
@@ -59,7 +57,7 @@ public final class ObjectTable {
   }
 
   /**
-   * Clear an entry from the object table
+   * Clear an entry from the object table.
    *
    * @param key the key of the variable to remove
    */

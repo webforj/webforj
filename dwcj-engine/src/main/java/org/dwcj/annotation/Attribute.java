@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * {@code
  * &#64;AppMeta(name = "custom name", content = "custom content", attributes = {
  *  &#64;Attribute(name = "custom-attribute", value = "custom attribute value"),
- *  @Attribute(name = "custom-attribute2", value = "custom attribute value2")
+ *  &#64;Attribute(name = "custom-attribute2", value = "custom attribute value2")
  * })
  * }
  * </pre>
@@ -30,14 +30,14 @@ import java.lang.annotation.Target;
 public @interface Attribute {
 
   /**
-   * The name of the attribute
+   * The name of the attribute.
    *
    * @return the name of the attribute
    **/
   String name();
 
   /**
-   * The value of the attribute
+   * The value of the attribute.
    *
    * @return the value of the attribute
    **/

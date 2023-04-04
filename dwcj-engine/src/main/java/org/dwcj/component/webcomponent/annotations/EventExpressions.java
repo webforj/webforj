@@ -10,17 +10,21 @@ import java.lang.annotation.Target;
 /**
  * Annotation to define a web component DOM event expressions.
  *
+ * <p>
  * An expression is a string that is evaluated by the javascript engine to determine the value of
  * the expression.
  *
  * Every expression have access to the following variables:
+ * </p>
  *
  * <ul>
  * <li><b>event</b> - The event object</li>
  * <li><b>component</b> - The web component instance</li>
  * </ul>
  *
+ * <p>
  * When working with expressions keep the following points in mind:
+ * </p>
  * <ul>
  * <li>Expressions are evaluated in the context of the web component instance</li>
  * <li>If the expression must return a value and has the word return in it, then we will assume it
@@ -40,8 +44,10 @@ import java.lang.annotation.Target;
  * expressions should return true if the event should be prevented, stopped or stopped immediately.
  * Otherwise, they should return false.
  *
+ * <p>
  * For example, the following expression will prevent the default action of the event if the value
  * of the component's "value" property is equal to "test":
+ * </p>
  *
  * <pre>
  * {@code
@@ -49,9 +55,11 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
+ * <p>
  * The "detail" expression should set the detail of the event. For example, the following expression
  * will set the detail of the event to the value of the component's "value" property. Then the event
  * detail will available in the event handler.
+ * </p>
  *
  * <pre>
  * {@code
@@ -59,9 +67,11 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
+ * <p>
  * The "Filter" expression should return true if the event should be fired. Otherwise, it should
  * return false. For example, the following expression will fire the event only if the event target
  * is the same as the component:
+ * </p>
  *
  * <pre>
  * {@code

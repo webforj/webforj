@@ -8,10 +8,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class to set the title of the DWC app.
+ * Annotates a class to set the title of the app.
  *
+ * <p>
  * The annotation can be used on the class level only and the class must extend `org.dwcj.App` in
  * order for the annotation to be processed.
+ * </p>
  *
  * <pre>
  * {@code
@@ -29,7 +31,7 @@ import java.lang.annotation.Target;
 public @interface AppTitle {
 
   /**
-   * The title of the app
+   * The title of the app.
    *
    * @return the title of the app
    **/

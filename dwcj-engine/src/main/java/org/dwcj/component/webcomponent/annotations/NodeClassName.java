@@ -11,8 +11,10 @@ import java.lang.annotation.Target;
 /**
  * The NodeClassName annotation is used to set css classes on the web component upon creation.
  *
+ * <p>
  * For example, the following annotation will set the class "my-class" on the web component when it
  * is created.
+ * </p>
  *
  * <pre>
  * {@code
