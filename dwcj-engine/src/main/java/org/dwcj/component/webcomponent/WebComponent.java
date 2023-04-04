@@ -45,20 +45,18 @@ import org.dwcj.exceptions.DwcjComponentDestroyed;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The class WebComponent helps to integrate web components into the DWCJ
- * framework.
- * 
- * The web component class must be annotated with {@link NodeName} annotation to
- * specify the tag name of the web component and must extend this class.
- * 
- * Attributes and properties that must be set directly after creation can
- * use the {@link NodeAttribute} and {@link NodeProperty} annotations.
- * 
- * To include assets (JavaScript, CSS, etc.) for the web component, the class
- * can be annotated with assets annotations like the {@link JavaScript} and
- * {@link InlineStyleSheet} annotations or by using the {@link org.dwcj.App}
- * class API.
- * 
+ * The class WebComponent helps to integrate web components into the DWCJ framework.
+ *
+ * The web component class must be annotated with {@link NodeName} annotation to specify the tag
+ * name of the web component and must extend this class.
+ *
+ * Attributes and properties that must be set directly after creation can use the
+ * {@link NodeAttribute} and {@link NodeProperty} annotations.
+ *
+ * To include assets (JavaScript, CSS, etc.) for the web component, the class can be annotated with
+ * assets annotations like the {@link JavaScript} and {@link InlineStyleSheet} annotations or by
+ * using the {@link org.dwcj.App} class API.
+ *
  * @author Hyyan Abo Fakher
  */
 public abstract class WebComponent extends AbstractComponent {
@@ -104,11 +102,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the UUID of the component.
-   * 
-   * The UUID is used to identify the component in the DOM and to
-   * communicate with it from the server. The UUID is generated
-   * automatically and cannot be changed.
-   * 
+   *
+   * The UUID is used to identify the component in the DOM and to communicate with it from the
+   * server. The UUID is generated automatically and cannot be changed.
+   *
    * @return the UUID of the component.
    */
   public String getUUID() {
@@ -117,9 +114,8 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Check if the web component is attached to a panel.
-   * 
-   * @return true if the web component is attached to a panel and not destroyed,
-   *         false otherwise
+   *
+   * @return true if the web component is attached to a panel and not destroyed, false otherwise
    */
   public boolean isAttached() {
     return panel != null && !isDestroyed();
@@ -148,11 +144,11 @@ public abstract class WebComponent extends AbstractComponent {
   }
 
   /**
-   * A hook that is called when the web component is attached to a panel and
-   * directly before any scripts are injected.
-   * 
+   * A hook that is called when the web component is attached to a panel and directly before any
+   * scripts are injected.
+   *
    * Subclasses can override this method to perform any initialization tasks.
-   * 
+   *
    * @param panel the panel that the web component is attached to
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -161,9 +157,9 @@ public abstract class WebComponent extends AbstractComponent {
   }
 
   /**
-   * A hook that is is called when the web component is attached to the panel
-   * and directly after all scripts are injected.
-   * 
+   * A hook that is is called when the web component is attached to the panel and directly after all
+   * scripts are injected.
+   *
    * @param panel the panel that the web component is detached from
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -179,11 +175,11 @@ public abstract class WebComponent extends AbstractComponent {
   }
 
   /**
-   * Get the panel that the web component is attached to or null if the web
-   * component is not attached to any panel.
-   * 
-   * @return the panel instance or null if the web component is not attached to
-   *         any panel or destroyed
+   * Get the panel that the web component is attached to or null if the web component is not
+   * attached to any panel.
+   *
+   * @return the panel instance or null if the web component is not attached to any panel or
+   *         destroyed
    */
   protected AbstractWindow getPanel() {
     if (!isDestroyed()) {
@@ -195,7 +191,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the events dispatcher of the web component.
-   * 
+   *
    * @return the event dispatcher
    * @See {@link EventDispatcher}
    */
@@ -205,7 +201,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the HTML container instance.
-   * 
+   *
    * @return the HTML container or null if the web component is destroyed
    */
   protected HtmlContainer getHtmlContainer() {
@@ -218,30 +214,27 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the tag name of the web component.
-   * 
+   *
    * Web component tag name is the defined in the {@link NodeName} annotation.
-   * 
+   *
    * @return the tag name of the web component
-   * @throws DwcjRuntimeException if the web component class is not annotated
-   *                             with @NodeName
+   * @throws DwcjRuntimeException if the web component class is not annotated with @NodeName
    */
   protected String getComponentTagName() {
     if (getClass().isAnnotationPresent(NodeName.class)) {
       return getClass().getAnnotation(NodeName.class).value();
     } else {
-      throw new DwcjRuntimeException(
-          "The web component class must be annotated with @NodeName");
+      throw new DwcjRuntimeException("The web component class must be annotated with @NodeName");
     }
   }
 
   /**
    * Get the default html view of the web component.
-   * 
-   * @return the default html view of the web component or empty string if the web
-   *         component is destroyed
-   * 
-   * @throws DwcjRuntimeException if the web component class is not annotated
-   *                             with @NodeName
+   *
+   * @return the default html view of the web component or empty string if the web component is
+   *         destroyed
+   *
+   * @throws DwcjRuntimeException if the web component class is not annotated with @NodeName
    */
   protected String getView() {
     if (isDestroyed()) {
@@ -291,8 +284,7 @@ public abstract class WebComponent extends AbstractComponent {
       attr.append(" dwcj-wc=\"").append(getUUID()).append("\"");
 
       StringBuilder view = new StringBuilder();
-      view.append("<").append(name).append(attr).append(">")
-          .append("</").append(name).append(">");
+      view.append("<").append(name).append(attr).append(">").append("</").append(name).append(">");
 
       return view.toString();
     }
@@ -300,69 +292,62 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Invoke a client method on the web component asynchronously.
-   * 
-   * The method is invoked asynchronously on the client and the result is
-   * discarded. In other words, no response is expected from the client.
-   * 
+   *
+   * The method is invoked asynchronously on the client and the result is discarded. In other words,
+   * no response is expected from the client.
+   *
    * The method name can be: An actual method name, "This" or "Exp".
-   * 
+   *
    * <ul>
-   * <li>
-   * <b>Method name</b> - The name of a method on the web component.
-   * for example:
-   * 
+   * <li><b>Method name</b> - The name of a method on the web component. for example:
+   *
    * <pre>
    * {@code
    * invokeAsync("myComponentMethod", "arg1", "arg2");
    * }
    * </pre>
-   * 
-   * <li>
-   * <b>This</b> - The web component instance.
-   * The method can be use to set a property on the web component.
-   * for example:
-   * 
+   *
+   * <li><b>This</b> - The web component instance. The method can be use to set a property on the
+   * web component. for example:
+   *
    * <pre>
    * {@code
    * invokeAsync("this", "value", "new value");
    * }
    * </pre>
-   * 
+   *
    * </li>
-   * 
-   * <li>
-   * <b>Exp</b> - A javascript expression that will be wrapped in a
-   * function and invoked on the client.
-   * 
-   * An expression is a string that is evaluated by the javascript engine.
-   * Every expression have access to the web component instance via the
-   * "component" variable.
-   * 
+   *
+   * <li><b>Exp</b> - A javascript expression that will be wrapped in a function and invoked on the
+   * client.
+   *
+   * An expression is a string that is evaluated by the javascript engine. Every expression have
+   * access to the web component instance via the "component" variable.
+   *
    * When working with expressions keep the following points in mind:
-   * 
+   *
    * <ul>
-   * <li>Expressions are evaluated in the context of the web component
-   * instance
-   * <li>If the expression must return a value and has the word return in it, then
-   * we will assume it is a multi-line expression and will not wrap it.</li>
-   * <li>If the expression must return a value and does not have the word return
-   * in it, then we will insert the return statement and the ";".</li>
-   * <li>If the expression has many lines, then you will need to provide the ";""
-   * at the end of each line and also provide the return statement.</li>
+   * <li>Expressions are evaluated in the context of the web component instance
+   * <li>If the expression must return a value and has the word return in it, then we will assume it
+   * is a multi-line expression and will not wrap it.</li>
+   * <li>If the expression must return a value and does not have the word return in it, then we will
+   * insert the return statement and the ";".</li>
+   * <li>If the expression has many lines, then you will need to provide the ";"" at the end of each
+   * line and also provide the return statement.</li>
    * </ul>
-   * 
+   *
    * For example:
-   * 
+   *
    * <pre>
    * {@code
    * invokeAsync("Function", "alert(component.value)");
    * }
    * </pre>
    * </ul>
-   * 
+   *
    * @param method the method name
-   * @param args   the method arguments
-   * 
+   * @param args the method arguments
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -372,10 +357,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Alias for {@link #invokeAsync(String, Object...)}
-   * 
+   *
    * @param method the method name
-   * @param args   the method arguments
-   * 
+   * @param args the method arguments
+   *
    * @return The web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -385,9 +370,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Execute a javascript expression asynchronously.
-   * 
+   *
    * @param expression the expression to execute
-   * 
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #invokeAsync(String, Object...)
@@ -398,70 +383,62 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Invoke a client method on the web component synchronously.
-   * 
-   * The method is invoked synchronously on the client and the result is
-   * returned. In other words, a response is expected from the client.
-   * 
+   *
+   * The method is invoked synchronously on the client and the result is returned. In other words, a
+   * response is expected from the client.
+   *
    * The method name can be: An actual method name, "This" or "Exp".
-   * 
+   *
    * <ul>
-   * <li>
-   * <b>Method name</b> - The name of a method on the web component.
-   * for example:
-   * 
+   * <li><b>Method name</b> - The name of a method on the web component. for example:
+   *
    * <pre>
    * {@code
    * String value = invoke("myComponentMethod", "arg1", "arg2");
    * }
    * </pre>
-   * 
-   * <li>
-   * <b>This</b> - The web component instance.
-   * Depending on the number of arguments, the method can be used to get a
-   * property or set a property on the web component.
-   * for example:
-   * 
+   *
+   * <li><b>This</b> - The web component instance. Depending on the number of arguments, the method
+   * can be used to get a property or set a property on the web component. for example:
+   *
    * <pre>
    * {@code
    * String value = invoke("this", "value");
    * invoke("this", "value", "new value");
    * }
    * </pre>
-   * 
+   *
    * </li>
-   * 
-   * <li>
-   * <b>Exp</b> - A javascript expression that will be wrapped in a
-   * function and invoked on the client and the result is returned.
-   * 
-   * An expression is a string that is evaluated by the javascript engine.
-   * Every expression have access to the web component instance via the
-   * "component" variable.
-   * 
+   *
+   * <li><b>Exp</b> - A javascript expression that will be wrapped in a function and invoked on the
+   * client and the result is returned.
+   *
+   * An expression is a string that is evaluated by the javascript engine. Every expression have
+   * access to the web component instance via the "component" variable.
+   *
    * When working with expressions keep the following points in mind:
    * <ul>
-   * <li>Expressions are evaluated in the context of the web component
-   * instance
-   * <li>If the expression must return a value and has the word return in it, then
-   * we will assume it is a multi-line expression and will not wrap it.</li>
-   * <li>If the expression must return a value and does not have the word return
-   * in it, then we will insert the return statement and the ";".</li>
-   * <li>If the expression has many lines, then you will need to provide the ";""
-   * at the end of each line and also provide the return statement.</li>
+   * <li>Expressions are evaluated in the context of the web component instance
+   * <li>If the expression must return a value and has the word return in it, then we will assume it
+   * is a multi-line expression and will not wrap it.</li>
+   * <li>If the expression must return a value and does not have the word return in it, then we will
+   * insert the return statement and the ";".</li>
+   * <li>If the expression has many lines, then you will need to provide the ";"" at the end of each
+   * line and also provide the return statement.</li>
    * </ul>
-   * 
+   *
    * For example:
-   * 
+   *
    * <pre>
    * {@code
    * String value = invoke("Exp", "component.value");
    * }
    * </pre>
    * </ul>
-   * 
+   *
    * @param method the method name
-   * @param args   the method arguments
-   * 
+   * @param args the method arguments
+   *
    * @return The result of the method
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -471,10 +448,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Alias for {@link #invoke(String, Object...)}
-   * 
+   *
    * @param method the method name
-   * @param args   the method arguments
-   * 
+   * @param args the method arguments
+   *
    * @return The result of the method
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -484,9 +461,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Execute a javascript expression.
-   * 
+   *
    * @param expression the expression to execute
-   * 
+   *
    * @return the result of the expression
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #invoke(String, Object...)
@@ -497,26 +474,23 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Add an event listener.
-   * 
-   * Event listeners are instances of {@link EventListener} that are invoked when
-   * an event is fired on the web component.
-   * 
-   * Every component must define the events it fires. This is done by annotating
-   * the supported event classes with {@link EventName}.
-   * Further control over the event data can be done by annotating the event class
-   * with {@link EventExpressions}.
-   * 
-   * @param <K>        the event class
+   *
+   * Event listeners are instances of {@link EventListener} that are invoked when an event is fired
+   * on the web component.
+   *
+   * Every component must define the events it fires. This is done by annotating the supported event
+   * classes with {@link EventName}. Further control over the event data can be done by annotating
+   * the event class with {@link EventExpressions}.
+   *
+   * @param <K> the event class
    * @param eventClass the event class
-   * @param listener   the event listener
-   * 
+   * @param listener the event listener
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
-   * @throws DwcjRuntimeException if the event class is not annotated
-   *                             with @EventName
+   * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
-  protected <K extends Event<?>> void addEventListener(
-      Class<K> eventClass,
+  protected <K extends Event<?>> void addEventListener(Class<K> eventClass,
       EventListener<K> listener) {
     assertNotDestroyed();
 
@@ -527,8 +501,7 @@ public abstract class WebComponent extends AbstractComponent {
     // register the event on the client side
     if (!registeredClientEvents.contains(eventName)) {
       StringBuilder exp = new StringBuilder();
-      exp.append("Dwcj.WcConnector.addEventListener('")
-          .append(getUUID()).append("', '")
+      exp.append("Dwcj.WcConnector.addEventListener('").append(getUUID()).append("', '")
           .append(eventName).append("', ");
 
       JsonObject options = new JsonObject();
@@ -538,7 +511,8 @@ public abstract class WebComponent extends AbstractComponent {
         options.addProperty("detail", encode.apply(eventConfig.detail()));
         options.addProperty("preventDefault", encode.apply(eventConfig.preventDefault()));
         options.addProperty("stopPropagation", encode.apply(eventConfig.stopPropagation()));
-        options.addProperty("stopImmediatePropagation", encode.apply(eventConfig.stopImmediatePropagation()));
+        options.addProperty("stopImmediatePropagation",
+            encode.apply(eventConfig.stopImmediatePropagation()));
       }
 
       exp.append(options.toString()).append(");");
@@ -550,15 +524,14 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Remove an event listener.
-   * 
-   * @param <K>        the event class
+   *
+   * @param <K> the event class
    * @param eventClass the event class
-   * @param listener   the event listener
-   * 
+   * @param listener the event listener
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
-   * @throws DwcjRuntimeException if the event class is not annotated
-   *                             with @EventName
+   * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
   protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
       EventListener<K> listener) {
@@ -573,42 +546,39 @@ public abstract class WebComponent extends AbstractComponent {
     boolean shouldReachClient = dispatcher.getListenersCount(eventClass) == 0;
 
     if (shouldReachClient) {
-      String exp = "Dwcj.WcConnector.removeEventListener('" + getUUID() + "', '" + eventName + "');";
+      String exp =
+          "Dwcj.WcConnector.removeEventListener('" + getUUID() + "', '" + eventName + "');";
       executeAsyncExpression(exp);
     }
   }
 
   /**
    * Get the added control with the given uuid
-   * 
+   *
    * @param uuid the uuid of the control to get
    * @return the control
    */
   protected AbstractComponent getControl(String uuid) {
-    return controls.entrySet().stream()
-        .filter(e -> e.getValue().getKey().equals(uuid))
-        .map(e -> e.getKey())
-        .findFirst()
-        .orElse(null);
+    return controls.entrySet().stream().filter(e -> e.getValue().getKey().equals(uuid))
+        .map(e -> e.getKey()).findFirst().orElse(null);
   }
 
   /**
    * Add a control inside the web component.
-   * 
-   * The method will move the given DWCJ control from its current parent in the
-   * DOM tree to the web component.
-   * 
+   *
+   * The method will move the given DWCJ control from its current parent in the DOM tree to the web
+   * component.
+   *
    * <p>
-   * Note if the control is not attached to any dwcj panel yet, the method will
-   * attach it to the panel of the web component when the component is attached.
+   * Note if the control is not attached to any dwcj panel yet, the method will attach it to the
+   * panel of the web component when the component is attached.
    * </p>
-   * 
+   *
    * @param control the control to add
    * @return the uuid of the control
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
-   * @throws IllegalArgumentException if the control is null, the control is the
-   *                                  web component itself or the control is
-   *                                  destroyed.
+   * @throws DwcjComponentDestroyed if the web component is destroyed
+   * @throws IllegalArgumentException if the control is null, the control is the web component
+   *         itself or the control is destroyed.
    */
   protected String addControl(AbstractComponent control) {
     assertNotDestroyed();
@@ -663,10 +633,8 @@ public abstract class WebComponent extends AbstractComponent {
     // move the control to the web component in the client side
     StringBuilder js = new StringBuilder();
     js.append("const selector='[dwcj-ctrl=\"").append(newUuid).append("\"]';")
-        .append("const control = document.querySelector(selector);")
-        .append("if(control)")
-        .append(" component.appendChild(control);")
-        .append("return;"); // avoid auto wrapping
+        .append("const control = document.querySelector(selector);").append("if(control)")
+        .append(" component.appendChild(control);").append("return;"); // avoid auto wrapping
 
     executeAsyncExpression(js.toString());
 
@@ -675,10 +643,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Remove a control from the web component.
-   * 
-   * The method will remove the given DWCJ control from the web component
-   * and destroy it.
-   * 
+   *
+   * The method will remove the given DWCJ control from the web component and destroy it.
+   *
    * @param String the uuid of the control to remove
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
@@ -697,10 +664,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the raw slot value (the html content).
-   * 
+   *
    * @param slot the slot name
-   * @return the raw slot value if the web component is not destroyed, an empty
-   *         string otherwise
+   * @return the raw slot value if the web component is not destroyed, an empty string otherwise
    */
   protected String getRawSlot(String slot) {
     if (isDestroyed()) {
@@ -712,9 +678,8 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the default raw slot value (the html content).
-   * 
-   * @return the raw slot value if the web component is not destroyed, an empty
-   *         string otherwise.
+   *
+   * @return the raw slot value if the web component is not destroyed, an empty string otherwise.
    */
   protected String getRawSlot() {
     return getRawSlot("__EMPTY_SLOT__");
@@ -722,16 +687,15 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set the raw slot value (the html content).
-   * 
-   * The method will use the given html content and render it in the web
-   * component defined slot.
-   * 
+   *
+   * The method will use the given html content and render it in the web component defined slot.
+   *
    * The method can be invoked multiple times to update the slot content.
-   * 
-   * @param slot  the slot name
+   *
+   * @param slot the slot name
    * @param value the raw slot value
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    */
   protected void addRawSlot(String slot, String value) {
@@ -758,8 +722,7 @@ public abstract class WebComponent extends AbstractComponent {
         // if the component has a span node with dwcj-${slot} attribute
         .append("if (span) {")
         // replace the text of the span node
-        .append("span.innerHTML = \\`").append(value).append("\\`; ")
-        .append("} else {")
+        .append("span.innerHTML = \\`").append(value).append("\\`; ").append("} else {")
         // if the component does not have a span node with dwcj-${slot} attribute
         // create a new span node and append it to the component
         .append("span = document.createElement('span');")
@@ -772,22 +735,21 @@ public abstract class WebComponent extends AbstractComponent {
     }
 
     js.append("span.innerHTML = \\`").append(value).append("\\`; ")
-        .append("component.appendChild(span);")
-        .append("}")
-        .append("return '';"); // to avoid auto wrapping
+        .append("component.appendChild(span);").append("}").append("return '';"); // to avoid auto
+                                                                                  // wrapping
 
     executeAsyncExpression(js.toString());
   }
 
   /**
    * Remove a raw slot.
-   * 
+   *
    * The method will remove the given slot from the web component.
-   * 
+   *
    * @param slot the slot name
    * @param html the html content
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    */
   protected void removeRawSlot(String slot) {
@@ -815,9 +777,7 @@ public abstract class WebComponent extends AbstractComponent {
           // if the component has a span node with dwcj-${slot} attribute
           .append("if(span){")
           // remove the span node
-          .append("span.remove();")
-          .append("}")
-          .append("return '';"); // to avoid auto wrapping
+          .append("span.remove();").append("}").append("return '';"); // to avoid auto wrapping
 
       executeAsyncExpression(js.toString());
     }
@@ -825,12 +785,12 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Remove the default raw slot.
-   * 
+   *
    * The method will remove the default slot from the web component.
-   * 
+   *
    * @param html the html content
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    */
   protected void removeRawSlot() {
@@ -839,10 +799,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set a default raw slot value (the html content).
-   * 
+   *
    * @param value the raw slot value
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a slot
    * @see #addRawSlot(String, String)
    */
@@ -852,9 +812,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the slot panel.
-   * 
+   *
    * @param slot the slot name
-   * 
+   *
    * @return the slot panel
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -872,7 +832,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the default slot panel
-   * 
+   *
    * @return the default slot panel
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -882,25 +842,22 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Attach a slot to the web component.
-   * 
-   * If the slot is already assigned to another panel, the old panel will be
-   * detached from the web component. If the slot is already assigned to the given
-   * panel, the method will do nothing. If the slot is not assigned to any panel,
-   * the method will attach the given panel to the web component in the given
-   * slot.
-   * 
-   * If the given panel is not attached to any parent panel, the method will
-   * attach
-   * the panel to the panel of the web component where the web component is
-   * attached.
-   * 
-   * @param slot    the slot name
-   * @param panel   the panel to attach
-   * @param destroy if true, and the slot is assigned to another panel, the old
-   *                panel will be destroyed (removed from the DOM)
-   * 
+   *
+   * If the slot is already assigned to another panel, the old panel will be detached from the web
+   * component. If the slot is already assigned to the given panel, the method will do nothing. If
+   * the slot is not assigned to any panel, the method will attach the given panel to the web
+   * component in the given slot.
+   *
+   * If the given panel is not attached to any parent panel, the method will attach the panel to the
+   * panel of the web component where the web component is attached.
+   *
+   * @param slot the slot name
+   * @param panel the panel to attach
+   * @param destroy if true, and the slot is assigned to another panel, the old panel will be
+   *        destroyed (removed from the DOM)
+   *
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    */
   protected void addSlot(String slot, AbstractWindow panel, boolean destroy) {
@@ -911,7 +868,8 @@ public abstract class WebComponent extends AbstractComponent {
     }
 
     if (panel.isDestroyed()) {
-      throw new IllegalArgumentException("Unable to attach a destroyed panel to the slot [" + slot + "]");
+      throw new IllegalArgumentException(
+          "Unable to attach a destroyed panel to the slot [" + slot + "]");
     }
 
     if (slots.containsKey(slot)) {
@@ -966,12 +924,12 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Attach a slot to the web component.
-   * 
-   * @param slot  the slot name
+   *
+   * @param slot the slot name
    * @param panel the panel to attach
-   * 
+   *
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #addSlot(String, AbstractWindow, boolean)
    */
@@ -981,11 +939,11 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Attach the default slot to the web component.
-   * 
+   *
    * @param panel the panel to attach
-   * 
+   *
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #addSlot(String, AbstractWindow, boolean)
    */
@@ -995,17 +953,17 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Detach a slot from the web component.
-   * 
-   * The method will detach the panel from the web component and then it is up to
-   * developer to destroy it later.
-   * 
-   * @param slot    the slot name
-   * @param destroy if true, the panel will be destroyed (removed from the DOM)
-   *                if false , the panel will be hidden without removing it from
-   *                the DOM and then it is up to developer to destroy it later.
-   * 
+   *
+   * The method will detach the panel from the web component and then it is up to developer to
+   * destroy it later.
+   *
+   * @param slot the slot name
+   * @param destroy if true, the panel will be destroyed (removed from the DOM) if false , the panel
+   *        will be hidden without removing it from the DOM and then it is up to developer to
+   *        destroy it later.
+   *
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    */
   protected void removeSlot(String slot, boolean destroy) {
@@ -1042,10 +1000,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Detach a slot from the web component.
-   * 
+   *
    * @param slot the slot name
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #removeSlot(String, boolean)
    */
@@ -1055,9 +1013,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Detach the default slot from the web component.
-   * 
+   *
    * @return the web component
-   * @throws DwcjComponentDestroyed      if the web component is destroyed
+   * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    * @see #removeSlot(String, boolean)
    */
@@ -1067,13 +1025,13 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get a component attribute.
-   * 
-   * @param name         the name of the attribute
+   *
+   * @param name the name of the attribute
    * @param defaultValue the default value of the attribute
-   * @param fromClient   true if the attribute should be read from the client
-   * 
-   * @return the value of the attribute or the default value if the attribute is
-   *         not set or the web component is destroyed
+   * @param fromClient true if the attribute should be read from the client
+   *
+   * @return the value of the attribute or the default value if the attribute is not set or the web
+   *         component is destroyed
    */
   protected String getComponentAttribute(String name, String defaultValue, boolean fromClient) {
     if (isDestroyed()) {
@@ -1104,12 +1062,12 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get component attribute from the server
-   * 
-   * @param name         the name of the attribute
+   *
+   * @param name the name of the attribute
    * @param defaultValue the default value of the attribute
-   * 
-   * @return the value of the attribute or the default value if the attribute is
-   *         not set or the web component is destroyed.
+   *
+   * @return the value of the attribute or the default value if the attribute is not set or the web
+   *         component is destroyed.
    * @see #getComponentAttribute(String, String, boolean)
    */
   protected String getComponentAttribute(String name, String defaultValue) {
@@ -1118,11 +1076,11 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get component attribute from the client
-   * 
+   *
    * @param name the name of the attribute
-   * 
-   * @return the value of the attribute or null if the attribute is not set or the
-   *         web component is destroyed.
+   *
+   * @return the value of the attribute or null if the attribute is not set or the web component is
+   *         destroyed.
    * @see #getComponentAttribute(String, String, boolean)
    */
   protected String getComponentAttribute(String name) {
@@ -1131,10 +1089,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set an attribute of the web component
-   * 
-   * @param name  the name of the attribute
+   *
+   * @param name the name of the attribute
    * @param value the value of the attribute
-   * 
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #setComponentAttribute(String, String, boolean)
@@ -1146,9 +1104,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set an attribute of the web component
-   * 
+   *
    * @param name the name and the value of the attribute
-   * 
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #setComponentAttribute(String, String)
@@ -1159,7 +1117,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Remove an attribute of the web component
-   * 
+   *
    * @param name the name of the attribute
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -1170,13 +1128,13 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get a property of the web component.
-   * 
-   * @param name         the name of the property
+   *
+   * @param name the name of the property
    * @param defaultValue the default value of the property
-   * @param fromClient   true if the property should be read from the client
-   * 
-   * @return the value of the property or the default value if the property is not
-   *         set or the web component is destroyed.
+   * @param fromClient true if the property should be read from the client
+   *
+   * @return the value of the property or the default value if the property is not set or the web
+   *         component is destroyed.
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
   protected Object getComponentProperty(String name, Object defaultValue, boolean fromClient) {
@@ -1208,12 +1166,12 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get a property of the web component from the server.
-   * 
-   * @param name         the name of the property
+   *
+   * @param name the name of the property
    * @param defaultValue the default value of the property
-   * 
-   * @return the value of the property or the default value if the property is not
-   *         set or the web component is destroyed.
+   *
+   * @return the value of the property or the default value if the property is not set or the web
+   *         component is destroyed.
    * @see #getComponentProperty(String, Object, boolean)
    */
   protected Object getComponentProperty(String name, Object defaultValue) {
@@ -1222,11 +1180,11 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get a property of the web component from the server.
-   * 
+   *
    * @param name the name of the property
-   * 
-   * @return the value of the property or null if the property is not set or the
-   *         web component is destroyed.
+   *
+   * @return the value of the property or null if the property is not set or the web component is
+   *         destroyed.
    * @see #getComponentProperty(String, Object, boolean)
    */
   protected Object getComponentProperty(String name) {
@@ -1235,10 +1193,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set a property of the web component.
-   * 
-   * @param name  the name of the property
+   *
+   * @param name the name of the property
    * @param value the value of the property
-   * 
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #setComponentProperty(String, Object, boolean)
@@ -1250,9 +1208,9 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set a property of the web component.
-   * 
+   *
    * @param name the name and the value of the property
-   * 
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #setComponentProperty(String, Object)
@@ -1263,14 +1221,14 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get a property or an attribute of the web component.
-   * 
-   * @param <V>        the type of the property
-   * @param property   the property
+   *
+   * @param <V> the type of the property
+   * @param property the property
    * @param fromClient true if the property should be read from the client
-   * @param type       the type of the property
-   * 
-   * @return the value of the property or attribute or the default value if the
-   *         property or attribute is not set or the web component is destroyed.
+   * @param type the type of the property
+   *
+   * @return the value of the property or attribute or the default value if the property or
+   *         attribute is not set or the web component is destroyed.
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #getComponentProperty(String, Object, boolean)
    * @see #getComponentAttribute(String, String, boolean)
@@ -1285,7 +1243,8 @@ public abstract class WebComponent extends AbstractComponent {
     if (!isAttribute) {
       if (fromClient) {
         // we need to convert the json string to the correct type.
-        String json = String.valueOf(getComponentProperty(property.getName(), property.getDefaultValue(), fromClient));
+        String json = String.valueOf(
+            getComponentProperty(property.getName(), property.getDefaultValue(), fromClient));
         if (json == null) {
           return property.getDefaultValue();
         }
@@ -1295,24 +1254,26 @@ public abstract class WebComponent extends AbstractComponent {
         return result;
       } else {
         @SuppressWarnings("unchecked")
-        V result = (V) getComponentProperty(property.getName(), property.getDefaultValue(), fromClient);
+        V result =
+            (V) getComponentProperty(property.getName(), property.getDefaultValue(), fromClient);
         return result;
       }
     } else {
       @SuppressWarnings("unchecked")
-      V result = (V) getComponentAttribute(property.getName(), String.valueOf(property.getDefaultValue()), fromClient);
+      V result = (V) getComponentAttribute(property.getName(),
+          String.valueOf(property.getDefaultValue()), fromClient);
       return result;
     }
   }
 
   /**
    * Get a property or an attribute of the web component.
-   * 
-   * @param <V>      the type of the property
+   *
+   * @param <V> the type of the property
    * @param property the property
-   * 
-   * @return the value of the property or attribute or the default value if the
-   *         property or attribute is not set or the web component is destroyed.
+   *
+   * @return the value of the property or attribute or the default value if the property or
+   *         attribute is not set or the web component is destroyed.
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #get(PropertyDescriptor, boolean, Type)
    */
@@ -1322,11 +1283,11 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set a property or an attribute of the web component.
-   * 
-   * @param <V>      the type of the property
+   *
+   * @param <V> the type of the property
    * @param property the property
-   * @param value    the value of the property
-   * 
+   * @param value the value of the property
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #setComponentProperty(String, Object)
@@ -1346,10 +1307,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set a property or an attribute of the web component.
-   * 
-   * @param <V>      the type of the property
+   *
+   * @param <V> the type of the property
    * @param property the property
-   * 
+   *
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @see #set(PropertyDescriptor, Object)
@@ -1360,7 +1321,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Add a class name to the web component
-   * 
+   *
    * @param className the class name
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
@@ -1371,7 +1332,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Remove a class name from the web component
-   * 
+   *
    * @param className the class name
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
@@ -1382,8 +1343,8 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Set a style of the web component
-   * 
-   * @param name  the name of the style
+   *
+   * @param name the name of the style
    * @param value the value of the style
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
@@ -1394,7 +1355,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get a style of the web component
-   * 
+   *
    * @param name the name of the style
    * @return the value of the style
    */
@@ -1402,24 +1363,25 @@ public abstract class WebComponent extends AbstractComponent {
     Object result = executeExpression("style.getPropertyValue(\\'" + name + "\\')");
     return String.valueOf(result);
   }
-  
+
   /**
    * Get the computed style of the web component
-   * 
+   *
    * @param name the name of the style
    * @return the computed value of the style
    */
   protected String getComponentComputedStyle(String name) {
-    Object result = executeExpression("window.getComputedStyle(component).getPropertyValue(\\'" + name + "\\')");
+    Object result = executeExpression(
+        "window.getComputedStyle(component).getPropertyValue(\\'" + name + "\\')");
     return String.valueOf(result);
   }
 
   /**
    * Remove a style of the web component
-   * 
+   *
    * @param name the name of the style
    * @return the web component
-   * 
+   *
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
   protected void removeComponentStyle(String name) {
@@ -1428,10 +1390,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Create the control.
-   * 
-   * This method is called by the framework when the control is added to a panel.
-   * You should not call this method directly.
-   * 
+   *
+   * This method is called by the framework when the control is added to a panel. You should not
+   * call this method directly.
+   *
    * @param panel the parent panel
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -1470,7 +1432,8 @@ public abstract class WebComponent extends AbstractComponent {
     key = "org.dwcj.WebComponent::scripts";
     attached = ObjectTable.contains(key);
     if (!attached) {
-      App.getPage().addInlineJavaScript("context://webcompoent/wcconnector.min.js", true, "id=wc-scripts");
+      App.getPage().addInlineJavaScript("context://webcompoent/wcconnector.min.js", true,
+          "id=wc-scripts");
       ObjectTable.put(key, true);
     }
 
@@ -1511,11 +1474,11 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Invoke a method of the web component.
-   * 
-   * @param async  true if the method is async
+   *
+   * @param async true if the method is async
    * @param method the method
-   * @param args   the arguments
-   * 
+   * @param args the arguments
+   *
    * @return the result
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
@@ -1543,8 +1506,7 @@ public abstract class WebComponent extends AbstractComponent {
 
     // execute an expression
     else if (methodLower.equals("exp")) {
-      js.append("'exp',")
-          .append("'" + encode.apply(String.valueOf(args[0])) + "'");
+      js.append("'exp',").append("'" + encode.apply(String.valueOf(args[0])) + "'");
     }
 
     // invoke a method on the component
@@ -1584,7 +1546,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Handle javascript events
-   * 
+   *
    * @param htmlContainerJavascriptEvent
    */
   private void handleJavascriptEvents(HtmlContainerJavascriptEvent htmlContainerJavascriptEvent) {
@@ -1600,10 +1562,8 @@ public abstract class WebComponent extends AbstractComponent {
     EventDispatcher eventDispatcher = getEventDispatcher();
     if (eventDispatcher != null && clientEventMap.containsKey(type)) {
       String detail = (String) eventMap.get("detail");
-      Map<String, Object> data = new Gson().fromJson(
-          detail,
-          new TypeToken<Map<String, Object>>() {
-          }.getType());
+      Map<String, Object> data =
+          new Gson().fromJson(detail, new TypeToken<Map<String, Object>>() {}.getType());
       Event<?> event = createEvent(clientEventMap.get(type), data);
 
       if (event != null) {
@@ -1614,11 +1574,10 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the event name for the given event class.
-   * 
+   *
    * @param eventClass the event class
    * @return the event name
-   * @throws DwcjRuntimeException if the event class is not annotated
-   *                             with @EventName
+   * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
   private String getEventName(Class<? extends Event<?>> eventClass) {
     String eventName = null;
@@ -1626,8 +1585,7 @@ public abstract class WebComponent extends AbstractComponent {
     if (eventClass.isAnnotationPresent(EventName.class)) {
       eventName = eventClass.getAnnotation(EventName.class).value();
     } else {
-      throw new DwcjRuntimeException(
-          "The event class must be annotated with @EventName");
+      throw new DwcjRuntimeException("The event class must be annotated with @EventName");
     }
 
     return eventName;
@@ -1635,11 +1593,11 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Create a web component event.
-   * 
-   * @param <E>        the type of the event
+   *
+   * @param <E> the type of the event
    * @param eventClass the class of the event
-   * @param data       the data
-   * 
+   * @param data the data
+   *
    * @return the event
    */
   private <E extends Event<?>> E createEvent(Class<E> eventClass, Map<String, Object> data) {
@@ -1651,9 +1609,8 @@ public abstract class WebComponent extends AbstractComponent {
       Class<?>[] parameterTypes = constructor.getParameterTypes();
 
       // is not inner class
-      if (parameterTypes.length == 2 &&
-          WebComponent.class.isAssignableFrom(parameterTypes[0]) &&
-          parameterTypes[1] == Map.class) {
+      if (parameterTypes.length == 2 && WebComponent.class.isAssignableFrom(parameterTypes[0])
+          && parameterTypes[1] == Map.class) {
         try {
           event = (E) constructor.newInstance(this, data); // NOSONAR
           break;
@@ -1663,10 +1620,9 @@ public abstract class WebComponent extends AbstractComponent {
         }
       }
       // else if inner class
-      else if (parameterTypes.length == 3 &&
-          WebComponent.class.isAssignableFrom(parameterTypes[0]) &&
-          WebComponent.class.isAssignableFrom(parameterTypes[1]) &&
-          parameterTypes[2] == Map.class) {
+      else if (parameterTypes.length == 3 && WebComponent.class.isAssignableFrom(parameterTypes[0])
+          && WebComponent.class.isAssignableFrom(parameterTypes[1])
+          && parameterTypes[2] == Map.class) {
         try {
           event = (E) constructor.newInstance(this, this, data); // NOSONAR
           break;
@@ -1682,18 +1638,17 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * Get the default css styles of the web component
-   * 
-   * @return the default css styles of the web component or empty string if the
-   *         web component is destroyed
+   *
+   * @return the default css styles of the web component or empty string if the web component is
+   *         destroyed
    */
   private String getStylesheets() {
     if (isDestroyed()) {
       return "";
     }
 
-    return "[dwcj-slot]{overflow: visible}" +
-        "[dwcj-hv]{overflow: visible}" +
-        "[dwcj-hv] .BBjHtmlView-content{overflow: visible}";
+    return "[dwcj-slot]{overflow: visible}" + "[dwcj-hv]{overflow: visible}"
+        + "[dwcj-hv] .BBjHtmlView-content{overflow: visible}";
   }
 
   /**
@@ -1708,7 +1663,7 @@ public abstract class WebComponent extends AbstractComponent {
 
   /**
    * A parameter that is passed as a JavaScript expression.
-   * 
+   *
    * @author Hyyan Abo Fakher
    */
   public class JsRawParam {
@@ -1717,7 +1672,7 @@ public abstract class WebComponent extends AbstractComponent {
 
     /**
      * Construct new instance of JsExpressionParam
-     * 
+     *
      * @param param the JavaScript expression
      */
     public JsRawParam(String param) {
@@ -1726,7 +1681,7 @@ public abstract class WebComponent extends AbstractComponent {
 
     /**
      * Get the JavaScript expression
-     * 
+     *
      * @return the JavaScript expression
      */
     public String getParam() {
@@ -1735,7 +1690,7 @@ public abstract class WebComponent extends AbstractComponent {
 
     /**
      * Get the JavaScript expression as string
-     * 
+     *
      * @return the JavaScript expression
      */
     @Override

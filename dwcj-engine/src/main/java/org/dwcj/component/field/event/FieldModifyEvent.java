@@ -5,19 +5,19 @@ import org.dwcj.component.field.TextBox;
 
 public class FieldModifyEvent implements ComponentEvent {
 
-    private final TextBox control;
+  private final TextBox control;
 
-    public FieldModifyEvent(TextBox tBox){
-        this.control = tBox;
-    }
+  public FieldModifyEvent(TextBox tBox) {
+    this.control = tBox;
+  }
 
-    @Override
-    public TextBox getControl() {
-        return control;
-    }
+  @Override
+  public TextBox getControl() {
+    return control;
+  }
 
-    public String toString() {
-        return "Event: TextBox modified";
-    }
-    
+  public String toString() {
+    return "Event: TextBox modified";
+  }
+
 }

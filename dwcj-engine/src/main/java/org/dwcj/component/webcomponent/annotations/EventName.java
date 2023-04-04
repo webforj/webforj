@@ -8,16 +8,15 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to define a web component DOM event name.
- * 
- * For example, the following annotation will define the "click" event name for
- * the web component.
- * 
+ *
+ * For example, the following annotation will define the "click" event name for the web component.
+ *
  * <pre>
  * {@code
- * @EventName("click")
+ * &#64;EventName("click")
  * }
  * </pre>
- * 
+ *
  * @see <a href=
  *      "https://developer.mozilla.org/en-US/docs/Web/Events">https://developer.mozilla.org/en-US/docs/Web/Events</a>
  * @author Hyyan Abo Fakher
@@ -29,7 +28,7 @@ public @interface EventName {
 
   /**
    * The name of the dom event as defined in the web component.
-   * 
+   *
    * @return the name of the dom event
    **/
   String value();

@@ -16,59 +16,57 @@ import java.util.function.Consumer;
 
 public final class TabSelectEventSink {
 
-    private ArrayList<Consumer<TabSelectEvent>> targets;
-    private final TabbedPane tabControl;
+  private ArrayList<Consumer<TabSelectEvent>> targets;
+  private final TabbedPane tabControl;
 
-    @SuppressWarnings({"static-access"})
-    public TabSelectEventSink(TabbedPane btn) {
+  @SuppressWarnings({"static-access"})
+  public TabSelectEventSink(TabbedPane btn) {
 
-        this.targets = new ArrayList<>();
-        this.tabControl = btn;
+    this.targets = new ArrayList<>();
+    this.tabControl = btn;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TAB_SELECT, //NOSONAR
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TAB_SELECT, // NOSONAR
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public TabSelectEventSink(TabbedPane tabControl, Consumer<TabSelectEvent> callback) {
+  public TabSelectEventSink(TabbedPane tabControl, Consumer<TabSelectEvent> callback) {
 
-        this.targets = new ArrayList<>();
-        this.targets.add(callback);
-        this.tabControl = tabControl;
+    this.targets = new ArrayList<>();
+    this.targets.add(callback);
+    this.tabControl = tabControl;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tabControl);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(tabControl);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void pushEvent(BBjTabSelectedEvent ev) { // NOSONAR
-        TabSelectEvent dwcEv = null;
-        try {
-            dwcEv = new TabSelectEvent(this.tabControl, ev.getIndex(), ev.getTitle());
-        } catch (BBjException e) {
-            Environment.logError(e);
-        }
-        Iterator<Consumer<TabSelectEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
+  public void pushEvent(BBjTabSelectedEvent ev) { // NOSONAR
+    TabSelectEvent dwcEv = null;
+    try {
+      dwcEv = new TabSelectEvent(this.tabControl, ev.getIndex(), ev.getTitle());
+    } catch (BBjException e) {
+      Environment.logError(e);
     }
+    Iterator<Consumer<TabSelectEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
 
-    public void addCallback(Consumer<TabSelectEvent> callback) {
-        targets.add(callback);
-    }
+  public void addCallback(Consumer<TabSelectEvent> callback) {
+    targets.add(callback);
+  }
 }

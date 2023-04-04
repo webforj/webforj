@@ -19,7 +19,8 @@ import org.dwcj.util.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public final class RadioButton extends AbstractDwcComponent implements HasReadOnly, Focusable, TabTraversable {
+public final class RadioButton extends AbstractDwcComponent
+    implements HasReadOnly, Focusable, TabTraversable {
 
   private BBjRadioButton bbjRadioButton;
 
@@ -52,9 +53,10 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "",
-          flags);
+      byte[] flags =
+          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+      ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, BASISNUMBER_1, "", flags);
       bbjRadioButton = (BBjRadioButton) ctrl;
       catchUp();
     } catch (Exception e) {
@@ -82,7 +84,7 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
 
   /**
    * Returns the ID of a button - IDs are assigned when a control is added to a panel, not before.
-   * 
+   *
    * @return The ID of the control which has been added to a panel.
    */
   public Integer getButtonID() {
@@ -93,13 +95,14 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
         Environment.logError(e);
       }
     }
-    App.consoleError("ID cannot be fetched as control does not yet exist. Please add control to a window first");
+    App.consoleError(
+        "ID cannot be fetched as control does not yet exist. Please add control to a window first");
     return null;
   }
 
   /**
    * Gets the position of the text alignment in relation to the radio button
-   * 
+   *
    * @return Enum value of the horizontal text position for the control.
    */
   public HorizontalTextPosition getHorizontalTextPosition() {
@@ -123,7 +126,7 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
 
   /**
    * Returns true if the radio button is selected, false otherwise.
-   * 
+   *
    * @return Boolean value representing the radio button's selection value
    */
   public Boolean isSelected() {
@@ -138,8 +141,9 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
   }
 
   /**
-   * Sets the selection value of the radio button - true if the button should be selected, false if not.
-   * 
+   * Sets the selection value of the radio button - true if the button should be selected, false if
+   * not.
+   *
    * @param selected Boolean for desired selection state of the button.
    * @return The control itself
    */
@@ -329,13 +333,15 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
   }
 
   /**
-   * Sets the expanse of the radio button from the enum with control-specific applicable expanse values
-   * 
+   * Sets the expanse of the radio button from the enum with control-specific applicable expanse
+   * values
+   *
    * <pre>
    * {@code
    * RadioButton button = new RadioButton().setExpanse(RadioButton.Expanse.LARGE);
    * }
    * </pre>
+   *
    * @param expanse The enum value representing the desired expanse
    * @return
    */
@@ -345,7 +351,8 @@ public final class RadioButton extends AbstractDwcComponent implements HasReadOn
   }
 
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
+                                  // of checks
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp()))
       throw new IllegalAccessException("catchUp cannot be called twice");

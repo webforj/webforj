@@ -13,56 +13,56 @@ import java.util.function.Consumer;
 
 public final class ComboBoxSelectEventSink {
 
-    private ArrayList<Consumer<ComboBoxSelectEvent>> targets = new ArrayList<>();
+  private ArrayList<Consumer<ComboBoxSelectEvent>> targets = new ArrayList<>();
 
-    private final ComboBox textComboBox;
+  private final ComboBox textComboBox;
 
-    private BBjControl bbjctrl;
+  private BBjControl bbjctrl;
 
-    @SuppressWarnings({"static-access"})
-    public ComboBoxSelectEventSink(ComboBox cb) {
-        this.textComboBox = cb;
+  @SuppressWarnings({"static-access"})
+  public ComboBoxSelectEventSink(ComboBox cb) {
+    this.textComboBox = cb;
 
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
-                    "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    @SuppressWarnings({"static-access"})
-    public ComboBoxSelectEventSink(ComboBox cb, Consumer<ComboBoxSelectEvent> callback) {
-        this.targets.add(callback);
-        this.textComboBox = cb;
+  @SuppressWarnings({"static-access"})
+  public ComboBoxSelectEventSink(ComboBox cb, Consumer<ComboBoxSelectEvent> callback) {
+    this.targets.add(callback);
+    this.textComboBox = cb;
 
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
-                    "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    @SuppressWarnings("java.S1172")
-    public void selectEvent(BBjListSelectEvent ev) { //NOSONAR
-        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.textComboBox);
-        Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  @SuppressWarnings("java.S1172")
+  public void selectEvent(BBjListSelectEvent ev) { // NOSONAR
+    ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.textComboBox);
+    Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void doSelect(Object key) {
-        ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.textComboBox);
-        dwcEv.setKey(key);
-        Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  public void doSelect(Object key) {
+    ComboBoxSelectEvent dwcEv = new ComboBoxSelectEvent(this.textComboBox);
+    dwcEv.setKey(key);
+    Iterator<Consumer<ComboBoxSelectEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void addCallback(Consumer<ComboBoxSelectEvent> callback) { targets.add(callback); }
+  public void addCallback(Consumer<ComboBoxSelectEvent> callback) {
+    targets.add(callback);
+  }
 }

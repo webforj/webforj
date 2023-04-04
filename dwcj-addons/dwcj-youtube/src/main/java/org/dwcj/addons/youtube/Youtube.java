@@ -15,12 +15,11 @@ import org.dwcj.component.webcomponent.annotations.NodeName;
 import org.dwcj.component.window.AbstractWindow;
 
 /**
- * The Youtube component is a component that allows you to embed a youtube
- * video in your application.
- * 
- * For instance, to embed a youtube video in your application you can do the
- * following:
- * 
+ * The Youtube component is a component that allows you to embed a youtube video in your
+ * application.
+ *
+ * For instance, to embed a youtube video in your application you can do the following:
+ *
  * <pre>
  * {@code
  * Youtube youtube = new Youtube();
@@ -31,14 +30,15 @@ import org.dwcj.component.window.AbstractWindow;
  * youtube.setMute(true);
  * }
  * </pre>
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @HtmlViewAttribute(name = "dwcj-youtube-container")
 @NodeName("iframe")
 @NodeAttribute(name = "dwcj-youtube")
 @NodeAttribute(name = "frameborder", value = "0")
-@NodeAttribute(name = "allow", value = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share")
+@NodeAttribute(name = "allow",
+    value = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share")
 @NodeAttribute(name = "allowfullscreen", value = "true")
 @InlineStyleSheet(id = "dwcj-youtube-widget", once = true, value = /* css */ """
     [dwcj-youtube-container] {
@@ -61,14 +61,13 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
   /** The type of the content that will load in the player. */
   public enum ListType {
     /**
-     * The list parameter value identifies the YouTube channel whose uploaded videos
-     * will be loaded.
+     * The list parameter value identifies the YouTube channel whose uploaded videos will be loaded.
      */
     USER_UPLOADS("user_uploads"),
     /**
-     * Specifies a YouTube playlist ID. In the parameter value, you need to prepend
-     * the playlist ID with the letters PL as shown in the example below.
-     * 
+     * Specifies a YouTube playlist ID. In the parameter value, you need to prepend the playlist ID
+     * with the letters PL as shown in the example below.
+     *
      * <pre>
      * {@code
      * player.setListType(ListType.PLAYLIST);
@@ -86,7 +85,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
     /**
      * Get the value of the enum
-     * 
+     *
      * @return the value of the enum
      */
     public String getValue() {
@@ -95,7 +94,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
     /**
      * Get the enum from the value
-     * 
+     *
      * @param value the value of the enum
      * @return the enum
      */
@@ -149,7 +148,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Create a new youtube component with the given id
-   * 
+   *
    * @param id the id of the youtube video
    */
   public Youtube(String id) {
@@ -159,7 +158,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Specifies the ID of the YouTube video to be played.
-   * 
+   *
    * @param id the id of the youtube video
    * @return the youtube component
    */
@@ -171,7 +170,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the id of the youtube video
-   * 
+   *
    * @return the id of the youtube video
    */
   public String getVideoId() {
@@ -180,10 +179,9 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Enable or disable the autoplay.
-   * 
-   * Specifies whether the initial video will automatically start to play when the
-   * player loads.
-   * 
+   *
+   * Specifies whether the initial video will automatically start to play when the player loads.
+   *
    * @param autoplay the autoplay property
    * @return the youtube component
    */
@@ -195,7 +193,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if the autoplay is enabled
-   * 
+   *
    * @return true if the autoplay is enabled, false otherwise
    */
   public Boolean isAutoPlay() {
@@ -204,19 +202,15 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Specifies the default language that the player will use to display captions.
-   * 
-   * Set the option's value to an
-   * <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php"> ISO 639-1
-   * two-letter language code.</a>
-   * 
-   * If you use this option and also set the {@link #setCaption(Boolean)
-   * showCaption } then the player will show captions in the specified language
-   * when the player loads.
-   * If you do not also set the {@link #setCaption(Boolean) showCaption }
-   * option, then captions will not
-   * display by default, but will display in the specified language if the user
-   * opts to turn captions on.
-   * 
+   *
+   * Set the option's value to an <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php">
+   * ISO 639-1 two-letter language code.</a>
+   *
+   * If you use this option and also set the {@link #setCaption(Boolean) showCaption } then the
+   * player will show captions in the specified language when the player loads. If you do not also
+   * set the {@link #setCaption(Boolean) showCaption } option, then captions will not display by
+   * default, but will display in the specified language if the user opts to turn captions on.
+   *
    * @param language the default language
    * @return the youtube component
    */
@@ -228,7 +222,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the default language
-   * 
+   *
    * @return the default language
    */
   public String getCaptionLanguage() {
@@ -236,9 +230,9 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
   }
 
   /**
-   * When enabled causes closed captions to be shown by default, even if the user
-   * has turned captions off. The default behavior is based on user preference.
-   * 
+   * When enabled causes closed captions to be shown by default, even if the user has turned
+   * captions off. The default behavior is based on user preference.
+   *
    * @param showCaption the load caption property
    * @return the youtube component
    */
@@ -250,7 +244,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if the load caption is enabled
-   * 
+   *
    * @return true if the load caption is enabled, false otherwise
    */
   public Boolean isCaption() {
@@ -259,7 +253,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Show or hide the player controls.
-   * 
+   *
    * @param controls when true, the player controls are shown, hidden otherwise.
    * @return the youtube component
    */
@@ -271,7 +265,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if the controls are shown
-   * 
+   *
    * @return true if the controls are shown, false otherwise
    */
   public Boolean isControls() {
@@ -280,9 +274,8 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Enable or disable the keyboard controls.
-   * 
-   * @param disableKeyboard when true causes the player to not respond to keyboard
-   *                        controls.
+   *
+   * @param disableKeyboard when true causes the player to not respond to keyboard controls.
    * @return the youtube component
    */
   public Youtube setDisableKeyboard(Boolean disableKeyboard) {
@@ -293,7 +286,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if keyboard interactions are disabled
-   * 
+   *
    * @return the disableKeyboard property
    */
   public Boolean isDisableKeyboard() {
@@ -301,9 +294,9 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
   }
 
   /**
-   * Specifies the time, measured in seconds from the start of the video, when the
-   * player should stop playing the video
-   * 
+   * Specifies the time, measured in seconds from the start of the video, when the player should
+   * stop playing the video
+   *
    * @param end the end time
    * @return the youtube component
    */
@@ -315,7 +308,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the end time
-   * 
+   *
    * @return the end time
    */
   public int getEnd() {
@@ -324,9 +317,9 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Enable or disable the fullscreen button.
-   * 
-   * @param fullScreen when false, prevents the fullscreen button from displaying
-   *                   in the player. by default the button will display.
+   *
+   * @param fullScreen when false, prevents the fullscreen button from displaying in the player. by
+   *        default the button will display.
    * @return the youtube component
    */
   public Youtube setFullScreenButton(Boolean fullScreen) {
@@ -337,7 +330,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if the fullscreen button is enabled
-   * 
+   *
    * @return true if the fullscreen button is enabled, false otherwise
    */
   public Boolean isFullScreenButton() {
@@ -346,18 +339,15 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Sets the player's interface language. The option value is an
-   * <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php">ISO 639-1
-   * two-letter language code</a> or a fully specified locale. For example,
-   * <code>fr</code> and
-   * </code>fr-ca</code> are both valid values. Other language input codes, such
-   * as <code>IETF</code>
-   * language tags (BCP 47) might also be handled properly.
-   * 
-   * The interface language is used for tooltips in the player and also affects
-   * the default caption track. Note that YouTube might select a different caption
-   * track language for a particular user based on the user's individual language
-   * preferences and the availability of caption tracks.
-   * 
+   * <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php">ISO 639-1 two-letter language
+   * code</a> or a fully specified locale. For example, <code>fr</code> and </code>fr-ca</code> are
+   * both valid values. Other language input codes, such as <code>IETF</code> language tags (BCP 47)
+   * might also be handled properly.
+   *
+   * The interface language is used for tooltips in the player and also affects the default caption
+   * track. Note that YouTube might select a different caption track language for a particular user
+   * based on the user's individual language preferences and the availability of caption tracks.
+   *
    * @param language the language
    * @return the youtube component
    */
@@ -369,7 +359,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the language
-   * 
+   *
    * @return the language
    * @see #setLanguage(String)
    */
@@ -379,7 +369,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Enable or disable the video annotations.
-   * 
+   *
    * @param showAnnotations true to show the annotations, false otherwise to hide.
    * @return the youtube component
    */
@@ -391,7 +381,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if the annotations are enabled
-   * 
+   *
    * @return true if the annotations are enabled, false otherwise
    */
   public Boolean isShowAnnotations() {
@@ -399,10 +389,9 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
   }
 
   /**
-   * The list option, in conjunction with the {@link #setListType(ListType)}
-   * option, identifies
-   * the content that will load in the player.
-   * 
+   * The list option, in conjunction with the {@link #setListType(ListType)} option, identifies the
+   * content that will load in the player.
+   *
    * @param list the list
    * @return the youtube component
    */
@@ -414,7 +403,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the list
-   * 
+   *
    * @return the list
    */
   public String getList() {
@@ -422,9 +411,9 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
   }
 
   /**
-   * The listType option, in conjunction with the {@link #setList(String) list}
-   * option, identifies the content that will load in the player.
-   * 
+   * The listType option, in conjunction with the {@link #setList(String) list} option, identifies
+   * the content that will load in the player.
+   *
    * @param listType the list type
    * @return the youtube component
    */
@@ -436,7 +425,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the list type
-   * 
+   *
    * @return the list type
    */
   public ListType getListType() {
@@ -445,15 +434,13 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Automatically play the video again and again.
-   * 
+   *
    * <p>
-   * In the case of a single video player, enabling the option causes the player
-   * to play
-   * the initial video again and again. In the case of a playlist player the
-   * player plays the entire playlist and then starts again at
-   * the first video.
+   * In the case of a single video player, enabling the option causes the player to play the initial
+   * video again and again. In the case of a playlist player the player plays the entire playlist
+   * and then starts again at the first video.
    * </p>
-   * 
+   *
    * @param loop the loop property
    * @return the youtube component
    */
@@ -465,7 +452,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Check if the loop is enabled
-   * 
+   *
    * @return true if the loop is enabled, false otherwise
    */
   public Boolean isLoop() {
@@ -473,16 +460,13 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
   }
 
   /**
-   * A Boolean value that indicates whether the YouTube player does not show a
-   * YouTube logo.
-   * 
-   * When true then prevents the YouTube logo from displaying in the control bar.
-   * Note that a small YouTube text label will still display in the upper-right
-   * corner of a paused video when the user's mouse pointer hovers over the
-   * player.
-   * 
-   * @param modestBranding when true, the YouTube logo is not shown, shown
-   *                       otherwise.
+   * A Boolean value that indicates whether the YouTube player does not show a YouTube logo.
+   *
+   * When true then prevents the YouTube logo from displaying in the control bar. Note that a small
+   * YouTube text label will still display in the upper-right corner of a paused video when the
+   * user's mouse pointer hovers over the player.
+   *
+   * @param modestBranding when true, the YouTube logo is not shown, shown otherwise.
    * @return the youtube component
    */
   public Youtube setModestBranding(Boolean modestBranding) {
@@ -493,7 +477,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the modestBranding property
-   * 
+   *
    * @return the modestBranding property
    */
   public Boolean isModestBranding() {
@@ -502,11 +486,10 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Specifies a comma-separated list of video IDs to play.
-   * 
-   * If you specify a value, the first video that plays will be the video id
-   * specified, and the videos specified in the playlist parameter will play
-   * thereafter.
-   * 
+   *
+   * If you specify a value, the first video that plays will be the video id specified, and the
+   * videos specified in the playlist parameter will play thereafter.
+   *
    * @param playlist the playlist property
    * @return the youtube component
    */
@@ -518,7 +501,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the list of videos to play
-   * 
+   *
    * @return the playlist property
    */
   public String getPlaylist() {
@@ -527,13 +510,11 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Controls whether videos play inline or fullscreen on iOS.
-   * 
-   * when false, then results in fullscreen playback. This is currently the
-   * default value.
-   * when true, then results in inline playback for mobile browsers and for
-   * WebViews created with the <code>allowsInlineMediaPlayback</code> property set
-   * to YES.
-   * 
+   *
+   * when false, then results in fullscreen playback. This is currently the default value. when
+   * true, then results in inline playback for mobile browsers and for WebViews created with the
+   * <code>allowsInlineMediaPlayback</code> property set to YES.
+   *
    * @param playsinline true to play inline, false otherwise
    * @return the youtube component
    */
@@ -545,7 +526,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the playsinline property
-   * 
+   *
    * @return the playsinline property
    */
   public Boolean isPlaysInline() {
@@ -554,10 +535,10 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Set the start time
-   * 
-   * Causes the player to begin playing the video at the given number of seconds
-   * from the start of the video.
-   * 
+   *
+   * Causes the player to begin playing the video at the given number of seconds from the start of
+   * the video.
+   *
    * @param start the start time
    * @return the youtube component
    */
@@ -569,7 +550,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the start time
-   * 
+   *
    * @return the start time
    */
   public int getStart() {
@@ -578,7 +559,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Set the mute property
-   * 
+   *
    * @param mute the mute property
    * @return the youtube component
    */
@@ -590,7 +571,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the mute property
-   * 
+   *
    * @return the mute property
    */
   public Boolean getMute() {
@@ -599,7 +580,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
 
   /**
    * Get the URL of the video
-   * 
+   *
    * @return the URL of the video
    */
   public String getURL() {

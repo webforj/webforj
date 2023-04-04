@@ -6,9 +6,9 @@ import java.sql.Connection;
 
 public class JDBCConnection {
 
-    private JDBCConnection() {}
+  private JDBCConnection() {}
 
-    public static Connection getJDBCConnection(String databasename) throws Exception {
-        return Environment.getInstance().getBBjAPI().getJDBCConnection(databasename);
-    }
+  public static Connection getJDBCConnection(String databasename) throws Exception {
+    return Environment.getInstance().getBBjAPI().getJDBCConnection(databasename);
+  }
 }

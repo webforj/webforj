@@ -13,53 +13,53 @@ import java.util.function.Consumer;
 
 public final class DateFieldModifyEventSink {
 
-    private ArrayList<Consumer<DateFieldModifyEvent>> targets;
-    private final DateField dateEditBox;
+  private ArrayList<Consumer<DateFieldModifyEvent>> targets;
+  private final DateField dateEditBox;
 
-    @SuppressWarnings({"static-access"})
-    public DateFieldModifyEventSink(DateField dateBox) {
+  @SuppressWarnings({"static-access"})
+  public DateFieldModifyEventSink(DateField dateBox) {
 
-        this.targets = new ArrayList<>();
-        this.dateEditBox = dateBox;
+    this.targets = new ArrayList<>();
+    this.dateEditBox = dateBox;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+          "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public DateFieldModifyEventSink(DateField dateBox, Consumer<DateFieldModifyEvent> callback) {
+  public DateFieldModifyEventSink(DateField dateBox, Consumer<DateFieldModifyEvent> callback) {
 
-        this.targets = new ArrayList<>();
-        this.targets.add(callback);
-        this.dateEditBox = dateBox;
+    this.targets = new ArrayList<>();
+    this.targets.add(callback);
+    this.dateEditBox = dateBox;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+          "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        DateFieldModifyEvent dwcEv = new DateFieldModifyEvent(this.dateEditBox);
-        Iterator<Consumer<DateFieldModifyEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
+    DateFieldModifyEvent dwcEv = new DateFieldModifyEvent(this.dateEditBox);
+    Iterator<Consumer<DateFieldModifyEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void addCallback(Consumer<DateFieldModifyEvent> callback) {
-        targets.add(callback);
-    }
+  public void addCallback(Consumer<DateFieldModifyEvent> callback) {
+    targets.add(callback);
+  }
 }

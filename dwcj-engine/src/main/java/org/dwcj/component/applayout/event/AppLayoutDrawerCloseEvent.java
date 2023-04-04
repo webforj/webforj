@@ -9,7 +9,7 @@ import org.dwcj.component.webcomponent.events.Event;
 
 /**
  * Emitted when the drawer is closed.
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @EventName(value = "bbj-drawer-closed")
@@ -18,7 +18,7 @@ public final class AppLayoutDrawerCloseEvent extends Event<AppLayout> {
 
   /**
    * Creates a new event.
-   * 
+   *
    * @param target the target of the event
    * @param detail the detail of the event
    */

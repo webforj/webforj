@@ -14,53 +14,53 @@ import java.util.function.Consumer;
 
 public class NumberFieldModifyEventSink {
 
-    private ArrayList<Consumer<NumberFieldModifyEvent>> targets;
-    private final NumberField numericBox;
-    
-    @SuppressWarnings({"static-access"})
-    public NumberFieldModifyEventSink(NumberField numBox) {
+  private ArrayList<Consumer<NumberFieldModifyEvent>> targets;
+  private final NumberField numericBox;
 
-        this.targets = new ArrayList<>();
-        this.numericBox = numBox;
+  @SuppressWarnings({"static-access"})
+  public NumberFieldModifyEventSink(NumberField numBox) {
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
-                    "onEvent");
+    this.targets = new ArrayList<>();
+    this.numericBox = numBox;
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+          "onEvent");
+
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public NumberFieldModifyEventSink(NumberField numBox, Consumer<NumberFieldModifyEvent> callback) {
+  public NumberFieldModifyEventSink(NumberField numBox, Consumer<NumberFieldModifyEvent> callback) {
 
-        this.targets = new ArrayList<>();
-        this.targets.add(callback);
-        this.numericBox = numBox;
+    this.targets = new ArrayList<>();
+    this.targets.add(callback);
+    this.numericBox = numBox;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+          "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        NumberFieldModifyEvent dwcEv = new NumberFieldModifyEvent(this.numericBox);
-        Iterator<Consumer<NumberFieldModifyEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
+    NumberFieldModifyEvent dwcEv = new NumberFieldModifyEvent(this.numericBox);
+    Iterator<Consumer<NumberFieldModifyEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void addCallback(Consumer<NumberFieldModifyEvent> callback) {
-        targets.add(callback);
-    }
+  public void addCallback(Consumer<NumberFieldModifyEvent> callback) {
+    targets.add(callback);
+  }
 }

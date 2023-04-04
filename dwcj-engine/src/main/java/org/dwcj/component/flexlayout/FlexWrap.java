@@ -1,12 +1,10 @@
 package org.dwcj.component.flexlayout;
 
 /**
- * The flex-wrap property specifies whether the flex items are forced in a
- * single line or can be flowed into multiple lines.
- * 
- * @see <a href=
- *      "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap">flex-wrap
- *      property</a>
+ * The flex-wrap property specifies whether the flex items are forced in a single line or can be
+ * flowed into multiple lines.
+ *
+ * @see <a href= "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap">flex-wrap property</a>
  * @author Hyyan Abo Fakher
  */
 public enum FlexWrap {
@@ -31,7 +29,7 @@ public enum FlexWrap {
 
   /**
    * Get the value of this property.
-   * 
+   *
    * @return the value
    */
   public String getValue() {
@@ -48,9 +46,8 @@ public enum FlexWrap {
 
   /**
    * Returns the {@link FlexWrap} enum value for the given string value.
-   * 
-   * @param value
-   *              the string value
+   *
+   * @param value the string value
    * @return the {@link FlexWrap} enum value
    */
   public static FlexWrap fromValue(String value) {
@@ -59,7 +56,7 @@ public enum FlexWrap {
 
   /**
    * Returns the default value for this property.
-   * 
+   *
    * @return the default value
    */
   public static FlexWrap getDefault() {

@@ -8,14 +8,14 @@ import org.dwcj.component.webcomponent.events.Event;
 
 /**
  * Emitted when the dialog is closed.
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @EventName("bbj-closed")
 public class DialogCloseEvent extends Event<Dialog> {
 
   /**
-   * @param control  the control
+   * @param control the control
    * @param eventMap the event map
    */
   public DialogCloseEvent(Dialog control, Map<String, Object> eventMap) {

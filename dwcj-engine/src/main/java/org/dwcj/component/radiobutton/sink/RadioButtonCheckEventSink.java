@@ -15,72 +15,68 @@ import java.util.function.Consumer;
 
 
 public final class RadioButtonCheckEventSink {
-    
-    private final ArrayList<Consumer<RadioButtonCheckEvent>> targets = new ArrayList<>();
 
-    private final RadioButton radioButton;
+  private final ArrayList<Consumer<RadioButtonCheckEvent>> targets = new ArrayList<>();
 
-    private BBjControl bbjControl;
+  private final RadioButton radioButton;
 
-    private static final String ON_EVENT = "onEvent";
+  private BBjControl bbjControl;
 
-    @SuppressWarnings({"static-access"})
-    public RadioButtonCheckEventSink(RadioButton rb){
-        this.radioButton = rb;
+  private static final String ON_EVENT = "onEvent";
 
-        try{
-            bbjControl = ComponentAccessor.getDefault().getBBjControl(rb);
-            bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
-                                   Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
-                                   ON_EVENT);
-            bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
-                                   Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
-                                   ON_EVENT);
+  @SuppressWarnings({"static-access"})
+  public RadioButtonCheckEventSink(RadioButton rb) {
+    this.radioButton = rb;
 
-        } catch(Exception e){
-            Environment.logError(e);
-        }
+    try {
+      bbjControl = ComponentAccessor.getDefault().getBBjControl(rb);
+      bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"), ON_EVENT);
+      bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"), ON_EVENT);
+
+    } catch (Exception e) {
+      Environment.logError(e);
     }
-    
-    @SuppressWarnings({"static-access"})
-    public RadioButtonCheckEventSink(RadioButton rb, Consumer<RadioButtonCheckEvent> target){
-        this.targets.add(target);
-        this.radioButton = rb;
+  }
 
-        try{
-            bbjControl = ComponentAccessor.getDefault().getBBjControl(rb);
-            bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
-                                   Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"),
-                                   ON_EVENT);
-            bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
-                                   Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"),
-                                   ON_EVENT);
+  @SuppressWarnings({"static-access"})
+  public RadioButtonCheckEventSink(RadioButton rb, Consumer<RadioButtonCheckEvent> target) {
+    this.targets.add(target);
+    this.radioButton = rb;
 
-        } catch(Exception e){
-            Environment.logError(e);
-        }
+    try {
+      bbjControl = ComponentAccessor.getDefault().getBBjControl(rb);
+      bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_OFF,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOffEvent"), ON_EVENT);
+      bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CHECK_ON,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "checkOnEvent"), ON_EVENT);
+
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    @SuppressWarnings("java:S1172")
-    public void checkOffEvent(BBjCheckOffEvent ev) { //NOSONAR
-        RadioButtonCheckEvent dwcEv = new RadioButtonCheckEvent(this.radioButton, false);
-        Iterator<Consumer<RadioButtonCheckEvent>> it = targets.iterator();
-        while(it.hasNext()){
-            it.next().accept(dwcEv);
-        }
+  @SuppressWarnings("java:S1172")
+  public void checkOffEvent(BBjCheckOffEvent ev) { // NOSONAR
+    RadioButtonCheckEvent dwcEv = new RadioButtonCheckEvent(this.radioButton, false);
+    Iterator<Consumer<RadioButtonCheckEvent>> it = targets.iterator();
+    while (it.hasNext()) {
+      it.next().accept(dwcEv);
     }
+  }
 
-    @SuppressWarnings("java:S1172")
-    public void checkOnEvent(BBjCheckOnEvent ev) { //NOSONAR
-        RadioButtonCheckEvent dwcEv = new RadioButtonCheckEvent(this.radioButton, true);
-        Iterator<Consumer<RadioButtonCheckEvent>> it = targets.iterator();
-        while(it.hasNext()){
-            it.next().accept(dwcEv);
-        }
+  @SuppressWarnings("java:S1172")
+  public void checkOnEvent(BBjCheckOnEvent ev) { // NOSONAR
+    RadioButtonCheckEvent dwcEv = new RadioButtonCheckEvent(this.radioButton, true);
+    Iterator<Consumer<RadioButtonCheckEvent>> it = targets.iterator();
+    while (it.hasNext()) {
+      it.next().accept(dwcEv);
     }
+  }
 
-    public void addCallback(Consumer<RadioButtonCheckEvent> callback) {
-        targets.add(callback);
-    }
+  public void addCallback(Consumer<RadioButtonCheckEvent> callback) {
+    targets.add(callback);
+  }
 
 }

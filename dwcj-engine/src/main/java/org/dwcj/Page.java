@@ -9,19 +9,18 @@ import org.dwcj.util.Assets;
 import com.basis.startup.type.BBjException;
 
 /**
- * Represents the web page open in the browser where the app is running
- * and provides methods to manipulate the page.
- * 
+ * Represents the web page open in the browser where the app is running and provides methods to
+ * manipulate the page.
+ *
  * @author Hyyan Abo Fakher
  */
 public final class Page {
 
-  private Page() {
-  }
+  private Page() {}
 
   /**
    * Get the current page instance
-   * 
+   *
    * @return the current page instance
    */
   public static Page getInstance() {
@@ -70,10 +69,10 @@ public final class Page {
   /**
    * Set a meta tag
    *
-   * @param name       The name of the meta tag
-   * @param content    The content of the meta tag
+   * @param name The name of the meta tag
+   * @param content The content of the meta tag
    * @param attributes A map of attributes to set
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the meta tag
    */
@@ -90,10 +89,10 @@ public final class Page {
   /**
    * Set a meta tag
    *
-   * @param name       The name of the meta tag
-   * @param content    The content of the meta tag
+   * @param name The name of the meta tag
+   * @param content The content of the meta tag
    * @param attributes A map of attributes to set (comma separated)
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the meta tag
    */
@@ -110,9 +109,9 @@ public final class Page {
   /**
    * Set a meta tag
    *
-   * @param name    The name of the meta tag
+   * @param name The name of the meta tag
    * @param content The content of the meta tag
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the meta tag
    */
@@ -129,18 +128,15 @@ public final class Page {
   /**
    * Set an attribute on the document
    *
-   * @param name     The name of the attribute
-   * @param value    The value of the attribute
+   * @param name The name of the attribute
+   * @param value The value of the attribute
    * @param selector By default, setAttribute applies to the <a href=
-   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
-   *                 element on
-   *                 the web page. If a selector is specified, it selects a
-   *                 descendant element within the document to set this attribute.
-   *                 If a specified <a href=
-   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
-   *                 doesn't return any elements, the
-   *                 default document element is used.
-   * 
+   *        "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
+   *        element on the web page. If a selector is specified, it selects a descendant element
+   *        within the document to set this attribute. If a specified <a href=
+   *        "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
+   *        doesn't return any elements, the default document element is used.
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the attribute
    */
@@ -157,9 +153,9 @@ public final class Page {
   /**
    * Set an attribute on the document
    *
-   * @param name  The name of the attribute
+   * @param name The name of the attribute
    * @param value The value of the attribute
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the attribute
    */
@@ -171,7 +167,7 @@ public final class Page {
    * Set an attribute on the document
    *
    * @param name The name of the attribute
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the attribute
    */
@@ -182,16 +178,13 @@ public final class Page {
   /**
    * Get an attribute from the document
    *
-   * @param name     The name of the attribute
+   * @param name The name of the attribute
    * @param selector By default, setAttribute applies to the <a href=
-   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
-   *                 element on
-   *                 the web page. If a selector is specified, it selects a
-   *                 descendant element within the document to set this attribute.
-   *                 If a specified <a href=
-   *                 "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
-   *                 doesn't return any elements, the
-   *                 default document element is used.
+   *        "https://developer.mozilla.org/en-US/docs/Web/API/Document/documentElement">document</a>
+   *        element on the web page. If a selector is specified, it selects a descendant element
+   *        within the document to set this attribute. If a specified <a href=
+   *        "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
+   *        doesn't return any elements, the default document element is used.
    * @return The attribute value
    * @throws DwcjRuntimeException if failed to get the attribute
    */
@@ -217,12 +210,11 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url        The URL of the stylesheet. The url will be resolved
-   *                   as a web server url if it starts with the
-   *                   <code>webserver://</code>
-   * @param top        Whether to inject the stylesheet at the top of the page
+   * @param url The URL of the stylesheet. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
+   * @param top Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -231,8 +223,7 @@ public final class Page {
       if (Assets.isWebServerURL(url))
         url = Assets.resolveWebServerURL(url);
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
-          url, top, attributes);
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -243,12 +234,11 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url        The URL of the stylesheet. The url will be resolved
-   *                   as a web server url if it starts with the
-   *                   <code>webserver://</code>
-   * @param top        Whether to inject the stylesheet at the top of the page
+   * @param url The URL of the stylesheet. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
+   * @param top Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -257,8 +247,7 @@ public final class Page {
       if (Assets.isWebServerURL(url))
         url = Assets.resolveWebServerURL(url);
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(
-          url, top, attributes);
+      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -269,11 +258,10 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url The URL of the stylesheet. The url will be resolved
-   *            as a web server url if it starts with the
-   *            <code>webserver://</code>
+   * @param url The URL of the stylesheet. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
    * @param top Whether to inject the stylesheet at the top of the page
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -284,10 +272,9 @@ public final class Page {
   /**
    * Inject a stylesheet into the page
    *
-   * @param url The URL of the stylesheet. The url will be resolved
-   *            as a web server url if it starts with the
-   *            <code>webserver://</code>
-   * 
+   * @param url The URL of the stylesheet. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -298,13 +285,12 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css        The CSS to inject. If a url is provided and starts with
-   *                   <code>context://</code> then the url will be resolved
-   *                   as a context url which points to the root of the
-   *                   resources folder of your application
-   * @param top        Whether to inject the stylesheet at the top of the page
+   * @param css The CSS to inject. If a url is provided and starts with <code>context://</code> then
+   *        the url will be resolved as a context url which points to the root of the resources
+   *        folder of your application
+   * @param top Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -324,13 +310,12 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css        The CSS to inject. If a url is provided and starts with
-   *                   <code>context://</code> then the url will be resolved
-   *                   as a context url which points to the root of the
-   *                   resources folder of your application
-   * @param top        Whether to inject the stylesheet at the top of the page
+   * @param css The CSS to inject. If a url is provided and starts with <code>context://</code> then
+   *        the url will be resolved as a context url which points to the root of the resources
+   *        folder of your application
+   * @param top Whether to inject the stylesheet at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -350,12 +335,11 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css The CSS to inject. If a url is provided and starts with
-   *            <code>context://</code> then the url will be resolved
-   *            as a context url which points to the root of the
-   *            resources folder of your application
+   * @param css The CSS to inject. If a url is provided and starts with <code>context://</code> then
+   *        the url will be resolved as a context url which points to the root of the resources
+   *        folder of your application
    * @param top Whether to inject the stylesheet at the top of the page
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -366,11 +350,10 @@ public final class Page {
   /**
    * Inject an inline stylesheet into the page
    *
-   * @param css The CSS to inject. If a url is provided and starts with
-   *            <code>context://</code> then the url will be resolved
-   *            as a context url which points to the root of the
-   *            resources folder of your application
-   * 
+   * @param css The CSS to inject. If a url is provided and starts with <code>context://</code> then
+   *        the url will be resolved as a context url which points to the root of the resources
+   *        folder of your application
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the stylesheet
    */
@@ -382,12 +365,11 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url        The URL of the script. The url will be resolved
-   *                   as a web server url if it starts with the
-   *                   <code>webserver://</code>
-   * @param top        Whether to inject the script at the top of the page
+   * @param url The URL of the script. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
+   * @param top Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -407,12 +389,11 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url        The URL of the script. The url will be resolved
-   *                   as a web server url if it starts with the
-   *                   <code>webserver://</code>
-   * @param top        Whether to inject the script at the top of the page
+   * @param url The URL of the script. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
+   * @param top Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -432,11 +413,10 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url The URL of the script.The url will be resolved
-   *            as a web server url if it starts with the
-   *            <code>webserver://</code>
+   * @param url The URL of the script.The url will be resolved as a web server url if it starts with
+   *        the <code>webserver://</code>
    * @param top Whether to inject the script at the top of the page
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -448,10 +428,9 @@ public final class Page {
   /**
    * Inject a script into the page
    *
-   * @param url The URL of the script. The url will be resolved
-   *            as a web server url if it starts with the
-   *            <code>webserver://</code>
-   * 
+   * @param url The URL of the script. The url will be resolved as a web server url if it starts
+   *        with the <code>webserver://</code>
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -462,13 +441,12 @@ public final class Page {
   /**
    * Inject an inline script into the page
    *
-   * @param script     The script to inject. If a url is provided and starts with
-   *                   <code>context://</code> then the url will be resolved
-   *                   as a context url which points to the root of the
-   *                   resources folder of your application
-   * @param top        Whether to inject the script at the top of the page
+   * @param script The script to inject. If a url is provided and starts with
+   *        <code>context://</code> then the url will be resolved as a context url which points to
+   *        the root of the resources folder of your application
+   * @param top Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -488,13 +466,12 @@ public final class Page {
   /**
    * Inject an inline script into the page
    *
-   * @param script     The script to inject. If a url is provided and starts with
-   *                   <code>context://</code> then the url will be resolved
-   *                   as a context url which points to the root of the
-   *                   resources folder of your application
-   * @param top        Whether to inject the script at the top of the page
+   * @param script The script to inject. If a url is provided and starts with
+   *        <code>context://</code> then the url will be resolved as a context url which points to
+   *        the root of the resources folder of your application
+   * @param top Whether to inject the script at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -515,11 +492,10 @@ public final class Page {
    * Inject an inline script into the page
    *
    * @param script The script to inject. If a url is provided and starts with
-   *               <code>context://</code> then the url will be resolved
-   *               as a context url which points to the root of the
-   *               resources folder of your application
-   * @param top    Whether to inject the script at the top of the page
-   * 
+   *        <code>context://</code> then the url will be resolved as a context url which points to
+   *        the root of the resources folder of your application
+   * @param top Whether to inject the script at the top of the page
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -531,10 +507,9 @@ public final class Page {
    * Inject an inline script into the page
    *
    * @param script The script to inject. If a url is provided and starts with
-   *               <code>context://</code> then the url will be resolved
-   *               as a context url which points to the root of the
-   *               resources folder of your application
-   * 
+   *        <code>context://</code> then the url will be resolved as a context url which points to
+   *        the root of the resources folder of your application
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the script
    */
@@ -545,12 +520,11 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url        The URL of the link. The url will be resolved
-   *                   as a web server url if it starts with the
-   *                   <code>webserver://</code>
-   * @param top        Whether to inject the link at the top of the page
+   * @param url The URL of the link. The url will be resolved as a web server url if it starts with
+   *        the <code>webserver://</code>
+   * @param top Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the link
    */
@@ -570,12 +544,11 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url        The URL of the link. The url will be resolved
-   *                   as a web server url if it starts with the
-   *                   <code>webserver://</code>
-   * @param top        Whether to inject the link at the top of the page
+   * @param url The URL of the link. The url will be resolved as a web server url if it starts with
+   *        the <code>webserver://</code>
+   * @param top Whether to inject the link at the top of the page
    * @param attributes A map of attributes to set (comma separated)
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the link
    */
@@ -595,11 +568,10 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url The URL of the link. The url will be resolved
-   *            as a web server url if it starts with the
-   *            <code>webserver://</code>
+   * @param url The URL of the link. The url will be resolved as a web server url if it starts with
+   *        the <code>webserver://</code>
    * @param top Whether to inject the link at the top of the page
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the link
    */
@@ -610,10 +582,9 @@ public final class Page {
   /**
    * Inject a link into the page
    *
-   * @param url The URL of the link.The url will be resolved
-   *            as a web server url if it starts with the
-   *            <code>webserver://</code>
-   * 
+   * @param url The URL of the link.The url will be resolved as a web server url if it starts with
+   *        the <code>webserver://</code>
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to add the link
    */
@@ -623,7 +594,7 @@ public final class Page {
 
   /**
    * Execute a script in the browser and return the result
-   * 
+   *
    * @param script The script to execute
    * @return The result of the script
    * @throws DwcjRuntimeException If dwcj fails to execute the script
@@ -638,10 +609,10 @@ public final class Page {
 
   /**
    * Execute a script in the browser without waiting for the result
-   * 
+   *
    * @param script The script to execute
    * @return The result of the script
-   * 
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException If dwcj fails to execute the script
    */
@@ -657,10 +628,9 @@ public final class Page {
 
   /**
    * Reload the page in the browser
-   * 
+   *
    * @return The current page instance
-   * @throws DwcjRuntimeException If dwcj fails to execute the script to reload the
-   *                             page
+   * @throws DwcjRuntimeException If dwcj fails to execute the script to reload the page
    */
   public Page reload() {
     return executeAsyncJs("window.location.reload();");

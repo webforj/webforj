@@ -5,12 +5,14 @@ import org.dwcj.component.choicebox.ChoiceBox;
 
 public final class ChoiceBoxChangeEvent implements ComponentEvent {
 
-    private final ChoiceBox control;
+  private final ChoiceBox control;
 
-    public ChoiceBoxChangeEvent (ChoiceBox comboBox) {
-        this.control = comboBox;
-    }
+  public ChoiceBoxChangeEvent(ChoiceBox comboBox) {
+    this.control = comboBox;
+  }
 
-    @Override
-    public ChoiceBox getControl() { return control; }
+  @Override
+  public ChoiceBox getControl() {
+    return control;
+  }
 }

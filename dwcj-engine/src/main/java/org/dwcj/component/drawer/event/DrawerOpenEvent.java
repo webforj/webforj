@@ -9,7 +9,7 @@ import org.dwcj.component.webcomponent.events.Event;
 
 /**
  * Emitted when the drawer is opened.
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @EventName(value = "bbj-drawer-opened")
@@ -18,7 +18,7 @@ public final class DrawerOpenEvent extends Event<Drawer> {
 
   /**
    * Creates a new event.
-   * 
+   *
    * @param target the target of the event
    * @param detail the detail of the event
    */

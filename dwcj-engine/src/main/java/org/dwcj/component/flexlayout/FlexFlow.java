@@ -1,14 +1,11 @@
 package org.dwcj.component.flexlayout;
 
 /**
- * The flex-flow property is a shorthand property for the flex-direction and
- * flex-wrap properties.
- * 
+ * The flex-flow property is a shorthand property for the flex-direction and flex-wrap properties.
+ *
  * @see FlexDirection
  * @see FlexWrap
- * @see <a href=
- *      "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-flow">flex-flow
- *      property</a>
+ * @see <a href= "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-flow">flex-flow property</a>
  */
 public enum FlexFlow {
   /**
@@ -68,7 +65,7 @@ public enum FlexFlow {
 
   /**
    * Get the value of this property.
-   * 
+   *
    * @return the value
    */
   public String getValue() {
@@ -85,7 +82,7 @@ public enum FlexFlow {
 
   /**
    * Returns the {@link FlexFlow} enum value for the given string value.
-   * 
+   *
    * @param value the string value
    * @return the {@link FlexFlow} enum value
    */
@@ -95,7 +92,7 @@ public enum FlexFlow {
 
   /**
    * Returns the default value for this property.
-   * 
+   *
    * @return the default value
    */
   public static FlexFlow getDefault() {

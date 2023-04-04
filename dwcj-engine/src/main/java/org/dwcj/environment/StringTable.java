@@ -7,16 +7,16 @@ import java.util.NoSuchElementException;
 
 /**
  * Provides access to the STBL String Table.
- * 
- * The STBL String Table is persistent, and global scope in this thread
- * Values can be changed programmatically or set in the config file, e.g.:
- * 
+ *
+ * The STBL String Table is persistent, and global scope in this thread Values can be changed
+ * programmatically or set in the config file, e.g.:
+ *
  * <pre>
  * SET COMPANY=Acme
  * </pre>
- * 
+ *
  * Then you can access the value with
- * 
+ *
  * {@code String val = StringTable.get("COMPANY")}
  */
 public final class StringTable {
@@ -24,12 +24,11 @@ public final class StringTable {
   /**
    * private constructor to prevent instantiation
    */
-  private StringTable() {
-  }
+  private StringTable() {}
 
   /**
    * Checks if the string table contains a key
-   * 
+   *
    * @param key the key of the variable to check
    * @return true if the string table contains the key
    */
@@ -47,7 +46,7 @@ public final class StringTable {
    *
    * @param key the key of the variable to access
    * @return the contents of the field
-   * 
+   *
    * @throws NoSuchElementException in case the string table entry does not exist
    */
   public static String get(String key) {
@@ -60,10 +59,10 @@ public final class StringTable {
 
   /**
    * Places a key/value pair into the string table.
-   * 
-   * @param key   the key of the variable to access
+   *
+   * @param key the key of the variable to access
    * @param value the contents to set in the field
-   * 
+   *
    * @return the value just set
    */
   public static String put(String key, String value) {
@@ -77,7 +76,7 @@ public final class StringTable {
 
   /**
    * Clear an entry from the string table
-   * 
+   *
    * @param key the key of the variable to remove
    */
   public static void clear(String key) {

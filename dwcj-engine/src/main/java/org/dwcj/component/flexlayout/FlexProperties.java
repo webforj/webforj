@@ -2,7 +2,7 @@ package org.dwcj.component.flexlayout;
 
 /**
  * Constants for flex layout properties.
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 final class FlexProperties {

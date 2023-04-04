@@ -7,22 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ListBoxDoubleClickEvent implements ComponentEvent{
-    
-    private final ListBox control;
+public class ListBoxDoubleClickEvent implements ComponentEvent {
 
-    private ArrayList<Object> keys = new ArrayList<>(); 
+  private final ListBox control;
 
-
-    public ListBoxDoubleClickEvent(ListBox clistBox) {
-        this.control = clistBox;
-        this.keys.add(control.getSelectedItem().getKey());
-    }
-
-    public void addKey(Object key) { keys.add(key); }
-    public List<Object> getKeys() { return keys; }
+  private ArrayList<Object> keys = new ArrayList<>();
 
 
-    @Override
-    public ListBox getControl() { return control; }
+  public ListBoxDoubleClickEvent(ListBox clistBox) {
+    this.control = clistBox;
+    this.keys.add(control.getSelectedItem().getKey());
+  }
+
+  public void addKey(Object key) {
+    keys.add(key);
+  }
+
+  public List<Object> getKeys() {
+    return keys;
+  }
+
+
+  @Override
+  public ListBox getControl() {
+    return control;
+  }
 }

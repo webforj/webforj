@@ -10,17 +10,17 @@ import java.lang.annotation.Target;
 
 /**
  * Annotates a class to inject a Link into the web page.
- * 
- * The annotation can be used on the class level only and the class must extend
- * `org.dwcj.App` in order for the annotation to be processed.
- * 
+ *
+ * The annotation can be used on the class level only and the class must extend `org.dwcj.App` in
+ * order for the annotation to be processed.
+ *
  * <pre>
  * {@code
- * @Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
+ * &#64;Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
  * @Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)
  * }
  * </pre>
- * 
+ *
  * @see InlineStyleSheet
  * @author Hyyan Abo Fakher
  */
@@ -33,42 +33,41 @@ public @interface Link {
 
   /**
    * A unique resource id. Can be used to avoid duplications
-   * 
+   *
    * @return the id of the resource
    **/
   String id() default "";
 
   /**
    * A link URL to be injected into this web page as a link element..
-   * 
+   *
    * @return the link URL
    **/
   String value();
 
   /**
-   * A boolean value specifying whether this link is to be injected into the head
-   * (true) or body (false) section.
-   * 
+   * A boolean value specifying whether this link is to be injected into the head (true) or body
+   * (false) section.
+   *
    * @return true if the link is to be injected into the head section
    */
   boolean top() default true;
 
   /**
    * A set of <a href=
-   * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes">attributes</a>
-   * to be added to the <a href=
-   * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link">link</a>
-   * element. Attributes can be
-   * specified either as a string in the format "attr=value,attr=value" or as a
+   * "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#attributes">attributes</a> to
+   * be added to the
+   * <a href= "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link">link</a> element.
+   * Attributes can be specified either as a string in the format "attr=value,attr=value" or as a
    * HashMap containing key/value pairs.
-   * 
+   *
    * @return the attributes of the link element
    */
   Attribute[] attributes() default {};
 
   /**
    * A container for multiple {@link Link} annotations.
-   * 
+   *
    * @see Link
    * @author Hyyan Abo Fakher
    */
@@ -79,7 +78,7 @@ public @interface Link {
   public @interface Container {
     /**
      * The multiple {@link Link} annotations.
-     * 
+     *
      * @return the multiple {@link Link} annotations
      */
     Link[] value();

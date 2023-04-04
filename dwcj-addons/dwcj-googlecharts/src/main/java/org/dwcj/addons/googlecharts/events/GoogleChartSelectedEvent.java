@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 
 /**
  * Emitted when data is selected in the chart.
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @EventName(value = "google-chart-select")
@@ -29,7 +29,7 @@ public final class GoogleChartSelectedEvent extends Event<GoogleChart> {
 
   /**
    * Get the selected data.
-   * 
+   *
    * @return the selected data as JsonArray
    */
   public JsonArray getSelection() {

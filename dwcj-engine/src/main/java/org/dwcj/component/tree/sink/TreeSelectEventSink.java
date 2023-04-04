@@ -11,29 +11,28 @@ import java.util.function.Consumer;
 
 public final class TreeSelectEventSink {
 
-    private final Consumer<TreeSelectEvent> target;
+  private final Consumer<TreeSelectEvent> target;
 
-    private final Tree tree;
+  private final Tree tree;
 
 
-    @SuppressWarnings({"static-access"})
-    public TreeSelectEventSink(Tree tree, Consumer<TreeSelectEvent> target) {
-        this.target = target;
-        this.tree = tree;
+  @SuppressWarnings({"static-access"})
+  public TreeSelectEventSink(Tree tree, Consumer<TreeSelectEvent> target) {
+    this.target = target;
+    this.tree = tree;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TREE_SELECT,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"),
-                    "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TREE_SELECT,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void selectEvent(BBjTreeNodeSelectedEvent ev) { // NOSONAR
-        TreeSelectEvent dwcEv = new TreeSelectEvent(this.tree);
-        target.accept(dwcEv);
-    }
+  public void selectEvent(BBjTreeNodeSelectedEvent ev) { // NOSONAR
+    TreeSelectEvent dwcEv = new TreeSelectEvent(this.tree);
+    target.accept(dwcEv);
+  }
 }

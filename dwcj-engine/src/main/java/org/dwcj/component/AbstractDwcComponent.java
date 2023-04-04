@@ -11,16 +11,15 @@ import java.util.Map;
 import org.dwcj.Environment;
 
 /**
- * The base class for most DWC/BBj controls. Extends the AbstractControl class,
- * and implements
+ * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
  * default behaviors for the implemented interface methods.
  */
 public abstract class AbstractDwcComponent extends AbstractComponent
     implements HasAttribute, HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility {
 
   /*
-   * =============================================================================
-   * Members implemented for interfacing with BBj methods/implementations
+   * ============================================================================= Members
+   * implemented for interfacing with BBj methods/implementations
    * =============================================================================
    */
   public static final String STR_EXPANSE = "expanse";
@@ -30,8 +29,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent
   protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
 
   /*
-   * =============================================================================
-   * Members common to all inheriting controls
+   * ============================================================================= Members common to
+   * all inheriting controls
    * =============================================================================
    */
   private String text = "";
@@ -41,17 +40,16 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   private final Map<String, String> styles = new HashMap<>();
   private final List<String> removeStyles = new ArrayList<>();
-  
+
   private final List<String> cssClasses = new ArrayList<>();
   private final List<String> removeCssClasses = new ArrayList<>();
-  
+
   private final Map<String, String> attributes = new HashMap<>();
   private final List<String> removeAttributes = new ArrayList<>();
-  
+
   /*
-   * =============================================================================
-   * Theme and Expanse variables which need to be enumerated in their respective
-   * child components
+   * ============================================================================= Theme and Expanse
+   * variables which need to be enumerated in their respective child components
    * =============================================================================
    */
   private Enum<?> theme = null;
@@ -73,7 +71,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Gets the value for an attribute in the control
-   * 
+   *
    * @param attribute the name of the attribute
    * @return the attribute
    */
@@ -94,9 +92,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Set the value for an attribute in the
-   * 
+   *
    * @param attribute the name of the attribute
-   * @param value     the value to be set
+   * @param value the value to be set
    * @return the control itself
    */
   @Override
@@ -116,7 +114,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Removes an attribute from the control
-   * 
+   *
    * @param attribute the name of the attribute
    * @return the control itself
    */
@@ -137,7 +135,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Gets the text of the control
-   * 
+   *
    * @return Text of the control
    */
   @Override
@@ -153,7 +151,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Sets the text of the control
-   * 
+   *
    * @param text The desired text of the control
    * @return the control itself
    */
@@ -247,7 +245,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Adds a class attribute to the control
-   * 
+   *
    * @param property The desired class
    * @return The control itself
    */
@@ -268,7 +266,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Removes a class attribute from the control
-   * 
+   *
    * @param property The desired class
    * @return The control itself
    */
@@ -289,7 +287,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Returns whether or not the control is enabled
-   * 
+   *
    * @return True if control is enabled, false otherwise
    */
   @Override
@@ -305,7 +303,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Sets whether or not the control is enabled
-   * 
+   *
    * @param enabled Desired boolean for enabled status of control
    * @return The control itself
    */
@@ -323,7 +321,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Gets the tooltip text for a control
-   * 
+   *
    * @return A string with the tooltip text for the control
    */
   @Override
@@ -339,7 +337,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Sets the tooltip text for a control
-   * 
+   *
    * @param text A string with the tooltip text for the control
    * @return The control itself
    */
@@ -357,7 +355,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Gets whether or not the control is visible
-   * 
+   *
    * @return The visibility of the control
    */
   @Override
@@ -373,7 +371,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   /**
    * Sets whether or not the control is visible
-   * 
+   *
    * @param Boolean for desired visibility of the control
    * @return The control itself
    */
@@ -390,9 +388,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent
   }
 
   /**
-   * Implementation to allow child controls to utilize base class Theme setters
-   * with their own option-appropriate Enums.
-   * 
+   * Implementation to allow child controls to utilize base class Theme setters with their own
+   * option-appropriate Enums.
+   *
    * @param theme Control-specific theme value
    */
 
@@ -452,9 +450,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent
   }
 
   /**
-   * Implementation to allow child controls to utilize base class Expanse setters
-   * with their own option-appropriate Enums.
-   * 
+   * Implementation to allow child controls to utilize base class Expanse setters with their own
+   * option-appropriate Enums.
+   *
    * @param theme Control-specific theme value
    */
   protected void setControlExpanse(Enum<?> expanse) {
@@ -492,18 +490,16 @@ public abstract class AbstractDwcComponent extends AbstractComponent
   }
 
   /**
-   * The catchUp method is used to replay attributes and settings that the API
-   * user might have
-   * added to a control before its creation. A control is not created before it's
-   * added
-   * to a panel. Anything that is added between instantiation of a control and its
-   * addition to a panel
-   * has to be recorded and replayed in this method
+   * The catchUp method is used to replay attributes and settings that the API user might have added
+   * to a control before its creation. A control is not created before it's added to a panel.
+   * Anything that is added between instantiation of a control and its addition to a panel has to be
+   * recorded and replayed in this method
    *
-   * @throws IllegalAccessException - thrown if an attempt is made to call this
-   *                                method more than once
+   * @throws IllegalAccessException - thrown if an attempt is made to call this method more than
+   *         once
    */
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
+                                  // of checks
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp()))

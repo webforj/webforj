@@ -9,23 +9,22 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to define the tag name of the web component node.
- * 
- * This annotation is processed by the
- * {@link org.dwcj.component.webcomponent.WebComponent}
- * class to define the tag name of the web component node.
- * 
- * For example, the following annotation will define the "my-component" tag name
- * for the web component.
- * 
+ *
+ * This annotation is processed by the {@link org.dwcj.component.webcomponent.WebComponent} class to
+ * define the tag name of the web component node.
+ *
+ * For example, the following annotation will define the "my-component" tag name for the web
+ * component.
+ *
  * <pre>
  * {@code
- * @NodeName("my-component")
+ * &#64;NodeName("my-component")
  * }
  * </pre>
- * 
- * If the value of this annotation is not defined, then the HTMLContainer will
- * will be used as the root.
- * 
+ *
+ * If the value of this annotation is not defined, then the HTMLContainer will will be used as the
+ * root.
+ *
  * @author Hyyan Abo Fakher
  */
 @Target(ElementType.TYPE)

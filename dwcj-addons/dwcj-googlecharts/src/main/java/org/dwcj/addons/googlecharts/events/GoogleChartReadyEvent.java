@@ -8,9 +8,9 @@ import org.dwcj.component.webcomponent.events.Event;
 import org.dwcj.addons.googlecharts.GoogleChart;
 
 /**
- * Most charts are rendered asynchronously; all Google charts throw a ready
- * event after they have finished rendering.
- * 
+ * Most charts are rendered asynchronously; all Google charts throw a ready event after they have
+ * finished rendering.
+ *
  * @author Hyyan Abo Fakher
  */
 @EventName(value = "google-chart-ready")

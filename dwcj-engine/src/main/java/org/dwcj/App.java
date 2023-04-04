@@ -10,9 +10,8 @@ import org.dwcj.exceptions.DwcjException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * This is the central class representing an app. In order to implement an app,
- * extend this class and
- * override the run() method.
+ * This is the central class representing an app. In order to implement an app, extend this class
+ * and override the run() method.
  *
  */
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
@@ -24,10 +23,7 @@ public abstract class App {
    * @see App#setTheme(Theme)
    */
   public enum Theme {
-    LIGHT("light"),
-    DARK("dark"),
-    DARK_PURE("dark-pure"),
-    SYSTEM("system");
+    LIGHT("light"), DARK("dark"), DARK_PURE("dark-pure"), SYSTEM("system");
 
     private String value;
 
@@ -54,7 +50,7 @@ public abstract class App {
 
   /**
    * Get the current page instance
-   * 
+   *
    * @return the current page instance
    */
   public static Page getPage() {
@@ -102,8 +98,8 @@ public abstract class App {
   }
 
   /**
-   * Set the name of the dark theme to use for the application.
-   * The dark theme setting is used when the application theme is set to "system".
+   * Set the name of the dark theme to use for the application. The dark theme setting is used when
+   * the application theme is set to "system".
    *
    * @param darkTheme The dark theme to set
    * @throws DwcjRuntimeException if failed to set the dark theme
@@ -131,9 +127,8 @@ public abstract class App {
   }
 
   /**
-   * Set the name of the light theme to use for the application.
-   * The light theme setting is used when the application theme is set to
-   * "system".
+   * Set the name of the light theme to use for the application. The light theme setting is used
+   * when the application theme is set to "system".
    *
    * @param lightTheme The light theme to set
    * @throws DwcjRuntimeException if failed to set the light theme
@@ -178,7 +173,7 @@ public abstract class App {
 
   /**
    * Get the application protocol
-   * 
+   *
    * @return The application protocol
    */
   public static String getProtocol() {
@@ -190,7 +185,7 @@ public abstract class App {
 
   /**
    * Get the application host
-   * 
+   *
    * @return The application host
    */
   public static String getHost() {
@@ -202,7 +197,7 @@ public abstract class App {
 
   /**
    * Get the application port
-   * 
+   *
    * @return The application port
    */
   public static String getPort() {
@@ -214,7 +209,7 @@ public abstract class App {
 
   /**
    * Get the application URL
-   * 
+   *
    * @return The application URL
    * @throws DwcjRuntimeException if failed to get the application URL
    */
@@ -261,7 +256,7 @@ public abstract class App {
 
   /**
    *
-   * @param alert   The message to show
+   * @param alert The message to show
    * @param options
    * @return
    */
@@ -271,7 +266,7 @@ public abstract class App {
 
   /**
    *
-   * @param alert   The message to show
+   * @param alert The message to show
    * @param options
    * @param title
    * @return
@@ -324,11 +319,10 @@ public abstract class App {
   }
 
   /**
-   * Override this method to implement custom cleanup
-   * e.g. kill all background threads that may still run
+   * Override this method to implement custom cleanup e.g. kill all background threads that may
+   * still run
    */
-  public void cleanup() {
-  }
+  public void cleanup() {}
 
   /**
    * Override this method to implement your app behavior

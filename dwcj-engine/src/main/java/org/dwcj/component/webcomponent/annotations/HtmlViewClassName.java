@@ -9,18 +9,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The HtmlViewClassName annotation is used to set css classes on the html view
- * hosting the web component upon creation.
- * 
- * For example, the following annotation will set the class "my-class" on the
- * html view hosting the web component when it is created.
- * 
+ * The HtmlViewClassName annotation is used to set css classes on the html view hosting the web
+ * component upon creation.
+ *
+ * For example, the following annotation will set the class "my-class" on the html view hosting the
+ * web component when it is created.
+ *
  * <pre>
  * {@code
  * &#64;HtmlViewClass("my-class")
  * }
  * </pre>
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @Target(ElementType.TYPE)
@@ -36,7 +36,7 @@ public @interface HtmlViewClassName {
 
   /**
    * The container annotation for {@link HtmlViewClassName} annotation.
-   * 
+   *
    * @see HtmlViewClassName
    * @author Hyyan Abo Fakher
    */
@@ -47,7 +47,7 @@ public @interface HtmlViewClassName {
   public @interface Container {
     /**
      * An array of {@link HtmlViewClassName} annotations.
-     * 
+     *
      * @return an array of {@link HtmlViewClassName} annotations
      */
     HtmlViewClassName[] value();
