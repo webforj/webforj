@@ -1,6 +1,7 @@
 package org.dwcj.component.choicebox;
 
 
+import com.basis.bbj.funcs.Env;
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -59,6 +60,8 @@ public final class ChoiceBox extends AbstractListBox implements HasReadOnly, Foc
     private Integer maxRowCount;
     private SimpleEntry<Integer, String> textAt = null;
     private Integer selected = null;
+    private String label = "";
+    private String placeholder = "";
 
 
     public ChoiceBox(){
@@ -230,6 +233,70 @@ public final class ChoiceBox extends AbstractListBox implements HasReadOnly, Foc
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the name of the placeholder.
+     * @return Returns the name of the placeholder. By default, the text is empty.
+     */
+    public String getPlaceholder(){
+        if(this.ctrl!=null){
+            try{
+                return bbjListButton.getAttribute("placeholder");
+            }catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        return this.placeholder;
+    }
+
+    /**
+     * Sets the value of placeholder added to the NumberField control.
+     * @param placeholder - name of the placeholder.
+     * @return Returns this.
+     */
+    public ChoiceBox setPlaceholder(String placeholder){
+        if(this.ctrl!=null){
+            try{
+                bbjListButton.setAttribute("placeholder", placeholder);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.placeholder = placeholder;
+        return this;
+    }
+
+    /**
+     * Returns the name of the label.
+     * @return Returns the name of the label. By default, the text is empty.
+     */
+    public String getLabel(){
+        if(this.ctrl!=null){
+            try {
+                return bbjListButton.getAttribute("label");
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        return this.label;
+    }
+
+    /**
+     * Sets the value of label added to the NumberField control.
+     * @param label - name of the label.
+     * @return Returns this.
+     */
+    public ChoiceBox setLabel(String label){
+        if(this.ctrl!=null){
+            try{
+                bbjListButton.setAttribute("label", label);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.label = label;
+        return this;
     }
 
     /**
@@ -681,5 +748,12 @@ public final class ChoiceBox extends AbstractListBox implements HasReadOnly, Foc
             this.selectIndex(this.selected);
         }
 
+        if(this.placeholder != ""){
+            this.setPlaceholder(this.placeholder);
+        }
+
+        if(this.label != ""){
+            this.setLabel(this.label);
+        }
     }
 }

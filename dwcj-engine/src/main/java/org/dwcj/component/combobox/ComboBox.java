@@ -1,5 +1,7 @@
 package org.dwcj.component.combobox;
 
+import com.basis.bbj.proxies.BBjAPI;
+import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -24,6 +26,7 @@ import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
+import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -57,8 +60,8 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, Focu
     private ComboBoxCloseEventSink closeEventSink;
     private ArrayList<Consumer<ComboBoxEditModifyEvent>> editModifyEvents = new ArrayList<>();
     private ComboBoxEditModifyEventSink editModifyEventSink;
-
-
+    private BBjComboBox bbjComboBox;
+    private String label = "";
     private String editText = "";
     private Integer maxRowCount = null;
     private SimpleEntry<Integer, String> textAt = null;
@@ -139,9 +142,37 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, Focu
         }
     }
 
+    /**
+     * Returns the name of the label.
+     * @return Returns the name of the label. By default, the text is empty.
+     */
+    public String getLabel(){
+        if(this.ctrl!= null){
+            try {
+                return bbjListEdit.getAttribute("label");
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        return this.label;
+    }
 
-
-
+    /**
+     * Sets the value of label added to the NumberField control.
+     * @param label - name of the label.
+     * @return Returns this.
+     */
+    public ComboBox setLabel(String label){
+        if(this.ctrl!=null){
+            try {
+               bbjListEdit.setAttribute("label", label);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.label = label;
+        return this;
+    }
 
 
 
@@ -662,6 +693,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, Focu
             this.setTextAlignment(this.textAlignment);
         }
         
+        if(this.label != ""){
+            this.setLabel(this.label);
+        }
 
     }
 }

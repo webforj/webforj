@@ -1,5 +1,6 @@
 package org.dwcj.component.numberfield;
 
+import com.basis.bbj.funcs.Env;
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -55,11 +56,8 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Fo
     protected Boolean commas = false;
     protected BigDecimal value = BigDecimal.valueOf(0);
 
-    
-
-
-
-
+    private String label;
+    private String placeholder;
 
     public NumberField(String text) {
         setText(text);
@@ -173,6 +171,70 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Fo
             }
         }
         return this.highlight;
+    }
+
+    /**
+     * Returns the name of the placeholder.
+     * @return Returns the name of the placeholder. By default, the text is empty.
+     */
+    public String getPlaceholder(){
+        if(this.ctrl!=null){
+            try{
+                return numBox.getAttribute("placeholder");
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        return this.placeholder;
+    }
+
+    /**
+     * Sets the value of placeholder added to the NumberField control.
+     * @param placeholder - name of the placeholder.
+     * @return Returns this.
+     */
+    public NumberField setPlaceholder(String placeholder){
+        if(this.ctrl!=null){
+            try{
+                numBox.setAttribute("placeholder", placeholder);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.placeholder = placeholder;
+        return this;
+    }
+
+    /**
+     * Returns the name of the label.
+     * @return Returns the name of the label. By default, the text is empty.
+     */
+    public String getLabel(){
+        if(this.ctrl!=null){
+            try{
+                return numBox.getAttribute("Label");
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        return this.label;
+    }
+
+    /**
+     * Sets the value of label added to the NumberField control.
+     * @param label - name of the label.
+     * @return Returns this.
+     */
+    public NumberField setLabel(String label){
+        if(this.ctrl!=null){
+            try{
+                numBox.setAttribute("label", label);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.label = label;
+        return this;
     }
 
     /**
@@ -889,5 +951,12 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Fo
             this.setHighlightOnFocus(this.textHighlight);
         }
 
+        if(this.label != ""){
+            this.setLabel(this.label);
+        }
+
+        if(this.placeholder != ""){
+            this.setPlaceholder(this.placeholder);
+        }
     }
 }

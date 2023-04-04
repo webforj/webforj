@@ -17,6 +17,7 @@ import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.FieldModifyEventSink;
+import org.dwcj.component.textarea.TextArea;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -40,6 +41,9 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
     private Integer maxLength = 2147483647;
     private Boolean homeDelete = false;
     private Boolean passwordVisible = false;
+    private Boolean spellcheck = false;
+    private String label = "";
+    private String placeholder = "";
 
 
 
@@ -158,7 +162,103 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
         return this;    
     }
 
-    
+    /**
+     * This method returns whether the Spellcheck is enabled in the Field control
+     * @return This method returns whether the Spellcheck is enabled in the Field control (false = spellcheck is ignored, true = spellcheck is enabled).
+     */
+    public Boolean isSpellcheck(){
+        if(this.ctrl!= null){
+            try{
+                return Boolean.valueOf(bbjEditBox.getAttribute("spellcheck"));
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        return Boolean.valueOf(this.spellcheck);
+    }
+
+    /**
+     * Specifies whether the spellcheck should be enabled
+     * @param spellcheck - Specifies whether the spellcheck should be enabled (false = ignored, true = spellcheck enabled). By default is false: ignored.
+     * @return Returns this
+     */
+
+    public TextBox setSpellcheck(Boolean spellcheck){
+        if(this.ctrl!= null) {
+            try{
+                bbjEditBox.setAttribute("spellcheck", String.valueOf(spellcheck));
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.spellcheck = spellcheck;
+        return this;
+    }
+
+    /**
+     * Returns the name of the placeholder.
+     * @return Returns the name of the placeholder. By default, the text is empty.
+     */
+    public String getPlaceholder(){
+        if(this.ctrl!=null){
+            try{
+                return bbjEditBox.getAttribute("placeholder");
+            }catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        return this.placeholder;
+    }
+
+    /**
+     * Sets the value of placeholder added to the Field control.
+     * @param placeholder - name of the placeholder.
+     * @return Returns this.
+     */
+    public TextBox setPlaceholder(String placeholder){
+        if(this.ctrl!=null){
+            try{
+                bbjEditBox.setAttribute("placeholder", placeholder);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.placeholder = placeholder;
+        return this;
+    }
+
+    /**
+     * Returns the name of the label.
+     * @return Returns the name of the label. By default, the text is empty.
+     */
+    public String getLabel(){
+        if(this.ctrl!=null){
+            try {
+                return bbjEditBox.getAttribute("label");
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        return this.label;
+    }
+
+    /**
+     * Sets the value of label added to the Field control.
+     * @param label - name of the label.
+     * @return Returns this.
+     */
+    public TextBox setLabel(String label){
+        if(this.ctrl!=null){
+            try{
+                bbjEditBox.setAttribute("label", label);
+            }catch (BBjException e){
+                Environment.logError(e);
+            }
+        }
+        this.label = label;
+        return this;
+    }
+
 
     public TextBox setMaxLength(Integer length){
         if(this.ctrl != null){
@@ -433,8 +533,18 @@ public final class TextBox extends AbstractDwcComponent implements HasReadOnly, 
         if(this.textHighlight != Highlight.HIGHLIGHT_NONE){
             this.setHighlightOnFocus(this.textHighlight);
         }
+
+        if(Boolean.FALSE.equals(this.spellcheck)){
+            this.setSpellcheck(this.spellcheck);
+        }
+
+        if(this.label != ""){
+            this.setLabel(this.label);
+        }
+
+        if(this.placeholder != ""){
+            this.setPlaceholder(this.placeholder);
+        }
+
     }
-
-
-
 }

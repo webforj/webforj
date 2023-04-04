@@ -1,5 +1,6 @@
 package org.dwcj.component.listbox;
 
+import com.basis.bbj.funcs.Str;
 import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -37,6 +38,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     private ListBoxDoubleClickEventSink doubleClickEventSink;
     Boolean multipleSelection = false;
     private SimpleEntry<Integer, String> textAt = null;
+    private String label = "";
 
 
     public ListBox(){
@@ -121,9 +123,38 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
         }
     }
 
-   
-    
-    
+    /**
+     * Returns the name of the label.
+     * @return Returns the name of the label. By default, the text is empty.
+     */
+    public String getLabel(){
+        if(this.ctrl != null){
+            try {
+                return bbjListBox.getAttribute("label");
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        return this.label;
+    }
+
+    /**
+     * Sets the value of label added to the NumberField control.
+     * @param label - name of the label.
+     * @return Returns this.
+     */
+    public ListBox setLabel(String label){
+        if(this.ctrl != null){
+            try {
+                bbjListBox.setAttribute("label", label);
+            } catch (BBjException e) {
+                Environment.logError(e);
+            }
+        }
+        this.label = label;
+        return this;
+    }
+
     public ListBox deselectAll() {
         if(this.ctrl != null){
             try{
@@ -239,7 +270,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
     /**
      * Returns a map of the items that have been selected in the ListBox
-     * @param N/A
+     * @param /A
      * @return Map of the selected items
      */
     public Map<Object, String> getSelectedItems() {
@@ -316,7 +347,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
     /**
      * Sets whether or not it is possible to select multiple items within the box
-     * @param bool - True or false whether or not to allow multiple selection
+     * @param - True or false whether or not to allow multiple selection
      * @return boolean
      */
     
@@ -715,6 +746,10 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
         if(this.textAlignment != Alignment.LEFT){
             this.setTextAlignment(this.textAlignment);
+        }
+
+        if(this.label != ""){
+            this.setLabel(this.label);
         }
     }
 
