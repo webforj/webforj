@@ -1,25 +1,21 @@
-name: 'publish-javaDoc'
+name: Deploy Javadoc
 
 on:
   push:
-    paths: [ '**.java']
-  
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+    branches:
+      - master
+      - main
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
-    
     steps:
-     - name: Publish JavaDoc
-       uses: ren130302/publish-javadoc@test
+      - name: Deploy JavaDoc 🚀
+        uses: MathieuSoysal/Javadoc-publisher.yml@v2.4.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          javadoc-branch: javadoc
+          java-version: 17
+          target-folder: javadoc # url will be https://<username>.github.io/<repo>/javadoc, This can be left as nothing to generate javadocs in the root folder.
+          project: maven # or gradle
+          # subdirectories: moduleA moduleB #for subdirectories support, needs to be run with custom command
