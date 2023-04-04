@@ -27,7 +27,7 @@
       <groupId>com.basis.lib</groupId>
       <artifactId>BBjUtil</artifactId>
       <scope>provided</scope>
-      <version>22.14</version>
+      <version>23.00</version>
     </dependency>
   </dependencies>
 
