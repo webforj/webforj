@@ -17,7 +17,8 @@ import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.controls.AbstractControl;
 
 /**
- * The DocViewer widget allows you to put a htmlView onto your application and diretly
+ * The DocViewer widget allows you to put a htmlView onto your application and
+ * diretly
  * open files in it.
  * 
  * For instance, to open a pdf file in your application you can do the
@@ -36,97 +37,97 @@ import org.dwcj.controls.AbstractControl;
 
 public final class DocViewer extends AbstractControl implements HasStyle {
 
-	
-	private HtmlContainer htmlView;
+  private HtmlContainer htmlView;
 
-	@Override
-	protected void create(AbstractPanel panel) {
-		super.create(panel);
+  @Override
+  protected void create(AbstractPanel panel) {
+    super.create(panel);
 
-		htmlView = new HtmlContainer();
+    htmlView = new HtmlContainer();
 
-		panel.add(htmlView);
-		htmlView.setStyle("width", "100%");
-		htmlView.setStyle("height", "100%");
-	}
+    panel.add(htmlView);
+    htmlView.setStyle("width", "100%");
+    htmlView.setStyle("height", "100%");
+  }
 
-	public DocViewer setStyle(String property, String value) {
-		htmlView.setStyle(property, value);
-		return this;
-	}
+  public DocViewer setStyle(String property, String value) {
+    htmlView.setStyle(property, value);
+    return this;
+  }
 
-	/**
-	 * open a document directly from a phyiscal file on disk.
-	 * The approrpiate viewer will be determined as of the extention
-	 * of the name.
-	 * 
-	 * @param filePathString The path to the sourcefile that should be
-	 * opened.
-	 * 
-	 * @return An instance of this object is returned          
-	 */
-	public DocViewer open(String filePathString) throws IOException {
+  /**
+   * open a document directly from a phyiscal file on disk.
+   * The approrpiate viewer will be determined as of the extention
+   * of the name.
+   * 
+   * @param filePathString The path to the sourcefile that should be
+   *                       opened.
+   * 
+   * @return An instance of this object is returned
+   */
+  public DocViewer open(String filePathString) throws IOException {
 
-		String extension = getExtension(filePathString);
+    String extension = getExtension(filePathString);
 
-		Path filePath = Paths.get(filePathString.substring(filePathString.lastIndexOf("/") + 1));
-		if (extension == "pdf") {
+    Path filePath = Paths.get(filePathString.substring(filePathString.lastIndexOf("/") + 1));
 
-			IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
-			Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+    if (extension.equals("pdf")) {
 
-			ArrayList<Object> args = new ArrayList<>();
-			args.add(filePathString); // p_srcFile$
-			args.add(filePath.toString()); // p_destDir$
-			args.add(""); // p_destFile$
-			args.add(0); // p_requireSSL
-			args.add(0); // p_obfuscate
+      IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+      Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
-			String result = (String) helper.invokeMethod(instance, "copyFileToWebServer", args);
-			htmlView.setUrl(result);
+      ArrayList<Object> args = new ArrayList<>();
+      args.add(filePathString); // p_srcFile$
+      args.add(filePath.toString()); // p_destDir$
+      args.add(""); // p_destFile$
+      args.add(0); // p_requireSSL
+      args.add(0); // p_obfuscate
 
-		} else {
+      String result = (String) helper.invokeMethod(instance, "copyFileToWebServer", args);
+      htmlView.setUrl(result);
 
-			filePath = Paths.get(filePathString);
-			String content = Files.readString(filePath);
-			htmlView.setText(content);
+    } else {
+      filePath = Paths.get(filePathString);
+      String content = Files.readString(filePath);
+      htmlView.setText(content);
 
-		}
-		return this;
-	}
+    }
+    return this;
+  }
 
-	/**
-	 * Open a document directly from a blob in memory. The approrpiate viewer will be determined as of the extention
-	 * of the name.
-	 * 
-	 * @param blob  The document as binary string
-	 * @param name  The file name under which the file should be served
-	 * 
-	 * @return An instance of this object is returned 
-	 */
-	public DocViewer open(String blob, String name) throws IOException {
+  /**
+   * Open a document directly from a blob in memory. The approrpiate viewer will
+   * be determined as of the extention
+   * of the name.
+   * 
+   * @param blob The document as binary string
+   * @param name The file name under which the file should be served
+   * 
+   * @return An instance of this object is returned
+   */
+  public DocViewer open(String blob, String name) throws IOException {
 
-		Path tempD = Files.createTempDirectory("__fviewer");
+    Path tempD = Files.createTempDirectory("__fviewer");
 
-		String tempDString = tempD.toAbsolutePath().toString() + "/";
-		String path = tempDString + name;
-		File file = new File(path);
+    String tempDString = tempD.toAbsolutePath().toString() + "/";
+    String path = tempDString + name;
+    File file = new File(path);
 
-		file.deleteOnExit();
-		FileOutputStream outputStream = new FileOutputStream(file);
-		byte[] strToBytes = blob.getBytes();
-		outputStream.write(strToBytes);
-		outputStream.close();
+    file.deleteOnExit();
+    FileOutputStream outputStream = new FileOutputStream(file);
+    byte[] strToBytes = blob.getBytes();
+    outputStream.write(strToBytes);
+    outputStream.close();
 
-		return open(path);
+    return open(path);
 
-	}
+  }
 
-	public String getExtension(String filePath) {
-		String extension = "";
-
-		extension = filePath.substring(filePath.lastIndexOf(".") + 1);
-
-		return extension;
-	}
+  private String getExtension(String filePath) {
+    String extension = "";
+    if (filePath.contains(".")) {
+      extension = filePath.substring(filePath.lastIndexOf(".") + 1);
+    }
+    return extension;
+  }
 }
