@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * <pre>
  * {@code
  * &#64;AppAttribute(name = "first-attr", value = "value1")
- * @AppAttribute(name = "second-attr", value = "value2", selector = "body")
+ * &#64;AppAttribute(name = "second-attr", value = "value2", selector = "body")
  * }
  * </pre>
  *
