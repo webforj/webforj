@@ -748,7 +748,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
             this.setTextAlignment(this.textAlignment);
         }
 
-        if(this.label != ""){
+        if(this.label.equals("")){
             this.setLabel(this.label);
         }
     }

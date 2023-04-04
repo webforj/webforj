@@ -951,11 +951,11 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Fo
             this.setHighlightOnFocus(this.textHighlight);
         }
 
-        if(this.label != ""){
+        if(this.label.equals("")){
             this.setLabel(this.label);
         }
 
-        if(this.placeholder != ""){
+        if(this.placeholder.equals("")){
             this.setPlaceholder(this.placeholder);
         }
     }

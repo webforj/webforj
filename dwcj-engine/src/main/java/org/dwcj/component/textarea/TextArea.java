@@ -176,7 +176,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
                 Environment.logError(e);
             }
         }
-        return Boolean.valueOf(this.spellcheck);
+        return this.spellcheck;
     }
 
     /**
@@ -1129,11 +1129,11 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
             this.setSpellcheck(this.spellcheck);
         }
 
-        if(this.label != ""){
+        if(this.label.equals("")){
             this.setLabel(this.label);
         }
 
-        if(this.placeholder != ""){
+        if(this.placeholder.equals("")){
             this.setPlaceholder(this.placeholder);
         }
 

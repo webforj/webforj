@@ -693,7 +693,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, Focu
             this.setTextAlignment(this.textAlignment);
         }
         
-        if(this.label != ""){
+        if(this.label.equals("")){
             this.setLabel(this.label);
         }
 

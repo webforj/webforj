@@ -748,11 +748,11 @@ public final class ChoiceBox extends AbstractListBox implements HasReadOnly, Foc
             this.selectIndex(this.selected);
         }
 
-        if(this.placeholder != ""){
+        if(this.placeholder.equals("")){
             this.setPlaceholder(this.placeholder);
         }
 
-        if(this.label != ""){
+        if(this.label.equals("")){
             this.setLabel(this.label);
         }
     }
