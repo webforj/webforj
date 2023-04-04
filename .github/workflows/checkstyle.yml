@@ -1,4 +1,4 @@
-name: reviewdog
+name: checkstyle
 on: [pull_request]
 jobs:
   checkstyle:
