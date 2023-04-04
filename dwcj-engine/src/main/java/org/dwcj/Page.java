@@ -218,8 +218,8 @@ public final class Page {
    */
   public Page addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
-      if (Assets.isWebServerURL(url)) {
-        url = Assets.resolveWebServerURL(url);
+      if (Assets.isWebServerUrl(url)) {
+        url = Assets.resolveWebServerUrl(url);
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
@@ -243,8 +243,8 @@ public final class Page {
    */
   public Page addStyleSheet(String url, boolean top, String attributes) {
     try {
-      if (Assets.isWebServerURL(url)) {
-        url = Assets.resolveWebServerURL(url);
+      if (Assets.isWebServerUrl(url)) {
+        url = Assets.resolveWebServerUrl(url);
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
@@ -296,8 +296,8 @@ public final class Page {
    */
   public Page addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
-      if (Assets.isContextURL(css)) {
-        css = Assets.contentOf(Assets.resolveContextURL(css));
+      if (Assets.isContextUrl(css)) {
+        css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
@@ -322,8 +322,8 @@ public final class Page {
    */
   public Page addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
-      if (Assets.isContextURL(css)) {
-        css = Assets.contentOf(Assets.resolveContextURL(css));
+      if (Assets.isContextUrl(css)) {
+        css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
@@ -377,8 +377,8 @@ public final class Page {
    */
   public Page addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
-      if (Assets.isWebServerURL(url)) {
-        url = Assets.resolveWebServerURL(url);
+      if (Assets.isWebServerUrl(url)) {
+        url = Assets.resolveWebServerUrl(url);
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
@@ -402,8 +402,8 @@ public final class Page {
    */
   public Page addJavaScript(String url, boolean top, String attributes) {
     try {
-      if (Assets.isWebServerURL(url)) {
-        url = Assets.resolveWebServerURL(url);
+      if (Assets.isWebServerUrl(url)) {
+        url = Assets.resolveWebServerUrl(url);
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
@@ -456,8 +456,8 @@ public final class Page {
    */
   public Page addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
-      if (Assets.isContextURL(script)) {
-        script = Assets.contentOf(Assets.resolveContextURL(script));
+      if (Assets.isContextUrl(script)) {
+        script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
@@ -482,8 +482,8 @@ public final class Page {
    */
   public Page addInlineJavaScript(String script, boolean top, String attributes) {
     try {
-      if (Assets.isContextURL(script)) {
-        script = Assets.contentOf(Assets.resolveContextURL(script));
+      if (Assets.isContextUrl(script)) {
+        script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
@@ -536,8 +536,8 @@ public final class Page {
    */
   public Page addLink(String url, boolean top, Map<String, String> attributes) {
     try {
-      if (Assets.isWebServerURL(url)) {
-        url = Assets.resolveWebServerURL(url);
+      if (Assets.isWebServerUrl(url)) {
+        url = Assets.resolveWebServerUrl(url);
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
@@ -561,8 +561,8 @@ public final class Page {
    */
   public Page addLink(String url, boolean top, String attributes) {
     try {
-      if (Assets.isWebServerURL(url)) {
-        url = Assets.resolveWebServerURL(url);
+      if (Assets.isWebServerUrl(url)) {
+        url = Assets.resolveWebServerUrl(url);
       }
 
       Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
