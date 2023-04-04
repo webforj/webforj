@@ -1,11 +1,10 @@
 package org.dwcj.addons.googlecharts.events;
 
 import java.util.Map;
-
+import org.dwcj.addons.googlecharts.GoogleChart;
 import org.dwcj.component.webcomponent.annotations.EventExpressions;
 import org.dwcj.component.webcomponent.annotations.EventName;
 import org.dwcj.component.webcomponent.events.Event;
-import org.dwcj.addons.googlecharts.GoogleChart;
 
 /**
  * Most charts are rendered asynchronously; all Google charts throw a ready event after they have
@@ -18,6 +17,8 @@ import org.dwcj.addons.googlecharts.GoogleChart;
 public final class GoogleChartReadyEvent extends Event<GoogleChart> {
 
   /**
+   * Construct new GoogleChartReadyEvent.
+   *
    * @param target the target of the event
    * @param detail the detail of the event
    */

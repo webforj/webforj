@@ -90,15 +90,17 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
     }
   }
 
-  private final PropertyDescriptor<Boolean> AUTO_FOCUS =
+  private final PropertyDescriptor<Boolean> autoFocusProp =
       PropertyDescriptor.property("autoFocus", false);
-  private final PropertyDescriptor<String> LABEL = PropertyDescriptor.property("label", "Drawer");
-  private final PropertyDescriptor<String> MAX_SIZE =
+  private final PropertyDescriptor<String> labelProp =
+      PropertyDescriptor.property("label", "Drawer");
+  private final PropertyDescriptor<String> maxSizeProp =
       PropertyDescriptor.property("maxSize", "100%");
-  private final PropertyDescriptor<Boolean> OPENED = PropertyDescriptor.property("opened", false);
-  private final PropertyDescriptor<String> PLACEMENT =
+  private final PropertyDescriptor<Boolean> openedProp =
+      PropertyDescriptor.property("opened", false);
+  private final PropertyDescriptor<String> placementProp =
       PropertyDescriptor.property("placement", Placement.LEFT.getValue());
-  private final PropertyDescriptor<String> SIZE = PropertyDescriptor.property("size", "16EM");
+  private final PropertyDescriptor<String> sizeProp = PropertyDescriptor.property("size", "16EM");
 
   /**
    * Instantiates a new drawer.
@@ -135,7 +137,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer
    */
   public Drawer setAutoFocus(boolean autoFocus) {
-    set(AUTO_FOCUS, autoFocus);
+    set(autoFocusProp, autoFocus);
     return this;
   }
 
@@ -145,7 +147,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer auto focus
    */
   public boolean isAutoFocus() {
-    return get(AUTO_FOCUS);
+    return get(autoFocusProp);
   }
 
   /**
@@ -155,7 +157,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer
    */
   public Drawer setLabel(String label) {
-    set(LABEL, label);
+    set(labelProp, label);
     return this;
   }
 
@@ -165,7 +167,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer label
    */
   public String getLabel() {
-    return get(LABEL);
+    return get(labelProp);
   }
 
   /**
@@ -176,7 +178,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer
    */
   public Drawer setMaxSize(String maxSize) {
-    set(MAX_SIZE, maxSize);
+    set(maxSizeProp, maxSize);
     return this;
   }
 
@@ -186,7 +188,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer max size
    */
   public String getMaxSize() {
-    return get(MAX_SIZE);
+    return get(maxSizeProp);
   }
 
   /**
@@ -196,7 +198,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer
    */
   public Drawer toggle(boolean opened) {
-    set(OPENED, opened);
+    set(openedProp, opened);
     return this;
   }
 
@@ -224,7 +226,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer opened
    */
   public boolean isOpened() {
-    return get(OPENED, true, Boolean.class);
+    return get(openedProp, true, Boolean.class);
   }
 
   /**
@@ -234,7 +236,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer
    */
   public Drawer setPlacement(Placement placement) {
-    set(PLACEMENT, placement.getValue());
+    set(placementProp, placement.getValue());
     return this;
   }
 
@@ -244,7 +246,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer placement
    */
   public Placement getPlacement() {
-    return Placement.fromValue(get(PLACEMENT));
+    return Placement.fromValue(get(placementProp));
   }
 
   /**
@@ -255,7 +257,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer
    */
   public Drawer setSize(String size) {
-    set(SIZE, size);
+    set(sizeProp, size);
     return this;
   }
 
@@ -265,7 +267,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
    * @return the drawer size
    */
   public String getSize() {
-    return get(SIZE);
+    return get(sizeProp);
   }
 
   /**

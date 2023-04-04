@@ -160,33 +160,33 @@ public class AppLayout extends WebComponent
   private Panel footer;
 
   // Property descriptors
-  private final PropertyDescriptor<Boolean> DRAWER_OPENED =
+  private final PropertyDescriptor<Boolean> drawerOpenProp =
       PropertyDescriptor.property("drawerOpened", false);
-  private final PropertyDescriptor<Boolean> DRAWER_POPOVER =
+  private final PropertyDescriptor<Boolean> drawerPopoverProp =
       PropertyDescriptor.property("drawerPopover", false);
-  private final PropertyDescriptor<Boolean> DRAWER_OVERLAY =
+  private final PropertyDescriptor<Boolean> drawerOverlayProp =
       PropertyDescriptor.property("drawerOverlay", false);
-  private final PropertyDescriptor<String> DRAWER_WIDTH =
+  private final PropertyDescriptor<String> drawerWidthProp =
       PropertyDescriptor.property("drawerWidth", "16em");
-  private final PropertyDescriptor<String> DRAWER_PLACEMENT =
+  private final PropertyDescriptor<String> drawerPlacementProp =
       PropertyDescriptor.property("drawerPlacement", DrawerPlacement.LEFT.getValue());
-  private final PropertyDescriptor<String> DRAWER_BREAKPOINT =
+  private final PropertyDescriptor<String> drawerBreakPointProp =
       PropertyDescriptor.property("drawerBreakpoint", "(max-width: 800px)");
-  private final PropertyDescriptor<String> FOOTER_SHADOW =
+  private final PropertyDescriptor<String> footerShadowProp =
       PropertyDescriptor.property("footerShadow", Shadow.HIDDEN.getValue());
-  private final PropertyDescriptor<Boolean> FOOTER_FIXED =
+  private final PropertyDescriptor<Boolean> footerFixedProp =
       PropertyDescriptor.property("footerFixed", true);
-  private final PropertyDescriptor<Boolean> FOOTER_OFFSCREEN =
+  private final PropertyDescriptor<Boolean> footerOffscreenProp =
       PropertyDescriptor.property("footerOffscreen", true);
-  private final PropertyDescriptor<Boolean> FOOTER_REVEAL =
+  private final PropertyDescriptor<Boolean> footerRevealProp =
       PropertyDescriptor.property("footerReveal", false);
-  private final PropertyDescriptor<String> HEADER_SHADOW =
+  private final PropertyDescriptor<String> headerSahdowProp =
       PropertyDescriptor.property("headerShadow", Shadow.SCROLL.getValue());
-  private final PropertyDescriptor<Boolean> HEADER_FIXED =
+  private final PropertyDescriptor<Boolean> headerFixedProp =
       PropertyDescriptor.property("headerFixed", true);
-  private final PropertyDescriptor<Boolean> HEADER_OFFSCREEN =
+  private final PropertyDescriptor<Boolean> headerOffscreenProp =
       PropertyDescriptor.property("headerOffscreen", true);
-  private final PropertyDescriptor<Boolean> HEADER_REVEAL =
+  private final PropertyDescriptor<Boolean> headerRevealProp =
       PropertyDescriptor.property("headerReveal", false);
 
   private boolean visible = true;
@@ -294,7 +294,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setDrawerOpened(boolean drawerOpened) {
-    set(DRAWER_OPENED, drawerOpened);
+    set(drawerOpenProp, drawerOpened);
     return this;
   }
 
@@ -305,7 +305,7 @@ public class AppLayout extends WebComponent
    */
   public boolean isDrawerOpened() {
     // always return the property value from the client side.
-    return get(DRAWER_OPENED, true, Boolean.class);
+    return get(drawerOpenProp, true, Boolean.class);
   }
 
   /**
@@ -316,7 +316,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setDrawerPopover(boolean drawerPopover) {
-    set(DRAWER_POPOVER, drawerPopover);
+    set(drawerPopoverProp, drawerPopover);
     return this;
   }
 
@@ -327,7 +327,7 @@ public class AppLayout extends WebComponent
    */
   public boolean isDrawerPopover() {
     // always return the property value from the client side.
-    return get(DRAWER_POPOVER, true, Boolean.class);
+    return get(drawerPopoverProp, true, Boolean.class);
   }
 
   /**
@@ -339,7 +339,7 @@ public class AppLayout extends WebComponent
    * @see #setDrawerPopover(boolean)
    */
   public AppLayout setDrawerOverlay(boolean drawerOverlay) {
-    set(DRAWER_OVERLAY, drawerOverlay);
+    set(drawerOverlayProp, drawerOverlay);
     return this;
   }
 
@@ -350,7 +350,7 @@ public class AppLayout extends WebComponent
    */
   public boolean isDrawerOverlay() {
     // always return the property value from the client side.
-    return get(DRAWER_OVERLAY, true, Boolean.class);
+    return get(drawerOverlayProp, true, Boolean.class);
   }
 
   /**
@@ -365,7 +365,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setDrawerWidth(String drawerWidth) {
-    set(DRAWER_WIDTH, drawerWidth);
+    set(drawerWidthProp, drawerWidth);
     return this;
   }
 
@@ -375,7 +375,7 @@ public class AppLayout extends WebComponent
    * @return the drawer width
    */
   public String getDrawerWidth() {
-    return get(DRAWER_WIDTH);
+    return get(drawerWidthProp);
   }
 
   /**
@@ -385,7 +385,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setDrawerPlacement(DrawerPlacement drawerPlacement) {
-    set(DRAWER_PLACEMENT, drawerPlacement.getValue());
+    set(drawerPlacementProp, drawerPlacement.getValue());
     return this;
   }
 
@@ -395,7 +395,7 @@ public class AppLayout extends WebComponent
    * @return the drawer placement
    */
   public DrawerPlacement getDrawerPlacement() {
-    return DrawerPlacement.fromValue(get(DRAWER_PLACEMENT));
+    return DrawerPlacement.fromValue(get(drawerPlacementProp));
   }
 
   /**
@@ -412,7 +412,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setDrawerBreakpoint(String drawerBreakpoint) {
-    set(DRAWER_BREAKPOINT, drawerBreakpoint);
+    set(drawerBreakPointProp, drawerBreakpoint);
     return this;
   }
 
@@ -422,7 +422,7 @@ public class AppLayout extends WebComponent
    * @return the drawer breakpoint
    */
   public String getDrawerBreakpoint() {
-    return get(DRAWER_BREAKPOINT);
+    return get(drawerBreakPointProp);
   }
 
   /**
@@ -432,7 +432,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setFooterShadow(Shadow footerShadow) {
-    set(FOOTER_SHADOW, footerShadow.getValue());
+    set(footerShadowProp, footerShadow.getValue());
     return this;
   }
 
@@ -442,7 +442,7 @@ public class AppLayout extends WebComponent
    * @return the footer shadow
    */
   public Shadow getFooterShadow() {
-    return Shadow.fromValue(get(FOOTER_SHADOW));
+    return Shadow.fromValue(get(footerShadowProp));
   }
 
   /**
@@ -453,7 +453,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setFooterFixed(boolean footerFixed) {
-    set(FOOTER_FIXED, footerFixed);
+    set(footerFixedProp, footerFixed);
     return this;
   }
 
@@ -463,7 +463,7 @@ public class AppLayout extends WebComponent
    * @return true if the footer is fixed, false otherwise
    */
   public boolean isFooterFixed() {
-    return get(FOOTER_FIXED);
+    return get(footerFixedProp);
   }
 
   /**
@@ -474,7 +474,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setFooterOffscreen(boolean footerOffscreen) {
-    set(FOOTER_OFFSCREEN, footerOffscreen);
+    set(footerOffscreenProp, footerOffscreen);
     return this;
   }
 
@@ -484,7 +484,7 @@ public class AppLayout extends WebComponent
    * @return true if the footer is offscreen, false otherwise
    */
   public boolean isFooterOffscreen() {
-    return get(FOOTER_OFFSCREEN);
+    return get(footerOffscreenProp);
   }
 
   /**
@@ -494,7 +494,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setFooterReveal(boolean footerReveal) {
-    set(FOOTER_REVEAL, footerReveal);
+    set(footerRevealProp, footerReveal);
     return this;
   }
 
@@ -504,7 +504,7 @@ public class AppLayout extends WebComponent
    * @return true if the footer is reveal, false otherwise
    */
   public boolean isFooterReveal() {
-    return get(FOOTER_REVEAL);
+    return get(footerRevealProp);
   }
 
   /**
@@ -514,7 +514,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setHeaderShadow(Shadow headerShadow) {
-    set(HEADER_SHADOW, headerShadow.getValue());
+    set(headerSahdowProp, headerShadow.getValue());
     return this;
   }
 
@@ -524,7 +524,7 @@ public class AppLayout extends WebComponent
    * @return the header shadow
    */
   public Shadow getHeaderShadow() {
-    return Shadow.fromValue(get(HEADER_SHADOW));
+    return Shadow.fromValue(get(headerSahdowProp));
   }
 
   /**
@@ -535,7 +535,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setHeaderFixed(boolean headerFixed) {
-    set(HEADER_FIXED, headerFixed);
+    set(headerFixedProp, headerFixed);
     return this;
   }
 
@@ -545,7 +545,7 @@ public class AppLayout extends WebComponent
    * @return true if the header is fixed, false otherwise
    */
   public boolean isHeaderFixed() {
-    return get(HEADER_FIXED);
+    return get(headerFixedProp);
   }
 
   /**
@@ -556,7 +556,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setHeaderOffscreen(boolean headerOffscreen) {
-    set(HEADER_OFFSCREEN, headerOffscreen);
+    set(headerOffscreenProp, headerOffscreen);
     return this;
   }
 
@@ -566,7 +566,7 @@ public class AppLayout extends WebComponent
    * @return true if the header is offscreen, false otherwise
    */
   public boolean isHeaderOffscreen() {
-    return get(HEADER_OFFSCREEN);
+    return get(headerOffscreenProp);
   }
 
   /**
@@ -576,7 +576,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setHeaderReveal(boolean headerReveal) {
-    set(HEADER_REVEAL, headerReveal);
+    set(headerRevealProp, headerReveal);
     return this;
   }
 

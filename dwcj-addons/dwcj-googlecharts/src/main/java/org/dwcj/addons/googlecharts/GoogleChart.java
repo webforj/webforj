@@ -1,5 +1,7 @@
 package org.dwcj.addons.googlecharts;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.dwcj.addons.googlecharts.events.GoogleChartReadyEvent;
 import org.dwcj.addons.googlecharts.events.GoogleChartSelectedEvent;
 import org.dwcj.annotation.Attribute;
@@ -11,13 +13,10 @@ import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeName;
 import org.dwcj.component.webcomponent.events.EventListener;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 /**
  * A simple implementation for Google Chart Web Component, this component is a wrapper for the
  * <a href=
- * "https://github.com/GoogleWebComponents/google-chart">GoogleWebComponents/google-chart</a>
+ * "https://github.com/GoogleWebComponents/google-chart">GoogleWebComponents/google-chart</a>.
  *
  * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery">Google Chart
  *      Gallery</a>
@@ -242,12 +241,12 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   }
 
   // Properties
-  private final PropertyDescriptor<String> TYPE =
+  private final PropertyDescriptor<String> typeProp =
       PropertyDescriptor.property("type", Type.BAR.getValue());
-  private final PropertyDescriptor<JsonArray> DATA = PropertyDescriptor.property("data", null);
-  private final PropertyDescriptor<JsonObject> OPTIONS =
+  private final PropertyDescriptor<JsonArray> dataProp = PropertyDescriptor.property("data", null);
+  private final PropertyDescriptor<JsonObject> optionProp =
       PropertyDescriptor.property("options", null);
-  private final PropertyDescriptor<JsonArray> SELECTION =
+  private final PropertyDescriptor<JsonArray> selectionProp =
       PropertyDescriptor.property("selection", null);
 
   private EventListener<GoogleChartReadyEvent> firstRenderListener;
@@ -286,7 +285,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    *      Visualization API reference (Chart Gallery)</a>
    */
   public GoogleChart setType(Type type) {
-    set(TYPE, type.getValue());
+    set(typeProp, type.getValue());
     return this;
   }
 
@@ -297,7 +296,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @see Type
    */
   public Type getType() {
-    return Type.fromValue(get(TYPE));
+    return Type.fromValue(get(typeProp));
   }
 
   /**
@@ -345,7 +344,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @return The chart
    */
   public GoogleChart setOptions(JsonObject options) {
-    set(OPTIONS, options);
+    set(optionProp, options);
     return this;
   }
 
@@ -355,13 +354,15 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @return The options to use when displaying the chart.
    */
   public JsonObject getOptions() {
-    return get(OPTIONS);
+    return get(optionProp);
   }
 
   /**
    * Sets the entire dataset for the chart.
    *
+   * <p>
    * For instance, to set the data for a bar chart:
+   * </p>
    *
    * <pre>
    * {@code
@@ -391,7 +392,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @return The chart
    */
   public GoogleChart setData(JsonArray data) {
-    set(DATA, data);
+    set(dataProp, data);
     return this;
   }
 
@@ -401,7 +402,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @return The data to use when displaying the chart.
    */
   public JsonArray getData() {
-    return get(DATA);
+    return get(dataProp);
   }
 
   /**
@@ -417,7 +418,9 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * <li>To select a whole row, set column to null.</li>
    * </ul>
    *
+   * <p>
    * For example, to select the first column, set `selection` to
+   * </p>
    *
    * <pre>
    * {@code
@@ -435,7 +438,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @return The chart
    */
   public GoogleChart setSelection(JsonArray selection) {
-    set(SELECTION, selection);
+    set(selectionProp, selection);
     return this;
   }
 
@@ -445,14 +448,16 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @return The selected items in the chart.
    */
   public JsonArray getSelection() {
-    return get(SELECTION, true, JsonArray.class);
+    return get(selectionProp, true, JsonArray.class);
   }
 
   /**
    * Redraw the chart.
    *
+   * <p>
    * Called automatically when data/type/selection/options are changed. Call manually to handle view
    * updates, page resizes, etc.
+   * </p>
    *
    * @return The chart
    */
@@ -464,11 +469,13 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   /**
    * Returns the chart serialized as an image URI.
    *
+   * <p>
    * Call this after the chart is drawn (`ready` event).
+   * </p>
    *
    * @return The URI of the image of the chart.
    */
-  public String getImageURI() {
+  public String getImageUri() {
     return (String) getComponentProperty("imageURI",
         "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", true);
   }
@@ -519,7 +526,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   }
 
   /**
-   * Alias for {@link #addSelectedListener(EventListener)}
+   * Alias for {@link #addSelectedListener(EventListener)}.
    *
    * @param listener the listener
    * @return The chart
@@ -551,7 +558,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   }
 
   /**
-   * Alias for {@link #addReadyListener(EventListener)}
+   * Alias for {@link #addReadyListener(EventListener)}.
    *
    * @param listener the listener
    * @return The chart

@@ -142,34 +142,37 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   private Panel footer;
 
   // Properties
-  private final PropertyDescriptor<String> ALIGNMENT =
+  private final PropertyDescriptor<String> alignmentProp =
       PropertyDescriptor.property("alignment", Alignment.CENTER.getValue());
-  private final PropertyDescriptor<Boolean> AUTOFOCUS =
+  private final PropertyDescriptor<Boolean> autoFocusProp =
       PropertyDescriptor.property("autofocus", false);
-  private final PropertyDescriptor<Boolean> BACKDROP =
+  private final PropertyDescriptor<Boolean> backdropProp =
       PropertyDescriptor.property("backdrop", true);
-  private final PropertyDescriptor<Boolean> BLURRED = PropertyDescriptor.property("blurred", false);
-  private final PropertyDescriptor<String> BREAKPOINT =
+  private final PropertyDescriptor<Boolean> blurredProp =
+      PropertyDescriptor.property("blurred", false);
+  private final PropertyDescriptor<String> breakpointProp =
       PropertyDescriptor.property("breakpoint", "");
-  private final PropertyDescriptor<Boolean> CANCEL_ON_ESC_KEY =
+  private final PropertyDescriptor<Boolean> cancelOnEscKeyProp =
       PropertyDescriptor.property("cancelOnEscKey", false);
-  private final PropertyDescriptor<Boolean> CANCEL_ON_OUTSIDE_CLICK =
+  private final PropertyDescriptor<Boolean> cancelOnOutsideClickProp =
       PropertyDescriptor.property("cancelOnOutsideClick", true);
-  private final PropertyDescriptor<Boolean> FULLSCREEN =
+  private final PropertyDescriptor<Boolean> fullscreenProp =
       PropertyDescriptor.property("fullscreen", false);
-  private final PropertyDescriptor<String> MAX_HEIGHT =
+  private final PropertyDescriptor<String> maxHeightProp =
       PropertyDescriptor.property("maxHeight", "");
-  private final PropertyDescriptor<String> MAX_WIDTH = PropertyDescriptor.property("maxWidth", "");
-  private final PropertyDescriptor<Boolean> MOVEABLE =
+  private final PropertyDescriptor<String> maxWidthProp =
+      PropertyDescriptor.property("maxWidth", "");
+  private final PropertyDescriptor<Boolean> moveableProp =
       PropertyDescriptor.property("moveable", true);
-  private final PropertyDescriptor<Boolean> OPENED = PropertyDescriptor.property("opened", false);
-  private final PropertyDescriptor<String> POSX = PropertyDescriptor.property("posx", "");
-  private final PropertyDescriptor<String> POSY = PropertyDescriptor.property("posy", "");
-  private final PropertyDescriptor<Integer> SNAP_THRESHOLD =
+  private final PropertyDescriptor<Boolean> openedProp =
+      PropertyDescriptor.property("opened", false);
+  private final PropertyDescriptor<String> posxProp = PropertyDescriptor.property("posx", "");
+  private final PropertyDescriptor<String> posyProp = PropertyDescriptor.property("posy", "");
+  private final PropertyDescriptor<Integer> snapThresholdProp =
       PropertyDescriptor.property("snapThreshold", 0);
-  private final PropertyDescriptor<Boolean> SNAP_TO_EDGE =
+  private final PropertyDescriptor<Boolean> snapToEdgeProp =
       PropertyDescriptor.property("snapToEdge", true);
-  private final PropertyDescriptor<String> THEME =
+  private final PropertyDescriptor<String> theme =
       PropertyDescriptor.property("theme", Theme.DEFAULT.getValue());
 
   /**
@@ -260,7 +263,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @see Alignment
    */
   public Dialog setAlignment(Alignment alignment) {
-    set(ALIGNMENT, alignment.getValue());
+    set(alignmentProp, alignment.getValue());
     return this;
   }
 
@@ -271,7 +274,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @see Alignment
    */
   public Alignment getAlignment() {
-    return Alignment.fromValue(get(ALIGNMENT));
+    return Alignment.fromValue(get(alignmentProp));
   }
 
   /**
@@ -285,7 +288,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setAutoFocus(boolean autofocus) {
-    set(AUTOFOCUS, autofocus);
+    set(autoFocusProp, autofocus);
     return this;
   }
 
@@ -295,7 +298,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the autofocus
    */
   public boolean isAutoFocus() {
-    return get(AUTOFOCUS);
+    return get(autoFocusProp);
   }
 
   /**
@@ -309,7 +312,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setBackdrop(boolean backdrop) {
-    set(BACKDROP, backdrop);
+    set(backdropProp, backdrop);
     return this;
   }
 
@@ -319,7 +322,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the backdrop
    */
   public boolean isBackdrop() {
-    return get(BACKDROP);
+    return get(backdropProp);
   }
 
   /**
@@ -333,7 +336,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setBlurred(boolean blurred) {
-    set(BLURRED, blurred);
+    set(blurredProp, blurred);
     return this;
   }
 
@@ -343,7 +346,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the blurred
    */
   public boolean isBlurred() {
-    return get(BLURRED);
+    return get(blurredProp);
   }
 
   /**
@@ -359,7 +362,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setBreakpoint(String breakpoint) {
-    set(BREAKPOINT, breakpoint);
+    set(breakpointProp, breakpoint);
     return this;
   }
 
@@ -369,7 +372,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the breakpoint
    */
   public String getBreakpoint() {
-    return get(BREAKPOINT);
+    return get(breakpointProp);
   }
 
   /**
@@ -383,7 +386,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setCancelOnEscKey(boolean cancelOnEscKey) {
-    set(CANCEL_ON_ESC_KEY, cancelOnEscKey);
+    set(cancelOnEscKeyProp, cancelOnEscKey);
     return this;
   }
 
@@ -393,7 +396,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the cancel on esc key
    */
   public boolean isCancelOnEscKey() {
-    return get(CANCEL_ON_ESC_KEY);
+    return get(cancelOnEscKeyProp);
   }
 
   /**
@@ -407,7 +410,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setCancelOnOutsideClick(boolean cancelOnOutsideClick) {
-    set(CANCEL_ON_OUTSIDE_CLICK, cancelOnOutsideClick);
+    set(cancelOnOutsideClickProp, cancelOnOutsideClick);
     return this;
   }
 
@@ -417,7 +420,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the cancel on outside click
    */
   public boolean isCancelOnOutsideClick() {
-    return get(CANCEL_ON_OUTSIDE_CLICK);
+    return get(cancelOnOutsideClickProp);
   }
 
   /**
@@ -445,7 +448,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setFullScreen(boolean fullscreen) {
-    set(FULLSCREEN, fullscreen);
+    set(fullscreenProp, fullscreen);
     return this;
   }
 
@@ -455,7 +458,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the fullscreen
    */
   public boolean isFullScreen() {
-    return get(FULLSCREEN, true, Boolean.class);
+    return get(fullscreenProp, true, Boolean.class);
   }
 
   /**
@@ -469,7 +472,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setMaxHeight(String maxHeight) {
-    set(MAX_HEIGHT, maxHeight);
+    set(maxHeightProp, maxHeight);
     return this;
   }
 
@@ -479,7 +482,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the max height
    */
   public String getMaxHeight() {
-    return get(MAX_HEIGHT);
+    return get(maxHeightProp);
   }
 
   /**
@@ -493,7 +496,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setMaxWidth(String maxWidth) {
-    set(MAX_WIDTH, maxWidth);
+    set(maxWidthProp, maxWidth);
     return this;
   }
 
@@ -503,7 +506,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the max width
    */
   public String getMaxWidth() {
-    return get(MAX_WIDTH);
+    return get(maxWidthProp);
   }
 
   /**
@@ -517,7 +520,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setMoveable(boolean moveable) {
-    set(MOVEABLE, moveable);
+    set(moveableProp, moveable);
     return this;
   }
 
@@ -527,7 +530,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the moveable
    */
   public boolean isMoveable() {
-    return get(MOVEABLE);
+    return get(moveableProp);
   }
 
   /**
@@ -536,7 +539,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog show() {
-    set(OPENED, true);
+    set(openedProp, true);
     return this;
   }
 
@@ -546,7 +549,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog hide() {
-    set(OPENED, false);
+    set(openedProp, false);
     return this;
   }
 
@@ -556,7 +559,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return true if the dialog is opened, false otherwise
    */
   public boolean isOpened() {
-    return get(OPENED, true, Boolean.class);
+    return get(openedProp, true, Boolean.class);
   }
 
   /**
@@ -566,7 +569,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setPosx(String posx) {
-    set(POSX, posx);
+    set(posxProp, posx);
     return this;
   }
 
@@ -576,7 +579,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the X position
    */
   public String getPosx() {
-    return get(POSX, true, String.class);
+    return get(posxProp, true, String.class);
   }
 
   /**
@@ -586,7 +589,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setPosy(String posy) {
-    set(POSY, posy);
+    set(posyProp, posy);
     return this;
   }
 
@@ -596,7 +599,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the Y position
    */
   public String getPosy() {
-    return get(POSY, true, String.class);
+    return get(posyProp, true, String.class);
   }
 
   /**
@@ -607,7 +610,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setSnapThreshold(int snapThreshold) {
-    set(SNAP_THRESHOLD, snapThreshold);
+    set(snapThresholdProp, snapThreshold);
     return this;
   }
 
@@ -617,7 +620,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the snap threshold
    */
   public int getSnapThreshold() {
-    return get(SNAP_THRESHOLD);
+    return get(snapThresholdProp);
   }
 
   /**
@@ -631,7 +634,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the dialog
    */
   public Dialog setSnapToEdge(boolean snapToEdge) {
-    set(SNAP_TO_EDGE, snapToEdge);
+    set(snapToEdgeProp, snapToEdge);
     return this;
   }
 
@@ -641,7 +644,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the snap to edge
    */
   public boolean isSnapToEdge() {
-    return get(SNAP_TO_EDGE);
+    return get(snapToEdgeProp);
   }
 
   /**
@@ -656,7 +659,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @see Theme
    */
   public Dialog setTheme(Theme theme) {
-    set(THEME, theme.getValue());
+    set(this.theme, theme.getValue());
     return this;
   }
 
@@ -666,7 +669,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @return the theme
    */
   public Theme getTheme() {
-    return Theme.fromValue(get(THEME));
+    return Theme.fromValue(get(theme));
   }
 
   /**

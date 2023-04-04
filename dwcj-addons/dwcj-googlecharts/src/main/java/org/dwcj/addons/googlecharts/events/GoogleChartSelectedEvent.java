@@ -1,14 +1,12 @@
 package org.dwcj.addons.googlecharts.events;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import java.util.Map;
-
+import org.dwcj.addons.googlecharts.GoogleChart;
 import org.dwcj.component.webcomponent.annotations.EventExpressions;
 import org.dwcj.component.webcomponent.annotations.EventName;
 import org.dwcj.component.webcomponent.events.Event;
-import org.dwcj.addons.googlecharts.GoogleChart;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 
 /**
  * Emitted when data is selected in the chart.
@@ -20,6 +18,8 @@ import com.google.gson.JsonArray;
 public final class GoogleChartSelectedEvent extends Event<GoogleChart> {
 
   /**
+   * Construct new GoogleChartSelectedEvent.
+   *
    * @param target the target of the event
    * @param detail the detail of the event
    */
