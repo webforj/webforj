@@ -21,7 +21,7 @@ public enum FlexAlignment {
    */
   END("flex-end"),
   /**
-   * Items are centered in the cross-axis
+   * Items are centered in the cross-axis.
    */
   CENTER("center"),
   /**

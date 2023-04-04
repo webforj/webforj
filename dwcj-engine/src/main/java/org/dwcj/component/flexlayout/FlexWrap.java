@@ -9,7 +9,7 @@ package org.dwcj.component.flexlayout;
  */
 public enum FlexWrap {
   /**
-   * The items will be on one line
+   * The items will be on one line.
    */
   NOWRAP("nowrap"),
   /**

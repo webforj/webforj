@@ -6,6 +6,9 @@ package org.dwcj.component.flexlayout;
  * @author Hyyan Abo Fakher
  */
 final class FlexProperties {
+
+  private FlexProperties() {}
+
   // container
   public static final String PROP_ALIGN_CONTENT = "align-content";
   public static final String PROP_ALIGN_ITEMS = "align-items";

@@ -373,7 +373,7 @@ public final class FlexLayoutBuilder {
   }
 
   /**
-   * The items will be on one line
+   * The items will be on one line.
    *
    * @return the builder
    */

@@ -13,15 +13,15 @@ public enum FlexDirection {
    */
   ROW("row"),
   /**
-   * Right to left in ltr; left to right in rtl
+   * Right to left in ltr; left to right in rtl.
    */
   ROW_REVERSE("row-reverse"),
   /**
-   * Same as {@link #ROW} but top to bottom
+   * Same as {@link #ROW} but top to bottom.
    */
   COLUMN("column"),
   /**
-   * Same as {@link #ROW_REVERSE} but bottom to top
+   * Same as {@link #ROW_REVERSE} but bottom to top.
    */
   COLUMN_REVERSE("column-reverse");
 

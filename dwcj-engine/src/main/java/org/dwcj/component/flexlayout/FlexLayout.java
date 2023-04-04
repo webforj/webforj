@@ -1,7 +1,6 @@
 package org.dwcj.component.flexlayout;
 
 import java.util.Optional;
-
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.HasStyle;
 import org.dwcj.component.window.Panel;
@@ -113,17 +112,16 @@ public class FlexLayout extends Panel {
    * @return true if the layout is inline, otherwise false
    */
   public boolean isInline() {
-    Boolean display =
-        Optional.ofNullable(getStyle("display")).map(d -> d.equals("inline-flex")).orElse(false);
-
-    return display;
+    return Optional.ofNullable(getStyle("display")).map(d -> d.equals("inline-flex")).orElse(false);
   }
 
   /**
    * Set the layout direction.
    *
+   * <p>
    * This establishes the main-axis, thus defining the direction items are placed in the layout. The
    * default value is {@link FlexDirection#ROW}.
+   * </p>
    *
    * @param direction the direction
    * @return this layout
@@ -148,11 +146,13 @@ public class FlexLayout extends Panel {
   /**
    * Set the layout wrap mode.
    *
+   * <p>
    * By default, items will all try to fit onto one line. You can change that and allow the items to
    * wrap as needed with this option. The default value is {@link FlexWrap#NOWRAP}.
+   * </p>
    *
-   * @see <a href="https://css-tricks.com/almanac/properties/f/flex-wrap/>visual demos of
-   *      flex-wrap</a>
+   * @see <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/#article-header-id-6">Flex
+   *      Wrap</a>
    *
    * @param wrap the wrap
    * @return this layout
@@ -177,8 +177,10 @@ public class FlexLayout extends Panel {
   /**
    * Set the layout flow.
    *
+   * <p>
    * This is a shorthand for setting both {@link #setDirection(FlexDirection)} and
    * {@link #setWrap(FlexWrap)} at the same time. The default value is {@link FlexFlow#ROW_NOWRAP}.
+   * </p>
    *
    * @param flow the flow
    * @return this layout
@@ -194,8 +196,10 @@ public class FlexLayout extends Panel {
   /**
    * Get the layout flow.
    *
+   * <p>
    * This is a shorthand for getting both {@link #getDirection()} and {@link #getWrap()} at the same
    * time.
+   * </p>
    *
    * @return the flow
    *
@@ -212,10 +216,12 @@ public class FlexLayout extends Panel {
   /**
    * Set the {@link FlexJustifyContent} use by the layout.
    *
+   * <p>
    * This defines the alignment along the main axis. it helps distribute extra free space left over
    * when either all the items on a line are inflexible, or are flexible but have reached their
    * maximum size. It also exerts some control over the alignment of items when they overflow the
    * line. The default value is {@link FlexJustifyContent#START}
+   * </p>
    *
    * @param justifyContent the justify content
    * @return this layout
@@ -240,9 +246,11 @@ public class FlexLayout extends Panel {
   /**
    * Set the {@link FlexAlignment} use by the layout.
    *
+   * <p>
    * Defines the default behaviour for how items are laid out along the cross axis on the current
    * line. Think of it as the {@link #setJustifyContent(FlexJustifyContent)} version for the
    * cross-axis (perpendicular to the main-axis). The default value is {@link FlexAlignment#STRETCH}
+   * </p>
    *
    * @param alignItems the align items
    * @return this layout
@@ -267,9 +275,11 @@ public class FlexLayout extends Panel {
   /**
    * Set the {@link FlexContentAlignment} use by the layout.
    *
+   * <p>
    * The aligns the layout's lines within when there is extra space in the cross-axis, similar to
    * how {@link #setJustifyContent(FlexJustifyContent)} aligns individual items within the
    * main-axis. The default value is {@link FlexContentAlignment#NORMAL}
+   * </p>
    *
    * <p>
    * Note: This property has no effect when the layout has only one line of items. In this case, the
@@ -300,8 +310,10 @@ public class FlexLayout extends Panel {
   /**
    * Set the gap between items.
    *
+   * <p>
    * The gap property explicitly controls the space between items. It applies that spacing only
    * between items not on the outer edges.
+   * </p>
    *
    * <p>
    * The behavior could be thought of as a minimum gutter, as if the gutter is bigger somehow
@@ -309,8 +321,8 @@ public class FlexLayout extends Panel {
    * then the gap will only take effect if that space would end up smaller.
    * </p>
    *
-   * @param spacing
-   * @return
+   * @param spacing the gap
+   * @return this layout
    */
   public FlexLayout setSpacing(String spacing) {
     setStyle(FlexProperties.PROP_GAP, spacing);
@@ -323,13 +335,11 @@ public class FlexLayout extends Panel {
    * @return the gap
    */
   public String getSpacing() {
-    String gap = Optional.ofNullable(getStyle(FlexProperties.PROP_GAP)).orElse("");
-
-    return gap;
+    return Optional.ofNullable(getStyle(FlexProperties.PROP_GAP)).orElse("");
   }
 
   /**
-   * Set the layout margin
+   * Set the layout margin.
    *
    * @param margin the margin
    * @return this layout
@@ -340,9 +350,8 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout margin
+   * Set the layout margin.
    *
-   * @param margin the margin
    * @return this layout
    */
   public String getMargin() {
@@ -352,7 +361,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout padding
+   * Set the layout padding.
    *
    * @param padding the padding
    * @return this layout
@@ -363,10 +372,9 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout padding
+   * Set the layout padding.
    *
-   * @param padding the padding
-   * @return this layout
+   * @return the padding
    */
   public String getPadding() {
     String padding = Optional.ofNullable(getStyle("gap")).orElse("");
@@ -375,10 +383,12 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the order of given control
+   * Set the order of given control.
    *
+   * <p>
    * By default, items will be laid out in the source order. However, the order property controls
    * the order in which they appear in the layout.
+   * </p>
    *
    * @param order the order
    * @param control the control
@@ -396,7 +406,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the order of given control
+   * Get the order of given control.
    *
    * @param control the control
    * @return the order
@@ -410,15 +420,17 @@ public class FlexLayout extends Panel {
   /**
    * Set the flex grow for the given items.
    *
+   * <p>
    * The defines the ability for a control to grow if necessary. It accepts a numeric value that
    * serves as a proportion. It dictates what amount of the available space inside the layout the
    * control should take up.
+   * </p>
    *
    * <p>
    * If all controls have flex-grow set to 1, the remaining space in the layout will be distributed
    * equally to all controls. If one of the items has a value of 2, the remaining space would take
    * up twice as much space as the others (or it will try to, at least).
-   * <p>
+   * </p>
    *
    * @param grow the grow to set. If {@code 0} the flex grow is removed from the control
    * @param items the items
@@ -459,7 +471,9 @@ public class FlexLayout extends Panel {
   /**
    * Set the flex shrink for the given items.
    *
+   * <p>
    * The defines the ability for a control to shrink if necessary.
+   * </p>
    *
    * @param shrink the shrink to set.
    * @param items the items
@@ -493,9 +507,11 @@ public class FlexLayout extends Panel {
   /**
    * Set the flex basis for the given items.
    *
+   * <p>
    * The defines the default size of an item before the remaining space is distributed. It can be a
    * length (e.g. 20%, 5rem, etc.) or a keyword. for instance, the "auto" keyword means "look at my
    * width or height property".
+   * </p>
    *
    * @param width the width to set. If {@code null} is passed then the flex-basis will be removed.
    * @param items the items
@@ -528,10 +544,12 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the alignment of given items
+   * Set the alignment of given items.
    *
+   * <p>
    * This allows the default alignment (or the one specified by
    * {@link #setAlignment(FlexAlignment)}) to be overridden for individual items.
+   * </p>
    *
    * @param alignSelf the alignment
    * @param items the items
@@ -555,7 +573,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the alignment of given control
+   * Get the alignment of given control.
    *
    * @param control the control
    * @return the alignment

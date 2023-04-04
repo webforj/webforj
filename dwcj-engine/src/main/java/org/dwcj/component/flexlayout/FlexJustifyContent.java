@@ -23,7 +23,7 @@ public enum FlexJustifyContent {
   CENTER("center"),
   /**
    * Items are evenly distributed in the line; first item is on the start line, last item on the end
-   * line
+   * line.
    */
   BETWEEN("space-between"),
   /**

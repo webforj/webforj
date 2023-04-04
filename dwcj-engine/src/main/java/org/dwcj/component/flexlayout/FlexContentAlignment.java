@@ -27,15 +27,15 @@ public enum FlexContentAlignment {
   CENTER("center"),
   /**
    * Items evenly distributed; the first line is at the start of the container while the last one is
-   * at the end
+   * at the end.
    */
   BETWEEN("space-between"),
   /**
-   * Items evenly distributed with equal space around each line
+   * Items evenly distributed with equal space around each line.
    */
   AROUND("space-around"),
   /**
-   * items are evenly distributed with equal space around them
+   * items are evenly distributed with equal space around them.
    */
   EVENLY("space-evenly"),
   /**
