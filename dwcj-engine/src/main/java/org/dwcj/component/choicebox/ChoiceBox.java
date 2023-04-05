@@ -1,10 +1,8 @@
 package org.dwcj.component.choicebox;
 
-
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Focusable;
@@ -22,7 +20,6 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
-
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -91,7 +88,7 @@ public final class ChoiceBox extends AbstractListBox
 
   }
 
-  /**
+  /**.
    * Add an item into the combobox
    *
    * @param key the item key
@@ -107,7 +104,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Allows user to insert an item at a specific index within the comboBox
    *
    * @param key Key for the item to be inserted
@@ -123,7 +120,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Adds a map of items to the already-existing items within the ComboBox
    *
    * @param items Map of items to be added
@@ -139,12 +136,11 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Inserts a map of items into the ComboBox at the desired index
    *
    * @param items Map of items to be added
    * @param index Integer representing the desired
-   * @return
    */
   public ChoiceBox insertItemsAt(Map<Object, String> items, Integer index) {
     this.values.putAll(items);
@@ -170,7 +166,7 @@ public final class ChoiceBox extends AbstractListBox
     }
   }
 
-  /**
+  /**.
    * set the list of items into the comboBox
    *
    * @param values A Map object containing the key-value pairs for the list
@@ -187,35 +183,35 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-    /**
+  /**.
    * Returns the name of the label for ChoiceBox control
    *
    * @return String representing the value of label
    */
 
   public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         return bbjListButton.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-    /**
+  /**.
    * set the value of label in ChoiceBox control
    *
    * @param label A String object containing the value of label
    * @return the control itself
    */
 
-  public ChoiceBox setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+  public ChoiceBox setLabel(String label) {
+    if (this.ctrl != null) {
+      try {
         bbjListButton.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -223,7 +219,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Deselects any selected items within the ComboBox
    *
    * @return The object itself
@@ -239,7 +235,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Returns all of the values in the ComboBox as a Map
    *
    * @return all values in the comboBox
@@ -248,7 +244,7 @@ public final class ChoiceBox extends AbstractListBox
     return this.values;
   }
 
-  /**
+  /**.
    * Returns a single string at the given key within the box
    *
    * @param key - Returns a single string at the given key within the box
@@ -258,7 +254,7 @@ public final class ChoiceBox extends AbstractListBox
     return values.get(key);
   }
 
-  /**
+  /**.
    * Selects the item at the given index (0 based)
    *
    * @param idx Index of the desired item
@@ -276,7 +272,7 @@ public final class ChoiceBox extends AbstractListBox
     return null;
   }
 
-  /**
+  /**.
    * Returns the index (0 based) of the selected item within the ComboBox
    *
    * @return Integer representing the selected index
@@ -292,7 +288,7 @@ public final class ChoiceBox extends AbstractListBox
     return null;
   }
 
-  /**
+  /**.
    * returns the currently selected item, implemented for one-to-one value maps
    *
    * @return selected entry
@@ -311,7 +307,7 @@ public final class ChoiceBox extends AbstractListBox
     return new SimpleEntry<>(null, null);
   }
 
-  /**
+  /**.
    * Returns number of items within the ComboBox
    *
    * @return Integer representing the total number of items
@@ -327,7 +323,7 @@ public final class ChoiceBox extends AbstractListBox
     return null;
   }
 
-  /**
+  /**.
    * opens the ComboBox dropdown list
    *
    * @return ComboBox - returns this
@@ -342,7 +338,7 @@ public final class ChoiceBox extends AbstractListBox
   }
 
 
-  /**
+  /**.
    * closes the ComboBox dropdown list
    *
    * @return ComboBox - returns this
@@ -357,7 +353,7 @@ public final class ChoiceBox extends AbstractListBox
   }
 
 
-  /**
+  /**.
    * Register a callback for selecting an item within the box
    *
    * @param callback A method to receive the selection event
@@ -376,7 +372,7 @@ public final class ChoiceBox extends AbstractListBox
   }
 
 
-  /**
+  /**.
    * Sets the behavior to be executed when the ComboBox control is opened
    *
    * @param callback A function with the behavior desired on opening a ComboBox
@@ -394,7 +390,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Sets the behavior to be executed when the ComboBox control is closed
    *
    * @param callback A function with the behavior desired on closing a ComboBox
@@ -412,7 +408,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Removed all of the items within a ComboBox
    *
    * @return The object itself
@@ -428,7 +424,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Removed an item at the given index (0 based) within the ComboBox
    *
    * @param index Integer for the desired index of the item to be removed
@@ -445,7 +441,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Selects the item at the given index within the ComboBox
    *
    * @param index Integer representing the index of the desired item for selection
@@ -463,7 +459,7 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  /**
+  /**.
    * Sets the maximum number of rows allowed within the ComboBox
    *
    * @param max Integer representing the desired maximum number of rows
@@ -482,7 +478,7 @@ public final class ChoiceBox extends AbstractListBox
   }
 
 
-  /**
+  /**.
    * Sets the text at one of the specific items at the given index within the ComboBox
    *
    * @param idx Index of the desired item to have text set
@@ -662,10 +658,11 @@ public final class ChoiceBox extends AbstractListBox
 
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
 
     super.catchUp();
 
@@ -727,7 +724,7 @@ public final class ChoiceBox extends AbstractListBox
       this.selectIndex(this.selected);
     }
 
-    if(!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
 
