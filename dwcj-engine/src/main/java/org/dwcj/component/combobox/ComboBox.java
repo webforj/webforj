@@ -64,6 +64,8 @@ public final class ComboBox extends AbstractListBox
   private Integer maxRowCount = null;
   private SimpleEntry<Integer, String> textAt = null;
 
+  private String label = "";
+
 
 
   public ComboBox() {
@@ -142,7 +144,41 @@ public final class ComboBox extends AbstractListBox
     }
   }
 
+/**
+  * Returns the name of the label for ComboBox control
+  *
+  * @return String representing the value of label
+  */
 
+  public String getLabel(){
+    if(this.ctrl!=null){
+      try{
+        return bbjListEdit.getAttribute("label");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+/**
+   * set the value of label in ComboBox control
+   *
+   * @param label A String object containing the value of label
+   * @return the control itself
+   */  
+
+  public ComboBox setLabel(String label){
+    if(this.ctrl!=null){
+      try{
+        bbjListEdit.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
 
   public ComboBox closeList() {
     if (this.ctrl != null) {
@@ -656,6 +692,9 @@ public final class ComboBox extends AbstractListBox
       this.setTextAlignment(this.textAlignment);
     }
 
+    if (!this.label.equals("")){
+      this.setLabel(this.label);
+    }
 
   }
 }
