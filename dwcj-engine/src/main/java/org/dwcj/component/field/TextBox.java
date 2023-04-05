@@ -3,10 +3,9 @@ package org.dwcj.component.field;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Consumer;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -134,7 +133,7 @@ public final class TextBox extends AbstractDwcComponent
   public String getSelection() {
     if (this.ctrl != null) {
       try {
-        return bbjEditBox.getSelection().toArray().toString();
+        return Arrays.toString(bbjEditBox.getSelection().toArray());
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -142,24 +141,24 @@ public final class TextBox extends AbstractDwcComponent
     return null;
   }
 
-      /**
+  /**.
    * Returns the name of the label for TextArea control
    *
    * @return String representing the value of label
    */
 
-   public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+  public String getLabel(){
+    if (this.ctrl != null) {
+      try {
         return bbjEditBox.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set the value of label in TextArea control
    *
    * @param label A String object containing the value of label
@@ -167,10 +166,10 @@ public final class TextBox extends AbstractDwcComponent
    */  
 
   public TextBox setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         bbjEditBox.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -178,51 +177,51 @@ public final class TextBox extends AbstractDwcComponent
     return this;
   }
 
-  /**
+  /**.
    * Returns the valiue of the placeholder for TextArea control
    *
    * @return String representing the value of placeholder
    */
 
-   public String getPlaceholder(){
-    if(this.ctrl!=null){
-      try{
+  public String getPlaceholder() {
+    if (this.ctrl != null) {
+      try {
         return bbjEditBox.getAttribute("placeholder");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set a placeholder in TextArea control
    *
-   * @param label A String object containing the value of placeholder
+   * @param placeholder A String object containing the value of placeholder
    * @return the control itself
    */  
 
-  public TextBox setPlaceholder(String placeholder){
-    if(this.ctrl!=null){
-      try{
+  public TextBox setPlaceholder(String placeholder) {
+    if (this.ctrl != null) {
+      try {
         bbjEditBox.setAttribute("placeholder", placeholder);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.label = label;
+    this.placeholder = placeholder;
     return this;
   }
 
-  /**
+  /**.
    * This method returns whether the spellcheck is enabled in the TextArea control
    *
-   * @return Returns This method returns whether the spellcheck is enabled in the TextArea control (false = ignored
-   *        , true = enabled).
+   * @return Returns This method returns whether the spellcheck is enabled in the TextArea control 
+   *     (false = ignored, true = enabled).
    */
 
-  public Boolean isSpellcheck(){
-    if(this.ctrl!=null){
+  public Boolean isSpellcheck() {
+    if (this.ctrl != null) {
       try {
         return Boolean.valueOf(bbjEditBox.getAttribute("spellcheck"));
       } catch (BBjException e) {
@@ -235,15 +234,15 @@ public final class TextBox extends AbstractDwcComponent
   /**
    * enables/disables the spellcheck. By default disabled (FALSE)
    *
-   * @param label A Boolean object allowing the spellcheck
+   * @param spellcheck A Boolean object allowing the spellcheck
    * @return the control itself
    */  
 
-  public TextBox setSpellcheck(Boolean spellcheck){
-    if(this.ctrl!=null){
-      try{
+  public TextBox setSpellcheck(Boolean spellcheck) {
+    if (this.ctrl != null) {
+      try {
         bbjEditBox.setAttribute("spellcheck", String.valueOf(spellcheck));
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -494,8 +493,9 @@ public final class TextBox extends AbstractDwcComponent
 
   @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.callbacks.isEmpty()) {
@@ -538,15 +538,15 @@ public final class TextBox extends AbstractDwcComponent
       this.setHighlightOnFocus(this.textHighlight);
     }
 
-    if (!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
 
-    if (!this.placeholder.equals("")){
+    if (!this.placeholder.equals("")) {
       this.setPlaceholder(this.placeholder);
     }
 
-    if (Boolean.FALSE.equals(this.spellcheck)){
+    if (Boolean.FALSE.equals(this.spellcheck)) {
       this.setSpellcheck(this.spellcheck);
     }
 
