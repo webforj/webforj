@@ -8,16 +8,16 @@ package org.dwcj.component;
 public interface HasTooltip {
 
   /**
-   * get the tooltip text property of the control
+   * get the tooltip text property of the control.
    *
    * @return the tooltip text
    */
   public String getTooltipText();
 
   /**
-   * Set the tooltip text of the control
+   * Set the tooltip text of the control.
    *
-   * @param text
+   * @param tooltipText the tooltip text to set
    * @return the control itself
    */
   public HasTooltip setTooltipText(String tooltipText);

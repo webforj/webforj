@@ -3,8 +3,6 @@ package org.dwcj.component;
 /**
  * On applicable controls, helps facilitate underlying BBj popup menu behavior to facilitate
  * implementation of methods to interact with this behavior.
- *
- * ==TODO==
  */
 
 public interface HasPopupMenu {

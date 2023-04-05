@@ -21,11 +21,13 @@ public interface Focusable {
   /**
    * setFocusable sets whether a control can be focused.
    *
+   * <p>
    * Note: A focused control is the control to which keyboard interaction is directed. Typically,
    * the focused control is indicated visually, often via a dotted grey border. A control which is
    * not focusable, therefore, cannot be manipulated via the keyboard. It is still possible to
    * interact with a non-focusable control via the mouse. To disable all interaction, including the
    * mouse, see setEnabled() and setReadOnly().
+   * </p>
    *
    * @param focusable Boolean True for allowing focusing, False to disable focus
    * @return Object itself

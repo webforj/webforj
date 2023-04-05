@@ -8,6 +8,9 @@ package org.dwcj.component;
  */
 public interface TextAlignable {
 
+  /**
+   * Enum which maps to BBj constants for text alignment.
+   */
   enum Alignment {
     LEFT(8192), MIDDLE(16384), RIGHT(32768);
 
@@ -21,7 +24,7 @@ public interface TextAlignable {
   /**
    * Returns a value indicating the text's horizontal alignment.
    *
-   * @return
+   * @return Enum value of text alignment
    */
   Alignment getTextAlignment();
 

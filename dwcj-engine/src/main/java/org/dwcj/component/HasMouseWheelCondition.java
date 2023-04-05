@@ -7,6 +7,9 @@ package org.dwcj.component;
  */
 public interface HasMouseWheelCondition {
 
+  /**
+   * Enum which maps to BBj constants for scroll wheel behavior.
+   */
   enum MouseWheelCondition {
     DEFAULT(0), NEVER(1), FOCUS(2), MOUSE_OVER(3), FOCUS_AND_MOUSE_OVER(4), MOUSE_THEN_FOCUS(
         5), FOCUS_THEN_MOUSE(6);
@@ -34,6 +37,4 @@ public interface HasMouseWheelCondition {
    * @return The control itself
    */
   HasMouseWheelCondition setScrollWheelBehavior(MouseWheelCondition condition);
-
-
 }

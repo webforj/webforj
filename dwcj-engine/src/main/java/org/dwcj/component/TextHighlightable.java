@@ -7,6 +7,9 @@ package org.dwcj.component;
  */
 public interface TextHighlightable {
 
+  /**
+   * Enum which maps to BBj constants for text highlighting.
+   */
   enum Highlight {
     HIGHLIGHT_NONE(0), HIGHLIGHT_KEY(1), HIGHLIGHT_MOUSE(2), HIGHLIGHT_KEY_MOUSE(
         3), HIGHLIGHT_FOCUS(

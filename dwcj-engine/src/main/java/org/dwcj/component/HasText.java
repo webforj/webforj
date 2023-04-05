@@ -8,7 +8,7 @@ package org.dwcj.component;
 public interface HasText {
 
   /**
-   * get the text property of the control
+   * get the text property of the control.
    *
    * @return the text
    */
@@ -17,11 +17,10 @@ public interface HasText {
   /**
    * set the text of the control Each control implementing this interface has a text property, which
    * might be visible in different ways (caption, title, contents of edit) or sometimes not visible
-   * at all
+   * at all.
    *
-   * @param text
+   * @param text the text to set
    * @return the control itself
    */
   public HasText setText(String text);
-
 }
