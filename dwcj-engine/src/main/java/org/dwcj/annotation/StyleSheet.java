@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * <pre>
  * {@code
  * &#64;StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css")
- * @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)
+ * &#64;StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)
  * }
  * </pre>
  *

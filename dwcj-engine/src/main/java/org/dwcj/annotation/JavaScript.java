@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * <pre>
  * {@code
  * &#64;JavaScript(url = "http://www.example.com/script.js")
- * @JavaScript(url = "http://www.example.com/script.js", top = true)
+ * &#64;JavaScript(url = "http://www.example.com/script.js", top = true)
  * }
  * </pre>
  *
