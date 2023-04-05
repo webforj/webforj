@@ -1,4 +1,4 @@
-package org.dwcj.addons.docviewer;
+package org.dwcj.addons.documentviewer;
 
 
 import java.io.File;

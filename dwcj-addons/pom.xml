@@ -22,7 +22,7 @@
     <module>dwcj-terminal</module>
     <module>dwcj-googlecharts</module>
     <module>dwcj-youtube</module>
-    <module>dwcj-docviewer</module>
+    <module>dwcj-documentviewer</module>
   </modules>
 
   <dependencies>

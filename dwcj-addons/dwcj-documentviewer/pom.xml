@@ -9,9 +9,9 @@
     <version>0.17.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>dwcj-docviewer</artifactId>
+  <artifactId>dwcj-documentviewer</artifactId>
 
-  <name>dwcj-docviewer</name>
+  <name>dwcj-documentviewer</name>
   <description>A Plug-in widget for display of documents in DWCJ programs.
     </description>
 
