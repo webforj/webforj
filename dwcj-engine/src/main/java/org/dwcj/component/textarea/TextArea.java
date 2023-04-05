@@ -269,7 +269,11 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   public Boolean isSpellcheck(){
     if(this.ctrl!=null){
-      return Boolean.valueOf(this.getAttribute("spellcheck"));
+      try {
+        return Boolean.valueOf(bbjCEdit.getAttribute("spellcheck"));
+      } catch (BBjException e) {
+        e.printStackTrace();
+      }
     }
     return this.spellcheck;
   }
