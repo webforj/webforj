@@ -17,20 +17,12 @@
     </description>
 
   <modules>
-<<<<<<< HEAD:dwcj-addons/pom.xml
     <module>dwcj-code</module>
     <module>dwcj-markdown</module>
     <module>dwcj-terminal</module>
     <module>dwcj-googlecharts</module>
     <module>dwcj-youtube</module>
-=======
-    <module>dwcj-code-widget</module>
-    <module>dwcj-markdown-widget</module>
-    <module>dwcj-terminal-widget</module>
-    <module>dwcj-googlecharts-widget</module>
-    <module>dwcj-youtube-widget</module>
->>>>>>> 2b8a698ff33fb61b6cd55fa0ff09e52f895cb3f0:dwcj-widgets/pom.xml
-    <module>dwcj-docviewer-widget</module>
+    <module>dwcj-docviewer</module>
   </modules>
 
   <dependencies>

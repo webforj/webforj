@@ -1,8 +1,9 @@
-package org.dwcj.widgets.docviewer;
+package org.dwcj.addons.docviewer;
 
-import org.dwcj.controls.htmlcontainer.HtmlContainer;
-import org.dwcj.controls.panels.AbstractPanel;
-import org.dwcj.interfaces.HasStyle;
+import org.dwcj.component.htmlcontainer.HtmlContainer;
+import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.HasStyle;
+import org.dwcj.component.AbstractComponent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
-import org.dwcj.controls.AbstractControl;
+
 
 /**
  * The DocViewer widget allows you to put a htmlView onto your application and
@@ -35,13 +36,13 @@ import org.dwcj.controls.AbstractControl;
  * @author Eric Handtke
  */
 
-public final class DocViewer extends AbstractControl implements HasStyle {
+public final class DocViewer extends AbstractComponent implements HasStyle {
 
   private HtmlContainer htmlView;
 
   @Override
-  protected void create(AbstractPanel panel) {
-    super.create(panel);
+  protected void create(AbstractWindow panel) {
+    //super.create(panel);
 
     htmlView = new HtmlContainer();
 
@@ -50,10 +51,28 @@ public final class DocViewer extends AbstractControl implements HasStyle {
     htmlView.setStyle("height", "100%");
   }
 
+  @Override
   public DocViewer setStyle(String property, String value) {
     htmlView.setStyle(property, value);
     return this;
   }
+
+  @Override
+  public DocViewer removeStyle(String property){
+    htmlView.removeStyle(property);
+    return this;
+  }
+
+  @Override
+  public String getComputedStyle(String property){
+    return htmlView.getComputedStyle(property);
+  }
+
+  @Override
+  public String getStyle(String property){
+    return htmlView.getStyle(property);
+  }
+
 
   /**
    * open a document directly from a phyiscal file on disk.

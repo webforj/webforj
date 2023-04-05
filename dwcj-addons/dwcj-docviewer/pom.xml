@@ -5,13 +5,13 @@
 
   <parent>
     <groupId>org.dwcj</groupId>
-    <artifactId>dwcj-widgets</artifactId>
-    <version>0.12.0-SNAPSHOT</version>
+    <artifactId>dwcj-addons</artifactId>
+    <version>0.17.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>dwcj-docviewer-widget</artifactId>
+  <artifactId>dwcj-docviewer</artifactId>
 
-  <name>dwcj-docviewer-widget</name>
+  <name>dwcj-docviewer</name>
   <description>A Plug-in widget for display of documents in DWCJ programs.
     </description>
 
