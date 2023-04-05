@@ -1,9 +1,12 @@
 package org.dwcj.component.listbox;
 
+
 import com.basis.bbj.proxies.sysgui.BBjListBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Focusable;
@@ -18,10 +21,6 @@ import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
 import org.dwcj.component.listbox.sink.ListBoxSelectEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
-
-import java.util.*;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.function.Consumer;
 
 public final class ListBox extends AbstractListBox implements Scrollable, HasReadOnly, Focusable,
     HasMouseWheelCondition, TabTraversable, TextAlignable {
@@ -71,7 +70,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     }
   }
 
-  /**
+  /**.
    * Add an item into the listBox
    *
    * @param key the item key
@@ -113,24 +112,24 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     return this;
   }
 
-  /**
+  /**.
   * Returns the name of the label for ListBox control
   *
   * @return String representing the value of label
   */
 
   public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         return bbjListBox.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e){
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-/**
+  /**.
   * set the value of label in ListBox control
   *
   * @param label A String object containing the value of label
@@ -138,10 +137,10 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
   */  
 
   public ListBox setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         bbjListBox.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -186,7 +185,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     return this;
   }
 
-  /**
+  /**.
    * Returns a map of all of the items within the ListBox
    *
    * @return all values in the listBox
@@ -236,7 +235,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     return null;
   }
 
-  /**
+  /**.
    * Returns true or false based on the ListBox allows selection of multiple items
    *
    * @return boolean
@@ -252,7 +251,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     return false;
   }
 
-  /**
+  /**.
    * returns the currently selected item, implemented for one-to-one value maps
    *
    * @return selected entry
@@ -281,10 +280,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     return null;
   }
 
-  /**
+  /**.
    * Returns a map of the items that have been selected in the ListBox
    *
-   * @param N/A
    * @return Map of the selected items
    */
   public Map<Object, String> getSelectedItems() {
@@ -297,8 +295,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
           SimpleEntry<Object, String> entry = getEntryByValue(value);
           if (entry != null) {
             Object key = entry.getKey();
-            if (key != null)
+            if (key != null) {
               map.put(key, value);
+            }
           }
         }
       } catch (BBjException e) {
@@ -311,7 +310,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
 
 
-  /**
+  /**.
    * Allows you to pass in a map of objects which will replace the objects currently in the ListBox
    *
    * @param values - A map with <Object, String> pairs.
@@ -330,7 +329,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
 
 
-  /**
+  /**.
    * Function that takes another function as parameter which allows functionality to be written when
    * an item is selected within the box
    *
@@ -360,13 +359,6 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     }
     return this;
   }
-
-  /**
-   * Sets whether or not it is possible to select multiple items within the box
-   *
-   * @param bool - True or false whether or not to allow multiple selection
-   * @return boolean
-   */
 
   public ListBox removeAllItems() {
     if (this.ctrl != null) {
@@ -703,11 +695,12 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  // of checks
   protected void catchUp() throws IllegalAccessException {
 
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.selectEvents.isEmpty()) {
@@ -760,7 +753,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
       this.setTextAlignment(this.textAlignment);
     }
 
-    if(!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
   }
