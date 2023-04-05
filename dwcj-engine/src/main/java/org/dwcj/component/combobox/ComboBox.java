@@ -65,7 +65,7 @@ public final class ComboBox extends AbstractListBox
   private SimpleEntry<Integer, String> textAt = null;
 
   private String label = "";
-
+  private String placeholder = "";
 
 
   public ComboBox() {
@@ -144,7 +144,7 @@ public final class ComboBox extends AbstractListBox
     }
   }
 
-/**
+ /**
   * Returns the name of the label for ComboBox control
   *
   * @return String representing the value of label
@@ -161,17 +161,53 @@ public final class ComboBox extends AbstractListBox
     return this.label;
   }
 
-/**
-   * set the value of label in ComboBox control
-   *
-   * @param label A String object containing the value of label
-   * @return the control itself
-   */  
+ /**
+  * set the value of label in ComboBox control
+  *
+  * @param label A String object containing the value of label
+  * @return the control itself
+  */  
 
   public ComboBox setLabel(String label){
     if(this.ctrl!=null){
       try{
         bbjListEdit.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
+
+ /**
+   * Returns the valiue of the placeholder for ComboBox control
+   *
+   * @return String representing the value of placeholder
+   */
+
+   public String getPlaceholder(){
+    if(this.ctrl!=null){
+      try{
+        return bbjListEdit.getAttribute("placeholder");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set a placeholder in ComboBox control
+   *
+   * @param label A String object containing the value of placeholder
+   * @return the control itself
+   */  
+
+  public ComboBox setPlaceholder(String placeholder){
+    if(this.ctrl!=null){
+      try{
+        bbjListEdit.setAttribute("placeholder", placeholder);
       }catch(BBjException e){
         Environment.logError(e);
       }
@@ -694,6 +730,10 @@ public final class ComboBox extends AbstractListBox
 
     if (!this.label.equals("")){
       this.setLabel(this.label);
+    }
+
+    if (!this.placeholder.equals("")){
+      this.setPlaceholder(this.placeholder);
     }
 
   }
