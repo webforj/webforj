@@ -5,19 +5,19 @@ import org.dwcj.component.numberfield.NumberField;
 
 public class NumberFieldModifyEvent implements ComponentEvent {
 
-    private final NumberField control;
+  private final NumberField control;
 
-    public NumberFieldModifyEvent(NumberField nBox){
-        this.control = nBox;
-    }
+  public NumberFieldModifyEvent(NumberField nBox) {
+    this.control = nBox;
+  }
 
-    @Override
-    public NumberField getControl() {
-        return control;
-    }
+  @Override
+  public NumberField getControl() {
+    return control;
+  }
 
-    public String toString() {
-        return "Event: DateEditBox modified";
-    }
-    
+  public String toString() {
+    return "Event: DateEditBox modified";
+  }
+
 }

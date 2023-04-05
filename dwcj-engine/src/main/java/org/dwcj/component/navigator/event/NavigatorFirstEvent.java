@@ -5,10 +5,14 @@ import org.dwcj.component.navigator.Navigator;
 
 public final class NavigatorFirstEvent implements ComponentEvent {
 
-    private final Navigator control;
+  private final Navigator control;
 
-    public NavigatorFirstEvent (Navigator navigator) { this.control = navigator; }
+  public NavigatorFirstEvent(Navigator navigator) {
+    this.control = navigator;
+  }
 
-    @Override
-    public Navigator getControl() { return control; }
+  @Override
+  public Navigator getControl() {
+    return control;
+  }
 }

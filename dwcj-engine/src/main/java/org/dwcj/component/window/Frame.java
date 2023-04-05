@@ -6,18 +6,18 @@ import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 
 /**
- * AppPanel is the core main application panel.
- * It typically occupied the full browser real estate and holds your app
- * that consists of div container panels
+ * AppPanel is the core main application panel. It typically occupied the full browser real estate
+ * and holds your app that consists of div container panels
  */
 public class Frame extends AbstractWindow {
 
   public Frame() throws DwcjAppInitializeException {
 
     try {
-      byte[] flags = new byte[] { (byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x88 };
+      byte[] flags = new byte[] {(byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x88};
       BasisNumber b1 = BasisNumber.createBasisNumber(1);
-      BasisNumber ctx = BasisNumber.createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
+      BasisNumber ctx = BasisNumber
+          .createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
       wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", flags);
       ctrl = wnd;
     } catch (NumberFormatException | BBjException e) {
@@ -41,7 +41,7 @@ public class Frame extends AbstractWindow {
   public String getComputedStyle(String property) {
     return wnd.getPanelStyle(property);
   }
-  
+
   @Override
   public Frame setStyle(String property, String value) {
     wnd.setPanelStyle(property, value);

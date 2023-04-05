@@ -4,14 +4,16 @@ import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.combobox.ComboBox;
 
 
-public class ComboBoxEditModifyEvent implements ComponentEvent{
+public class ComboBoxEditModifyEvent implements ComponentEvent {
 
-    private final ComboBox control;
+  private final ComboBox control;
 
-    public ComboBoxEditModifyEvent(ComboBox cTextComboBox) {
-        this.control = cTextComboBox;
-    }
+  public ComboBoxEditModifyEvent(ComboBox cTextComboBox) {
+    this.control = cTextComboBox;
+  }
 
-    @Override
-    public ComboBox getControl() { return control; }
+  @Override
+  public ComboBox getControl() {
+    return control;
+  }
 }

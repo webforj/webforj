@@ -27,10 +27,9 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
   private final Map<String, String> styles = new HashMap<>();
 
   /**
-   * Used to add controls to a panel. Multiple controls can be passed to this
-   * function, and will be added in the order the arguments are passed
-   * (arg0 added first, arg1 second, etc...)
-   * 
+   * Used to add controls to a panel. Multiple controls can be passed to this function, and will be
+   * added in the order the arguments are passed (arg0 added first, arg1 second, etc...)
+   *
    * @param ctrl the control(s) to be added
    * @return the panel itself
    */
@@ -55,9 +54,9 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
   }
 
   /**
-   * This method is only accessible through "friend" classes
-   * no customer shall ever use this directly
-   * 
+   * This method is only accessible through "friend" classes no customer shall ever use this
+   * directly
+   *
    * @return the underlying BBjWindow
    */
   BBjWindow getBBjWindow() {
@@ -67,7 +66,8 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
   /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
+                                  // of checks
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp()))

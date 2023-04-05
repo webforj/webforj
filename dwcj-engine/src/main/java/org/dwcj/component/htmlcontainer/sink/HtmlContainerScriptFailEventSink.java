@@ -17,36 +17,36 @@ import java.util.function.Consumer;
 
 
 public class HtmlContainerScriptFailEventSink {
-    
-    private ArrayList<Consumer<HtmlContainerScriptFailEvent>> targets;
-    private final HtmlContainer htmlContainer;
 
-    public HtmlContainerScriptFailEventSink(HtmlContainer container) {
+  private ArrayList<Consumer<HtmlContainerScriptFailEvent>> targets;
+  private final HtmlContainer htmlContainer;
 
-        this.targets = new ArrayList<>();
-        this.htmlContainer = container;
+  public HtmlContainerScriptFailEventSink(HtmlContainer container) {
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
-            bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_FAILED,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptFailedEvent"),
-                    "onEvent");
+    this.targets = new ArrayList<>();
+    this.htmlContainer = container;
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
+      bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_FAILED,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptFailedEvent"),
+          "onEvent");
+
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void scriptFailedEvent(BBjScriptFailedEvent ev) { // NOSONAR
-        HtmlContainerScriptFailEvent dwcEv = new HtmlContainerScriptFailEvent(this.htmlContainer);
-        Iterator<Consumer<HtmlContainerScriptFailEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
-    
-    public void addCallback(Consumer<HtmlContainerScriptFailEvent> callback) {
-        targets.add(callback);
-    }
+  public void scriptFailedEvent(BBjScriptFailedEvent ev) { // NOSONAR
+    HtmlContainerScriptFailEvent dwcEv = new HtmlContainerScriptFailEvent(this.htmlContainer);
+    Iterator<Consumer<HtmlContainerScriptFailEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
+
+  public void addCallback(Consumer<HtmlContainerScriptFailEvent> callback) {
+    targets.add(callback);
+  }
 
 }

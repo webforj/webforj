@@ -1,19 +1,16 @@
 package org.dwcj.component.flexlayout;
 
 /**
- * Enum with possible values for the way the space inside the layout is
- * distributed between and around the controls along the main axis of the
- * layout.
+ * Enum with possible values for the way the space inside the layout is distributed between and
+ * around the controls along the main axis of the layout.
  *
- * @see <a href=
- *      "https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content">justify-content
+ * @see <a href= "https://developer.mozilla.org/en-US/docs/Web/CSS/justify-content">justify-content
  *      property</a>
  * @author Hyyan Abo Fakher
  */
 public enum FlexJustifyContent {
   /**
-   * Items are packed toward the start of the layout direction. This is the
-   * default value.
+   * Items are packed toward the start of the layout direction. This is the default value.
    */
   START("flex-start"),
   /**
@@ -25,26 +22,24 @@ public enum FlexJustifyContent {
    */
   CENTER("center"),
   /**
-   * Items are evenly distributed in the line; first item is on the start line,
-   * last item on the end line
+   * Items are evenly distributed in the line; first item is on the start line, last item on the end
+   * line.
    */
   BETWEEN("space-between"),
   /**
    * Items are evenly distributed in the line with equal space around them.
-   * 
+   *
    * <p>
-   * Note that visually the spaces aren’t equal, since all the items have equal
-   * space
-   * on both sides. The first item will have one unit of space against the
-   * container edge, but two units of space between the next item because that
-   * next item has its own spacing that applies.
+   * Note that visually the spaces aren’t equal, since all the items have equal space on both sides.
+   * The first item will have one unit of space against the container edge, but two units of space
+   * between the next item because that next item has its own spacing that applies.
    * </p>
    */
   AROUND("space-around"),
 
   /**
-   * Items are distributed so that the spacing between any two items (and the
-   * space to the edges) is equal.
+   * Items are distributed so that the spacing between any two items (and the space to the edges) is
+   * equal.
    */
   EVENLY("space-evenly");
 

@@ -7,21 +7,21 @@ import java.util.Map;
 
 public final class HtmlContainerJavascriptEvent implements ComponentEvent {
 
-    private final HtmlContainer control;
+  private final HtmlContainer control;
 
-    private final Map<String,String> eventMap;
+  private final Map<String, String> eventMap;
 
-    public HtmlContainerJavascriptEvent(HtmlContainer h, Map<String,String> eventMap) {
-        this.control = h;
-        this.eventMap = eventMap;
-    }
+  public HtmlContainerJavascriptEvent(HtmlContainer h, Map<String, String> eventMap) {
+    this.control = h;
+    this.eventMap = eventMap;
+  }
 
-    @Override
-    public HtmlContainer getControl() {
-        return control;
-    }
+  @Override
+  public HtmlContainer getControl() {
+    return control;
+  }
 
-    public Map<String,String> getEventMap() {
-        return eventMap;
-    }
+  public Map<String, String> getEventMap() {
+    return eventMap;
+  }
 }

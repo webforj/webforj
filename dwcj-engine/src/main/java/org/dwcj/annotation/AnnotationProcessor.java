@@ -8,30 +8,30 @@ import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
 
 /**
- * Annotation processor for the application and controls annotations
- * 
+ * Annotation processor for the application and controls annotations.
+ *
  * @author Hyyan Abo Fakher
  */
 public final class AnnotationProcessor {
 
   /**
-   * The running phase of the application
+   * The running phase of the application.
    */
   public enum RunningPhase {
     /**
-     * The application is running before the run method
+     * The application is running before the run method.
      */
     PRE_RUN,
     /**
-     * The application is running after the run method
+     * The application is running after the run method.
      */
     POST_RUN
   }
 
   /**
-   * Process the annotations of the application
-   * 
-   * @param app   The application to process
+   * Process the annotations of the application.
+   *
+   * @param app The application to process
    * @param phase The phase of the application
    */
   public void processAppAnnotations(App app, RunningPhase phase) {
@@ -56,8 +56,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the annotations of the control
-   * 
+   * Process the annotations of the control.
+   *
    * @param control The control to process
    */
   public void processControlAnnotations(AbstractComponent control) {
@@ -70,8 +70,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppTitle annotation
-   * 
+   * Process the AppTitle annotation.
+   *
    * @param clazz The class to process
    */
   private void processAppTitle(Object clazz) {
@@ -82,22 +82,23 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppAttribute annotation
-   * 
+   * Process the AppAttribute annotation.
+   *
    * @param clazz The class to process
    */
   private void processAppAttribute(Object clazz) {
     AppAttribute[] appAttributes = clazz.getClass().getAnnotationsByType(AppAttribute.class);
     if (appAttributes != null) {
       for (AppAttribute appAttribute : appAttributes) {
-        App.getPage().setAttribute(appAttribute.name(), appAttribute.value(), appAttribute.selector());
+        App.getPage().setAttribute(appAttribute.name(), appAttribute.value(),
+            appAttribute.selector());
       }
     }
   }
 
   /**
-   * Process the AppDarkTheme annotation
-   * 
+   * Process the AppDarkTheme annotation.
+   *
    * @param clazz The class to process
    */
   private void processAppDarkTheme(Object clazz) {
@@ -108,8 +109,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppLightTheme annotation
-   * 
+   * Process the AppLightTheme annotation.
+   *
    * @param clazz The class to process
    */
   private void processAppLightTheme(Object clazz) {
@@ -120,8 +121,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppTheme annotation
-   * 
+   * Process the AppTheme annotation.
+   *
    * @param clazz The class to process
    */
   private void processAppTheme(Object clazz) {
@@ -132,8 +133,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the AppMeta annotation
-   * 
+   * Process the AppMeta annotation.
+   *
    * @param clazz The class to process
    */
   private void processAppMeta(Object clazz) {
@@ -151,8 +152,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the StyleSheet annotation
-   * 
+   * Process the StyleSheet annotation.
+   *
    * @param clazz The class to process
    */
   private void processStyleSheet(Object clazz) {
@@ -180,12 +181,13 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the InlineStyleSheet annotation
-   * 
+   * Process the InlineStyleSheet annotation.
+   *
    * @param clazz The class to process
    */
   private void processInlineStyleSheet(Object clazz) {
-    InlineStyleSheet[] inlineStyleSheets = clazz.getClass().getAnnotationsByType(InlineStyleSheet.class);
+    InlineStyleSheet[] inlineStyleSheets =
+        clazz.getClass().getAnnotationsByType(InlineStyleSheet.class);
     if (inlineStyleSheets != null) {
       for (InlineStyleSheet sheet : inlineStyleSheets) {
         HashMap<String, String> attributes = new HashMap<>();
@@ -215,8 +217,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the JavaScript annotation
-   * 
+   * Process the JavaScript annotation.
+   *
    * @param clazz The class to process
    */
   private void processJavaScript(Object clazz) {
@@ -244,12 +246,13 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the InlineJavaScript annotation
-   * 
+   * Process the InlineJavaScript annotation.
+   *
    * @param clazz The class to process
    */
   private void processInlineJavaScript(Object clazz) {
-    InlineJavaScript[] inlineJavascript = clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
+    InlineJavaScript[] inlineJavascript =
+        clazz.getClass().getAnnotationsByType(InlineJavaScript.class);
     if (inlineJavascript != null) {
       for (InlineJavaScript script : inlineJavascript) {
         HashMap<String, String> attributes = new HashMap<>();
@@ -276,8 +279,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the Link annotation
-   * 
+   * Process the Link annotation.
+   *
    * @param clazz The class to process
    */
   private void processLink(Object clazz) {
@@ -306,8 +309,8 @@ public final class AnnotationProcessor {
   }
 
   /**
-   * Process the Configuration annotation
-   * 
+   * Process the Configuration annotation.
+   *
    * @param clazz The class to process
    * @param phase The phase to process
    */
@@ -326,7 +329,7 @@ public final class AnnotationProcessor {
         if (phase == RunningPhase.PRE_RUN && StringTable.contains(key)) {
 
           // is blacklisted ?
-          String[] blackList = new String[] { "DEBUG" };
+          String[] blackList = new String[] {"DEBUG"};
           if (Arrays.asList(blackList).contains(key)) {
             continue;
           }

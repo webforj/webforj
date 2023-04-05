@@ -16,34 +16,34 @@ import java.util.function.Consumer;
 
 public class HtmlContainerScriptLoadEventSink {
 
-    private ArrayList<Consumer<HtmlContainerScriptLoadEvent>> targets;
-    private final HtmlContainer htmlContainer;
+  private ArrayList<Consumer<HtmlContainerScriptLoadEvent>> targets;
+  private final HtmlContainer htmlContainer;
 
-    public HtmlContainerScriptLoadEventSink(HtmlContainer container) {
+  public HtmlContainerScriptLoadEventSink(HtmlContainer container) {
 
-        this.targets = new ArrayList<>();
-        this.htmlContainer = container;
+    this.targets = new ArrayList<>();
+    this.htmlContainer = container;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
-            bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_LOADED,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptLoadedEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
+      bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_LOADED,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptLoadedEvent"),
+          "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void scriptLoadedEvent(BBjScriptLoadedEvent ev) { // NOSONAR
-        HtmlContainerScriptLoadEvent dwcEv = new HtmlContainerScriptLoadEvent(this.htmlContainer);
-        Iterator<Consumer<HtmlContainerScriptLoadEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
-    
-    public void addCallback(Consumer<HtmlContainerScriptLoadEvent> callback) {
-        targets.add(callback);
-    }
+  public void scriptLoadedEvent(BBjScriptLoadedEvent ev) { // NOSONAR
+    HtmlContainerScriptLoadEvent dwcEv = new HtmlContainerScriptLoadEvent(this.htmlContainer);
+    Iterator<Consumer<HtmlContainerScriptLoadEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
+
+  public void addCallback(Consumer<HtmlContainerScriptLoadEvent> callback) {
+    targets.add(callback);
+  }
 }

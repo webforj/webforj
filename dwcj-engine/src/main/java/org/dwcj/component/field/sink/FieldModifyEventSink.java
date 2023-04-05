@@ -13,37 +13,37 @@ import java.util.function.Consumer;
 
 
 public class FieldModifyEventSink {
-    
-    private ArrayList<Consumer<FieldModifyEvent>> targets;
-    private final TextBox textBox;
 
-    @SuppressWarnings({"static-access"})
-    public FieldModifyEventSink(TextBox tBox) {
+  private ArrayList<Consumer<FieldModifyEvent>> targets;
+  private final TextBox textBox;
 
-        this.targets = new ArrayList<>();
-        this.textBox = tBox;
+  @SuppressWarnings({"static-access"})
+  public FieldModifyEventSink(TextBox tBox) {
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tBox);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
-                    "onEvent");
+    this.targets = new ArrayList<>();
+    this.textBox = tBox;
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(tBox);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+          "onEvent");
+
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-        FieldModifyEvent dwcEv = new FieldModifyEvent(this.textBox);
-        Iterator<Consumer<FieldModifyEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
+    FieldModifyEvent dwcEv = new FieldModifyEvent(this.textBox);
+    Iterator<Consumer<FieldModifyEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void addCallback(Consumer<FieldModifyEvent> callback) {
-        targets.add(callback);
-    }
+  public void addCallback(Consumer<FieldModifyEvent> callback) {
+    targets.add(callback);
+  }
 
 }

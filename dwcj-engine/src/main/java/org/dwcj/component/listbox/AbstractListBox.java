@@ -10,9 +10,9 @@ import com.basis.startup.type.BBjVector;
 
 public abstract class AbstractListBox extends AbstractDwcComponent {
 
-    protected BBjVector data2 = new BBjVector();
-    protected Map<Object, String> values = new HashMap<>();
+  protected BBjVector data2 = new BBjVector();
+  protected Map<Object, String> values = new HashMap<>();
 
-    protected abstract void populate();
+  protected abstract void populate();
 
 }

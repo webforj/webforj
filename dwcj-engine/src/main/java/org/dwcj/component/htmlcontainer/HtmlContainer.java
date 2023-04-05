@@ -32,13 +32,17 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
 
   private BBjHtmlView bbjHtmlView;
 
-  private final ArrayList<Consumer<HtmlContainerScriptLoadEvent>> scriptLoadedEvents = new ArrayList<>();
+  private final ArrayList<Consumer<HtmlContainerScriptLoadEvent>> scriptLoadedEvents =
+      new ArrayList<>();
   private HtmlContainerScriptLoadEventSink onScriptLoadSink = null;
-  private final ArrayList<Consumer<HtmlContainerScriptFailEvent>> scriptFailedEvents = new ArrayList<>();
+  private final ArrayList<Consumer<HtmlContainerScriptFailEvent>> scriptFailedEvents =
+      new ArrayList<>();
   private HtmlContainerScriptFailEventSink onScriptFailSink = null;
-  private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> javascriptEvents = new ArrayList<>();
+  private final ArrayList<Consumer<HtmlContainerJavascriptEvent>> javascriptEvents =
+      new ArrayList<>();
   private HtmlContainerNativeJavascriptEventSink javascriptEventSink = null;
-  private final ArrayList<Consumer<HtmlContainerPageLoadEvent>> pageLoadedEvents = new ArrayList<>();
+  private final ArrayList<Consumer<HtmlContainerPageLoadEvent>> pageLoadedEvents =
+      new ArrayList<>();
   private HtmlContainerPageLoadEventSink pageLoadEventSink = null;
 
   private ArrayList<String> executeScript = new ArrayList<>();
@@ -53,8 +57,7 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   private Boolean reload = false;
   private String userAgent = "";
 
-  public HtmlContainer() {
-  }
+  public HtmlContainer() {}
 
   public HtmlContainer(String text) {
     setText(text);
@@ -64,9 +67,10 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          getText(), flags);
+      byte[] flags =
+          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+      ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, getText(), flags);
       ctrl.setNoEdge(true);
       bbjHtmlView = (BBjHtmlView) ctrl;
       catchUp();
@@ -102,16 +106,15 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   /**
-   * Executes a script in the context of the currently loaded page without waiting
-   * for the result.
-   * 
-   * If the control is not yet attache to panel, the control will queue the script
-   * and execute it when the control is
-   * attached to a panel. The result of the script will be null in this case.
-   * 
-   * It is recommended to invoke this method only after the control has been
-   * attached to a panel.
-   * 
+   * Executes a script in the context of the currently loaded page without waiting for the result.
+   *
+   * <p>
+   * If the control is not yet attache to panel, the control will queue the script and execute it
+   * when the control is attached to a panel. The result of the script will be null in this case.
+   *
+   * It is recommended to invoke this method only after the control has been attached to a panel.
+   * </p>
+   *
    * @param script The script to execute
    */
   public void executeAsyncScript(String script) {
@@ -127,16 +130,15 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   /**
-   * Executes a script in the context of the currently loaded page and returns the
-   * result.
-   * 
-   * If the control is not yet attache to panel, the control will queue the script
-   * and execute it when the control is
-   * attached to a panel. The result of the script will be null in this case.
-   * 
-   * It is recommended to invoke this method only after the control has been
-   * attached to a panel.
-   * 
+   * Executes a script in the context of the currently loaded page and returns the result.
+   *
+   * <p>
+   * If the control is not yet attache to panel, the control will queue the script and execute it
+   * when the control is attached to a panel. The result of the script will be null in this case.
+   *
+   * It is recommended to invoke this method only after the control has been attached to a panel.
+   * </p>
+   *
    * @param script The script to execute
    * @return The result of the script
    */
@@ -345,9 +347,9 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   /**
-   * register a callback method to be called after the page loaded event in the
-   * htmlcontainer is reached
-   * 
+   * register a callback method to be called after the page loaded event in the htmlcontainer is
+   * reached
+   *
    * @param callback the callback method
    * @return the control itself
    */
@@ -364,11 +366,10 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   /**
-   * register a callback method to be called from JavaScript with
-   * basisDispatchNativeEvent
-   * see <a href=
+   * register a callback method to be called from JavaScript with basisDispatchNativeEvent see
+   * <a href=
    * "https://documentation.basis.com/BASISHelp/WebHelp/bbjevents/BBjNativeJavaScriptEvent/BBjNativeJavaScriptEvent.htm">BBjNativeJavaScriptEvent</a>
-   * 
+   *
    * @param callback the callback method
    * @return the control itself
    */
@@ -489,7 +490,8 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
+                                  // of checks
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp()))
       throw new IllegalAccessException("catchUp cannot be called twice");

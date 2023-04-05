@@ -2,9 +2,8 @@ package org.dwcj.component.flexlayout;
 
 /**
  * Possible values for the flex-direction property.
- * 
- * @see <a href=
- *      "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction">flex-direction
+ *
+ * @see <a href= "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction">flex-direction
  *      property</a>
  * @author Hyyan Abo Fakher
  */
@@ -14,15 +13,15 @@ public enum FlexDirection {
    */
   ROW("row"),
   /**
-   * Right to left in ltr; left to right in rtl
+   * Right to left in ltr; left to right in rtl.
    */
   ROW_REVERSE("row-reverse"),
   /**
-   * Same as {@link #ROW} but top to bottom
+   * Same as {@link #ROW} but top to bottom.
    */
   COLUMN("column"),
   /**
-   * Same as {@link #ROW_REVERSE} but bottom to top
+   * Same as {@link #ROW_REVERSE} but bottom to top.
    */
   COLUMN_REVERSE("column-reverse");
 
@@ -34,7 +33,7 @@ public enum FlexDirection {
 
   /**
    * Get the value of this property.
-   * 
+   *
    * @return the value
    */
   public String getValue() {
@@ -51,7 +50,7 @@ public enum FlexDirection {
 
   /**
    * Returns the {@link FlexDirection} enum value for the given string value.
-   * 
+   *
    * @param value the string value
    * @return the {@link FlexDirection} enum value
    */
@@ -61,7 +60,7 @@ public enum FlexDirection {
 
   /**
    * Returns the default value for direction.
-   * 
+   *
    * @return the default value
    */
   public static FlexDirection getDefault() {

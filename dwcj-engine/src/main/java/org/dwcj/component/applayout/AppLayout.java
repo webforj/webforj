@@ -15,16 +15,17 @@ import org.dwcj.component.window.Panel;
 
 /**
  * AppLayout is a web component that provides a responsive layout for web apps.
- * 
- * The layout is responsive and it provides a header, a footer , a drawer, and
- * content area. The header and footer are fixed and the drawer slides in and
- * out of the viewport and the content is scrollable.
- * 
+ *
+ * The layout is responsive and it provides a header, a footer , a drawer, and content area. The
+ * header and footer are fixed and the drawer slides in and out of the viewport and the content is
+ * scrollable.
+ *
  * @author Hyyan Abo Fakher
  */
 @NodeName("bbj-app-layout")
 @NodeAttribute(name = "fit-viewport")
-public class AppLayout extends WebComponent implements HasClassName, HasStyle, HasVisibility, HasAttribute {
+public class AppLayout extends WebComponent
+    implements HasClassName, HasStyle, HasVisibility, HasAttribute {
 
   /**
    * The drawer placement.
@@ -62,7 +63,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
     /**
      * Gets the drawer placement from value.
-     * 
+     *
      * @param value the value to parse
      * @return the drawer placement
      */
@@ -78,7 +79,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
     /**
      * Gets the drawer placement value as string.
-     * 
+     *
      * @return the string
      */
     @Override
@@ -127,7 +128,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
     /**
      * Gets the header shadow from value.
-     * 
+     *
      * @param value the value to parse
      * @return the header shadow
      */
@@ -143,7 +144,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
     /**
      * Gets the header shadow value as string.
-     * 
+     *
      * @return the string
      */
     @Override
@@ -159,24 +160,34 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
   private Panel footer;
 
   // Property descriptors
-  private final PropertyDescriptor<Boolean> DRAWER_OPENED = PropertyDescriptor.property("drawerOpened", false);
-  private final PropertyDescriptor<Boolean> DRAWER_POPOVER = PropertyDescriptor.property("drawerPopover", false);
-  private final PropertyDescriptor<Boolean> DRAWER_OVERLAY = PropertyDescriptor.property("drawerOverlay", false);
-  private final PropertyDescriptor<String> DRAWER_WIDTH = PropertyDescriptor.property("drawerWidth", "16em");
-  private final PropertyDescriptor<String> DRAWER_PLACEMENT = PropertyDescriptor.property("drawerPlacement",
-      DrawerPlacement.LEFT.getValue());
-  private final PropertyDescriptor<String> DRAWER_BREAKPOINT = PropertyDescriptor.property("drawerBreakpoint",
-      "(max-width: 800px)");
-  private final PropertyDescriptor<String> FOOTER_SHADOW = PropertyDescriptor.property("footerShadow",
-      Shadow.HIDDEN.getValue());
-  private final PropertyDescriptor<Boolean> FOOTER_FIXED = PropertyDescriptor.property("footerFixed", true);
-  private final PropertyDescriptor<Boolean> FOOTER_OFFSCREEN = PropertyDescriptor.property("footerOffscreen", true);
-  private final PropertyDescriptor<Boolean> FOOTER_REVEAL = PropertyDescriptor.property("footerReveal", false);
-  private final PropertyDescriptor<String> HEADER_SHADOW = PropertyDescriptor.property("headerShadow",
-      Shadow.SCROLL.getValue());
-  private final PropertyDescriptor<Boolean> HEADER_FIXED = PropertyDescriptor.property("headerFixed", true);
-  private final PropertyDescriptor<Boolean> HEADER_OFFSCREEN = PropertyDescriptor.property("headerOffscreen", true);
-  private final PropertyDescriptor<Boolean> HEADER_REVEAL = PropertyDescriptor.property("headerReveal", false);
+  private final PropertyDescriptor<Boolean> drawerOpenProp =
+      PropertyDescriptor.property("drawerOpened", false);
+  private final PropertyDescriptor<Boolean> drawerPopoverProp =
+      PropertyDescriptor.property("drawerPopover", false);
+  private final PropertyDescriptor<Boolean> drawerOverlayProp =
+      PropertyDescriptor.property("drawerOverlay", false);
+  private final PropertyDescriptor<String> drawerWidthProp =
+      PropertyDescriptor.property("drawerWidth", "16em");
+  private final PropertyDescriptor<String> drawerPlacementProp =
+      PropertyDescriptor.property("drawerPlacement", DrawerPlacement.LEFT.getValue());
+  private final PropertyDescriptor<String> drawerBreakPointProp =
+      PropertyDescriptor.property("drawerBreakpoint", "(max-width: 800px)");
+  private final PropertyDescriptor<String> footerShadowProp =
+      PropertyDescriptor.property("footerShadow", Shadow.HIDDEN.getValue());
+  private final PropertyDescriptor<Boolean> footerFixedProp =
+      PropertyDescriptor.property("footerFixed", true);
+  private final PropertyDescriptor<Boolean> footerOffscreenProp =
+      PropertyDescriptor.property("footerOffscreen", true);
+  private final PropertyDescriptor<Boolean> footerRevealProp =
+      PropertyDescriptor.property("footerReveal", false);
+  private final PropertyDescriptor<String> headerSahdowProp =
+      PropertyDescriptor.property("headerShadow", Shadow.SCROLL.getValue());
+  private final PropertyDescriptor<Boolean> headerFixedProp =
+      PropertyDescriptor.property("headerFixed", true);
+  private final PropertyDescriptor<Boolean> headerOffscreenProp =
+      PropertyDescriptor.property("headerOffscreen", true);
+  private final PropertyDescriptor<Boolean> headerRevealProp =
+      PropertyDescriptor.property("headerReveal", false);
 
   private boolean visible = true;
 
@@ -194,7 +205,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Use the passed panel in header slot.
-   * 
+   *
    * @param header the header panel
    * @return the app layout
    */
@@ -206,7 +217,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Get the header panel instance.
-   * 
+   *
    * @return the app layout
    */
   public Panel getHeader() {
@@ -215,7 +226,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Use the passed panel in drawer slot.
-   * 
+   *
    * @param drawer the drawer panel
    * @return the app layout
    */
@@ -227,7 +238,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Get the drawer panel instance.
-   * 
+   *
    * @return the app layout
    */
   public Panel getDrawer() {
@@ -236,7 +247,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Use the passed panel in content slot.
-   * 
+   *
    * @param content the content panel
    * @return the app layout
    */
@@ -248,7 +259,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Get the content panel instance.
-   * 
+   *
    * @return the app layout
    */
   public Panel getContent() {
@@ -257,7 +268,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Use the passed panel in footer slot.
-   * 
+   *
    * @param footer the footer panel
    * @return the app layout
    */
@@ -269,7 +280,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Get the footer panel instance.
-   * 
+   *
    * @return the app layout
    */
   public Panel getFooter() {
@@ -278,293 +289,294 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Open/close the drawer.
-   * 
+   *
    * @param drawerOpened true to open the drawer, false to close it
    * @return the app layout
    */
   public AppLayout setDrawerOpened(boolean drawerOpened) {
-    set(DRAWER_OPENED, drawerOpened);
+    set(drawerOpenProp, drawerOpened);
     return this;
   }
 
   /**
    * Check if the drawer is opened.
-   * 
+   *
    * @return true if the drawer is opened, false otherwise
    */
   public boolean isDrawerOpened() {
     // always return the property value from the client side.
-    return get(DRAWER_OPENED, true, Boolean.class);
+    return get(drawerOpenProp, true, Boolean.class);
   }
 
   /**
    * Set drawer popover.
-   * 
-   * @param drawerPopover When true, then the drawer will pop over
-   *                      the header , footer and the content area.
+   *
+   * @param drawerPopover When true, then the drawer will pop over the header , footer and the
+   *        content area.
    * @return the app layout
    */
   public AppLayout setDrawerPopover(boolean drawerPopover) {
-    set(DRAWER_POPOVER, drawerPopover);
+    set(drawerPopoverProp, drawerPopover);
     return this;
   }
 
   /**
    * Check if the drawer is popover.
-   * 
+   *
    * @return true if the drawer is popover, false otherwise
    */
   public boolean isDrawerPopover() {
     // always return the property value from the client side.
-    return get(DRAWER_POPOVER, true, Boolean.class);
+    return get(drawerPopoverProp, true, Boolean.class);
   }
 
   /**
    * Set the drawer overlay.
-   * 
-   * @param drawerOverlay When true and the `drawerPopover` is enabled then the
-   *                      drawer will have an overlay behind it when it is opened.
+   *
+   * @param drawerOverlay When true and the `drawerPopover` is enabled then the drawer will have an
+   *        overlay behind it when it is opened.
    * @return the app layout
    * @see #setDrawerPopover(boolean)
    */
   public AppLayout setDrawerOverlay(boolean drawerOverlay) {
-    set(DRAWER_OVERLAY, drawerOverlay);
+    set(drawerOverlayProp, drawerOverlay);
     return this;
   }
 
   /**
    * Check if the drawer is overlay.
-   * 
+   *
    * @return true if the drawer is overlay, false otherwise
    */
   public boolean isDrawerOverlay() {
     // always return the property value from the client side.
-    return get(DRAWER_OVERLAY, true, Boolean.class);
+    return get(drawerOverlayProp, true, Boolean.class);
   }
 
   /**
    * Set the drawer width.
-   * 
-   * If the drawer width set in CSS using the `--bbj-app-layout-drawer-width`
-   * custom property then this property will be ignored.
-   * 
+   *
+   * <p>
+   * If the drawer width set in CSS using the `--bbj-app-layout-drawer-width` custom property then
+   * this property will be ignored.
+   * </p>
+   *
    * @param drawerWidth the drawer width
    * @return the app layout
    */
   public AppLayout setDrawerWidth(String drawerWidth) {
-    set(DRAWER_WIDTH, drawerWidth);
+    set(drawerWidthProp, drawerWidth);
     return this;
   }
 
   /**
    * Get the drawer width.
-   * 
+   *
    * @return the drawer width
    */
   public String getDrawerWidth() {
-    return get(DRAWER_WIDTH);
+    return get(drawerWidthProp);
   }
 
   /**
    * Set the drawer placement.
-   * 
+   *
    * @param drawerPlacement the drawer placement
    * @return the app layout
    */
   public AppLayout setDrawerPlacement(DrawerPlacement drawerPlacement) {
-    set(DRAWER_PLACEMENT, drawerPlacement.getValue());
+    set(drawerPlacementProp, drawerPlacement.getValue());
     return this;
   }
 
   /**
    * Get the drawer placement.
-   * 
+   *
    * @return the drawer placement
    */
   public DrawerPlacement getDrawerPlacement() {
-    return DrawerPlacement.fromValue(get(DRAWER_PLACEMENT));
+    return DrawerPlacement.fromValue(get(drawerPlacementProp));
   }
 
   /**
    * Set the drawer breakpoint.
-   * 
-   * The breakpoint is a media query to control when the drawer will be switched
-   * to popover mode. Useful for small screens.
-   * 
-   * By default the drawer popover mode will be enabled
-   * when the screen size is `800px` or less.
-   * 
+   *
+   * <p>
+   * The breakpoint is a media query to control when the drawer will be switched to popover mode.
+   * Useful for small screens.
+   *
+   * By default the drawer popover mode will be enabled when the screen size is `800px` or less.
+   * </p>
+   *
    * @param drawerBreakpoint the drawer breakpoint
    * @return the app layout
    */
   public AppLayout setDrawerBreakpoint(String drawerBreakpoint) {
-    set(DRAWER_BREAKPOINT, drawerBreakpoint);
+    set(drawerBreakPointProp, drawerBreakpoint);
     return this;
   }
 
   /**
    * Get the drawer breakpoint.
-   * 
+   *
    * @return the drawer breakpoint
    */
   public String getDrawerBreakpoint() {
-    return get(DRAWER_BREAKPOINT);
+    return get(drawerBreakPointProp);
   }
 
   /**
    * Set the footer shadow.
-   * 
+   *
    * @param footerShadow the footer shadow
    * @return the app layout
    */
   public AppLayout setFooterShadow(Shadow footerShadow) {
-    set(FOOTER_SHADOW, footerShadow.getValue());
+    set(footerShadowProp, footerShadow.getValue());
     return this;
   }
 
   /**
    * Get the footer shadow.
-   * 
+   *
    * @return the footer shadow
    */
   public Shadow getFooterShadow() {
-    return Shadow.fromValue(get(FOOTER_SHADOW));
+    return Shadow.fromValue(get(footerShadowProp));
   }
 
   /**
    * Set the footer fixed.
-   * 
-   * @param footerFixed When true, the footer will be fixed at the top and won't
-   *                    move when the user scrolls.
+   *
+   * @param footerFixed When true, the footer will be fixed at the top and won't move when the user
+   *        scrolls.
    * @return the app layout
    */
   public AppLayout setFooterFixed(boolean footerFixed) {
-    set(FOOTER_FIXED, footerFixed);
+    set(footerFixedProp, footerFixed);
     return this;
   }
 
   /**
    * Check if the footer is fixed.
-   * 
+   *
    * @return true if the footer is fixed, false otherwise
    */
   public boolean isFooterFixed() {
-    return get(FOOTER_FIXED);
+    return get(footerFixedProp);
   }
 
   /**
    * Set the footer offscreen.
-   * 
-   * @param footerOffscreen When true, the footer position will be shifted to fit
-   *                        beside the opened drawer.
+   *
+   * @param footerOffscreen When true, the footer position will be shifted to fit beside the opened
+   *        drawer.
    * @return the app layout
    */
   public AppLayout setFooterOffscreen(boolean footerOffscreen) {
-    set(FOOTER_OFFSCREEN, footerOffscreen);
+    set(footerOffscreenProp, footerOffscreen);
     return this;
   }
 
   /**
    * Check if the footer is offscreen.
-   * 
+   *
    * @return true if the footer is offscreen, false otherwise
    */
   public boolean isFooterOffscreen() {
-    return get(FOOTER_OFFSCREEN);
+    return get(footerOffscreenProp);
   }
 
   /**
    * Set the footer reveal.
-   * 
-   * @param footerReveal When true, the footer will be revealed when the user
-   *                     scrolls down.
+   *
+   * @param footerReveal When true, the footer will be revealed when the user scrolls down.
    * @return the app layout
    */
   public AppLayout setFooterReveal(boolean footerReveal) {
-    set(FOOTER_REVEAL, footerReveal);
+    set(footerRevealProp, footerReveal);
     return this;
   }
 
   /**
    * Check if the footer is reveal.
-   * 
+   *
    * @return true if the footer is reveal, false otherwise
    */
   public boolean isFooterReveal() {
-    return get(FOOTER_REVEAL);
+    return get(footerRevealProp);
   }
 
   /**
    * Set the header shadow.
-   * 
+   *
    * @param headerShadow the header shadow
    * @return the app layout
    */
   public AppLayout setHeaderShadow(Shadow headerShadow) {
-    set(HEADER_SHADOW, headerShadow.getValue());
+    set(headerSahdowProp, headerShadow.getValue());
     return this;
   }
 
   /**
    * Get the header shadow.
-   * 
+   *
    * @return the header shadow
    */
   public Shadow getHeaderShadow() {
-    return Shadow.fromValue(get(HEADER_SHADOW));
+    return Shadow.fromValue(get(headerSahdowProp));
   }
 
   /**
    * Set the header fixed.
-   * 
-   * @param headerFixed When true, the header will be fixed at the top and won't
-   *                    move when the user scrolls.
+   *
+   * @param headerFixed When true, the header will be fixed at the top and won't move when the user
+   *        scrolls.
    * @return the app layout
    */
   public AppLayout setHeaderFixed(boolean headerFixed) {
-    set(HEADER_FIXED, headerFixed);
+    set(headerFixedProp, headerFixed);
     return this;
   }
 
   /**
    * Check if the header is fixed.
-   * 
+   *
    * @return true if the header is fixed, false otherwise
    */
   public boolean isHeaderFixed() {
-    return get(HEADER_FIXED);
+    return get(headerFixedProp);
   }
 
   /**
    * Set the header offscreen.
-   * 
-   * @param headerOffscreen When true, the header position will be shifted to fit
-   *                        beside the opened drawer.
+   *
+   * @param headerOffscreen When true, the header position will be shifted to fit beside the opened
+   *        drawer.
    * @return the app layout
    */
   public AppLayout setHeaderOffscreen(boolean headerOffscreen) {
-    set(HEADER_OFFSCREEN, headerOffscreen);
+    set(headerOffscreenProp, headerOffscreen);
     return this;
   }
 
   /**
    * Check if the header is offscreen.
-   * 
+   *
    * @return true if the header is offscreen, false otherwise
    */
   public boolean isHeaderOffscreen() {
-    return get(HEADER_OFFSCREEN);
+    return get(headerOffscreenProp);
   }
 
   /**
    * Set the header reveal.
-   * 
-   * @param headerReveal When true, the header will be revealed when the user
-   *                     scrolls up.
+   *
+   * @param headerReveal When true, the header will be revealed when the user scrolls up.
    * @return the app layout
    */
   public AppLayout setHeaderReveal(boolean headerReveal) {
-    set(HEADER_REVEAL, headerReveal);
+    set(headerRevealProp, headerReveal);
     return this;
   }
 
@@ -665,7 +677,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Add a listener for the drawer opened event.
-   * 
+   *
    * @param listener the listener
    * @return the app layout
    */
@@ -676,7 +688,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Alias for {@link #addDrawerOpenListener(EventListener)}.
-   * 
+   *
    * @param listener the listener
    * @return the app layout
    */
@@ -686,7 +698,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Remove a listener for the drawer opened event.
-   * 
+   *
    * @param listener the listener
    * @return the app layout
    */
@@ -697,7 +709,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Add a listener for the drawer closed event.
-   * 
+   *
    * @param listener the listener
    * @return the app layout
    */
@@ -708,7 +720,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Alias for {@link #addDrawerCloseListener(EventListener)}.
-   * 
+   *
    * @param listener the listener
    * @return the app layout
    */
@@ -718,7 +730,7 @@ public class AppLayout extends WebComponent implements HasClassName, HasStyle, H
 
   /**
    * Remove a listener for the drawer closed event.
-   * 
+   *
    * @param listener the listener
    * @return the app layout
    */

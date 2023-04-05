@@ -11,11 +11,10 @@ import org.dwcj.component.webcomponent.events.EventListener;
 import org.dwcj.component.window.Panel;
 
 /**
- * The drawer component allows developers to create a container which slides
- * into the viewport to expose additional options and information.
- * There is no limit on the number of drawers that an application can create. In
- * this case drawers will be stacked above each other.
- * 
+ * The drawer component allows developers to create a container which slides into the viewport to
+ * expose additional options and information. There is no limit on the number of drawers that an
+ * application can create. In this case drawers will be stacked above each other.
+ *
  * @author Hyyan Abo Fakher
  */
 @NodeName("bbj-drawer")
@@ -66,7 +65,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
     /**
      * Gets the drawer placement from value.
-     * 
+     *
      * @param value the value to parse
      * @return the drawer placement
      */
@@ -82,7 +81,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
     /**
      * Gets the drawer placement value as string.
-     * 
+     *
      * @return the string
      */
     @Override
@@ -91,13 +90,17 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
     }
   }
 
-  private final PropertyDescriptor<Boolean> AUTO_FOCUS = PropertyDescriptor.property("autoFocus", false);
-  private final PropertyDescriptor<String> LABEL = PropertyDescriptor.property("label", "Drawer");
-  private final PropertyDescriptor<String> MAX_SIZE = PropertyDescriptor.property("maxSize", "100%");
-  private final PropertyDescriptor<Boolean> OPENED = PropertyDescriptor.property("opened", false);
-  private final PropertyDescriptor<String> PLACEMENT = PropertyDescriptor.property("placement",
-      Placement.LEFT.getValue());
-  private final PropertyDescriptor<String> SIZE = PropertyDescriptor.property("size", "16EM");
+  private final PropertyDescriptor<Boolean> autoFocusProp =
+      PropertyDescriptor.property("autoFocus", false);
+  private final PropertyDescriptor<String> labelProp =
+      PropertyDescriptor.property("label", "Drawer");
+  private final PropertyDescriptor<String> maxSizeProp =
+      PropertyDescriptor.property("maxSize", "100%");
+  private final PropertyDescriptor<Boolean> openedProp =
+      PropertyDescriptor.property("opened", false);
+  private final PropertyDescriptor<String> placementProp =
+      PropertyDescriptor.property("placement", Placement.LEFT.getValue());
+  private final PropertyDescriptor<String> sizeProp = PropertyDescriptor.property("size", "16EM");
 
   /**
    * Instantiates a new drawer.
@@ -108,8 +111,8 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the drawer content
-   * 
+   * Set the drawer content.
+   *
    * @param content The drawer content.
    * @return the drawer
    */
@@ -120,7 +123,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Get the drawer content.
-   * 
+   *
    * @return the drawer content
    */
   public Panel getContent() {
@@ -129,80 +132,79 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Set Drawer auto focus.
-   * 
-   * @param autoFocus When true then automatically focus the first focusable
-   *                  element in the drawer.
+   *
+   * @param autoFocus When true then automatically focus the first focusable element in the drawer.
    * @return the drawer
    */
   public Drawer setAutoFocus(boolean autoFocus) {
-    set(AUTO_FOCUS, autoFocus);
+    set(autoFocusProp, autoFocus);
     return this;
   }
 
   /**
    * Get Drawer auto focus.
-   * 
+   *
    * @return the drawer auto focus
    */
   public boolean isAutoFocus() {
-    return get(AUTO_FOCUS);
+    return get(autoFocusProp);
   }
 
   /**
    * Set Drawer label. (Used for accessibility)
-   * 
+   *
    * @param label The drawer label.
    * @return the drawer
    */
   public Drawer setLabel(String label) {
-    set(LABEL, label);
+    set(labelProp, label);
     return this;
   }
 
   /**
    * Get Drawer label.
-   * 
+   *
    * @return the drawer label
    */
   public String getLabel() {
-    return get(LABEL);
+    return get(labelProp);
   }
 
   /**
    * Set Drawer max size.
-   * 
-   * @param maxSize The Drawer max width. Max width in case placement is `left` or
-   *                `right` or max height in case placement is `top` or `bottom`.
+   *
+   * @param maxSize The Drawer max width. Max width in case placement is `left` or `right` or max
+   *        height in case placement is `top` or `bottom`.
    * @return the drawer
    */
   public Drawer setMaxSize(String maxSize) {
-    set(MAX_SIZE, maxSize);
+    set(maxSizeProp, maxSize);
     return this;
   }
 
   /**
    * Get Drawer max size.
-   * 
+   *
    * @return the drawer max size
    */
   public String getMaxSize() {
-    return get(MAX_SIZE);
+    return get(maxSizeProp);
   }
 
   /**
    * Open or close the drawer.
-   * 
+   *
    * @param opened When true, the drawer is shown.
    * @return the drawer
    */
   public Drawer toggle(boolean opened) {
-    set(OPENED, opened);
+    set(openedProp, opened);
     return this;
   }
 
   /**
    * Open the drawer.
-   * 
+   *
    * @return the drawer
    */
   public Drawer open() {
@@ -211,7 +213,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Close the drawer.
-   * 
+   *
    * @return the drawer
    */
   public Drawer close() {
@@ -220,52 +222,52 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Get Drawer opened.
-   * 
+   *
    * @return the drawer opened
    */
   public boolean isOpened() {
-    return get(OPENED, true, Boolean.class);
+    return get(openedProp, true, Boolean.class);
   }
 
   /**
    * Set Drawer placement.
-   * 
+   *
    * @param placement The drawer placement.
    * @return the drawer
    */
   public Drawer setPlacement(Placement placement) {
-    set(PLACEMENT, placement.getValue());
+    set(placementProp, placement.getValue());
     return this;
   }
 
   /**
    * Get Drawer placement.
-   * 
+   *
    * @return the drawer placement
    */
   public Placement getPlacement() {
-    return Placement.fromValue(get(PLACEMENT));
+    return Placement.fromValue(get(placementProp));
   }
 
   /**
    * Set Drawer size.
-   * 
-   * @param size The Drawer size. Width in case placement is `left` or `right` or
-   *             height in case placement is `top` or `bottom`.
+   *
+   * @param size The Drawer size. Width in case placement is `left` or `right` or height in case
+   *        placement is `top` or `bottom`.
    * @return the drawer
    */
   public Drawer setSize(String size) {
-    set(SIZE, size);
+    set(sizeProp, size);
     return this;
   }
 
   /**
    * Get Drawer size.
-   * 
+   *
    * @return the drawer size
    */
   public String getSize() {
-    return get(SIZE);
+    return get(sizeProp);
   }
 
   /**
@@ -322,7 +324,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Add Drawer opened listener.
-   * 
+   *
    * @param listener the listener
    * @return the drawer
    */
@@ -333,7 +335,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Alias for {@link #addOpenListener(EventListener)}.
-   * 
+   *
    * @param listener the listener
    * @return the drawer
    */
@@ -343,7 +345,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Remove Drawer opened listener.
-   * 
+   *
    * @param listener the listener
    * @return the drawer
    */
@@ -354,7 +356,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Add Drawer closed listener.
-   * 
+   *
    * @param listener the listener
    * @return the drawer
    */
@@ -365,7 +367,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Alias for {@link #addCloseListener(EventListener)}.
-   * 
+   *
    * @param listener the listener
    * @return the drawer
    */
@@ -375,7 +377,7 @@ public class Drawer extends WebComponent implements HasClassName, HasStyle {
 
   /**
    * Remove Drawer closed listener.
-   * 
+   *
    * @param listener the listener
    * @return the drawer
    */

@@ -14,34 +14,35 @@ import java.util.function.Consumer;
 
 public final class HtmlContainerPageLoadEventSink {
 
-    private final ArrayList<Consumer<HtmlContainerPageLoadEvent>> targets;
-    private final HtmlContainer container;
+  private final ArrayList<Consumer<HtmlContainerPageLoadEvent>> targets;
+  private final HtmlContainer container;
 
-    public HtmlContainerPageLoadEventSink(HtmlContainer htmlv) {
-        this.targets = new ArrayList<>();
-        this.container = htmlv;
+  public HtmlContainerPageLoadEventSink(HtmlContainer htmlv) {
+    this.targets = new ArrayList<>();
+    this.container = htmlv;
 
-        BBjControl bbjctrl = null;
+    BBjControl bbjctrl = null;
 
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(htmlv);
-            bbjctrl.setCallback(SysGuiEventConstants.ON_PAGE_LOADED, Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
-
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(htmlv);
+      bbjctrl.setCallback(SysGuiEventConstants.ON_PAGE_LOADED,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
 
-    public void onEvent(BBjPageLoadedEvent ev) { //NOSONAR
-        HtmlContainerPageLoadEvent dwcEv = new HtmlContainerPageLoadEvent(container);
-        Iterator<Consumer<HtmlContainerPageLoadEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  }
 
-    public void addCallback(Consumer<HtmlContainerPageLoadEvent> callback) {
-        targets.add(callback);
-    }
+  public void onEvent(BBjPageLoadedEvent ev) { // NOSONAR
+    HtmlContainerPageLoadEvent dwcEv = new HtmlContainerPageLoadEvent(container);
+    Iterator<Consumer<HtmlContainerPageLoadEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
+
+  public void addCallback(Consumer<HtmlContainerPageLoadEvent> callback) {
+    targets.add(callback);
+  }
 
 
 }

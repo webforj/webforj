@@ -11,27 +11,29 @@ import java.util.function.Consumer;
 
 public class TreeBlurEventSink {
 
-    private final Consumer<TreeBlurEvent> target;
+  private final Consumer<TreeBlurEvent> target;
 
-    private final Tree tree;
+  private final Tree tree;
 
 
-    @SuppressWarnings({"static-access"})
-    public TreeBlurEventSink(Tree tree, Consumer<TreeBlurEvent> target) {
-        this.target = target;
-        this.tree = tree;
+  @SuppressWarnings({"static-access"})
+  public TreeBlurEventSink(Tree tree, Consumer<TreeBlurEvent> target) {
+    this.target = target;
+    this.tree = tree;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LOST_FOCUS, Environment.getInstance().getDwcjHelper().getEventProxy(this, "lostFocusEvent"), "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LOST_FOCUS,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "lostFocusEvent"),
+          "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void lostFocusEvent(BBjLostFocusEvent ev) { // NOSONAR
-        TreeBlurEvent dwcEv = new TreeBlurEvent(this.tree);
-        target.accept(dwcEv);
-    }
+  public void lostFocusEvent(BBjLostFocusEvent ev) { // NOSONAR
+    TreeBlurEvent dwcEv = new TreeBlurEvent(this.tree);
+    target.accept(dwcEv);
+  }
 }

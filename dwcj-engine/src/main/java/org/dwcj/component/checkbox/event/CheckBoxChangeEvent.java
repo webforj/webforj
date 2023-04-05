@@ -5,19 +5,21 @@ import org.dwcj.component.checkbox.CheckBox;
 
 public final class CheckBoxChangeEvent implements ComponentEvent {
 
-    private final CheckBox control;
+  private final CheckBox control;
 
-    private boolean isChecked = false; 
+  private boolean isChecked = false;
 
-    public CheckBoxChangeEvent(CheckBox cCheckBox, boolean checked) {
-        this.isChecked = checked;
-        this.control = cCheckBox;
-    }
+  public CheckBoxChangeEvent(CheckBox cCheckBox, boolean checked) {
+    this.isChecked = checked;
+    this.control = cCheckBox;
+  }
 
-    public boolean isChecked(){
-        return isChecked;
-    }
+  public boolean isChecked() {
+    return isChecked;
+  }
 
-    @Override
-    public CheckBox getControl() { return control; }
+  @Override
+  public CheckBox getControl() {
+    return control;
+  }
 }

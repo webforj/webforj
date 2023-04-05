@@ -4,24 +4,24 @@ import org.dwcj.component.ComponentEvent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 
 public class HtmlContainerScriptLoadEvent implements ComponentEvent {
-    
-    private final HtmlContainer control;
 
-    public HtmlContainerScriptLoadEvent(HtmlContainer cHtmlContainer) {
-        this.control = cHtmlContainer;
-    }
+  private final HtmlContainer control;
 
-    @Override
-    public HtmlContainer getControl() {
-        return control;
-    }
+  public HtmlContainerScriptLoadEvent(HtmlContainer cHtmlContainer) {
+    this.control = cHtmlContainer;
+  }
 
-    public String getUrl(){
-        return this.control.getUrl();
-    }
+  @Override
+  public HtmlContainer getControl() {
+    return control;
+  }
 
-    public String toString() {
-        return "Event: HtmlContainer Script Loaded";
-    }
+  public String getUrl() {
+    return this.control.getUrl();
+  }
+
+  public String toString() {
+    return "Event: HtmlContainer Script Loaded";
+  }
 
 }

@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
- * This class represents a div container, which behaves as a panel and
- * can be styled and hold other divs (panels) and controls
+ * This class represents a div container, which behaves as a panel and can be styled and hold other
+ * divs (panels) and controls
  */
 public class Panel extends AbstractWindow {
 
@@ -36,10 +36,10 @@ public class Panel extends AbstractWindow {
       if (Boolean.FALSE.equals(this.isEnabled())) {
         finalFlag += (byte) 0x20;
       }
-      byte[] flags = new byte[] { (byte) 0x00, (byte) 0x10, (byte) 0x88, finalFlag };
+      byte[] flags = new byte[] {(byte) 0x00, (byte) 0x10, (byte) 0x88, finalFlag};
       // todo honor visible flag if set before addition to panel
-      wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1, "",
-          flags, Environment.getInstance().getSysGui().getAvailableContext());
+      wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, "", flags, Environment.getInstance().getSysGui().getAvailableContext());
       ctrl = wnd;
       catchUp();
     } catch (Exception e) {
@@ -49,10 +49,9 @@ public class Panel extends AbstractWindow {
   }
 
   /**
-   * Used to add controls to a panel. Multiple controls can be passed to this
-   * function, and will be added in the order the arguments are passed
-   * (arg0 added first, arg1 second, etc...)
-   * 
+   * Used to add controls to a panel. Multiple controls can be passed to this function, and will be
+   * added in the order the arguments are passed (arg0 added first, arg1 second, etc...)
+   *
    * @param control the control(s) to be added
    * @return the panel itself
    */
@@ -151,7 +150,8 @@ public class Panel extends AbstractWindow {
   }
 
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
+                                  // of checks
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp()))
       throw new IllegalAccessException("catchUp cannot be called twice");

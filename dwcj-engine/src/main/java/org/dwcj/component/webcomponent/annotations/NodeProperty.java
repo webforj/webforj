@@ -9,18 +9,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The NodeProperty annotation is used to set properties on the web component
- * upon creation.
- * 
- * For example, the following annotation will set the "disabled" property to
- * "true" on the web component when it is created.
- * 
+ * The NodeProperty annotation is used to set properties on the web component upon creation.
+ *
+ * <p>
+ * For example, the following annotation will set the "disabled" property to "true" on the web
+ * component when it is created.
+ * </p>
+ *
  * <pre>
  * {@code
- * @NodeProperty(name = "disabled", value = "true")
+ * &#64;NodeProperty(name = "disabled", value = "true")
  * }
  * </pre>
- * 
+ *
  * @author Hyyan Abo Fakher
  */
 @Target(ElementType.TYPE)
@@ -31,21 +32,21 @@ import java.lang.annotation.Target;
 public @interface NodeProperty {
   /**
    * The name of the property to set on the web component.
-   * 
+   *
    * @return the name of the property
    **/
   String name();
 
   /**
    * The value of the property to set on the web component.
-   * 
+   *
    * @return the value of the property
    **/
   String value() default "";
 
   /**
    * A container for the {@link NodeProperty} annotation.
-   * 
+   *
    * @see NodeProperty
    * @author Hyyan Abo Fakher
    */
@@ -56,7 +57,7 @@ public @interface NodeProperty {
   public @interface Container {
     /**
      * The array of {@link NodeProperty} annotations.
-     * 
+     *
      * @return the array of {@link NodeProperty} annotations
      */
     NodeProperty[] value();

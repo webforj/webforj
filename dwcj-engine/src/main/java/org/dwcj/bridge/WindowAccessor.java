@@ -6,53 +6,52 @@ import org.dwcj.component.window.AbstractWindow;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 
 /**
- * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel class
- * it's not for customer use, only for use in the "friend" classes
- * Pattern see Tulach, p.75ff
+ * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
+ * class it's not for customer use, only for use in the "friend" classes Pattern see Tulach, p.75ff
  */
 public abstract class WindowAccessor {
-    private static WindowAccessor accessor;
+  private static WindowAccessor accessor;
 
-    protected WindowAccessor() {
+  protected WindowAccessor() {}
+
+  /**
+   * get the accessor instance to access the protected methods in the Dwcj Panel instances
+   *
+   * @return the accessor instance
+   */
+  public static WindowAccessor getDefault() {
+    WindowAccessor a = accessor;
+    if (a != null) {
+      return a;
     }
-
-    /**
-     * get the accessor instance to access the protected methods in the Dwcj Panel instances
-     * @return the accessor instance
-     */
-    public static WindowAccessor getDefault() {
-        WindowAccessor a = accessor;
-        if (a != null) {
-            return a;
-        }
-        try {
-            Class.forName(AbstractWindow.class.getName(), true, AbstractWindow.class.getClassLoader());
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
-        return accessor;
+    try {
+      Class.forName(AbstractWindow.class.getName(), true, AbstractWindow.class.getClassLoader());
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+    return accessor;
+  }
 
-    /**
-     * set the accessor instance for static access
-     *
-     * @param accessor the instance of the accessor implementation
-     */
-    public static void setDefault(WindowAccessor accessor) {
-        if (WindowAccessor.accessor != null) {
-            throw new IllegalStateException();
-        }
-        WindowAccessor.accessor = accessor;
+  /**
+   * set the accessor instance for static access
+   *
+   * @param accessor the instance of the accessor implementation
+   */
+  public static void setDefault(WindowAccessor accessor) {
+    if (WindowAccessor.accessor != null) {
+      throw new IllegalStateException();
     }
+    WindowAccessor.accessor = accessor;
+  }
 
 
-    /**
-     *
-     * @param panel the panel that contains the BBj window
-     * @return the BBjWindow object behind the panel
-     * @throws IllegalAccessException
-     */
-    public abstract BBjWindow getBBjWindow(AbstractWindow panel) throws IllegalAccessException;
+  /**
+   *
+   * @param panel the panel that contains the BBj window
+   * @return the BBjWindow object behind the panel
+   * @throws IllegalAccessException
+   */
+  public abstract BBjWindow getBBjWindow(AbstractWindow panel) throws IllegalAccessException;
 
 }
 

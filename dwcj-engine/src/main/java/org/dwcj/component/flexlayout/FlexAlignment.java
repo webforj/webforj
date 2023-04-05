@@ -3,15 +3,13 @@ package org.dwcj.component.flexlayout;
 /**
  * Enum with possible values for the items alignment inside the layout.
  *
- * @see <a href=
- *      "https://developer.mozilla.org/en-US/docs/Web/CSS/align-items">align-items
+ * @see <a href= "https://developer.mozilla.org/en-US/docs/Web/CSS/align-items">align-items
  *      property</a>
  * @author Hyyan Abo Fakher
  */
 public enum FlexAlignment {
   /**
-   * Stretch to fill the layout (still respect min-width/max-width). This is
-   * the default value.
+   * Stretch to fill the layout (still respect min-width/max-width). This is the default value.
    */
   STRETCH("stretch"),
   /**
@@ -23,7 +21,7 @@ public enum FlexAlignment {
    */
   END("flex-end"),
   /**
-   * Items are centered in the cross-axis
+   * Items are centered in the cross-axis.
    */
   CENTER("center"),
   /**

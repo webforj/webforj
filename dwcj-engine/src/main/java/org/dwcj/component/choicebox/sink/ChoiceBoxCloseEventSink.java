@@ -13,48 +13,48 @@ import java.util.function.Consumer;
 
 
 public class ChoiceBoxCloseEventSink {
-    
-    private ArrayList<Consumer<ChoiceBoxCloseEvent>> targets = new ArrayList<>();
-    private final ChoiceBox comboBox;
-    private BBjControl bbjctrl;
 
-    @SuppressWarnings({"static-access"})
-    public ChoiceBoxCloseEventSink(ChoiceBox cb) {
-        this.comboBox = cb;
+  private ArrayList<Consumer<ChoiceBoxCloseEvent>> targets = new ArrayList<>();
+  private final ChoiceBox comboBox;
+  private BBjControl bbjctrl;
 
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
-                    "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+  @SuppressWarnings({"static-access"})
+  public ChoiceBoxCloseEventSink(ChoiceBox cb) {
+    this.comboBox = cb;
+
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    @SuppressWarnings({"static-access"})
-    public ChoiceBoxCloseEventSink(ChoiceBox cb, Consumer<ChoiceBoxCloseEvent> callback) {
-        this.targets.add(callback);
-        this.comboBox = cb;
+  @SuppressWarnings({"static-access"})
+  public ChoiceBoxCloseEventSink(ChoiceBox cb, Consumer<ChoiceBoxCloseEvent> callback) {
+    this.targets.add(callback);
+    this.comboBox = cb;
 
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"),
-                    "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLOSE,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "closeEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    @SuppressWarnings("java.S1172")
-    public void closeEvent(BBjListCloseEvent ev) { //NOSONAR
-        ChoiceBoxCloseEvent dwcEv = new ChoiceBoxCloseEvent(this.comboBox);
-        Iterator<Consumer<ChoiceBoxCloseEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  @SuppressWarnings("java.S1172")
+  public void closeEvent(BBjListCloseEvent ev) { // NOSONAR
+    ChoiceBoxCloseEvent dwcEv = new ChoiceBoxCloseEvent(this.comboBox);
+    Iterator<Consumer<ChoiceBoxCloseEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void addCallback(Consumer<ChoiceBoxCloseEvent> callback) { targets.add(callback); }
+  public void addCallback(Consumer<ChoiceBoxCloseEvent> callback) {
+    targets.add(callback);
+  }
 
 }

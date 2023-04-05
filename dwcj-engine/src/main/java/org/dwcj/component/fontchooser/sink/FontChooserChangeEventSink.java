@@ -13,33 +13,34 @@ import java.util.function.Consumer;
 
 public final class FontChooserChangeEventSink {
 
-    private ArrayList<Consumer<FontChooserChangeEvent>> targets;
+  private ArrayList<Consumer<FontChooserChangeEvent>> targets;
 
-    private final FontChooser fontChooser;
+  private final FontChooser fontChooser;
 
-    @SuppressWarnings({"static-access"})
-    public FontChooserChangeEventSink(FontChooser fc, Consumer<FontChooserChangeEvent> callback) {
-        this.targets.add(callback);
-        this.fontChooser = fc;
+  @SuppressWarnings({"static-access"})
+  public FontChooserChangeEventSink(FontChooser fc, Consumer<FontChooserChangeEvent> callback) {
+    this.targets.add(callback);
+    this.fontChooser = fc;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(fc);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_FILECHOOSER_CHANGE,
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"),
-                    "onEvent");
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
-        
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(fc);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_FILECHOOSER_CHANGE,
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "changeEvent"), "onEvent");
+    } catch (Exception e) {
+      Environment.logError(e);
     }
 
-    public void changeEvent(BBjFileChooserChangeEvent ev) { //NOSONAR
-        FontChooserChangeEvent dwcEv = new FontChooserChangeEvent(this.fontChooser);
-        Iterator<Consumer<FontChooserChangeEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  }
 
-    public void addCallback(Consumer<FontChooserChangeEvent> callback) { targets.add(callback); }
+  public void changeEvent(BBjFileChooserChangeEvent ev) { // NOSONAR
+    FontChooserChangeEvent dwcEv = new FontChooserChangeEvent(this.fontChooser);
+    Iterator<Consumer<FontChooserChangeEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
+
+  public void addCallback(Consumer<FontChooserChangeEvent> callback) {
+    targets.add(callback);
+  }
 }

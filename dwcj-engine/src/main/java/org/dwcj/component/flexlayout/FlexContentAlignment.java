@@ -1,18 +1,16 @@
 package org.dwcj.component.flexlayout;
 
 /**
- * Enum with the possible to set the distribution of space between and around
- * content items along a flexbox's cross-axis.
- * 
- * @see <a href=
- *      "https://developer.mozilla.org/en-US/docs/Web/CSS/align-content">align-content
+ * Enum with the possible to set the distribution of space between and around content items along a
+ * flexbox's cross-axis.
+ *
+ * @see <a href= "https://developer.mozilla.org/en-US/docs/Web/CSS/align-content">align-content
  *      property</a>
  * @author Hyyan Abo Fakher
  */
 public enum FlexContentAlignment {
   /**
-   * Items are packed in their default position as if no value was set.
-   * This is the default value.
+   * Items are packed in their default position as if no value was set. This is the default value.
    */
   NORMAL("normal"),
   /**
@@ -28,16 +26,16 @@ public enum FlexContentAlignment {
    */
   CENTER("center"),
   /**
-   * Items evenly distributed; the first line is at the start of the container
-   * while the last one is at the end
+   * Items evenly distributed; the first line is at the start of the container while the last one is
+   * at the end.
    */
   BETWEEN("space-between"),
   /**
-   * Items evenly distributed with equal space around each line
+   * Items evenly distributed with equal space around each line.
    */
   AROUND("space-around"),
   /**
-   * items are evenly distributed with equal space around them
+   * items are evenly distributed with equal space around them.
    */
   EVENLY("space-evenly"),
   /**
@@ -53,7 +51,7 @@ public enum FlexContentAlignment {
 
   /**
    * Get the value of this property.
-   * 
+   *
    * @return the value
    */
   public String getValue() {
@@ -69,9 +67,8 @@ public enum FlexContentAlignment {
   }
 
   /**
-   * Returns the {@link FlexContentAlignment} enum value for the given string
-   * value.
-   * 
+   * Returns the {@link FlexContentAlignment} enum value for the given string value.
+   *
    * @param value the string value
    * @return the {@link FlexContentAlignment} enum value
    */

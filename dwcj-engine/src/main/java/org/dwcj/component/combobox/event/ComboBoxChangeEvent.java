@@ -5,13 +5,15 @@ import org.dwcj.component.combobox.ComboBox;
 
 
 public class ComboBoxChangeEvent implements ComponentEvent {
-    
-    private final ComboBox control;
 
-    public ComboBoxChangeEvent(ComboBox tComboBox) {
-        this.control = tComboBox;
-    }
+  private final ComboBox control;
 
-    @Override
-    public ComboBox getControl() { return control; }
+  public ComboBoxChangeEvent(ComboBox tComboBox) {
+    this.control = tComboBox;
+  }
+
+  @Override
+  public ComboBox getControl() {
+    return control;
+  }
 }

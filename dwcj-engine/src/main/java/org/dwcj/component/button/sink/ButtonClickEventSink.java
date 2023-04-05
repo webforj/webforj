@@ -13,63 +13,61 @@ import java.util.function.Consumer;
 
 public final class ButtonClickEventSink {
 
-    private ArrayList<Consumer<ButtonClickEvent>> targets;
-    private final Button button;
+  private ArrayList<Consumer<ButtonClickEvent>> targets;
+  private final Button button;
 
-    @SuppressWarnings({"static-access"})
-    public ButtonClickEventSink(Button btn) {
+  @SuppressWarnings({"static-access"})
+  public ButtonClickEventSink(Button btn) {
 
-        this.targets = new ArrayList<>();
-        this.button = btn;
+    this.targets = new ArrayList<>();
+    this.button = btn;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public ButtonClickEventSink(Button btn, Consumer<ButtonClickEvent> callback) {
+  public ButtonClickEventSink(Button btn, Consumer<ButtonClickEvent> callback) {
 
-        this.targets = new ArrayList<>();
-        this.targets.add(callback);
-        this.button = btn;
+    this.targets = new ArrayList<>();
+    this.targets.add(callback);
+    this.button = btn;
 
-        BBjControl bbjctrl = null;
-        try {
-            bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
-            bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, //NOSONAR
-                    Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"),
-                    "onEvent");
+    BBjControl bbjctrl = null;
+    try {
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
+      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
+          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
-        } catch (Exception e) {
-            Environment.logError(e);
-        }
+    } catch (Exception e) {
+      Environment.logError(e);
     }
+  }
 
-    public void pushEvent(BBjButtonPushEvent ev) { // NOSONAR
-        ButtonClickEvent dwcEv = new ButtonClickEvent(this.button);
-        Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  public void pushEvent(BBjButtonPushEvent ev) { // NOSONAR
+    ButtonClickEvent dwcEv = new ButtonClickEvent(this.button);
+    Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    /**
-     * Clicks the button, for testing purposes
-     */
-    public void doClick() {
-        ButtonClickEvent dwcEv = new ButtonClickEvent(button);
-        Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
-        while (it.hasNext())
-            it.next().accept(dwcEv);
-    }
+  /**
+   * Clicks the button, for testing purposes
+   */
+  public void doClick() {
+    ButtonClickEvent dwcEv = new ButtonClickEvent(button);
+    Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
+    while (it.hasNext())
+      it.next().accept(dwcEv);
+  }
 
-    public void addCallback(Consumer<ButtonClickEvent> callback) {
-        targets.add(callback);
-    }
+  public void addCallback(Consumer<ButtonClickEvent> callback) {
+    targets.add(callback);
+  }
 }

@@ -5,10 +5,14 @@ import org.dwcj.component.fontchooser.FontChooser;
 
 public class FontChooserCancelEvent implements ComponentEvent {
 
-    private final FontChooser control;
+  private final FontChooser control;
 
-    public FontChooserCancelEvent(FontChooser fontChooser) { this.control = fontChooser; }
+  public FontChooserCancelEvent(FontChooser fontChooser) {
+    this.control = fontChooser;
+  }
 
-    @Override
-    public FontChooser getControl() { return control; }
+  @Override
+  public FontChooser getControl() {
+    return control;
+  }
 }

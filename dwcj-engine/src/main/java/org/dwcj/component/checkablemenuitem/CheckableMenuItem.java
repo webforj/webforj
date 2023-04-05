@@ -8,30 +8,30 @@ import com.basis.startup.type.BBjException;
 
 public class CheckableMenuItem extends MenuItem {
 
-    private BBjCheckableMenuItem bbjCheckableMenuItem;
+  private BBjCheckableMenuItem bbjCheckableMenuItem;
 
-    public CheckableMenuItem setSelected(boolean selected) {
-        try {
-            bbjCheckableMenuItem.setSelected(selected);
-        } catch (BBjException e) {
-            Environment.logError(e);
-        }
-        return this;
-
+  public CheckableMenuItem setSelected(boolean selected) {
+    try {
+      bbjCheckableMenuItem.setSelected(selected);
+    } catch (BBjException e) {
+      Environment.logError(e);
     }
+    return this;
 
-    public boolean isSelected() {
-        try {
-            return bbjCheckableMenuItem.isSelected();
-        } catch (BBjException e) {
-            Environment.logError(e);
-            return false;
-        }
-    }
+  }
 
-    @Override
-    public CheckableMenuItem setId(String elementId){
-        super.setId(elementId);
-        return this;
+  public boolean isSelected() {
+    try {
+      return bbjCheckableMenuItem.isSelected();
+    } catch (BBjException e) {
+      Environment.logError(e);
+      return false;
     }
+  }
+
+  @Override
+  public CheckableMenuItem setId(String elementId) {
+    super.setId(elementId);
+    return this;
+  }
 }
