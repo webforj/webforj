@@ -21,7 +21,7 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 
-public final class TextBox extends AbstractDwcComponent
+public final class Field extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
@@ -44,11 +44,11 @@ public final class TextBox extends AbstractDwcComponent
 
 
 
-  public TextBox() {
+  public Field() {
     this("");
   }
 
-  public TextBox(String text) {
+  public Field(String text) {
     setText(text);
     this.readOnly = false;
     this.focusable = true;
@@ -75,7 +75,7 @@ public final class TextBox extends AbstractDwcComponent
   }
 
 
-  public TextBox onEditModify(Consumer<FieldModifyEvent> callback) {
+  public Field onEditModify(Consumer<FieldModifyEvent> callback) {
     if (this.ctrl != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new FieldModifyEventSink(this);
@@ -152,7 +152,7 @@ public final class TextBox extends AbstractDwcComponent
     return this.passwordVisible;
   }
 
-  public TextBox select(Integer offset1, Integer offset2) {
+  public Field select(Integer offset1, Integer offset2) {
     if (this.ctrl != null) {
       bbjEditBox.select(offset1, offset2);
     }
@@ -161,7 +161,7 @@ public final class TextBox extends AbstractDwcComponent
 
 
 
-  public TextBox setMaxLength(Integer length) {
+  public Field setMaxLength(Integer length) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setMaxLength(length);
@@ -173,7 +173,7 @@ public final class TextBox extends AbstractDwcComponent
     return this;
   }
 
-  public TextBox setPassHomeDelete(Boolean pass) {
+  public Field setPassHomeDelete(Boolean pass) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setPassHomeDelete(pass);
@@ -185,7 +185,7 @@ public final class TextBox extends AbstractDwcComponent
     return this;
   }
 
-  public TextBox setPasswordVisible(Boolean visible) {
+  public Field setPasswordVisible(Boolean visible) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setPasswordVisible(visible);
@@ -212,7 +212,7 @@ public final class TextBox extends AbstractDwcComponent
   }
 
   @Override
-  public TextBox setReadOnly(Boolean editable) {
+  public Field setReadOnly(Boolean editable) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setEditable(!editable);
@@ -237,7 +237,7 @@ public final class TextBox extends AbstractDwcComponent
   }
 
   @Override
-  public TextBox setFocusable(Boolean focusable) {
+  public Field setFocusable(Boolean focusable) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setFocusable(focusable);
@@ -262,7 +262,7 @@ public final class TextBox extends AbstractDwcComponent
   }
 
   @Override
-  public TextBox setTabTraversable(Boolean traversable) {
+  public Field setTabTraversable(Boolean traversable) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setTabTraversable(traversable);
@@ -280,7 +280,7 @@ public final class TextBox extends AbstractDwcComponent
   }
 
   @Override
-  public TextBox setTextAlignment(Alignment alignment) {
+  public Field setTextAlignment(Alignment alignment) {
     // todo: why could an exception be thrown?
     if (this.ctrl != null) {
       try {
@@ -300,7 +300,7 @@ public final class TextBox extends AbstractDwcComponent
   }
 
   @Override
-  public TextBox setHighlightOnFocus(Highlight highlight) {
+  public Field setHighlightOnFocus(Highlight highlight) {
     if (this.ctrl != null) {
       try {
         bbjEditBox.setHighlightOnFocus(highlight.highlightType);
@@ -315,67 +315,67 @@ public final class TextBox extends AbstractDwcComponent
 
 
   @Override
-  public TextBox setText(String text) {
+  public Field setText(String text) {
     super.setText(text);
     return this;
   }
 
   @Override
-  public TextBox setVisible(Boolean visible) {
+  public Field setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
   @Override
-  public TextBox setEnabled(Boolean enabled) {
+  public Field setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
     return this;
   }
 
   @Override
-  public TextBox setTooltipText(String text) {
+  public Field setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
   @Override
-  public TextBox setAttribute(String attribute, String value) {
+  public Field setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
   @Override
-  public TextBox setId(String elementId) {
+  public Field setId(String elementId) {
     super.setId(elementId);
     return this;
   }
 
   @Override
-  public TextBox setStyle(String property, String value) {
+  public Field setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
   @Override
-  public TextBox addClassName(String selector) {
+  public Field addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
   @Override
-  public TextBox removeClassName(String selector) {
+  public Field removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }
 
 
 
-  public TextBox setExpanse(Expanse expanse) {
+  public Field setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
     return this;
   }
 
-  public TextBox setTheme(Theme theme) {
+  public Field setTheme(Theme theme) {
     super.setControlTheme(theme);
     return this;
   }

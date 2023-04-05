@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.field.TextBox;
+import org.dwcj.component.field.Field;
 import org.dwcj.component.field.event.FieldModifyEvent;
 
 import java.util.ArrayList;
@@ -15,10 +15,10 @@ import java.util.function.Consumer;
 public class FieldModifyEventSink {
 
   private ArrayList<Consumer<FieldModifyEvent>> targets;
-  private final TextBox textBox;
+  private final Field textBox;
 
   @SuppressWarnings({"static-access"})
-  public FieldModifyEventSink(TextBox tBox) {
+  public FieldModifyEventSink(Field tBox) {
 
     this.targets = new ArrayList<>();
     this.textBox = tBox;

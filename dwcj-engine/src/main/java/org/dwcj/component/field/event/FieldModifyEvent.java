@@ -1,18 +1,18 @@
 package org.dwcj.component.field.event;
 
 import org.dwcj.component.ComponentEvent;
-import org.dwcj.component.field.TextBox;
+import org.dwcj.component.field.Field;
 
 public class FieldModifyEvent implements ComponentEvent {
 
-  private final TextBox control;
+  private final Field control;
 
-  public FieldModifyEvent(TextBox tBox) {
+  public FieldModifyEvent(Field tBox) {
     this.control = tBox;
   }
 
   @Override
-  public TextBox getControl() {
+  public Field getControl() {
     return control;
   }
 
