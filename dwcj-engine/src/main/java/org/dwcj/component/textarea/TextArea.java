@@ -85,7 +85,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     }
   }
 
-  public TextArea onEditModify(Consumer<TextAreaModifyEvent> callback) {
+  public TextArea onEditModify (Consumer<TextAreaModifyEvent> callback) {
     if (this.ctrl != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new TextAreaModifyEventSink(this);
@@ -97,7 +97,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Adds a paragraph to the MultilineEdit control
    *
    * @param index - Specifies the paragraph number with 0 identifying the first paragraph. If index
@@ -117,7 +117,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   }
 
 
-  /**
+  /**.
    * Appends text to the end of a paragraph in the MultilineEdit control
    *
    * @param index - Specifies the 0-based index of the paragraph to append the text to.
@@ -135,7 +135,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * This method returns the text of all paragraphs from the MultilineEdit in a List
    *
    * @return Paragraph text from the MultilineEdit control in a List of strings.
@@ -153,7 +153,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   // Will likely eventually want to add an internal counter for tracking para num.
 
-  /**
+  /**.
    * This method returns the current zero-based paragraph index in the MultilineEdit control
    *
    * @return Returns the zero-based paragraph index in the MultilineEdit control
@@ -169,7 +169,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return -1;
   }
 
-  /**
+  /**.
    * Returns whether a horizontal scroll bar will appear when the text is too large to fit within
    * the MultilineEdit control area
    *
@@ -188,35 +188,35 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-    /**
+  /**.
    * Returns the name of the label for TextArea control
    *
    * @return String representing the value of label
    */
 
-   public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+  public String getLabel() {
+    if (this.ctrl != null) {
+      try {
         return bbjCEdit.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set the value of label in TextArea control
    *
    * @param label A String object containing the value of label
    * @return the control itself
-   */  
+   */
 
-  public TextArea setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+  public TextArea setLabel(String label) {
+    if (this.ctrl != null) {
+      try {
         bbjCEdit.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -224,51 +224,51 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Returns the valiue of the placeholder for TextArea control
    *
    * @return String representing the value of placeholder
    */
 
-   public String getPlaceholder(){
-    if(this.ctrl!=null){
-      try{
+  public String getPlaceholder() {
+    if (this.ctrl != null) {
+      try {
         return bbjCEdit.getAttribute("placeholder");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set a placeholder in TextArea control
    *
-   * @param label A String object containing the value of placeholder
+   * @param placeholder A String object containing the value of placeholder
    * @return the control itself
-   */  
+   */
 
-  public TextArea setPlaceholder(String placeholder){
-    if(this.ctrl!=null){
-      try{
+  public TextArea setPlaceholder(String placeholder) {
+    if (this.ctrl != null) {
+      try {
         bbjCEdit.setAttribute("placeholder", placeholder);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.label = label;
+    this.placeholder = placeholder;
     return this;
   }
 
-  /**
-   * This method returns whether the spellcheck is enabled in the TextArea control
+  /**.
+   * Returns whether spellcheck is enabled
    *
-   * @return Returns This method returns whether the spellcheck is enabled in the TextArea control (false = ignored
-   *        , true = enabled).
+   * @return Returns whether spellcheck is enabled (false = Ignored, true =
+   *         Enabled).
    */
 
-  public Boolean isSpellcheck(){
-    if(this.ctrl!=null){
+  public Boolean isSpellcheck() {
+    if (this.ctrl != null) {
       try {
         return Boolean.valueOf(bbjCEdit.getAttribute("spellcheck"));
       } catch (BBjException e) {
@@ -281,15 +281,15 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   /**
    * enables/disables the spellcheck. By default disabled (FALSE)
    *
-   * @param label A Boolean object allowing the spellcheck
+   * @param spellcheck A Boolean object allowing the spellcheck.
    * @return the control itself
-   */  
+   */
 
-  public TextArea setSpellcheck(Boolean spellcheck){
-    if(this.ctrl!=null){
-      try{
+  public TextArea setSpellcheck(Boolean spellcheck) {
+    if (this.ctrl != null) {
+      try {
         bbjCEdit.setAttribute("spellcheck", String.valueOf(spellcheck));
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -297,13 +297,13 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-
-  /**
+  /**.
    * This method returns whether the ENTER key is ignored in the MultilineEdit control
    *
    * @return Returns whether the ENTER key is ignored in the MultilineEdit control (false = ENTER
    *         key not ignored, true = ENTER key ignored).
    */
+
   public Boolean isIgnoreEnters() {
     if (this.ctrl != null) {
       try {
@@ -315,7 +315,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-  /**
+  /**.
    * Returns whether TAB key is ignored in the MultilineEdit control
    *
    * @return Returns whether the TAB key is ignored in the control (false = TAB key not ignored,
@@ -349,7 +349,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-  /**
+  /**.
    * This method returns the maximum number of lines (paragraphs) that can be entered into the
    * MultilineEdit control
    *
@@ -366,7 +366,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return -1;
   }
 
-  /**
+  /**.
    * Returns whether lines are wrapped in the MultilineEdit control
    *
    * @return Returns whether the lines are wrapped in the control (false = Not Wrapped, true =
@@ -383,7 +383,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-  /**
+  /**.
    * Returns the maximum number of characters allowed per paragraph in the MultilineEdit control
    *
    * @return Returns the maximum number of characters allowed per paragraph in the control
@@ -399,7 +399,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return -1;
   }
 
-  /**
+  /**.
    * This method returns the maximum length of the text in a MultilineEdit control
    *
    * @return Returns the maximum length of the text in the control.
@@ -411,7 +411,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return 2147483647;
   }
 
-  /**
+  /**.
    * Returns the number of paragraphs in the MultilineEdit control
    *
    * @return Returns the number of paragraphs in the control.
@@ -427,7 +427,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return 0;
   }
 
-  /**
+  /**.
    * Returns whether overtype mode is used in the MultilineEdit control
    *
    * @return Returns whether overtype mode is being used in the control (false = Not in Overtype
@@ -445,7 +445,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-  /**
+  /**.
    * Returns the paragraph text in the MultilineEdit control
    *
    * @param parNum - Specifies the 0-based index of the paragraph, for text to be returned.
@@ -462,7 +462,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return "";
   }
 
-  /**
+  /**.
    * Returns the selected text in the MultilineEdit control
    *
    * @return Returns a four-element List of strings that identifies the currently selected text in
@@ -484,7 +484,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return Collections.emptyList();
   }
 
-  /**
+  /**.
    * Returns the tab size in the MultilineEdit control
    *
    * @return Returns the tab size of the control.
@@ -518,7 +518,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-  /**
+  /**.
    * This method gets the style of wrapping used if the MultilineEdit control is wrapping lines
    *
    * @return Returns the style of wrapping used if the text area is wrapping lines (true = wrap at
@@ -535,7 +535,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return false;
   }
 
-  /**
+  /**.
    * Highlights characters in the MultilineEdit control
    *
    * @param parIndex1 - Specifies the 0-based paragraph index where the highlight is to begin.
@@ -553,14 +553,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     }
   }
 
-  /**
-   * Returns whether the text is editable in the MultilineEdit control
-   *
-   * @return Returns whether the text is editable in the control (false = Not Editable, true =
-   *         Editable).
-   */
-
-  /**
+  /**.
    * This method removes all paragraphs from the MultilineEdit control
    */
   public void removeAll() {
@@ -573,7 +566,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     }
   }
 
-  /**
+  /**.
    * Removes a paragraph in theMultilineEdit control
    *
    * @param parIndex - Specifies the 0-based index of the paragraph to be removed.
@@ -592,7 +585,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
 
 
-  /**
+  /**.
    * Sets whether a horizontal scroll bar will appear when the text is too large to fit within the
    * MultilineEdit control
    *
@@ -613,7 +606,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * This method sets whether to ignore the ENTER key in the MultilineEdit control
    *
    * @param ignore - Specifies whether the ENTER key is ignored (false = ENTER key not ignored, true
@@ -632,7 +625,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets whether to ignore the Tab key in the MultilineEdit control
    *
    * @param ignore - Specifies whether the TAB key is ignored (false = TAB key not ignored, true =
@@ -651,7 +644,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets whether the MultilineEdit control is limited to one paragraph
    *
    * @param limit - Specifies whether control is limited to one paragraph (false = Not limited, true
@@ -670,7 +663,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * This method sets the maximum number of paragraphs (lines) that can be entered into the
    * MultilineEdit control
    *
@@ -689,7 +682,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets whether the lines will be wrapped in the MultilineEdit control
    *
    * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
@@ -707,10 +700,10 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets the maximum number of characters allowed in a MultilineEdit control paragraph.
    *
-   * @param limit - Specifies the number of characters to be allowed in a paragraph.
+   * @param size - Specifies the number of characters to be allowed in a paragraph.
    * @return Returns this
    */
   public TextArea setMaxParagraphSize(Integer size) {
@@ -725,10 +718,10 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * This method sets the maximum length of the text in a MultilineEdit control
    *
-   * @param limit - Specifies the maximum length of the text in the control.
+   * @param length - Specifies the maximum length of the text in the control.
    * @return Returns this
    */
   public TextArea setMaxLength(Integer length) {
@@ -743,7 +736,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets whether the overtype mode is used in the MultilineEdit control
    *
    * @param overtype - Specifies whether to use overtype mode (false = Not in Overtype Mode, true =
@@ -762,7 +755,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets the tab size of the MultilineEdit control
    *
    * @param size - Specifies the tab size.
@@ -780,7 +773,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * Sets whether a vertical scroll bar will appear when the text is too large to fit within the
    * MultilineEdit control
    *
@@ -800,10 +793,10 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  /**
+  /**.
    * this method sets the style of wrapping used if the MultilineEdit control is wrapping lines.
    *
-   * @param wrap - Sets the style of wrapping used if the BBjCEdit is wrapping lines (false = Wrap
+   * @param word - Sets the style of wrapping used if the BBjCEdit is wrapping lines (false = Wrap
    *        at character boundaries, true = Wrap at word boundaries.)
    * @return Returns this
    */
@@ -833,7 +826,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this.readOnly;
   }
 
-  /**
+  /**.
    * Sets whether the text is editable in the MultilineEdit control
    *
    * @param editable - Specifies whether the text can be edited (false = Not Editable, true =
@@ -1103,8 +1096,9 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.callbacks.isEmpty()) {
@@ -1191,15 +1185,15 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
       this.setTabTraversable(this.tabTraversable);
     }
 
-    if (!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
 
-    if (!this.placeholder.equals("")){
+    if (!this.placeholder.equals("")) {
       this.setPlaceholder(this.placeholder);
     }
 
-    if (Boolean.FALSE.equals(this.spellcheck)){
+    if (Boolean.FALSE.equals(this.spellcheck)) {
       this.setSpellcheck(this.spellcheck);
     }
 
