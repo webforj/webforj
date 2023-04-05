@@ -1,6 +1,5 @@
 package org.dwcj.addons.documentviewer;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,8 +17,8 @@ import org.dwcj.component.window.AbstractWindow;
 
 
 /**
- * The DocViewer widget allows you to put a htmlView onto your application and diretly open files in
- * it. For instance, to open a pdf file in your application you can do the following:
+ * The DocViewer widget allows you to put a htmlView onto your application and directly open files
+ * in it. For instance, to open a pdf file in your application you can do the following:
  *
  * <pre>
  * {@code
@@ -31,47 +30,46 @@ import org.dwcj.component.window.AbstractWindow;
  *
  * @author Eric Handtke
  */
-
 public final class DocumentViewer extends AbstractComponent implements HasStyle {
-
   private HtmlContainer htmlView;
 
-  @Override
-  protected void create(AbstractWindow panel) {
-
-    htmlView = new HtmlContainer();
-
-    panel.add(htmlView);
-    htmlView.setStyle("width", "100%");
-    htmlView.setStyle("height", "100%");
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public DocumentViewer setStyle(String property, String value) {
     htmlView.setStyle(property, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public DocumentViewer removeStyle(String property) {
     htmlView.removeStyle(property);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getComputedStyle(String property) {
     return htmlView.getComputedStyle(property);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getStyle(String property) {
     return htmlView.getStyle(property);
   }
 
-
   /**
-   * open a document directly from a phyiscal file on disk. The approrpiate viewer will be
-   * determined as of the extention of the name.
+   * open a document directly from a physical file on disk. The appropriate viewer will be
+   * determined as of the extension of the name.
    *
    * @param filePathString The path to the sourcefile that should be opened.
    *
@@ -108,8 +106,8 @@ public final class DocumentViewer extends AbstractComponent implements HasStyle 
   }
 
   /**
-   * Open a document directly from a blob in memory. The approrpiate viewer will be determined as of
-   * the extention of the name.
+   * Open a document directly from a blob in memory. The appropriate viewer will be determined as of
+   * the extension of the name.
    *
    * @param blob The document as binary string
    * @param name The file name under which the file should be served
@@ -117,9 +115,6 @@ public final class DocumentViewer extends AbstractComponent implements HasStyle 
    * @return An instance of this object is returned
    */
   public DocumentViewer open(String blob, String name) throws IOException {
-
-
-
     String tempDir = System.getProperty("java.io.tmpdir");
     String path = tempDir + FileSystems.getDefault().getSeparator() + name;
     File file = new File(path);
@@ -131,7 +126,19 @@ public final class DocumentViewer extends AbstractComponent implements HasStyle 
     outputStream.close();
 
     return open(path);
+  }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void create(AbstractWindow panel) {
+
+    htmlView = new HtmlContainer();
+
+    panel.add(htmlView);
+    htmlView.setStyle("width", "100%");
+    htmlView.setStyle("height", "100%");
   }
 
   private String getExtension(String filePath) {
