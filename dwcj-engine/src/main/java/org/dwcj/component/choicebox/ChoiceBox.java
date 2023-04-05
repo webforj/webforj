@@ -60,6 +60,7 @@ public final class ChoiceBox extends AbstractListBox
   private SimpleEntry<Integer, String> textAt = null;
   private Integer selected = null;
 
+  private String label = "";
 
   public ChoiceBox() {
     this.readOnly = false;
@@ -183,6 +184,42 @@ public final class ChoiceBox extends AbstractListBox
       data2.add(values.get(it.next()));
     }
     populate();
+    return this;
+  }
+
+    /**
+   * Returns the name of the label for ChoiceBox control
+   *
+   * @return String representing the value of label
+   */
+
+  public String getLabel(){
+    if(this.ctrl!=null){
+      try{
+        return bbjListButton.getAttribute("label");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+    /**
+   * set the value of label in ChoiceBox control
+   *
+   * @param label A String object containing the value of label
+   * @return the control itself
+   */
+
+  public ChoiceBox setLabel(String label){
+    if(this.ctrl!=null){
+      try{
+        bbjListButton.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
     return this;
   }
 
@@ -688,6 +725,10 @@ public final class ChoiceBox extends AbstractListBox
 
     if (this.selected != null) {
       this.selectIndex(this.selected);
+    }
+
+    if(!this.label.equals("")){
+      this.setLabel(this.label);
     }
 
   }
