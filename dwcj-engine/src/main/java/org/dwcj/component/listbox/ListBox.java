@@ -39,6 +39,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
   Boolean multipleSelection = false;
   private SimpleEntry<Integer, String> textAt = null;
 
+  private String label = "";
+
 
   public ListBox() {
     this.horizontalScrollBarPosition = 0;
@@ -111,6 +113,42 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
     return this;
   }
 
+  /**
+  * Returns the name of the label for ListBox control
+  *
+  * @return String representing the value of label
+  */
+
+  public String getLabel(){
+    if(this.ctrl!=null){
+      try{
+        return bbjListBox.getAttribute("label");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+/**
+  * set the value of label in ListBox control
+  *
+  * @param label A String object containing the value of label
+  * @return the control itself
+  */  
+
+  public ListBox setLabel(String label){
+    if(this.ctrl!=null){
+      try{
+        bbjListBox.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
+
   @SuppressWarnings("unchecked")
   protected void populate() {
     if (this.ctrl != null) {
@@ -164,6 +202,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
    * Returns a single String representing the item at the given key.
    *
    * @param key - Object representing the key in the map
+   * 
    * @return String item at the given key
    */
   public String getItem(Object key) {
@@ -719,6 +758,10 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setTextAlignment(this.textAlignment);
+    }
+
+    if(!this.label.equals("")){
+      this.setLabel(this.label);
     }
   }
 
