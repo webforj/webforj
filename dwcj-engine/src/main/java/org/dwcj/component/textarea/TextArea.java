@@ -17,7 +17,7 @@ import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +54,9 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   private Boolean vScroll = false;
   private Boolean wrapWord = true;
 
-
+  private String label = "";
+  private String placeholder = "";
+  private Boolean spellcheck = false;
 
   public TextArea() {
     this.readOnly = false;
@@ -185,6 +187,112 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     }
     return false;
   }
+
+    /**
+   * Returns the name of the label for TextArea control
+   *
+   * @return String representing the value of label
+   */
+
+   public String getLabel(){
+    if(this.ctrl!=null){
+      try{
+        return bbjCEdit.getAttribute("label");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set the value of label in TextArea control
+   *
+   * @param label A String object containing the value of label
+   * @return the control itself
+   */  
+
+  public TextArea setLabel(String label){
+    if(this.ctrl!=null){
+      try{
+        bbjCEdit.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
+
+  /**
+   * Returns the valiue of the placeholder for TextArea control
+   *
+   * @return String representing the value of placeholder
+   */
+
+   public String getPlaceholder(){
+    if(this.ctrl!=null){
+      try{
+        return bbjCEdit.getAttribute("placeholder");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set a placeholder in TextArea control
+   *
+   * @param label A String object containing the value of placeholder
+   * @return the control itself
+   */  
+
+  public TextArea setPlaceholder(String placeholder){
+    if(this.ctrl!=null){
+      try{
+        bbjCEdit.setAttribute("placeholder", placeholder);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
+
+  /**
+   * This method returns whether the spellcheck is enabled in the TextArea control
+   *
+   * @return Returns This method returns whether the spellcheck is enabled in the TextArea control (false = ignored
+   *        , true = enabled).
+   */
+
+  public Boolean isSpellcheck(){
+    if(this.ctrl!=null){
+      return Boolean.valueOf(this.getAttribute("spellcheck"));
+    }
+    return this.spellcheck;
+  }
+
+  /**
+   * enables/disables the spellcheck. By default disabled (FALSE)
+   *
+   * @param label A Boolean object allowing the spellcheck
+   * @return the control itself
+   */  
+
+  public TextArea setSpellcheck(Boolean spellcheck){
+    if(this.ctrl!=null){
+      try{
+        bbjCEdit.setAttribute("spellcheck", String.valueOf(spellcheck));
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.spellcheck = spellcheck;
+    return this;
+  }
+
 
   /**
    * This method returns whether the ENTER key is ignored in the MultilineEdit control
@@ -1077,7 +1185,18 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
+    }
 
+    if (!this.label.equals("")){
+      this.setLabel(this.label);
+    }
+
+    if (!this.placeholder.equals("")){
+      this.setPlaceholder(this.placeholder);
+    }
+
+    if (Boolean.FALSE.equals(this.spellcheck)){
+      this.setSpellcheck(this.spellcheck);
     }
 
   }
