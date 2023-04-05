@@ -53,7 +53,8 @@ public final class TextField extends AbstractDwcComponent
   private Boolean passTab = false;
   private String restore = "";
 
-
+  private String label = "";
+  private String placeholder = "";
 
   public TextField() {
     this("");
@@ -117,6 +118,78 @@ public final class TextField extends AbstractDwcComponent
       }
     }
     return null;
+  }
+
+    /**
+   * Returns the name of the label for TextField control
+   *
+   * @return String representing the value of label
+   */
+
+  public String getLabel(){
+    if(this.ctrl!=null){
+      try{
+        return bbjInputE.getAttribute("label");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set the value of label in TextField control
+   *
+   * @param label A String object containing the value of label
+   * @return the control itself
+   */  
+
+  public TextField setLabel(String label){
+    if(this.ctrl!=null){
+      try{
+        bbjInputE.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
+
+    /**
+   * Returns the valiue of the placeholder for TextField control
+   *
+   * @return String representing the value of placeholder
+   */
+
+   public String getPlaceholder(){
+    if(this.ctrl!=null){
+      try{
+        return bbjInputE.getAttribute("placeholder");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set a placeholder in TextField control
+   *
+   * @param label A String object containing the value of placeholder
+   * @return the control itself
+   */  
+
+  public TextField setPlaceholder(String placeholder){
+    if(this.ctrl!=null){
+      try{
+        bbjInputE.setAttribute("placeholder", placeholder);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
   }
 
   public String getEditString() {
@@ -648,6 +721,14 @@ public final class TextField extends AbstractDwcComponent
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
       this.setHighlightOnFocus(this.textHighlight);
+    }
+
+    if(!this.label.equals("")){
+      this.setLabel(this.label);
+    }
+
+    if(!this.placeholder.equals("")){
+      this.setPlaceholder(this.placeholder);
     }
 
   }
