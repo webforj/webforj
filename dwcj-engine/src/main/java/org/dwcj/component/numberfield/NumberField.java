@@ -56,6 +56,8 @@ public class NumberField extends AbstractDwcComponent
   protected Boolean commas = false;
   protected BigDecimal value = BigDecimal.valueOf(0);
 
+  private String label = "";
+  private String placeholder = "";
 
 
   public NumberField(String text) {
@@ -128,6 +130,78 @@ public class NumberField extends AbstractDwcComponent
       }
     }
     return this.dotChar;
+  }
+
+  /**
+   * Returns the name of the label for NumberField control
+   *
+   * @return String representing the value of label
+   */
+
+  public String getLabel(){
+    if(this.ctrl!=null){
+      try{
+        return numBox.getAttribute("label");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set the value of label in NumberField control
+   *
+   * @param label A String object containing the value of label
+   * @return the control itself
+   */  
+
+  public NumberField setLabel(String label){
+    if(this.ctrl!=null){
+      try{
+        numBox.setAttribute("label", label);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
+  }
+
+    /**
+   * Returns the valiue of the placeholder for NumberField control
+   *
+   * @return String representing the value of placeholder
+   */
+
+   public String getPlaceholder(){
+    if(this.ctrl!=null){
+      try{
+        return numBox.getAttribute("placeholder");
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    return this.label;
+  }
+
+  /**
+   * set a placeholder in NumberField control
+   *
+   * @param label A String object containing the value of placeholder
+   * @return the control itself
+   */  
+
+  public NumberField setPlaceholder(String placeholder){
+    if(this.ctrl!=null){
+      try{
+        numBox.setAttribute("placeholder", placeholder);
+      }catch(BBjException e){
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
   }
 
   /**
@@ -948,6 +1022,14 @@ public class NumberField extends AbstractDwcComponent
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
       this.setHighlightOnFocus(this.textHighlight);
+    }
+
+    if(!this.label.equals("")){
+      this.setLabel(this.label);
+    }
+
+    if(!this.placeholder.equals("")){
+      this.setPlaceholder(this.placeholder);
     }
 
   }
