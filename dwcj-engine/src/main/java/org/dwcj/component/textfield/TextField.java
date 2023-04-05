@@ -1,9 +1,11 @@
 package org.dwcj.component.textfield;
 
+import com.basis.bbj.proxies.sysgui.BBjInputE;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
@@ -17,10 +19,6 @@ import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
-
-import com.basis.bbj.proxies.sysgui.BBjInputE;
-import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
 
 public final class TextField extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
@@ -47,7 +45,10 @@ public final class TextField extends AbstractDwcComponent
   private Integer length = null;
   private Integer margin = 7;
   private String mask =
-      "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+      "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+      + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+      + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+      + "XXXXXXXXXXX";
   private String pad = " ";
   private Boolean passEnter = false;
   private Boolean passTab = false;
@@ -60,7 +61,7 @@ public final class TextField extends AbstractDwcComponent
     this("");
   }
 
-  public TextField(String text) {
+  public TextField (String text) {
     setText(text);
     this.readOnly = false;
     this.focusable = true;
@@ -84,7 +85,7 @@ public final class TextField extends AbstractDwcComponent
     }
   }
 
-  public TextField onEditModify(Consumer<TextFieldModifyEvent> callback) {
+  public TextField onEditModify (Consumer<TextFieldModifyEvent> callback) {
 
     if (this.ctrl != null) {
       if (this.editModifyEventSink == null) {
@@ -109,6 +110,7 @@ public final class TextField extends AbstractDwcComponent
     return this.caretPos;
   }
 
+  
   public Integer getError() {
     if (this.ctrl != null) {
       try {
@@ -120,35 +122,35 @@ public final class TextField extends AbstractDwcComponent
     return null;
   }
 
-    /**
+  /**.
    * Returns the name of the label for TextField control
    *
    * @return String representing the value of label
    */
 
   public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         return bbjInputE.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set the value of label in TextField control
    *
    * @param label A String object containing the value of label
    * @return the control itself
    */  
 
-  public TextField setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+  public TextField setLabel(String label) {
+    if (this.ctrl != null) {
+      try {
         bbjInputE.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -156,39 +158,39 @@ public final class TextField extends AbstractDwcComponent
     return this;
   }
 
-    /**
+  /**.
    * Returns the valiue of the placeholder for TextField control
    *
-   * @return String representing the value of placeholder
+   * @return String representing the value of placeholder.
    */
 
-   public String getPlaceholder(){
-    if(this.ctrl!=null){
-      try{
+  public String getPlaceholder() {
+    if (this.ctrl != null) {
+      try {
         return bbjInputE.getAttribute("placeholder");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    return this.label;
+    return this.placeholder;
   }
 
-  /**
+  /**.
    * set a placeholder in TextField control
    *
-   * @param label A String object containing the value of placeholder
+   * @param placeholder A String object containing the value of placeholder
    * @return the control itself
    */  
 
-  public TextField setPlaceholder(String placeholder){
-    if(this.ctrl!=null){
-      try{
+  public TextField setPlaceholder(String placeholder) {
+    if (this.ctrl != null) {
+      try {
         bbjInputE.setAttribute("placeholder", placeholder);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.label = label;
+    this.placeholder = placeholder;
     return this;
   }
 
@@ -643,8 +645,9 @@ public final class TextField extends AbstractDwcComponent
 
   @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
 
@@ -723,11 +726,11 @@ public final class TextField extends AbstractDwcComponent
       this.setHighlightOnFocus(this.textHighlight);
     }
 
-    if(!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
 
-    if(!this.placeholder.equals("")){
+    if (!this.placeholder.equals("")) {
       this.setPlaceholder(this.placeholder);
     }
 
