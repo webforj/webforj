@@ -19,7 +19,7 @@ public class Frame extends AbstractWindow {
       BasisNumber b1 = BasisNumber.createBasisNumber(1);
       BasisNumber ctx = BasisNumber
           .createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
-      wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "AppPanel", flags);
+      wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "Frame", flags);
       ctrl = wnd;
     } catch (NumberFormatException | BBjException e) {
       Environment.logError(e);
