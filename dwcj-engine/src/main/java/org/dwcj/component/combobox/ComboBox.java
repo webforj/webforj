@@ -23,17 +23,17 @@ import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
-
 import java.util.ArrayList;
+
+
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-/**
- * ComboBoxEdit Control
- */
+
 public final class ComboBox extends AbstractListBox
     implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
@@ -46,6 +46,7 @@ public final class ComboBox extends AbstractListBox
   public enum Theme {
     DEFAULT, DANGER, PRIMARY, SUCCESS, WARNING
   }
+
 
 
   private ArrayList<Consumer<ComboBoxSelectEvent>> selectEvents = new ArrayList<>();
@@ -144,17 +145,18 @@ public final class ComboBox extends AbstractListBox
     }
   }
 
- /**
+
+  /**.
   * Returns the name of the label for ComboBox control
   *
   * @return String representing the value of label
   */
 
   public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         return bbjListEdit.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -169,10 +171,10 @@ public final class ComboBox extends AbstractListBox
   */  
 
   public ComboBox setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         bbjListEdit.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e){
         Environment.logError(e);
       }
     }
@@ -197,22 +199,22 @@ public final class ComboBox extends AbstractListBox
     return this.label;
   }
 
-  /**
+  
+  /**.
    * set a placeholder in ComboBox control
-   *
-   * @param label A String object containing the value of placeholder
+   * @param placeholder A String object containing the value of placeholder
    * @return the control itself
    */  
 
   public ComboBox setPlaceholder(String placeholder){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         bbjListEdit.setAttribute("placeholder", placeholder);
-      }catch(BBjException e){
+      } catch(BBjException e){
         Environment.logError(e);
       }
     }
-    this.label = label;
+    this.placeholder = placeholder;
     return this;
   }
 
@@ -724,16 +726,16 @@ public final class ComboBox extends AbstractListBox
       this.setTabTraversable(this.tabTraversable);
     }
 
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
-    }
-
-    if (!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
 
-    if (!this.placeholder.equals("")){
+    if (!this.placeholder.equals("")) {
       this.setPlaceholder(this.placeholder);
+    }
+
+    if (this.textAlignment != Alignment.LEFT) {
+      this.setTextAlignment(this.textAlignment);
     }
 
   }
