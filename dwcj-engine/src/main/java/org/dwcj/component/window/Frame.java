@@ -4,6 +4,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcjAppInitializeException;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * AppPanel is the core main application panel. It typically occupied the full browser real estate
@@ -86,13 +87,23 @@ public class Frame extends AbstractWindow {
 
   @Override
   public Frame addClassName(String selector) {
-    super.addClassName(selector);
+    try {
+      wnd.addPanelStyle(selector);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to add Frame class name", e);
+    }
+
     return this;
   }
 
   @Override
   public Frame removeClassName(String selector) {
-    super.removeClassName(selector);
+    try {
+      wnd.removePanelStyle(selector);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to remove Frame class name", e);
+    }
+
     return this;
   }
 }
