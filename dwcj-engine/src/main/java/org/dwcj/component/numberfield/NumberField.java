@@ -4,11 +4,10 @@ import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Consumer;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -132,24 +131,24 @@ public class NumberField extends AbstractDwcComponent
     return this.dotChar;
   }
 
-  /**
+  /**.
    * Returns the name of the label for NumberField control
    *
    * @return String representing the value of label
    */
 
-  public String getLabel(){
-    if(this.ctrl!=null){
-      try{
+  public String getLabel() {
+    if (this.ctrl != null) {
+      try {
         return numBox.getAttribute("label");
-      }catch(BBjException e){
+      } catch (BBjException e){
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set the value of label in NumberField control
    *
    * @param label A String object containing the value of label
@@ -157,10 +156,10 @@ public class NumberField extends AbstractDwcComponent
    */  
 
   public NumberField setLabel(String label){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         numBox.setAttribute("label", label);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
@@ -168,39 +167,39 @@ public class NumberField extends AbstractDwcComponent
     return this;
   }
 
-    /**
-   * Returns the valiue of the placeholder for NumberField control
-   *
-   * @return String representing the value of placeholder
-   */
+  /**.
+  * Returns the valiue of the placeholder for NumberField control
+  *
+  * @return String representing the value of placeholder
+  */
 
-   public String getPlaceholder(){
-    if(this.ctrl!=null){
-      try{
+  public String getPlaceholder() {
+    if (this.ctrl != null) {
+      try {
         return numBox.getAttribute("placeholder");
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
     return this.label;
   }
 
-  /**
+  /**.
    * set a placeholder in NumberField control
    *
-   * @param label A String object containing the value of placeholder
+   * @param placeholder A String object containing the value of placeholder
    * @return the control itself
    */  
 
   public NumberField setPlaceholder(String placeholder){
-    if(this.ctrl!=null){
-      try{
+    if (this.ctrl != null) {
+      try {
         numBox.setAttribute("placeholder", placeholder);
-      }catch(BBjException e){
+      } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.label = label;
+    this.placeholder = placeholder;
     return this;
   }
 
@@ -214,7 +213,7 @@ public class NumberField extends AbstractDwcComponent
   public String getEditString() {
     if (this.ctrl != null) {
       try {
-        return numBox.getEditString().toString();
+        return Arrays.toString(numBox.getEditString());
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -289,7 +288,7 @@ public class NumberField extends AbstractDwcComponent
     return this.length;
   }
 
-  /**
+  /**.
    * This method returns the left margin of the NumericBox control.
    *
    * @return Returns the left margin of the control.
@@ -934,10 +933,11 @@ public class NumberField extends AbstractDwcComponent
 
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.callbacks.isEmpty()) {
@@ -1024,11 +1024,11 @@ public class NumberField extends AbstractDwcComponent
       this.setHighlightOnFocus(this.textHighlight);
     }
 
-    if(!this.label.equals("")){
+    if (!this.label.equals("")) {
       this.setLabel(this.label);
     }
 
-    if(!this.placeholder.equals("")){
+    if (!this.placeholder.equals("")) {
       this.setPlaceholder(this.placeholder);
     }
 
