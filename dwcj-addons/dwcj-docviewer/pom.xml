@@ -5,32 +5,24 @@
 
   <parent>
     <groupId>org.dwcj</groupId>
-    <artifactId>dwcj-project</artifactId>
+    <artifactId>dwcj-addons</artifactId>
     <version>0.17.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>dwcj-addons</artifactId>
-  <packaging>pom</packaging>
-  <name>dwcj-addons</name>
-  <description>
-        Addons for dwcj
+  <artifactId>dwcj-docviewer</artifactId>
+
+  <name>dwcj-docviewer</name>
+  <description>A Plug-in widget for display of documents in DWCJ programs.
     </description>
 
-  <modules>
-    <module>dwcj-code</module>
-    <module>dwcj-markdown</module>
-    <module>dwcj-terminal</module>
-    <module>dwcj-googlecharts</module>
-    <module>dwcj-youtube</module>
-    <module>dwcj-docviewer</module>
-  </modules>
-
   <dependencies>
+
     <dependency>
       <groupId>org.dwcj</groupId>
       <artifactId>dwcj-engine</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
 
 </project>
