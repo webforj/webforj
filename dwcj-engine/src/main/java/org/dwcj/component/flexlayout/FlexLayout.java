@@ -355,9 +355,7 @@ public class FlexLayout extends Panel {
    * @return this layout
    */
   public String getMargin() {
-    String margin = Optional.ofNullable(getStyle("margin")).orElse("");
-
-    return margin;
+    return Optional.ofNullable(getStyle("margin")).orElse("");
   }
 
   /**
@@ -377,9 +375,7 @@ public class FlexLayout extends Panel {
    * @return the padding
    */
   public String getPadding() {
-    String padding = Optional.ofNullable(getStyle("gap")).orElse("");
-
-    return padding;
+    return Optional.ofNullable(getStyle("gap")).orElse("");
   }
 
   /**
@@ -538,9 +534,7 @@ public class FlexLayout extends Panel {
    * @return the flex basis
    */
   public String getItemBasis(HasStyle control) {
-    String basis = Optional.ofNullable(control.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
-
-    return basis;
+    return Optional.ofNullable(control.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
   }
 
   /**
