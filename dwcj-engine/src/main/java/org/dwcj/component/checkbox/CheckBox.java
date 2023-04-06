@@ -1,9 +1,11 @@
 package org.dwcj.component.checkbox;
 
+
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
+import java.util.ArrayList;
+import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -16,26 +18,23 @@ import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
+/** A checkbox object. */
 public final class CheckBox extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
 
-  /*
+  /**
    * =====================================================================================
    * Initialize the enums for Expanse and Theme if applicable to the control.
    * =====================================================================================
    */
-
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
 
 
 
-  /*
+  /**
    * ===================================================================================== If a
    * control has BBj integer constants, create an enum with parameterized constructors that
    * correspond to these numeric constants in BBj.
@@ -63,11 +62,17 @@ public final class CheckBox extends AbstractDwcComponent
   private CheckBoxCheckEventSink checkboxCheckEventSink;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Boolean checked = false;
+  private Boolean autoValidate = true;
+  private Boolean autoValidateOnLoad = false;
+  private Boolean autoWasValidated = false;
+  private String label;
+  private String name;
+  private Boolean required = false;
 
 
-  /*
+  /**
    * =====================================================================================
-   * Constructor initializes the inherited interface member variables to their defaults
+   * Constructor initializes the inherited interface member variables to their defaults.
    * =====================================================================================
    */
   public CheckBox() {
@@ -101,7 +106,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * register an event callback for a checkOn or checkOff event
+   * register an event callback for a checkOn or checkOff event.
    *
    * @param callback A method to receive the onChange event
    * @return the control itself
@@ -119,8 +124,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the horizontal position of the text in the CheckBox control. The default
-   * horizontal text position is RIGHT.
+   * The default horizontal text position is RIGHT.
    *
    * @return This method returns the horizontal position of the text in the CheckBox control.
    */
@@ -131,7 +135,13 @@ public final class CheckBox extends AbstractDwcComponent
     return HorizontalTextPosition.RIGHT;
   }
 
-
+  /**
+   * Sets the horizontal text position.
+   *
+   * @param position the position where the text should be placed.
+   * 
+   * @return this object.
+   */
   public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
     if (this.ctrl != null) {
       try {
@@ -161,6 +171,13 @@ public final class CheckBox extends AbstractDwcComponent
     return false;
   }
 
+  /**
+   * Sets the box to be either checked or unchecked.
+   *
+   * @param checked Wether the box should be checked or not.
+   * 
+   * @return this object.
+   */
   public CheckBox setChecked(Boolean checked) {
     if (this.ctrl != null) {
       try {
@@ -366,8 +383,181 @@ public final class CheckBox extends AbstractDwcComponent
     this.textAlignment = alignment;
     return this;
   }
+  /*
+   * ===================================================================================== Ensure
+   * that all attributes applicable to the class have methods to easily access them.
+   * =====================================================================================
+   */
 
 
+
+  /**
+   * The method to enable or disable auto validation.
+   *
+   * @param value the boolean to determine disable/enable.
+   * 
+   * @return this.
+   */
+  public CheckBox setAutoValidate(Boolean value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("auto-validate", value.toString());
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.autoValidate = value;
+    return this;
+  }
+
+  /**
+   * Returns wether or not the control automatically validates.  
+   *
+   * @return A boolean representing wether or not the control autovalidates.
+   */
+  public Boolean isAutoValidated() {
+    return this.autoValidate;
+  }
+
+  /**
+   * The method to enable or disable auto validation on first load.
+   *
+   * @param value the boolean to determine disable/enable.
+   * 
+   * @return this.
+   */
+  public CheckBox setAutoValidateOnLoad(Boolean value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("auto-validate-on-load", value.toString());
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.autoValidateOnLoad = value;
+    return this;
+  }
+
+  /**
+   * Returns wether or not the control automatically validates on first load.  
+   *
+   * @return A boolean representing wether or not the control autovalidates on first load.
+   */
+  public Boolean isAutoValidatedOnLoad() {
+    return this.autoValidateOnLoad;
+  }
+
+  /**
+   * The method to enable or disable automatic switching of valid property.
+   *
+   * @param value the boolean to determine disable/enable.
+   * 
+   * @return this.
+   */
+  public CheckBox setAutoWasValidated(Boolean value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("auto-was-validated", value.toString());
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.autoWasValidated = value;
+    return this;
+  }
+
+  /**
+   * Returns wether or not the control automatically switches valid property.  
+   *
+   * @return A boolean representing wether or not the control automatically switches valid property.
+   */
+  public Boolean getAutoWasValidated() {
+    return this.autoWasValidated;
+  }
+
+  /**
+   * The method to set the label of the checkbox.
+   *
+   * @param value the label text to be set.
+   * 
+   * @return this.
+   */
+  public CheckBox setLabel(String value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("label", value);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.label = value;
+    return this;
+  }
+
+  /**
+   * Returns the label of the control.  
+   *
+   * @return A String representing the label.
+   */
+  public String getLabel() {
+    return this.label;
+  }
+
+  /**
+   * The method to set the name of the checkbox.
+   *
+   * @param value the name text to be set.
+   * 
+   * @return this.
+   */
+  public CheckBox setName(String value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("name", value);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.name = value;
+    return this;
+  }
+
+  /**
+   * Returns the name of the control.  
+   *
+   * @return A String representing the name.
+   */
+  public String getName() {
+    return this.name;
+  }
+
+  /**
+   * The method to enable or disable the checkbox being required.
+   *
+   * @param value the boolean to determine disable/enable.
+   * 
+   * @return this.
+   */
+  public CheckBox setRequired(Boolean value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("required", value.toString());
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.required = value;
+    return this;
+  }
+
+  /**
+   * Returns wether or not the checkbox is required.  
+   *
+   * @return A Boolean representing wether or not the checkbox is required.
+   */
+  public Boolean getRequired() {
+    return this.required;
+  }
 
   /*
    * ===================================================================================== Finally,
@@ -381,8 +571,9 @@ public final class CheckBox extends AbstractDwcComponent
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (this.checked != null) {
@@ -420,6 +611,30 @@ public final class CheckBox extends AbstractDwcComponent
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setTextAlignment(this.textAlignment);
+    }
+
+    if (Boolean.FALSE.equals(this.autoValidate)) {
+      this.setAutoValidate(this.autoValidate);
+    }
+
+    if (Boolean.TRUE.equals(this.autoValidateOnLoad)) {
+      this.setAutoValidateOnLoad(this.autoValidateOnLoad);
+    }
+
+    if (Boolean.TRUE.equals(this.autoWasValidated)) {
+      this.setAutoWasValidated(this.autoWasValidated);
+    }
+
+    if (this.label != null) {
+      this.setLabel(this.label);
+    }
+
+    if (this.name != null) {
+      this.setName(this.name);
+    }
+
+    if (Boolean.TRUE.equals(this.required)) {
+      this.setRequired(this.required);
     }
   }
 
