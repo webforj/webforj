@@ -63,7 +63,6 @@ public final class CheckBox extends AbstractDwcComponent
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Boolean checked = false;
   private Boolean indeterminate = false;
-  private String label;
   private String name;
   private Boolean required = false;
 
@@ -406,7 +405,7 @@ public final class CheckBox extends AbstractDwcComponent
   public CheckBox setIndeterminate(Boolean value) {
     if (ctrl != null) {
       try {
-        ctrl.setAttribute("label", value.toString());
+        ctrl.setAttribute("indeterminate", value.toString());
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -434,14 +433,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @return this.
    */
   public CheckBox setLabel(String value) {
-    if (ctrl != null) {
-      try {
-        ctrl.setAttribute("label", value);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.label = value;
+    super.setProperty("label", value);
     return this;
   }
 
@@ -451,7 +443,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @return A String representing the label.
    */
   public String getLabel() {
-    return this.label;
+    return (String) super.getProperty("label");
   }
 
   /**
@@ -568,10 +560,6 @@ public final class CheckBox extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.indeterminate)) {
       this.setIndeterminate(this.indeterminate);
-    }
-
-    if (this.label != null) {
-      this.setLabel(this.label);
     }
 
     if (this.name != null) {
