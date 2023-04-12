@@ -49,10 +49,7 @@ public class EventDispatcher {
     CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
 
     if (list != null) {
-      App.consoleLog(list.toString());
-      App.consoleLog(listener.toString());
       list.remove(listener);
-      App.consoleLog(list.toString());
     }
   }
 

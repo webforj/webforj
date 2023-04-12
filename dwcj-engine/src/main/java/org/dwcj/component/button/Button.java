@@ -122,12 +122,12 @@ public final class Button extends AbstractDwcComponent
     }
   }
 
-/**
- * Adds a click event for the Button component
- * 
- * @param listener The event
- * @return The component itself
- */
+  /**
+   * Adds a click event for the Button component
+   *
+   * @param listener The event
+   * @return The component itself
+   */
   public Button addClickEvent(EventListener<ButtonClickEvent> listener) {
     dispatcher.addEventListener(ButtonClickEvent.class, listener);
     this.buttonClickEventSink.addEvent();
@@ -136,7 +136,7 @@ public final class Button extends AbstractDwcComponent
 
   /**
    * Removes a click event from the Button component
-   * 
+   *
    * @param listener The event to be removed
    * @return The component itself
    */
