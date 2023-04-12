@@ -139,7 +139,7 @@ public final class CheckBox extends AbstractDwcComponent
    * Sets the horizontal text position.
    *
    * @param position the position where the text should be placed.
-   * 
+   *
    * @return this object.
    */
   public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
@@ -175,7 +175,7 @@ public final class CheckBox extends AbstractDwcComponent
    * Sets the box to be either checked or unchecked.
    *
    * @param checked Wether the box should be checked or not.
-   * 
+   *
    * @return this object.
    */
   public CheckBox setChecked(Boolean checked) {
@@ -395,7 +395,7 @@ public final class CheckBox extends AbstractDwcComponent
    * The method to enable or disable auto validation.
    *
    * @param value the boolean to determine disable/enable.
-   * 
+   *
    * @return this.
    */
   public CheckBox setAutoValidate(Boolean value) {
@@ -411,7 +411,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether or not the control automatically validates.  
+   * Returns wether or not the control automatically validates.
    *
    * @return A boolean representing wether or not the control autovalidates.
    */
@@ -423,7 +423,7 @@ public final class CheckBox extends AbstractDwcComponent
    * The method to enable or disable auto validation on first load.
    *
    * @param value the boolean to determine disable/enable.
-   * 
+   *
    * @return this.
    */
   public CheckBox setAutoValidateOnLoad(Boolean value) {
@@ -439,7 +439,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether or not the control automatically validates on first load.  
+   * Returns wether or not the control automatically validates on first load.
    *
    * @return A boolean representing wether or not the control autovalidates on first load.
    */
@@ -451,7 +451,7 @@ public final class CheckBox extends AbstractDwcComponent
    * The method to enable or disable automatic switching of valid property.
    *
    * @param value the boolean to determine disable/enable.
-   * 
+   *
    * @return this.
    */
   public CheckBox setAutoWasValidated(Boolean value) {
@@ -467,7 +467,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether or not the control automatically switches valid property.  
+   * Returns wether or not the control automatically switches valid property.
    *
    * @return A boolean representing wether or not the control automatically switches valid property.
    */
@@ -479,7 +479,7 @@ public final class CheckBox extends AbstractDwcComponent
    * The method to set the label of the checkbox.
    *
    * @param value the label text to be set.
-   * 
+   *
    * @return this.
    */
   public CheckBox setLabel(String value) {
@@ -495,7 +495,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns the label of the control.  
+   * Returns the label of the control.
    *
    * @return A String representing the label.
    */
@@ -507,7 +507,7 @@ public final class CheckBox extends AbstractDwcComponent
    * The method to set the name of the checkbox.
    *
    * @param value the name text to be set.
-   * 
+   *
    * @return this.
    */
   public CheckBox setName(String value) {
@@ -523,7 +523,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns the name of the control.  
+   * Returns the name of the control.
    *
    * @return A String representing the name.
    */
@@ -535,7 +535,7 @@ public final class CheckBox extends AbstractDwcComponent
    * The method to enable or disable the checkbox being required.
    *
    * @param value the boolean to determine disable/enable.
-   * 
+   *
    * @return this.
    */
   public CheckBox setRequired(Boolean value) {
@@ -551,7 +551,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether or not the checkbox is required.  
+   * Returns wether or not the checkbox is required.
    *
    * @return A Boolean representing wether or not the checkbox is required.
    */
