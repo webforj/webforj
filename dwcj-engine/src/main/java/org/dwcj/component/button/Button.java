@@ -12,11 +12,11 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
+import org.dwcj.component.events.EventDispatcher;
+import org.dwcj.component.events.EventListener;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * A Push Button
@@ -69,7 +69,8 @@ public final class Button extends AbstractDwcComponent
    * =====================================================================================
    */
 
-  private ArrayList<Consumer<ButtonClickEvent>> callbacks = new ArrayList<>();
+  // private ArrayList<Consumer<ButtonClickEvent>> callbacks = new ArrayList<>();
+  private EventDispatcher dispatcher = new EventDispatcher();
   private ButtonClickEventSink buttonClickEventSink;
   private Boolean disableOnClick = false;
 
@@ -114,29 +115,47 @@ public final class Button extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
+      buttonClickEventSink = new ButtonClickEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
     }
   }
 
+/**
+ * Adds a click event for the Button component
+ * 
+ * @param listener The event
+ * @return The component itself
+ */
+  public Button addClickEvent(EventListener<ButtonClickEvent> listener) {
+    dispatcher.addEventListener(ButtonClickEvent.class, listener);
+    this.buttonClickEventSink.addEvent();
+    return this;
+  }
+
   /**
-   * register an event callback for the click event
+   * Removes a click event from the Button component
+   * 
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Button removeClickEvent(EventListener<ButtonClickEvent> listener) {
+    dispatcher.removeEventListener(ButtonClickEvent.class, listener);
+    this.buttonClickEventSink.removeEvent();
+    return this;
+  }
+
+  /**
+   * Alias for the addClickEvent method
    *
+   * @see Button#removeClickEvent(EventListener)
    * @param callback A method to receive the click event
    * @return the control itself
    */
 
-  public Button onClick(Consumer<ButtonClickEvent> callback) {
-    if (this.ctrl != null) {
-      if (this.buttonClickEventSink == null) {
-        this.buttonClickEventSink = new ButtonClickEventSink(this);
-      }
-      this.buttonClickEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
-    }
-    return this;
+  public Button onClick(EventListener<ButtonClickEvent> listener) {
+    return addClickEvent(listener);
   }
 
   /**
@@ -413,13 +432,6 @@ public final class Button extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.disableOnClick)) {
       this.setDisableOnClick(this.disableOnClick);
-    }
-
-    if (!this.callbacks.isEmpty()) {
-      this.buttonClickEventSink = new ButtonClickEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.buttonClickEventSink.addCallback(this.callbacks.remove(0));
-      }
     }
 
     if (Boolean.FALSE.equals(this.focusable)) {

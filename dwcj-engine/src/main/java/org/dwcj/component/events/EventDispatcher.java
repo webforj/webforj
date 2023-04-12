@@ -1,7 +1,8 @@
-package org.dwcj.component.webcomponent.events;
+package org.dwcj.component.events;
 
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.dwcj.App;
 
 /**
  * The EventDispatcher is minimalistic event manager that can be used to dispatch events to
@@ -48,7 +49,10 @@ public class EventDispatcher {
     CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
 
     if (list != null) {
+      App.consoleLog(list.toString());
+      App.consoleLog(listener.toString());
       list.remove(listener);
+      App.consoleLog(list.toString());
     }
   }
 

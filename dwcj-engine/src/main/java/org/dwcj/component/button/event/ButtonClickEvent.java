@@ -1,21 +1,18 @@
 package org.dwcj.component.button.event;
 
-import org.dwcj.component.ComponentEvent;
+import java.util.Map;
 import org.dwcj.component.button.Button;
+import org.dwcj.component.events.Event;
 
-public final class ButtonClickEvent implements ComponentEvent {
-  private final Button control;
+public class ButtonClickEvent extends Event<Button> {
 
-  public ButtonClickEvent(Button cButton) {
-    this.control = cButton;
-  }
-
-  @Override
-  public Button getControl() {
-    return control;
-  }
-
-  public String toString() {
-    return "Event: ButtonPushed";
+  /**
+   * Creates a new event.
+   *
+   * @param control the control
+   * @param eventMap the event map
+   */
+  public ButtonClickEvent(Button control, Map<String, Object> eventMap) {
+    super(control, eventMap);
   }
 }

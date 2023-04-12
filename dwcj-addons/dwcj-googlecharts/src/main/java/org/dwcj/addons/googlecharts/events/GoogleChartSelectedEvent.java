@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import java.util.Map;
 import org.dwcj.addons.googlecharts.GoogleChart;
+import org.dwcj.component.events.Event;
 import org.dwcj.component.webcomponent.annotations.EventExpressions;
 import org.dwcj.component.webcomponent.annotations.EventName;
-import org.dwcj.component.webcomponent.events.Event;
 
 /**
  * Emitted when data is selected in the chart.

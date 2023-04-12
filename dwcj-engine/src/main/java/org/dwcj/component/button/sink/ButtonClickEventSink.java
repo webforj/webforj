@@ -6,68 +6,53 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.function.Consumer;
+import org.dwcj.component.events.EventDispatcher;
+import java.util.HashMap;
 
 public final class ButtonClickEventSink {
 
-  private ArrayList<Consumer<ButtonClickEvent>> targets;
   private final Button button;
+  private final EventDispatcher dispatcher;
+  private boolean isActive = false;
+  BBjControl bbjctrl = null;
 
   @SuppressWarnings({"static-access"})
-  public ButtonClickEventSink(Button btn) {
-
-    this.targets = new ArrayList<>();
+  public ButtonClickEventSink(Button btn, EventDispatcher dispatcher) {
+    this.dispatcher = dispatcher;
     this.button = btn;
 
-    BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
-
     } catch (Exception e) {
       Environment.logError(e);
     }
   }
 
-  public ButtonClickEventSink(Button btn, Consumer<ButtonClickEvent> callback) {
+  public void addEvent() {
+    if (!isActive) {
+      isActive = true;
+      try {
+        bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
+            Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
+      } catch (Exception e) {
+        Environment.logError(e);
+      }
+    }
+  }
 
-    this.targets = new ArrayList<>();
-    this.targets.add(callback);
-    this.button = btn;
-
-    BBjControl bbjctrl = null;
-    try {
-      bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
-
-    } catch (Exception e) {
-      Environment.logError(e);
+  public void removeEvent() {
+    if (isActive && (dispatcher.getListenersCount(ButtonClickEvent.class) == 0)) {
+      isActive = false;
+      try {
+        bbjctrl.clearCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH);
+      } catch (Exception e) {
+        Environment.logError(e);
+      }
     }
   }
 
   public void pushEvent(BBjButtonPushEvent ev) { // NOSONAR
-    ButtonClickEvent dwcEv = new ButtonClickEvent(this.button);
-    Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
-    while (it.hasNext())
-      it.next().accept(dwcEv);
-  }
-
-  /**
-   * Clicks the button, for testing purposes
-   */
-  public void doClick() {
-    ButtonClickEvent dwcEv = new ButtonClickEvent(button);
-    Iterator<Consumer<ButtonClickEvent>> it = targets.iterator();
-    while (it.hasNext())
-      it.next().accept(dwcEv);
-  }
-
-  public void addCallback(Consumer<ButtonClickEvent> callback) {
-    targets.add(callback);
+    ButtonClickEvent dwcEv = new ButtonClickEvent(this.button, new HashMap<>());
+    this.dispatcher.dispatchEvent(dwcEv);
   }
 }
