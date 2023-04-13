@@ -4,6 +4,9 @@ import java.util.Map;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.events.Event;
 
+/**
+ * A push, or click, event for the Button class.
+ */
 public class ButtonClickEvent extends Event<Button> {
 
   /**
