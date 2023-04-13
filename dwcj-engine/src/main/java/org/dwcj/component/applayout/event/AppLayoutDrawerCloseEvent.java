@@ -2,9 +2,9 @@ package org.dwcj.component.applayout.event;
 
 import java.util.Map;
 import org.dwcj.component.applayout.AppLayout;
+import org.dwcj.component.events.Event;
 import org.dwcj.component.webcomponent.annotations.EventExpressions;
 import org.dwcj.component.webcomponent.annotations.EventName;
-import org.dwcj.component.webcomponent.events.Event;
 
 /**
  * Emitted when the drawer is closed.
