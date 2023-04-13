@@ -6,11 +6,11 @@ import org.dwcj.component.HasStyle;
 import org.dwcj.component.HasVisibility;
 import org.dwcj.component.applayout.event.AppLayoutDrawerCloseEvent;
 import org.dwcj.component.applayout.event.AppLayoutDrawerOpenEvent;
+import org.dwcj.component.events.EventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeAttribute;
 import org.dwcj.component.webcomponent.annotations.NodeName;
-import org.dwcj.component.webcomponent.events.EventListener;
 import org.dwcj.component.window.Panel;
 
 /**
