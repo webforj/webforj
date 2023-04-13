@@ -1,4 +1,4 @@
-package org.dwcj.component.webcomponent.events;
+package org.dwcj.component.events;
 
 import java.io.Serializable;
 

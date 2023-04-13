@@ -3,7 +3,6 @@ package org.dwcj.component.button;
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -12,14 +11,14 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
+import org.dwcj.component.events.EventDispatcher;
+import org.dwcj.component.events.EventListener;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
- * A Push Button
+ * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
     implements Focusable, TabTraversable, TextAlignable {
@@ -32,12 +31,20 @@ public final class Button extends AbstractDwcComponent
    * =====================================================================================
    */
 
+  /**
+   * Expanse options for the Button component.
+   */
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL;
   }
 
+  /**
+   * Theme options for the Button component.
+   */
   public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, OUTLINED_WARNING
+    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, 
+    OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, 
+    OUTLINED_WARNING
   }
 
 
@@ -49,6 +56,9 @@ public final class Button extends AbstractDwcComponent
    * =====================================================================================
    */
 
+  /**
+  * Vertical alignment options for the Button component.
+  */
   public enum TextVerticalAlignment {
     TOP(1), CENTER(0), BOTTOM(3);
 
@@ -69,8 +79,8 @@ public final class Button extends AbstractDwcComponent
    * =====================================================================================
    */
 
-  private ArrayList<Consumer<ButtonClickEvent>> callbacks = new ArrayList<>();
-  private ButtonClickEventSink buttonClickEventSink;
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private ButtonClickEventSink clickEventsSink;
   private Boolean disableOnClick = false;
 
   private Expanse expanse = null;
@@ -94,7 +104,7 @@ public final class Button extends AbstractDwcComponent
 
   /**
    * Parameterized button constructor, accepts a string as an argument which will be the initial
-   * text displayed on the button
+   * text displayed on the button.
    *
    * @param text String value for initial button text
    */
@@ -114,6 +124,7 @@ public final class Button extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
+      this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -121,20 +132,41 @@ public final class Button extends AbstractDwcComponent
   }
 
   /**
-   * register an event callback for the click event
+   * Adds a click event for the Button component.
    *
-   * @param callback A method to receive the click event
+   * @param listener The event
+   * @return The component itself
+   */
+  public Button addClickListener(EventListener<ButtonClickEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
+      this.clickEventsSink.setCallback();
+    }
+    dispatcher.addEventListener(ButtonClickEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addClickEvent method.
+   *
+   * @see Button#removeClickEvent(EventListener)
+   * @param listener A method to receive the click event
    * @return the control itself
    */
 
-  public Button onClick(Consumer<ButtonClickEvent> callback) {
-    if (this.ctrl != null) {
-      if (this.buttonClickEventSink == null) {
-        this.buttonClickEventSink = new ButtonClickEventSink(this);
-      }
-      this.buttonClickEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
+  public Button onClick(EventListener<ButtonClickEvent> listener) {
+    return addClickListener(listener);
+  }
+
+  /**
+   * Removes a click event from the Button component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Button removeClickListener(EventListener<ButtonClickEvent> listener) {
+    dispatcher.removeEventListener(ButtonClickEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
+      this.clickEventsSink.removeCallback();
     }
     return this;
   }
@@ -156,7 +188,7 @@ public final class Button extends AbstractDwcComponent
   }
 
   /**
-   * Mutator for whether or not the button is disabled on click
+   * Mutator for whether or not the button is disabled on click.
    *
    * @param disable Boolean value
    * @return Instance of the object to enable method chaining.
@@ -175,7 +207,7 @@ public final class Button extends AbstractDwcComponent
 
 
   /**
-   * Accessor for the vertical alignment of text within the button
+   * Accessor for the vertical alignment of text within the button.
    *
    * @return Enum value of text's vertical alignment
    */
@@ -187,10 +219,10 @@ public final class Button extends AbstractDwcComponent
   }
 
   /**
-   * Mutator for the vertical alignment of text within the button
+   * Mutator for the vertical alignment of text within the button.
    *
+   * @param alignment TextVerticalAlignment enum value
    * @return The Button itself
-   * @param Button TextVerticalAlignment enum value
    */
   public Button setVerticalAlignment(TextVerticalAlignment alignment) {
     if (this.ctrl != null) {
@@ -278,7 +310,7 @@ public final class Button extends AbstractDwcComponent
    */
 
   /**
-   * Accessor to return the button object's current expanse
+   * Accessor to return the button object's current expanse.
    *
    * @return Expanse enum from the button class
    */
@@ -287,7 +319,7 @@ public final class Button extends AbstractDwcComponent
   }
 
   /**
-   * Mutator to change the expanse of a button that requires a specific button enum value
+   * Mutator to change the expanse of a button that requires a specific button enum value.
    *
    * @param expanse button expanse enum value
    * @return The button object itself
@@ -298,7 +330,7 @@ public final class Button extends AbstractDwcComponent
   }
 
   /**
-   * Accessor to return the button object's current theme
+   * Accessor to return the button object's current theme.
    *
    * @return Expanse enum from the button class
    */
@@ -307,7 +339,7 @@ public final class Button extends AbstractDwcComponent
   }
 
   /**
-   * Mutator to change the theme of a button that requires a specific button enum value
+   * Mutator to change the theme of a button that requires a specific button enum value.
    *
    * @param theme button theme enum value
    * @return The button object itself
@@ -403,23 +435,20 @@ public final class Button extends AbstractDwcComponent
    */
 
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity, it's just a batch list of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
 
     super.catchUp();
 
-    if (Boolean.TRUE.equals(this.disableOnClick)) {
-      this.setDisableOnClick(this.disableOnClick);
+    if (this.dispatcher.getListenersCount(ButtonClickEvent.class) > 0) {
+      this.clickEventsSink.setCallback();
     }
 
-    if (!this.callbacks.isEmpty()) {
-      this.buttonClickEventSink = new ButtonClickEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.buttonClickEventSink.addCallback(this.callbacks.remove(0));
-      }
+    if (Boolean.TRUE.equals(this.disableOnClick)) {
+      this.setDisableOnClick(this.disableOnClick);
     }
 
     if (Boolean.FALSE.equals(this.focusable)) {

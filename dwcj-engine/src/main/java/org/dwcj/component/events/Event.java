@@ -1,4 +1,4 @@
-package org.dwcj.component.webcomponent.events;
+package org.dwcj.component.events;
 
 import java.util.EventObject;
 import java.util.Map;
