@@ -80,7 +80,7 @@ public final class Button extends AbstractDwcComponent
    */
 
   private EventDispatcher dispatcher = new EventDispatcher();
-  private ButtonClickEventSink buttonClickEventSink;
+  private ButtonClickEventSink clickEventsSink;
   private Boolean disableOnClick = false;
 
   private Expanse expanse = null;
@@ -124,7 +124,7 @@ public final class Button extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
-      this.buttonClickEventSink = new ButtonClickEventSink(this, dispatcher);
+      this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -137,9 +137,9 @@ public final class Button extends AbstractDwcComponent
    * @param listener The event
    * @return The component itself
    */
-  public Button addClickEvent(EventListener<ButtonClickEvent> listener) {
+  public Button addClickListener(EventListener<ButtonClickEvent> listener) {
     if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
-      this.buttonClickEventSink.registerEvents();
+      this.clickEventsSink.setCallback();
     }
     dispatcher.addEventListener(ButtonClickEvent.class, listener);
     return this;
@@ -154,7 +154,7 @@ public final class Button extends AbstractDwcComponent
    */
 
   public Button onClick(EventListener<ButtonClickEvent> listener) {
-    return addClickEvent(listener);
+    return addClickListener(listener);
   }
 
   /**
@@ -163,10 +163,10 @@ public final class Button extends AbstractDwcComponent
    * @param listener The event to be removed
    * @return The component itself
    */
-  public Button removeClickEvent(EventListener<ButtonClickEvent> listener) {
+  public Button removeClickListener(EventListener<ButtonClickEvent> listener) {
     dispatcher.removeEventListener(ButtonClickEvent.class, listener);
     if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
-      this.buttonClickEventSink.deregisterEvents();
+      this.clickEventsSink.removeCallback();
     }
     return this;
   }
@@ -444,7 +444,7 @@ public final class Button extends AbstractDwcComponent
     super.catchUp();
 
     if (this.dispatcher.getListenersCount(ButtonClickEvent.class) > 0) {
-      this.buttonClickEventSink.registerEvents();
+      this.clickEventsSink.setCallback();
     }
 
     if (Boolean.TRUE.equals(this.disableOnClick)) {
