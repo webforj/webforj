@@ -27,14 +27,6 @@ public final class Field extends AbstractDwcComponent
   private BBjEditBox bbjEditBox;
 
 
-  public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL
-  }
-
-  public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
-  }
-
   private ArrayList<Consumer<FieldModifyEvent>> callbacks = new ArrayList<>();
   private FieldModifyEventSink editModifyEventSink;
 
@@ -370,21 +362,11 @@ public final class Field extends AbstractDwcComponent
 
 
 
-  public Field setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
-    return this;
-  }
-
-  public Field setTheme(Theme theme) {
-    super.setControlTheme(theme);
-    return this;
-  }
-
-
   @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.callbacks.isEmpty()) {
