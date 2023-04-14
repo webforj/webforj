@@ -87,7 +87,7 @@ public enum FlexFlow {
    * @return the {@link FlexFlow} enum value
    */
   public static FlexFlow fromValue(String value) {
-    return valueOf(value.toUpperCase());
+    return valueOf(value.toUpperCase().replace(" ", "_").replace("-", "_"));
   }
 
   /**
