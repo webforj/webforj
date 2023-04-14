@@ -55,7 +55,7 @@ public enum FlexDirection {
    * @return the {@link FlexDirection} enum value
    */
   public static FlexDirection fromValue(String value) {
-    return valueOf(value.toUpperCase());
+    return valueOf(value.toUpperCase().replace("-", "_"));
   }
 
   /**
