@@ -3,10 +3,9 @@ package org.dwcj.component.field;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
+import com.basis.startup.type.BBjVector;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -18,37 +17,37 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.FieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-
+/** A Field to enter Text. */
 public final class Field extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
-
-
   private ArrayList<Consumer<FieldModifyEvent>> callbacks = new ArrayList<>();
   private FieldModifyEventSink editModifyEventSink;
-
   private Integer maxLength = 2147483647;
-  private Boolean homeDelete = false;
-  private Boolean passwordVisible = false;
-
-
+  private FieldType type;
 
   public Field() {
-    this("");
+    this("", FieldType.TEXT);
   }
 
   public Field(String text) {
+    this(text, FieldType.TEXT);
+  }
+
+  /** Constructor which takes a initial text to display and the field type. */
+  public Field(String text, FieldType type) {
     setText(text);
+    setType(type);
     this.readOnly = false;
     this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
   }
-
 
   @Override
   protected void create(AbstractWindow p) {
@@ -66,7 +65,7 @@ public final class Field extends AbstractDwcComponent
 
   }
 
-
+  /** Register an event when the field is modified. */
   public Field onEditModify(Consumer<FieldModifyEvent> callback) {
     if (this.ctrl != null) {
       if (this.editModifyEventSink == null) {
@@ -79,13 +78,11 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  public String getEditType() {
-    if (this.ctrl != null) {
-      return bbjEditBox.getEditType();
-    }
-    return "";
-  }
-
+  /**
+   * Getter for the max length of this field.
+   *
+   * @return the max amount of character this field is allowed to hold
+   */
   public Integer getMaxLength() {
     if (this.ctrl != null) {
       return bbjEditBox.getMaxLength();
@@ -93,17 +90,7 @@ public final class Field extends AbstractDwcComponent
     return this.maxLength;
   }
 
-  public Boolean isPassHomeDelete() {
-    if (this.ctrl != null) {
-      try {
-        return bbjEditBox.getPassHomeDelete();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.homeDelete;
-  }
-
+  /** Getter for the selcted text. */
   public String getSelectedText() {
     if (this.ctrl != null) {
       try {
@@ -112,18 +99,17 @@ public final class Field extends AbstractDwcComponent
         Environment.logError(e);
       }
     }
-    return null;
+    return "";
   }
 
-  /* Unsure if this is the correct return type for this functionality -MH */
-
-  /*
-   * Changed this to return a single string, otherwise could not get this to properly work -MH
-   */
-  public String getSelection() {
+  /** Getter for the info on the current selection. */
+  public FieldselectionInfo getSelectionInfo() {
     if (this.ctrl != null) {
       try {
-        return bbjEditBox.getSelection().toArray().toString();
+        BBjVector vec = bbjEditBox.getSelection();
+        Integer offsetLeft = (Integer) vec.get(1);
+        Integer offsetRight = (Integer) vec.get(3);
+        return new FieldselectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -131,28 +117,15 @@ public final class Field extends AbstractDwcComponent
     return null;
   }
 
-
-
-  public boolean isPasswordVisible() {
+  /** Selects a part of the text based on the provided offsets. */
+  public Field select(Integer offsetLeft, Integer offsetRight) {
     if (this.ctrl != null) {
-      try {
-        return bbjEditBox.isPasswordVisible();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.passwordVisible;
-  }
-
-  public Field select(Integer offset1, Integer offset2) {
-    if (this.ctrl != null) {
-      bbjEditBox.select(offset1, offset2);
+      bbjEditBox.select(offsetLeft, offsetRight);
     }
     return this;
   }
 
-
-
+  /** Setter for the max amount of characters for this field. */
   public Field setMaxLength(Integer length) {
     if (this.ctrl != null) {
       try {
@@ -165,31 +138,25 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  public Field setPassHomeDelete(Boolean pass) {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.setPassHomeDelete(pass);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
+  /** Setter for the fields type. */
+  public Field setType(FieldType type) {
+    this.type = type;
+    if (ctrl == null) {
+      return this;
     }
-    this.homeDelete = pass;
-    return this;
+
+    try {
+      ctrl.setAttribute("type", type.toString());
+      return this;
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set type for the field.", e);
+    }
   }
 
-  public Field setPasswordVisible(Boolean visible) {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.setPasswordVisible(visible);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.passwordVisible = visible;
-    return this;
+  /** Getter for the field type. */
+  public FieldType getType() {
+    return this.type;
   }
-
-
 
   @Override
   public Boolean isReadOnly() {
@@ -273,7 +240,6 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Field setTextAlignment(Alignment alignment) {
-    // todo: why could an exception be thrown?
     if (this.ctrl != null) {
       try {
         bbjEditBox.setAlignment(alignment.textPosition);
@@ -284,7 +250,6 @@ public final class Field extends AbstractDwcComponent
     this.textAlignment = alignment;
     return this;
   }
-
 
   @Override
   public Highlight getHighlightOnFocus() {
@@ -303,8 +268,6 @@ public final class Field extends AbstractDwcComponent
     this.textHighlight = highlight;
     return this;
   }
-
-
 
   @Override
   public Field setText(String text) {
@@ -360,8 +323,6 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-
-
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
@@ -380,14 +341,9 @@ public final class Field extends AbstractDwcComponent
       this.setMaxLength(this.maxLength);
     }
 
-    if (Boolean.TRUE.equals(this.homeDelete)) {
-      this.setPassHomeDelete(this.homeDelete);
+    if (this.type != FieldType.TEXT) {
+      this.setType(type);
     }
-
-    if (Boolean.TRUE.equals(this.passwordVisible)) {
-      this.setPasswordVisible(this.passwordVisible);
-    }
-
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
@@ -409,7 +365,4 @@ public final class Field extends AbstractDwcComponent
       this.setHighlightOnFocus(this.textHighlight);
     }
   }
-
-
-
 }
