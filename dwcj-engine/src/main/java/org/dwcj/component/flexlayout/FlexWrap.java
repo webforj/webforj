@@ -51,7 +51,7 @@ public enum FlexWrap {
    * @return the {@link FlexWrap} enum value
    */
   public static FlexWrap fromValue(String value) {
-    return valueOf(value.toUpperCase());
+    return valueOf(value.toUpperCase().replace("-", "_"));
   }
 
   /**

@@ -73,7 +73,7 @@ public enum FlexJustifyContent {
    * @return the {@link FlexJustifyContent} enum value
    */
   public static FlexJustifyContent fromValue(String value) {
-    return valueOf(value.toUpperCase());
+    return valueOf(value.toUpperCase().replaceAll(".+-", ""));
   }
 
   /**
