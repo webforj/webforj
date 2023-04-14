@@ -73,7 +73,7 @@ public enum FlexContentAlignment {
    * @return the {@link FlexContentAlignment} enum value
    */
   public static FlexContentAlignment fromValue(String value) {
-    return valueOf(value.toUpperCase().replaceAll(".+-", ""));
+    return valueOf(value.toUpperCase().replaceAll("^(.+?)-", ""));
   }
 
   /**
