@@ -1,13 +1,13 @@
-package org.dwcj.component.field;
+package org.dwcj.component;
 
 /** Contains information about the selected text. */
-public class FieldselectionInfo {
+public class SelectionInfo {
   private final Integer begin;
   private final Integer end;
   private final String selectedText;
 
   /** Constructor which takes the begin, end and the selected text. */
-  public FieldselectionInfo(Integer begin, Integer end, String text) {
+  public SelectionInfo(Integer begin, Integer end, String text) {
     this.begin = begin;
     this.end = end;
     this.selectedText = text;
@@ -24,5 +24,5 @@ public class FieldselectionInfo {
   public String getSelectedText() {
     return selectedText;
   }
-    
+
 }

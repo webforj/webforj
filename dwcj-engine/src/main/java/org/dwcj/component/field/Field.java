@@ -9,6 +9,7 @@ import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.SelectionInfo;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
@@ -125,13 +126,13 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Getter for the info on the current selection. */
-  public FieldselectionInfo getSelectionInfo() {
+  public SelectionInfo getSelectionInfo() {
     if (this.ctrl != null) {
       try {
         BBjVector vec = bbjEditBox.getSelection();
         Integer offsetLeft = (Integer) vec.get(1);
         Integer offsetRight = (Integer) vec.get(3);
-        return new FieldselectionInfo(offsetLeft, offsetRight, this.getSelectedText());
+        return new SelectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
         Environment.logError(e);
       }
