@@ -4,8 +4,6 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -14,8 +12,10 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
-import org.dwcj.component.field.event.FieldModifyEvent;
-import org.dwcj.component.field.sink.FieldModifyEventSink;
+import org.dwcj.component.events.EventDispatcher;
+import org.dwcj.component.events.EventListener;
+import org.dwcj.component.events.FocusGainedEvent;
+import org.dwcj.component.field.sink.FieldFocusGainedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -25,10 +25,13 @@ public final class Field extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
-  private ArrayList<Consumer<FieldModifyEvent>> callbacks = new ArrayList<>();
-  private FieldModifyEventSink editModifyEventSink;
+
+
   private Integer maxLength = 2147483647;
   private FieldType type;
+  private final EventDispatcher dispatcher = new EventDispatcher();
+  private FieldFocusGainedEventSink focusGainedEventSink;
+
 
   public Field() {
     this("", FieldType.TEXT);
@@ -47,6 +50,7 @@ public final class Field extends AbstractDwcComponent
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
+
   }
 
   @Override
@@ -57,6 +61,7 @@ public final class Field extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
+      this.focusGainedEventSink = new FieldFocusGainedEventSink(this, dispatcher);
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
@@ -65,18 +70,35 @@ public final class Field extends AbstractDwcComponent
 
   }
 
-  /** Register an event when the field is modified. */
-  public Field onEditModify(Consumer<FieldModifyEvent> callback) {
-    if (this.ctrl != null) {
-      if (this.editModifyEventSink == null) {
-        this.editModifyEventSink = new FieldModifyEventSink(this);
-      }
-      this.editModifyEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
+  /**
+   * Adds a click event for the Button component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addFocusGained(EventListener<FocusGainedEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusGainedEvent.class) == 0) {
+      this.focusGainedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(FocusGainedEvent.class, listener);
+    return this;
+  }
+
+
+  /**
+   * Removes a click event from the Button component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeFocusGained(EventListener<FocusGainedEvent> listener) {
+    dispatcher.removeEventListener(FocusGainedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusGainedEvent.class) == 0) {
+      this.focusGainedEventSink.removeCallback();
     }
     return this;
   }
+
 
   /**
    * Getter for the max length of this field.
@@ -330,11 +352,9 @@ public final class Field extends AbstractDwcComponent
     }
     super.catchUp();
 
-    if (!this.callbacks.isEmpty()) {
-      this.editModifyEventSink = new FieldModifyEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.editModifyEventSink.addCallback(this.callbacks.remove(0));
-      }
+
+    if (this.dispatcher.getListenersCount(FocusGainedEvent.class) > 0) {
+      this.focusGainedEventSink.setCallback();
     }
 
     if (this.maxLength != 2147483647) {
