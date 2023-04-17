@@ -15,7 +15,7 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.events.EventDispatcher;
 import org.dwcj.component.events.EventListener;
 import org.dwcj.component.events.FocusGainedEvent;
-import org.dwcj.component.field.sink.FieldFocusGainedEventSink;
+import org.dwcj.component.events.FocusGainedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -30,7 +30,7 @@ public final class Field extends AbstractDwcComponent
   private Integer maxLength = 2147483647;
   private FieldType type;
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private FieldFocusGainedEventSink focusGainedEventSink;
+  private FocusGainedEventSink focusGainedEventSink;
 
 
   public Field() {
@@ -61,7 +61,7 @@ public final class Field extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
-      this.focusGainedEventSink = new FieldFocusGainedEventSink(this, dispatcher);
+      this.focusGainedEventSink = new FocusGainedEventSink(this, dispatcher);
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
