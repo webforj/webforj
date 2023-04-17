@@ -1,7 +1,8 @@
-package org.dwcj.component.events;
+package org.dwcj.component.events.shared.events;
 
 import java.util.Map;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.events.Event;
 
 /**
  * A gained focus event for the Field class.
@@ -17,7 +18,4 @@ public class FocusGainedEvent extends Event<AbstractDwcComponent> {
   public FocusGainedEvent(AbstractDwcComponent control, Map<String, Object> eventMap) {
     super(control, eventMap);
   }
-
-
-
 }
