@@ -11,7 +11,7 @@ import org.dwcj.component.HasStyle;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotations.NodeName;
+import org.dwcj.component.webcomponent.annotation.NodeName;
 
 /**
  * A simple implementation for Google Chart Web Component, this component is a wrapper for the

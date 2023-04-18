@@ -8,9 +8,9 @@ import org.dwcj.component.HasClassName;
 import org.dwcj.component.HasStyle;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotations.HtmlViewAttribute;
-import org.dwcj.component.webcomponent.annotations.NodeAttribute;
-import org.dwcj.component.webcomponent.annotations.NodeName;
+import org.dwcj.component.webcomponent.annotation.HtmlViewAttribute;
+import org.dwcj.component.webcomponent.annotation.NodeAttribute;
+import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.AbstractWindow;
 
 /**

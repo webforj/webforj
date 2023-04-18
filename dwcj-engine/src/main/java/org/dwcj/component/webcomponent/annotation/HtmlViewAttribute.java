@@ -1,4 +1,4 @@
-package org.dwcj.component.webcomponent.annotations;
+package org.dwcj.component.webcomponent.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,16 +9,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The NodeAttribute annotation is used to set attributes on the web component upon creation.
+ * The HtmlViewAttribute annotation is used to set attributes on the html view hosting the web
+ * component upon creation.
  *
  * <p>
- * For example, the following annotation will set the "disabled" attribute to "true" on the web
- * component when it is created.
+ * For example, the following annotation will set the attribute "disabled" with value "true" on the
+ * html view hosting the web component when it is created.
  * </p>
  *
  * <pre>
  * {@code
- * &#64;NodeAttribute(name = "disabled", value = "true")
+ * &#64;HtmlViewAttribute(name = "disabled", value = "true")
  * }
  * </pre>
  *
@@ -26,10 +27,10 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(NodeAttribute.Container.class)
+@Repeatable(HtmlViewAttribute.Container.class)
 @Inherited
 @Documented
-public @interface NodeAttribute {
+public @interface HtmlViewAttribute {
   /**
    * The name of the attribute.
    *
@@ -45,9 +46,9 @@ public @interface NodeAttribute {
   String value() default "";
 
   /**
-   * The container annotation for {@link NodeAttribute} annotation.
+   * The container annotation for {@link HtmlViewAttribute} annotation.
    *
-   * @see NodeAttribute
+   * @see HtmlViewAttribute
    * @author Hyyan Abo Fakher
    */
   @Target(ElementType.TYPE)
@@ -56,10 +57,10 @@ public @interface NodeAttribute {
   @Documented
   public @interface Container {
     /**
-     * An array of {@link NodeAttribute} annotations.
+     * An array of {@link HtmlViewAttribute} annotations.
      *
-     * @return an array of {@link NodeAttribute} annotations
+     * @return an array of {@link HtmlViewAttribute} annotations
      */
-    NodeAttribute[] value();
+    HtmlViewAttribute[] value();
   }
 }

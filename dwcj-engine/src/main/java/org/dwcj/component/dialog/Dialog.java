@@ -7,7 +7,7 @@ import org.dwcj.component.dialog.event.DialogOpenEvent;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotations.NodeName;
+import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.Panel;
 
 /**

@@ -5,8 +5,8 @@ import com.google.gson.JsonArray;
 import java.util.Map;
 import org.dwcj.addons.googlecharts.GoogleChart;
 import org.dwcj.component.event.Event;
-import org.dwcj.component.webcomponent.annotations.EventExpressions;
-import org.dwcj.component.webcomponent.annotations.EventName;
+import org.dwcj.component.webcomponent.annotation.EventExpressions;
+import org.dwcj.component.webcomponent.annotation.EventName;
 
 /**
  * Emitted when data is selected in the chart.
