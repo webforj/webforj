@@ -4,12 +4,12 @@ import java.util.Map;
 import org.dwcj.component.AbstractDwcComponent;
 
 /**
- * A blur event for the Components that can be blured.
+ * A blur event for applicable Components.
  */
 public class BlurEvent extends Event<AbstractDwcComponent> {
   
   /**
-   * Creates a new event.
+   * Creates a new Blur event.
    *
    * @param control the control
    * @param payload the event map
@@ -19,9 +19,9 @@ public class BlurEvent extends Event<AbstractDwcComponent> {
   }
 
   /**
-   * Getter for the text of the blurred control.
+   * Gets the text of the component that is sent as part of the event payload.
    *
-   * @return the text of the control.
+   * @return the text of the component.
    */
   public String getText() {
     return (String) this.getEventMap().get("text");
@@ -41,7 +41,9 @@ public class BlurEvent extends Event<AbstractDwcComponent> {
    *
    * @return a boolean indicating wether the focus changed is permanent or temporary
    */
+  /*
   public Boolean isTemporary() {
     return (Boolean) this.getEventMap().get("temporary");
   }
+  */
 }
