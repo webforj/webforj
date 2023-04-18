@@ -12,10 +12,29 @@ public class ButtonClickEvent extends Event<Button> {
   /**
    * Creates a new event.
    *
-   * @param control the control
-   * @param eventMap the event map
+   * @param component the component
+   * @param payload the event map
    */
-  public ButtonClickEvent(Button control, Map<String, Object> eventMap) {
-    super(control, eventMap);
+  public ButtonClickEvent(Button component, Map<String, Object> payload) {
+    super(component, payload);
+  }
+
+  /**
+   * Getter for the x coordinate.
+   *
+   * @return the x coordinate
+   */
+  public double getX() {
+    return (double) this.getEventMap().get("x");
+  }
+
+  /**
+   * Getter for the y coordinate.
+   *
+   * @return the y coordinate
+   */
+  public double getY() {
+    return (double) this.getEventMap().get("y");
   }
 }
+
