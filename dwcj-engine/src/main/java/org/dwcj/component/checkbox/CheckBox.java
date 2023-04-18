@@ -168,7 +168,7 @@ public final class CheckBox extends AbstractDwcComponent
         Environment.logError(e);
       }
     }
-    return false;
+    return checked;
   }
 
   /**
