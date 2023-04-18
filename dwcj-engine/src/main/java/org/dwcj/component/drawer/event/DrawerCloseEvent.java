@@ -2,7 +2,7 @@ package org.dwcj.component.drawer.event;
 
 import java.util.Map;
 import org.dwcj.component.drawer.Drawer;
-import org.dwcj.component.events.Event;
+import org.dwcj.component.event.Event;
 import org.dwcj.component.webcomponent.annotations.EventExpressions;
 import org.dwcj.component.webcomponent.annotations.EventName;
 

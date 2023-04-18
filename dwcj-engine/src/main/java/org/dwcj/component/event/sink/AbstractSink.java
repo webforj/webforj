@@ -1,11 +1,11 @@
-package org.dwcj.component.events.sinks;
+package org.dwcj.component.event.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.events.EventDispatcher;
+import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**

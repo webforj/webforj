@@ -1,12 +1,12 @@
-package org.dwcj.component.events.sinks;
+package org.dwcj.component.event.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjLostFocusEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.events.BlurEvent;
-import org.dwcj.component.events.EventDispatcher;
+import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.event.EventDispatcher;
 
 /**
  * This class will map the BBjLostFocusEvent event to a Java {@link BlurEvent}.

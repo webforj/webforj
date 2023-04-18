@@ -11,8 +11,8 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.events.EventDispatcher;
-import org.dwcj.component.events.EventListener;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -42,9 +42,7 @@ public final class Button extends AbstractDwcComponent
    * Theme options for the Button component.
    */
   public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, 
-    OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, 
-    OUTLINED_WARNING
+    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, OUTLINED_WARNING
   }
 
 
@@ -57,8 +55,8 @@ public final class Button extends AbstractDwcComponent
    */
 
   /**
-  * Vertical alignment options for the Button component.
-  */
+   * Vertical alignment options for the Button component.
+   */
   public enum TextVerticalAlignment {
     TOP(1), CENTER(0), BOTTOM(3);
 

@@ -8,7 +8,7 @@ import org.dwcj.annotation.Attribute;
 import org.dwcj.annotation.JavaScript;
 import org.dwcj.annotation.Link;
 import org.dwcj.component.HasStyle;
-import org.dwcj.component.events.EventListener;
+import org.dwcj.component.event.EventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotations.NodeName;

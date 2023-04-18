@@ -6,8 +6,8 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.events.EventDispatcher;
-import org.dwcj.component.events.sinks.AbstractSink;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.sink.AbstractSink;
 
 /**
  * Sink class responsible for communication between BBj and java.

@@ -2,7 +2,7 @@ package org.dwcj.component.applayout.event;
 
 import java.util.Map;
 import org.dwcj.component.applayout.AppLayout;
-import org.dwcj.component.events.Event;
+import org.dwcj.component.event.Event;
 import org.dwcj.component.webcomponent.annotations.EventExpressions;
 import org.dwcj.component.webcomponent.annotations.EventName;
 
