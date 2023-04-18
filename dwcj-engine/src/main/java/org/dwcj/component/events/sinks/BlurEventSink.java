@@ -23,7 +23,7 @@ public class BlurEventSink extends AbstractSink {
     HashMap<String, Object> map = new HashMap<>();
 
     map.put("text", event.getText());
-    map.put("temporary", event.isTemporary());
+//     map.put("temporary", event.isTemporary());
     map.put("client-validation-valid", event.isClientValidationValid());
     
     BlurEvent dwcEv = new BlurEvent(component, map);
