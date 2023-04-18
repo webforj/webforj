@@ -38,8 +38,7 @@ public abstract class AbstractSink {
   }
 
   /**
-   * Method is called to register an on-push event with the BBj object as needed when adding an
-   * onClick event.
+   * Method to set a callback on an underlying BBj control.
    */
   public void setCallback() {
     try {
@@ -51,8 +50,7 @@ public abstract class AbstractSink {
   }
 
   /**
-   * Method is called to deregister an on-push event with the BBj object as needed when removing an
-   * onClick event.
+   * Method to remove a callback on an underlying BBj control.
    */
   public void removeCallback() {
     try {
