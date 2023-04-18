@@ -9,7 +9,8 @@ import org.dwcj.component.events.BlurEvent;
 import org.dwcj.component.events.EventDispatcher;
 
 /**
- * Sink class responsible for communication between BBj and java.
+ * This class is responsible for Blur event communication between the Java representation 
+ * of the underlying BBj component.
  */
 public class BlurEventSink extends AbstractSink {
 
