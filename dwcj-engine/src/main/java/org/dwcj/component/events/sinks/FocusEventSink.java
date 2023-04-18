@@ -9,8 +9,7 @@ import org.dwcj.component.events.EventDispatcher;
 import org.dwcj.component.events.FocusEvent;
 
 /**
- * This class is responsible for Focus event communication between the Java representation 
- * of the underlying BBj component.
+ * The class will map the BBjGainedFocusEvent to a Java {@link FocusEvent}.
  */
 public class FocusEventSink extends AbstractSink {
 
@@ -18,6 +17,11 @@ public class FocusEventSink extends AbstractSink {
     super(component, dispatcher, SysGuiEventConstants.ON_GAINED_FOCUS);
   }
 
+  /**
+   * Handles the BBj event and dispatches a new {@link FocusEvent}.
+   *
+   * @param ev A BBj gained focus event
+   */
   @Override
   public void handleEvent(BBjEvent ev) {
     BBjGainedFocusEvent event = (BBjGainedFocusEvent) ev;
@@ -29,5 +33,5 @@ public class FocusEventSink extends AbstractSink {
     FocusEvent dwcEv = new FocusEvent(this.component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }
-    
+
 }

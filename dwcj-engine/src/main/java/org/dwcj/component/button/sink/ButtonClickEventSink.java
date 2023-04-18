@@ -19,13 +19,12 @@ public final class ButtonClickEventSink extends AbstractSink {
   }
 
   /**
-   * Method responsible for calling the dispatcher event which calls the execute method on the
-   * desired listener.
+   * Handles the BBj event and dispatches a new {@link ButtonClickEvent}.
    *
    * @param ev A BBj button push event
    */
   @Override
-  public void handleEvent(BBjEvent ev) { // NOSONAR
+  public void handleEvent(BBjEvent ev) {
     BBjButtonPushEvent event = (BBjButtonPushEvent) ev;
     HashMap<String, Object> map = new HashMap<>();
 

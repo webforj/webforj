@@ -4,18 +4,18 @@ import java.util.Map;
 import org.dwcj.component.AbstractDwcComponent;
 
 /**
- * A blur event for applicable Components.
+ * An event that is fired when a component loses focus.
  */
 public class BlurEvent extends Event<AbstractDwcComponent> {
-  
+
   /**
    * Creates a new Blur event.
    *
-   * @param control the control
+   * @param component the component that fired the event
    * @param payload the event map
    */
-  public BlurEvent(AbstractDwcComponent control, Map<String, Object> payload) {
-    super(control, payload);
+  public BlurEvent(AbstractDwcComponent component, Map<String, Object> payload) {
+    super(component, payload);
   }
 
   /**
@@ -35,15 +35,4 @@ public class BlurEvent extends Event<AbstractDwcComponent> {
   public Boolean isClientValidationValid() {
     return (Boolean) this.getEventMap().get("client-validation-valid");
   }
-
-  /**
-   * Getter for the state of the focus. 
-   *
-   * @return a boolean indicating wether the focus changed is permanent or temporary
-   */
-  /*
-  public Boolean isTemporary() {
-    return (Boolean) this.getEventMap().get("temporary");
-  }
-  */
 }

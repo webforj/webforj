@@ -20,11 +20,11 @@ public abstract class AbstractSink {
   /**
    * Constructor for the sink class.
    *
-   * @param component The Java component object
+   * @param component The Java component
    * @param dispatcher The dispatcher for that object's events
-   * @param eventType The type of the event
+   * @param eventType The type of the BBj event
    */
-  protected AbstractSink(AbstractDwcComponent component, EventDispatcher dispatcher, 
+  protected AbstractSink(AbstractDwcComponent component, EventDispatcher dispatcher,
       int eventType) {
     this.component = component;
     this.dispatcher = dispatcher;
@@ -34,7 +34,7 @@ public abstract class AbstractSink {
       control = ComponentAccessor.getDefault().getBBjControl(component);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to get instantiate the Sink.", e);
-    }    
+    }
   }
 
   /**

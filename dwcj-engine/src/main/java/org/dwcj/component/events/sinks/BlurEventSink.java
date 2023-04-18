@@ -9,24 +9,27 @@ import org.dwcj.component.events.BlurEvent;
 import org.dwcj.component.events.EventDispatcher;
 
 /**
- * This class is responsible for Blur event communication between the Java representation 
- * of the underlying BBj component.
+ * This class will map the BBjLostFocusEvent event to a Java {@link BlurEvent}.
  */
 public class BlurEventSink extends AbstractSink {
 
   public BlurEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
-    super(component, dispatcher, SysGuiEventConstants.ON_LOST_FOCUS);   
+    super(component, dispatcher, SysGuiEventConstants.ON_LOST_FOCUS);
   }
 
+  /**
+   * Handles the BBj event and dispatches a new {@link BlurEvent}.
+   *
+   * @param ev A BBj lost focus event
+   */
   @Override
   public void handleEvent(BBjEvent ev) {
     BBjLostFocusEvent event = (BBjLostFocusEvent) ev;
     HashMap<String, Object> map = new HashMap<>();
 
     map.put("text", event.getText());
-//     map.put("temporary", event.isTemporary());
     map.put("client-validation-valid", event.isClientValidationValid());
-    
+
     BlurEvent dwcEv = new BlurEvent(component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }

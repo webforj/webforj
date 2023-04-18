@@ -4,18 +4,18 @@ import java.util.Map;
 import org.dwcj.component.AbstractDwcComponent;
 
 /**
- * A focus event for the controls that can be focused.
+ * An event that is fired when a component gains focus.
  */
 public class FocusEvent extends Event<AbstractDwcComponent> {
 
   /**
    * Creates a new event.
    *
-   * @param control the control
+   * @param component the component that fired the event
    * @param payload the event map
    */
-  public FocusEvent(AbstractDwcComponent control, Map<String, Object> payload) {
-    super(control, payload);
+  public FocusEvent(AbstractDwcComponent component, Map<String, Object> payload) {
+    super(component, payload);
   }
 
   /**
@@ -26,15 +26,4 @@ public class FocusEvent extends Event<AbstractDwcComponent> {
   public String getText() {
     return (String) this.getEventMap().get("text");
   }
-
-  /**
-   * Getter for the state of the focus. 
-   *
-   * @return a boolean indicating wether the focus changed is permanent or temporary
-   */
-  /*
-  public Boolean isTemporary() {
-    return (Boolean) this.getEventMap().get("temporary");
-  }
-  */
 }
