@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.events.EventDispatcher;
 import org.dwcj.component.events.sinks.AbstractSink;
@@ -14,7 +14,7 @@ import org.dwcj.component.events.sinks.AbstractSink;
  */
 public final class ButtonClickEventSink extends AbstractSink {
 
-  public ButtonClickEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public ButtonClickEventSink(Button component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_BUTTON_PUSH);
   }
 
@@ -31,8 +31,8 @@ public final class ButtonClickEventSink extends AbstractSink {
 
     map.put("x", event.getX());
     map.put("y", event.getY());
-    
-    ButtonClickEvent dwcEv = new ButtonClickEvent(this.component, map);
+
+    ButtonClickEvent dwcEv = new ButtonClickEvent((Button) this.component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }
 }
