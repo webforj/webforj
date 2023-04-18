@@ -1,18 +1,17 @@
-package org.dwcj.component.events.shared.sinks;
+package org.dwcj.component.events.sinks;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjLostFocusEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.events.BlurEvent;
 import org.dwcj.component.events.EventDispatcher;
-import org.dwcj.component.events.Sink;
-import org.dwcj.component.events.shared.events.BlurEvent;
 
 /**
  * Sink class responsible for communication between BBj and java.
  */
-public class BlurEventSink extends Sink {
+public class BlurEventSink extends AbstractSink {
 
   public BlurEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_LOST_FOCUS);   

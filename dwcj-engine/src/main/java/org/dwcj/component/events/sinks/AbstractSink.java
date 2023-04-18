@@ -1,16 +1,17 @@
-package org.dwcj.component.events;
+package org.dwcj.component.events.sinks;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.events.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * Sink class responsible for communication between BBj and java.
  */
-public abstract class Sink {
+public abstract class AbstractSink {
   protected final AbstractDwcComponent component;
   protected final EventDispatcher dispatcher;
   private BBjControl control = null;
@@ -23,7 +24,8 @@ public abstract class Sink {
    * @param dispatcher The dispatcher for that object's events
    * @param eventType The type of the event
    */
-  protected Sink(AbstractDwcComponent component, EventDispatcher dispatcher, int eventType) {
+  protected AbstractSink(AbstractDwcComponent component, EventDispatcher dispatcher, 
+      int eventType) {
     this.component = component;
     this.dispatcher = dispatcher;
     this.eventType = eventType;
@@ -64,7 +66,7 @@ public abstract class Sink {
    * Method responsible for calling the dispatcher event which calls the execute method on the
    * desired listener.
    *
-   * @param ev A BBj component event
+   * @param ev A BBj event
    */
   public abstract void handleEvent(BBjEvent ev);
 

@@ -1,21 +1,20 @@
-package org.dwcj.component.events.shared.events;
+package org.dwcj.component.events;
 
 import java.util.Map;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.events.Event;
 
 /**
- * A focus event for the controls that can be focused.
+ * A blur event for the Components that can be blured.
  */
-public class FocusEvent extends Event<AbstractDwcComponent> {
-
+public class BlurEvent extends Event<AbstractDwcComponent> {
+  
   /**
    * Creates a new event.
    *
    * @param control the control
    * @param payload the event map
    */
-  public FocusEvent(AbstractDwcComponent control, Map<String, Object> payload) {
+  public BlurEvent(AbstractDwcComponent control, Map<String, Object> payload) {
     super(control, payload);
   }
 
@@ -26,6 +25,15 @@ public class FocusEvent extends Event<AbstractDwcComponent> {
    */
   public String getText() {
     return (String) this.getEventMap().get("text");
+  }
+
+  /**
+   * Returns the result of the client validation function, if any, when the control loses focus.
+   *
+   * @return the result of the client validation, if any
+   */
+  public Boolean isClientValidationValid() {
+    return (Boolean) this.getEventMap().get("client-validation-valid");
   }
 
   /**
