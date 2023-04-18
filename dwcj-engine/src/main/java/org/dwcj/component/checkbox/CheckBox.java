@@ -62,9 +62,7 @@ public final class CheckBox extends AbstractDwcComponent
   private CheckBoxCheckEventSink checkboxCheckEventSink;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Boolean checked = false;
-  private Boolean autoValidate = true;
-  private Boolean autoValidateOnLoad = false;
-  private Boolean autoWasValidated = false;
+  private Boolean indeterminate = false;
   private String label;
   private String name;
   private Boolean required = false;
@@ -389,91 +387,44 @@ public final class CheckBox extends AbstractDwcComponent
    * =====================================================================================
    */
 
-
+  /**
+   * Returns wether or not the checkbox is focused.
+   *
+   * @return A Boolean representing wether or not the checkbox is focused.
+   */
+  public boolean hasFocus() {
+    return Boolean.parseBoolean(super.getAttribute("has-focus"));
+  }
 
   /**
-   * The method to enable or disable auto validation.
+   * The method to set wether the checkbox is indeterminate or not.
    *
-   * @param value the boolean to determine disable/enable.
+   * @param value a boolean representing wether the checkbox is indeterminate.
    *
    * @return this.
    */
-  public CheckBox setAutoValidate(Boolean value) {
+  public CheckBox setIndeterminate(Boolean value) {
     if (ctrl != null) {
       try {
-        ctrl.setAttribute("auto-validate", value.toString());
+        ctrl.setAttribute("label", value.toString());
       } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.autoValidate = value;
+    this.indeterminate = value;
     return this;
   }
 
   /**
-   * Returns wether or not the control automatically validates.
+   * Returns wether or not the checkbox is indeterminate.
    *
-   * @return A boolean representing wether or not the control autovalidates.
+   * @return A Boolean representing wether or not the checkbox is indeterminate.
    */
-  public Boolean isAutoValidated() {
-    return this.autoValidate;
+  public Boolean getIndeterminate() {
+    return this.indeterminate;
   }
 
-  /**
-   * The method to enable or disable auto validation on first load.
-   *
-   * @param value the boolean to determine disable/enable.
-   *
-   * @return this.
-   */
-  public CheckBox setAutoValidateOnLoad(Boolean value) {
-    if (ctrl != null) {
-      try {
-        ctrl.setAttribute("auto-validate-on-load", value.toString());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.autoValidateOnLoad = value;
-    return this;
-  }
 
-  /**
-   * Returns wether or not the control automatically validates on first load.
-   *
-   * @return A boolean representing wether or not the control autovalidates on first load.
-   */
-  public Boolean isAutoValidatedOnLoad() {
-    return this.autoValidateOnLoad;
-  }
-
-  /**
-   * The method to enable or disable automatic switching of valid property.
-   *
-   * @param value the boolean to determine disable/enable.
-   *
-   * @return this.
-   */
-  public CheckBox setAutoWasValidated(Boolean value) {
-    if (ctrl != null) {
-      try {
-        ctrl.setAttribute("auto-was-validated", value.toString());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.autoWasValidated = value;
-    return this;
-  }
-
-  /**
-   * Returns wether or not the control automatically switches valid property.
-   *
-   * @return A boolean representing wether or not the control automatically switches valid property.
-   */
-  public Boolean getAutoWasValidated() {
-    return this.autoWasValidated;
-  }
 
   /**
    * The method to set the label of the checkbox.
@@ -559,6 +510,8 @@ public final class CheckBox extends AbstractDwcComponent
     return this.required;
   }
 
+
+
   /*
    * ===================================================================================== Finally,
    * override the catchUp() method - this is done by calling the super method, and then catching up
@@ -613,16 +566,8 @@ public final class CheckBox extends AbstractDwcComponent
       this.setTextAlignment(this.textAlignment);
     }
 
-    if (Boolean.FALSE.equals(this.autoValidate)) {
-      this.setAutoValidate(this.autoValidate);
-    }
-
-    if (Boolean.TRUE.equals(this.autoValidateOnLoad)) {
-      this.setAutoValidateOnLoad(this.autoValidateOnLoad);
-    }
-
-    if (Boolean.TRUE.equals(this.autoWasValidated)) {
-      this.setAutoWasValidated(this.autoWasValidated);
+    if (Boolean.TRUE.equals(this.indeterminate)) {
+      this.setIndeterminate(this.indeterminate);
     }
 
     if (this.label != null) {
