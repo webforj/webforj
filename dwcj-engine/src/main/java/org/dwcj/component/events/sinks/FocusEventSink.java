@@ -9,7 +9,8 @@ import org.dwcj.component.events.EventDispatcher;
 import org.dwcj.component.events.FocusEvent;
 
 /**
- * Sink class responsible for communication between BBj and java.
+ * This class is responsible for Focus event communication between the Java representation 
+ * of the underlying BBj component.
  */
 public class FocusEventSink extends AbstractSink {
 
