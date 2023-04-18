@@ -14,8 +14,8 @@ import org.dwcj.Environment;
  * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
  * default behaviors for the implemented interface methods.
  */
-public abstract class AbstractDwcComponent extends AbstractComponent
-    implements HasAttribute, HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility {
+public abstract class AbstractDwcComponent extends AbstractComponent implements HasAttribute,
+    HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility, HasProperty {
 
   /*
    * ============================================================================= Members
@@ -46,6 +46,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent
 
   private final Map<String, String> attributes = new HashMap<>();
   private final List<String> removeAttributes = new ArrayList<>();
+
+  private final Map<String, String> properties = new HashMap<>();
 
   /*
    * ============================================================================= Theme and Expanse
@@ -129,6 +131,45 @@ public abstract class AbstractDwcComponent extends AbstractComponent
     } else {
       removeAttributes.add(attribute);
       attributes.remove(attribute);
+    }
+    return this;
+  }
+
+  /**
+   * Gets the value for a property in the control.
+   *
+   * @param property the name of the property
+   * @return the value of the property
+   */
+  @Override
+  public String getProperty(String property) {
+    if (ctrl != null) {
+      try {
+        return (String) ctrl.getClientProperty(property);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return properties.get(property);
+  }
+
+  /**
+   * Set the value for a property in the control.
+   *
+   * @param property the name of the property
+   * @param value the value to be set
+   * @return the control itself
+   */
+  @Override
+  public AbstractDwcComponent setProperty(String property, String value) {
+    if (ctrl != null) {
+      try {
+        ctrl.putClientProperty(property, value);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    } else {
+      properties.put(property, value);
     }
     return this;
   }
@@ -539,6 +580,12 @@ public abstract class AbstractDwcComponent extends AbstractComponent
     if (!this.removeAttributes.isEmpty()) {
       for (String attribute : this.removeAttributes) {
         this.removeAttribute(attribute);
+      }
+    }
+
+    if (!this.properties.isEmpty()) {
+      for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+        this.setProperty(entry.getKey(), entry.getValue());
       }
     }
 
