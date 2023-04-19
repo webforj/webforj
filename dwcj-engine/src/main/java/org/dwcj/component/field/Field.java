@@ -3,60 +3,137 @@ package org.dwcj.component.field;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
+import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.SelectionInfo;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
-import org.dwcj.component.field.event.FieldModifyEvent;
-import org.dwcj.component.field.sink.FieldModifyEventSink;
+import org.dwcj.component.events.EventDispatcher;
+import org.dwcj.component.events.EventListener;
+import org.dwcj.component.events.shared.events.FocusGainedEvent;
+import org.dwcj.component.events.shared.sinks.FocusGainedEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-
+/** A Field to enter Text. */
 public final class Field extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
 
 
-  public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL
-  }
-
-  public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
-  }
-
-  private ArrayList<Consumer<FieldModifyEvent>> callbacks = new ArrayList<>();
-  private FieldModifyEventSink editModifyEventSink;
-
   private Integer maxLength = 2147483647;
-  private Boolean homeDelete = false;
-  private Boolean passwordVisible = false;
+  private FieldType type;
+  private final EventDispatcher dispatcher = new EventDispatcher();
+  private FocusGainedEventSink focusGainedEventSink;
+
+/** Enum to descripe the Fields types. */
+ enum FieldType {
+  /** A control for specifying a color; opening a color picker when active. */
+  COLOR,
+
+  /** A control for entering a date (year, month, and day, with no time). 
+   * Opens a date picker or numeric wheels for year, month, day when active. 
+   */
+  DATE,
+  
+  /** A control for entering a date and time, with no time zone. 
+   * Opens a date picker or numeric wheels for date- and time-components when active. 
+   */
+  DATETIME,
+  
+  /** A field for editing an email address. 
+   * Looks like a text input, but has validation parameters. 
+   */
+  EMAIL,
+  
+  /** A control that lets the user select a file. 
+   * Use the accept attribute to define the types of files that the control can select.
+   */
+  FILE,
+  
+  /** A control for entering a month and year, with no time zone. */
+  MONTH,
+
+  /** A control for entering a number. 
+   * Displays a spinner and adds default validation. 
+   */
+  NUMBER,
+
+  /** A single-line text field whose value is obscured. */
+  PASSWORD,
+
+  /** A control for entering a number whose exact value is not important. 
+   * Displays as a range widget defaulting to the middle value. 
+   * Used in conjunction min and max to define the range of acceptable values.
+   */
+  RANGE,
+
+  /** A single-line text field for entering search strings. 
+   * Line-breaks are automatically removed from the input value. 
+   * May include a delete icon in supporting browsers that can be used to clear the field. 
+   * Displays a search icon instead of enter key on some devices with dynamic keypads. 
+   */
+  SEARCH,
+
+  /** A control for entering a telephone number. */
+  TEL,
+
+  /** The default value. 
+   * A single-line text field. 
+   * Line-breaks are automatically removed from the input value. 
+   */
+  TEXT,
+
+  /** A control for entering a time value with no time zone. */
+  TIME,
+
+  /** A field for entering a URL. 
+   * Looks like a text input, but has validation parameters.
+   */
+  URL,
+
+  /** A control for entering a date consisting 
+   * of a week-year number and a week number with no time zone. 
+   */
+  WEEK;
+
+  @Override
+  public String toString() {
+    if (this == DATETIME) {
+      return "datetime-local";
+    }
+    return super.toString().toLowerCase();
+  }
+}
 
 
 
   public Field() {
-    this("");
+    this("", FieldType.TEXT);
   }
 
   public Field(String text) {
+    this(text, FieldType.TEXT);
+  }
+
+  /** Constructor which takes a initial text to display and the field type. */
+  public Field(String text, FieldType type) {
     setText(text);
+    setType(type);
     this.readOnly = false;
     this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
-  }
 
+  }
 
   @Override
   protected void create(AbstractWindow p) {
@@ -66,6 +143,7 @@ public final class Field extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
+      this.focusGainedEventSink = new FocusGainedEventSink(this, dispatcher);
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
@@ -74,26 +152,41 @@ public final class Field extends AbstractDwcComponent
 
   }
 
+  /**
+   * Adds a click event for the Button component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addFocusGained(EventListener<FocusGainedEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusGainedEvent.class) == 0) {
+      this.focusGainedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(FocusGainedEvent.class, listener);
+    return this;
+  }
 
-  public Field onEditModify(Consumer<FieldModifyEvent> callback) {
-    if (this.ctrl != null) {
-      if (this.editModifyEventSink == null) {
-        this.editModifyEventSink = new FieldModifyEventSink(this);
-      }
-      this.editModifyEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
+
+  /**
+   * Removes a click event from the Button component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeFocusGained(EventListener<FocusGainedEvent> listener) {
+    dispatcher.removeEventListener(FocusGainedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusGainedEvent.class) == 0) {
+      this.focusGainedEventSink.removeCallback();
     }
     return this;
   }
 
-  public String getEditType() {
-    if (this.ctrl != null) {
-      return bbjEditBox.getEditType();
-    }
-    return "";
-  }
 
+  /**
+   * Getter for the max length of this field.
+   *
+   * @return the max amount of character this field is allowed to hold
+   */
   public Integer getMaxLength() {
     if (this.ctrl != null) {
       return bbjEditBox.getMaxLength();
@@ -101,17 +194,7 @@ public final class Field extends AbstractDwcComponent
     return this.maxLength;
   }
 
-  public Boolean isPassHomeDelete() {
-    if (this.ctrl != null) {
-      try {
-        return bbjEditBox.getPassHomeDelete();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.homeDelete;
-  }
-
+  /** Getter for the selcted text. */
   public String getSelectedText() {
     if (this.ctrl != null) {
       try {
@@ -120,18 +203,17 @@ public final class Field extends AbstractDwcComponent
         Environment.logError(e);
       }
     }
-    return null;
+    return "";
   }
 
-  /* Unsure if this is the correct return type for this functionality -MH */
-
-  /*
-   * Changed this to return a single string, otherwise could not get this to properly work -MH
-   */
-  public String getSelection() {
+  /** Getter for the info on the current selection. */
+  public SelectionInfo getSelectionInfo() {
     if (this.ctrl != null) {
       try {
-        return bbjEditBox.getSelection().toArray().toString();
+        BBjVector vec = bbjEditBox.getSelection();
+        Integer offsetLeft = (Integer) vec.get(1);
+        Integer offsetRight = (Integer) vec.get(3);
+        return new SelectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -139,28 +221,15 @@ public final class Field extends AbstractDwcComponent
     return null;
   }
 
-
-
-  public boolean isPasswordVisible() {
+  /** Selects a part of the text based on the provided offsets. */
+  public Field select(Integer offsetLeft, Integer offsetRight) {
     if (this.ctrl != null) {
-      try {
-        return bbjEditBox.isPasswordVisible();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.passwordVisible;
-  }
-
-  public Field select(Integer offset1, Integer offset2) {
-    if (this.ctrl != null) {
-      bbjEditBox.select(offset1, offset2);
+      bbjEditBox.select(offsetLeft, offsetRight);
     }
     return this;
   }
 
-
-
+  /** Setter for the max amount of characters for this field. */
   public Field setMaxLength(Integer length) {
     if (this.ctrl != null) {
       try {
@@ -173,31 +242,25 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  public Field setPassHomeDelete(Boolean pass) {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.setPassHomeDelete(pass);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
+  /** Setter for the fields type. */
+  public Field setType(FieldType type) {
+    this.type = type;
+    if (ctrl == null) {
+      return this;
     }
-    this.homeDelete = pass;
-    return this;
+
+    try {
+      ctrl.setAttribute("type", type.toString());
+      return this;
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set type for the field.", e);
+    }
   }
 
-  public Field setPasswordVisible(Boolean visible) {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.setPasswordVisible(visible);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.passwordVisible = visible;
-    return this;
+  /** Getter for the field type. */
+  public FieldType getType() {
+    return this.type;
   }
-
-
 
   @Override
   public Boolean isReadOnly() {
@@ -281,7 +344,6 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Field setTextAlignment(Alignment alignment) {
-    // todo: why could an exception be thrown?
     if (this.ctrl != null) {
       try {
         bbjEditBox.setAlignment(alignment.textPosition);
@@ -292,7 +354,6 @@ public final class Field extends AbstractDwcComponent
     this.textAlignment = alignment;
     return this;
   }
-
 
   @Override
   public Highlight getHighlightOnFocus() {
@@ -311,8 +372,6 @@ public final class Field extends AbstractDwcComponent
     this.textHighlight = highlight;
     return this;
   }
-
-
 
   @Override
   public Field setText(String text) {
@@ -368,44 +427,25 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-
-
-  public Field setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
-    return this;
-  }
-
-  public Field setTheme(Theme theme) {
-    super.setControlTheme(theme);
-    return this;
-  }
-
-
   @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
-    if (!this.callbacks.isEmpty()) {
-      this.editModifyEventSink = new FieldModifyEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.editModifyEventSink.addCallback(this.callbacks.remove(0));
-      }
+
+    if (this.dispatcher.getListenersCount(FocusGainedEvent.class) > 0) {
+      this.focusGainedEventSink.setCallback();
     }
 
     if (this.maxLength != 2147483647) {
       this.setMaxLength(this.maxLength);
     }
 
-    if (Boolean.TRUE.equals(this.homeDelete)) {
-      this.setPassHomeDelete(this.homeDelete);
+    if (this.type != FieldType.TEXT) {
+      this.setType(type);
     }
-
-    if (Boolean.TRUE.equals(this.passwordVisible)) {
-      this.setPasswordVisible(this.passwordVisible);
-    }
-
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
@@ -427,7 +467,4 @@ public final class Field extends AbstractDwcComponent
       this.setHighlightOnFocus(this.textHighlight);
     }
   }
-
-
-
 }
