@@ -18,19 +18,12 @@ public abstract class AbstractMouseEventSink extends AbstractSink {
   }
 
   /**
-   * Supposed to be overwritten with a specific implementation casting ev
-   * into a BBjMouseEvent and then calling handleEventParams with it.
+   * Handles the BBj event and dispatches a new {@link MouseEvent}.
    *
-   * @param ev A BBj mouse event
+   * @param ev A BBj event
    */
-  public abstract void handleEvent(BBjEvent ev);
-  
-  /**
-   * Handles the BBj mouse event and dispatches a new {@link MouseEvent}.
-   *
-   * @param event A BBj mouse event
-   */
-  protected void handleEventParams(BBjMouseEvent event) {
+  public void handleEvent(BBjEvent ev) {
+    BBjMouseEvent event = (BBjMouseEvent) ev;
     HashMap<String, Object> map = new HashMap<>();
 
     map.put("legacyMouseButton", event.getLegacyMouseButton());
@@ -50,4 +43,7 @@ public abstract class AbstractMouseEventSink extends AbstractSink {
     MouseEvent dwcEv = new MouseEvent(component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }
+
+
+
 }
