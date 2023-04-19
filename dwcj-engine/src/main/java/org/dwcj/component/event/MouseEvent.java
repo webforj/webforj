@@ -1,6 +1,5 @@
 package org.dwcj.component.event;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import java.util.Map;
 import org.dwcj.component.AbstractComponent;
 
@@ -21,36 +20,12 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns wether or not a mouse button was pressed while the event happened. Uses the legacy
-   * mouse button values.
-   *
-   * @return An int representing the mouse Button pressed.
-   */
-  public int getLegacyMouseButton() {
-    return (int) this.getEventMap().get("legacyMouseButton");
-  }
-
-  /**
    * Returns wether or not a mouse button was pressed while the event happened.
    *
    * @return An int representing the mouse Button pressed.
    */
   public int getMouseButton() {
     return (int) this.getEventMap().get("mouseButton");
-  }
-
-  /**
-   * Returns wether or not a mouse button was pressed while the event happened. Uses the javascript
-   * mouse button ids.
-   *
-   * @return An int representing the mouse Button pressed.
-   */
-  public int getNativeMouseButton() {
-    return (int) this.getEventMap().get("nativeMouseButton");
-  }
-
-  public BBjControl getOriginalControl() {
-    return (BBjControl) this.getEventMap().get("originalControl");
   }
 
   /**
