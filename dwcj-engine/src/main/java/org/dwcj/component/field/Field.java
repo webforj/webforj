@@ -251,13 +251,15 @@ public final class Field extends AbstractDwcComponent
 
   /** Setter for the fields type. */
   public Field setType(FieldType type) {
+    if (this.type == type) return this;
+
     this.type = type;
     if (ctrl == null) {
       return this;
     }
 
     try {
-      ctrl.setAttribute("type", type.toString());
+      super.setAttribute("type", type.toString());
       return this;
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set type for the field.", e);
@@ -448,10 +450,6 @@ public final class Field extends AbstractDwcComponent
 
     if (this.maxLength != 2147483647) {
       this.setMaxLength(this.maxLength);
-    }
-
-    if (this.type != FieldType.TEXT) {
-      this.setType(type);
     }
 
     if (Boolean.TRUE.equals(this.readOnly)) {
