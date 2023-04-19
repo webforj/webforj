@@ -337,9 +337,36 @@ public final class RadioButton extends AbstractDwcComponent
   /**
    * {@inheritDoc}
    */
+  @Override 
+  public RadioButton setUserData(String key, Object data) {
+    super.setUserData(key, data);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public RadioButton setStyle(String property, String value) {
     super.setStyle(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public RadioButton removeAttribute(String attribute){
+    super.removeAttribute(attribute);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public RadioButton removeStyle(String property){
+    super.removeStyle(property);
     return this;
   }
 
