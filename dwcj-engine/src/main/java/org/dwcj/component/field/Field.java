@@ -4,7 +4,6 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
@@ -150,7 +149,7 @@ public final class Field extends AbstractDwcComponent
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Failed to create Field.",e);
     }
 
   }
@@ -251,7 +250,7 @@ public final class Field extends AbstractDwcComponent
       try {
         return bbjEditBox.getSelectedText();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to get selected text.",e);
       }
     }
     return "";
@@ -266,7 +265,7 @@ public final class Field extends AbstractDwcComponent
         Integer offsetRight = (Integer) vec.get(3);
         return new SelectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to get selection info.",e);
       }
     }
     return null;
@@ -286,7 +285,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setMaxLength(length);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to set max length.",e);
       }
     }
     this.maxLength = length;
@@ -321,7 +320,7 @@ public final class Field extends AbstractDwcComponent
       try {
         return !bbjEditBox.isEditable();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to read read only setting.",e);
       }
     }
     return this.readOnly;
@@ -333,7 +332,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setEditable(!editable);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to set read only.",e);
       }
     }
     this.readOnly = editable;
@@ -346,7 +345,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.isFocusable();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to read focusable setting.",e);
       }
     }
     return this.focusable;
@@ -358,7 +357,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setFocusable(focusable);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to set focusable.",e);
       }
     }
     this.focusable = focusable;
@@ -371,7 +370,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.isTabTraversable();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to read tab traversable setting.",e);
       }
     }
     return this.tabTraversable;
@@ -383,7 +382,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setTabTraversable(traversable);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to set tab traversable.",e);
       }
     }
     this.tabTraversable = traversable;
@@ -401,7 +400,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setAlignment(alignment.textPosition);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to set alignment.",e);
       }
     }
     this.textAlignment = alignment;
@@ -419,7 +418,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException("Failed to set highlight on focus.",e);
       }
     }
     this.textHighlight = highlight;
