@@ -13,9 +13,11 @@ import org.dwcj.component.SelectionInfo;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -27,11 +29,12 @@ public final class Field extends AbstractDwcComponent
 
   private BBjEditBox bbjEditBox;
 
-
   private Integer maxLength = 2147483647;
   private FieldType type;
+
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
+  private BlurEventSink blurEventSink;
 
   /** Enum to descripe the Fields types. */
   enum FieldType {
@@ -142,6 +145,8 @@ public final class Field extends AbstractDwcComponent
       ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
       this.focusEventSink = new FocusEventSink(this, dispatcher);
+      this.blurEventSink = new BlurEventSink(this, dispatcher);
+
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
@@ -185,6 +190,45 @@ public final class Field extends AbstractDwcComponent
     dispatcher.removeEventListener(FocusEvent.class, listener);
     if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
       this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+    /**
+   * Adds a blur event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addBlurListener(EventListener<BlurEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.setCallback();
+    }
+    dispatcher.addEventListener(BlurEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addBlurListener method.
+   *
+   * @see Field #addBlurListener(EventListener)
+   * @param listener A method to receive the blur event
+   * @return the control itself
+   */
+  public Field onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
+  }
+
+  /**
+   * Removes a blur event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeBlurListener(EventListener<BlurEvent> listener) {
+    dispatcher.removeEventListener(BlurEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.removeCallback();
     }
     return this;
   }
@@ -445,6 +489,10 @@ public final class Field extends AbstractDwcComponent
 
 
     if (this.dispatcher.getListenersCount(FocusEvent.class) > 0) {
+      this.focusEventSink.setCallback();
+    }
+
+    if(this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
       this.focusEventSink.setCallback();
     }
 
