@@ -374,6 +374,7 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
+<<<<<<< HEAD
   public RadioButton setProperty(String property, Object value){
     super.setProperty(property, value);
     return this;
@@ -383,6 +384,8 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
+=======
+>>>>>>> 501afbaf1a669ded383d55dcb2fa56c02d1140c2
   public RadioButton addClassName(String selector) {
     super.addClassName(selector);
     return this;
