@@ -1,8 +1,2 @@
-name: presubmit
-on: [push, pull_request, workflow_dispatch]
-jobs:
-  presubmit:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: codehabits/conventional-commits@v0.0.1
+- name: verify conventional commits
+  uses: taskmedia/action-conventional-commits@v1.1.0
