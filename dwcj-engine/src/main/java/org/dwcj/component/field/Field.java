@@ -113,8 +113,6 @@ public final class Field extends AbstractDwcComponent
     }
   }
 
-
-
   public Field() {
     this("", FieldType.TEXT);
   }
@@ -173,7 +171,7 @@ public final class Field extends AbstractDwcComponent
    * @param listener A method to receive the focus event
    * @return the control itself
    */
-   public Field onFocus(EventListener<FocusEvent> listener) {
+  public Field onFocus(EventListener<FocusEvent> listener) {
     return addFocusListener(listener);
   }
 
