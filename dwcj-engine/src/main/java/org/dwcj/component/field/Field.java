@@ -494,7 +494,7 @@ public final class Field extends AbstractDwcComponent
     }
 
     if (this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
-      this.focusEventSink.setCallback();
+      this.blurEventSink.setCallback();
     }
 
     if (this.maxLength != 2147483647) {
