@@ -444,8 +444,8 @@ public final class Field extends AbstractDwcComponent
     super.catchUp();
 
 
-    if (this.dispatcher.getListenersCount(FocusGainedEvent.class) > 0) {
-      this.focusGainedEventSink.setCallback();
+    if (this.dispatcher.getListenersCount(FocusEvent.class) > 0) {
+      this.focusEventSink.setCallback();
     }
 
     if (this.maxLength != 2147483647) {
