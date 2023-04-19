@@ -28,6 +28,16 @@ public final class RadioButton extends AbstractDwcComponent
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
 
+  public enum Alignment {
+    CENTER(16384), LEFT(8192), RIGHT(32768);
+
+    public final Integer alignment;
+
+    private Alignment(Integer alignment) {
+      this.alignment = alignment;
+    }
+  }
+
   public enum HorizontalTextPosition {
     RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
 
@@ -42,6 +52,7 @@ public final class RadioButton extends AbstractDwcComponent
   private RadioButtonCheckEventSink checkEventSink;
   private Boolean checked = false;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
+  private Alignment alignment = Alignment.LEFT;
 
   public RadioButton() {
     this.readOnly = false;
@@ -101,6 +112,27 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
+   * Gets the aligntment of text in radio button
+   *
+   * @return Enum value of the alignment for the control.
+   */
+  public Alignment getAlignment() {
+    return this.alignment;
+  }
+
+  public RadioButton setAlignment(Alignment align) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAlignment(align.alignment);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.alignment = align;
+    return this;
+  }
+
+  /**
    * Gets the position of the text alignment in relation to the radio button
    *
    * @return Enum value of the horizontal text position for the control.
@@ -126,7 +158,6 @@ public final class RadioButton extends AbstractDwcComponent
    *
    * @return Boolean value representing the radio button's selection value
    */
-
   public Boolean isChecked() {
     if (this.ctrl != null) {
       try {
