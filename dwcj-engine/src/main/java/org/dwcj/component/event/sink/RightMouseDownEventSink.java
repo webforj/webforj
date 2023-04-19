@@ -3,45 +3,28 @@ package org.dwcj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjRightMouseDownEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
-import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.RightMouseDownEvent;
 
 
 /**
- * This class will map the BBjRightMouseDownEvent event to a Java {@link RightMouseDownEvent}.
+ * This class will map the BBjRightMouseDownEvent event to a Java {@link MouseEvent}.
  */
-public class RightMouseDownEventSink extends AbstractSink {
+public class RightMouseDownEventSink extends AbstractMouseEventSink {
 
   public RightMouseDownEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
-    super(component, dispatcher, SysGuiEventConstants.ON_CHECK_OFF);
+    super(component, dispatcher, SysGuiEventConstants.ON_RIGHT_MOUSE_DOWN);
   }
 
   /**
-   * Handles the BBj event and dispatches a new {@link RightMouseDownEvent}.
+   * Handles the BBj event and calls handleEventParams to map the 
+   * event parameters and dispatch a new {@link MouseEvent}.
    *
-   * @param ev A BBj check off event
+   * @param ev A BBj mouse event
    */
+  @Override
   public void handleEvent(BBjEvent ev) {
     BBjRightMouseDownEvent event = (BBjRightMouseDownEvent) ev;
-    HashMap<String, Object> map = new HashMap<>();
-
-    map.put("legacyMouseButton", event.getLegacyMouseButton());
-    map.put("mouseButton", event.getMouseButton());
-    map.put("nativeMouseButton", event.getNativeMouseButton());
-    map.put("originalControl", event.getOriginalControl());
-    map.put("screenX", event.getScreenX());
-    map.put("screenY", event.getScreenY());
-    map.put("x", event.getX());
-    map.put("y", event.getY());
-    map.put("altDown", event.isAltDown());
-    map.put("cmdDown", event.isCmdDown());
-    map.put("controlDown", event.isControlDown());
-    map.put("shiftDown", event.isShiftDown());
-
-
-    RightMouseDownEvent dwcEv = new RightMouseDownEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    this.handleEventParams(event);
   }
 }
