@@ -388,6 +388,7 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
+  
   /**
    * {@inheritDoc}
    */
