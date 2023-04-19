@@ -47,7 +47,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private final Map<String, String> attributes = new HashMap<>();
   private final List<String> removeAttributes = new ArrayList<>();
 
-  private final Map<String, String> properties = new HashMap<>();
+  private final Map<String, Object> properties = new HashMap<>();
 
   /*
    * ============================================================================= Theme and Expanse
@@ -142,10 +142,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return the value of the property
    */
   @Override
-  public String getProperty(String property) {
+  public Object getProperty(String property) {
     if (ctrl != null) {
       try {
-        return (String) ctrl.getClientProperty(property);
+        return ctrl.getClientProperty(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -161,7 +161,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return the control itself
    */
   @Override
-  public AbstractDwcComponent setProperty(String property, String value) {
+  public AbstractDwcComponent setProperty(String property, Object value) {
     if (ctrl != null) {
       try {
         ctrl.putClientProperty(property, value);
@@ -584,7 +584,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
 
     if (!this.properties.isEmpty()) {
-      for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+      for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
         this.setProperty(entry.getKey(), entry.getValue());
       }
     }
