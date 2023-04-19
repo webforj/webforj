@@ -149,7 +149,7 @@ public final class Field extends AbstractDwcComponent
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
-      throw new DwcjRuntimeException("Failed to create Field.",e);
+      throw new DwcjRuntimeException("Failed to create Field.", e);
     }
 
   }
@@ -193,7 +193,7 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-    /**
+  /**
    * Adds a blur event for the Field component.
    *
    * @param listener The event
@@ -250,7 +250,7 @@ public final class Field extends AbstractDwcComponent
       try {
         return bbjEditBox.getSelectedText();
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to get selected text.",e);
+        throw new DwcjRuntimeException("Failed to get selected text.", e);
       }
     }
     return "";
@@ -265,7 +265,7 @@ public final class Field extends AbstractDwcComponent
         Integer offsetRight = (Integer) vec.get(3);
         return new SelectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to get selection info.",e);
+        throw new DwcjRuntimeException("Failed to get selection info.", e);
       }
     }
     return null;
@@ -285,7 +285,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setMaxLength(length);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set max length.",e);
+        throw new DwcjRuntimeException("Failed to set max length.", e);
       }
     }
     this.maxLength = length;
@@ -294,7 +294,9 @@ public final class Field extends AbstractDwcComponent
 
   /** Setter for the fields type. */
   public Field setType(FieldType type) {
-    if (this.type == type) return this;
+    if (this.type == type) {
+      return this;
+    }
 
     this.type = type;
     if (ctrl == null) {
@@ -320,7 +322,7 @@ public final class Field extends AbstractDwcComponent
       try {
         return !bbjEditBox.isEditable();
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to read read only setting.",e);
+        throw new DwcjRuntimeException("Failed to read read only setting.", e);
       }
     }
     return this.readOnly;
@@ -332,7 +334,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setEditable(!editable);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set read only.",e);
+        throw new DwcjRuntimeException("Failed to set read only.", e);
       }
     }
     this.readOnly = editable;
@@ -345,7 +347,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.isFocusable();
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to read focusable setting.",e);
+        throw new DwcjRuntimeException("Failed to read focusable setting.", e);
       }
     }
     return this.focusable;
@@ -357,7 +359,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setFocusable(focusable);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set focusable.",e);
+        throw new DwcjRuntimeException("Failed to set focusable.", e);
       }
     }
     this.focusable = focusable;
@@ -370,7 +372,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.isTabTraversable();
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to read tab traversable setting.",e);
+        throw new DwcjRuntimeException("Failed to read tab traversable setting.", e);
       }
     }
     return this.tabTraversable;
@@ -382,7 +384,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setTabTraversable(traversable);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set tab traversable.",e);
+        throw new DwcjRuntimeException("Failed to set tab traversable.", e);
       }
     }
     this.tabTraversable = traversable;
@@ -400,7 +402,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setAlignment(alignment.textPosition);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set alignment.",e);
+        throw new DwcjRuntimeException("Failed to set alignment.", e);
       }
     }
     this.textAlignment = alignment;
@@ -418,7 +420,7 @@ public final class Field extends AbstractDwcComponent
       try {
         bbjEditBox.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set highlight on focus.",e);
+        throw new DwcjRuntimeException("Failed to set highlight on focus.", e);
       }
     }
     this.textHighlight = highlight;
@@ -491,7 +493,7 @@ public final class Field extends AbstractDwcComponent
       this.focusEventSink.setCallback();
     }
 
-    if(this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
+    if (this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
       this.focusEventSink.setCallback();
     }
 
