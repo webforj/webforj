@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasPlaceholder;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.SelectionInfo;
 import org.dwcj.component.TextAlignable;
@@ -23,12 +24,13 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 /** A Field to enter Text. */
 public final class Field extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, Focusable, TextAlignable, TextHighlightable, HasPlaceholder {
 
   private BBjEditBox bbjEditBox;
 
   private Integer maxLength = 2147483647;
   private FieldType type;
+  private String placeholder;
 
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
@@ -316,22 +318,22 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Sets the hint for expected file type in file upload controls
+   * Sets the hint for expected file type in file upload controls.
    *
    * @param types expected file types
    * @return the control itself
    */
-  public Field setAllowedFileTypes(String types) {
+  public Field setExpectedFileTypes(String types) {
     super.setProperty("accept", types);
     return this;
   }
 
   /**
-   * Returns the file types in file upload controls
+   * Returns the file types in file upload controls.
    *
    * @return the expected file types
    */
-  public String getAllowedFileTypes() {
+  public String getExpectedFileTypes() {
     return (String) super.getProperty("accept");
   }
 
@@ -343,7 +345,7 @@ public final class Field extends AbstractDwcComponent
    */
   public Field enableAutocorrect(Boolean enabled) {
     final String value;
-    if (enabled) {
+    if (Boolean.TRUE.equals(enabled)) {
       value = "on";
     } else {
       value = "off";
@@ -359,10 +361,7 @@ public final class Field extends AbstractDwcComponent
    */
   public Boolean hasAutocorrect() {
     final String value = (String) super.getProperty("autocorrect");
-    if (value == "on") {
-      return true;
-    }
-    return false;
+    return value.equals("on");
   }
 
   /**
@@ -387,7 +386,7 @@ public final class Field extends AbstractDwcComponent
 
   /**
    * Returns if the control is currently focused.
-   * 
+   *
    * @return true if the control currently has focus, false otherwise
    */
   public Boolean hasFocus() {
@@ -400,7 +399,7 @@ public final class Field extends AbstractDwcComponent
    * @param label the label displayed
    * @return the control itself
    */
-  public Field setLabel(String label){
+  public Field setLabel(String label) {
     super.setProperty("label", label);
     return this;
   }
@@ -412,6 +411,64 @@ public final class Field extends AbstractDwcComponent
    */
   public String getLabel() {
     return (String) super.getProperty("label"); 
+  }
+
+  /**
+   * Sets the maximum for numeric types.
+   *
+   * @return the maximum
+   */
+  public Field setMax(Double max) {
+    super.setProperty("max", max);
+    return this;
+  }
+
+  /**
+   * Returns the maximum for nuremic types.
+   *
+   * @return the maximum
+   */
+  public Double getMax() {
+    return (Double) super.getProperty("max");
+  }
+
+  /**
+   * Sets the minimum for numeric types.
+   *
+   * @return the minimum
+   */
+  public Field setMin(Double min) {
+    super.setProperty("min", min);
+    return this;
+  }
+
+  /**
+   * Returns the minimum for nuremic types.
+   *
+   * @return the minimum
+   */
+  public Double getMin() {
+    return (Double) super.getProperty("min");
+  }
+
+  /**
+   * Sets the minimum amount of characters.
+   *
+   * @param min the amount of required characters
+   * @return the control itself
+   */
+  public Field setMinLength(Integer min) {
+    super.setProperty("minLength", min);
+    return this;
+  }
+
+  /**
+   * Returns the minimum amount of characters.
+   *
+   * @return the minimum amount of characters
+   */
+  public Integer getMinLength() {
+    return (Integer) super.getProperty("minLength");
   }
 
   /**
@@ -641,6 +698,36 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getPlaceholder() {
+    return this.placeholder;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Field setPlaceholder(String placeholder) {
+    this.placeholder = placeholder;
+    if (this.ctrl == null) {
+      return this;
+    }
+
+    try {
+      this.bbjEditBox.setPlaceholder(placeholder);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to set the placeholder.", e);
+    }
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
@@ -659,6 +746,10 @@ public final class Field extends AbstractDwcComponent
 
     if (this.maxLength != 2147483647) {
       this.setMaxLength(this.maxLength);
+    }
+
+    if (this.placeholder != null) {
+      this.setPlaceholder(placeholder);
     }
 
     if (Boolean.TRUE.equals(this.readOnly)) {
