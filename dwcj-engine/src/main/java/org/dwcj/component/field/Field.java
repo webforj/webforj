@@ -15,6 +15,8 @@ import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -29,7 +31,7 @@ public final class Field extends AbstractDwcComponent
   private Integer maxLength = 2147483647;
   private FieldType type;
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private FocusGainedEventSink focusGainedEventSink;
+  private FocusEventSink focusEventSink;
 
   /** Enum to descripe the Fields types. */
   enum FieldType {
@@ -141,7 +143,7 @@ public final class Field extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
-      this.focusGainedEventSink = new FocusGainedEventSink(this, dispatcher);
+      this.focusEventSink = new FocusEventSink(this, dispatcher);
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
@@ -151,34 +153,43 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Adds a click event for the Button component.
+   * Adds a focus event for the Field component.
    *
    * @param listener The event
    * @return The component itself
    */
-  public Field addFocusGained(EventListener<FocusGainedEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusGainedEvent.class) == 0) {
-      this.focusGainedEventSink.setCallback();
+  public Field addFocusListener(EventListener<FocusEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.setCallback();
     }
-    dispatcher.addEventListener(FocusGainedEvent.class, listener);
+    dispatcher.addEventListener(FocusEvent.class, listener);
     return this;
   }
 
+  /**
+   * Alias for the addFocusListener method.
+   *
+   * @see Field #addFocusListener(EventListener)
+   * @param listener A method to receive the focus event
+   * @return the control itself
+   */
+   public Field onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
+  }
 
   /**
-   * Removes a click event from the Button component.
+   * Removes a focus event from the Field component.
    *
    * @param listener The event to be removed
    * @return The component itself
    */
-  public Field removeFocusGained(EventListener<FocusGainedEvent> listener) {
-    dispatcher.removeEventListener(FocusGainedEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusGainedEvent.class) == 0) {
-      this.focusGainedEventSink.removeCallback();
+  public Field removeFocusListener(EventListener<FocusEvent> listener) {
+    dispatcher.removeEventListener(FocusEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
     }
     return this;
   }
-
 
   /**
    * Getter for the max length of this field.
