@@ -40,7 +40,7 @@ public final class RadioButton extends AbstractDwcComponent
 
   private ArrayList<Consumer<RadioButtonCheckEvent>> callbacks = new ArrayList<>();
   private RadioButtonCheckEventSink checkEventSink;
-  private Boolean selected = false;
+  private Boolean checked = false;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
 
   public RadioButton() {
@@ -106,9 +106,6 @@ public final class RadioButton extends AbstractDwcComponent
    * @return Enum value of the horizontal text position for the control.
    */
   public HorizontalTextPosition getHorizontalTextPosition() {
-    if (this.ctrl != null) {
-      return this.horizontalTextPosition;
-    }
     return this.horizontalTextPosition;
   }
 
@@ -129,7 +126,8 @@ public final class RadioButton extends AbstractDwcComponent
    *
    * @return Boolean value representing the radio button's selection value
    */
-  public Boolean isSelected() {
+
+  public Boolean isChecked() {
     if (this.ctrl != null) {
       try {
         return bbjRadioButton.isSelected();
@@ -137,25 +135,25 @@ public final class RadioButton extends AbstractDwcComponent
         Environment.logError(e);
       }
     }
-    return this.selected;
+    return this.checked;
   }
 
   /**
    * Sets the selection value of the radio button - true if the button should be selected, false if
    * not.
    *
-   * @param selected Boolean for desired selection state of the button.
+   * @param checked Boolean for desired selection state of the button.
    * @return The control itself
    */
-  public RadioButton setSelected(boolean selected) {
+  public RadioButton setChecked(boolean checked) {
     if (this.ctrl != null) {
       try {
-        bbjRadioButton.setSelected(selected);
+        bbjRadioButton.setSelected(checked);
       } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.selected = selected;
+    this.checked = checked;
     return this;
   }
 
@@ -358,8 +356,8 @@ public final class RadioButton extends AbstractDwcComponent
       throw new IllegalAccessException("catchUp cannot be called twice");
     super.catchUp();
 
-    if (Boolean.TRUE.equals(this.selected)) {
-      this.setSelected(this.selected);
+    if (Boolean.TRUE.equals(this.checked)) {
+      this.setChecked(this.checked);
     }
 
     if (!this.callbacks.isEmpty()) {
@@ -367,6 +365,15 @@ public final class RadioButton extends AbstractDwcComponent
       while (!this.callbacks.isEmpty()) {
         this.checkEventSink.addCallback(this.callbacks.remove(0));
       }
+    }
+
+    if (this.alignment != Alignment.LEFT) {
+      try {
+        bbjRadioButton.setAlignment(alignment.alignment);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+      this.setAlignment(this.alignment);
     }
 
     if (this.horizontalTextPosition != HorizontalTextPosition.RIGHT) {
@@ -390,8 +397,8 @@ public final class RadioButton extends AbstractDwcComponent
       this.setTabTraversable(this.tabTraversable);
     }
 
-    if (Boolean.FALSE.equals(this.selected)) {
-      this.setSelected(this.selected);
+    if (Boolean.FALSE.equals(this.checked)) {
+      this.setChecked(this.checked);
     }
 
   }
