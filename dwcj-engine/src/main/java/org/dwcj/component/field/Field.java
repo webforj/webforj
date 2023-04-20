@@ -9,7 +9,6 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.SelectionInfo;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.event.BlurEvent;
@@ -24,7 +23,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 /** A Field to enter Text. */
 public final class Field extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, Focusable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
 
@@ -367,31 +366,6 @@ public final class Field extends AbstractDwcComponent
   }
 
   @Override
-  public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.isTabTraversable();
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to read tab traversable setting.", e);
-      }
-    }
-    return this.tabTraversable;
-  }
-
-  @Override
-  public Field setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.setTabTraversable(traversable);
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set tab traversable.", e);
-      }
-    }
-    this.tabTraversable = traversable;
-    return this;
-  }
-
-  @Override
   public Alignment getTextAlignment() {
     return this.textAlignment;
   }
@@ -507,10 +481,6 @@ public final class Field extends AbstractDwcComponent
 
     if (Boolean.FALSE.equals(this.focusable)) {
       this.setFocusable(this.focusable);
-    }
-
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
     }
 
     if (this.textAlignment != Alignment.LEFT) {
