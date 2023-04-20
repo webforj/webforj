@@ -1,8 +1,8 @@
 package org.dwcj.component;
 
 /**
- * The HasPlaceholder interface provides methods to set and get the placeholder text 
- * for a component that displays a placeholder when empty.
+ * The HasPlaceholder interface provides methods to set and get the placeholder text for a component
+ * that displays a placeholder when empty.
  */
 public interface HasPlaceholder {
 
