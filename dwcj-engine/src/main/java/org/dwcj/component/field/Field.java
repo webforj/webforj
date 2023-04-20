@@ -401,57 +401,120 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setText(String text) {
     super.setText(text);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Field removeAttribute(String attribute) {
+    super.removeAttribute(attribute);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setId(String elementId) {
     super.setId(elementId);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Field setUserData(String key, Object userData) {
+    super.setUserData(key, userData);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Field removeStyle(String property) {
+    super.removeStyle(property);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field removeClassName(String selector) {
     super.removeClassName(selector);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Field setProperty(String property, Object value) {
+    super.setProperty(property, value);
     return this;
   }
 
