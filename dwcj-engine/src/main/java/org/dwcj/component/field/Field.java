@@ -395,6 +395,26 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * The Fields label.
+   *
+   * @param label the label displayed
+   * @return the control itself
+   */
+  public Field setLabel(String label){
+    super.setProperty("label", label);
+    return this;
+  }
+
+  /**
+   * Returns the Fields label. 
+   *
+   * @return the label
+   */
+  public String getLabel() {
+    return (String) super.getProperty("label"); 
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
