@@ -41,7 +41,4 @@ public abstract class AbstractMouseEventSink extends AbstractSink {
     MouseEvent dwcEv = new MouseEvent(component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }
-
-
-
 }
