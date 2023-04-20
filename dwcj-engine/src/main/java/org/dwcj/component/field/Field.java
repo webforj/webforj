@@ -336,6 +336,36 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * Enables autocorrection. Safari only.
+   *
+   * @param enabled true if enabled, false otherwise
+   * @return the control itself
+   */
+  public Field enableAutocorrect(Boolean enabled) {
+    final String value;
+    if (enabled) {
+      value = "on";
+    } else {
+      value = "off";
+    }
+    super.setProperty("autocorrect", value);
+    return this;
+  }
+
+  /**
+   * Returns wether autocorrection is enbaled or not. 
+   *
+   * @return true if enabled, false otherwise
+   */
+  public Boolean hasAutocorrect() {
+    final String value = (String) super.getProperty("autocorrect");
+    if (value == "on") {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
