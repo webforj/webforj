@@ -1,11 +1,8 @@
 package org.dwcj.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEvent;
 import org.dwcj.component.event.sink.AbstractMouseEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
