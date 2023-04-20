@@ -3,7 +3,8 @@ package org.dwcj.component.radiobutton;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
+import java.util.ArrayList;
+import java.util.function.Consumer;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
@@ -15,19 +16,26 @@ import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
-// welcome radio button
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
+
+/**
+  * The class itself extending the abstract DWC Component and implementing interfaces.
+  */
 public final class RadioButton extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable {
 
   private BBjRadioButton bbjRadioButton;
 
+  /**
+   * Enum values with respective values for the expanse of the text.
+   */
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
 
+  /**
+   * Enum values with respective values for the alignment of text position.
+   */
   public enum Alignment {
     CENTER(16384), LEFT(8192), RIGHT(32768);
 
@@ -38,6 +46,9 @@ public final class RadioButton extends AbstractDwcComponent
     }
   }
 
+  /**
+   * Enum values with respective values for the horizontal text position.
+   */
   public enum HorizontalTextPosition {
     RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
 
@@ -54,6 +65,9 @@ public final class RadioButton extends AbstractDwcComponent
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Alignment alignment = Alignment.LEFT;
 
+  /**
+   * The Constructor with expected behavior after an instance of it created.
+   */
   public RadioButton() {
     this.readOnly = false;
     this.focusable = true;
@@ -76,7 +90,7 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * register an event callback for a checkOn or checkOff event
+   * register an event callback for a checkOn or checkOff event.
    *
    * @param callback A method to receive the onCheck event
    * @return the control itself
@@ -98,7 +112,7 @@ public final class RadioButton extends AbstractDwcComponent
    *
    * @return The ID of the control which has been added to a panel.
    */
-  public Integer getButtonID() {
+  public Integer getButtonId() {
     if (this.ctrl != null) {
       try {
         return bbjRadioButton.getID();
@@ -112,7 +126,7 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * Gets the aligntment of text in radio button
+   * Gets the aligntment of text in radio button.
    *
    * @return Enum value of the alignment for the control.
    */
@@ -120,6 +134,11 @@ public final class RadioButton extends AbstractDwcComponent
     return this.alignment;
   }
 
+  /**
+   * Sets the alignment of the text.
+   *
+   * @return The control itself.
+   */
   public RadioButton setAlignment(Alignment align) {
     if (this.ctrl != null) {
       try {
@@ -133,7 +152,7 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * Gets the position of the text alignment in relation to the radio button
+   * Gets the position of the text alignment in relation to the radio button.
    *
    * @return Enum value of the horizontal text position for the control.
    */
@@ -141,6 +160,11 @@ public final class RadioButton extends AbstractDwcComponent
     return this.horizontalTextPosition;
   }
 
+  /**
+   * Sets the position of the text horizontally.
+   *
+   * @return The control itself.
+   */
   public RadioButton setHorizontalTextPosition(HorizontalTextPosition position) {
     if (this.ctrl != null) {
       try {
@@ -174,7 +198,7 @@ public final class RadioButton extends AbstractDwcComponent
    * not.
    *
    * @param checked Boolean for desired selection state of the button.
-   * @return The control itself
+   * @return The control itself.
    */
   public RadioButton setChecked(boolean checked) {
     if (this.ctrl != null) {
@@ -356,7 +380,7 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
-  public RadioButton removeAttribute(String attribute){
+  public RadioButton removeAttribute(String attribute) {
     super.removeAttribute(attribute);
     return this;
   }
@@ -365,7 +389,7 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
-  public RadioButton removeStyle(String property){
+  public RadioButton removeStyle(String property) {
     super.removeStyle(property);
     return this;
   }
@@ -374,18 +398,6 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
-<<<<<<< HEAD
-  public RadioButton setProperty(String property, Object value){
-    super.setProperty(property, value);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-=======
->>>>>>> 501afbaf1a669ded383d55dcb2fa56c02d1140c2
   public RadioButton addClassName(String selector) {
     super.addClassName(selector);
     return this;
@@ -403,7 +415,7 @@ public final class RadioButton extends AbstractDwcComponent
 
   /**
    * Sets the expanse of the radio button from the enum with control-specific applicable expanse
-   * values
+   * values.
    *
    * <pre>
    * {@code
@@ -412,7 +424,7 @@ public final class RadioButton extends AbstractDwcComponent
    * </pre>
    *
    * @param expanse The enum value representing the desired expanse
-   * @return
+   * @return the class.
    */
   public RadioButton setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
@@ -421,10 +433,12 @@ public final class RadioButton extends AbstractDwcComponent
 
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  // of checks
+  
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (Boolean.TRUE.equals(this.checked)) {
