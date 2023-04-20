@@ -359,7 +359,7 @@ public final class Field extends AbstractDwcComponent
    */
   public Boolean hasAutocorrect() {
     final String value = (String) super.getProperty("autocorrect");
-    if (value == "on") {
+    if (value.equals("on") ) {
       return true;
     }
     return false;
