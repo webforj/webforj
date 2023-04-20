@@ -315,6 +315,9 @@ public final class Field extends AbstractDwcComponent
     return this.type;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Boolean isReadOnly() {
     if (this.ctrl != null) {
@@ -327,6 +330,9 @@ public final class Field extends AbstractDwcComponent
     return this.readOnly;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setReadOnly(Boolean editable) {
     if (this.ctrl != null) {
@@ -340,6 +346,9 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Boolean isFocusable() {
     if (this.ctrl != null) {
@@ -352,6 +361,9 @@ public final class Field extends AbstractDwcComponent
     return this.focusable;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setFocusable(Boolean focusable) {
     if (this.ctrl != null) {
@@ -365,11 +377,17 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Alignment getTextAlignment() {
     return this.textAlignment;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
@@ -383,11 +401,17 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Highlight getHighlightOnFocus() {
     return this.textHighlight;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Field setHighlightOnFocus(Highlight highlight) {
     if (this.ctrl != null) {
