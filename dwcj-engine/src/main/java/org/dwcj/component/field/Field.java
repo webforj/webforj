@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasPlaceholder;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.SelectionInfo;
 import org.dwcj.component.TextAlignable;
@@ -23,12 +24,13 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 /** A Field to enter Text. */
 public final class Field extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, Focusable, TextAlignable, TextHighlightable, HasPlaceholder {
 
   private BBjEditBox bbjEditBox;
 
   private Integer maxLength = 2147483647;
   private FieldType type;
+  private String placeholder;
 
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
@@ -641,6 +643,34 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getPlaceholder() {
+   return this.placeholder;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Field setPlaceholder(String placeholder) {
+    this.placeholder = placeholder;
+    if (this.ctrl == null) return this;
+
+    try {
+      this.bbjEditBox.setPlaceholder(placeholder);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to set the placeholder.", e);
+    }
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
@@ -659,6 +689,10 @@ public final class Field extends AbstractDwcComponent
 
     if (this.maxLength != 2147483647) {
       this.setMaxLength(this.maxLength);
+    }
+
+    if (this.placeholder != null) {
+      this.setPlaceholder(placeholder);
     }
 
     if (Boolean.TRUE.equals(this.readOnly)) {
