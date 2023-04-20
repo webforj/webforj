@@ -433,6 +433,25 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * Sets the minimum for numeric types.
+   *
+   * @return the minimum
+   */
+  public Field setMin(Double min) {
+    super.setProperty("min", min);
+    return this;
+  }
+
+  /**
+   * Returns the minimum for nuremic types.
+   *
+   * @return the minimum
+   */
+  public Double getMin() {
+    return (Double) super.getProperty("min");
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
