@@ -472,55 +472,6 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Automatically focus the control when the page is loaded.
-   *
-   * @param enabled true for enabling, false otherwise
-   * @return the control itself
-   */
-  public Field enableAutofocus(Boolean enabled) {
-    super.setProperty("autofocus", enabled);
-    return this;
-  }
-
-  /**
-   * Returns if the control gets autofocused when the page is loaded.
-   *
-   * @return true if enabled, false otherwise
-   */
-  public Boolean isAutofocusEnabled() {
-    return (Boolean) super.getProperty("autofocus");
-  }
-
-  /**
-   * Returns if the control is currently focused.
-   *
-   * @return true if the control currently has focus, false otherwise
-   */
-  public Boolean hasFocus() {
-    return Boolean.parseBoolean(super.getAttribute("has-focus"));
-  }
-
-  /**
-   * The Fields label.
-   *
-   * @param label the label displayed
-   * @return the control itself
-   */
-  public Field setLabel(String label) {
-    super.setProperty("label", label);
-    return this;
-  }
-
-  /**
-   * Returns the Fields label. 
-   *
-   * @return the label
-   */
-  public String getLabel() {
-    return (String) super.getProperty("label"); 
-  }
-
-  /**
    * {@inheritDoc}
    */
   @Override
