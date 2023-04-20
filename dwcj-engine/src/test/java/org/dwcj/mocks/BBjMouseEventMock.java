@@ -6,7 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
 
 /**
- * A Mock class for the BBjMouseEvent to test the corresponding event sinks.
+ * A mock class for the BBjMouseEvent to test the corresponding event sinks.
  */
 public class BBjMouseEventMock implements BBjMouseEvent {
 
