@@ -20,7 +20,7 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns wether or not a mouse button was pressed while the event happened.
+   * Returns whether or not a mouse button was pressed while the event happened.
    *
    * @return An int representing the mouse Button pressed.
    */
@@ -29,7 +29,7 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns the absolute screen coordinate where this event happened.
+   * Returns the absolute abscissa screen coordinate where this event happened.
    *
    * @return The x coordinate where the event happened.
    */
@@ -38,7 +38,7 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns the absolute screen coordinate where this event happened.
+   * Returns the absolute ordinate screen coordinate where this event happened.
    *
    * @return The y coordinate where the event happened.
    */
@@ -47,7 +47,7 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns the coordinate where this event happened relative to the parent.
+   * Returns the abscissa coordinate where this event happened relative to the parent.
    *
    * @return The x coordinate where the event happened.
    */
@@ -56,7 +56,7 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns the coordinate where this event happened relative to the parent.
+   * Returns the ordinate coordinate where this event happened relative to the parent.
    *
    * @return The y coordinate where the event happened.
    */
@@ -65,36 +65,36 @@ public class MouseEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns wether or not the alt key was pressed when the event happened.
+   * Returns whether or not the alt key was pressed when the event happened.
    *
-   * @return A boolean representing wether alt was pressed.
+   * @return A boolean representing whether alt was pressed.
    */
   public boolean isAltDown() {
     return (boolean) this.getEventMap().get("altDown");
   }
 
   /**
-   * Returns wether or not the command key was pressed when the event happened.
+   * Returns whether or not the command key was pressed when the event happened.
    *
-   * @return A boolean representing wether cmd was pressed.
+   * @return A boolean representing whether cmd was pressed.
    */
   public boolean isCmdDown() {
     return (boolean) this.getEventMap().get("cmdDown");
   }
 
   /**
-   * Returns wether or not the control key was pressed when the event happened.
+   * Returns whether or not the control key was pressed when the event happened.
    *
-   * @return A boolean representing wether ctrl was pressed.
+   * @return A boolean representing whether ctrl was pressed.
    */
   public boolean isControlDown() {
     return (boolean) this.getEventMap().get("controlDown");
   }
 
   /**
-   * Returns wether or not the shift key was pressed when the event happened.
+   * Returns whether or not the shift key was pressed when the event happened.
    *
-   * @return A boolean representing wether shift was pressed.
+   * @return A boolean representing whether shift was pressed.
    */
   public boolean isShiftDown() {
     return (boolean) this.getEventMap().get("shiftDown");
