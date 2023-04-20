@@ -323,7 +323,7 @@ public final class Field extends AbstractDwcComponent
    * @param types expected file types
    * @return the control itself
    */
-  public Field setAllowedFileTypes(String types) {
+  public Field setExpectedFileTypes(String types) {
     super.setProperty("accept", types);
     return this;
   }
@@ -333,7 +333,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return the expected file types
    */
-  public String getAllowedFileTypes() {
+  public String getExpectedFileTypes() {
     return (String) super.getProperty("accept");
   }
 
