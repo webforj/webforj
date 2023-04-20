@@ -414,6 +414,25 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * Sets the maximum for numeric types.
+   *
+   * @return the maximum
+   */
+  public Field setMax(Double max) {
+    super.setProperty("max", max);
+    return this;
+  }
+
+  /**
+   * Returns the maximum for nuremic types.
+   *
+   * @return the maximum
+   */
+  public Double getMax() {
+    return (Double) super.getProperty("max");
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
