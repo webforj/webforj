@@ -497,10 +497,8 @@ public final class Field extends AbstractDwcComponent
    * @return true if the control currently has focus, false otherwise
    */
   public Boolean hasFocus() {
-    return (Boolean) super.getProperty("has-focus");
+    return Boolean.parseBoolean(super.getAttribute("has-focus"));
   }
-
-  
 
   /**
    * {@inheritDoc}
