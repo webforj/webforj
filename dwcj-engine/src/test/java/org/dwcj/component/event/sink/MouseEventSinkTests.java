@@ -1,13 +1,9 @@
-package org.dwcj.event;
+package org.dwcj.component.event.sink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.MouseEvent;
-import org.dwcj.component.event.sink.AbstractMouseEventSink;
-import org.dwcj.component.event.sink.MouseEnterEventSink;
-import org.dwcj.component.event.sink.MouseExitEventSink;
-import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.mocks.BBjMouseEventMock;
 import org.dwcj.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * A class for testing the MouseEvent with different sinks.
  */
-public class MouseEventTests {
+public class MouseEventSinkTests {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjMouseEventMock eventMock;
