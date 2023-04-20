@@ -9,7 +9,8 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.MouseEvent;
 
 /**
- * 
+ * An abstract class of a mouse event sink which would handle a BBjMouseEvent and dispatch
+ * the corresponding java event.
  */
 public abstract class AbstractMouseEventSink extends AbstractSink {
   protected AbstractMouseEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
@@ -26,10 +27,7 @@ public abstract class AbstractMouseEventSink extends AbstractSink {
     BBjMouseEvent event = (BBjMouseEvent) ev;
     HashMap<String, Object> map = new HashMap<>();
 
-    map.put("legacyMouseButton", event.getLegacyMouseButton());
     map.put("mouseButton", event.getMouseButton());
-    map.put("nativeMouseButton", event.getNativeMouseButton());
-    map.put("originalControl", event.getOriginalControl());
     map.put("screenX", event.getScreenX());
     map.put("screenY", event.getScreenY());
     map.put("x", event.getX());
