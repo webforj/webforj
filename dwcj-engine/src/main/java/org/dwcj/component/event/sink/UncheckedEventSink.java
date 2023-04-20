@@ -4,8 +4,8 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.event.UncheckedEvent;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.UncheckedEvent;
 
 /**
  * This class will map the BBjCheckOffEvent event to a Java {@link UncheckedEvent}.
