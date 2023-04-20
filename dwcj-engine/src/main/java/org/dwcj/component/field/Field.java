@@ -316,6 +316,26 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * Sets the hint for expected file type in file upload controls
+   *
+   * @param types expected file types
+   * @return the control itself
+   */
+  public Field setAllowedFileTypes(String types) {
+    super.setProperty("accept", types);
+    return this;
+  }
+
+  /**
+   * Returns the file types in file upload controls
+   *
+   * @return the expected file types
+   */
+  public String getAllowedFileTypes() {
+    return (String) super.getProperty("accept");
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
