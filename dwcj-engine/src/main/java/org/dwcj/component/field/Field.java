@@ -645,7 +645,7 @@ public final class Field extends AbstractDwcComponent
    */
   @Override
   public String getPlaceholder() {
-   return this.placeholder;
+    return this.placeholder;
   }
 
   /**
@@ -654,7 +654,9 @@ public final class Field extends AbstractDwcComponent
   @Override
   public Field setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
-    if (this.ctrl == null) return this;
+    if (this.ctrl == null) {
+      return this;
+    }
 
     try {
       this.bbjEditBox.setPlaceholder(placeholder);
