@@ -345,7 +345,7 @@ public final class Field extends AbstractDwcComponent
    */
   public Field enableAutocorrect(Boolean enabled) {
     final String value;
-    if (enabled) {
+    if (Boolean.TRUE.equals(enabled)) {
       value = "on";
     } else {
       value = "off";
