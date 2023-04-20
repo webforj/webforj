@@ -22,14 +22,14 @@ import org.junit.jupiter.params.provider.MethodSource;
  * A class for testing the MouseEvent with different sinks.
  */
 public class MouseEventTests {
-  static DwcComponentMock mockComponent = new DwcComponentMock();
+  static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
-  BBjMouseEventMock mockEvent;
+  BBjMouseEventMock eventMock;
   MouseEvent dispatchedEvent;
 
   @BeforeEach
   void setUp() {
-    mockEvent = new BBjMouseEventMock();
+    eventMock = new BBjMouseEventMock();
   }
 
   /**
@@ -37,35 +37,30 @@ public class MouseEventTests {
    *
    * @return An array of {@link AbstractMouseEventSink}
    */
-  public static AbstractMouseEventSink[] data() {
-    return new AbstractMouseEventSink[] {new MouseEnterEventSink(mockComponent, dispatcher),
-        new MouseExitEventSink(mockComponent, dispatcher),
-        new RightMouseDownEventSink(mockComponent, dispatcher)};
+  public static AbstractMouseEventSink[] getMouseEventSinks() {
+    return new AbstractMouseEventSink[] {new MouseEnterEventSink(componentMock, dispatcher),
+        new MouseExitEventSink(componentMock, dispatcher),
+        new RightMouseDownEventSink(componentMock, dispatcher)};
   }
 
   @ParameterizedTest
-  @MethodSource(value = "data")
-  @DisplayName("MouseEvent tests")
-  void testMouseEnter(AbstractMouseEventSink sink) {
-    EventListener<MouseEvent> listener = this::testMethod;
-    dispatcher.addEventListener(MouseEvent.class, listener);
+  @MethodSource(value = "getMouseEventSinks")
+  @DisplayName("Test the MouseEvent payload with different sinks")
+  void payload(AbstractMouseEventSink sink) {
+    dispatcher.addEventListener(MouseEvent.class, e -> dispatchedEvent = e);
+    sink.handleEvent(eventMock);
 
-    sink.handleEvent(mockEvent);
-    assertEquals(2, dispatchedEvent.getMouseButton());
-    assertEquals(10, dispatchedEvent.getScreenX());
-    assertEquals(20, dispatchedEvent.getScreenY());
-    assertEquals(30, dispatchedEvent.getX());
-    assertEquals(40, dispatchedEvent.getY());
-    assertFalse(dispatchedEvent.isAltDown());
-    assertFalse(dispatchedEvent.isCmdDown());
-    assertFalse(dispatchedEvent.isControlDown());
-    assertTrue(dispatchedEvent.isShiftDown());
+    assertEquals(eventMock.getMouseButton(), dispatchedEvent.getMouseButton());
+    assertEquals(eventMock.getScreenX(), dispatchedEvent.getScreenX());
+    assertEquals(eventMock.getScreenY(), dispatchedEvent.getScreenY());
+    assertEquals(eventMock.getX(), dispatchedEvent.getX());
+    assertEquals(eventMock.getY(), dispatchedEvent.getY());
+
+    assertEquals(eventMock.isAltDown(), dispatchedEvent.isAltDown());
+    assertEquals(eventMock.isCmdDown(), dispatchedEvent.isCmdDown());
+    assertEquals(eventMock.isControlDown(), dispatchedEvent.isControlDown());
+    assertEquals(eventMock.isShiftDown(), dispatchedEvent.isShiftDown());
   }
-
-  void testMethod(MouseEvent ev) {
-    dispatchedEvent = ev;
-  }
-
 }
 
 
