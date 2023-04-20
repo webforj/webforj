@@ -231,14 +231,15 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
-  public RadioButton setReadOnly(Boolean editable) {
+  public RadioButton setReadOnly(Boolean readOnly) {
     if (this.ctrl != null) {
       try {
-        bbjRadioButton.setEditable(!editable);
+        bbjRadioButton.setEditable(!readOnly);
       } catch (BBjException e) {
         Environment.logError(e);
       }
     }
+    this.readOnly = readOnly;
     return this;
   }
 
