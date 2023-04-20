@@ -452,6 +452,26 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * Sets the minimum amount of characters.
+   *
+   * @param min the amount of required characters
+   * @return the control itself
+   */
+  public Field setMinLength(Integer min) {
+    super.setProperty("minLength", min);
+    return this;
+  }
+
+  /**
+   * Returns the minimum amount of characters.
+   *
+   * @return the minimum amount of characters
+   */
+  public Integer getMinLength() {
+    return (Integer) super.getProperty("minLength");
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
