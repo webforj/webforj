@@ -18,6 +18,7 @@ import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseEvent;
+import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
@@ -298,11 +299,11 @@ public final class Field extends AbstractDwcComponent
    * @param listener The event
    * @return The component itself
    */
-  public Field addMouseExitListener(EventListener<MouseEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+  public Field addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.setCallback();
     }
-    dispatcher.addEventListener(MouseEvent.class, listener);
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
     return this;
   }
 
@@ -313,7 +314,7 @@ public final class Field extends AbstractDwcComponent
    * @param listener A method to receive the mouse enter event
    * @return the control itself
    */
-  public Field onMouseExit(EventListener<MouseEvent> listener) {
+  public Field onMouseExit(EventListener<MouseExitEvent> listener) {
     return addMouseExitListener(listener);
   }
 
@@ -323,9 +324,9 @@ public final class Field extends AbstractDwcComponent
    * @param listener The event to be removed
    * @return The component itself
    */
-  public Field removeMouseExitListener(EventListener<MouseEvent> listener) {
-    dispatcher.removeEventListener(MouseEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+  public Field removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.removeCallback();
     }
     return this;
