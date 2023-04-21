@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 /**
  * A class for testing the RightMouseDownEvent.
  */
-public class RightMouseDownEventSinkTest {
+class RightMouseDownEventSinkTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjMouseEventMock eventMock;

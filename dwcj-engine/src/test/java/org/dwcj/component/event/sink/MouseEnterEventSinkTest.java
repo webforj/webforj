@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 /**
  * A class for testing the MouseEnterEvent.
  */
-public class MouseEnterEventSinkTest {
+class MouseEnterEventSinkTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjMouseEventMock eventMock;
