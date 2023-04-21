@@ -1,11 +1,8 @@
 package org.dwcj.component.checkbox;
 
-
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -36,23 +33,16 @@ import org.dwcj.util.BBjFunctionalityHelper;
 public final class CheckBox extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
-
   /**
-   * =====================================================================================
-   * Initialize the enums for Expanse and Theme if applicable to the control.
-   * =====================================================================================
+   * Expanse options for the checkbox.
    */
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
 
-
-
   /**
-   * ===================================================================================== If a
-   * control has BBj integer constants, create an enum with parameterized constructors that
-   * correspond to these numeric constants in BBj.
-   * =====================================================================================
+   * Enum that replaced the BBj constants required by the underlying BBj methods to more
+   * legible and developer-friendly options.
    */
   public enum HorizontalTextPosition {
     RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
@@ -64,14 +54,6 @@ public final class CheckBox extends AbstractDwcComponent
     }
   }
 
-
-  /*
-   * ===================================================================================== Create a
-   * member variable of the BBj component, casted from this.ctrl. Initialize any other
-   * control-specific events or member variables as needed. These extra member variables should be
-   * listed in the BBj documentation for each control.
-   * =====================================================================================
-   */
   private EventDispatcher dispatcher = new EventDispatcher();
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
@@ -88,9 +70,7 @@ public final class CheckBox extends AbstractDwcComponent
 
 
   /**
-   * =====================================================================================
    * Constructor initializes the inherited interface member variables to their defaults.
-   * =====================================================================================
    */
   public CheckBox() {
     this.readOnly = false;
@@ -100,14 +80,9 @@ public final class CheckBox extends AbstractDwcComponent
 
   }
 
-  /*
-   * ===================================================================================== This
-   * first section implements parameterized constructors, overrides the create() method, and
-   * implements methods for the control-specific behaviors, which often include getters and setters
-   * for control-specific member variables and/or functionality.
-   * =====================================================================================
+  /**
+   * {@inheritDoc}}
    */
-
   @Override
   protected void create(AbstractWindow p) {
     try {
@@ -169,7 +144,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Adds a unchecked event for the checkbox component.
+   * Adds an unchecked event for the checkbox component.
    *
    * @param listener the event listener to be added
    * @return The checkbox itself
@@ -194,7 +169,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Removes a unchecked event from the checkbox component.
+   * Removes an unchecked event from the checkbox component.
    *
    * @param listener the event listener to be removed
    * @return The checkbox itself
@@ -233,7 +208,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Removes a Focus event from the checkbox component.
+   * Removes a focus event from the checkbox component.
    *
    * @param listener the event listener to be removed
    * @return The checkbox itself
@@ -247,7 +222,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Adds a Blur event for the checkbox component.
+   * Adds a blur event for the checkbox component.
    *
    * @param listener the event listener to be added
    * @return The checkbox itself
@@ -272,7 +247,7 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Removes a Blur event from the checkbox component.
+   * Removes a blur event from the checkbox component.
    *
    * @param listener the event listener to be removed
    * @return The checkbox itself
@@ -418,6 +393,7 @@ public final class CheckBox extends AbstractDwcComponent
    * Sets the horizontal text position.
    *
    * @param position the position where the text should be placed.
+   * @see HorizontalTextPosition
    *
    * @return this object.
    */
@@ -468,17 +444,6 @@ public final class CheckBox extends AbstractDwcComponent
     this.checked = checked;
     return this;
   }
-
-
-
-  /*
-   * ===================================================================================== This
-   * section overrides the various base class abstract methods in the AbstractDwcjControl class.
-   * These need to be should for method chaining purposes (i.e.
-   * setExample().setExample2().setExample3() ).
-   * =====================================================================================
-   */
-
 
   @Override
   public CheckBox setText(String text) {
@@ -534,28 +499,16 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
-
-
-  /*
-   * ===================================================================================== If Themes
-   * or Expanses are applicable for this control (if they have had Enums implemented for their
-   * respective options), create the methods to set these by calling the super method and returning
-   * this for chaining.
-   * =====================================================================================
+  /**
+   * Sets the expanse for the checkbox.
+   *
+   * @param expanse The desired Expanse enum
+   * @return The object itself
    */
-
   public CheckBox setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
     return this;
   }
-
-
-
-  /*
-   * ===================================================================================== Ensure
-   * that any interfaces which are applicable to the control have their methods overridden.
-   * =====================================================================================
-   */
 
   /**
    * Returns whether the BBjCheckBox is editable (false = not editable, true = editable).
@@ -618,7 +571,6 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
-
   @Override
   public Boolean isTabTraversable() {
     if (this.ctrl != null) {
@@ -644,7 +596,6 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
-
   @Override
   public Alignment getTextAlignment() {
     return this.textAlignment;
@@ -662,11 +613,6 @@ public final class CheckBox extends AbstractDwcComponent
     this.textAlignment = alignment;
     return this;
   }
-  /*
-   * ===================================================================================== Ensure
-   * that all attributes applicable to the class have methods to easily access them.
-   * =====================================================================================
-   */
 
   /**
    * Returns wether or not the checkbox is focused.
@@ -704,8 +650,6 @@ public final class CheckBox extends AbstractDwcComponent
   public Boolean getIndeterminate() {
     return this.indeterminate;
   }
-
-
 
   /**
    * The method to set the label of the checkbox.
@@ -784,19 +728,8 @@ public final class CheckBox extends AbstractDwcComponent
     return this.required;
   }
 
-
-
-  /*
-   * ===================================================================================== Finally,
-   * override the catchUp() method - this is done by calling the super method, and then catching up
-   * any control-specific member variables and/or interface variables for this control.
-   * =====================================================================================
-   */
-
-
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
