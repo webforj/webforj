@@ -1,9 +1,11 @@
 package org.dwcj.component.checkbox;
 
+
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
+import java.util.ArrayList;
+import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -11,31 +13,37 @@ import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
-import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
-import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
+import org.dwcj.component.event.CheckedEvent;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.UncheckedEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.CheckedEventSink;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
+/** A checkbox object. */
 public final class CheckBox extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
 
-  /*
+  /**
    * =====================================================================================
    * Initialize the enums for Expanse and Theme if applicable to the control.
    * =====================================================================================
    */
-
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
 
 
 
-  /*
+  /**
    * ===================================================================================== If a
    * control has BBj integer constants, create an enum with parameterized constructors that
    * correspond to these numeric constants in BBj.
@@ -59,15 +67,24 @@ public final class CheckBox extends AbstractDwcComponent
    * listed in the BBj documentation for each control.
    * =====================================================================================
    */
-  private ArrayList<Consumer<CheckBoxChangeEvent>> callbacks = new ArrayList<>();
-  private CheckBoxCheckEventSink checkboxCheckEventSink;
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
+  private CheckedEventSink checkedEventSink;
+  private UncheckedEventSink uncheckedEventSink;
+  private FocusEventSink focusEventSink;
+  private BlurEventSink blurEventSink;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Boolean checked = false;
+  private Boolean indeterminate = false;
+  private String name;
+  private Boolean required = false;
 
 
-  /*
+  /**
    * =====================================================================================
-   * Constructor initializes the inherited interface member variables to their defaults
+   * Constructor initializes the inherited interface member variables to their defaults.
    * =====================================================================================
    */
   public CheckBox() {
@@ -94,6 +111,13 @@ public final class CheckBox extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, "", flags);
+      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+      this.checkedEventSink = new CheckedEventSink(this, dispatcher);
+      this.uncheckedEventSink = new UncheckedEventSink(this, dispatcher);
+      this.focusEventSink = new FocusEventSink(this, dispatcher);
+      this.blurEventSink = new BlurEventSink(this, dispatcher);
       this.catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -101,26 +125,85 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * register an event callback for a checkOn or checkOff event
+   * Adds a checked event for the checkbox component.
    *
-   * @param callback A method to receive the onChange event
-   * @return the control itself
+   * @param listener the event listener to be added
+   * @return The checkbox itself
    */
-  public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
-    if (this.ctrl != null) {
-      if (this.checkboxCheckEventSink == null) {
-        this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
-      }
-      this.checkboxCheckEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
+  public CheckBox addCheckedListener(EventListener<CheckedEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
+      this.checkedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(CheckedEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addCheckedListener method.
+   *
+   * @see Checkbox#addCheckedLitener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onChecked(EventListener<CheckedEvent> listener) {
+    return addCheckedListener(listener);
+  }
+
+  /**
+   * Removes a checked event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeCheckedListener(EventListener<CheckedEvent> listener) {
+    dispatcher.removeEventListener(CheckedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
+      this.checkedEventSink.removeCallback();
     }
     return this;
   }
 
   /**
-   * This method returns the horizontal position of the text in the CheckBox control. The default
-   * horizontal text position is RIGHT.
+   * Adds a unchecked event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addUncheckedListener(EventListener<UncheckedEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
+      this.uncheckedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(UncheckedEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addUncheckedListener method.
+   *
+   * @see Checkbox#addUncheckedLitener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onUnchecked(EventListener<UncheckedEvent> listener) {
+    return addUncheckedListener(listener);
+  }
+
+  /**
+   * Removes a checked event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeClickListener(EventListener<CheckedEvent> listener) {
+    dispatcher.removeEventListener(CheckedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
+      this.checkedEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * The default horizontal text position is RIGHT.
    *
    * @return This method returns the horizontal position of the text in the CheckBox control.
    */
@@ -131,7 +214,13 @@ public final class CheckBox extends AbstractDwcComponent
     return HorizontalTextPosition.RIGHT;
   }
 
-
+  /**
+   * Sets the horizontal text position.
+   *
+   * @param position the position where the text should be placed.
+   *
+   * @return this object.
+   */
   public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
     if (this.ctrl != null) {
       try {
@@ -158,9 +247,16 @@ public final class CheckBox extends AbstractDwcComponent
         Environment.logError(e);
       }
     }
-    return false;
+    return checked;
   }
 
+  /**
+   * Sets the box to be either checked or unchecked.
+   *
+   * @param checked Wether the box should be checked or not.
+   *
+   * @return this object.
+   */
   public CheckBox setChecked(Boolean checked) {
     if (this.ctrl != null) {
       try {
@@ -366,6 +462,127 @@ public final class CheckBox extends AbstractDwcComponent
     this.textAlignment = alignment;
     return this;
   }
+  /*
+   * ===================================================================================== Ensure
+   * that all attributes applicable to the class have methods to easily access them.
+   * =====================================================================================
+   */
+
+  /**
+   * Returns wether or not the checkbox is focused.
+   *
+   * @return A Boolean representing wether or not the checkbox is focused.
+   */
+  public boolean hasFocus() {
+    return Boolean.parseBoolean(super.getAttribute("has-focus"));
+  }
+
+  /**
+   * The method to set wether the checkbox is indeterminate or not.
+   *
+   * @param value a boolean representing wether the checkbox is indeterminate.
+   *
+   * @return this.
+   */
+  public CheckBox setIndeterminate(Boolean value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("indeterminate", value.toString());
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.indeterminate = value;
+    return this;
+  }
+
+  /**
+   * Returns wether or not the checkbox is indeterminate.
+   *
+   * @return A Boolean representing wether or not the checkbox is indeterminate.
+   */
+  public Boolean getIndeterminate() {
+    return this.indeterminate;
+  }
+
+
+
+  /**
+   * The method to set the label of the checkbox.
+   *
+   * @param value the label text to be set.
+   *
+   * @return this.
+   */
+  public CheckBox setLabel(String value) {
+    super.setProperty("label", value);
+    return this;
+  }
+
+  /**
+   * Returns the label of the control.
+   *
+   * @return A String representing the label.
+   */
+  public String getLabel() {
+    return (String) super.getProperty("label");
+  }
+
+  /**
+   * The method to set the name of the checkbox.
+   *
+   * @param value the name text to be set.
+   *
+   * @return this.
+   */
+  public CheckBox setName(String value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("name", value);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.name = value;
+    return this;
+  }
+
+  /**
+   * Returns the name of the control.
+   *
+   * @return A String representing the name.
+   */
+  public String getName() {
+    return this.name;
+  }
+
+  /**
+   * The method to enable or disable the checkbox being required.
+   *
+   * @param value the boolean to determine disable/enable.
+   *
+   * @return this.
+   */
+  public CheckBox setRequired(Boolean value) {
+    if (ctrl != null) {
+      try {
+        ctrl.setAttribute("required", value.toString());
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.required = value;
+    return this;
+  }
+
+  /**
+   * Returns wether or not the checkbox is required.
+   *
+   * @return A Boolean representing wether or not the checkbox is required.
+   */
+  public Boolean getRequired() {
+    return this.required;
+  }
 
 
 
@@ -381,19 +598,13 @@ public final class CheckBox extends AbstractDwcComponent
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (this.checked != null) {
       this.setChecked(this.checked);
-    }
-
-    if (!this.callbacks.isEmpty()) {
-      this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.checkboxCheckEventSink.addCallback(this.callbacks.remove(0));
-      }
     }
 
 
@@ -420,6 +631,18 @@ public final class CheckBox extends AbstractDwcComponent
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setTextAlignment(this.textAlignment);
+    }
+
+    if (Boolean.TRUE.equals(this.indeterminate)) {
+      this.setIndeterminate(this.indeterminate);
+    }
+
+    if (this.name != null) {
+      this.setName(this.name);
+    }
+
+    if (Boolean.TRUE.equals(this.required)) {
+      this.setRequired(this.required);
     }
   }
 
