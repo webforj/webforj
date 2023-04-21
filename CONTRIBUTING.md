@@ -1,4 +1,3 @@
-
 # Contributing to the DWCJ
 We're glad you're interested in contributing to DWCJ, and appreciate our contributors work in making our product even better. This guide is designed to help you get started with contributing to the project. We'll walk you through the process of setting up your development environment, submitting pull requests, and working with the DWCJ community.
 
