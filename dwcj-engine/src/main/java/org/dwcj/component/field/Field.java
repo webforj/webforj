@@ -35,6 +35,8 @@ public final class Field extends AbstractDwcComponent
   private Integer maxLength = 2147483647;
   private FieldType type;
   private String placeholder;
+  private String name;
+  private Boolean required = false;
 
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
@@ -606,6 +608,105 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
+   * Sets the name of the control
+   *
+   * @param name the name
+   * @return the control itself
+   */
+  public Field setName(String name) {
+    if (this.name.equals(name)) {
+      return this;
+    }
+
+    this.name = name;
+    if (ctrl == null) {
+      return this;
+    }
+
+    try {
+      super.setAttribute("name", name);
+      return this;
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set name for the field.", e);
+    }
+  }
+
+  /**
+   * Returns the name of this control.
+   *
+   * @return the name
+   */
+  public String getName() {
+    return this.name;
+  }
+
+  /**
+   * Show/Hide the password if the Field is of type password
+   * 
+   * @param show true to show the password, false to hide it
+   * @return the control itself
+   */
+  public Field showPassword(Boolean show) {
+    super.setProperty("password-reveal", show);
+    return this;
+  }
+
+  /**
+   * Requires a value.
+   * 
+   * @param required true to force a value, false if it can be empty
+   * @return the control itself
+   */
+  public Field setRquired(Boolean required) {
+    if (this.required.equals(required)) {
+      return this;
+    }
+
+    this.required = required;
+
+    if (ctrl == null) {
+      return this;
+    }
+
+    try {
+      super.setAttribute("required", required.toString());
+      return this;
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set required for the field.", e);
+    }
+  } 
+
+  /**
+   * Returns if this requires a value.
+   *
+   * @return true if the field requires value, false otherwise
+   */
+  public Boolean getRequired() {
+    return this.required;
+  }
+
+
+  /**
+   * Set the size of the control. 
+   *
+   * @param size the size
+   * @return the control itself
+   */
+  public Field setSize(Double size) {
+    super.setProperty("size", size);
+    return this;
+  }
+
+  /**
+   * Returns the size of the control.
+   *
+   * @return the size
+   */
+  public Double getSize() {
+    return (Double) super.getProperty("size");
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -888,6 +989,14 @@ public final class Field extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
+    }
+
+    if(Boolean.TRUE.equals(this.required)) {
+      this.setRquired(required);
+    }
+
+    if (this.name != null) {
+      this.setName(name);
     }
 
     if (Boolean.FALSE.equals(this.focusable)) {
