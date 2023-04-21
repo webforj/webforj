@@ -1047,6 +1047,15 @@ public final class Field extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
+  public Field setUserData(String key, Object userData) {
+    super.setUserData(key, userData);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public Field setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
