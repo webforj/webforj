@@ -16,8 +16,12 @@ import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -35,75 +39,84 @@ public final class Field extends AbstractDwcComponent
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
   private BlurEventSink blurEventSink;
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
 
   /** Enum to descripe the Fields types. */
   enum FieldType {
     /** A control for specifying a color; opening a color picker when active. */
     COLOR,
 
-    /** A control for entering a date (year, month, and day, with no time). 
-     * Opens a date picker or numeric wheels for year, month, day when active. 
+    /**
+     * A control for entering a date (year, month, and day, with no time). Opens a date picker or
+     * numeric wheels for year, month, day when active.
      */
     DATE,
-    
-    /** A control for entering a date and time, with no time zone. 
-     * Opens a date picker or numeric wheels for date- and time-components when active. 
+
+    /**
+     * A control for entering a date and time, with no time zone. Opens a date picker or numeric
+     * wheels for date- and time-components when active.
      */
     DATETIME,
-    
-    /** A field for editing an email address. 
-     * Looks like a text input, but has validation parameters. 
+
+    /**
+     * A field for editing an email address. Looks like a text input, but has validation parameters.
      */
     EMAIL,
-    
-    /** A control that lets the user select a file. 
-     * Use the accept attribute to define the types of files that the control can select.
+
+    /**
+     * A control that lets the user select a file. Use the accept attribute to define the types of
+     * files that the control can select.
      */
     FILE,
-    
+
     /** A control for entering a month and year, with no time zone. */
     MONTH,
 
-    /** A control for entering a number. 
-     * Displays a spinner and adds default validation. 
+    /**
+     * A control for entering a number. Displays a spinner and adds default validation.
      */
     NUMBER,
 
     /** A single-line text field whose value is obscured. */
     PASSWORD,
 
-    /** A control for entering a number whose exact value is not important. 
-     * Displays as a range widget defaulting to the middle value. 
-     * Used in conjunction min and max to define the range of acceptable values.
+    /**
+     * A control for entering a number whose exact value is not important. Displays as a range
+     * widget defaulting to the middle value. Used in conjunction min and max to define the range of
+     * acceptable values.
      */
     RANGE,
 
-    /** A single-line text field for entering search strings. 
-     * Line-breaks are automatically removed from the input value. 
-     * May include a delete icon in supporting browsers that can be used to clear the field. 
-     * Displays a search icon instead of enter key on some devices with dynamic keypads. 
+    /**
+     * A single-line text field for entering search strings. Line-breaks are automatically removed
+     * from the input value. May include a delete icon in supporting browsers that can be used to
+     * clear the field. Displays a search icon instead of enter key on some devices with dynamic
+     * keypads.
      */
     SEARCH,
 
     /** A control for entering a telephone number. */
     TEL,
 
-    /** The default value. 
-     * A single-line text field. 
-     * Line-breaks are automatically removed from the input value. 
+    /**
+     * The default value. A single-line text field. Line-breaks are automatically removed from the
+     * input value.
      */
     TEXT,
 
     /** A control for entering a time value with no time zone. */
     TIME,
 
-    /** A field for entering a URL. 
-     * Looks like a text input, but has validation parameters.
+    /**
+     * A field for entering a URL. Looks like a text input, but has validation parameters.
      */
     URL,
 
-    /** A control for entering a date consisting 
-     * of a week-year number and a week number with no time zone. 
+    /**
+     * A control for entering a date consisting of a week-year number and a week number with no time
+     * zone.
      */
     WEEK;
 
@@ -146,6 +159,9 @@ public final class Field extends AbstractDwcComponent
           BASISNUMBER_1, getText(), flags);
       this.focusEventSink = new FocusEventSink(this, dispatcher);
       this.blurEventSink = new BlurEventSink(this, dispatcher);
+      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
 
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
@@ -229,6 +245,124 @@ public final class Field extends AbstractDwcComponent
     dispatcher.removeEventListener(BlurEvent.class, listener);
     if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
       this.blurEventSink.removeCallback();
+    }
+    return this;
+  }
+
+
+  /**
+   * Adds a mouse enter event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addMouseEnterListener(EventListener<MouseEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Field #addMouseEnterListener(EventListener)
+   * @param listener A method to receive the mouse enter event
+   * @return the control itself
+   */
+  public Field onMouseEnter(EventListener<MouseEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Removes a mouse enter event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeMouseEnterListener(EventListener<MouseEvent> listener) {
+    dispatcher.removeEventListener(MouseEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a mouse exit event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addMouseExitListener(EventListener<MouseEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Field #addMouseEnterListener(EventListener)
+   * @param listener A method to receive the mouse enter event
+   * @return the control itself
+   */
+  public Field onMouseExit(EventListener<MouseEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a mouse enter event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeMouseExitListener(EventListener<MouseEvent> listener) {
+    dispatcher.removeEventListener(MouseEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a right mouse down event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addRightMouseDownListener(EventListener<MouseEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see Field #addRightMouseDownListener(EventListener)
+   * @param listener A method to receive the right mouse down event
+   * @return the control itself
+   */
+  public Field onRightMouseDown(EventListener<MouseEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a right mouse down event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeRightMouseDownListener(EventListener<MouseEvent> listener) {
+    dispatcher.removeEventListener(MouseEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
     }
     return this;
   }
@@ -355,7 +489,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether autocorrection is enbaled or not. 
+   * Returns wether autocorrection is enbaled or not.
    *
    * @return true if enabled, false otherwise
    */
@@ -405,12 +539,12 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the Fields label. 
+   * Returns the Fields label.
    *
    * @return the label
    */
   public String getLabel() {
-    return (String) super.getProperty("label"); 
+    return (String) super.getProperty("label");
   }
 
   /**
