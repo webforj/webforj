@@ -4,17 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.MouseEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.mocks.BBjMouseEventMock;
 import org.dwcj.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 /**
- * A class for testing the MouseEvent with different sinks.
+ * A class for testing the RightMouseDownEvent.
  */
-public class MouseEventSinkTests {
+public class RightMouseDownEventSinkTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjMouseEventMock eventMock;
@@ -25,22 +25,11 @@ public class MouseEventSinkTests {
     eventMock = new BBjMouseEventMock();
   }
 
-  /**
-   * A method returning the sinks for the parameterized test.
-   *
-   * @return An array of {@link AbstractMouseEventSink}
-   */
-  public static AbstractMouseEventSink[] getMouseEventSinks() {
-    return new AbstractMouseEventSink[] {new MouseEnterEventSink(componentMock, dispatcher),
-        new MouseExitEventSink(componentMock, dispatcher),
-        new RightMouseDownEventSink(componentMock, dispatcher)};
-  }
-
-  @ParameterizedTest
-  @MethodSource(value = "getMouseEventSinks")
-  @DisplayName("Test the MouseEvent payload with different sinks")
-  void payload(AbstractMouseEventSink sink) {
-    dispatcher.addEventListener(MouseEvent.class, e -> dispatchedEvent = e);
+  @Test
+  @DisplayName("Test the RightMouseDownEvent payload")
+  void payload() {
+    RightMouseDownEventSink sink = new RightMouseDownEventSink(componentMock, dispatcher);
+    dispatcher.addEventListener(RightMouseDownEvent.class, e -> dispatchedEvent = e);
     sink.handleEvent(eventMock);
 
     assertEquals(eventMock.getMouseButton(), dispatchedEvent.getMouseButton());
