@@ -706,6 +706,27 @@ public final class Field extends AbstractDwcComponent
     return (Double) super.getProperty("size");
   }
 
+
+  /**
+   * Enables spellcheck. 
+   *
+   * @param enabled true if spellcheck is enabled, false otherwise
+   * @return the control itself
+   */
+  public Field setSpellcheck(Boolean enabled) {
+    super.setProperty("spellcheck", enabled);
+    return this;
+  }
+
+  /**
+   * Returns the spellcheck value for this control. 
+   *
+   * @return true if spellcheck is enabled, false otherwise
+   */
+  public Boolean getSpellcheck() {
+    return (Boolean) super.getProperty("spellcheck");
+  }
+
   /**
    * {@inheritDoc}
    */
