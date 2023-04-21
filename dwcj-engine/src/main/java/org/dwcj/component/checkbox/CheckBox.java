@@ -13,9 +13,14 @@ import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
+import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.CheckedEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.UncheckedEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.CheckedEventSink;
@@ -180,7 +185,7 @@ public final class CheckBox extends AbstractDwcComponent
   /**
    * Alias for the addUncheckedListener method.
    *
-   * @see Checkbox#addUncheckedLitener(EventListener)
+   * @see Checkbox#addUncheckedListener(EventListener)
    * @param listener the event listener to be added
    * @return The checkbox itself
    */
@@ -189,15 +194,210 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Removes a checked event from the checkbox component.
+   * Removes a unchecked event from the checkbox component.
    *
    * @param listener the event listener to be removed
    * @return The checkbox itself
    */
-  public CheckBox removeClickListener(EventListener<CheckedEvent> listener) {
-    dispatcher.removeEventListener(CheckedEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
-      this.checkedEventSink.removeCallback();
+  public CheckBox removeUncheckedListener(EventListener<UncheckedEvent> listener) {
+    dispatcher.removeEventListener(UncheckedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
+      this.uncheckedEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a focus event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addFocusListener(EventListener<FocusEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.setCallback();
+    }
+    dispatcher.addEventListener(FocusEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addFocusListener method.
+   *
+   * @see Checkbox#addFocusListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
+  }
+
+  /**
+   * Removes a Focus event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeFocusListener(EventListener<FocusEvent> listener) {
+    dispatcher.removeEventListener(FocusEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a Blur event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addBlurListener(EventListener<BlurEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.setCallback();
+    }
+    dispatcher.addEventListener(BlurEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addBlurListener method.
+   *
+   * @see Checkbox#addBlurListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
+  }
+
+  /**
+   * Removes a Blur event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeBlurListener(EventListener<BlurEvent> listener) {
+    dispatcher.removeEventListener(BlurEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseEnter event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Checkbox#addMouseEnterListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Removes a MouseEnter event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseExitListener method.
+   *
+   * @see Checkbox#addMouseExitListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a MouseExit event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see Checkbox#addRightMouseDownListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a RightMouseDown event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
     }
     return this;
   }
