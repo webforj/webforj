@@ -141,6 +141,10 @@ public final class Field extends AbstractDwcComponent
     this(text, FieldType.TEXT);
   }
 
+  public Field(FieldType type) {
+    this("",type);
+  }
+
   /** Constructor which takes a initial text to display and the field type. */
   public Field(String text, FieldType type) {
     setText(text);
