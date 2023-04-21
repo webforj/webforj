@@ -16,11 +16,13 @@ import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.ModifyEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.ModifyEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
@@ -36,8 +38,8 @@ public final class Field extends AbstractDwcComponent
 
   private Integer maxLength = 2147483647;
   private FieldType type;
-  private String placeholder;
-  private String name;
+  private String placeholder = "";
+  private String name = "";
   private Boolean required = false;
 
   private final EventDispatcher dispatcher = new EventDispatcher();
@@ -46,9 +48,10 @@ public final class Field extends AbstractDwcComponent
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
+  private ModifyEventSink modifyEventSink;
 
   /** Enum to describe the Fields types. */
-  enum FieldType {
+  public enum FieldType {
     /** A value for specifying a color; opening a color picker when active. */
     COLOR,
 
@@ -87,8 +90,8 @@ public final class Field extends AbstractDwcComponent
     PASSWORD,
 
     /**
-     * A value for entering a number whose exact value is not important. Displays as a range
-     * widget defaulting to the middle value. Used in conjunction min and max to define the range of
+     * A value for entering a number whose exact value is not important. Displays as a range widget
+     * defaulting to the middle value. Used in conjunction min and max to define the range of
      * acceptable values.
      */
     RANGE,
@@ -157,7 +160,6 @@ public final class Field extends AbstractDwcComponent
     this.focusable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
-
   }
 
   @Override
@@ -166,20 +168,59 @@ public final class Field extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, getText(), flags);
+      ctrl = w.addEditBox(getText(), flags);
       this.focusEventSink = new FocusEventSink(this, dispatcher);
       this.blurEventSink = new BlurEventSink(this, dispatcher);
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+      this.modifyEventSink = new ModifyEventSink(this, dispatcher);
 
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create Field.", e);
     }
+  }
 
+
+  /**
+   * Adds a modify event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addModifyListener(EventListener<ModifyEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(ModifyEvent.class) == 0) {
+      this.modifyEventSink.setCallback();
+    }
+    dispatcher.addEventListener(ModifyEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addModifyListener method.
+   *
+   * @see Field #addModifyListener(EventListener)
+   * @param listener A method to receive the modify event
+   * @return the component itself
+   */
+  public Field onModify(EventListener<ModifyEvent> listener) {
+    return addModifyListener(listener);
+  }
+
+  /**
+   * Removes a modify event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeModifyListener(EventListener<ModifyEvent> listener) {
+    dispatcher.removeEventListener(ModifyEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(ModifyEvent.class) == 0) {
+      this.modifyEventSink.removeCallback();
+    }
+    return this;
   }
 
   /**
@@ -390,10 +431,11 @@ public final class Field extends AbstractDwcComponent
     return this.maxLength;
   }
 
-  /** Getter for the selected text. 
+  /**
+   * Getter for the selected text.
    *
    * @return A string value of the text selected by the user.
-  */
+   */
   public String getSelectedText() {
     if (this.ctrl != null) {
       try {
@@ -405,40 +447,54 @@ public final class Field extends AbstractDwcComponent
     return "";
   }
 
-  /** Getter for the info on the current selection. 
+  /**
+   * Getter for the info on the current selection.
    *
    * @see SelectionInfo
    * @return A SelectionInfo object.
-  */
+   */
   public SelectionInfo getSelectionInfo() {
     if (this.ctrl != null) {
       try {
         BBjVector vec = bbjEditBox.getSelection();
         Integer offsetLeft = (Integer) vec.get(1);
         Integer offsetRight = (Integer) vec.get(3);
+        if (offsetLeft == null) {
+          offsetLeft = 0;
+        }
+        if (offsetRight == null) {
+          offsetRight = 0;
+        }
         return new SelectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
         throw new DwcjRuntimeException("Failed to get selection info.", e);
       }
     }
-    return null;
+    return new SelectionInfo(0, 0, "");
   }
 
-  /** Selects a part of the text based on the provided offsets. 
+  /**
+   * Selects a part of the text based on the provided offsets.
    *
    * @return The object itself.
-  */
+   */
   public Field select(Integer offsetLeft, Integer offsetRight) {
     if (this.ctrl != null) {
+      try {
+        bbjEditBox.focus();
+      } catch (Exception e) {
+        throw new DwcjRuntimeException("Failed to select the text.", e);
+      }
       bbjEditBox.select(offsetLeft, offsetRight);
     }
     return this;
   }
 
-  /** Setter for the max amount of characters for this field. 
+  /**
+   * Setter for the max amount of characters for this field.
    *
    * @return The object itself.
-  */
+   */
   public Field setMaxLength(Integer length) {
     if (this.ctrl != null) {
       try {
@@ -451,10 +507,11 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /** Setter for the fields type. 
+  /**
+   * Setter for the fields type.
    *
    * @return The object itself.
-  */
+   */
   public Field setType(FieldType type) {
     if (this.type == type) {
       return this;
@@ -473,11 +530,12 @@ public final class Field extends AbstractDwcComponent
     }
   }
 
-  /** Getter for the field type. 
+  /**
+   * Getter for the field type.
    *
    * @see FieldType
    * @return The applicable FieldType enum value
-  */
+   */
   public FieldType getType() {
     return this.type;
   }
@@ -583,7 +641,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The maximum set for the component
    */
-  public Field setMax(Double max) {
+  public Field setMax(Integer max) {
     super.setProperty("max", max);
     return this;
   }
@@ -593,8 +651,8 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The maximum value of the component
    */
-  public Double getMax() {
-    return (Double) super.getProperty("max");
+  public Integer getMax() {
+    return (Integer) super.getProperty("max");
   }
 
   /**
@@ -602,7 +660,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The component itself
    */
-  public Field setMin(Double min) {
+  public Field setMin(Integer min) {
     super.setProperty("min", min);
     return this;
   }
@@ -612,8 +670,8 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The minimum value for the component
    */
-  public Double getMin() {
-    return (Double) super.getProperty("min");
+  public Integer getMin() {
+    return (Integer) super.getProperty("min");
   }
 
   /**
@@ -703,7 +761,7 @@ public final class Field extends AbstractDwcComponent
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set required for the field.", e);
     }
-  } 
+  }
 
   /**
    * Returns whether or not this component requires a value.
@@ -716,12 +774,12 @@ public final class Field extends AbstractDwcComponent
 
 
   /**
-   * Set the size of the component. 
+   * Set the size of the component.
    *
    * @param size the size
    * @return the component itself
    */
-  public Field setSize(Double size) {
+  public Field setSize(Integer size) {
     super.setProperty("size", size);
     return this;
   }
@@ -731,13 +789,13 @@ public final class Field extends AbstractDwcComponent
    *
    * @return the size
    */
-  public Double getSize() {
-    return (Double) super.getProperty("size");
+  public Integer getSize() {
+    return (Integer) super.getProperty("size");
   }
 
 
   /**
-   * Enables spellcheck. 
+   * Enables spellcheck.
    *
    * @param enabled true if spellcheck is enabled, false otherwise
    * @return The component itself
@@ -748,7 +806,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the spellcheck value for this component. 
+   * Returns the spellcheck value for this component.
    *
    * @return True if spellcheck is enabled, false otherwise
    */
@@ -1060,6 +1118,10 @@ public final class Field extends AbstractDwcComponent
 
     if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
       this.rightMouseDownEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(ModifyEvent.class) > 0) {
+      this.modifyEventSink.setCallback();
     }
 
     if (this.maxLength != 2147483647) {
