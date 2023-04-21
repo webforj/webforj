@@ -608,7 +608,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Sets the name of the control
+   * Sets the name of the control.
    *
    * @param name the name
    * @return the control itself
@@ -641,8 +641,8 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Show/Hide the password if the Field is of type password
-   * 
+   * Show/Hide the password if the Field is of type password.
+   *
    * @param show true to show the password, false to hide it
    * @return the control itself
    */
@@ -653,7 +653,7 @@ public final class Field extends AbstractDwcComponent
 
   /**
    * Requires a value.
-   * 
+   *
    * @param required true to force a value, false if it can be empty
    * @return the control itself
    */
@@ -1012,7 +1012,7 @@ public final class Field extends AbstractDwcComponent
       this.setReadOnly(this.readOnly);
     }
 
-    if(Boolean.TRUE.equals(this.required)) {
+    if (Boolean.TRUE.equals(this.required)) {
       this.setRquired(required);
     }
 
