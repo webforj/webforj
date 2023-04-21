@@ -1,12 +1,9 @@
 package org.dwcj.component.event.sink;
 
-
-import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjMouseEvent;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.MouseEvent;
 
 /**
  * An abstract class of a mouse event sink which would handle a BBjMouseEvent and dispatch the
@@ -19,26 +16,24 @@ public abstract class AbstractMouseEventSink extends AbstractSink {
   }
 
   /**
-   * Handles the BBj event, populates the event payload map and dispatches a new {@link MouseEvent}.
+   * Helper method to build the payload for BBjMouseEvents.
    *
-   * @param ev A BBj event
+   * @param ev the event
+   * @return the payload
    */
-  public void handleEvent(BBjEvent ev) {
-    BBjMouseEvent event = (BBjMouseEvent) ev;
+  protected HashMap<String, Object> buildPayload(BBjMouseEvent ev) {
     HashMap<String, Object> map = new HashMap<>();
 
-    map.put("mouseButton", event.getMouseButton());
-    map.put("screenX", event.getScreenX());
-    map.put("screenY", event.getScreenY());
-    map.put("x", event.getX());
-    map.put("y", event.getY());
-    map.put("altDown", event.isAltDown());
-    map.put("cmdDown", event.isCmdDown());
-    map.put("controlDown", event.isControlDown());
-    map.put("shiftDown", event.isShiftDown());
+    map.put("mouseButton", ev.getMouseButton());
+    map.put("screenX", ev.getScreenX());
+    map.put("screenY", ev.getScreenY());
+    map.put("x", ev.getX());
+    map.put("y", ev.getY());
+    map.put("altDown", ev.isAltDown());
+    map.put("cmdDown", ev.isCmdDown());
+    map.put("controlDown", ev.isControlDown());
+    map.put("shiftDown", ev.isShiftDown());
 
-
-    MouseEvent dwcEv = new MouseEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    return map;
   }
 }
