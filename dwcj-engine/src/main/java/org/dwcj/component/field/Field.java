@@ -17,8 +17,8 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.MouseEnterEvent;
-import org.dwcj.component.event.MouseEvent;
 import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
@@ -338,11 +338,11 @@ public final class Field extends AbstractDwcComponent
    * @param listener The event
    * @return The component itself
    */
-  public Field addRightMouseDownListener(EventListener<MouseEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+  public Field addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.setCallback();
     }
-    dispatcher.addEventListener(MouseEvent.class, listener);
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
     return this;
   }
 
@@ -353,7 +353,7 @@ public final class Field extends AbstractDwcComponent
    * @param listener A method to receive the right mouse down event
    * @return the control itself
    */
-  public Field onRightMouseDown(EventListener<MouseEvent> listener) {
+  public Field onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);
   }
 
@@ -363,9 +363,9 @@ public final class Field extends AbstractDwcComponent
    * @param listener The event to be removed
    * @return The component itself
    */
-  public Field removeRightMouseDownListener(EventListener<MouseEvent> listener) {
-    dispatcher.removeEventListener(MouseEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEvent.class) == 0) {
+  public Field removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
     }
     return this;
