@@ -622,7 +622,7 @@ public final class RadioButton extends AbstractDwcComponent
     }
 
     if (Boolean.TRUE.equals(this.switched)) {
-      this.setChecked(this.checked);
+      this.setSwitched(this.switched);
     }
 
     if (Boolean.TRUE.equals(this.disabled)) {
