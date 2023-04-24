@@ -76,6 +76,7 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean autoValidate = true;
   private Boolean autoValidateOnLoad = false;
   private Boolean autoWasValidated = false;
+  private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Alignment alignment = Alignment.LEFT;
 
@@ -693,7 +694,17 @@ public final class RadioButton extends AbstractDwcComponent
    */
   public RadioButton setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
+    this.expanse = expanse;
     return this;
+  }
+
+  /**
+   * Returns Expanse of RadioButton.
+   *
+   * @return The Expanse which was set from the setExpanse() method.
+   */
+  public Expanse getExpanse() {
+    return this.expanse;
   }
 
   @Override
