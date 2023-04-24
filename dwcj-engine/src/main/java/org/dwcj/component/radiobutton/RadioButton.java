@@ -2,6 +2,7 @@ package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.resource.preprocessor;
 import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -62,6 +63,13 @@ public final class RadioButton extends AbstractDwcComponent
   private ArrayList<Consumer<RadioButtonCheckEvent>> callbacks = new ArrayList<>();
   private RadioButtonCheckEventSink checkEventSink;
   private Boolean checked = false;
+  private Boolean disabled = false;
+  private Boolean switched = false;
+  private Boolean valid = false;
+  private Boolean required = false;
+  private Boolean autoValidate = true;
+  private Boolean autoValidateOnLoad = false;
+  private Boolean autoWasValidated = false;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Alignment alignment = Alignment.LEFT;
 
@@ -152,6 +160,22 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
+   * True to disable the radio button , false to enable it.
+
+   * @return checks if control is disabled.
+   */
+  public Boolean isDisabled() {
+    if (this.ctrl != null) {
+      try {
+        return !bbjRadioButton.isEnabled();
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.disabled;
+  }
+
+  /**
    * Gets the position of the text alignment in relation to the radio button.
    *
    * @return Enum value of the horizontal text position for the control.
@@ -209,6 +233,212 @@ public final class RadioButton extends AbstractDwcComponent
       }
     }
     this.checked = checked;
+    return this;
+  }
+
+  /**
+   * Returns true if the radio button is validated, false otherwise.
+   *
+   * @return Checks if automatically validated after validation.
+   */
+  public Boolean isAutoWasValidated() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("autoWasValidated"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.autoWasValidated;
+  }
+
+  /**
+   * When true , the control will switch the valid property automatically
+   *      after the control is validated and became valid.
+   *
+   * @param autoWasValidate Boolean to switch automatically after
+   *        validation.
+   * @return The control itself.
+   */
+  public RadioButton setAutoWasValidate(boolean autoWasValidate) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("type", "autoWasValidate");
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.autoWasValidated = autoWasValidate;
+    return this;
+  }
+
+  /**
+   * Returns true if the radio button is validated after first load, false otherwise.
+   *
+   * @return Checks if validated after first load.
+   */ 
+  public Boolean isAutoValidatedOnLoad() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("autoValidateOnLoad"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.autoValidateOnLoad;
+  }
+
+  /**
+   * When true , then the control will be validated when it is loaded for the first time.
+   *
+   * @param autoValidateOnLoad Boolean to validate after first load.
+   * @return The control itself.
+   */
+  public RadioButton setAutoValidateOnLoad(boolean autoValidateOnLoad) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("type", "autoValidateOnLoad");
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.autoValidateOnLoad = autoValidateOnLoad;
+    return this;
+  }
+
+  /**
+   * Returns true if the radio button is validated, false otherwise.
+   *
+   * @return Checks if validated.
+   */ 
+  public Boolean isAutoValidated() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("autoValidate"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.autoValidate;
+  }
+
+  /**
+   * When true , then the control will be validated with every change.
+   *
+   * @param autoValidate Boolean to validate with every change.
+   * @return The control itself.
+   */
+  public RadioButton setAutoValidate(boolean autoValidate) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("type", "autoValidate");
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.autoValidate = autoValidate;
+    return this;
+  }
+
+  /**
+   * Returns true if the radio button is submittable, false otherwise.
+   *
+   * @return Checks if the radioButton is submittable.
+   */ 
+  public Boolean isRequired() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("required"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.required;
+  }
+
+  /**
+   *  A value is required or must be check for the form to be submittable.
+   *
+   * @param required Boolean for the form to be submittable.
+   * @return The control itself.
+   */
+  public RadioButton setRequired(boolean required) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("type", "required");
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.required = required;
+    return this;
+  }
+
+  /**
+   * Returns true if the radio button is valid, false otherwise.
+   *
+   * @return Checks if valid.
+   */ 
+  public Boolean isValid() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("valid"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.valid;
+  }
+
+  /**
+   *  A value is required or must be check for the form to be submittable.
+   *
+   * @param valid Boolean for the form to be submittable.
+   * @return The control itself.
+   */  
+  public RadioButton setValid(boolean valid) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("type", "valid");
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.valid = valid;
+    return this;
+  }
+
+  /**
+   * Returns true if the radioButton is rendered, false otherwise.
+   *
+   * @return Checks if will be rendered.
+   */ 
+  public Boolean isSwitched() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("switch"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.switched;
+  }
+
+  /**
+   *  When true, the radio button will be rendered as a switch.
+   *
+   * @param switched Boolean to be rendered as a switch.
+   * @return The control itself.
+   */
+  public RadioButton setSwitched(boolean switched) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("type", "switch");
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.switched = switched;
     return this;
   }
 
@@ -329,6 +559,7 @@ public final class RadioButton extends AbstractDwcComponent
   @Override
   public RadioButton setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
+    this.disabled = !enabled;
     return this;
   }
 
@@ -485,6 +716,34 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (Boolean.FALSE.equals(this.checked)) {
       this.setChecked(this.checked);
+    }
+
+    if (Boolean.TRUE.equals(this.switched)) {
+      this.setChecked(this.checked);
+    }
+
+    if (Boolean.TRUE.equals(this.disabled)) {
+      this.setEnabled(!this.disabled);
+    }
+
+    if (Boolean.TRUE.equals(this.valid)) {
+      this.setValid(this.valid);
+    }
+
+    if (Boolean.TRUE.equals(this.required)) {
+      this.setRequired(this.required);
+    }
+
+    if (Boolean.FALSE.equals(this.autoValidate)) {
+      this.setAutoValidate(this.autoValidate);
+    }
+
+    if (Boolean.TRUE.equals(this.autoValidateOnLoad)) {
+      this.setAutoValidateOnLoad(this.autoValidateOnLoad);
+    }
+
+    if (Boolean.TRUE.equals(this.autoWasValidated)) {
+      this.setAutoWasValidate(this.autoWasValidated);
     }
 
   }
