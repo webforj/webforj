@@ -2,7 +2,6 @@ package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.resource.preprocessor;
 import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -35,15 +34,22 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
+   * Enum values with respective values for the activation of radioButton.
+   */
+  public enum Activation {
+    AUTO, MANUAL
+  }
+
+  /**
    * Enum values with respective values for the alignment of text position.
    */
   public enum Alignment {
     CENTER(16384), LEFT(8192), RIGHT(32768);
 
-    public final Integer alignment;
+    public final Integer textAlignment;
 
     private Alignment(Integer alignment) {
-      this.alignment = alignment;
+      this.textAlignment = alignment;
     }
   }
 
@@ -71,6 +77,7 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean autoValidateOnLoad = false;
   private Boolean autoWasValidated = false;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
+  private Activation activation = Activation.MANUAL;
   private Alignment alignment = Alignment.LEFT;
 
   /**
@@ -150,7 +157,7 @@ public final class RadioButton extends AbstractDwcComponent
   public RadioButton setAlignment(Alignment align) {
     if (this.ctrl != null) {
       try {
-        bbjRadioButton.setAlignment(align.alignment);
+        bbjRadioButton.setAlignment(align.textAlignment);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -646,6 +653,32 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
+   * Sets the activation of the ratio button from the enum with control-specific applicable
+   * activation values.
+   * 
+   * <pre>
+   * {@code}
+   * RadioButton button = new RadioButton.setActivation(RadioButton.Activation.MANUAL);
+   * }
+   * </pre>
+   *    * @param activation The enum value representing the desired activation.
+   *    * @return the class itself.
+   */
+  public RadioButton setActivation(Activation activation) {
+    super.setAttribute("activation", String.valueOf(activation));
+    return this;
+  }
+
+  /**
+   * Returns Activation of RadioButton.
+   *
+   * @return The Activation which was set from the setActivation() method.
+   */
+  public Activation getActivation() {
+    return Activation.valueOf(super.getAttribute("activation"));
+  }
+
+  /**
    * Sets the expanse of the radio button from the enum with control-specific applicable expanse
    * values.
    *
@@ -660,6 +693,7 @@ public final class RadioButton extends AbstractDwcComponent
    */
   public RadioButton setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
+    this.expanse = expanse;
     return this;
   }
 
@@ -686,7 +720,7 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (this.alignment != Alignment.LEFT) {
       try {
-        bbjRadioButton.setAlignment(alignment.alignment);
+        bbjRadioButton.setAlignment(alignment.textAlignment);
       } catch (BBjException e) {
         Environment.logError(e);
       }
