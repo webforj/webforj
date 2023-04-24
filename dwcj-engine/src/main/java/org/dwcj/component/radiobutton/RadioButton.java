@@ -71,7 +71,6 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean checked = false;
   private Boolean disabled = false;
   private Boolean switched = false;
-  private Boolean valid = false;
   private Boolean required = false;
   private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
@@ -274,39 +273,6 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
-  /**
-   * Returns true if the radio button is valid, false otherwise.
-   *
-   * @return Checks if valid.
-   */ 
-  public Boolean isValid() {
-    if (this.ctrl != null) {
-      try {
-        return Boolean.valueOf(bbjRadioButton.getAttribute("valid"));
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.valid;
-  }
-
-  /**
-   *  A value is required or must be check for the form to be submittable.
-   *
-   * @param valid Boolean for the form to be submittable.
-   * @return The control itself.
-   */  
-  public RadioButton setValid(boolean valid) {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.setAttribute("type", "valid");
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.valid = valid;
-    return this;
-  }
 
   /**
    * Returns true if the radioButton is rendered, false otherwise.
@@ -661,10 +627,6 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.disabled)) {
       this.setEnabled(!this.disabled);
-    }
-
-    if (Boolean.TRUE.equals(this.valid)) {
-      this.setValid(this.valid);
     }
 
     if (Boolean.TRUE.equals(this.required)) {
