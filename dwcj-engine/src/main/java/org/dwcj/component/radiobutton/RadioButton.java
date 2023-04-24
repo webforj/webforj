@@ -244,6 +244,14 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
+  /**
+   * An error message to present to the user when the control is invalid.
+   *
+   * @return The Invalid message for the user.
+   */
+  public String getInvalidMessage() {
+    return super.getAttribute("invalidMessage");
+  }
 
   /**
    * Returns true if the radio button is selected, false otherwise.
