@@ -77,7 +77,6 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean autoValidateOnLoad = false;
   private Boolean autoWasValidated = false;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
-  private Activation activation = Activation.MANUAL;
   private Alignment alignment = Alignment.LEFT;
 
   /**
@@ -678,6 +677,7 @@ public final class RadioButton extends AbstractDwcComponent
     return Activation.valueOf(super.getAttribute("activation"));
   }
 
+
   /**
    * Sets the expanse of the radio button from the enum with control-specific applicable expanse
    * values.
@@ -693,7 +693,6 @@ public final class RadioButton extends AbstractDwcComponent
    */
   public RadioButton setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
-    this.expanse = expanse;
     return this;
   }
 
