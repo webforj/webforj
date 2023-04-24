@@ -73,7 +73,6 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean switched = false;
   private Boolean valid = false;
   private Boolean required = false;
-  private Boolean autoValidate = true;
   private Boolean autoValidateOnLoad = false;
   private Boolean autoWasValidated = false;
   private Expanse expanse = Expanse.LARGE;
@@ -310,40 +309,6 @@ public final class RadioButton extends AbstractDwcComponent
       }
     }
     this.autoValidateOnLoad = autoValidateOnLoad;
-    return this;
-  }
-
-  /**
-   * Returns true if the radio button is validated, false otherwise.
-   *
-   * @return Checks if validated.
-   */ 
-  public Boolean isAutoValidated() {
-    if (this.ctrl != null) {
-      try {
-        return Boolean.valueOf(bbjRadioButton.getAttribute("autoValidate"));
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.autoValidate;
-  }
-
-  /**
-   * When true , then the control will be validated with every change.
-   *
-   * @param autoValidate Boolean to validate with every change.
-   * @return The control itself.
-   */
-  public RadioButton setAutoValidate(boolean autoValidate) {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.setAttribute("type", "autoValidate");
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.autoValidate = autoValidate;
     return this;
   }
 
@@ -776,10 +741,6 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.required)) {
       this.setRequired(this.required);
-    }
-
-    if (Boolean.FALSE.equals(this.autoValidate)) {
-      this.setAutoValidate(this.autoValidate);
     }
 
     if (Boolean.TRUE.equals(this.autoValidateOnLoad)) {
