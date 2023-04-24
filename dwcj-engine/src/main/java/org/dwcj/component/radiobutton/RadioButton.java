@@ -19,8 +19,8 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 
 /**
-  * The class itself extending the abstract DWC Component and implementing interfaces.
-  */
+ * The class itself extending the abstract DWC Component and implementing interfaces.
+ */
 public final class RadioButton extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable {
 
@@ -169,7 +169,7 @@ public final class RadioButton extends AbstractDwcComponent
 
   /**
    * True to disable the radio button , false to enable it.
-
+   *
    * @return checks if control is disabled.
    */
   public Boolean isDisabled() {
@@ -292,7 +292,7 @@ public final class RadioButton extends AbstractDwcComponent
    * Returns true if the radio button is submittable, false otherwise.
    *
    * @return Checks if the radioButton is submittable.
-   */ 
+   */
   public Boolean isRequired() {
     if (this.ctrl != null) {
       try {
@@ -305,7 +305,16 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   *  A value is required or must be check for the form to be submittable.
+   * Returns Radio button label.
+   *
+   * @return The radio button label.
+   */  
+  public String getLabel() {
+    return String.valueOf(super.getProperty("label"));
+  }
+
+  /**
+   * A value is required or must be check for the form to be submittable.
    *
    * @param required Boolean for the form to be submittable.
    * @return The control itself.
@@ -327,7 +336,7 @@ public final class RadioButton extends AbstractDwcComponent
    * Returns true if the radioButton is rendered, false otherwise.
    *
    * @return Checks if will be rendered.
-   */ 
+   */
   public Boolean isSwitched() {
     if (this.ctrl != null) {
       try {
@@ -340,7 +349,7 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   *  When true, the radio button will be rendered as a switch.
+   * When true, the radio button will be rendered as a switch.
    *
    * @param switched Boolean to be rendered as a switch.
    * @return The control itself.
@@ -508,7 +517,7 @@ public final class RadioButton extends AbstractDwcComponent
   /**
    * {@inheritDoc}
    */
-  @Override 
+  @Override
   public RadioButton setUserData(String key, Object data) {
     super.setUserData(key, data);
     return this;
@@ -550,7 +559,7 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
-  
+
   /**
    * {@inheritDoc}
    */
@@ -563,14 +572,15 @@ public final class RadioButton extends AbstractDwcComponent
   /**
    * Sets the activation of the ratio button from the enum with control-specific applicable
    * activation values.
-   * 
+   *
    * <pre>
    * {@code}
    * RadioButton button = new RadioButton.setActivation(RadioButton.Activation.MANUAL);
    * }
    * </pre>
-   *    * @param activation The enum value representing the desired activation.
-   *    * @return the class itself.
+   *
+   * * @param activation The enum value representing the desired activation. * @return the class
+   * itself.
    */
   public RadioButton setActivation(Activation activation) {
     super.setAttribute("activation", String.valueOf(activation));
@@ -618,7 +628,7 @@ public final class RadioButton extends AbstractDwcComponent
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
   // of checks
-  
+
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
