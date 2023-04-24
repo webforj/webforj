@@ -162,6 +162,10 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
+  public Boolean hasFocus() {
+    return Boolean.valueOf(super.getAttribute("hasFocus"));
+  }
+
   /**
    * True to disable the radio button , false to enable it.
 
