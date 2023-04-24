@@ -3,6 +3,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import javax.swing.GroupLayout.Alignment;
 import org.dwcj.component.radiobutton.RadioButton;
 import org.dwcj.component.radiobutton.RadioButton.Expanse;
+import org.dwcj.component.radiobutton.RadioButton.HorizontalTextPosition;
+import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
@@ -186,16 +188,52 @@ public class RadioButtonComponentTest {
     @DisplayName("The RadioButton should set/remove className")
     void testRadioButtonClassName() {
         radioButton.addClassName("myId");
-        // wrong
+        // cannot be tested yet
     }
 
     @Test
     @DisplayName("Expanse of RadioButton should take an effect")
-    void textRadioButtonExpanse() {
+    void testRadioButtonExpanse() {
         radioButton.setExpanse(Expanse.MEDIUM);
-        // wrong
+        // cannot be tested yet
     }
 
-    
+    @Test
+    @DisplayName("Text of RadioButton should be displayed in respectively horizontal position")
+    void testRadioButtonHorizontalText() {
+        radioButton.setHorizontalTextPosition(HorizontalTextPosition.RIGHT);
+        assertEquals(HorizontalTextPosition.RIGHT, radioButton.getHorizontalTextPosition());
+        radioButton.setHorizontalTextPosition(HorizontalTextPosition.LEFT);
+        assertEquals(HorizontalTextPosition.LEFT, radioButton.getHorizontalTextPosition());
+        radioButton.setHorizontalTextPosition(HorizontalTextPosition.LEADING);
+        assertEquals(HorizontalTextPosition.LEADING, radioButton.getHorizontalTextPosition());
+        radioButton.setHorizontalTextPosition(HorizontalTextPosition.TRAILING);
+        assertEquals(HorizontalTextPosition.TRAILING, radioButton.getHorizontalTextPosition());
+        radioButton.setHorizontalTextPosition(HorizontalTextPosition.CENTER);
+        assertEquals(HorizontalTextPosition.CENTER, radioButton.getHorizontalTextPosition());
+    }
+
+    @RepeatedTest(5)
+    @DisplayName("Ensure handling of defaul value")
+    void testDefaulRadioButtonHorizontalText() {
+        assertEquals(HorizontalTextPosition.RIGHT, radioButton.getHorizontalTextPosition());
+    }
+
+    @Test
+    @DisplayName("Event should be executed successfully")
+    void testRadioButtonOnChange() {
+        radioButton.onChange(e -> {
+            radioButton.setText("Success");
+        });
+        assertEquals("Success", radioButton.getText());
+        // cannot be tested yet
+    }
+
+    @Test
+    @DisplayName("Checking if RadioButton is disabled")
+    void testRadioButtonDisabled() {
+        radioButton.setEnabled(false);
+        assertEquals(true, radioButton.isDisabled());
+    }
 
 }
