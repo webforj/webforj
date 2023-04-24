@@ -72,6 +72,7 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean disabled = false;
   private Boolean switched = false;
   private Boolean required = false;
+  private Boolean invalid = false;
   private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Alignment alignment = Alignment.LEFT;
@@ -207,6 +208,42 @@ public final class RadioButton extends AbstractDwcComponent
     this.horizontalTextPosition = position;
     return this;
   }
+
+
+  /**
+   * Returns true to indicate that the user input is invalid, false otherwise.
+   *
+   * @return Boolean value representing if the users input is valid.
+   */
+  public Boolean isInvalid() {
+    if (this.ctrl != null) {
+      try {
+        return Boolean.valueOf(bbjRadioButton.getAttribute("invalid"));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.invalid;
+  }
+
+  /**
+   * Indicates whether the users input is valid or not.
+   *
+   * @param invalid Boolean to check the validity of users input.
+   * @return The control itself.
+   */
+  public RadioButton setInvalid(boolean invalid) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("invalid", String.valueOf(invalid));
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.invalid = invalid;
+    return this;
+  }
+
 
   /**
    * Returns true if the radio button is selected, false otherwise.
