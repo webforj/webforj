@@ -85,7 +85,6 @@ public final class RadioButton extends AbstractDwcComponent
   private Activation activation = Activation.MANUAL;
   private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
-  private Alignment alignment = Alignment.LEFT;
 
   /**
    * The Constructor with expected behavior after an instance of it created.
@@ -599,7 +598,6 @@ public final class RadioButton extends AbstractDwcComponent
    * RadioButton button = new RadioButton.setActivation(RadioButton.Activation.MANUAL);
    * }
    * </pre>
-   *
    * * @param activation The enum value representing the desired activation. * @return the class
    * itself.
    */
@@ -633,8 +631,6 @@ public final class RadioButton extends AbstractDwcComponent
    * @return the class.
    */
   public RadioButton setExpanse(Expanse expanse) {
-    // super.setControlExpanse(expanse);
-   // super.setAttribute("expanse", String.valueOf(expanse));
     this.expanse = expanse;
     return this;
   }
@@ -669,7 +665,7 @@ public final class RadioButton extends AbstractDwcComponent
       }
     }
 
-    if (this.textAlignment != Alignment.LEFT) {
+    if (this.textAlignment != Alignment.MIDDLE) {
       this.setTextAlignment(this.textAlignment);
     }
 
