@@ -73,6 +73,7 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean switched = false;
   private Boolean required = false;
   private Boolean invalid = false;
+  private Activation activation = Activation.MANUAL;
   private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Alignment alignment = Alignment.LEFT;
@@ -584,6 +585,7 @@ public final class RadioButton extends AbstractDwcComponent
    */
   public RadioButton setActivation(Activation activation) {
     super.setAttribute("activation", String.valueOf(activation));
+    this.activation = activation;
     return this;
   }
 
@@ -593,7 +595,7 @@ public final class RadioButton extends AbstractDwcComponent
    * @return The Activation which was set from the setActivation() method.
    */
   public Activation getActivation() {
-    return Activation.valueOf(super.getAttribute("activation"));
+    return this.activation;
   }
 
 
