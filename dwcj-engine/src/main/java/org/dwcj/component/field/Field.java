@@ -509,7 +509,7 @@ public final class Field extends AbstractDwcComponent
    * @param enabled true if enabled, false otherwise
    * @return The component itself
    */
-  public Field enableAutocorrect(Boolean enabled) {
+  public Field setAutocorrect(Boolean enabled) {
     final String value;
     if (Boolean.TRUE.equals(enabled)) {
       value = "on";
@@ -525,7 +525,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return True if enabled, false otherwise
    */
-  public Boolean hasAutocorrect() {
+  public Boolean isAutocorrect() {
     final String value = (String) super.getProperty("autocorrect");
     return value.equals("on");
   }
@@ -536,7 +536,7 @@ public final class Field extends AbstractDwcComponent
    * @param enabled true for enabling, false otherwise
    * @return The component itself
    */
-  public Field enableAutofocus(Boolean enabled) {
+  public Field setAutofocus(Boolean enabled) {
     super.setProperty("autofocus", enabled);
     return this;
   }
@@ -546,7 +546,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return True if enabled, false otherwise
    */
-  public Boolean isAutofocusEnabled() {
+  public Boolean isAutofocus() {
     return (Boolean) super.getProperty("autofocus");
   }
 
@@ -711,7 +711,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return True if the field requires value, false otherwise
    */
-  public Boolean getRequired() {
+  public Boolean isRequired() {
     return this.required;
   }
 
@@ -753,8 +753,29 @@ public final class Field extends AbstractDwcComponent
    *
    * @return True if spellcheck is enabled, false otherwise
    */
-  public Boolean getSpellcheck() {
+  public Boolean isSpellcheck() {
     return (Boolean) super.getProperty("spellcheck");
+  }
+
+
+  /**
+   * Sets the incremental step for when the control type is range.
+   *
+   * @param step the amount of each step
+   * @return the control itself
+   */
+  public Field setStep(Integer step) {
+    super.setProperty("step", step);
+    return this;
+  }
+
+  /**
+   * Returns the step value for this control.
+   *
+   * @return the amount of each step
+   */
+  public Integer getStep() {
+    return (Integer) super.getProperty("step");
   }
 
   /**
