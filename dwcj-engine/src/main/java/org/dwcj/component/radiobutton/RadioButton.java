@@ -12,6 +12,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.TextAlignable;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -22,9 +23,56 @@ import org.dwcj.util.BBjFunctionalityHelper;
  * The class itself extending the abstract DWC Component and implementing interfaces.
  */
 public final class RadioButton extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable {
+    implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
 
   private BBjRadioButton bbjRadioButton;
+
+
+  @Override
+  public Alignment getTextAlignment() {
+    return this.textAlignment;
+  }
+
+  @Override
+  public RadioButton setTextAlignment(Alignment alignment) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAlignment(alignment.textPosition);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.textAlignment = alignment;
+    return this;
+  }
+
+
+/*  *//**
+   * Gets the aligntment of text in radio button.
+   *
+   * @return Enum value of the alignment for the control.
+   *//*
+  public Alignment getAlignment() {
+    return this.alignment;
+  }
+
+  *//**
+   * Sets the alignment of the text.
+   *
+   * @return The control itself.
+   *//*
+
+  public RadioButton setAlignment(Alignment alignment) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAlignment(alignment.alignment);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.alignment = alignment;
+    return this;
+  }*/
 
   /**
    * Enum values with respective values for the expanse of the text.
@@ -40,18 +88,18 @@ public final class RadioButton extends AbstractDwcComponent
     AUTO, MANUAL
   }
 
-  /**
+/*  *//**
    * Enum values with respective values for the alignment of text position.
-   */
+   *//*
   public enum Alignment {
-    CENTER(16384), LEFT(8192), RIGHT(32768);
+    LEFT(8192), MIDDLE(16384), RIGHT(32768);
 
-    public final Integer textAlignment;
+    public final Integer textPosition;
 
-    private Alignment(Integer alignment) {
-      this.textAlignment = alignment;
+    private Alignment(Integer position) {
+      this.textPosition = position;
     }
-  }
+  }*/
 
   /**
    * Enum values with respective values for the horizontal text position.
@@ -85,6 +133,7 @@ public final class RadioButton extends AbstractDwcComponent
     this.readOnly = false;
     this.focusable = true;
     this.tabTraversable = true;
+    this.textAlignment = Alignment.MIDDLE;
   }
 
   @Override
@@ -136,32 +185,6 @@ public final class RadioButton extends AbstractDwcComponent
     App.consoleError(
         "ID cannot be fetched as control does not yet exist. Please add control to a window first");
     return null;
-  }
-
-  /**
-   * Gets the aligntment of text in radio button.
-   *
-   * @return Enum value of the alignment for the control.
-   */
-  public Alignment getAlignment() {
-    return this.alignment;
-  }
-
-  /**
-   * Sets the alignment of the text.
-   *
-   * @return The control itself.
-   */
-  public RadioButton setAlignment(Alignment align) {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.setAlignment(align.textAlignment);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.alignment = align;
-    return this;
   }
 
   public Boolean hasFocus() {
@@ -309,7 +332,7 @@ public final class RadioButton extends AbstractDwcComponent
    * Returns Radio button label.
    *
    * @return The radio button label.
-   */  
+   */
   public String getLabel() {
     return String.valueOf(super.getProperty("label"));
   }
@@ -584,7 +607,7 @@ public final class RadioButton extends AbstractDwcComponent
    * itself.
    */
   public RadioButton setActivation(Activation activation) {
-    super.setAttribute("activation", String.valueOf(activation));
+    super.setAttribute("activation", String.valueOf(activation).toLowerCase());
     this.activation = activation;
     return this;
   }
@@ -613,7 +636,8 @@ public final class RadioButton extends AbstractDwcComponent
    * @return the class.
    */
   public RadioButton setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
+    // super.setControlExpanse(expanse);
+   // super.setAttribute("expanse", String.valueOf(expanse));
     this.expanse = expanse;
     return this;
   }
@@ -648,13 +672,8 @@ public final class RadioButton extends AbstractDwcComponent
       }
     }
 
-    if (this.alignment != Alignment.LEFT) {
-      try {
-        bbjRadioButton.setAlignment(alignment.textAlignment);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-      this.setAlignment(this.alignment);
+    if (this.textAlignment != Alignment.LEFT) {
+      this.setTextAlignment(this.textAlignment);
     }
 
     if (this.horizontalTextPosition != HorizontalTextPosition.RIGHT) {
@@ -694,5 +713,4 @@ public final class RadioButton extends AbstractDwcComponent
       this.setRequired(this.required);
     }
   }
-
 }
