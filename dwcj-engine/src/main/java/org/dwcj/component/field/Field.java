@@ -47,7 +47,7 @@ public final class Field extends AbstractDwcComponent
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
 
-  /** Enum to descripe the Fields types. */
+  /** Enum to describe the Fields types. */
   enum FieldType {
     /** A control for specifying a color; opening a color picker when active. */
     COLOR,
@@ -391,7 +391,7 @@ public final class Field extends AbstractDwcComponent
     return this.maxLength;
   }
 
-  /** Getter for the selcted text. */
+  /** Getter for the selected text. */
   public String getSelectedText() {
     if (this.ctrl != null) {
       try {
@@ -570,7 +570,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the maximum for nuremic types.
+   * Returns the maximum for numeric types.
    *
    * @return the maximum
    */
@@ -589,7 +589,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the minimum for nuremic types.
+   * Returns the minimum for numeric types.
    *
    * @return the minimum
    */
@@ -667,7 +667,7 @@ public final class Field extends AbstractDwcComponent
    * @param required true to force a value, false if it can be empty
    * @return the control itself
    */
-  public Field setRquired(Boolean required) {
+  public Field setRequired(Boolean required) {
     if (this.required.equals(required)) {
       return this;
     }
@@ -1035,7 +1035,7 @@ public final class Field extends AbstractDwcComponent
     }
 
     if (Boolean.TRUE.equals(this.required)) {
-      this.setRquired(required);
+      this.setRequired(required);
     }
 
     if (this.name != null) {
