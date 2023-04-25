@@ -33,11 +33,11 @@ class KeypressEventSinkTest {
 
     assertEquals(eventMock.getKeyCode(), dispatchedEvent.getKeyCode());
     assertEquals(eventMock.getKeyCodeWithFlags(), dispatchedEvent.getKeyCodeWithFlags());
-    assertEquals(eventMock.getModifiersEx(), dispatchedEvent.getModifiersEx());
-    assertEquals(eventMock.isAltDown(), dispatchedEvent.isAltDown());
-    assertEquals(eventMock.isCmdDown(), dispatchedEvent.isCmdDown());
-    assertEquals(eventMock.isControlDown(), dispatchedEvent.isControlDown());
-    assertEquals(eventMock.isShiftDown(), dispatchedEvent.isShiftDown());
+    assertEquals(eventMock.getModifiersEx(), dispatchedEvent.getExtendedModifiers());
+    assertEquals(eventMock.isAltDown(), dispatchedEvent.isAltKey());
+    assertEquals(eventMock.isCmdDown(), dispatchedEvent.isCmdKey());
+    assertEquals(eventMock.isControlDown(), dispatchedEvent.isControlKey());
+    assertEquals(eventMock.isShiftDown(), dispatchedEvent.isShiftKey());
   }
 }
 
