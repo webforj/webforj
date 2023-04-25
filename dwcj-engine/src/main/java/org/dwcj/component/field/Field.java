@@ -142,7 +142,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   public Field(FieldType type) {
-    this("",type);
+    this("", type);
   }
 
   public static Field password() {
