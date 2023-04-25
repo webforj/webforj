@@ -152,10 +152,6 @@ public final class Field extends AbstractDwcComponent
     return new Field(FieldType.PASSWORD);
   }
 
-  public static Field password() {
-    return new Field(FieldType.PASSWORD);
-  }
-
   /** Constructor which takes a initial text to display and the field type. */
   public Field(String text, FieldType type) {
     setText(text);
