@@ -121,6 +121,7 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean switched = false;
   private Boolean required = false;
   private Boolean invalid = false;
+  private String invalidMessage = "";
   private Activation activation = Activation.MANUAL;
   private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
@@ -274,7 +275,25 @@ public final class RadioButton extends AbstractDwcComponent
    * @return The Invalid message for the user.
    */
   public String getInvalidMessage() {
-    return super.getAttribute("invalidMessage");
+    return this.invalidMessage;
+  }
+
+  /**
+   * Sets the message to present to the user when control is invalid.
+   *
+   * @param message A string message to present to the user when control is invalid.
+   * @return The control itself.
+   */
+  public RadioButton setInvalidMessage(String message) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("invalidMessage", message);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.invalidMessage = message;
+    return this;
   }
 
   /**
