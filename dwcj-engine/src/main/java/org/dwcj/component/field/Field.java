@@ -758,10 +758,10 @@ public final class Field extends AbstractDwcComponent
 
 
   /**
-   * Sets the incremental step for when the control type is range.
+   * Sets the incremental step for when the component type is range.
    *
    * @param step the amount of each step
-   * @return the control itself
+   * @return The component itself
    */
   public Field setStep(Integer step) {
     super.setProperty("step", step);
@@ -769,9 +769,9 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the step value for this control.
+   * Returns the step value for this component.
    *
-   * @return the amount of each step
+   * @return The amount of each step
    */
   public Integer getStep() {
     return (Integer) super.getProperty("step");
