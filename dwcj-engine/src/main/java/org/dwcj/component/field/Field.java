@@ -1043,7 +1043,6 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-
   /**
    * {@inheritDoc}
    */
