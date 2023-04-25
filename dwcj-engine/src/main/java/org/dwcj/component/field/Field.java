@@ -1043,14 +1043,6 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Field setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
 
   /**
    * {@inheritDoc}
