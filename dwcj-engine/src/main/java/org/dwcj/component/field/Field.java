@@ -155,7 +155,6 @@ public final class Field extends AbstractDwcComponent
     setType(type);
     this.readOnly = false;
     this.focusable = true;
-    this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
 
