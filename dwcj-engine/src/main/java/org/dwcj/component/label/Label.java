@@ -11,7 +11,7 @@ import org.dwcj.component.TextAlignable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class Label extends AbstractDwcComponent implements TextAlignable {
+public final class Label extends AbstractDwcComponent {
 
   /*
    * top, right, bottom, left margins, used simple array as user will not have to interact directly
@@ -29,7 +29,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label(String text) {
     setText(text);
-    this.textAlignment = Alignment.LEFT;
+    
   }
 
   @Override
@@ -44,24 +44,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     } catch (Exception e) {
       Environment.logError(e);
     }
-  }
-
-  @Override
-  public Alignment getTextAlignment() {
-    return this.textAlignment;
-  }
-
-  @Override
-  public Label setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjStaticText) ctrl).setAlignment(alignment.textPosition);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
-    return this;
   }
 
   @Override
