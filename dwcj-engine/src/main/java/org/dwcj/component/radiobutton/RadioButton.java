@@ -46,34 +46,6 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
-
-/*  *//**
-   * Gets the aligntment of text in radio button.
-   *
-   * @return Enum value of the alignment for the control.
-   *//*
-  public Alignment getAlignment() {
-    return this.alignment;
-  }
-
-  *//**
-   * Sets the alignment of the text.
-   *
-   * @return The control itself.
-   *//*
-
-  public RadioButton setAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.setAlignment(alignment.alignment);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.alignment = alignment;
-    return this;
-  }*/
-
   /**
    * Enum values with respective values for the expanse of the text.
    */
@@ -87,19 +59,6 @@ public final class RadioButton extends AbstractDwcComponent
   public enum Activation {
     AUTO, MANUAL
   }
-
-/*  *//**
-   * Enum values with respective values for the alignment of text position.
-   *//*
-  public enum Alignment {
-    LEFT(8192), MIDDLE(16384), RIGHT(32768);
-
-    public final Integer textPosition;
-
-    private Alignment(Integer position) {
-      this.textPosition = position;
-    }
-  }*/
 
   /**
    * Enum values with respective values for the horizontal text position.
@@ -122,6 +81,7 @@ public final class RadioButton extends AbstractDwcComponent
   private Boolean required = false;
   private Boolean invalid = false;
   private String invalidMessage = "";
+  private String label = "";
   private Activation activation = Activation.MANUAL;
   private Expanse expanse = Expanse.LARGE;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
@@ -353,7 +313,25 @@ public final class RadioButton extends AbstractDwcComponent
    * @return The radio button label.
    */
   public String getLabel() {
-    return String.valueOf(super.getProperty("label"));
+    return this.label;
+  }
+
+  /**
+   * The radio button label.
+   *
+   * @param label The radio button label.
+   * @return The control itself.
+   */
+  public RadioButton setLabel(String label) {
+    if (this.ctrl != null) {
+      try {
+        bbjRadioButton.setAttribute("label", label);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.label = label;
+    return this;
   }
 
   /**
