@@ -49,17 +49,17 @@ public final class Field extends AbstractDwcComponent
 
   /** Enum to describe the Fields types. */
   enum FieldType {
-    /** A control for specifying a color; opening a color picker when active. */
+    /** A value for specifying a color; opening a color picker when active. */
     COLOR,
 
     /**
-     * A control for entering a date (year, month, and day, with no time). Opens a date picker or
+     * A value for entering a date (year, month, and day, with no time). Opens a date picker or
      * numeric wheels for year, month, day when active.
      */
     DATE,
 
     /**
-     * A control for entering a date and time, with no time zone. Opens a date picker or numeric
+     * A value for entering a date and time, with no time zone. Opens a date picker or numeric
      * wheels for date- and time-components when active.
      */
     DATETIME,
@@ -70,16 +70,16 @@ public final class Field extends AbstractDwcComponent
     EMAIL,
 
     /**
-     * A control that lets the user select a file. Use the accept attribute to define the types of
-     * files that the control can select.
+     * A value that lets the user select a file. Use the accept attribute to define the types of
+     * files that the component can select.
      */
     FILE,
 
-    /** A control for entering a month and year, with no time zone. */
+    /** A value for entering a month and year, with no time zone. */
     MONTH,
 
     /**
-     * A control for entering a number. Displays a spinner and adds default validation.
+     * A value for entering a number. Displays a spinner and adds default validation.
      */
     NUMBER,
 
@@ -87,7 +87,7 @@ public final class Field extends AbstractDwcComponent
     PASSWORD,
 
     /**
-     * A control for entering a number whose exact value is not important. Displays as a range
+     * A value for entering a number whose exact value is not important. Displays as a range
      * widget defaulting to the middle value. Used in conjunction min and max to define the range of
      * acceptable values.
      */
@@ -101,7 +101,7 @@ public final class Field extends AbstractDwcComponent
      */
     SEARCH,
 
-    /** A control for entering a telephone number. */
+    /** A value for entering a telephone number. */
     TEL,
 
     /**
@@ -110,7 +110,7 @@ public final class Field extends AbstractDwcComponent
      */
     TEXT,
 
-    /** A control for entering a time value with no time zone. */
+    /** A value for entering a time value with no time zone. */
     TIME,
 
     /**
@@ -119,7 +119,7 @@ public final class Field extends AbstractDwcComponent
     URL,
 
     /**
-     * A control for entering a date consisting of a week-year number and a week number with no time
+     * A value for entering a date consisting of a week-year number and a week number with no time
      * zone.
      */
     WEEK;
@@ -202,7 +202,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @see Field #addFocusListener(EventListener)
    * @param listener A method to receive the focus event
-   * @return the control itself
+   * @return the component itself
    */
   public Field onFocus(EventListener<FocusEvent> listener) {
     return addFocusListener(listener);
@@ -223,7 +223,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Adds a blur event for the Field component.
+   * Adds a blur event for the Field component. A blur event fires when a component looses focus.
    *
    * @param listener The event
    * @return The component itself
@@ -241,14 +241,14 @@ public final class Field extends AbstractDwcComponent
    *
    * @see Field #addBlurListener(EventListener)
    * @param listener A method to receive the blur event
-   * @return the control itself
+   * @return the component itself
    */
   public Field onBlur(EventListener<BlurEvent> listener) {
     return addBlurListener(listener);
   }
 
   /**
-   * Removes a blur event from the Field component.
+   * Removes a blur event from the Field component. Fires when a component looses focus.
    *
    * @param listener The event to be removed
    * @return The component itself
@@ -281,7 +281,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @see Field #addMouseEnterListener(EventListener)
    * @param listener A method to receive the mouse enter event
-   * @return the control itself
+   * @return the component itself
    */
   public Field onMouseEnter(EventListener<MouseEnterEvent> listener) {
     return addMouseEnterListener(listener);
@@ -320,7 +320,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @see Field #addMouseEnterListener(EventListener)
    * @param listener A method to receive the mouse enter event
-   * @return the control itself
+   * @return the component itself
    */
   public Field onMouseExit(EventListener<MouseExitEvent> listener) {
     return addMouseExitListener(listener);
@@ -359,7 +359,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @see Field #addRightMouseDownListener(EventListener)
    * @param listener A method to receive the right mouse down event
-   * @return the control itself
+   * @return the component itself
    */
   public Field onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);
@@ -391,7 +391,10 @@ public final class Field extends AbstractDwcComponent
     return this.maxLength;
   }
 
-  /** Getter for the selected text. */
+  /** Getter for the selected text. 
+   * 
+   * @return A string value of the text selected by the user.
+  */
   public String getSelectedText() {
     if (this.ctrl != null) {
       try {
@@ -403,7 +406,11 @@ public final class Field extends AbstractDwcComponent
     return "";
   }
 
-  /** Getter for the info on the current selection. */
+  /** Getter for the info on the current selection. 
+   * 
+   * @see SelectionInfo
+   * @return A SelectionInfo object.
+  */
   public SelectionInfo getSelectionInfo() {
     if (this.ctrl != null) {
       try {
@@ -418,7 +425,10 @@ public final class Field extends AbstractDwcComponent
     return null;
   }
 
-  /** Selects a part of the text based on the provided offsets. */
+  /** Selects a part of the text based on the provided offsets. 
+   * 
+   * @return The object itself.
+  */
   public Field select(Integer offsetLeft, Integer offsetRight) {
     if (this.ctrl != null) {
       bbjEditBox.select(offsetLeft, offsetRight);
@@ -426,7 +436,10 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /** Setter for the max amount of characters for this field. */
+  /** Setter for the max amount of characters for this field. 
+   * 
+   * @return The object itself.
+  */
   public Field setMaxLength(Integer length) {
     if (this.ctrl != null) {
       try {
@@ -439,7 +452,10 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /** Setter for the fields type. */
+  /** Setter for the fields type. 
+   * 
+   * @return The object itself.
+  */
   public Field setType(FieldType type) {
     if (this.type == type) {
       return this;
@@ -458,16 +474,20 @@ public final class Field extends AbstractDwcComponent
     }
   }
 
-  /** Getter for the field type. */
+  /** Getter for the field type. 
+   * 
+   * @see FieldType
+   * @return The applicable FieldType enum value
+  */
   public FieldType getType() {
     return this.type;
   }
 
   /**
-   * Sets the hint for expected file type in file upload controls.
+   * Sets the hint for expected file type in file upload components.
    *
    * @param types expected file types
-   * @return the control itself
+   * @return The component itself
    */
   public Field setExpectedFileTypes(String types) {
     super.setProperty("accept", types);
@@ -475,9 +495,9 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the file types in file upload controls.
+   * Returns the file types in file upload components.
    *
-   * @return the expected file types
+   * @return The expected file types
    */
   public String getExpectedFileTypes() {
     return (String) super.getProperty("accept");
@@ -487,7 +507,7 @@ public final class Field extends AbstractDwcComponent
    * Enables autocorrection. Safari only.
    *
    * @param enabled true if enabled, false otherwise
-   * @return the control itself
+   * @return The component itself
    */
   public Field enableAutocorrect(Boolean enabled) {
     final String value;
@@ -501,9 +521,9 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether autocorrection is enbaled or not.
+   * Returns whether autocorrection is enbaled or not.
    *
-   * @return true if enabled, false otherwise
+   * @return True if enabled, false otherwise
    */
   public Boolean hasAutocorrect() {
     final String value = (String) super.getProperty("autocorrect");
@@ -511,10 +531,10 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Automatically focus the control when the page is loaded.
+   * Automatically focus the component when the page is loaded.
    *
    * @param enabled true for enabling, false otherwise
-   * @return the control itself
+   * @return The component itself
    */
   public Field enableAutofocus(Boolean enabled) {
     super.setProperty("autofocus", enabled);
@@ -522,18 +542,18 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns if the control gets autofocused when the page is loaded.
+   * Returns if the component gets autofocused when the page is loaded.
    *
-   * @return true if enabled, false otherwise
+   * @return True if enabled, false otherwise
    */
   public Boolean isAutofocusEnabled() {
     return (Boolean) super.getProperty("autofocus");
   }
 
   /**
-   * Returns if the control is currently focused.
+   * Returns if the component is currently focused.
    *
-   * @return true if the control currently has focus, false otherwise
+   * @return True if the component currently has focus, false otherwise
    */
   public Boolean hasFocus() {
     return Boolean.parseBoolean(super.getAttribute("has-focus"));
@@ -543,7 +563,7 @@ public final class Field extends AbstractDwcComponent
    * The Fields label.
    *
    * @param label the label displayed
-   * @return the control itself
+   * @return The component itself
    */
   public Field setLabel(String label) {
     super.setProperty("label", label);
@@ -553,7 +573,7 @@ public final class Field extends AbstractDwcComponent
   /**
    * Returns the Fields label.
    *
-   * @return the label
+   * @return Component's label
    */
   public String getLabel() {
     return (String) super.getProperty("label");
@@ -562,7 +582,7 @@ public final class Field extends AbstractDwcComponent
   /**
    * Sets the maximum for numeric types.
    *
-   * @return the maximum
+   * @return The maximum set for the component
    */
   public Field setMax(Double max) {
     super.setProperty("max", max);
@@ -572,7 +592,7 @@ public final class Field extends AbstractDwcComponent
   /**
    * Returns the maximum for numeric types.
    *
-   * @return the maximum
+   * @return The maximum value of the component
    */
   public Double getMax() {
     return (Double) super.getProperty("max");
@@ -581,7 +601,7 @@ public final class Field extends AbstractDwcComponent
   /**
    * Sets the minimum for numeric types.
    *
-   * @return the minimum
+   * @return The component itself
    */
   public Field setMin(Double min) {
     super.setProperty("min", min);
@@ -591,7 +611,7 @@ public final class Field extends AbstractDwcComponent
   /**
    * Returns the minimum for numeric types.
    *
-   * @return the minimum
+   * @return The minimum value for the component
    */
   public Double getMin() {
     return (Double) super.getProperty("min");
@@ -601,7 +621,7 @@ public final class Field extends AbstractDwcComponent
    * Sets the minimum amount of characters.
    *
    * @param min the amount of required characters
-   * @return the control itself
+   * @return The component itself
    */
   public Field setMinLength(Integer min) {
     super.setProperty("minLength", min);
@@ -611,17 +631,17 @@ public final class Field extends AbstractDwcComponent
   /**
    * Returns the minimum amount of characters.
    *
-   * @return the minimum amount of characters
+   * @return The minimum amount of characters
    */
   public Integer getMinLength() {
     return (Integer) super.getProperty("minLength");
   }
 
   /**
-   * Sets the name of the control.
+   * Sets the name of the component.
    *
    * @param name the name
-   * @return the control itself
+   * @return The component itself
    */
   public Field setName(String name) {
     if (this.name.equals(name)) {
@@ -642,9 +662,9 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the name of this control.
+   * Returns the name of this component.
    *
-   * @return the name
+   * @return The name of the component
    */
   public String getName() {
     return this.name;
@@ -654,7 +674,7 @@ public final class Field extends AbstractDwcComponent
    * Show/Hide the password if the Field is of type password.
    *
    * @param show true to show the password, false to hide it
-   * @return the control itself
+   * @return The component itself
    */
   public Field showPassword(Boolean show) {
     super.setProperty("password-reveal", show);
@@ -662,10 +682,10 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Requires a value.
+   * Sets whether or not the component should force a value to be entered.
    *
    * @param required true to force a value, false if it can be empty
-   * @return the control itself
+   * @return The component itself
    */
   public Field setRequired(Boolean required) {
     if (this.required.equals(required)) {
@@ -687,9 +707,9 @@ public final class Field extends AbstractDwcComponent
   } 
 
   /**
-   * Returns if this requires a value.
+   * Returns whether or not this component requires a value.
    *
-   * @return true if the field requires value, false otherwise
+   * @return True if the field requires value, false otherwise
    */
   public Boolean getRequired() {
     return this.required;
@@ -697,10 +717,10 @@ public final class Field extends AbstractDwcComponent
 
 
   /**
-   * Set the size of the control. 
+   * Set the size of the component. 
    *
    * @param size the size
-   * @return the control itself
+   * @return the component itself
    */
   public Field setSize(Double size) {
     super.setProperty("size", size);
@@ -708,7 +728,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the size of the control.
+   * Returns the size of the component.
    *
    * @return the size
    */
@@ -721,7 +741,7 @@ public final class Field extends AbstractDwcComponent
    * Enables spellcheck. 
    *
    * @param enabled true if spellcheck is enabled, false otherwise
-   * @return the control itself
+   * @return The component itself
    */
   public Field setSpellcheck(Boolean enabled) {
     super.setProperty("spellcheck", enabled);
@@ -729,9 +749,9 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the spellcheck value for this control. 
+   * Returns the spellcheck value for this component. 
    *
-   * @return true if spellcheck is enabled, false otherwise
+   * @return True if spellcheck is enabled, false otherwise
    */
   public Boolean getSpellcheck() {
     return (Boolean) super.getProperty("spellcheck");
