@@ -13,7 +13,7 @@ import org.dwcj.component.event.EventDispatcher;
 public class CheckedEventSink extends AbstractSink {
 
   public CheckedEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
-    super(component, dispatcher, SysGuiEventConstants.ON_CHECK_OFF);
+    super(component, dispatcher, SysGuiEventConstants.ON_CHECK_ON);
   }
 
   /**
