@@ -391,7 +391,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Getter for the selected text. 
-   * 
+   *
    * @return A string value of the text selected by the user.
   */
   public String getSelectedText() {
@@ -406,7 +406,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Getter for the info on the current selection. 
-   * 
+   *
    * @see SelectionInfo
    * @return A SelectionInfo object.
   */
@@ -425,7 +425,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Selects a part of the text based on the provided offsets. 
-   * 
+   *
    * @return The object itself.
   */
   public Field select(Integer offsetLeft, Integer offsetRight) {
@@ -436,7 +436,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Setter for the max amount of characters for this field. 
-   * 
+   *
    * @return The object itself.
   */
   public Field setMaxLength(Integer length) {
@@ -452,7 +452,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Setter for the fields type. 
-   * 
+   *
    * @return The object itself.
   */
   public Field setType(FieldType type) {
@@ -474,7 +474,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /** Getter for the field type. 
-   * 
+   *
    * @see FieldType
    * @return The applicable FieldType enum value
   */
