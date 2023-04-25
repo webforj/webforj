@@ -4,7 +4,7 @@ import java.util.Map;
 import org.dwcj.component.AbstractComponent;
 
 /**
- * An event that is fired when a component is editet.
+ * An event that is fired when a component is edited.
  */
 public class EditModifyEvent extends Event<AbstractComponent> {
 
