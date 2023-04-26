@@ -90,8 +90,8 @@ public final class Field extends AbstractDwcComponent
     PASSWORD,
 
     /**
-     * A value for entering a number whose exact value is not important. Displays as a range
-     * widget defaulting to the middle value. Used in conjunction min and max to define the range of
+     * A value for entering a number whose exact value is not important. Displays as a range widget
+     * defaulting to the middle value. Used in conjunction min and max to define the range of
      * acceptable values.
      */
     RANGE,
@@ -432,10 +432,11 @@ public final class Field extends AbstractDwcComponent
     return this.maxLength;
   }
 
-  /** Getter for the selected text. 
+  /**
+   * Getter for the selected text.
    *
    * @return A string value of the text selected by the user.
-  */
+   */
   public String getSelectedText() {
     if (this.ctrl != null) {
       try {
@@ -447,11 +448,12 @@ public final class Field extends AbstractDwcComponent
     return "";
   }
 
-  /** Getter for the info on the current selection. 
+  /**
+   * Getter for the info on the current selection.
    *
    * @see SelectionInfo
    * @return A SelectionInfo object.
-  */
+   */
   public SelectionInfo getSelectionInfo() {
     if (this.ctrl != null) {
       try {
@@ -463,13 +465,14 @@ public final class Field extends AbstractDwcComponent
         throw new DwcjRuntimeException("Failed to get selection info.", e);
       }
     }
-    return null;
+    return new SelectionInfo(0,0,"");
   }
 
-  /** Selects a part of the text based on the provided offsets. 
+  /**
+   * Selects a part of the text based on the provided offsets.
    *
    * @return The object itself.
-  */
+   */
   public Field select(Integer offsetLeft, Integer offsetRight) {
     if (this.ctrl != null) {
       bbjEditBox.select(offsetLeft, offsetRight);
@@ -477,10 +480,11 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /** Setter for the max amount of characters for this field. 
+  /**
+   * Setter for the max amount of characters for this field.
    *
    * @return The object itself.
-  */
+   */
   public Field setMaxLength(Integer length) {
     if (this.ctrl != null) {
       try {
@@ -493,10 +497,11 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /** Setter for the fields type. 
+  /**
+   * Setter for the fields type.
    *
    * @return The object itself.
-  */
+   */
   public Field setType(FieldType type) {
     if (this.type == type) {
       return this;
@@ -515,11 +520,12 @@ public final class Field extends AbstractDwcComponent
     }
   }
 
-  /** Getter for the field type. 
+  /**
+   * Getter for the field type.
    *
    * @see FieldType
    * @return The applicable FieldType enum value
-  */
+   */
   public FieldType getType() {
     return this.type;
   }
@@ -745,7 +751,7 @@ public final class Field extends AbstractDwcComponent
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set required for the field.", e);
     }
-  } 
+  }
 
   /**
    * Returns whether or not this component requires a value.
@@ -758,7 +764,7 @@ public final class Field extends AbstractDwcComponent
 
 
   /**
-   * Set the size of the component. 
+   * Set the size of the component.
    *
    * @param size the size
    * @return the component itself
@@ -779,7 +785,7 @@ public final class Field extends AbstractDwcComponent
 
 
   /**
-   * Enables spellcheck. 
+   * Enables spellcheck.
    *
    * @param enabled true if spellcheck is enabled, false otherwise
    * @return The component itself
@@ -790,7 +796,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   /**
-   * Returns the spellcheck value for this component. 
+   * Returns the spellcheck value for this component.
    *
    * @return True if spellcheck is enabled, false otherwise
    */
