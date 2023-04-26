@@ -23,4 +23,10 @@ public interface Component {
    */
   public Component setUserData(String key, Object data);
 
+  /**
+   * Allows user to fetch the componentId which is a uuid generated for the specific component.
+   *
+   * @return The componentId as a String.
+   */
+  public String getComponentId();
 }
