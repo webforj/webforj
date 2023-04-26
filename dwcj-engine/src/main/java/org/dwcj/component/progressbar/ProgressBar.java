@@ -320,12 +320,6 @@ public final class ProgressBar extends AbstractDwcComponent {
   }
 
   @Override
-  public ProgressBar setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public ProgressBar setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

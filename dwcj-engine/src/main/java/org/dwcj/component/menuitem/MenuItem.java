@@ -80,13 +80,7 @@ public class MenuItem extends AbstractDwcComponent {
     super.setAttribute(attribute, value);
     return this;
   }
-
-  @Override
-  public MenuItem setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
+  
   @Override
   public MenuItem setStyle(String property, String value) {
     super.setStyle(property, value);

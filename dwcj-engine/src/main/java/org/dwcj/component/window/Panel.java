@@ -126,12 +126,6 @@ public class Panel extends AbstractWindow {
   }
 
   @Override
-  public Panel setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Panel setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

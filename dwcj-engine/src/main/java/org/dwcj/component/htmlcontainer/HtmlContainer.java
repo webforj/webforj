@@ -466,12 +466,6 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   @Override
-  public HtmlContainer setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public HtmlContainer setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

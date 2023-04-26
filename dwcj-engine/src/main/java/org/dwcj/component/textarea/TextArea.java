@@ -949,13 +949,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     super.setAttribute(attribute, value);
     return this;
   }
-
-  @Override
-  public TextArea setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
+  
   @Override
   public TextArea setStyle(String property, String value) {
     super.setStyle(property, value);

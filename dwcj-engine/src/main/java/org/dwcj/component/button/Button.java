@@ -274,12 +274,6 @@ public final class Button extends AbstractDwcComponent
   }
 
   @Override
-  public Button setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Button setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

@@ -821,12 +821,6 @@ public class NumberField extends AbstractDwcComponent
   }
 
   @Override
-  public NumberField setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public NumberField setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

@@ -420,12 +420,6 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
   }
 
   @Override
-  public ListBox setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public ListBox setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

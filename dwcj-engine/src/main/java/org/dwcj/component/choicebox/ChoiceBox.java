@@ -589,13 +589,7 @@ public final class ChoiceBox extends AbstractListBox
     super.setAttribute(attribute, value);
     return this;
   }
-
-  @Override
-  public ChoiceBox setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
+  
   @Override
   public ChoiceBox setStyle(String property, String value) {
     super.setStyle(property, value);
