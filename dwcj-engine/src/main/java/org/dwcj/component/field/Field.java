@@ -51,7 +51,7 @@ public final class Field extends AbstractDwcComponent
   private ModifyEventSink modifyEventSink;
 
   /** Enum to describe the Fields types. */
-  enum FieldType {
+  public enum FieldType {
     /** A value for specifying a color; opening a color picker when active. */
     COLOR,
 
