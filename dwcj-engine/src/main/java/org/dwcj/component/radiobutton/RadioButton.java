@@ -113,7 +113,7 @@ public final class RadioButton extends AbstractDwcComponent
    * register an event callback for a checkOn or checkOff event.
    *
    * @param callback A method to receive the onCheck event
-   * @return the control itself
+   * @return the component itself
    */
   public RadioButton onChange(Consumer<RadioButtonCheckEvent> callback) {
     if (this.ctrl != null) {
@@ -128,9 +128,9 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * Returns the ID of a button - IDs are assigned when a control is added to a panel, not before.
+   * Returns the ID of a button - IDs are assigned when a component is added to a panel, not before.
    *
-   * @return The ID of the control which has been added to a panel.
+   * @return The ID of the component which has been added to a panel.
    */
   public Integer getButtonId() {
     if (this.ctrl != null) {
@@ -141,7 +141,7 @@ public final class RadioButton extends AbstractDwcComponent
       }
     }
     App.consoleError(
-        "ID cannot be fetched as control does not yet exist. Please add control to a window first");
+        "ID cannot be fetched as component does not yet exist. Please add component to a window first");
     return null;
   }
 
@@ -152,7 +152,7 @@ public final class RadioButton extends AbstractDwcComponent
   /**
    * True to disable the radio button , false to enable it.
    *
-   * @return checks if control is disabled.
+   * @return checks if component is disabled.
    */
   public Boolean isDisabled() {
     if (this.ctrl != null) {
@@ -168,7 +168,7 @@ public final class RadioButton extends AbstractDwcComponent
   /**
    * Gets the position of the text alignment in relation to the radio button.
    *
-   * @return Enum value of the horizontal text position for the control.
+   * @return Enum value of the horizontal text position for the component.
    */
   public HorizontalTextPosition getHorizontalTextPosition() {
     return this.horizontalTextPosition;
@@ -177,7 +177,7 @@ public final class RadioButton extends AbstractDwcComponent
   /**
    * Sets the position of the text horizontally.
    *
-   * @return The control itself.
+   * @return The component itself.
    */
   public RadioButton setHorizontalTextPosition(HorizontalTextPosition position) {
     if (this.ctrl != null) {
@@ -212,7 +212,7 @@ public final class RadioButton extends AbstractDwcComponent
    * Indicates whether the users input is valid or not.
    *
    * @param invalid Boolean to check the validity of users input.
-   * @return The control itself.
+   * @return The component itself.
    */
   public RadioButton setInvalid(boolean invalid) {
     if (this.ctrl != null) {
@@ -227,7 +227,7 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * An error message to present to the user when the control is invalid.
+   * An error message to present to the user when the component is invalid.
    *
    * @return The Invalid message for the user.
    */
@@ -236,10 +236,10 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * Sets the message to present to the user when control is invalid.
+   * Sets the message to present to the user when component is invalid.
    *
-   * @param message A string message to present to the user when control is invalid.
-   * @return The control itself.
+   * @param message A string message to present to the user when component is invalid.
+   * @return The component itself.
    */
   public RadioButton setInvalidMessage(String message) {
     if (this.ctrl != null) {
@@ -274,7 +274,7 @@ public final class RadioButton extends AbstractDwcComponent
    * not.
    *
    * @param checked Boolean for desired selection state of the button.
-   * @return The control itself.
+   * @return The component itself.
    */
   public RadioButton setChecked(boolean checked) {
     if (this.ctrl != null) {
@@ -317,7 +317,7 @@ public final class RadioButton extends AbstractDwcComponent
    * The radio button label.
    *
    * @param label The radio button label.
-   * @return The control itself.
+   * @return The component itself.
    */
   public RadioButton setLabel(String label) {
     if (this.ctrl != null) {
@@ -335,7 +335,7 @@ public final class RadioButton extends AbstractDwcComponent
    * A value is required or must be check for the form to be submittable.
    *
    * @param required Boolean for the form to be submittable.
-   * @return The control itself.
+   * @return The component itself.
    */
   public RadioButton setRequired(boolean required) {
     if (this.ctrl != null) {
@@ -370,7 +370,7 @@ public final class RadioButton extends AbstractDwcComponent
    * When true, the radio button will be rendered as a switch.
    *
    * @param switched Boolean to be rendered as a switch.
-   * @return The control itself.
+   * @return The component itself.
    */
   public RadioButton setSwitched(boolean switched) {
     if (this.ctrl != null) {
@@ -557,7 +557,7 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * Sets the activation of the ratio button from the enum with control-specific applicable
+   * Sets the activation of the ratio button from the enum with component-specific applicable
    * activation values.
    *
    * <pre>
@@ -585,7 +585,7 @@ public final class RadioButton extends AbstractDwcComponent
 
 
   /**
-   * Sets the expanse of the radio button from the enum with control-specific applicable expanse
+   * Sets the expanse of the radio button from the enum with component-specific applicable expanse
    * values.
    *
    * <pre>
