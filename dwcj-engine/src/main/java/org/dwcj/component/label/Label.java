@@ -1,35 +1,40 @@
 package org.dwcj.component.label;
 
-import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.TextAlignable;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
+/** A label object. */
 public final class Label extends AbstractDwcComponent {
 
-  /*
-   * top, right, bottom, left margins, used simple array as user will not have to interact directly
-   * with this
-   */
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
 
   public Label() {
     this("");
   }
 
   /**
-   * Constructor used to give the label initial text
+   * Constructor used to give the label initial text.
    *
    * @param text String value for initial display text
    */
   public Label(String text) {
     setText(text);
-    
+
   }
 
   @Override
@@ -40,10 +45,130 @@ public final class Label extends AbstractDwcComponent {
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
+      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
     }
+  }
+
+  /**
+   * Adds a MouseEnter event for the Label component.
+   *
+   * @param listener the event listener to be added
+   * @return The Label itself
+   */
+  public Label addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Label#addMouseEnterListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The Label itself
+   */
+  public Label onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Removes a MouseEnter event from the Label component.
+   *
+   * @param listener the event listener to be removed
+   * @return The Label itself
+   */
+  public Label removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the Label component.
+   *
+   * @param listener the event listener to be added
+   * @return The Label itself
+   */
+  public Label addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseExitListener method.
+   *
+   * @see Label#addMouseExitListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The Label itself
+   */
+  public Label onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a MouseExit event from the Label component.
+   *
+   * @param listener the event listener to be removed
+   * @return The Label itself
+   */
+  public Label removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the Label component.
+   *
+   * @param listener the event listener to be added
+   * @return The Label itself
+   */
+  public Label addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see Label#addRightMouseDownListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The Label itself
+   */
+  public Label onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a RightMouseDown event from the Label component.
+   *
+   * @param listener the event listener to be removed
+   * @return The Label itself
+   */
+  public Label removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
+    }
+    return this;
   }
 
   @Override
@@ -104,8 +229,9 @@ public final class Label extends AbstractDwcComponent {
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
   }
 
