@@ -14,15 +14,15 @@ public class SelectionInfo {
   }
 
   public Integer getBegin() {
-    return begin;
+    return this.begin;
   }
 
   public Integer getEnd() {
-    return end;
+    return this.end;
   }
 
   public String getSelectedText() {
-    return selectedText;
+    return this.selectedText;
   }
 
 }
