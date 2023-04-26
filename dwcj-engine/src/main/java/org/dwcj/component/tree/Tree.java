@@ -5,31 +5,31 @@ import com.basis.bbj.proxies.sysgui.BBjTree;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.tree.event.TreeBlurEvent;
 import org.dwcj.component.tree.event.TreeCollapseEvent;
 import org.dwcj.component.tree.event.TreeDeselectEvent;
 import org.dwcj.component.tree.event.TreeDoubleClickEvent;
 import org.dwcj.component.tree.event.TreeEditStopEvent;
 import org.dwcj.component.tree.event.TreeExpandEvent;
 import org.dwcj.component.tree.event.TreeFocusEvent;
-import org.dwcj.component.tree.event.TreeBlurEvent;
 import org.dwcj.component.tree.event.TreeSelectEvent;
+import org.dwcj.component.tree.sink.TreeBlurEventSink;
 import org.dwcj.component.tree.sink.TreeCollapseEventSink;
 import org.dwcj.component.tree.sink.TreeDeselectEventSink;
 import org.dwcj.component.tree.sink.TreeDoubleClickEventSink;
 import org.dwcj.component.tree.sink.TreeEditStopEventSink;
 import org.dwcj.component.tree.sink.TreeExpandEventSink;
 import org.dwcj.component.tree.sink.TreeFocusEventSink;
-import org.dwcj.component.tree.sink.TreeBlurEventSink;
 import org.dwcj.component.tree.sink.TreeSelectEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.models.Icon;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 public final class Tree extends AbstractDwcComponent {
 
