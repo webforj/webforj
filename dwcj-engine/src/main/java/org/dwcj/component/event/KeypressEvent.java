@@ -22,30 +22,12 @@ public class KeypressEvent extends Event<AbstractComponent> {
   }
 
   /**
-   * Returns the key code with flags.
-   *
-   * @return the key code of the pressed key
-   */
-  public int getKeyCodeWithFlags() {
-    return (int) this.getEventMap().get("keyCodeWithFlags");
-  }
-
-  /**
-   * Returns the extended modifiers for the key that has been pressed.
-   *
-   * @return the extended modifiers for pressed key
-   */
-  public int getExtendedModifiers() {
-    return (int) this.getEventMap().get("modifiersEx");
-  }
-
-  /**
    * Returns whether or not the alt key was pressed when the event happened.
    *
    * @return A boolean representing whether alt was pressed.
    */
   public boolean isAltKey() {
-    return (boolean) this.getEventMap().get("altDown");
+    return (boolean) this.getEventMap().get("altKey");
   }
 
   /**
@@ -54,7 +36,7 @@ public class KeypressEvent extends Event<AbstractComponent> {
    * @return A boolean representing whether cmd was pressed.
    */
   public boolean isCmdKey() {
-    return (boolean) this.getEventMap().get("cmdDown");
+    return (boolean) this.getEventMap().get("cmdKey");
   }
 
   /**
@@ -63,7 +45,7 @@ public class KeypressEvent extends Event<AbstractComponent> {
    * @return A boolean representing whether ctrl was pressed.
    */
   public boolean isControlKey() {
-    return (boolean) this.getEventMap().get("controlDown");
+    return (boolean) this.getEventMap().get("controlKey");
   }
 
   /**
@@ -72,6 +54,6 @@ public class KeypressEvent extends Event<AbstractComponent> {
    * @return A boolean representing whether shift was pressed.
    */
   public boolean isShiftKey() {
-    return (boolean) this.getEventMap().get("shiftDown");
+    return (boolean) this.getEventMap().get("shiftKey");
   }
 }

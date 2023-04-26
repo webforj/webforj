@@ -28,12 +28,10 @@ public abstract class AbstractKeypressEventSink extends AbstractSink {
     BBjAbstractTextKeypressEvent event = (BBjAbstractTextKeypressEvent) ev;
 
     map.put("keyCode", event.getKeyCode());
-    map.put("keyCodeWithFlags", event.getKeyCodeWithFlags());
-    map.put("modifiersEx", event.getModifiersEx());
-    map.put("altDown", event.isAltDown());
-    map.put("cmdDown", event.isCmdDown());
-    map.put("controlDown", event.isControlDown());
-    map.put("shiftDown", event.isShiftDown());
+    map.put("altKey", event.isAltDown());
+    map.put("cmdKey", event.isCmdDown());
+    map.put("controlKey", event.isControlDown());
+    map.put("shiftKey", event.isShiftDown());
 
     return map;
   }
