@@ -43,8 +43,7 @@ public final class Label extends AbstractDwcComponent {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, getText(), flags);
+      ctrl = w.addStaticText(getText(), flags);
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
