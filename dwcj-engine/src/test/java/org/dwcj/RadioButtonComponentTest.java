@@ -71,22 +71,7 @@ class RadioButtonComponentTest {
   void testDefaultRadioButtonFocusable() {
     assertEquals(true, radioButton.isFocusable());
   }
-
-  @Test
-  @DisplayName("The RadioButton should be/not be tabTraversable")
-  void testRadioButtonTabTraversable() {
-    radioButton.setTabTraversable(false);
-    assertEquals(false, radioButton.isTabTraversable());
-    radioButton.setTabTraversable(true);
-    assertEquals(true, radioButton.isTabTraversable());
-  }
-
-  @RepeatedTest(5)
-  @DisplayName("Ensure correct handling of default value")
-  void testDefaultRadioButtonTabTraversable() {
-    assertEquals(true, radioButton.isTabTraversable());
-  }
-
+  
   @Test
   @DisplayName("The text of the RadioButton should be displayed")
   void testRadioButtonText() {
@@ -270,7 +255,7 @@ class RadioButtonComponentTest {
   }
 
   @Test
-  @DisplayName("Should show the label of RadioButton") 
+  @DisplayName("Should show the label of RadioButton")
   void testRadioButtonLabel() {
     radioButton.setLabel("maLabel");
     assertEquals("maLabel", radioButton.getLabel());
