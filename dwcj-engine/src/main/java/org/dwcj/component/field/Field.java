@@ -641,7 +641,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The maximum set for the component
    */
-  public Field setMax(Double max) {
+  public Field setMax(Integer max) {
     super.setProperty("max", max);
     return this;
   }
@@ -651,8 +651,8 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The maximum value of the component
    */
-  public Double getMax() {
-    return (Double) super.getProperty("max");
+  public Integer getMax() {
+    return (Integer) super.getProperty("max");
   }
 
   /**
@@ -660,7 +660,7 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The component itself
    */
-  public Field setMin(Double min) {
+  public Field setMin(Integer min) {
     super.setProperty("min", min);
     return this;
   }
@@ -670,8 +670,8 @@ public final class Field extends AbstractDwcComponent
    *
    * @return The minimum value for the component
    */
-  public Double getMin() {
-    return (Double) super.getProperty("min");
+  public Integer getMin() {
+    return (Integer) super.getProperty("min");
   }
 
   /**
@@ -779,7 +779,7 @@ public final class Field extends AbstractDwcComponent
    * @param size the size
    * @return the component itself
    */
-  public Field setSize(Double size) {
+  public Field setSize(Integer size) {
     super.setProperty("size", size);
     return this;
   }
@@ -789,8 +789,8 @@ public final class Field extends AbstractDwcComponent
    *
    * @return the size
    */
-  public Double getSize() {
-    return (Double) super.getProperty("size");
+  public Integer getSize() {
+    return (Integer) super.getProperty("size");
   }
 
 
