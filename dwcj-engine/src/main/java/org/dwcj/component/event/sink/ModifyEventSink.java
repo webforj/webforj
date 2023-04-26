@@ -5,18 +5,18 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.event.EditModifyEvent;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.ModifyEvent;
 
 /**
- * This class will map the BBjEditModifyEvent event to a Java {@link EditModifyEvent}.
+ * This class will map the BBjEditModifyEvent event to a Java {@link ModifyEvent}.
  */
-public class EditModifyEventSink extends AbstractSink {
+public class ModifyEventSink extends AbstractSink {
 
-  protected EditModifyEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  protected ModifyEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_EDIT_MODIFY);
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -27,8 +27,7 @@ public class EditModifyEventSink extends AbstractSink {
 
     map.put("text", event.getText());
 
-    EditModifyEvent dwcEv = new EditModifyEvent(component, map);
+    ModifyEvent dwcEv = new ModifyEvent(component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }
-
 }
