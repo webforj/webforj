@@ -26,7 +26,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
  * A textarea object.
  */
 public final class TextArea extends AbstractDwcComponent implements HasReadOnly, TextHighlightable,
-    Focusable, HasMouseWheelCondition, Scrollable, TabTraversable {
+    Focusable, HasMouseWheelCondition, Scrollable {
 
   private BBjCEdit bbjCEdit;
 
@@ -895,33 +895,6 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   }
 
   @Override
-  public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
-      try {
-        bbjCEdit.isTabTraversable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.tabTraversable;
-  }
-
-  @Override
-  public TextArea setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
-      try {
-        bbjCEdit.setTabTraversable(traversable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.tabTraversable = traversable;
-    return this;
-  }
-
-
-
-  @Override
   public TextArea setText(String text) {
     super.setText(text);
     return this;
@@ -1069,11 +1042,6 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
     if (this.mouseWheelCondition != MouseWheelCondition.DEFAULT) {
       this.setScrollWheelBehavior(this.mouseWheelCondition);
-    }
-
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
-
     }
 
   }
