@@ -1,9 +1,12 @@
 package org.dwcj.component.label;
 
+import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.TextAlignable;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
@@ -16,12 +19,16 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 /** A label object. */
-public final class Label extends AbstractDwcComponent {
+public final class Label extends AbstractDwcComponent implements TextAlignable {
 
   private EventDispatcher dispatcher = new EventDispatcher();
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
+
+  private boolean lineWrap = true;
+
+  private BBjStaticText bbjStaticText;
 
   public Label() {
     this("");
@@ -44,6 +51,7 @@ public final class Label extends AbstractDwcComponent {
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addStaticText(getText(), flags);
+      bbjStaticText = (BBjStaticText) ctrl;
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
@@ -170,6 +178,59 @@ public final class Label extends AbstractDwcComponent {
     return this;
   }
 
+  /**
+   * Sets whether the lines will be wrapped in the label.
+   *
+   * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
+   * @return Returns this
+   */
+  public Label setLineWrap(Boolean wrap) {
+    if (this.ctrl != null) {
+      try {
+        bbjStaticText.setLineWrap(wrap);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.lineWrap = wrap;
+    return this;
+  }
+
+  /**
+   * Returns whether lines are wrapped in the label.
+   *
+   * @return Returns whether the lines are wrapped in the component (false = Not Wrapped, true =
+   *         Wrapped).
+   */
+  public Boolean isLineWrap() {
+    if (this.ctrl != null) {
+      try {
+        return bbjStaticText.getLineWrap();
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return this.lineWrap;
+  }
+
+  @Override
+  public Label setTextAlignment(Alignment alignment) {
+    if (this.ctrl != null) {
+      try {
+        bbjStaticText.setAlignment(alignment.textPosition);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.textAlignment = alignment;
+    return this;
+  }
+
+  @Override
+  public Alignment getTextAlignment() {
+    return this.textAlignment;
+  }
+
   @Override
   public Label setText(String text) {
     super.setText(text);
@@ -224,6 +285,8 @@ public final class Label extends AbstractDwcComponent {
     return this;
   }
 
+
+
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
@@ -232,6 +295,14 @@ public final class Label extends AbstractDwcComponent {
       throw new IllegalAccessException("catchUp cannot be called twice");
     }
     super.catchUp();
+    
+    if (!this.lineWrap) {
+      this.setLineWrap(lineWrap);
+    }
+
+    if (this.textAlignment != Alignment.MIDDLE) {
+      this.setTextAlignment(this.textAlignment);
+    }
   }
 
 }
