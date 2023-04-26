@@ -11,7 +11,6 @@ import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
@@ -23,7 +22,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
  * The class itself extending the abstract DWC Component and implementing interfaces.
  */
 public final class RadioButton extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+    implements HasReadOnly, Focusable, TextAlignable {
 
   private BBjRadioButton bbjRadioButton;
 
@@ -102,8 +101,7 @@ public final class RadioButton extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, BASISNUMBER_1, "", flags);
+      ctrl = w.addRadioButton("", flags);
       bbjRadioButton = (BBjRadioButton) ctrl;
       catchUp();
     } catch (Exception e) {
@@ -567,7 +565,6 @@ public final class RadioButton extends AbstractDwcComponent
    * RadioButton button = new RadioButton.setActivation(RadioButton.Activation.MANUAL);
    * }
    * </pre>
-   *
    * * @param activation The enum value representing the desired activation. * @return the class
    * itself.
    */
@@ -654,10 +651,6 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (Boolean.FALSE.equals(this.focusable)) {
       this.setFocusable(this.focusable);
-    }
-
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
     }
 
     if (Boolean.FALSE.equals(this.checked)) {
