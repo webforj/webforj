@@ -5,7 +5,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.FieldKeypressEvent;
+import org.dwcj.component.event.KeypressEvent;
 import org.dwcj.component.field.Field;
 
 /**
@@ -26,7 +26,7 @@ public class FieldKeypressEventSink extends AbstractKeypressEventSink {
   public void handleEvent(BBjEvent ev) {
     HashMap<String, Object> map = super.buildPayload(ev);
 
-    FieldKeypressEvent dwcEv = new FieldKeypressEvent(component, map);
+    KeypressEvent dwcEv = new KeypressEvent(component, map);
     this.dispatcher.dispatchEvent(dwcEv);
   }
 }
