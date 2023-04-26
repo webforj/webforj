@@ -2,12 +2,10 @@ package org.dwcj.component;
 
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.dwcj.Environment;
 
 /**
@@ -72,7 +70,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected TextHighlightable.Highlight textHighlight = null;
 
   /**
-   * Gets the value for an attribute in the control
+   * Gets the value for an attribute in the control.
    *
    * @param attribute the name of the attribute
    * @return the attribute
@@ -93,7 +91,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Set the value for an attribute in the
+   * Set the value for an attribute in the.
    *
    * @param attribute the name of the attribute
    * @param value the value to be set
@@ -115,7 +113,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Removes an attribute from the control
+   * Removes an attribute from the control.
    *
    * @param attribute the name of the attribute
    * @return the control itself
@@ -175,23 +173,24 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets the text of the control
+   * Gets the text of the control.
    *
    * @return Text of the control
    */
   @Override
   public String getText() {
-    if (ctrl != null)
+    if (ctrl != null) {
       try {
         return ctrl.getText();
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     return text;
   }
 
   /**
-   * Sets the text of the control
+   * Sets the text of the control.
    *
    * @param text The desired text of the control
    * @return the control itself
@@ -285,9 +284,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Adds a class attribute to the control
+   * Adds a class attribute to the control.
    *
-   * @param property The desired class
+   * @param selector The desired class
    * @return The control itself
    */
   @Override
@@ -306,9 +305,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Removes a class attribute from the control
+   * Removes a class attribute from the control.
    *
-   * @param property The desired class
+   * @param selector The desired class
    * @return The control itself
    */
   @Override
@@ -327,103 +326,110 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Returns whether or not the control is enabled
+   * Returns whether or not the control is enabled.
    *
    * @return True if control is enabled, false otherwise
    */
   @Override
   public Boolean isEnabled() {
-    if (this.ctrl != null)
+    if (this.ctrl != null) {
       try {
         return ctrl.isEnabled();
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     return enabled;
   }
 
   /**
-   * Sets whether or not the control is enabled
+   * Sets whether or not the control is enabled.
    *
    * @param enabled Desired boolean for enabled status of control
    * @return The control itself
    */
   @Override
   public AbstractDwcComponent setEnabled(Boolean enabled) {
-    if (this.ctrl != null)
+    if (this.ctrl != null) {
       try {
         ctrl.setEnabled(enabled);
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     this.enabled = enabled;
     return this;
   }
 
   /**
-   * Gets the tooltip text for a control
+   * Gets the tooltip text for a control.
    *
    * @return A string with the tooltip text for the control
    */
   @Override
   public String getTooltipText() {
-    if (this.ctrl != null)
+    if (this.ctrl != null) {
       try {
         return ctrl.getToolTipText();
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     return tooltipText;
   }
 
   /**
-   * Sets the tooltip text for a control
+   * Sets the tooltip text for a control.
    *
    * @param text A string with the tooltip text for the control
    * @return The control itself
    */
   @Override
   public AbstractDwcComponent setTooltipText(String text) {
-    if (this.ctrl != null)
+    if (this.ctrl != null) {
       try {
         ctrl.setToolTipText(text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     this.tooltipText = text;
     return this;
   }
 
   /**
-   * Gets whether or not the control is visible
+   * Gets whether or not the control is visible.
    *
    * @return The visibility of the control
    */
   @Override
   public Boolean isVisible() {
-    if (this.ctrl != null)
+    if (this.ctrl != null) {
       try {
         return ctrl.isVisible();
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     return visible;
   }
 
   /**
-   * Sets whether or not the control is visible
+   * Sets whether or not the control is visible.
    *
-   * @param Boolean for desired visibility of the control
+   * @param visible for desired visibility of the control
+   * 
    * @return The control itself
    */
   @Override
   public AbstractDwcComponent setVisible(Boolean visible) {
-    if (this.ctrl != null)
+    if (this.ctrl != null) {
       try {
         ctrl.setVisible(visible);
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     this.visible = visible;
     return this;
   }
@@ -436,7 +442,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
 
   protected void setControlTheme(Enum<?> theme) {
-    if (ctrl != null)
+    if (ctrl != null) {
       try {
         switch (theme.toString()) {
           case "DEFAULT":
@@ -487,6 +493,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     this.theme = theme;
   }
 
@@ -497,7 +504,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @param theme Control-specific theme value
    */
   protected void setControlExpanse(Enum<?> expanse) {
-    if (ctrl != null)
+    if (ctrl != null) {
       try {
         switch (expanse.toString()) {
           case "LARGE":
@@ -527,6 +534,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       } catch (BBjException e) {
         Environment.logError(e);
       }
+    }
     this.expanse = expanse;
   }
 
@@ -543,8 +551,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
                                   // of checks
   @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.text.isEmpty()) {
@@ -630,7 +639,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Method to destroy a control
+   * Method to destroy a control.
    */
   @Override
   public void destroy() {
