@@ -16,11 +16,13 @@ import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.KeypressEvent;
 import org.dwcj.component.event.ModifyEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.FieldKeypressEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.ModifyEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
@@ -49,6 +51,7 @@ public final class Field extends AbstractDwcComponent
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
   private ModifyEventSink modifyEventSink;
+  private FieldKeypressEventSink fieldKeypressEventSink;
 
   /** Enum to describe the Fields types. */
   public enum FieldType {
@@ -175,12 +178,53 @@ public final class Field extends AbstractDwcComponent
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
       this.modifyEventSink = new ModifyEventSink(this, dispatcher);
+      this.fieldKeypressEventSink = new FieldKeypressEventSink(this, dispatcher);
 
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create Field.", e);
     }
+  }
+
+
+  /**
+   * Adds a keypress event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addKeypressListener(EventListener<KeypressEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(KeypressEvent.class) == 0) {
+      this.fieldKeypressEventSink.setCallback();
+    }
+    dispatcher.addEventListener(KeypressEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addKeypressListener method.
+   *
+   * @see Field #addKeypressListener(EventListener)
+   * @param listener A method to receive the keypress event
+   * @return the component itself
+   */
+  public Field onKeypress(EventListener<KeypressEvent> listener) {
+    return addKeypressListener(listener);
+  }
+
+  /**
+   * Removes a keypress event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeKeypressListener(EventListener<KeypressEvent> listener) {
+    dispatcher.removeEventListener(KeypressEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(KeypressEvent.class) == 0) {
+      this.fieldKeypressEventSink.removeCallback();
+    }
+    return this;
   }
 
 
@@ -1122,6 +1166,10 @@ public final class Field extends AbstractDwcComponent
 
     if (this.dispatcher.getListenersCount(ModifyEvent.class) > 0) {
       this.modifyEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(KeypressEvent.class) > 0) {
+      this.fieldKeypressEventSink.setCallback();
     }
 
     if (this.maxLength != 2147483647) {
