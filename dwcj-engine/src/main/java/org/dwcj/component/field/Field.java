@@ -474,6 +474,11 @@ public final class Field extends AbstractDwcComponent
    */
   public Field select(Integer offsetLeft, Integer offsetRight) {
     if (this.ctrl != null) {
+      try {
+        bbjEditBox.focus();
+      } catch (Exception e) {
+        throw new DwcjRuntimeException("Failed to select the text.", e);
+      }
       bbjEditBox.select(offsetLeft, offsetRight);
     }
     return this;
