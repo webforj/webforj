@@ -25,10 +25,8 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
-
   private boolean lineWrap = true;
-
-  private BBjStaticText bbjStaticText;
+  private BBjStaticText component;
 
   public Label() {
     this("");
@@ -44,6 +42,9 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void create(AbstractWindow p) {
     try {
@@ -51,7 +52,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addStaticText(getText(), flags);
-      bbjStaticText = (BBjStaticText) ctrl;
+      component = (BBjStaticText) ctrl;
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
@@ -187,7 +188,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   public Label setLineWrap(Boolean wrap) {
     if (this.ctrl != null) {
       try {
-        bbjStaticText.setLineWrap(wrap);
+        component.setLineWrap(wrap);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -203,21 +204,17 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    *         Wrapped).
    */
   public Boolean isLineWrap() {
-    if (this.ctrl != null) {
-      try {
-        return bbjStaticText.getLineWrap();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
     return this.lineWrap;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        bbjStaticText.setAlignment(alignment.textPosition);
+        component.setAlignment(alignment.textPosition);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -226,76 +223,106 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Alignment getTextAlignment() {
     return this.textAlignment;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setText(String text) {
     super.setText(text);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setId(String elementId) {
     super.setId(elementId);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Label removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }
 
-
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  // tolerate cognitive complexity for now, it's just a batch list of checks
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
     }
     super.catchUp();
-    
+
     if (!this.lineWrap) {
       this.setLineWrap(lineWrap);
     }
