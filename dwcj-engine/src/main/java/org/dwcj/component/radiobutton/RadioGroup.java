@@ -31,7 +31,7 @@ public class RadioGroup extends AbstractDwcComponent{
       Environment.logError(e);
     }
   }
-
+  
   public RadioGroup addRadioGroup(RadioButton... buttons){
     radioButtonList.addAll(List.of(buttons));
     return this;
