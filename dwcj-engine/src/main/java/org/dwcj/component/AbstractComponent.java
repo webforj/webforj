@@ -17,7 +17,7 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   /*
    * The id of the component.
    */
-  protected String uuid = "";
+  private String uuid = "";
 
   /*
    * Underlying BBj control
