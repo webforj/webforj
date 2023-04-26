@@ -459,6 +459,12 @@ public final class Field extends AbstractDwcComponent
         BBjVector vec = bbjEditBox.getSelection();
         Integer offsetLeft = (Integer) vec.get(1);
         Integer offsetRight = (Integer) vec.get(3);
+        if (offsetLeft == null) {
+          offsetLeft = 0;
+        }
+        if (offsetRight == null) {
+          offsetRight = 0;
+        }
         return new SelectionInfo(offsetLeft, offsetRight, this.getSelectedText());
       } catch (BBjException e) {
         throw new DwcjRuntimeException("Failed to get selection info.", e);
