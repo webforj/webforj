@@ -76,7 +76,7 @@ public abstract class AbstractComponent implements Component, HasDestroy {
    *
    * @return the uuid of the component
    */
-  public String getUuid() {
+  public String getComponentId() {
     if (uuid.equals("")) {
       uuid = UUID.randomUUID().toString();
     }

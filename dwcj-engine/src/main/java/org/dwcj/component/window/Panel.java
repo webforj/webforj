@@ -61,7 +61,7 @@ public class Panel extends AbstractWindow {
           AnnotationProcessor processor = new AnnotationProcessor();
           processor.processControlAnnotations(c);
           ComponentAccessor.getDefault().create(c, this);
-          components.put(c.getUuid(), c);
+          components.put(c.getComponentId(), c);
         } catch (IllegalAccessException e) {
           Environment.logError(e);
         }
