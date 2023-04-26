@@ -16,11 +16,13 @@ import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.ModifyEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.ModifyEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
@@ -46,6 +48,7 @@ public final class Field extends AbstractDwcComponent
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
+  private ModifyEventSink modifyEventSink;
 
   /** Enum to describe the Fields types. */
   enum FieldType {
@@ -157,7 +160,6 @@ public final class Field extends AbstractDwcComponent
     this.focusable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
-
   }
 
   @Override
@@ -173,13 +175,53 @@ public final class Field extends AbstractDwcComponent
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+      this.modifyEventSink = new ModifyEventSink(this, dispatcher);
 
       bbjEditBox = (BBjEditBox) this.ctrl;
       catchUp();
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create Field.", e);
     }
+  }
 
+
+  /**
+   * Adds a modify event for the Field component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Field addModifyListener(EventListener<ModifyEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(ModifyEvent.class) == 0) {
+      this.modifyEventSink.setCallback();
+    }
+    dispatcher.addEventListener(ModifyEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addModifyListener method.
+   *
+   * @see Field #addModifyListener(EventListener)
+   * @param listener A method to receive the modify event
+   * @return the component itself
+   */
+  public Field onModify(EventListener<ModifyEvent> listener) {
+    return addModifyListener(listener);
+  }
+
+  /**
+   * Removes a modify event from the Field component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Field removeModifyListener(EventListener<ModifyEvent> listener) {
+    dispatcher.removeEventListener(ModifyEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(ModifyEvent.class) == 0) {
+      this.modifyEventSink.removeCallback();
+    }
+    return this;
   }
 
   /**
