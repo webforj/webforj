@@ -476,48 +476,6 @@ public final class Tree extends AbstractDwcComponent {
     }
   }
 
-  public boolean isDragEnabled() {
-    return tree.getDragEnabled();
-  }
-
-  public String getDragType(int id) {
-    try {
-      return tree.getDragType(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return "";
-  }
-
-  public List<String> getDropTypes(int id) {
-    try {
-      return tree.getDropTypes(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return new ArrayList<>();
-  }
-
-  public void setDragEnabled(boolean enabled) {
-    tree.setDragEnabled(enabled);
-  }
-
-  public void setDragType(int id, String type) {
-    try {
-      tree.setDragType(id, type);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setDropTypes(int id, List<String> types) {
-    try {
-      tree.setDropTypes(id, (BBjVector) types);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
   public Tree onFocus(Consumer<TreeFocusEvent> callback) {
     new TreeFocusEventSink(this, callback);
     return this;
