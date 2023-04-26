@@ -360,24 +360,6 @@ public final class Tree extends AbstractDwcComponent {
    * {@inheritDoc}
    */
   @Override
-  public Tree setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Tree setUserData(String key, Object userData) {
-    super.setUserData(key, userData);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public Tree setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
