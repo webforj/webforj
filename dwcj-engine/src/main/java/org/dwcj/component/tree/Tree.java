@@ -28,7 +28,9 @@ import org.dwcj.component.tree.sink.TreeExpandEventSink;
 import org.dwcj.component.tree.sink.TreeFocusEventSink;
 import org.dwcj.component.tree.sink.TreeSelectEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.models.Icon;
+import org.dwcj.util.BBjFunctionalityHelper;
 
 
 public final class Tree extends AbstractDwcComponent {
@@ -39,14 +41,13 @@ public final class Tree extends AbstractDwcComponent {
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      // todo: honor visibility flag, if set before adding the control to the form, so it's created
-      // invisibly right away
-      ctrl = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1);
+      byte[] flags = 
+        BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+      ctrl = w.addTree(flags);
       tree = (BBjTree) ctrl;
       catchUp();
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Failed to create Tree", e);
     }
   }
 
