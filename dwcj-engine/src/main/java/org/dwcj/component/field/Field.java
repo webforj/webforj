@@ -38,8 +38,8 @@ public final class Field extends AbstractDwcComponent
 
   private Integer maxLength = 2147483647;
   private FieldType type;
-  private String placeholder;
-  private String name;
+  private String placeholder = "";
+  private String name = "";
   private Boolean required = false;
 
   private final EventDispatcher dispatcher = new EventDispatcher();
@@ -465,7 +465,7 @@ public final class Field extends AbstractDwcComponent
         throw new DwcjRuntimeException("Failed to get selection info.", e);
       }
     }
-    return new SelectionInfo(0,0,"");
+    return new SelectionInfo(0, 0, "");
   }
 
   /**
