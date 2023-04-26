@@ -1042,7 +1042,7 @@ public final class Field extends AbstractDwcComponent
     super.removeAttribute(attribute);
     return this;
   }
-
+  
   /**
    * {@inheritDoc}
    */
