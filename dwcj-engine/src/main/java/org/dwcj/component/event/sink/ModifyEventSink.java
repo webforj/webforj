@@ -13,7 +13,7 @@ import org.dwcj.component.event.ModifyEvent;
  */
 public class ModifyEventSink extends AbstractSink {
 
-  protected ModifyEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public ModifyEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_EDIT_MODIFY);
   }
 
