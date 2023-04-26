@@ -7,22 +7,6 @@ package org.dwcj.component;
 public interface Component {
 
   /**
-   * Returns the control's ID.
-   *
-   * @return Control's ID
-   */
-  public String getId();
-
-  /**
-   * Assigns the ID of a control.
-   *
-   * @param elementId Desired ID designation
-   * @return The control itself
-   */
-  public Component setId(String elementId);
-
-
-  /**
    * Allows user to fetch extraneous, user-included information from the control.
    *
    * @param key Key of the data

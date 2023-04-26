@@ -61,33 +61,6 @@ public abstract class AbstractComponent implements Component, HasDestroy {
     return this.ctrl;
   }
 
-  @Override
-  public String getId() {
-    if (this.ctrl != null) {
-      try {
-        return ctrl.getAttribute("id");
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    } else if (!(this.elementId.equals(""))) {
-      return this.elementId;
-    }
-    return "";
-  }
-
-  @Override
-  public AbstractComponent setId(String elementId) {
-    if (this.ctrl != null) {
-      try {
-        this.ctrl.setAttribute("id", elementId);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.elementId = elementId;
-    return this;
-  }
-
   public Object getUserData(String key) {
     return this.userData.get(key);
   }
@@ -116,10 +89,6 @@ public abstract class AbstractComponent implements Component, HasDestroy {
 
     if (Boolean.TRUE.equals(this.caughtUp)) {
       throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-
-    if (!(this.elementId.equals(""))) {
-      this.setId(this.elementId);
     }
 
     this.caughtUp = true;
