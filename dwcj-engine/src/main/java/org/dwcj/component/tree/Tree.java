@@ -35,10 +35,6 @@ public final class Tree extends AbstractDwcComponent {
 
   private BBjTree tree;
 
-  public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL
-  }
-
   @Override
   protected void create(AbstractWindow p) {
     try {
@@ -614,13 +610,6 @@ public final class Tree extends AbstractDwcComponent {
   @Override
   public Tree removeClassName(String selector) {
     super.removeClassName(selector);
-    return this;
-  }
-
-
-
-  public Tree setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
     return this;
   }
 
