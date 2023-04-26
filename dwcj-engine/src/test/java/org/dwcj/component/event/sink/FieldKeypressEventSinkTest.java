@@ -25,7 +25,7 @@ class FieldKeypressEventSinkTest {
   }
 
   @Test
-  @DisplayName("Test the FieldKeypressEvent payload")
+  @DisplayName("Test the KeypressEvent payload")
   void payload() {
     FieldKeypressEventSink sink = new FieldKeypressEventSink(componentMock, dispatcher);
     dispatcher.addEventListener(KeypressEvent.class, e -> dispatchedEvent = e);

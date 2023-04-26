@@ -1,13 +1,11 @@
 package org.dwcj.mocks;
 
-import com.basis.bbj.proxies.event.BBjEditKeypressEvent;
-import com.basis.bbj.proxies.sysgui.BBjCEdit;
+import com.basis.bbj.proxies.event.BBjAbstractTextKeypressEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 
 /** A mock class for the BBjEditKeypressEvent to test corresponding event sink. */
-public class BBjKeypressEventMock implements BBjEditKeypressEvent {
+public class BBjKeypressEventMock implements BBjAbstractTextKeypressEvent {
 
   @Override
   public BBjControl getControl() {
@@ -39,12 +37,10 @@ public class BBjKeypressEventMock implements BBjEditKeypressEvent {
     return 0;
   }
 
-
   @Override
   public boolean getNumLock() {
     return false;
   }
-
 
   @Override
   public boolean isAltDown() {
@@ -74,15 +70,5 @@ public class BBjKeypressEventMock implements BBjEditKeypressEvent {
   @Override
   public int getModifiersEx() {
     return 21;
-  }
-
-  @Override
-  public BBjCEdit getCEdit() throws BBjException {
-    return null;
-  }
-
-  @Override
-  public BBjEditBox getEditBox() throws BBjException {
-    return null;
   }
 }
