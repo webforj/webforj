@@ -1104,6 +1104,10 @@ public final class Field extends AbstractDwcComponent
       this.rightMouseDownEventSink.setCallback();
     }
 
+    if (this.dispatcher.getListenersCount(ModifyEvent.class) > 0) {
+      this.modifyEventSink.setCallback();
+    }
+
     if (this.maxLength != 2147483647) {
       this.setMaxLength(this.maxLength);
     }
