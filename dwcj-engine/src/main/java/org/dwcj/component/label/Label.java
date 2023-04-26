@@ -39,7 +39,26 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label(String text) {
     setText(text);
+  }
 
+  /**
+   * Constructor used to give the label wether it is linewrapped or not.
+   *
+   * @param wrap Boolean value for linewrapping.
+   */
+  public Label(boolean wrap) {
+    this("", wrap);
+  }
+
+  /**
+   * Constructor used to give the label initial text and wether it is linewrapped or not.
+   *
+   * @param text String value for initial display text
+   * @param wrap Boolean value for linewrapping.
+   */
+  public Label(String text, boolean wrap) {
+    this(text);
+    this.setWrap(wrap);
   }
 
   /**
@@ -185,7 +204,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
    * @return Returns this
    */
-  public Label setLineWrap(Boolean wrap) {
+  public Label setWrap(Boolean wrap) {
     if (this.ctrl != null) {
       try {
         component.setLineWrap(wrap);
@@ -203,7 +222,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return Returns whether the lines are wrapped in the component (false = Not Wrapped, true =
    *         Wrapped).
    */
-  public Boolean isLineWrap() {
+  public Boolean isWrap() {
     return this.lineWrap;
   }
 
@@ -280,15 +299,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  public Label setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public Label setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
@@ -324,7 +334,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     super.catchUp();
 
     if (!this.lineWrap) {
-      this.setLineWrap(lineWrap);
+      this.setWrap(lineWrap);
     }
 
     if (this.textAlignment != Alignment.MIDDLE) {
