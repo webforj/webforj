@@ -25,6 +25,8 @@ public interface Component {
 
   /**
    * Allows user to fetch the componentId which is a uuid generated for the specific component.
+   * This ID is randomly generated each time a new session is run, and is reliable for querying
+   * components in the same session, but not across different sessions.
    *
    * @return The componentId as a String.
    */
