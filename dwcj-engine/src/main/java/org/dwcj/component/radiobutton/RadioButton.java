@@ -452,37 +452,6 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
-  public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.isTabTraversable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.tabTraversable;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public RadioButton setTabTraversable(Boolean traverse) {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.setTabTraversable(traverse);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.tabTraversable = traverse;
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public RadioButton setText(String text) {
     super.setText(text);
     return this;
@@ -598,6 +567,7 @@ public final class RadioButton extends AbstractDwcComponent
    * RadioButton button = new RadioButton.setActivation(RadioButton.Activation.MANUAL);
    * }
    * </pre>
+   *
    * * @param activation The enum value representing the desired activation. * @return the class
    * itself.
    */
