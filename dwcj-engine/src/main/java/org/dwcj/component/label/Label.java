@@ -16,6 +16,7 @@ import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 /** A label object. */
@@ -65,7 +66,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  protected void create(AbstractWindow p) {
+  protected void create(AbstractWindow p) throws DwcjRuntimeException {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
@@ -77,7 +78,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException(e);
     }
   }
 
@@ -204,12 +205,12 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
    * @return Returns this
    */
-  public Label setWrap(Boolean wrap) {
+  public Label setWrap(Boolean wrap) throws DwcjRuntimeException {
     if (this.ctrl != null) {
       try {
         component.setLineWrap(wrap);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
     this.lineWrap = wrap;
@@ -230,12 +231,12 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  public Label setTextAlignment(Alignment alignment) {
+  public Label setTextAlignment(Alignment alignment) throws DwcjRuntimeException {
     if (this.ctrl != null) {
       try {
         component.setAlignment(alignment.textPosition);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
     this.textAlignment = alignment;
