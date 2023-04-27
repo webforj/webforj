@@ -1,4 +1,4 @@
-package org.dwcj.util;
+package org.dwcj.utilities;
 
 import com.basis.startup.type.BBjException;
 import org.dwcj.App;

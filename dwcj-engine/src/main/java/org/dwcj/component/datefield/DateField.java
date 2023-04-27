@@ -22,7 +22,7 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
+import org.dwcj.utilities.BBjFunctionalityHelper;
 
 public final class DateField extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {

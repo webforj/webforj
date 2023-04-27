@@ -20,7 +20,7 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
+import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public class NumberField extends AbstractDwcComponent

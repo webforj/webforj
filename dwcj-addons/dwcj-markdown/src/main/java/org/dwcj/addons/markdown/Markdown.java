@@ -1,6 +1,5 @@
 package org.dwcj.addons.markdown;
 
-import org.dwcj.util.Assets;
 import org.dwcj.addons.code.Code;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -9,7 +8,7 @@ import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.window.Panel;
 import org.dwcj.environment.ObjectTable;
-
+import org.dwcj.utilities.Assets;
 import java.util.HashSet;
 
 public class Markdown extends Panel {

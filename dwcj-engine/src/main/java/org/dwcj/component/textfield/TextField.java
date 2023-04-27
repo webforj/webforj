@@ -16,8 +16,7 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.dwcj.utilities.BBjFunctionalityHelper;
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;

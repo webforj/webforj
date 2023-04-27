@@ -18,7 +18,7 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.FieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
+import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public final class Field extends AbstractDwcComponent

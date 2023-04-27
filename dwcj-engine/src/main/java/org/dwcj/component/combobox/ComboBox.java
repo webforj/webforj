@@ -22,8 +22,7 @@ import org.dwcj.component.combobox.sink.ComboBoxOpenEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
