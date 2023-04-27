@@ -11,8 +11,7 @@ import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 

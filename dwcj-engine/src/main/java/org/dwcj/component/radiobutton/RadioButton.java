@@ -15,8 +15,7 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
 import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 

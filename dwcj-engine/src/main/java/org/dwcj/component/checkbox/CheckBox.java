@@ -15,8 +15,7 @@ import org.dwcj.component.TextAlignable;
 import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
 import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
