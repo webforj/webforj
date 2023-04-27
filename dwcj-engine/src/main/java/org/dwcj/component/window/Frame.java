@@ -3,6 +3,7 @@ package org.dwcj.component.window;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
+import org.dwcj.component.HasEnable;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -10,7 +11,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * AppPanel is the core main application panel. It typically occupied the full browser real estate
  * and holds your app that consists of div container panels
  */
-public class Frame extends AbstractWindow {
+public class Frame extends AbstractWindow implements HasEnable{
 
   public Frame() throws DwcjAppInitializeException {
 
@@ -62,12 +63,6 @@ public class Frame extends AbstractWindow {
   }
 
   @Override
-  public Frame setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
-    return this;
-  }
-
-  @Override
   public Frame setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
@@ -99,5 +94,16 @@ public class Frame extends AbstractWindow {
     }
 
     return this;
+  }
+
+  @Override
+  public Frame setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
+    return this;
+  }
+
+  @Override 
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
   }
 }

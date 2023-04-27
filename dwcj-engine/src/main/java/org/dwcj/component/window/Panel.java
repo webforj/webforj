@@ -7,6 +7,7 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.event.WindowClickEvent;
 import org.dwcj.component.window.sink.WindowClickEventSink;
 
@@ -15,7 +16,7 @@ import org.dwcj.component.window.sink.WindowClickEventSink;
  * This class represents a div container, which behaves as a panel and can be styled and hold other
  * divs (panels) and controls.
  */
-public class Panel extends AbstractWindow {
+public class Panel extends AbstractWindow implements HasEnable{
 
   private ArrayList<Consumer<WindowClickEvent>> callbacks = new ArrayList<>();
   private WindowClickEventSink divClickEventSink;
@@ -106,9 +107,14 @@ public class Panel extends AbstractWindow {
   }
 
   @Override
-  public Panel setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public Panel setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
   }
 
   @Override

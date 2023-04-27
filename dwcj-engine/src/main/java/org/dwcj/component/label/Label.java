@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -37,7 +38,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
       catchUp();
@@ -73,12 +74,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   @Override
   public Label setVisible(Boolean visible) {
     super.setVisible(visible);
-    return this;
-  }
-
-  @Override
-  public Label setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
     return this;
   }
 

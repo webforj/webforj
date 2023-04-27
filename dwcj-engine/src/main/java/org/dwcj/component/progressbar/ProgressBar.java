@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
 public final class ProgressBar extends AbstractDwcComponent {
@@ -298,12 +299,6 @@ public final class ProgressBar extends AbstractDwcComponent {
   @Override
   public ProgressBar setVisible(Boolean visible) {
     super.setVisible(visible);
-    return this;
-  }
-
-  @Override
-  public ProgressBar setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
     return this;
   }
 

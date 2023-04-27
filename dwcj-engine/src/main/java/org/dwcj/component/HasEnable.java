@@ -11,7 +11,7 @@ public interface HasEnable {
    *
    * @return true if the control is enabled, false otherwise
    */
-  public Boolean isEnabled();
+  public boolean isEnabled();
 
   /**
    * Set whether the control is to be enabled.
@@ -19,5 +19,5 @@ public interface HasEnable {
    * @param enabled true if the control is to be enabled, false otherwise
    * @return the control itself
    */
-  public HasEnable setEnabled(Boolean enabled);
+  public HasEnable setEnabled(boolean enabled);
 }
