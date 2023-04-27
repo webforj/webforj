@@ -1,4 +1,4 @@
-package org.dwcj.component.event.sink;
+package org.dwcj.component;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class AbstractComponentTest {
   ComponentMock component;
-  
+
   @BeforeEach
   void setUp() {
     component = new ComponentMock();
