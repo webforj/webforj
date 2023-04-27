@@ -172,21 +172,23 @@ public final class Field extends AbstractDwcComponent
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addEditBox(getText(), flags);
-      this.focusEventSink = new FocusEventSink(this, dispatcher);
-      this.blurEventSink = new BlurEventSink(this, dispatcher);
-      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
-      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
-      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
-      this.modifyEventSink = new ModifyEventSink(this, dispatcher);
-      this.fieldKeypressEventSink = new FieldKeypressEventSink(this, dispatcher);
-
       bbjEditBox = (BBjEditBox) this.ctrl;
+      createEventSinks();
       catchUp();
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create Field.", e);
     }
   }
 
+  private void createEventSinks() {
+    this.focusEventSink = new FocusEventSink(this, dispatcher);
+    this.blurEventSink = new BlurEventSink(this, dispatcher);
+    this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+    this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+    this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+    this.modifyEventSink = new ModifyEventSink(this, dispatcher);
+    this.fieldKeypressEventSink = new FieldKeypressEventSink(this, dispatcher);
+  }
 
   /**
    * Adds a keypress event for the Field component.
@@ -1124,17 +1126,7 @@ public final class Field extends AbstractDwcComponent
     return this;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-    super.catchUp();
-
-
+  private void eventCatchUp() {
     if (this.dispatcher.getListenersCount(FocusEvent.class) > 0) {
       this.focusEventSink.setCallback();
     }
@@ -1162,6 +1154,18 @@ public final class Field extends AbstractDwcComponent
     if (this.dispatcher.getListenersCount(KeypressEvent.class) > 0) {
       this.fieldKeypressEventSink.setCallback();
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void catchUp() throws IllegalAccessException {
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
+      throw new IllegalAccessException("catchUp cannot be called twice");
+    }
+    super.catchUp();
+    eventCatchUp();
 
     if (this.maxLength != 2147483647) {
       this.setMaxLength(this.maxLength);
