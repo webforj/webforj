@@ -300,15 +300,6 @@ public final class RadioButton extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @Override
-  public RadioButton setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public RadioButton setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

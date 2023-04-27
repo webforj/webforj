@@ -60,12 +60,6 @@ public final class FileChooser extends AbstractDwcComponent {
   }
 
   @Override
-  public FileChooser setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public FileChooser setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

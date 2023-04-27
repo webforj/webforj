@@ -742,12 +742,6 @@ public final class DateField extends AbstractDwcComponent
   }
 
   @Override
-  public DateField setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public DateField setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

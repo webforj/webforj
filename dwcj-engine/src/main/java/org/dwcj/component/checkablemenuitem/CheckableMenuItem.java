@@ -29,9 +29,4 @@ public class CheckableMenuItem extends MenuItem {
     }
   }
 
-  @Override
-  public CheckableMenuItem setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
 }

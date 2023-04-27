@@ -287,12 +287,6 @@ public final class TabbedPane extends AbstractDwcComponent {
   }
 
   @Override
-  public TabbedPane setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public TabbedPane setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
