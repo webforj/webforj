@@ -21,7 +21,7 @@ class RadioButtonTest {
   void setUp() {
     radioButton = new RadioButton();
   }
-  
+
 
   @Test
   @DisplayName("The RadioButton should be/not be checked")
@@ -176,16 +176,6 @@ class RadioButtonTest {
   @DisplayName("Ensure handling of defaul value")
   void testDefaulRadioButtonHorizontalText() {
     assertEquals(HorizontalTextPosition.RIGHT, radioButton.getHorizontalTextPosition());
-  }
-
-  @Test
-  @DisplayName("Event should be executed successfully")
-  void testRadioButtonOnChange() {
-    radioButton.onChange(e -> {
-      radioButton.setText("Success");
-    });
-    assertEquals("Success", radioButton.getText());
-    // cannot be tested yet
   }
 
   @Test
