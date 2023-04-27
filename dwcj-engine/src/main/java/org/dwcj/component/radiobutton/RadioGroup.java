@@ -1,20 +1,14 @@
 package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjVector;
+import java.util.ArrayList;
+import java.util.List;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class RadioGroup extends AbstractDwcComponent{
 
@@ -31,7 +25,7 @@ public class RadioGroup extends AbstractDwcComponent{
       Environment.logError(e);
     }
   }
-  
+
   public RadioGroup addRadioGroup(RadioButton... buttons){
     radioButtonList.addAll(List.of(buttons));
     return this;
@@ -43,11 +37,16 @@ public class RadioGroup extends AbstractDwcComponent{
 
   public RadioButton getSelected() {
     for (RadioButton radioButton : radioButtonList) {
-      if (radioButton.isChecked()) {
+      if (Boolean.TRUE.equals(radioButton.isChecked())) {
         return radioButton;
       }
     }
     return null;
+  }
+
+  public RadioGroup remove(RadioButton button) {
+    radioButtonList.removeIf(radioButton -> radioButton == button);
+    return this;
   }
 
 }
