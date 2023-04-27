@@ -8,10 +8,11 @@ import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.popupmenu.PopupMenu;
 import org.dwcj.component.window.AbstractWindow;
 
-public final class MenuButton extends AbstractDwcComponent {
+public final class MenuButton extends AbstractDwcComponent implements HasEnable{
 
   private BBjMenuButton bbjMenuButton;
 
@@ -148,10 +149,14 @@ public final class MenuButton extends AbstractDwcComponent {
 
   @Override
   public MenuButton setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
   }
 
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
+  }
   @Override
   public MenuButton setTooltipText(String text) {
     super.setTooltipText(text);

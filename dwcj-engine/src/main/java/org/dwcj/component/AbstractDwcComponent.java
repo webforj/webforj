@@ -13,7 +13,7 @@ import org.dwcj.Environment;
  * default behaviors for the implemented interface methods.
  */
 public abstract class AbstractDwcComponent extends AbstractComponent implements HasAttribute,
-    HasText, HasClassName, HasStyle, HasEnable, HasTooltip, HasVisibility, HasProperty {
+    HasText, HasClassName, HasStyle, HasTooltip, HasVisibility, HasProperty {
 
   /*
    * ============================================================================= Members
@@ -326,12 +326,12 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Returns whether or not the control is enabled.
+   * Returns whether or not the component is enabled.
    *
-   * @return True if control is enabled, false otherwise
+   * @return True if component is enabled, false otherwise
    */
-  @Override
-  public Boolean isEnabled() {
+ 
+  protected Boolean isComponentEnabled() {
     if (this.ctrl != null) {
       try {
         return ctrl.isEnabled();
@@ -343,13 +343,12 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Sets whether or not the control is enabled.
+   * Sets whether or not the component is enabled.
    *
-   * @param enabled Desired boolean for enabled status of control
-   * @return The control itself
+   * @param enabled Desired boolean for enabled status of component
+   * @return The component itself
    */
-  @Override
-  public AbstractDwcComponent setEnabled(Boolean enabled) {
+  protected AbstractDwcComponent setComponentEnabled(Boolean enabled) {
     if (this.ctrl != null) {
       try {
         ctrl.setEnabled(enabled);
@@ -569,7 +568,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
 
     if (!Boolean.TRUE.equals(this.enabled)) {
-      this.setEnabled(this.enabled);
+      this.setComponentEnabled(this.enabled);
     }
 
     if (!this.tooltipText.isEmpty()) {

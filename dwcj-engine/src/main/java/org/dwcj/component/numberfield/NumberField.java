@@ -13,6 +13,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -24,7 +25,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 
 public class NumberField extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, Focusable, TabTraversable, HasEnable, TextAlignable, TextHighlightable {
 
   protected BBjInputN numBox;
 
@@ -804,8 +805,13 @@ public class NumberField extends AbstractDwcComponent
 
   @Override
   public NumberField setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

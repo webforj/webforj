@@ -9,13 +9,14 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.Base64;
 
-public final class ImageControl extends AbstractDwcComponent {
+public final class ImageControl extends AbstractDwcComponent implements HasEnable{
 
   private BBjImageCtrl bbjImageControl;
 
@@ -95,8 +96,13 @@ public final class ImageControl extends AbstractDwcComponent {
 
   @Override
   public ImageControl setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

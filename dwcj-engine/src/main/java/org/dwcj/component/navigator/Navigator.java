@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.navigator.event.NavigatorFirstEvent;
 import org.dwcj.component.navigator.event.NavigatorLastEvent;
@@ -20,7 +21,7 @@ import org.dwcj.component.window.AbstractWindow;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcComponent implements HasReadOnly {
+public final class Navigator extends AbstractDwcComponent implements HasReadOnly, HasEnable {
 
   private BBjNavigator bbjNavigator;
 
@@ -129,8 +130,13 @@ public final class Navigator extends AbstractDwcComponent implements HasReadOnly
 
   @Override
   public Navigator setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

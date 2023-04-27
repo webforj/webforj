@@ -9,6 +9,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailEvent;
@@ -28,7 +29,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcComponent implements Focusable, TabTraversable {
+public final class HtmlContainer extends AbstractDwcComponent implements Focusable, HasEnable, TabTraversable {
 
   private BBjHtmlView bbjHtmlView;
 
@@ -449,8 +450,13 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
 
   @Override
   public HtmlContainer setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

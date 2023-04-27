@@ -8,6 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -15,7 +16,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class HtmlEdit extends AbstractDwcComponent implements Focusable, TabTraversable {
+public final class HtmlEdit extends AbstractDwcComponent implements Focusable, HasEnable, TabTraversable {
 
   private BBjHtmlEdit bbjHtmlEdit;
 
@@ -402,8 +403,13 @@ public final class HtmlEdit extends AbstractDwcComponent implements Focusable, T
 
   @Override
   public HtmlEdit setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

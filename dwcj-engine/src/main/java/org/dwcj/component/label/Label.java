@@ -7,11 +7,12 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class Label extends AbstractDwcComponent implements TextAlignable {
+public final class Label extends AbstractDwcComponent implements TextAlignable, HasEnable {
 
   /*
    * top, right, bottom, left margins, used simple array as user will not have to interact directly
@@ -78,8 +79,13 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
 
   @Override
   public Label setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

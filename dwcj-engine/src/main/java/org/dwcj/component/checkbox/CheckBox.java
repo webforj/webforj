@@ -8,6 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, HasEnable {
 
 
   /*
@@ -198,8 +199,13 @@ public final class CheckBox extends AbstractDwcComponent
 
   @Override
   public CheckBox setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

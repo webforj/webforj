@@ -4,9 +4,10 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
-public final class FileChooser extends AbstractDwcComponent {
+public final class FileChooser extends AbstractDwcComponent implements HasEnable{
 
   public enum Theme {
     DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, OUTLINED_WARNING
@@ -43,8 +44,13 @@ public final class FileChooser extends AbstractDwcComponent {
 
   @Override
   public FileChooser setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

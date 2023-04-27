@@ -8,12 +8,13 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasPopupMenu;
 import org.dwcj.component.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.component.menuitem.MenuItem;
 import org.dwcj.component.window.AbstractWindow;
 
-public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu {
+public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu, HasEnable{
 
   private BBjPopupMenu bbjPopupMenu;
 
@@ -375,8 +376,13 @@ public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu {
 
   @Override
   public PopupMenu setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.Scrollable;
@@ -23,7 +24,7 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractListBox implements Scrollable, HasReadOnly, Focusable,
+public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly, Focusable,
     HasMouseWheelCondition, TabTraversable, TextAlignable {
 
   private BBjListBox bbjListBox;
@@ -403,8 +404,13 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasRea
 
   @Override
   public ListBox setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

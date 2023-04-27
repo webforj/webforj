@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.fontchooser.event.FontChooserApproveEvent;
 import org.dwcj.component.fontchooser.event.FontChooserCancelEvent;
 import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
@@ -19,7 +20,7 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 
-public final class FontChooser extends AbstractDwcComponent {
+public final class FontChooser extends AbstractDwcComponent implements HasEnable{
 
   private FontChooserApproveEventSink fontChooserApproveEventSink;
 
@@ -207,8 +208,13 @@ public final class FontChooser extends AbstractDwcComponent {
 
   @Override
   public FontChooser setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public Boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override
