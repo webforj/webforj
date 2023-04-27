@@ -3,16 +3,28 @@ package org.dwcj.component.radiobutton;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TextAlignable;
-import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
-import org.dwcj.component.radiobutton.sink.RadioButtonCheckEventSink;
+import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.event.CheckedEvent;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.UncheckedEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.CheckedEventSink;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
@@ -24,6 +36,14 @@ public final class RadioButton extends AbstractDwcComponent
     implements HasReadOnly, Focusable, TextAlignable {
 
   private BBjRadioButton bbjRadioButton;
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
+  private CheckedEventSink checkedEventSink;
+  private UncheckedEventSink uncheckedEventSink;
+  private FocusEventSink focusEventSink;
+  private BlurEventSink blurEventSink;
 
 
   @Override
@@ -71,8 +91,6 @@ public final class RadioButton extends AbstractDwcComponent
     }
   }
 
-  private ArrayList<Consumer<RadioButtonCheckEvent>> callbacks = new ArrayList<>();
-  private RadioButtonCheckEventSink checkEventSink;
   private Boolean checked = false;
   private Boolean disabled = false;
   private Boolean switched = false;
@@ -101,6 +119,13 @@ public final class RadioButton extends AbstractDwcComponent
       byte[] flags =
         BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addRadioButton("", flags);
+      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+      this.checkedEventSink = new CheckedEventSink(this, dispatcher);
+      this.uncheckedEventSink = new UncheckedEventSink(this, dispatcher);
+      this.focusEventSink = new FocusEventSink(this, dispatcher);
+      this.blurEventSink = new BlurEventSink(this, dispatcher);
       bbjRadioButton = (BBjRadioButton) ctrl;
       catchUp();
     } catch (Exception e) {
@@ -109,23 +134,283 @@ public final class RadioButton extends AbstractDwcComponent
   }
 
   /**
-   * register an event callback for a checkOn or checkOff event.
+   * Adds a checked event for the radiobutton component.
    *
-   * @param callback A method to receive the onCheck event
-   * @return the component itself
+   * @param listener the event listener to be added
+   * @return The radiobutton itself
    */
-  public RadioButton onChange(Consumer<RadioButtonCheckEvent> callback) {
-    if (this.ctrl != null) {
-      if (this.checkEventSink == null) {
-        this.checkEventSink = new RadioButtonCheckEventSink(this);
-      }
-      this.checkEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
+  public RadioButton addCheckedListener(EventListener<CheckedEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
+      this.checkedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(CheckedEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addCheckedListener method.
+   *
+   * @see RadioButton#addCheckedLitener(EventListener)
+   * @param listener the event listener to be added
+   * @return The radiobutton itself
+   */
+  public RadioButton onChecked(EventListener<CheckedEvent> listener) {
+    return addCheckedListener(listener);
+  }
+
+  /**
+   * Removes a checked event from the radiobutton component.
+   *
+   * @param listener the event listener to be removed
+   * @return The radiobutton itself
+   */
+  public RadioButton removeCheckedListener(EventListener<CheckedEvent> listener) {
+    dispatcher.removeEventListener(CheckedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
+      this.checkedEventSink.removeCallback();
     }
     return this;
   }
 
+  /**
+   * Adds an unchecked event for the RadioButton component.
+   *
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton addUncheckedListener(EventListener<UncheckedEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
+      this.uncheckedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(UncheckedEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addUncheckedListener method.
+   *
+   * @see RadioButton#addUncheckedListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton onUnchecked(EventListener<UncheckedEvent> listener) {
+    return addUncheckedListener(listener);
+  }
+
+  /**
+   * Removes an unchecked event from the RadioButton component.
+   *
+   * @param listener the event listener to be removed
+   * @return The RadioButton itself
+   */
+  public RadioButton removeUncheckedListener(EventListener<UncheckedEvent> listener) {
+    dispatcher.removeEventListener(UncheckedEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
+      this.uncheckedEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a focus event for the RadioButton component.
+   *
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton addFocusListener(EventListener<FocusEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.setCallback();
+    }
+    dispatcher.addEventListener(FocusEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addFocusListener method.
+   *
+   * @see RadioButton#addFocusListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
+  }
+
+  /**
+   * Removes a focus event from the RadioButton component.
+   *
+   * @param listener the event listener to be removed
+   * @return The RadioButton itself
+   */
+  public RadioButton removeFocusListener(EventListener<FocusEvent> listener) {
+    dispatcher.removeEventListener(FocusEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a blur event for the RadioButton component.
+   *
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton addBlurListener(EventListener<BlurEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.setCallback();
+    }
+    dispatcher.addEventListener(BlurEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addBlurListener method.
+   *
+   * @see RadioButton#addBlurListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
+  }
+
+  /**
+   * Removes a blur event from the RadioButton component.
+   *
+   * @param listener the event listener to be removed
+   * @return The RadioButton itself
+   */
+  public RadioButton removeBlurListener(EventListener<BlurEvent> listener) {
+    dispatcher.removeEventListener(BlurEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseEnter event for the RadioButton component.
+   *
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see RadioButton#addMouseEnterListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Removes a MouseEnter event from the RadioButton component.
+   *
+   * @param listener the event listener to be removed
+   * @return The RadioButton itself
+   */
+  public RadioButton removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the RadioButton component.
+   *
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton  addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseExitListener method.
+   *
+   * @see RadioButton #addMouseExitListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The RadioButton  itself
+   */
+  public RadioButton  onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a MouseExit event from the RadioButton  component.
+   *
+   * @param listener the event listener to be removed
+   * @return The RadioButton  itself
+   */
+  public RadioButton  removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the RadioButton  component.
+   *
+   * @param listener the event listener to be added
+   * @return The RadioButton itself
+   */
+  public RadioButton  addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see RadioButton #addRightMouseDownListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The RadioButton  itself
+   */
+  public RadioButton onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a RightMouseDown event from the RadioButton  component.
+   *
+   * @param listener the event listener to be removed
+   * @return The RadioButton  itself
+   */
+  public RadioButton  removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Checks from Clientside if the component has focus.
+   *
+   * @return checks if component has focus.
+   */
   public Boolean hasFocus() {
     return Boolean.valueOf(super.getAttribute("hasFocus"));
   }
@@ -594,13 +879,6 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.checked)) {
       this.setChecked(this.checked);
-    }
-
-    if (!this.callbacks.isEmpty()) {
-      this.checkEventSink = new RadioButtonCheckEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.checkEventSink.addCallback(this.callbacks.remove(0));
-      }
     }
 
     if (this.textAlignment != Alignment.MIDDLE) {
