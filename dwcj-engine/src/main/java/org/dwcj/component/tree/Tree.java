@@ -8,8 +8,14 @@ import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.util.BBjFunctionalityHelper;
@@ -23,6 +29,9 @@ public final class Tree extends AbstractDwcComponent {
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
   private BlurEventSink blurEventSink;
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
 
   @Override
   protected void create(AbstractWindow p) {
@@ -42,6 +51,9 @@ public final class Tree extends AbstractDwcComponent {
   private void createEventSinks() {
     this.focusEventSink = new FocusEventSink(this, dispatcher);
     this.blurEventSink = new BlurEventSink(this, dispatcher);
+    this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+    this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+    this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
   }
 
   /**
@@ -118,6 +130,123 @@ public final class Tree extends AbstractDwcComponent {
     dispatcher.removeEventListener(BlurEvent.class, listener);
     if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
       this.blurEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a mouse enter event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Tree #addMouseEnterListener(EventListener)
+   * @param listener A method to receive the mouse enter event
+   * @return the component itself
+   */
+  public Tree onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Removes a mouse enter event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a mouse exit event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Tree #addMouseEnterListener(EventListener)
+   * @param listener A method to receive the mouse enter event
+   * @return the component itself
+   */
+  public Tree onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a mouse enter event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a right mouse down event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see Tree #addRightMouseDownListener(EventListener)
+   * @param listener A method to receive the right mouse down event
+   * @return the component itself
+   */
+  public Tree onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a right mouse down event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
     }
     return this;
   }
@@ -246,6 +375,18 @@ public final class Tree extends AbstractDwcComponent {
 
     if (this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
       this.blurEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(MouseEnterEvent.class) > 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(MouseExitEvent.class) > 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+
+    if(this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
+      this.rightMouseDownEventSink.setCallback();
     }
   }
 
