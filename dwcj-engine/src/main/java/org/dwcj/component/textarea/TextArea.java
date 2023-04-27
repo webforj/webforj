@@ -20,6 +20,18 @@ import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 /**
@@ -61,7 +73,8 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   private Integer tabSize = 8;
   private Boolean vScroll = false;
   private Boolean wrapWord = true;
-
+  private EventDispatcher dispatcher = new EventDispatcher();
+  
 
 
   public TextArea() {
