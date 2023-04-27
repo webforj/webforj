@@ -11,6 +11,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -22,7 +23,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 
 public final class Field extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, Focusable, TabTraversable, HasEnable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
 
@@ -327,9 +328,14 @@ public final class Field extends AbstractDwcComponent
   }
 
   @Override
-  public Field setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public Field setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

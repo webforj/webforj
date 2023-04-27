@@ -8,6 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.slider.event.SliderScrollEvent;
@@ -21,7 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class Slider extends AbstractDwcComponent
-    implements Focusable, HasMouseWheelCondition, TabTraversable {
+    implements Focusable, HasMouseWheelCondition, TabTraversable, HasEnable {
 
   private BBjSlider bbjSlider;
 
@@ -562,9 +563,14 @@ public final class Slider extends AbstractDwcComponent
   }
 
   @Override
-  public Slider setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public Slider setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

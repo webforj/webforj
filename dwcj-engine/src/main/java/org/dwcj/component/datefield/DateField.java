@@ -15,6 +15,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -25,7 +26,7 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
 public final class DateField extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextHighlightable, TextAlignable {
+    implements HasReadOnly, Focusable, TabTraversable, HasEnable, TextHighlightable, TextAlignable {
 
   private BBjInputD bbjDateEditBox;
 
@@ -724,11 +725,15 @@ public final class DateField extends AbstractDwcComponent
   }
 
   @Override
-  public DateField setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public DateField setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
   }
 
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
+  }
   @Override
   public DateField setTooltipText(String text) {
     super.setTooltipText(text);

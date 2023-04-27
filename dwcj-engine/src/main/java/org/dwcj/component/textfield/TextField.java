@@ -9,6 +9,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -23,7 +24,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 public final class TextField extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable, HasEnable {
 
 
   private BBjInputE bbjInputE;
@@ -512,9 +513,14 @@ public final class TextField extends AbstractDwcComponent
   }
 
   @Override
-  public TextField setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public TextField setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

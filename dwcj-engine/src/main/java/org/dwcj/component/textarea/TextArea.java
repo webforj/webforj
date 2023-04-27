@@ -8,6 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.Scrollable;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public final class TextArea extends AbstractDwcComponent implements HasReadOnly, TextHighlightable,
-    Focusable, HasMouseWheelCondition, Scrollable, TabTraversable {
+    Focusable, HasMouseWheelCondition, Scrollable, TabTraversable, HasEnable {
 
   private BBjCEdit bbjCEdit;
 
@@ -933,9 +934,14 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   }
 
   @Override
-  public TextArea setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public TextArea setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
   }
 
   @Override

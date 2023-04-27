@@ -7,6 +7,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -31,7 +32,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 
 /** A checkbox object. */
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, HasEnable {
 
   /**
    * Expanse options for the checkbox.
@@ -457,9 +458,14 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   @Override
-  public CheckBox setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public CheckBox setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override
