@@ -42,15 +42,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   }
 
   /**
-   * Constructor used to give the label wether it is linewrapped or not.
-   *
-   * @param wrap Boolean value for linewrapping.
-   */
-  public Label(boolean wrap) {
-    this("", wrap);
-  }
-
-  /**
    * Constructor used to give the label initial text and wether it is linewrapped or not.
    *
    * @param text String value for initial display text
