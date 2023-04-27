@@ -224,12 +224,6 @@ public final class FontChooser extends AbstractDwcComponent {
   }
 
   @Override
-  public FontChooser setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public FontChooser setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

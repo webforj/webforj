@@ -90,12 +90,6 @@ public class BBjWindowAdapter extends AbstractWindow {
   }
 
   @Override
-  public BBjWindowAdapter setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   protected void create(AbstractWindow p) {
     // nothing to do here
   }
