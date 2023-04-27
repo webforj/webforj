@@ -43,13 +43,13 @@ public final class FileChooser extends AbstractDwcComponent implements HasEnable
   }
 
   @Override
-  public FileChooser setEnabled(Boolean enabled) {
+  public FileChooser setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

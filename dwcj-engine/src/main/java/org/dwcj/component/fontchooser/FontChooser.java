@@ -207,13 +207,13 @@ public final class FontChooser extends AbstractDwcComponent implements HasEnable
   }
 
   @Override
-  public FontChooser setEnabled(Boolean enabled) {
+  public FontChooser setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

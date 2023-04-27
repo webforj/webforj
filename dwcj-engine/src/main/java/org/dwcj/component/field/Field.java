@@ -328,13 +328,13 @@ public final class Field extends AbstractDwcComponent
   }
 
   @Override
-  public Field setEnabled(Boolean enabled) {
+  public Field setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

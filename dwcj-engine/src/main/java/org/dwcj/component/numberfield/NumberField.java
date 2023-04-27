@@ -804,13 +804,13 @@ public class NumberField extends AbstractDwcComponent
   }
 
   @Override
-  public NumberField setEnabled(Boolean enabled) {
+  public NumberField setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

@@ -517,13 +517,13 @@ public final class ComboBox extends AbstractListBox
     return this;
   }
   @Override
-  public ComboBox setEnabled(Boolean enabled) {
+  public ComboBox setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

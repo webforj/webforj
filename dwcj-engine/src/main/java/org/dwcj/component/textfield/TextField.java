@@ -513,13 +513,13 @@ public final class TextField extends AbstractDwcComponent
   }
 
   @Override
-  public TextField setEnabled(Boolean enabled) {
+  public TextField setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

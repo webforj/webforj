@@ -46,13 +46,13 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
   }
 
   @Override
-  public ColorChooser setEnabled(Boolean enabled) {
+  public ColorChooser setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override
-  public Boolean isEnabled() {
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

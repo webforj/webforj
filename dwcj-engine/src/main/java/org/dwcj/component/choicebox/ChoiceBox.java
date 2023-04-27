@@ -574,13 +574,13 @@ public final class ChoiceBox extends AbstractListBox
   }
 
   @Override
-  public ChoiceBox setEnabled(Boolean enabled) {
+  public ChoiceBox setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
   @Override

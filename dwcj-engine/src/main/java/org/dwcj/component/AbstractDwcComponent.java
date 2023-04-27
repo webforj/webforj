@@ -348,7 +348,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @param enabled Desired boolean for enabled status of component
    * @return The component itself
    */
-  protected AbstractDwcComponent setComponentEnabled(Boolean enabled) {
+  protected AbstractDwcComponent setComponentEnabled(boolean enabled) {
     if (this.ctrl != null) {
       try {
         ctrl.setEnabled(enabled);

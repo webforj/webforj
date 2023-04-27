@@ -577,13 +577,13 @@ public final class Tree extends AbstractDwcComponent implements HasEnable{
   }
 
   @Override
-  public Tree setEnabled(Boolean enabled) {
+  public Tree setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

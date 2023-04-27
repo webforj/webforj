@@ -402,13 +402,13 @@ public final class HtmlEdit extends AbstractDwcComponent implements Focusable, H
   }
 
   @Override
-  public HtmlEdit setEnabled(Boolean enabled) {
+  public HtmlEdit setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

@@ -257,13 +257,13 @@ public final class Button extends AbstractDwcComponent
   }
 
   @Override
-  public Button setEnabled(Boolean enabled) {
+  public Button setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

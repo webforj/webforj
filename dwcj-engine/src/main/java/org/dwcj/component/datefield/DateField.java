@@ -725,13 +725,13 @@ public final class DateField extends AbstractDwcComponent
   }
 
   @Override
-  public DateField setEnabled(Boolean enabled) {
+  public DateField setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
   @Override

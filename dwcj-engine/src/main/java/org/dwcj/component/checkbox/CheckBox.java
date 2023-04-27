@@ -198,13 +198,13 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   @Override
-  public CheckBox setEnabled(Boolean enabled) {
+  public CheckBox setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

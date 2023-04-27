@@ -563,13 +563,13 @@ public final class Slider extends AbstractDwcComponent
   }
 
   @Override
-  public Slider setEnabled(Boolean enabled) {
+  public Slider setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

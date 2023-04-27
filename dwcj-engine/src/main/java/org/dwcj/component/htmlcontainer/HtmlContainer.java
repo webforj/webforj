@@ -449,13 +449,13 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   @Override
-  public HtmlContainer setEnabled(Boolean enabled) {
+  public HtmlContainer setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 
