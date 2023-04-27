@@ -385,7 +385,7 @@ public final class Tree extends AbstractDwcComponent {
       this.mouseExitEventSink.setCallback();
     }
 
-    if(this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
+    if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
       this.rightMouseDownEventSink.setCallback();
     }
   }
