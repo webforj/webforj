@@ -6,12 +6,12 @@ import org.dwcj.component.AbstractComponent;
 /**
  * An event that is fired when a component is edited.
  */
-public class EditModifyEvent extends Event<AbstractComponent> {
+public class ModifyEvent extends Event<AbstractComponent> {
 
-  public EditModifyEvent(AbstractComponent component, Map<String, Object> payload) {
+  public ModifyEvent(AbstractComponent component, Map<String, Object> payload) {
     super(component, payload);
   }
-  
+
   /**
    * Gets the text of the component that is sent as part of the event payload.
    *

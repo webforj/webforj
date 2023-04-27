@@ -535,12 +535,6 @@ public final class ComboBox extends AbstractListBox
   }
 
   @Override
-  public ComboBox setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public ComboBox setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

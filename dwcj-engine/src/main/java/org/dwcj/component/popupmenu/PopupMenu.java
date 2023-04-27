@@ -392,12 +392,6 @@ public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu {
   }
 
   @Override
-  public PopupMenu setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public PopupMenu setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
