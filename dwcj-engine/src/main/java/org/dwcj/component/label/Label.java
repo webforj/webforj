@@ -317,7 +317,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  // tolerate cognitive complexity for now, it's just a batch list of checks
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
@@ -332,5 +331,4 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       this.setTextAlignment(this.textAlignment);
     }
   }
-
 }
