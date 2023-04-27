@@ -4,9 +4,10 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
-public final class ColorChooser extends AbstractDwcComponent {
+public final class ColorChooser extends AbstractDwcComponent implements HasEnable {
 
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
@@ -45,9 +46,14 @@ public final class ColorChooser extends AbstractDwcComponent {
   }
 
   @Override
-  public ColorChooser setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public ColorChooser setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
   }
 
   @Override

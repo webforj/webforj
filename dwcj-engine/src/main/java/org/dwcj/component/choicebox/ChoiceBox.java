@@ -8,6 +8,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -34,7 +35,7 @@ import java.util.function.Consumer;
  * Combobox Control
  */
 public final class ChoiceBox extends AbstractListBox
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, HasEnable {
 
   private BBjListButton bbjListButton;
 
@@ -573,11 +574,15 @@ public final class ChoiceBox extends AbstractListBox
   }
 
   @Override
-  public ChoiceBox setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public ChoiceBox setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
   }
 
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
+  }
   @Override
   public ChoiceBox setTooltipText(String text) {
     super.setTooltipText(text);
