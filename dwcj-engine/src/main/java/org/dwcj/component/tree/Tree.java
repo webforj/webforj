@@ -1,621 +1,437 @@
 package org.dwcj.component.tree;
 
-import com.basis.bbj.proxies.sysgui.BBjImage;
 import com.basis.bbj.proxies.sysgui.BBjTree;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjVector;
-import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.tree.event.TreeCollapseEvent;
-import org.dwcj.component.tree.event.TreeDeselectEvent;
-import org.dwcj.component.tree.event.TreeDoubleClickEvent;
-import org.dwcj.component.tree.event.TreeEditStopEvent;
-import org.dwcj.component.tree.event.TreeExpandEvent;
-import org.dwcj.component.tree.event.TreeFocusEvent;
-import org.dwcj.component.tree.event.TreeBlurEvent;
-import org.dwcj.component.tree.event.TreeSelectEvent;
-import org.dwcj.component.tree.sink.TreeCollapseEventSink;
-import org.dwcj.component.tree.sink.TreeDeselectEventSink;
-import org.dwcj.component.tree.sink.TreeDoubleClickEventSink;
-import org.dwcj.component.tree.sink.TreeEditStopEventSink;
-import org.dwcj.component.tree.sink.TreeExpandEventSink;
-import org.dwcj.component.tree.sink.TreeFocusEventSink;
-import org.dwcj.component.tree.sink.TreeBlurEventSink;
-import org.dwcj.component.tree.sink.TreeSelectEventSink;
+import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.models.Icon;
+import org.dwcj.exceptions.DwcjRuntimeException;
+import org.dwcj.util.BBjFunctionalityHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
+/**
+ * A Tree control.
+ */
 public final class Tree extends AbstractDwcComponent {
 
-  private BBjTree tree;
-
-  public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL
-  }
+  private BBjTree bbjTree;
+  private TreeNode root;
+  private final EventDispatcher dispatcher = new EventDispatcher();
+  private FocusEventSink focusEventSink;
+  private BlurEventSink blurEventSink;
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
 
   @Override
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      // todo: honor visibility flag, if set before adding the control to the form, so it's created
-      // invisibly right away
-      ctrl = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1);
-      tree = (BBjTree) ctrl;
+      byte[] flags = 
+        BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+      ctrl = w.addTree(flags);
+      createEventSinks();
+      bbjTree = (BBjTree) ctrl;
       catchUp();
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Failed to create Tree", e);
     }
   }
 
-  public void addExpandableNode(int childID, int parentID, String text) {
-    try {
-      tree.addExpandableNode(childID, parentID, text);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+  private void createEventSinks() {
+    this.focusEventSink = new FocusEventSink(this, dispatcher);
+    this.blurEventSink = new BlurEventSink(this, dispatcher);
+    this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+    this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+    this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
   }
 
-  public void addNode(int childID, int parentID, String text) {
-    try {
-      tree.addNode(childID, parentID, text);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Adds a focus event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addFocusListener(EventListener<FocusEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.setCallback();
     }
+    dispatcher.addEventListener(FocusEvent.class, listener);
+    return this;
   }
 
-  public void clearImageSize() {
-    try {
-      tree.clearImageSize();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+  /**
+   * Alias for the addFocusListener method.
+   *
+   * @see Tree #addFocusListener(EventListener)
+   * @param listener A method to receive the focus event
+   * @return the component itself
+   */
+  public Tree onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
   }
 
-  public int getChild(int parentID, int index) {
-    try {
-      return tree.getChildAt(parentID, index);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Removes a focus event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeFocusListener(EventListener<FocusEvent> listener) {
+    dispatcher.removeEventListener(FocusEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
     }
-    return 0;
+    return this;
   }
 
-  public int getChildIndex(int parentID) {
-    try {
-      return tree.getIndexOfChild(parentID);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Adds a blur event for the Tree component. A blur event fires when a component looses focus.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addBlurListener(EventListener<BlurEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.setCallback();
     }
-    return 0;
+    dispatcher.addEventListener(BlurEvent.class, listener);
+    return this;
   }
 
-  public int getParentNode(int childID) {
-    try {
-      return tree.getParentNode(childID);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return 0;
+  /**
+   * Alias for the addBlurListener method.
+   *
+   * @see Tree #addBlurListener(EventListener)
+   * @param listener A method to receive the blur event
+   * @return the component itself
+   */
+  public Tree onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
   }
 
-  public int getRoot() {
-    try {
-      return tree.getRoot();
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Removes a blur event from the Tree component. Fires when a component looses focus.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeBlurListener(EventListener<BlurEvent> listener) {
+    dispatcher.removeEventListener(BlurEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.removeCallback();
     }
-    return 0;
+    return this;
   }
 
-  public void insertExpandableNode(int childID, int parentID, String text, int index) {
-    try {
-      tree.insertExpandableNode(childID, parentID, text, index);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Adds a mouse enter event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
     }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
   }
 
-  public void insertNode(int childID, int parentID, String text, int index) {
-    try {
-      tree.insertNode(childID, parentID, text, index);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Tree #addMouseEnterListener(EventListener)
+   * @param listener A method to receive the mouse enter event
+   * @return the component itself
+   */
+  public Tree onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
   }
 
-  public boolean isLeafNode(int id) {
-    try {
-      return tree.isNodeLeaf(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Removes a mouse enter event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
     }
-    return false;
+    return this;
   }
 
-  public void removeDescendants(int id) {
-    try {
-      tree.removeDescendants(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Adds a mouse exit event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
     }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
   }
 
-  public void removeNode(int id) {
-    try {
-      tree.removeNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see Tree #addMouseEnterListener(EventListener)
+   * @param listener A method to receive the mouse enter event
+   * @return the component itself
+   */
+  public Tree onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
   }
 
-  public void setRoot(int id, String text) {
-    try {
-      tree.setRoot(id, text);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Removes a mouse enter event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
     }
+    return this;
   }
 
-  public void collapseNode(int id) {
-    try {
-      tree.collapseNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Adds a right mouse down event for the Tree component.
+   *
+   * @param listener The event
+   * @return The component itself
+   */
+  public Tree addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
     }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
   }
 
-  public void collapseTreeFromNode(int id) {
-    try {
-      tree.collapseTreeFromNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see Tree #addRightMouseDownListener(EventListener)
+   * @param listener A method to receive the right mouse down event
+   * @return the component itself
+   */
+  public Tree onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
   }
 
-  public void expandNode(int id) {
-    try {
-      tree.expandNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Removes a right mouse down event from the Tree component.
+   *
+   * @param listener The event to be removed
+   * @return The component itself
+   */
+  public Tree removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
     }
+    return this;
   }
 
-  public void expandTreeFromNode(int id) {
-    try {
-      tree.expandTreeFromNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
 
-  public int getCollapsedNode() {
-    try {
-      return tree.getCollapsedNode();
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Creates the root node.
+   *
+   * @param id the id of the root node
+   * @param text the text of the root node
+   * @return the control ifself
+   */
+  public Tree setRoot(int id, String text) {
+    this.root = TreeNode.root(id, text);
+    
+    if (this.bbjTree == null) {
+      return this;
     }
-    return 0;
-  }
 
-  public int getExpandedNode() {
     try {
-      return tree.getExpandedNode();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return 0;
-  }
-
-  public List<Integer> getExpandedNodes() {
-    try {
-      return (List) tree.getExpandedNodes();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return new ArrayList<>();
-  }
-
-  public boolean isNodeExpandable(int id) {
-    try {
-      return tree.isNodeExpandable(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return false;
-  }
-
-  public boolean isNodeExpanded(int id) {
-    try {
-      return tree.isNodeExpanded(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return false;
-  }
-
-  public String getNodeText(int id) {
-    try {
-      return tree.getNodeText(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return "";
-  }
-
-  public void setNodeText(int id, String text) {
-    try {
-      tree.setNodeText(id, text);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void editNode(int id) {
-    try {
-      tree.editNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void endEdit() {
-    try {
-      tree.endEdit();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public boolean isNodeEditable(int id) {
-    try {
-      return tree.isNodeEditable(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return false;
-  }
-
-  public boolean isTreeEditable() {
-    try {
-      return tree.isTreeEditable();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return false;
-  }
-
-  public void setNodeEditable(int id, boolean editable) {
-    try {
-      tree.setNodeEditable(id, editable);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setTreeEditable(boolean editable) {
-    try {
-      tree.setTreeEditable(editable);
+      bbjTree.setRoot(id, text);
+      return this;
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Failed to set the root", e);
     }
   }
 
-  public void clearNodeIcon(int id) {
-    try {
-      tree.clearNodeIcon(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
+  /**
+   * Adds a note to the given parent.
+   *
+   * @param id the id of the new node
+   * @param parentId the id of the parent node
+   * @param text the text of the node
+   * @return the control ifself
+   */
+  public Tree addNode(int id, int parentId, String text) {
+    if (this.bbjTree == null) {
+      final TreeNode parent = root.findNode(root, parentId);
+      if (parent == null) {
+        throw new DwcjRuntimeException("No node with given parentId.");
+      }
+      parent.addChild(parentId, text);
+  
+      return this;
     }
-  }
 
-  public void clearNodeSelectedIcon(int id) {
     try {
-      tree.clearNodeSelectedIcon(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setCollapsedIcon(Icon icon) {
-    try {
-      tree.setCollapsedIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setExpandedIcon(Icon icon) {
-    try {
-      tree.setExpandedIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setLeafIcon(Icon icon) {
-    try {
-      tree.setLeafIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setNodeIcon(int id, Icon icon) {
-    try {
-      tree.setNodeIcon(id, (BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setNodeSelectedIcon(int id, Icon icon) {
-    try {
-      tree.setNodeSelectedIcon(id, (BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setSelectedIcon(Icon icon) {
-    try {
-      tree.setSelectedIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void deselectAll() {
-    try {
-      tree.deselectAll();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void deselectChildren(int parentID) {
-    try {
-      tree.deselectChildren(parentID);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void deselectNode(int id) {
-    try {
-      tree.deselectNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public int getSelectedNode() {
-    try {
-      return tree.getSelectedNode();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return 0;
-  }
-
-  public List<Integer> getSelectedNodes() {
-    try {
-      return tree.getSelectedNodes();
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return new ArrayList<>();
-  }
-
-  public int getSelectionMode() {
-    return tree.getSelectionMode();
-  }
-
-  public boolean isNodeSelected(int id) {
-    try {
-      tree.isNodeSelected(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return false;
-  }
-
-  public boolean isRootVisible() {
-    return tree.isRootVisible();
-  }
-
-  public void selectChildren(int parentID) {
-    try {
-      tree.selectChildren(parentID);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void selectNode(int id) {
-    try {
-      tree.selectNode(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setNodeVisible(int id) {
-    try {
-      tree.setNodeVisible(id);
+      bbjTree.addNode(id, parentId, text);
+      return this;
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Failed to add node.", e);
     }
   }
 
-  public void setRootVisible(boolean visible) {
-    tree.setRootVisible(visible);
-  }
-
-  public void setSelectionMode(int mode) {
-    tree.setSelectionMode(mode);
-  }
-
-  public String getNodeToolTipText(int id) {
-    try {
-      return tree.getToolTipText(id);
-    } catch (Exception e) {
-      Environment.logError(e);
-    }
-    return "";
-  }
-
-  public void setNodeToolTipText(int id, String text) {
-    try {
-      tree.setToolTipText(id, text);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public boolean isDragEnabled() {
-    return tree.getDragEnabled();
-  }
-
-  public String getDragType(int id) {
-    try {
-      return tree.getDragType(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return "";
-  }
-
-  public List<String> getDropTypes(int id) {
-    try {
-      return tree.getDropTypes(id);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-    return new ArrayList<>();
-  }
-
-  public void setDragEnabled(boolean enabled) {
-    tree.setDragEnabled(enabled);
-  }
-
-  public void setDragType(int id, String type) {
-    try {
-      tree.setDragType(id, type);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public void setDropTypes(int id, List<String> types) {
-    try {
-      tree.setDropTypes(id, (BBjVector) types);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  public Tree onFocus(Consumer<TreeFocusEvent> callback) {
-    new TreeFocusEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onBlur(Consumer<TreeBlurEvent> callback) {
-    new TreeBlurEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onSelect(Consumer<TreeSelectEvent> callback) {
-    new TreeSelectEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onDeselect(Consumer<TreeDeselectEvent> callback) {
-    new TreeDeselectEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onExpand(Consumer<TreeExpandEvent> callback) {
-    new TreeExpandEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onCollapse(Consumer<TreeCollapseEvent> callback) {
-    new TreeCollapseEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onEditStop(Consumer<TreeEditStopEvent> callback) {
-    new TreeEditStopEventSink(this, callback);
-    return this;
-  }
-
-  public Tree onDoubleClick(Consumer<TreeDoubleClickEvent> callback) {
-    new TreeDoubleClickEventSink(this, callback);
-    return this;
-  }
-
-
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree setText(String text) {
     super.setText(text);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree setEnabled(Boolean enabled) {
     super.setEnabled(enabled);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Tree removeAttribute(String attribute) {
+    super.removeAttribute(attribute);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Tree removeStyle(String property) {
+    super.removeStyle(property);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Tree removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }
 
-
-
-  public Tree setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Tree setProperty(String property, Object value) {
+    super.setProperty(property, value);
     return this;
   }
 
+  private void eventCatchUp() {
+    if (this.dispatcher.getListenersCount(FocusEvent.class) > 0) {
+      this.focusEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
+      this.blurEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(MouseEnterEvent.class) > 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(MouseExitEvent.class) > 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void catchUp() throws IllegalAccessException {
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
+      throw new IllegalAccessException("catchUp cannot be called twice");
+    }
+    super.catchUp();
+    eventCatchUp();
+  }
 }
