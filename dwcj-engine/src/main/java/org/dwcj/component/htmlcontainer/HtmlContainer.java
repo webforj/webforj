@@ -8,7 +8,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailEvent;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcComponent implements Focusable, TabTraversable {
+public final class HtmlContainer extends AbstractDwcComponent implements HasFocus, TabTraversable {
 
   private BBjHtmlView bbjHtmlView;
 
@@ -386,27 +386,8 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjHtmlView.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public HtmlContainer setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjHtmlView.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public HtmlContainer focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -487,8 +468,9 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.scriptLoadedEvents.isEmpty()) {
@@ -553,10 +535,6 @@ public final class HtmlContainer extends AbstractDwcComponent implements Focusab
 
     if (!this.userAgent.equals("")) {
       this.setUserAgent(this.userAgent);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {

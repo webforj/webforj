@@ -8,7 +8,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -23,7 +23,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 public final class TextField extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, TextHighlightable {
 
 
   private BBjInputE bbjInputE;
@@ -62,7 +62,6 @@ public final class TextField extends AbstractDwcComponent
   public TextField(String text) {
     setText(text);
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
@@ -411,27 +410,8 @@ public final class TextField extends AbstractDwcComponent
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjInputE.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public TextField setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjInputE.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public TextField focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -626,10 +606,6 @@ public final class TextField extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {

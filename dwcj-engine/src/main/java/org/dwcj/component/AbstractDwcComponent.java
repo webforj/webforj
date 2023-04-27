@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.dwcj.Environment;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
@@ -61,7 +62,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * =============================================================================
    */
   protected Boolean readOnly = null;
-  protected Boolean focusable = null;
+  protected Boolean wasFocused = null;
   protected Boolean tabTraversable = null;
   protected TextAlignable.Alignment textAlignment = null;
   protected Integer horizontalScrollBarPosition = null;
@@ -434,6 +435,18 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     return this;
   }
 
+  protected AbstractDwcComponent focusComponent() throws DwcjRuntimeException {
+    if (this.ctrl != null) {
+      try {
+        ctrl.focus();
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+    this.wasFocused = true;
+    return this;
+  }
+
   /**
    * Implementation to allow child controls to utilize base class Theme setters with their own
    * option-appropriate Enums.
@@ -634,6 +647,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (this.expanse != null) {
       this.setControlExpanse(this.expanse);
+    }
+
+    if (this.wasFocused != null) {
+      this.focusComponent();
     }
 
   }

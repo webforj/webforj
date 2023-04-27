@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.Scrollable;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public final class TextArea extends AbstractDwcComponent implements HasReadOnly, TextHighlightable,
-    Focusable, HasMouseWheelCondition, Scrollable, TabTraversable {
+    HasFocus, HasMouseWheelCondition, Scrollable, TabTraversable {
 
   private BBjCEdit bbjCEdit;
 
@@ -61,7 +61,6 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
     this.horizontalScrollBarPosition = 0;
     this.verticalScrollBarPosition = 0;
-    this.focusable = true;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     this.tabTraversable = true;
 
@@ -761,27 +760,8 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjCEdit.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public TextArea setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjCEdit.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public TextArea focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -1051,10 +1031,6 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
       this.setHighlightOnFocus(this.textHighlight);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (this.horizontalScrollBarPosition != 0) {

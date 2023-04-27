@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.Focusable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * ComboBoxEdit Control
  */
 public final class ComboBox extends AbstractListBox
-    implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
+    implements HasReadOnly, HasFocus, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
   private BBjListEdit bbjListEdit;
 
@@ -68,7 +68,6 @@ public final class ComboBox extends AbstractListBox
 
   public ComboBox() {
     this.readOnly = false;
-    this.focusable = true;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
@@ -414,27 +413,8 @@ public final class ComboBox extends AbstractListBox
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        return ((BBjListEdit) this.ctrl).isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public ComboBox setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjListEdit) this.ctrl).setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public ComboBox focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -632,10 +612,6 @@ public final class ComboBox extends AbstractListBox
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (this.mouseWheelCondition != MouseWheelCondition.DEFAULT) {

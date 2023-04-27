@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable {
+    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable {
 
 
   /*
@@ -72,7 +72,6 @@ public final class CheckBox extends AbstractDwcComponent
    */
   public CheckBox() {
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
 
@@ -292,30 +291,10 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        return ((BBjCheckBox) ctrl).isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public CheckBox setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjCheckBox) this.ctrl).setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public CheckBox focus() {
+    super.focusComponent();
     return this;
   }
-
 
   @Override
   public Boolean isTabTraversable() {
@@ -402,10 +381,6 @@ public final class CheckBox extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(true);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
