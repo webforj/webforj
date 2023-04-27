@@ -72,7 +72,7 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   }
 
   /**
-   *{@inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   public String getComponentId() {

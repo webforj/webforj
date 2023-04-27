@@ -295,7 +295,7 @@ public final class RadioButton extends AbstractDwcComponent
     super.setAttribute(attribute, value);
     return this;
   }
-  
+
   /**
    * {@inheritDoc}
    */

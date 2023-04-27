@@ -418,7 +418,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * Sets whether or not the control is visible.
    *
    * @param visible for desired visibility of the control
-   * 
+   *
    * @return The control itself
    */
   @Override

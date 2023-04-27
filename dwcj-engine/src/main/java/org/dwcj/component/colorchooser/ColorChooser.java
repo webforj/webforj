@@ -61,7 +61,7 @@ public final class ColorChooser extends AbstractDwcComponent {
     super.setAttribute(attribute, value);
     return this;
   }
-  
+
   @Override
   public ColorChooser setStyle(String property, String value) {
     super.setStyle(property, value);
