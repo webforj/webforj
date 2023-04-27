@@ -213,7 +213,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return Returns whether the lines are wrapped in the component (false = Not Wrapped, true =
    *         Wrapped).
    */
-  public Boolean isWrap() {
+  public boolean isWrap() {
     return this.lineWrap;
   }
 
