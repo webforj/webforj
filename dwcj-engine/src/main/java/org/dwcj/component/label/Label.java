@@ -3,7 +3,6 @@ package org.dwcj.component.label;
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.TextAlignable;
