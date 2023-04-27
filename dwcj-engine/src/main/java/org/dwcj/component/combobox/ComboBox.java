@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
@@ -35,7 +36,7 @@ import java.util.function.Consumer;
  * ComboBoxEdit Control
  */
 public final class ComboBox extends AbstractListBox
-    implements HasReadOnly, Focusable, HasMouseWheelCondition, TabTraversable, TextAlignable {
+    implements HasReadOnly, Focusable, HasMouseWheelCondition, HasEnable, TabTraversable, TextAlignable {
 
   private BBjListEdit bbjListEdit;
 
@@ -515,11 +516,15 @@ public final class ComboBox extends AbstractListBox
     super.setVisible(visible);
     return this;
   }
-
   @Override
-  public ComboBox setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public ComboBox setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override

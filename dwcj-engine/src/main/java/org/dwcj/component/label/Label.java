@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
@@ -16,7 +17,8 @@ import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
-import org.dwcj.util.BBjFunctionalityHelper;
+import org.dwcj.utilities.BBjFunctionalityHelper;
+
 
 /** A label object. */
 public final class Label extends AbstractDwcComponent implements TextAlignable {
@@ -60,7 +62,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       ctrl = w.addStaticText(getText(), flags);
       component = (BBjStaticText) ctrl;
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
@@ -256,15 +258,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   @Override
   public Label setVisible(Boolean visible) {
     super.setVisible(visible);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Label setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
     return this;
   }
 

@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
 /**
@@ -13,7 +14,7 @@ import org.dwcj.component.window.AbstractWindow;
  * BBjWindow into an AbstractDwcPanel so that DWCJ Controls can be added to code that is written in
  * the BBj language.
  */
-public class BBjWindowAdapter extends AbstractWindow {
+public class BBjWindowAdapter extends AbstractWindow implements HasEnable{
 
   public BBjWindowAdapter(BBjWindow w) {
     this.wnd = w;
@@ -72,11 +73,15 @@ public class BBjWindowAdapter extends AbstractWindow {
   }
 
   @Override
-  public BBjWindowAdapter setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public BBjWindowAdapter setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
   }
 
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
+  }
   @Override
   public BBjWindowAdapter setTooltipText(String text) {
     super.setTooltipText(text);
