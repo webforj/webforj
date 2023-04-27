@@ -215,12 +215,6 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   @Override
-  public CheckBox setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public CheckBox setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

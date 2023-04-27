@@ -1,8 +1,10 @@
 package org.dwcj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
-
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
@@ -10,19 +12,16 @@ import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.AbstractDwcComponent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+
 
 /**
- * the base class for all panel implementations
+ * the base class for all panel implementations.
  */
 public abstract class AbstractWindow extends AbstractDwcComponent {
 
   protected BBjWindow wnd;
 
-  protected ArrayList<AbstractComponent> controls = new ArrayList<>();
+  protected LinkedHashMap<String, AbstractComponent> components = new LinkedHashMap<>();
   private final HashSet<String> cssClasses = new HashSet<>();
   private final Map<String, String> styles = new HashMap<>();
 
@@ -40,7 +39,7 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
           AnnotationProcessor processor = new AnnotationProcessor();
           processor.processControlAnnotations(c);
           ComponentAccessor.getDefault().create(c, this);
-          controls.add(c);
+          components.put(c.getComponentId(), c);
         } catch (IllegalAccessException e) {
           Environment.logError(e);
         }
@@ -55,7 +54,7 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
 
   /**
    * This method is only accessible through "friend" classes no customer shall ever use this
-   * directly
+   * directly.
    *
    * @return the underlying BBjWindow
    */
@@ -70,8 +69,9 @@ public abstract class AbstractWindow extends AbstractDwcComponent {
                                   // of checks
   @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.styles.isEmpty()) {

@@ -419,12 +419,6 @@ public final class HtmlEdit extends AbstractDwcComponent implements Focusable, T
   }
 
   @Override
-  public HtmlEdit setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public HtmlEdit setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

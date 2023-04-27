@@ -594,12 +594,6 @@ public final class Tree extends AbstractDwcComponent {
   }
 
   @Override
-  public Tree setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Tree setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

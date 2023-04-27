@@ -95,12 +95,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   }
 
   @Override
-  public Label setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Label setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
