@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.dwcj.Environment;
+import org.dwcj.exceptions.DwcjRuntimeException;
+import com.basis.bbj.proxies.sysgui.Focusable;
 
 /**
  * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
@@ -434,6 +436,25 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     return this;
   }
 
+  protected AbstractDwcComponent setComponentTabTraversable(boolean value)
+      throws DwcjRuntimeException {
+    if (this.ctrl != null) {
+      try {
+        if (ctrl instanceof Focusable) {
+          ((Focusable) ctrl).setFocusable(false);
+        }
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+    this.tabTraversable = value;
+    return this;
+  }
+
+  protected Boolean isComponentTabTraversable() {
+    return this.tabTraversable;
+  }
+
   /**
    * Implementation to allow child controls to utilize base class Theme setters with their own
    * option-appropriate Enums.
@@ -634,6 +655,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (this.expanse != null) {
       this.setControlExpanse(this.expanse);
+    }
+
+    if (this.tabTraversable != null) {
+      this.setComponentTabTraversable(this.tabTraversable);
     }
 
   }
