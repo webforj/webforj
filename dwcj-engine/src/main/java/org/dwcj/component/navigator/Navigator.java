@@ -21,7 +21,7 @@ import org.dwcj.component.window.AbstractWindow;
 
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcComponent implements HasReadOnly, HasEnable {
+public final class Navigator extends AbstractDwcComponent implements HasReadOnly {
 
   private BBjNavigator bbjNavigator;
 
@@ -126,17 +126,6 @@ public final class Navigator extends AbstractDwcComponent implements HasReadOnly
   public Navigator setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
-  }
-
-  @Override
-  public Navigator setEnabled(Boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override 
-  public Boolean isEnabled(){
-    return super.isComponentEnabled();
   }
 
   @Override

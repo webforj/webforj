@@ -113,7 +113,7 @@ public class Panel extends AbstractWindow implements HasEnable{
   }
 
   @Override 
-  public Boolean isEnabled(){
+  public Boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

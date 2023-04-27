@@ -16,7 +16,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Base64;
 
-public final class ImageControl extends AbstractDwcComponent implements HasEnable{
+public final class ImageControl extends AbstractDwcComponent {
 
   private BBjImageCtrl bbjImageControl;
 
@@ -92,17 +92,6 @@ public final class ImageControl extends AbstractDwcComponent implements HasEnabl
   public ImageControl setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
-  }
-
-  @Override
-  public ImageControl setEnabled(Boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override 
-  public Boolean isEnabled(){
-    return super.isComponentEnabled();
   }
 
   @Override

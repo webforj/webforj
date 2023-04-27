@@ -9,7 +9,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
-public final class ProgressBar extends AbstractDwcComponent implements HasEnable{
+public final class ProgressBar extends AbstractDwcComponent {
 
   private BBjProgressBar bbjProgressBar;
 
@@ -300,17 +300,6 @@ public final class ProgressBar extends AbstractDwcComponent implements HasEnable
   public ProgressBar setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
-  }
-
-  @Override
-  public ProgressBar setEnabled(Boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override 
-  public Boolean isEnabled(){
-    return super.isComponentEnabled();
   }
 
   @Override

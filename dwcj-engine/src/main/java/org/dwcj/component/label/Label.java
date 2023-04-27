@@ -12,7 +12,7 @@ import org.dwcj.component.TextAlignable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class Label extends AbstractDwcComponent implements TextAlignable, HasEnable {
+public final class Label extends AbstractDwcComponent implements TextAlignable {
 
   /*
    * top, right, bottom, left margins, used simple array as user will not have to interact directly
@@ -38,7 +38,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable, 
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
       catchUp();
@@ -75,17 +75,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable, 
   public Label setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
-  }
-
-  @Override
-  public Label setEnabled(Boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override 
-  public Boolean isEnabled(){
-    return super.isComponentEnabled();
   }
 
   @Override

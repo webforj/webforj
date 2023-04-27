@@ -12,7 +12,7 @@ import org.dwcj.component.numberfield.NumberField;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.util.BBjFunctionalityHelper;
 
-public final class SpinnerNumberField extends NumberField implements HasEnable, HasMouseWheelCondition {
+public final class SpinnerNumberField extends NumberField implements HasMouseWheelCondition {
 
   private BBjInputNSpinner numBoxS;
 
@@ -57,18 +57,7 @@ public final class SpinnerNumberField extends NumberField implements HasEnable, 
     }
     return this;
   }
-
-  @Override
-  public SpinnerNumberField setEnabled(Boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override 
-  public Boolean isEnabled(){
-    return super.isComponentEnabled();
-  }
-
+  
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
