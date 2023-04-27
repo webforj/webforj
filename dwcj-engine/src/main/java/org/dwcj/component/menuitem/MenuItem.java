@@ -70,8 +70,8 @@ public class MenuItem extends AbstractDwcComponent implements HasEnable {
     return this;
   }
 
-  @Override
-  public boolean isEnabled() {
+  @Override 
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

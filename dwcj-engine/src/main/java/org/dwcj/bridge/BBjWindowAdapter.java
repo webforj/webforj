@@ -14,7 +14,7 @@ import org.dwcj.component.window.AbstractWindow;
  * BBjWindow into an AbstractDwcPanel so that DWCJ Controls can be added to code that is written in
  * the BBj language.
  */
-public class BBjWindowAdapter extends AbstractWindow implements HasEnable {
+public class BBjWindowAdapter extends AbstractWindow implements HasEnable{
 
   public BBjWindowAdapter(BBjWindow w) {
     this.wnd = w;
@@ -78,7 +78,7 @@ public class BBjWindowAdapter extends AbstractWindow implements HasEnable {
     return this;
   }
 
-  @Override
+  @Override 
   public boolean isEnabled() {
     return super.isComponentEnabled();
   }

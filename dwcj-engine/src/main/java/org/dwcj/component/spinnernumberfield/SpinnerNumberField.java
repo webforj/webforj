@@ -57,7 +57,6 @@ public final class SpinnerNumberField extends NumberField implements HasMouseWhe
     }
     return this;
   }
-
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks

@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;

@@ -29,8 +29,6 @@ import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * A Checkbox component.
@@ -466,8 +464,8 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
-  @Override
-  public boolean isEnabled() {
+  @Override 
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
 

@@ -495,18 +495,17 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
     super.setVisible(visible);
     return this;
   }
-
   @Override
   public ComboBox setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
-  @Override
-  public boolean isEnabled() {
+  @Override 
+  public boolean isEnabled(){
     return super.isComponentEnabled();
   }
-
+  
   @Override
   public ComboBox setTooltipText(String text) {
     super.setTooltipText(text);
