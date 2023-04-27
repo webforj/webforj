@@ -1,21 +1,19 @@
 package org.dwcj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-
+import java.util.ArrayList;
+import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.window.event.WindowClickEvent;
 import org.dwcj.component.window.sink.WindowClickEventSink;
-import org.dwcj.util.BBjFunctionalityHelper;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * This class represents a div container, which behaves as a panel and can be styled and hold other
- * divs (panels) and controls
+ * divs (panels) and controls.
  */
 public class Panel extends AbstractWindow {
 
@@ -63,7 +61,7 @@ public class Panel extends AbstractWindow {
           AnnotationProcessor processor = new AnnotationProcessor();
           processor.processControlAnnotations(c);
           ComponentAccessor.getDefault().create(c, this);
-          controls.add(c);
+          components.put(c.getComponentId(), c);
         } catch (IllegalAccessException e) {
           Environment.logError(e);
         }
@@ -77,7 +75,7 @@ public class Panel extends AbstractWindow {
   }
 
   /**
-   * register an event callback for the click event
+   * register an event callback for the click event.
    *
    * @param callback A method to receive the click event
    * @return the control itself
@@ -126,12 +124,6 @@ public class Panel extends AbstractWindow {
   }
 
   @Override
-  public Panel setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Panel setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
@@ -153,8 +145,9 @@ public class Panel extends AbstractWindow {
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     while (!this.catchUpControls.isEmpty()) {
@@ -171,13 +164,13 @@ public class Panel extends AbstractWindow {
   }
 
   /**
-   * removes and destroys all controls within the Div
+   * removes and destroys all controls within the Div.
    */
   protected void clear() {
-    for (AbstractComponent control : this.controls) {
-      control.destroy();
+    for (AbstractComponent component : this.components.values()) {
+      component.destroy();
     }
-    controls.clear();
+    components.clear();
 
   }
 

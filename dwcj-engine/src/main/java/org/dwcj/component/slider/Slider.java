@@ -580,12 +580,6 @@ public final class Slider extends AbstractDwcComponent
   }
 
   @Override
-  public Slider setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Slider setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;

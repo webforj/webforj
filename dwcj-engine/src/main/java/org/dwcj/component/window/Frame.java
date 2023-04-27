@@ -80,12 +80,6 @@ public class Frame extends AbstractWindow {
   }
 
   @Override
-  public Frame setId(String elementId) {
-    super.setId(elementId);
-    return this;
-  }
-
-  @Override
   public Frame addClassName(String selector) {
     try {
       wnd.addPanelStyle(selector);

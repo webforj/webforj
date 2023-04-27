@@ -1,14 +1,11 @@
 package org.dwcj.component;
 
-import org.dwcj.Environment;
-import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.window.AbstractWindow;
-
+import com.basis.bbj.proxies.sysgui.BBjControl;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.startup.type.BBjException;
+import java.util.UUID;
+import org.dwcj.bridge.ComponentAccessor;
+import org.dwcj.component.window.AbstractWindow;
 
 /**
  * Abstract base class for all engine controls. Implements default behaviors for the implemented
@@ -18,6 +15,11 @@ import com.basis.startup.type.BBjException;
 public abstract class AbstractComponent implements Component, HasDestroy {
 
   /*
+   * The id of the component.
+   */
+  private String uuid = "";
+
+  /*
    * Underlying BBj control
    */
   protected BBjControl ctrl;
@@ -25,7 +27,6 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   /*
    * Members responsible for tracking ID attribute and user data
    */
-  protected String elementId = "";
   protected final Map<String, Object> userData = new HashMap<>();
 
   /*
@@ -51,41 +52,14 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   protected abstract void create(AbstractWindow panel);
 
   /**
-   * This method returns the underlying original BBj control It's package private and can only be
+   * This method gets the underlying original BBj control It's package private and can only be
    * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
-   * controls
+   * controls.
    *
    * @return the underlying BBj control
    */
   BBjControl getControl() {
     return this.ctrl;
-  }
-
-  @Override
-  public String getId() {
-    if (this.ctrl != null) {
-      try {
-        return ctrl.getAttribute("id");
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    } else if (!(this.elementId.equals(""))) {
-      return this.elementId;
-    }
-    return "";
-  }
-
-  @Override
-  public AbstractComponent setId(String elementId) {
-    if (this.ctrl != null) {
-      try {
-        this.ctrl.setAttribute("id", elementId);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.elementId = elementId;
-    return this;
   }
 
   public Object getUserData(String key) {
@@ -95,6 +69,17 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   public AbstractComponent setUserData(String key, Object data) {
     this.userData.put(key, data);
     return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComponentId() {
+    if (uuid.equals("")) {
+      uuid = UUID.randomUUID().toString();
+    }
+    return uuid;
   }
 
   public Boolean getCaughtUp() {
@@ -116,10 +101,6 @@ public abstract class AbstractComponent implements Component, HasDestroy {
 
     if (Boolean.TRUE.equals(this.caughtUp)) {
       throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-
-    if (!(this.elementId.equals(""))) {
-      this.setId(this.elementId);
     }
 
     this.caughtUp = true;
