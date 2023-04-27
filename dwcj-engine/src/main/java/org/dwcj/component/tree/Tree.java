@@ -26,6 +26,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
 public final class Tree extends AbstractDwcComponent {
 
   private BBjTree bbjTree;
+  private TreeNode root;
   private final EventDispatcher dispatcher = new EventDispatcher();
   private FocusEventSink focusEventSink;
   private BlurEventSink blurEventSink;
@@ -249,6 +250,56 @@ public final class Tree extends AbstractDwcComponent {
       this.rightMouseDownEventSink.removeCallback();
     }
     return this;
+  }
+
+
+  /**
+   * Creates the root node.
+   *
+   * @param id the id of the root node
+   * @param text the text of the root node
+   * @return the control ifself
+   */
+  public Tree setRoot(int id, String text) {
+    this.root = TreeNode.root(id, text);
+    
+    if (this.bbjTree == null) {
+      return this;
+    }
+
+    try {
+      bbjTree.setRoot(id, text);
+      return this;
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set the root", e);
+    }
+  }
+
+  /**
+   * Adds a note to the given parent.
+   *
+   * @param id the id of the new node
+   * @param parentId the id of the parent node
+   * @param text the text of the node
+   * @return the control ifself
+   */
+  public Tree addNode(int id, int parentId, String text) {
+    if (this.bbjTree == null) {
+      final TreeNode parent = root.findNode(root, parentId);
+      if (parent == null) {
+        throw new DwcjRuntimeException("No node with given parentId.");
+      }
+      parent.addChild(parentId, text);
+  
+      return this;
+    }
+
+    try {
+      bbjTree.addNode(id, parentId, text);
+      return this;
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to add node.", e);
+    }
   }
 
   /**
