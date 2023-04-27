@@ -22,8 +22,7 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
-
+import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Iterator;

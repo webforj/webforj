@@ -1,4 +1,4 @@
-package org.dwcj.util;
+package org.dwcj.utilities;
 
 import java.io.File;
 import java.io.IOException;

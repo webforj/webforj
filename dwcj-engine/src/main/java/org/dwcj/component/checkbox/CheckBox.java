@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -28,11 +28,12 @@ import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.util.BBjFunctionalityHelper;
+import org.dwcj.utilities.BBjFunctionalityHelper;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
-/** A checkbox object. */
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, HasEnable {
+    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, HasEnable {
 
   /**
    * Expanse options for the checkbox.
@@ -75,7 +76,6 @@ public final class CheckBox extends AbstractDwcComponent
    */
   public CheckBox() {
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
 
@@ -463,8 +463,8 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
@@ -546,27 +546,8 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        return ((BBjCheckBox) ctrl).isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public CheckBox setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjCheckBox) this.ctrl).setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public CheckBox focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -751,10 +732,6 @@ public final class CheckBox extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(true);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
