@@ -4,7 +4,7 @@ import com.basis.startup.type.BBjException;
 import java.util.Map;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
-import org.dwcj.util.Assets;
+import org.dwcj.utilities.Assets;
 
 /**
  * Represents the web page open in the browser where the app is running and provides methods to
