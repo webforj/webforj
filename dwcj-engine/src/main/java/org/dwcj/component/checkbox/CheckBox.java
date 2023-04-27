@@ -89,8 +89,7 @@ public final class CheckBox extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, "", flags);
+      ctrl = w.addCheckBox("", flags);
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
