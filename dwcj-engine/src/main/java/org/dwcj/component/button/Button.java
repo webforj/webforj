@@ -18,7 +18,10 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
+<<<<<<< HEAD
 import org.dwcj.utilities.ImageUtil;
+=======
+>>>>>>> 5ca4ad3 (feat: renamed util to utilities (#330))
 
 
 /**
