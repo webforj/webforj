@@ -21,6 +21,7 @@ public class RadioGroup extends AbstractDwcComponent{
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       ctrl = (BBjControl) w.addRadioGroup();
       this.bbjRadioGroup = (BBjRadioGroup) ctrl;
+      catchUp();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -47,6 +48,13 @@ public class RadioGroup extends AbstractDwcComponent{
   public RadioGroup remove(RadioButton button) {
     radioButtonList.removeIf(radioButton -> radioButton == button);
     return this;
+  }
+
+  protected void catchUp() throws IllegalAccessException {
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
+      throw new IllegalAccessException("catchUp cannot be called twice");
+    }
+    super.catchUp();
   }
 
 }
