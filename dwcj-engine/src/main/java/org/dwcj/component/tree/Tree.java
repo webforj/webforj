@@ -324,8 +324,8 @@ public final class Tree extends AbstractDwcComponent {
    * {@inheritDoc}
    */
   @Override
-  public Tree setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public Tree setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
   }
 

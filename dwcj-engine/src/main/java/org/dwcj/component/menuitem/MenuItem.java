@@ -8,10 +8,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.dwcj.Environment;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.popupmenu.PopupMenu;
 import org.dwcj.component.window.AbstractWindow;
 
-public class MenuItem extends AbstractDwcComponent {
+public class MenuItem extends AbstractDwcComponent implements HasEnable{
 
   private BBjMenuItem bbjMenuItem;
 
@@ -64,11 +65,15 @@ public class MenuItem extends AbstractDwcComponent {
   }
 
   @Override
-  public MenuItem setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public MenuItem setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
   }
 
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
+  }
   @Override
   public MenuItem setTooltipText(String text) {
     super.setTooltipText(text);

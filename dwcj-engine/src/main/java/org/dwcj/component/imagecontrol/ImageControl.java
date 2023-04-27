@@ -9,6 +9,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
 import java.awt.*;
@@ -90,12 +91,6 @@ public final class ImageControl extends AbstractDwcComponent {
   @Override
   public ImageControl setVisible(Boolean visible) {
     super.setVisible(visible);
-    return this;
-  }
-
-  @Override
-  public ImageControl setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
     return this;
   }
 

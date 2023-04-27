@@ -7,6 +7,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Focusable;
+import org.dwcj.component.HasEnable;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
@@ -21,7 +22,7 @@ import org.dwcj.util.BBjFunctionalityHelper;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements Focusable, TabTraversable, TextAlignable {
+    implements Focusable, TabTraversable, TextAlignable, HasEnable {
 
 
 
@@ -256,9 +257,14 @@ public final class Button extends AbstractDwcComponent
   }
 
   @Override
-  public Button setEnabled(Boolean enabled) {
-    super.setEnabled(enabled);
+  public Button setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
     return this;
+  }
+
+  @Override 
+  public boolean isEnabled(){
+    return super.isComponentEnabled();
   }
 
   @Override
