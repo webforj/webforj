@@ -8,8 +8,8 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.radiobutton.event.RadioButtonCheckEvent;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class RadioButton extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, HasEnable {
+    implements HasReadOnly, HasFocus, TabTraversable, HasEnable {
 
   private BBjRadioButton bbjRadioButton;
 
@@ -45,7 +45,6 @@ public final class RadioButton extends AbstractDwcComponent
 
   public RadioButton() {
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
   }
 
@@ -189,34 +188,9 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public RadioButton setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjRadioButton.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public RadioButton focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -373,10 +347,6 @@ public final class RadioButton extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(true);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
