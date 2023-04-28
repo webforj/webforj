@@ -7,15 +7,15 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class HtmlEdit extends AbstractDwcComponent implements Focusable, HasEnable, TabTraversable {
+public final class HtmlEdit extends AbstractDwcComponent implements HasFocus, HasEnable, TabTraversable {
 
   private BBjHtmlEdit bbjHtmlEdit;
 
@@ -334,30 +334,9 @@ public final class HtmlEdit extends AbstractDwcComponent implements Focusable, H
     return this;
   }
 
-
-
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        return bbjHtmlEdit.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public HtmlEdit setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjHtmlEdit.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public HtmlEdit focus() {
+    super.focusComponent();
     return this;
   }
 

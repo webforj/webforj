@@ -7,8 +7,8 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * Combobox Control
  */
 public final class ChoiceBox extends AbstractListBox
-    implements HasReadOnly, Focusable, TabTraversable, TextAlignable, HasEnable {
+    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, HasEnable {
 
   private BBjListButton bbjListButton;
 
@@ -63,7 +63,6 @@ public final class ChoiceBox extends AbstractListBox
 
   public ChoiceBox() {
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
   }
@@ -491,27 +490,8 @@ public final class ChoiceBox extends AbstractListBox
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        return ((BBjListButton) this.ctrl).isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public ChoiceBox setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjListButton) this.ctrl).setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public ChoiceBox focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -670,10 +650,6 @@ public final class ChoiceBox extends AbstractListBox
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {

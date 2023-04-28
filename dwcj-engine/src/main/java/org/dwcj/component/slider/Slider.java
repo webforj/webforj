@@ -7,12 +7,13 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.slider.event.SliderScrollEvent;
 import org.dwcj.component.slider.sink.SliderScrollEventSink;
+import org.dwcj.component.textarea.TextArea;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class Slider extends AbstractDwcComponent
-    implements Focusable, HasMouseWheelCondition, TabTraversable, HasEnable {
+    implements HasFocus, HasMouseWheelCondition, TabTraversable, HasEnable {
 
   private BBjSlider bbjSlider;
 
@@ -56,7 +57,6 @@ public final class Slider extends AbstractDwcComponent
 
 
   public Slider() {
-    this.focusable = true;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     this.tabTraversable = true;
   }
@@ -481,27 +481,8 @@ public final class Slider extends AbstractDwcComponent
 
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjSlider.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public Slider setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjSlider.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public Slider focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -666,10 +647,6 @@ public final class Slider extends AbstractDwcComponent
 
     if (this.orientation != Orientation.HORIZONTAL) {
       this.setOrientation(Orientation.VERTICAL);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {

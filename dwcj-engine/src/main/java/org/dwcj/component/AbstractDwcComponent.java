@@ -63,7 +63,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * =============================================================================
    */
   protected Boolean readOnly = null;
-  protected Boolean focusable = null;
+  protected Boolean wasFocused = null;
   protected Boolean tabTraversable = null;
   protected TextAlignable.Alignment textAlignment = null;
   protected Integer horizontalScrollBarPosition = null;
@@ -332,7 +332,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    *
    * @return True if component is enabled, false otherwise
    */
- 
+
   protected Boolean isComponentEnabled() {
     if (this.ctrl != null) {
       try {
@@ -436,12 +436,30 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-  * Sets whether or not the component can gain focus via navigation of the page
-  * using the Tab key.
+  * Gives a component focus when it is added to the window. Note that if this
+  * method is called on multiple components, focus will be given to the component
+  * added latest to the window. 
   *
-  * @param Boolean value for desired tab traversability status.
-  * @return The component itself.
+  * @return The component itself
   */
+  protected AbstractDwcComponent focusComponent() throws DwcjRuntimeException {
+    if (this.ctrl != null) {
+      try {
+        ctrl.focus();
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+    this.wasFocused = true;
+    return this;
+  }
+
+  /**
+   * Sets whether or not the component can gain focus via navigation of the page using the Tab key.
+   *
+   * @param Boolean value for desired tab traversability status.
+   * @return The component itself.
+   */
   protected AbstractDwcComponent setComponentTabTraversable(boolean value)
       throws DwcjRuntimeException {
     if (this.ctrl != null) {
@@ -458,10 +476,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /*
-  * Returns whether or not a component can receive focus via navigation with the Tab key.
-  *
-  * @return True is component can be focused, false if not.
-  */
+   * Returns whether or not a component can receive focus via navigation with the Tab key.
+   *
+   * @return True is component can be focused, false if not.
+   */
   protected Boolean isComponentTabTraversable() {
     return this.tabTraversable;
   }
@@ -671,8 +689,12 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     if (this.tabTraversable != null) {
       this.setComponentTabTraversable(this.tabTraversable);
     }
-
+    
+    if (this.wasFocused != null) {
+      this.focusComponent();
+    }
   }
+
 
   /**
    * Method to destroy a component.

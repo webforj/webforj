@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.Scrollable;
@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly, Focusable,
+public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly, HasFocus,
     HasMouseWheelCondition, TabTraversable, TextAlignable {
 
   private BBjListBox bbjListBox;
@@ -44,7 +44,6 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
     this.horizontalScrollBarPosition = 0;
     this.verticalScrollBarPosition = 0;
     this.readOnly = false;
-    this.focusable = true;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
@@ -571,27 +570,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        return ((BBjListBox) this.ctrl).isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public ListBox setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjListBox) this.ctrl).setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public ListBox focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -702,10 +682,6 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (this.mouseWheelCondition != MouseWheelCondition.DEFAULT) {

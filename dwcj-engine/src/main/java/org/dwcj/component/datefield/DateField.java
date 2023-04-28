@@ -14,8 +14,8 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -26,7 +26,7 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 public final class DateField extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, HasEnable, TextHighlightable, TextAlignable {
+    implements HasReadOnly, HasFocus, TabTraversable, HasEnable, TextHighlightable, TextAlignable {
 
   private BBjInputD bbjDateEditBox;
 
@@ -67,7 +67,6 @@ public final class DateField extends AbstractDwcComponent
   public DateField(String text) {
     setText(text);
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
@@ -623,29 +622,9 @@ public final class DateField extends AbstractDwcComponent
     this.readOnly = editable;
     return this;
   }
-
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjDateEditBox.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public DateField setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjDateEditBox.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public DateField focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -851,14 +830,8 @@ public final class DateField extends AbstractDwcComponent
       this.setShowWeeks(this.showWeeks);
     }
 
-
-
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
