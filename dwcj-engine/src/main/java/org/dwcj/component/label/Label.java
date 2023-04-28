@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
@@ -28,8 +27,10 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
   private boolean lineWrap = true;
-  private BBjStaticText component;
 
+  /**
+   * Default Constructor to automatically create an empty label.
+   */
   public Label() {
     this("");
   }
@@ -63,7 +64,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       ctrl = w.addStaticText(getText(), flags);
-      component = (BBjStaticText) ctrl;
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
@@ -199,7 +199,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   public Label setWrap(Boolean wrap) throws DwcjRuntimeException {
     if (this.ctrl != null) {
       try {
-        component.setLineWrap(wrap);
+        ((BBjStaticText) this.ctrl).setLineWrap(wrap);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -225,7 +225,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   public Label setTextAlignment(Alignment alignment) throws DwcjRuntimeException {
     if (this.ctrl != null) {
       try {
-        component.setAlignment(alignment.textPosition);
+        ((BBjStaticText) this.ctrl).setAlignment(alignment.textPosition);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
