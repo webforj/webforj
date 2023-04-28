@@ -3,6 +3,8 @@ package org.dwcj.component.button;
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -16,6 +18,7 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
+import org.dwcj.utilities.ImageUtil;
 
 
 /**
@@ -85,7 +88,7 @@ public final class Button extends AbstractDwcComponent
   private Expanse expanse = null;
   private Theme theme = Theme.DEFAULT;
   private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
-
+  private BBjButton bbjButton;
 
 
   /*
@@ -123,10 +126,23 @@ public final class Button extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
+      this.bbjButton = (BBjButton) ctrl;
       this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
+    }
+  }
+
+
+  public void setImage(BufferedImage image) {
+    if (this.bbjButton != null) {
+      try {
+        this.bbjButton.setImage(ImageUtil.convertImageToBBjImage(image, ""));
+      } catch (BBjException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 
@@ -262,8 +278,8 @@ public final class Button extends AbstractDwcComponent
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
