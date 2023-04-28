@@ -61,8 +61,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   protected void create(AbstractWindow p) throws DwcjRuntimeException {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
+      byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       ctrl = w.addStaticText(getText(), flags);
       component = (BBjStaticText) ctrl;
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
@@ -306,6 +305,20 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     return this;
   }
 
+  private void eventCatchUp() {
+    if (this.dispatcher.getListenersCount(MouseEnterEvent.class) > 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(MouseExitEvent.class) > 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -315,7 +328,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       throw new IllegalAccessException("catchUp cannot be called twice");
     }
     super.catchUp();
-
+    eventCatchUp();
     if (!this.lineWrap) {
       this.setWrap(lineWrap);
     }
