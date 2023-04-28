@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
@@ -23,7 +23,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public final class Field extends AbstractDwcComponent
-    implements HasReadOnly, Focusable, TabTraversable, HasEnable, TextAlignable, TextHighlightable {
+    implements HasReadOnly, HasFocus, TabTraversable, HasEnable, TextAlignable, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
 
@@ -52,7 +52,6 @@ public final class Field extends AbstractDwcComponent
   public Field(String text) {
     setText(text);
     this.readOnly = false;
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
     this.textHighlight = Highlight.HIGHLIGHT_NONE;
@@ -226,27 +225,8 @@ public final class Field extends AbstractDwcComponent
   }
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public Field setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        bbjEditBox.setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public Field focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -409,10 +389,6 @@ public final class Field extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
