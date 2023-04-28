@@ -7,7 +7,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
 
-public final class FileChooser extends AbstractDwcComponent implements HasEnable{
+public final class FileChooser extends AbstractDwcComponent implements HasEnable {
 
   public enum Theme {
     DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, OUTLINED_WARNING
@@ -48,8 +48,8 @@ public final class FileChooser extends AbstractDwcComponent implements HasEnable
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

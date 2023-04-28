@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class TabbedPane extends AbstractDwcComponent implements HasEnable{
+public final class TabbedPane extends AbstractDwcComponent implements HasEnable {
 
   /** Event sink for selection of a tab */
   private TabSelectEventSink tabSelectEventSink;
@@ -275,8 +275,8 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable{
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

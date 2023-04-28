@@ -249,8 +249,8 @@ public final class RadioButton extends AbstractDwcComponent
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

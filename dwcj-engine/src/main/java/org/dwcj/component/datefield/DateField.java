@@ -622,6 +622,7 @@ public final class DateField extends AbstractDwcComponent
     this.readOnly = editable;
     return this;
   }
+
   @Override
   public DateField focus() {
     super.focusComponent();
@@ -709,10 +710,11 @@ public final class DateField extends AbstractDwcComponent
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
+
   @Override
   public DateField setTooltipText(String text) {
     super.setTooltipText(text);

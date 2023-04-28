@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, HasEnable  {
+    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, HasEnable {
 
 
   /*
@@ -201,8 +201,8 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

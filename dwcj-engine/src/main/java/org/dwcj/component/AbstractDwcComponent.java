@@ -436,12 +436,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-  * Gives a component focus when it is added to the window. Note that if this
-  * method is called on multiple components, focus will be given to the component
-  * added latest to the window. 
-  *
-  * @return The component itself
-  */
+   * Gives a component focus when it is added to the window. Note that if this method is called on
+   * multiple components, focus will be given to the component added latest to the window.
+   *
+   * @return The component itself
+   */
   protected AbstractDwcComponent focusComponent() throws DwcjRuntimeException {
     if (this.ctrl != null) {
       try {
@@ -591,8 +590,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   /**
    * The catchUp method is used to replay attributes and settings that the API user might have added
    * to a component before its creation. A component is not created before it's added to a panel.
-   * Anything that is added between instantiation of a component and its addition to a panel has to be
-   * recorded and replayed in this method
+   * Anything that is added between instantiation of a component and its addition to a panel has to
+   * be recorded and replayed in this method
    *
    * @throws IllegalAccessException - thrown if an attempt is made to call this method more than
    *         once
@@ -689,7 +688,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     if (this.tabTraversable != null) {
       this.setComponentTabTraversable(this.tabTraversable);
     }
-    
+
     if (this.wasFocused != null) {
       this.focusComponent();
     }

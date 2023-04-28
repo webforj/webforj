@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class Tree extends AbstractDwcComponent implements HasEnable{
+public final class Tree extends AbstractDwcComponent implements HasEnable {
 
   private BBjTree tree;
 
@@ -582,8 +582,8 @@ public final class Tree extends AbstractDwcComponent implements HasEnable{
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
