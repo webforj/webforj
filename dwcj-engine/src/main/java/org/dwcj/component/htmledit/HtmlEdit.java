@@ -15,7 +15,8 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class HtmlEdit extends AbstractDwcComponent implements HasFocus, HasEnable, TabTraversable {
+public final class HtmlEdit extends AbstractDwcComponent
+    implements HasFocus, HasEnable, TabTraversable {
 
   private BBjHtmlEdit bbjHtmlEdit;
 
@@ -385,8 +386,8 @@ public final class HtmlEdit extends AbstractDwcComponent implements HasFocus, Ha
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

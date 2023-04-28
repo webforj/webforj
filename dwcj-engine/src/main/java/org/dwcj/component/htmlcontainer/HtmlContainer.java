@@ -28,7 +28,8 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcComponent implements HasFocus, HasEnable, TabTraversable {
+public final class HtmlContainer extends AbstractDwcComponent
+    implements HasFocus, HasEnable, TabTraversable {
 
   private BBjHtmlView bbjHtmlView;
 
@@ -434,8 +435,8 @@ public final class HtmlContainer extends AbstractDwcComponent implements HasFocu
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
