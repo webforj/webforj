@@ -18,7 +18,7 @@ import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
-import org.dwcj.util.BBjFunctionalityHelper;
+import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /**
  * A Tree control.

@@ -22,7 +22,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, TextAlignable,  HasEnable {
+    implements HasFocus, TabTraversable, TextAlignable, HasEnable {
 
 
 
@@ -261,8 +261,8 @@ public final class Button extends AbstractDwcComponent
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

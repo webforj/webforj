@@ -37,8 +37,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
+      byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       ctrl = w.addStaticText(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
       catchUp();

@@ -11,7 +11,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * AppPanel is the core main application panel. It typically occupied the full browser real estate
  * and holds your app that consists of div container panels
  */
-public class Frame extends AbstractWindow implements HasEnable{
+public class Frame extends AbstractWindow implements HasEnable {
 
   public Frame() throws DwcjAppInitializeException {
 
@@ -102,7 +102,7 @@ public class Frame extends AbstractWindow implements HasEnable{
     return this;
   }
 
-  @Override 
+  @Override
   public boolean isEnabled() {
     return super.isComponentEnabled();
   }

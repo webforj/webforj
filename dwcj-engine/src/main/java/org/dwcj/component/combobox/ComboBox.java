@@ -34,8 +34,8 @@ import java.util.function.Consumer;
 /**
  * ComboBoxEdit Control
  */
-public final class ComboBox extends AbstractListBox
-    implements HasReadOnly, HasFocus, HasMouseWheelCondition, HasEnable, TabTraversable, TextAlignable {
+public final class ComboBox extends AbstractListBox implements HasReadOnly, HasFocus,
+    HasMouseWheelCondition, HasEnable, TabTraversable, TextAlignable {
 
   private BBjListEdit bbjListEdit;
 
@@ -495,14 +495,15 @@ public final class ComboBox extends AbstractListBox
     super.setVisible(visible);
     return this;
   }
+
   @Override
   public ComboBox setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

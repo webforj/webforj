@@ -23,8 +23,8 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly, HasFocus,
-    HasMouseWheelCondition, TabTraversable, TextAlignable {
+public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly,
+    HasFocus, HasMouseWheelCondition, TabTraversable, TextAlignable {
 
   private BBjListBox bbjListBox;
 
@@ -406,8 +406,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
