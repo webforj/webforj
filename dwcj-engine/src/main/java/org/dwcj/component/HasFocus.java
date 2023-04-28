@@ -6,11 +6,10 @@ package org.dwcj.component;
 public interface HasFocus {
 
   /**
-  * Gives a component focus when it is added to the window. Note that if this
-  * method is called on multiple components, focus will be given to the component
-  * added latest to the window. 
-  *
-  * @return The component itself
-  */
+   * Gives a component focus when it is added to the window. Note that if this method is called on
+   * multiple components, focus will be given to the component added latest to the window.
+   *
+   * @return The component itself
+   */
   public HasFocus focus();
 }

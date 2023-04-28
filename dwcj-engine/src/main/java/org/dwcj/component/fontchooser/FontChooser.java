@@ -20,7 +20,7 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 
-public final class FontChooser extends AbstractDwcComponent implements HasEnable{
+public final class FontChooser extends AbstractDwcComponent implements HasEnable {
 
   private FontChooserApproveEventSink fontChooserApproveEventSink;
 
@@ -212,8 +212,8 @@ public final class FontChooser extends AbstractDwcComponent implements HasEnable
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

@@ -14,7 +14,7 @@ import org.dwcj.component.checkablemenuitem.CheckableMenuItem;
 import org.dwcj.component.menuitem.MenuItem;
 import org.dwcj.component.window.AbstractWindow;
 
-public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu, HasEnable{
+public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu, HasEnable {
 
   private BBjPopupMenu bbjPopupMenu;
 
@@ -380,8 +380,8 @@ public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu, Has
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

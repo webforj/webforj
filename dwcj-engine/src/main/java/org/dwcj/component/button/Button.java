@@ -28,7 +28,7 @@ import org.dwcj.utilities.ImageUtil;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, TextAlignable,  HasEnable {
+    implements HasFocus, TabTraversable, TextAlignable, HasEnable {
 
 
 
