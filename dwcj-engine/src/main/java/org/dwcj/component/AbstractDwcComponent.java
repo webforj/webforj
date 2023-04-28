@@ -441,7 +441,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     if (this.ctrl != null) {
       try {
         if (ctrl instanceof Focusable) {
-          ((Focusable) ctrl).setFocusable(false);
+          ((Focusable) ctrl).setFocusable(value);
         }
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
