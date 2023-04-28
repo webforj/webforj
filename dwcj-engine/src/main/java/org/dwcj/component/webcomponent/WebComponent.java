@@ -84,7 +84,6 @@ public abstract class WebComponent extends AbstractComponent {
 
     hv = new HtmlContainer();
     hv.setTabTraversable(false);
-    hv.setFocusable(false);
     hv.onJavascriptEvent(this::handleJavascriptEvents);
     hv.setAttribute("dwcj-hv", getUuid());
 

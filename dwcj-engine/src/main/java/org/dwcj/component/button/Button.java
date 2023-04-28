@@ -8,8 +8,8 @@ import java.awt.image.BufferedImage;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.Focusable;
 import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
@@ -28,7 +28,7 @@ import org.dwcj.utilities.ImageUtil;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements Focusable, TabTraversable, TextAlignable, HasEnable {
+    implements HasFocus, TabTraversable, TextAlignable,  HasEnable {
 
 
 
@@ -115,7 +115,6 @@ public final class Button extends AbstractDwcComponent
    */
   public Button(String text) {
     super.setText(text);
-    this.focusable = true;
     this.tabTraversable = true;
     this.textAlignment = Alignment.MIDDLE;
   }
@@ -375,27 +374,8 @@ public final class Button extends AbstractDwcComponent
    */
 
   @Override
-  public Boolean isFocusable() {
-    if (this.ctrl != null) {
-      try {
-        ((BBjButton) ctrl).isFocusable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.focusable;
-  }
-
-  @Override
-  public Button setFocusable(Boolean focusable) {
-    if (this.ctrl != null) {
-      try {
-        ((BBjButton) ctrl).setFocusable(focusable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.focusable = focusable;
+  public Button focus() {
+    super.focusComponent();
     return this;
   }
 
@@ -466,10 +446,6 @@ public final class Button extends AbstractDwcComponent
 
     if (Boolean.TRUE.equals(this.disableOnClick)) {
       this.setDisableOnClick(this.disableOnClick);
-    }
-
-    if (Boolean.FALSE.equals(this.focusable)) {
-      this.setFocusable(this.focusable);
     }
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
