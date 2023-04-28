@@ -16,7 +16,7 @@ import org.dwcj.component.window.sink.WindowClickEventSink;
  * This class represents a div container, which behaves as a panel and can be styled and hold other
  * divs (panels) and controls.
  */
-public class Panel extends AbstractWindow implements HasEnable{
+public class Panel extends AbstractWindow implements HasEnable {
 
   private ArrayList<Consumer<WindowClickEvent>> callbacks = new ArrayList<>();
   private WindowClickEventSink divClickEventSink;
@@ -112,7 +112,7 @@ public class Panel extends AbstractWindow implements HasEnable{
     return this;
   }
 
-  @Override 
+  @Override
   public boolean isEnabled() {
     return super.isComponentEnabled();
   }

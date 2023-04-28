@@ -12,7 +12,7 @@ import org.dwcj.component.HasEnable;
 import org.dwcj.component.popupmenu.PopupMenu;
 import org.dwcj.component.window.AbstractWindow;
 
-public final class MenuButton extends AbstractDwcComponent implements HasEnable{
+public final class MenuButton extends AbstractDwcComponent implements HasEnable {
 
   private BBjMenuButton bbjMenuButton;
 
@@ -153,10 +153,11 @@ public final class MenuButton extends AbstractDwcComponent implements HasEnable{
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
+
   @Override
   public MenuButton setTooltipText(String text) {
     super.setTooltipText(text);
