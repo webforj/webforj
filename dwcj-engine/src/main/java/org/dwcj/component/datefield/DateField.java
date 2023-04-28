@@ -622,7 +622,7 @@ public final class DateField extends AbstractDwcComponent
     this.readOnly = editable;
     return this;
   }
-
+  
   @Override
   public DateField focus() {
     super.focusComponent();

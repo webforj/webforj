@@ -688,7 +688,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     if (this.tabTraversable != null) {
       this.setComponentTabTraversable(this.tabTraversable);
     }
-
     if (this.wasFocused != null) {
       this.focusComponent();
     }

@@ -439,7 +439,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   public boolean isEnabled(){
     return super.isComponentEnabled();
   }
-  
+
   @Override
   public HtmlContainer setTooltipText(String text) {
     super.setTooltipText(text);

@@ -505,7 +505,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   public boolean isEnabled(){
     return super.isComponentEnabled();
   }
-  
+
   @Override
   public ComboBox setTooltipText(String text) {
     super.setTooltipText(text);
