@@ -33,11 +33,11 @@ if class$="" then
 fi
 
 if class$="" then
-    class$="org.dwcj.util.WelcomeApp"
+    class$="org.dwcj.utilities.WelcomeApp"
     gosub determineClasspathEntries
 fi
 
-h! = new ::DwcjHelper.bbj::DwcjHelper() 
+h! = new ::DwcjHelper.bbj::DwcjHelper()
 Environment.init(BBjAPI(), h!)
 
 Class.forName(class$,err=class_not_found)
@@ -47,7 +47,7 @@ process_events,err=dwcj_error
 
 terminate:
     release
-    
+
 
 checkDebugMode:
   DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
@@ -60,7 +60,7 @@ checkDebugMode:
           continue
       fi
   next
-return  
+return
 
 determineClasspathEntries:
         admin! = new Admin()
@@ -74,7 +74,7 @@ determineClasspathEntries:
         endif
         cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
         cp! = Api!.getClasspath(cp$)
-        
+
         al! = new java.util.ArrayList()
         it!=cp!.iterator()
         while it!.hasNext()
@@ -84,7 +84,7 @@ determineClasspathEntries:
             fi
             al!.add(c$)
         wend
-        
+
         BBjAPI().getObjectTable().put("dwcjcp",al!)
 return
 
@@ -117,7 +117,7 @@ release
 
 dwcj_error:
     gosub checkDebugMode
-    
+
     if DEBUG=0 then
         a=msgbox("An error has occured!",48,"Error")
     else
