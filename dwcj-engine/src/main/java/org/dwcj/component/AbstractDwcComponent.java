@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.dwcj.Environment;
+import org.dwcj.exceptions.DwcjRuntimeException;
+import com.basis.bbj.proxies.sysgui.Focusable;
 
 /**
- * The base class for most DWC/BBj controls. Extends the AbstractControl class, and implements
+ * The base class for most DWC/BBj components. Extends the AbstractComponent class, and implements
  * default behaviors for the implemented interface methods.
  */
 public abstract class AbstractDwcComponent extends AbstractComponent implements HasAttribute,
@@ -28,7 +30,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
   /*
    * ============================================================================= Members common to
-   * all inheriting controls
+   * all inheriting components
    * =============================================================================
    */
   private String text = "";
@@ -70,14 +72,14 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected TextHighlightable.Highlight textHighlight = null;
 
   /**
-   * Gets the value for an attribute in the control.
+   * Gets the value for a specific attribute in the component.
    *
    * @param attribute the name of the attribute
    * @return the attribute
    */
   @Override
   public String getAttribute(String attribute) {
-    // ask the control first
+    // ask the component first
     if (ctrl != null) {
       try {
         return ctrl.getAttribute(attribute);
@@ -91,11 +93,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Set the value for an attribute in the.
+   * Set the value for a specified component attribute.
    *
    * @param attribute the name of the attribute
    * @param value the value to be set
-   * @return the control itself
+   * @return the component itself
    */
   @Override
   public AbstractDwcComponent setAttribute(String attribute, String value) {
@@ -113,10 +115,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Removes an attribute from the control.
+   * Removes an attribute from the component.
    *
    * @param attribute the name of the attribute
-   * @return the control itself
+   * @return the component itself
    */
   @Override
   public AbstractDwcComponent removeAttribute(String attribute) {
@@ -134,7 +136,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets the value for a property in the control.
+   * Gets the value for a property in the component.
    *
    * @param property the name of the property
    * @return the value of the property
@@ -152,11 +154,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Set the value for a property in the control.
+   * Set the value for a property in the component.
    *
    * @param property the name of the property
    * @param value the value to be set
-   * @return the control itself
+   * @return the component itself
    */
   @Override
   public AbstractDwcComponent setProperty(String property, Object value) {
@@ -173,9 +175,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets the text of the control.
+   * Gets the text of the component.
    *
-   * @return Text of the control
+   * @return Text of the component
    */
   @Override
   public String getText() {
@@ -190,10 +192,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Sets the text of the control.
+   * Sets the text of the component.
    *
-   * @param text The desired text of the control
-   * @return the control itself
+   * @param text The desired text of the component
+   * @return the component itself
    */
   @Override
   public AbstractDwcComponent setText(String text) {
@@ -284,10 +286,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Adds a class attribute to the control.
+   * Adds a class attribute to the component.
    *
    * @param selector The desired class
-   * @return The control itself
+   * @return The component itself
    */
   @Override
   public AbstractDwcComponent addClassName(String selector) {
@@ -305,10 +307,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Removes a class attribute from the control.
+   * Removes a class attribute from the component.
    *
    * @param selector The desired class
-   * @return The control itself
+   * @return The component itself
    */
   @Override
   public AbstractDwcComponent removeClassName(String selector) {
@@ -361,9 +363,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets the tooltip text for a control.
+   * Gets the tooltip text for a component.
    *
-   * @return A string with the tooltip text for the control
+   * @return A string with the tooltip text for the component
    */
   @Override
   public String getTooltipText() {
@@ -378,10 +380,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Sets the tooltip text for a control.
+   * Sets the tooltip text for a component.
    *
-   * @param text A string with the tooltip text for the control
-   * @return The control itself
+   * @param text A string with the tooltip text for the component
+   * @return The component itself
    */
   @Override
   public AbstractDwcComponent setTooltipText(String text) {
@@ -397,9 +399,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets whether or not the control is visible.
+   * Gets whether or not the component is visible.
    *
-   * @return The visibility of the control
+   * @return The visibility of the component
    */
   @Override
   public Boolean isVisible() {
@@ -414,11 +416,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Sets whether or not the control is visible.
+   * Sets whether or not the is component is visible on the page, true if so false if not.
    *
-   * @param visible for desired visibility of the control
+   * @param visible for desired visibility of the component
    *
-   * @return The control itself
+   * @return The component itself
    */
   @Override
   public AbstractDwcComponent setVisible(Boolean visible) {
@@ -434,10 +436,41 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Implementation to allow child controls to utilize base class Theme setters with their own
+  * Sets whether or not the component can gain focus via navigation of the page
+  * using the Tab key.
+  *
+  * @param Boolean value for desired tab traversability status.
+  * @return The component itself.
+  */
+  protected AbstractDwcComponent setComponentTabTraversable(boolean value)
+      throws DwcjRuntimeException {
+    if (this.ctrl != null) {
+      try {
+        if (ctrl instanceof Focusable) {
+          ((Focusable) ctrl).setFocusable(value);
+        }
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+    this.tabTraversable = value;
+    return this;
+  }
+
+  /*
+  * Returns whether or not a component can receive focus via navigation with the Tab key.
+  *
+  * @return True is component can be focused, false if not.
+  */
+  protected Boolean isComponentTabTraversable() {
+    return this.tabTraversable;
+  }
+
+  /**
+   * Implementation to allow child components to utilize base class Theme setters with their own
    * option-appropriate Enums.
    *
-   * @param theme Control-specific theme value
+   * @param theme Component-specific theme value
    */
 
   protected void setControlTheme(Enum<?> theme) {
@@ -497,10 +530,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Implementation to allow child controls to utilize base class Expanse setters with their own
+   * Implementation to allow child components to utilize base class Expanse setters with their own
    * option-appropriate Enums.
    *
-   * @param theme Control-specific theme value
+   * @param theme Component-specific theme value
    */
   protected void setControlExpanse(Enum<?> expanse) {
     if (ctrl != null) {
@@ -539,8 +572,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
   /**
    * The catchUp method is used to replay attributes and settings that the API user might have added
-   * to a control before its creation. A control is not created before it's added to a panel.
-   * Anything that is added between instantiation of a control and its addition to a panel has to be
+   * to a component before its creation. A component is not created before it's added to a panel.
+   * Anything that is added between instantiation of a component and its addition to a panel has to be
    * recorded and replayed in this method
    *
    * @throws IllegalAccessException - thrown if an attempt is made to call this method more than
@@ -635,10 +668,14 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       this.setControlExpanse(this.expanse);
     }
 
+    if (this.tabTraversable != null) {
+      this.setComponentTabTraversable(this.tabTraversable);
+    }
+
   }
 
   /**
-   * Method to destroy a control.
+   * Method to destroy a component.
    */
   @Override
   public void destroy() {
