@@ -34,7 +34,8 @@ public class AppFinder {
     // ignore class in case of exceptions, this class is apparently not for us!
 
     if (tmpClass != null && this.appBaseClass.isAssignableFrom(tmpClass)
-        && !className.equals("org.dwcj.App") && !className.equals("org.dwcj.util.WelcomeApp")) {
+        && !className.equals("org.dwcj.App")
+        && !className.equals("org.dwcj.utilities.WelcomeApp")) {
       this.appImplmentations.add(className);
     }
   }
