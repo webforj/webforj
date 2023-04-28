@@ -380,8 +380,8 @@ public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu, Has
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

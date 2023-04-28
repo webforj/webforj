@@ -918,7 +918,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
     return this;
   }
 
-  @Override 
+  @Override
   public boolean isEnabled() {
     return super.isComponentEnabled();
   }

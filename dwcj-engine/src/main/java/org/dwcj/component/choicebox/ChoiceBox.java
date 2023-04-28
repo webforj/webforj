@@ -558,8 +558,8 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 

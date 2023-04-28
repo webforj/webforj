@@ -406,8 +406,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
     return this;
   }
 
-  @Override 
-  public boolean isEnabled(){
+  @Override
+  public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
