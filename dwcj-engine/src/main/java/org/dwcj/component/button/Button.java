@@ -3,7 +3,6 @@ package org.dwcj.component.button;
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
@@ -18,10 +17,7 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
-<<<<<<< HEAD
 import org.dwcj.utilities.ImageUtil;
-=======
->>>>>>> 5ca4ad3 (feat: renamed util to utilities (#330))
 
 
 /**
@@ -94,6 +90,7 @@ public final class Button extends AbstractDwcComponent
   private BBjButton bbjButton;
 
 
+
   /*
    * ===================================================================================== This
    * first section implements parameterized constructors, overrides the create() method, and
@@ -128,8 +125,8 @@ public final class Button extends AbstractDwcComponent
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
-      this.bbjButton = (BBjButton) ctrl;
       this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
+      this.bbjButton = (BBjButton) ctrl;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -465,5 +462,4 @@ public final class Button extends AbstractDwcComponent
     }
 
   }
-
 }
