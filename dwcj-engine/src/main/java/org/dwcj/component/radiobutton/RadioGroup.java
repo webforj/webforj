@@ -1,9 +1,12 @@
 package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -13,14 +16,15 @@ import org.dwcj.component.window.AbstractWindow;
  * The class to implement the RadioGroup in order to group radioButtons.
  */
 public class RadioGroup extends AbstractDwcComponent {
-
   private List<RadioButton> radioButtonList = new ArrayList<>();
+  private BBjRadioGroup radioGroup;
 
   @Override
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       ctrl = (BBjControl) w.addRadioGroup();
+      radioGroup = (BBjRadioGroup) ctrl;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -30,8 +34,13 @@ public class RadioGroup extends AbstractDwcComponent {
   /**
    * Constructor taking as many RadioButtons as possible in RadioGroup.
    */
-  public RadioGroup addRadioGroup(RadioButton... buttons) {
-    radioButtonList.addAll(List.of(buttons));
+  public RadioGroup addRadioGroup(RadioButton... buttons) throws BBjException {
+    if (this.ctrl != null) {
+      radioButtonList.addAll(List.of(buttons));
+      for (RadioButton radioButton : radioButtonList) {
+        radioGroup.add(radioButton.bbjRadioButton);
+      }
+    }
     return this;
   }
 
@@ -47,14 +56,15 @@ public class RadioGroup extends AbstractDwcComponent {
    *
    * @return The selected RadioButton.
    */
-  public RadioButton getSelected() {
-    for (RadioButton radioButton : radioButtonList) {
-      if (Boolean.TRUE.equals(radioButton.isChecked())) {
-        return radioButton;
+    public RadioButton getSelected() throws BBjException {
+      radioGroup.getSelected();
+      for (RadioButton radioButton : radioButtonList) {
+        if(radioButton.isChecked()) {
+          return radioButton;
+        }
       }
+      return null;
     }
-    return null;
-  }
 
 
   /**
@@ -62,8 +72,8 @@ public class RadioGroup extends AbstractDwcComponent {
    *
    * @return the component itself.
    */
-  public RadioGroup remove(RadioButton button) {
-    radioButtonList.removeIf(radioButton -> radioButton == button);
+  public RadioGroup remove(RadioButton button) throws BBjException {
+    radioGroup.remove(button.bbjRadioButton);
     return this;
   }
 
