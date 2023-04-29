@@ -1,0 +1,30 @@
+name: Java Tests
+'on':
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: 'dwcjava/sandbox:000'
+    steps:
+      - name: Install Maven
+        run: apk add maven
+      - uses: actions/checkout@v3
+      - name: Adjust BBj version in POM
+        run: printf '%s\n' ',s/23.00/00.00/g' w q | ed ./dwcj-engine/pom.xml && cat ./dwcj-engine/pom.xml
+      - name: Install Maven Dependencies
+        run: >
+          mvn install:install-file "-Dfile=/opt/bbx/lib/BBjStartup.jar"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=00.00"
+          "-Dpackaging=jar" -q && mvn install:install-file
+          "-Dfile=/opt/bbx/lib/BBj.jar" "-DgroupId=com.basis.lib"
+          "-DartifactId=BBj" "-Dversion=00.00" "-Dpackaging=jar" -q && mvn
+          install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=00.00"
+          "-Dpackaging=jar" -q && mvn install -q -DskipTests
+      - name: Run Tests
+        run: mvn test -q
