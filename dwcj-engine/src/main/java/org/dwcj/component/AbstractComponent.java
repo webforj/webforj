@@ -22,7 +22,7 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   /*
    * Underlying BBj control
    */
-  protected BBjControl ctrl;
+  protected BBjControl control;
 
   /*
    * Members responsible for tracking ID attribute and user data
@@ -59,7 +59,7 @@ public abstract class AbstractComponent implements Component, HasDestroy {
    * @return the underlying BBj control
    */
   BBjControl getControl() {
-    return this.ctrl;
+    return this.control;
   }
 
   public Object getUserData(String key) {

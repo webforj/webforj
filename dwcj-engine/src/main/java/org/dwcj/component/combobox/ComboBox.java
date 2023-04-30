@@ -80,12 +80,12 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addListEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250,
-          BASISNUMBER_250, "", flags);
-      ctrl.setAttribute("max-row-count", "25");
-      ctrl.setAttribute("open-width", "2500");
-      ctrl.setAttribute("button-height", "auto");
-      this.bbjListEdit = (BBjListEdit) ctrl;
+      control = w.addListEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_250, BASISNUMBER_250, "", flags);
+      control.setAttribute("max-row-count", "25");
+      control.setAttribute("open-width", "2500");
+      control.setAttribute("button-height", "auto");
+      this.bbjListEdit = (BBjListEdit) control;
       populate();
       catchUp();
     } catch (Exception e) {
@@ -130,9 +130,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @SuppressWarnings("unchecked")
   protected void populate() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        BBjListEdit cb = (BBjListEdit) ctrl;
+        BBjListEdit cb = (BBjListEdit) control;
         cb.removeAllItems();
         cb.insertItems(0, data2);
       } catch (BBjException e) {
@@ -144,7 +144,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
 
   public ComboBox closeList() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListEdit.closeList();
       } catch (BBjException e) {
@@ -155,7 +155,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public ComboBox deselect() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListEdit.deselect();
       } catch (BBjException e) {
@@ -170,7 +170,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public String getEditText() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjListEdit.getEditText();
       } catch (BBjException e) {
@@ -181,14 +181,14 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public String getItemAt(Object key) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return values.get(key);
     }
     return null;
   }
 
   public Integer getItemCount() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjListEdit.getItemCount();
       } catch (BBjException e) {
@@ -200,7 +200,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public Integer getSelectedIndex() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjListEdit.getSelectedIndex();
       } catch (BBjException e) {
@@ -226,7 +226,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
 
   public ComboBox openList() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListEdit.openList();
       } catch (BBjException e) {
@@ -237,7 +237,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public ComboBox removeAllItems() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListEdit.removeAllItems();
       } catch (BBjException e) {
@@ -248,9 +248,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public ComboBox select(Integer indexStart, Integer indexEnd) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).select(indexStart, indexEnd);
+        ((BBjListEdit) this.control).select(indexStart, indexEnd);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -260,9 +260,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
 
   public ComboBox selectIndex(Integer index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).selectIndex(index);
+        ((BBjListEdit) this.control).selectIndex(index);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -273,7 +273,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   public ComboBox setEditText(String text) {
     this.editText = text;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListEdit.setEditText(text);
       } catch (BBjException e) {
@@ -302,7 +302,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   public ComboBox setMaximumRowCount(Integer max) {
     this.maxRowCount = max;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListEdit.setMaximumRowCount(max);
       } catch (BBjException e) {
@@ -314,9 +314,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   public ComboBox setTextAt(Integer idx, String text) {
     this.textAt = new SimpleEntry<>(idx, text);
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).setTextAt(idx, text);
+        ((BBjListEdit) this.control).setTextAt(idx, text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -326,7 +326,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
 
   public ComboBox onSelect(Consumer<ComboBoxSelectEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.selectEventSink == null) {
         this.selectEventSink = new ComboBoxSelectEventSink(this);
       }
@@ -339,7 +339,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
 
   public ComboBox onChange(Consumer<ComboBoxChangeEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.changeEventSink == null) {
         this.changeEventSink = new ComboBoxChangeEventSink(this);
       }
@@ -351,7 +351,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public ComboBox onOpen(Consumer<ComboBoxOpenEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.openEventSink == null) {
         this.openEventSink = new ComboBoxOpenEventSink(this);
       }
@@ -363,7 +363,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public ComboBox onClose(Consumer<ComboBoxCloseEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.closeEventSink == null) {
         this.closeEventSink = new ComboBoxCloseEventSink(this);
       }
@@ -375,7 +375,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   public ComboBox onEditModify(Consumer<ComboBoxEditModifyEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new ComboBoxEditModifyEventSink(this);
       }
@@ -389,9 +389,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return !((BBjListEdit) this.ctrl).isEditable();
+        return !((BBjListEdit) this.control).isEditable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -401,9 +401,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public ComboBox setReadOnly(Boolean readOnly) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).setEditable(readOnly);
+        ((BBjListEdit) this.control).setEditable(readOnly);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -425,9 +425,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public ComboBox setScrollWheelBehavior(MouseWheelCondition condition) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+        ((BBjListEdit) this.control).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -438,9 +438,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjListEdit) this.ctrl).isTabTraversable();
+        return ((BBjListEdit) this.control).isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -450,9 +450,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public ComboBox setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).setTabTraversable(traversable);
+        ((BBjListEdit) this.control).setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -463,7 +463,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public Alignment getTextAlignment() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return this.textAlignment;
     }
     return this.textAlignment;
@@ -471,9 +471,9 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
   @Override
   public ComboBox setTextAlignment(Alignment textAlignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListEdit) this.ctrl).setAlignment(textAlignment.textPosition);
+        ((BBjListEdit) this.control).setAlignment(textAlignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

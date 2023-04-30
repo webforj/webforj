@@ -9,15 +9,24 @@ package org.dwcj.component;
 public interface TextAlignable {
 
   /**
-   * Enum which maps to BBj constants for text alignment.
+   * Enum which represents the text alignment of a component.
    */
   enum Alignment {
     LEFT(8192), MIDDLE(16384), RIGHT(32768);
 
-    public final Integer textPosition;
+    public final int value;
 
-    private Alignment(Integer position) {
-      this.textPosition = position;
+    private Alignment(int position) {
+      this.value = position;
+    }
+
+    /**
+     * Gets the integer value of the text alignment.
+     *
+     * @return Integer value of text alignment
+     */
+    public int getValue() {
+      return value;
     }
   }
 

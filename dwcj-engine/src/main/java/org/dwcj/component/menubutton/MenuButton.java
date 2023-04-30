@@ -23,10 +23,10 @@ public final class MenuButton extends AbstractDwcComponent implements HasEnable 
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visibility flag, if set before adding the control to the form, so it's created
       // invisibly right away
-      ctrl = w.addMenuButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addMenuButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_250, BASISNUMBER_250, "");
       catchUp();
-      bbjMenuButton = (BBjMenuButton) ctrl;
+      bbjMenuButton = (BBjMenuButton) control;
     } catch (Exception e) {
       Environment.logError(e);
     }

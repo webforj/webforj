@@ -74,13 +74,13 @@ public final class ChoiceBox extends AbstractListBox
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addListButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addListButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_250, BASISNUMBER_250, "", flags);
-      ctrl.setAttribute("max-row-count", "25");
-      ctrl.setAttribute("open-width", "2500");
-      ctrl.setAttribute("button-height", "auto");
-      ctrl.setAttribute("left", "calc( 50vw - 100px )");
-      bbjListButton = (BBjListButton) ctrl;
+      control.setAttribute("max-row-count", "25");
+      control.setAttribute("open-width", "2500");
+      control.setAttribute("button-height", "auto");
+      control.setAttribute("left", "calc( 50vw - 100px )");
+      bbjListButton = (BBjListButton) control;
       populate();
       catchUp();
     } catch (Exception e) {
@@ -157,9 +157,9 @@ public final class ChoiceBox extends AbstractListBox
 
   @SuppressWarnings("unchecked")
   protected void populate() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        BBjListButton cb = (BBjListButton) ctrl;
+        BBjListButton cb = (BBjListButton) control;
         cb.removeAllItems();
         cb.insertItems(0, data2);
       } catch (BBjException e) {
@@ -191,9 +191,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox deselect() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).deselect();
+        ((BBjListButton) this.control).deselect();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -227,9 +227,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return String value of the selected item
    */
   public String getItemAt(Integer idx) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        BBjListButton cb = (BBjListButton) ctrl;
+        BBjListButton cb = (BBjListButton) control;
         return cb.getItemAt(idx);
       } catch (BBjException e) {
         Environment.logError(e);
@@ -244,9 +244,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return Integer representing the selected index
    */
   public Integer getSelectedIndex() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjListButton) ctrl).getSelectedIndex();
+        return ((BBjListButton) control).getSelectedIndex();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -279,9 +279,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return Integer representing the total number of items
    */
   public Integer getItemCount() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjListButton) ctrl).getItemCount();
+        return ((BBjListButton) control).getItemCount();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -326,7 +326,7 @@ public final class ChoiceBox extends AbstractListBox
    * @return the control itself
    */
   public ChoiceBox onSelect(Consumer<ChoiceBoxSelectEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.selectEventSink == null) {
         this.selectEventSink = new ChoiceBoxSelectEventSink(this);
       }
@@ -345,7 +345,7 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox onOpen(Consumer<ChoiceBoxOpenEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.openEventSink == null) {
         this.openEventSink = new ChoiceBoxOpenEventSink(this);
       }
@@ -363,7 +363,7 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox onClose(Consumer<ChoiceBoxCloseEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.closeEventSink == null) {
         this.closeEventSink = new ChoiceBoxCloseEventSink(this);
       }
@@ -380,9 +380,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox removeAllItems() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).removeAllItems();
+        ((BBjListButton) this.control).removeAllItems();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -397,9 +397,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox removeItemAt(Integer index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).removeItemAt(index);
+        ((BBjListButton) this.control).removeItemAt(index);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -414,9 +414,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox selectIndex(Integer index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).selectIndex(index);
+        ((BBjListButton) this.control).selectIndex(index);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -432,9 +432,9 @@ public final class ChoiceBox extends AbstractListBox
    * @return The object itself
    */
   public ChoiceBox setMaximumRowCount(Integer max) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).setMaximumRowCount(max);
+        ((BBjListButton) this.control).setMaximumRowCount(max);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -453,9 +453,9 @@ public final class ChoiceBox extends AbstractListBox
    */
   public ChoiceBox setTextAt(Integer idx, String text) {
     this.textAt = new SimpleEntry<>(idx, text);
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).setTextAt(idx, text);
+        ((BBjListButton) this.control).setTextAt(idx, text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -466,9 +466,9 @@ public final class ChoiceBox extends AbstractListBox
 
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return !((BBjListButton) this.ctrl).isEditable();
+        return !((BBjListButton) this.control).isEditable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -478,9 +478,9 @@ public final class ChoiceBox extends AbstractListBox
 
   @Override
   public ChoiceBox setReadOnly(Boolean readOnly) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).setEditable(readOnly);
+        ((BBjListButton) this.control).setEditable(readOnly);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -497,9 +497,9 @@ public final class ChoiceBox extends AbstractListBox
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjListButton) this.ctrl).isTabTraversable();
+        return ((BBjListButton) this.control).isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -509,9 +509,9 @@ public final class ChoiceBox extends AbstractListBox
 
   @Override
   public ChoiceBox setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).setTabTraversable(traversable);
+        ((BBjListButton) this.control).setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -527,9 +527,9 @@ public final class ChoiceBox extends AbstractListBox
 
   @Override
   public ChoiceBox setTextAlignment(Alignment textAlignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListButton) this.ctrl).setAlignment(textAlignment.textPosition);
+        ((BBjListButton) this.control).setAlignment(textAlignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

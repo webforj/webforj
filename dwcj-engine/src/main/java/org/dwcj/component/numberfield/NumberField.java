@@ -77,9 +77,9 @@ public class NumberField extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addInputN(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addInputN(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, flags);
-      numBox = (BBjInputN) this.ctrl;
+      numBox = (BBjInputN) this.control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -87,7 +87,7 @@ public class NumberField extends AbstractDwcComponent
   }
 
   public NumberField onEditModify(Consumer<NumberFieldModifyEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new NumberFieldModifyEventSink(this);
       }
@@ -104,7 +104,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the character that is used as the comma in the control.
    */
   public String getCommaCharacter() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getCommaCharacter();
       } catch (BBjException e) {
@@ -120,7 +120,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the character to be used indicating the decimal point.
    */
   public String getDotCharacter() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getDotCharacter();
       } catch (BBjException e) {
@@ -138,7 +138,7 @@ public class NumberField extends AbstractDwcComponent
    *         control.
    */
   public String getEditString() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getEditString().toString();
       } catch (BBjException e) {
@@ -154,7 +154,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the number of the last error generated in the control.
    */
   public Integer getError() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getError();
       } catch (BBjException e) {
@@ -172,7 +172,7 @@ public class NumberField extends AbstractDwcComponent
    *         highlighted).
    */
   public Boolean isHighlight() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getHighlight();
       } catch (BBjException e) {
@@ -189,7 +189,7 @@ public class NumberField extends AbstractDwcComponent
    *         In insert mode).
    */
   public Boolean isInsertMode() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getInsertMode();
       } catch (BBjException e) {
@@ -205,7 +205,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the length of the text in the control.
    */
   public int getLength() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getLength();
       } catch (BBjException e) {
@@ -221,7 +221,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the left margin of the control.
    */
   public Integer getMargin() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getMargin();
       } catch (BBjException e) {
@@ -237,7 +237,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the mask of the control, which provides character-type verification.
    */
   public String getMask() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getMask();
       } catch (BBjException e) {
@@ -253,7 +253,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns whether this control will accept negative values.
    */
   public Boolean isNegatable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getNegateable();
       } catch (BBjException e) {
@@ -270,7 +270,7 @@ public class NumberField extends AbstractDwcComponent
    *         true = Passed).
    */
   public Boolean isPassEnter() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getPassEnter();
       } catch (BBjException e) {
@@ -287,7 +287,7 @@ public class NumberField extends AbstractDwcComponent
    *         passed, true = Passed) .
    */
   public Boolean isPassTab() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getPassTab();
       } catch (BBjException e) {
@@ -305,7 +305,7 @@ public class NumberField extends AbstractDwcComponent
    *         NumericBox::restore method.
    */
   public String getRestore() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getRestore();
       } catch (BBjException e) {
@@ -322,7 +322,7 @@ public class NumberField extends AbstractDwcComponent
    *         commas, 1 = Display commas). By default, commas are not displayed.
    */
   public Boolean isUseEditCommas() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getUseEditCommas();
       } catch (BBjException e) {
@@ -338,7 +338,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns the value of the contents of the control.
    */
   public BigDecimal getValue() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return numBox.getValue().toBigDecimal();
       } catch (BBjException e) {
@@ -355,7 +355,7 @@ public class NumberField extends AbstractDwcComponent
    * creation of the BBjInputN control or by calling the NumericBox::setRestoreString method.
    */
   public void restore() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.restore();
       } catch (BBjException e) {
@@ -371,7 +371,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField selectAll() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.selectAll();
       } catch (BBjException e) {
@@ -389,7 +389,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setCommaCharacter(String comma) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setCommaCharacter(comma);
       } catch (BBjException e) {
@@ -408,7 +408,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setDotCharacter(String dot) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setDotCharacter(dot);
       } catch (BBjException e) {
@@ -429,7 +429,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setEditString(String edit) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setEditString(edit.getBytes());
       } catch (BBjException e) {
@@ -449,7 +449,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setHighlight(Boolean highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setHighlight(highlight);
       } catch (BBjException e) {
@@ -468,7 +468,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setInsertMode(Boolean insert) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setInsertMode(insert);
       } catch (BBjException e) {
@@ -488,7 +488,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setLength(Integer len) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setLength(len);
       } catch (BBjException e) {
@@ -506,7 +506,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setMargin(Integer marginWidth) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setMargin(marginWidth);
       } catch (BBjException e) {
@@ -524,7 +524,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setMask(String mask) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setMask(mask);
       } catch (BBjException e) {
@@ -544,7 +544,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setNegatable(boolean negatable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setNegateable(negatable);
       } catch (BBjException e) {
@@ -564,7 +564,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setPassEnter(Boolean pass) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setPassEnter(pass);
       } catch (BBjException e) {
@@ -584,7 +584,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setPassTab(Boolean pass) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setPassEnter(pass);
       } catch (BBjException e) {
@@ -603,7 +603,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setRestore(float restore) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setRestore(String.valueOf(restore));
       } catch (BBjException e) {
@@ -623,7 +623,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setUseEditCommas(boolean useCommas) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setUseEditCommas(useCommas);
       } catch (BBjException e) {
@@ -644,7 +644,7 @@ public class NumberField extends AbstractDwcComponent
    * @return Returns this
    */
   public NumberField setValue(BigDecimal value) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setValue(BasisNumber.createBasisNumber(value));
       } catch (BBjException e) {
@@ -673,7 +673,7 @@ public class NumberField extends AbstractDwcComponent
    */
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return !numBox.isEditable();
       } catch (BBjException e) {
@@ -692,7 +692,7 @@ public class NumberField extends AbstractDwcComponent
    */
   @Override
   public NumberField setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setEditable(!editable);
       } catch (BBjException e) {
@@ -710,7 +710,7 @@ public class NumberField extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.isTabTraversable();
       } catch (BBjException e) {
@@ -722,7 +722,7 @@ public class NumberField extends AbstractDwcComponent
 
   @Override
   public NumberField setTabTraversable(Boolean traverse) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setTabTraversable(traverse);
       } catch (BBjException e) {
@@ -740,7 +740,7 @@ public class NumberField extends AbstractDwcComponent
 
   @Override
   public NumberField setHighlightOnFocus(Highlight highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBox.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {
@@ -758,9 +758,9 @@ public class NumberField extends AbstractDwcComponent
 
   @Override
   public NumberField setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        numBox.setAlignment(alignment.textPosition);
+        numBox.setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

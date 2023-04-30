@@ -30,7 +30,7 @@ public final class ImageControl extends AbstractDwcComponent {
       BBjImage img = Environment.getInstance().getSysGui().getImageManager()
           .loadImageFromBytes(Base64.getDecoder().decode(CLEARPIXEL));
       bbjImageControl = w.addImageCtrl(img);
-      ctrl = bbjImageControl;
+      control = bbjImageControl;
       App.consoleLog("image added " + bbjImageControl);
       catchUp();
     } catch (Exception e) {

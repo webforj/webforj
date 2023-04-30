@@ -70,10 +70,10 @@ public final class HtmlContainer extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, getText(), flags);
-      ctrl.setNoEdge(true);
-      bbjHtmlView = (BBjHtmlView) ctrl;
+      control = w.addHtmlView(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
+      control.setNoEdge(true);
+      bbjHtmlView = (BBjHtmlView) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -81,7 +81,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer onScriptLoad(Consumer<HtmlContainerScriptLoadEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.onScriptLoadSink == null) {
         this.onScriptLoadSink = new HtmlContainerScriptLoadEventSink(this);
       }
@@ -94,7 +94,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer onScriptFail(Consumer<HtmlContainerScriptFailEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.onScriptFailSink == null) {
         this.onScriptFailSink = new HtmlContainerScriptFailEventSink(this);
       }
@@ -119,7 +119,7 @@ public final class HtmlContainer extends AbstractDwcComponent
    * @param script The script to execute
    */
   public void executeAsyncScript(String script) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.executeAsyncScript(script);
       } catch (BBjException e) {
@@ -144,7 +144,7 @@ public final class HtmlContainer extends AbstractDwcComponent
    * @return The result of the script
    */
   public Object executeScript(String script) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.executeScript(script);
       } catch (BBjException e) {
@@ -157,7 +157,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public Boolean isAutoNavigate() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.getAutoNavigate();
       } catch (BBjException e) {
@@ -168,7 +168,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public String getClientType() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.getClientType();
       } catch (BBjException e) {
@@ -179,7 +179,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public String getClientVersion() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.getClientVersion();
       } catch (BBjException e) {
@@ -190,7 +190,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public Image getImage() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return (Image) bbjHtmlView.getImage();
       } catch (BBjException e) {
@@ -202,7 +202,7 @@ public final class HtmlContainer extends AbstractDwcComponent
 
   @Override
   public String getText() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.getText();
       } catch (BBjException e) {
@@ -213,7 +213,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public String getUrl() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.getUrl();
       } catch (BBjException e) {
@@ -224,7 +224,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public String getUserAgent() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.getUserAgent();
       } catch (BBjException e) {
@@ -235,7 +235,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer injectScript(String script) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.injectScript(script);
       } catch (BBjException e) {
@@ -247,7 +247,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer injectScript(String script, Boolean top) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.injectScript(script, top);
       } catch (BBjException e) {
@@ -260,7 +260,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer injectUrl(String url) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.injectUrl(url);
       } catch (BBjException e) {
@@ -272,7 +272,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer injectUrl(String url, Boolean top) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.injectUrl(url, top);
       } catch (BBjException e) {
@@ -285,7 +285,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public Boolean print() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlView.print();
       } catch (BBjException e) {
@@ -296,7 +296,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer setAutoNavigate(Boolean autoNavigate) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.setAutoNavigate(autoNavigate);
       } catch (BBjException e) {
@@ -308,7 +308,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer setDownloadDirectory(String downloadDir) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjHtmlView.setDownloadDirectory(downloadDir);
     }
     this.downloadDirectory = downloadDir;
@@ -316,7 +316,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer setUrl(String url) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.setUrl(url);
       } catch (BBjException e) {
@@ -328,7 +328,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer setUrl(String url, Boolean reload) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.setUrl(url, reload);
       } catch (BBjException e) {
@@ -341,7 +341,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   public HtmlContainer setUserAgent(String userAgent) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjHtmlView.setUserAgent(userAgent);
     }
     return this;
@@ -355,7 +355,7 @@ public final class HtmlContainer extends AbstractDwcComponent
    * @return the control itself
    */
   public HtmlContainer onPageLoad(Consumer<HtmlContainerPageLoadEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.pageLoadEventSink == null) {
         this.pageLoadEventSink = new HtmlContainerPageLoadEventSink(this);
       }
@@ -375,7 +375,7 @@ public final class HtmlContainer extends AbstractDwcComponent
    * @return the control itself
    */
   public HtmlContainer onJavascriptEvent(Consumer<HtmlContainerJavascriptEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.javascriptEventSink == null) {
         this.javascriptEventSink = new HtmlContainerNativeJavascriptEventSink(this);
       }
@@ -394,7 +394,7 @@ public final class HtmlContainer extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.isTabTraversable();
       } catch (BBjException e) {
@@ -406,7 +406,7 @@ public final class HtmlContainer extends AbstractDwcComponent
 
   @Override
   public HtmlContainer setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlView.setTabTraversable(traversable);
       } catch (BBjException e) {

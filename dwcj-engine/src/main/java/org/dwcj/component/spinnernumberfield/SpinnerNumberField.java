@@ -30,10 +30,10 @@ public final class SpinnerNumberField extends NumberField implements HasMouseWhe
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addInputNSpinner(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1, flags);
       numBoxS = (BBjInputNSpinner) this.numBox;
-      this.numBox = (BBjInputNSpinner) this.ctrl;
+      this.numBox = (BBjInputNSpinner) this.control;
       super.catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -48,7 +48,7 @@ public final class SpinnerNumberField extends NumberField implements HasMouseWhe
 
   @Override
   public SpinnerNumberField setScrollWheelBehavior(MouseWheelCondition condition) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         numBoxS.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
       } catch (BBjException e) {

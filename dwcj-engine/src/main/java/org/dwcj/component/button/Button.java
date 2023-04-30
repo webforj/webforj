@@ -120,7 +120,7 @@ public final class Button extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
       this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
       catchUp();
@@ -136,7 +136,7 @@ public final class Button extends AbstractDwcComponent
    * @return The component itself
    */
   public Button addClickListener(EventListener<ButtonClickEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
       this.clickEventsSink.setCallback();
     }
     dispatcher.addEventListener(ButtonClickEvent.class, listener);
@@ -163,7 +163,7 @@ public final class Button extends AbstractDwcComponent
    */
   public Button removeClickListener(EventListener<ButtonClickEvent> listener) {
     dispatcher.removeEventListener(ButtonClickEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
       this.clickEventsSink.removeCallback();
     }
     return this;
@@ -175,9 +175,9 @@ public final class Button extends AbstractDwcComponent
    * @return Boolean value
    */
   public Boolean isDisableOnClick() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).getDisableOnClick();
+        ((BBjButton) control).getDisableOnClick();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -192,9 +192,9 @@ public final class Button extends AbstractDwcComponent
    * @return Instance of the object to enable method chaining.
    */
   public Button setDisableOnClick(Boolean disable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setDisableOnClick(disable);
+        ((BBjButton) control).setDisableOnClick(disable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -210,7 +210,7 @@ public final class Button extends AbstractDwcComponent
    * @return Enum value of text's vertical alignment
    */
   public TextVerticalAlignment getVerticalAlignment() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return this.verticalAlignment;
     }
     return this.verticalAlignment;
@@ -223,9 +223,9 @@ public final class Button extends AbstractDwcComponent
    * @return The Button itself
    */
   public Button setVerticalAlignment(TextVerticalAlignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setVerticalAlignment(alignment.alignment);
+        ((BBjButton) control).setVerticalAlignment(alignment.alignment);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -363,9 +363,9 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).isTabTraversable();
+        ((BBjButton) control).isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -375,9 +375,9 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   public Button setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setTabTraversable(traversable);
+        ((BBjButton) control).setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -394,9 +394,9 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   public Button setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setAlignment(alignment.textPosition);
+        ((BBjButton) control).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

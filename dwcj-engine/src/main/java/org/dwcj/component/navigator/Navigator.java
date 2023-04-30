@@ -44,10 +44,10 @@ public final class Navigator extends AbstractDwcComponent implements HasReadOnly
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visibility flag, if set before adding the control to the form, so it's created
       // invisibly right away
-      ctrl = w.addNavigator(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, "");
+      control = w.addNavigator(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, BASISNUMBER_1, "");
       catchUp();
-      bbjNavigator = (BBjNavigator) ctrl;
+      bbjNavigator = (BBjNavigator) control;
     } catch (Exception e) {
       Environment.logError(e);
     }

@@ -21,7 +21,7 @@ public class Frame extends AbstractWindow implements HasEnable {
       BasisNumber ctx = BasisNumber
           .createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
       wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "Frame", flags);
-      ctrl = wnd;
+      control = wnd;
     } catch (NumberFormatException | BBjException e) {
       Environment.logError(e);
       throw new DwcjAppInitializeException(e);

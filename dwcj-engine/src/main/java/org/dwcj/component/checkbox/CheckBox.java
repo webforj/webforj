@@ -91,8 +91,8 @@ public final class CheckBox extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, "", flags);
+      control = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, BASISNUMBER_1, "", flags);
       this.catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -106,7 +106,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @return the control itself
    */
   public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.checkboxCheckEventSink == null) {
         this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
       }
@@ -124,7 +124,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @return This method returns the horizontal position of the text in the CheckBox control.
    */
   public HorizontalTextPosition getHorizontalTextPosition() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return this.horizontalTextPosition;
     }
     return HorizontalTextPosition.RIGHT;
@@ -132,9 +132,9 @@ public final class CheckBox extends AbstractDwcComponent
 
 
   public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjCheckBox) this.ctrl).setHorizontalTextPosition(position.position);
+        ((BBjCheckBox) this.control).setHorizontalTextPosition(position.position);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -150,9 +150,9 @@ public final class CheckBox extends AbstractDwcComponent
    * @return false if not checked, true if checked.
    */
   public Boolean isChecked() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjCheckBox) this.ctrl).isSelected();
+        return ((BBjCheckBox) this.control).isSelected();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -161,9 +161,9 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   public CheckBox setChecked(Boolean checked) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjCheckBox) this.ctrl).setSelected(checked);
+        ((BBjCheckBox) this.control).setSelected(checked);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -266,9 +266,9 @@ public final class CheckBox extends AbstractDwcComponent
    */
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return !((BBjCheckBox) ctrl).isEditable();
+        return !((BBjCheckBox) control).isEditable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -284,9 +284,9 @@ public final class CheckBox extends AbstractDwcComponent
    */
   @Override
   public CheckBox setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjCheckBox) this.ctrl).setEditable(!editable);
+        ((BBjCheckBox) this.control).setEditable(!editable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -303,9 +303,9 @@ public final class CheckBox extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjCheckBox) ctrl).isTabTraversable();
+        return ((BBjCheckBox) control).isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -315,9 +315,9 @@ public final class CheckBox extends AbstractDwcComponent
 
   @Override
   public CheckBox setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjCheckBox) this.ctrl).setTabTraversable(traversable);
+        ((BBjCheckBox) this.control).setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -334,9 +334,9 @@ public final class CheckBox extends AbstractDwcComponent
 
   @Override
   public CheckBox setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjCheckBox) this.ctrl).setAlignment(alignment.textPosition);
+        ((BBjCheckBox) this.control).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -377,7 +377,7 @@ public final class CheckBox extends AbstractDwcComponent
 
     if (this.horizontalTextPosition != HorizontalTextPosition.RIGHT) {
       try {
-        ((BBjCheckBox) ctrl).setHorizontalTextPosition(horizontalTextPosition.position);
+        ((BBjCheckBox) control).setHorizontalTextPosition(horizontalTextPosition.position);
       } catch (BBjException e) {
         Environment.logError(e);
       }

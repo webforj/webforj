@@ -3,6 +3,7 @@ package org.dwcj.component.label;
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.TextAlignable;
@@ -41,6 +42,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param text String value for initial display text
    */
   public Label(String text) {
+    this.textAlignment = Alignment.LEFT;
     setText(text);
   }
 
@@ -59,11 +61,11 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  protected void create(AbstractWindow p) throws DwcjRuntimeException {
+  protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
-      ctrl = w.addStaticText(getText(), flags);
+      control = w.addStaticText(getText(), flags);
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
@@ -80,7 +82,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseEnterEvent.class, listener);
@@ -106,7 +108,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.removeCallback();
     }
     return this;
@@ -119,7 +121,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseExitEvent.class, listener);
@@ -145,7 +147,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label removeMouseExitListener(EventListener<MouseExitEvent> listener) {
     dispatcher.removeEventListener(MouseExitEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.removeCallback();
     }
     return this;
@@ -158,7 +160,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.setCallback();
     }
     dispatcher.addEventListener(RightMouseDownEvent.class, listener);
@@ -184,7 +186,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
     }
     return this;
@@ -196,10 +198,10 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
    * @return Returns this
    */
-  public Label setWrap(Boolean wrap) throws DwcjRuntimeException {
-    if (this.ctrl != null) {
+  public Label setWrap(Boolean wrap) {
+    if (this.control != null) {
       try {
-        ((BBjStaticText) this.ctrl).setLineWrap(wrap);
+        ((BBjStaticText) this.control).setLineWrap(wrap);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -222,10 +224,10 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  public Label setTextAlignment(Alignment alignment) throws DwcjRuntimeException {
-    if (this.ctrl != null) {
+  public Label setTextAlignment(Alignment alignment) {
+    if (this.control != null) {
       try {
-        ((BBjStaticText) this.ctrl).setAlignment(alignment.textPosition);
+        ((BBjStaticText) this.control).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -246,6 +248,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setText(String text) {
     super.setText(text);
     return this;
@@ -255,6 +258,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
@@ -264,6 +268,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
@@ -273,6 +278,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
@@ -282,6 +288,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
@@ -291,6 +298,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label addClassName(String selector) {
     super.addClassName(selector);
     return this;
@@ -300,6 +308,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
@@ -333,7 +342,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       this.setWrap(lineWrap);
     }
 
-    if (this.textAlignment != Alignment.MIDDLE) {
+    if (this.textAlignment != Alignment.LEFT) {
       this.setTextAlignment(this.textAlignment);
     }
   }
