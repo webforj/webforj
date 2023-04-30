@@ -42,6 +42,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param text String value for initial display text
    */
   public Label(String text) {
+    this.textAlignment = Alignment.LEFT;
     setText(text);
   }
 
