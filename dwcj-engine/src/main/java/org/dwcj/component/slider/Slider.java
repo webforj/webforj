@@ -68,9 +68,9 @@ public final class Slider extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_250, BASISNUMBER_250, flags);
-      bbjSlider = (BBjSlider) ctrl;
+      bbjSlider = (BBjSlider) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -85,7 +85,7 @@ public final class Slider extends AbstractDwcComponent
    * @return The object itself
    */
   public Slider onScroll(Consumer<SliderScrollEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.scrollEventSink == null) {
         this.scrollEventSink = new SliderScrollEventSink(this);
       }
@@ -105,7 +105,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns whether the control orientation is inverted.
    */
   public Boolean isInverted() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getInverted();
       } catch (BBjException e) {
@@ -122,7 +122,7 @@ public final class Slider extends AbstractDwcComponent
    *         position of the corresponding String label.
    */
   public Map<Integer, String> getLabels() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getLabels();
       } catch (BBjException e) {
@@ -138,7 +138,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns the slider's major tick spacing.
    */
   public Integer getMajorTickSpacing() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getMajorTickSpacing();
       } catch (BBjException e) {
@@ -154,7 +154,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns the maximum value of the control.
    */
   public Integer getMaximum() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getMaximum();
       } catch (BBjException e) {
@@ -170,7 +170,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns the minimum value of the control.
    */
   public Integer getMinimum() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getMinimum();
       } catch (BBjException e) {
@@ -186,7 +186,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns the slider's minor tick spacing.
    */
   public Integer getMinorTickSpacing() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getMinorTickSpacing();
       } catch (BBjException e) {
@@ -202,7 +202,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns the orientation of the control (0 = HORIZONTAL, 1 = VERTICAL).
    */
   public Integer getOrientation() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return bbjSlider.getOrientation();
     }
     if (this.orientation == Orientation.HORIZONTAL) {
@@ -217,7 +217,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns whether labels are painted on this slider.
    */
   public Boolean isPaintLabels() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getPaintLabels();
       } catch (BBjException e) {
@@ -233,7 +233,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns whether ticks are painted on this slider.
    */
   public Boolean isPaintTicks() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getPaintTicks();
       } catch (BBjException e) {
@@ -251,7 +251,7 @@ public final class Slider extends AbstractDwcComponent
    *         thumb.
    */
   public Boolean isSnapToTicks() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getSnapToTicks();
       } catch (BBjException e) {
@@ -267,7 +267,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns the current value of the control.
    */
   public Integer getValue() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjSlider.getValue();
       } catch (BBjException e) {
@@ -287,7 +287,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setInverted(Boolean inverted) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setInverted(inverted);
       } catch (BBjException e) {
@@ -306,7 +306,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setLabels(Map<Integer, String> labels) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setLabels(labels);
       } catch (BBjException e) {
@@ -323,7 +323,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setMajorTickSpacing(Integer tick) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setMajorTickSpacing(tick);
       } catch (BBjException e) {
@@ -341,7 +341,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setMaximum(Integer maximum) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setMaximum(maximum);
       } catch (BBjException e) {
@@ -359,7 +359,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setMinimum(Integer minimum) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setMinimum(minimum);
       } catch (BBjException e) {
@@ -377,7 +377,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setMinorTickSpacing(Integer tick) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setMinorTickSpacing(tick);
       } catch (BBjException e) {
@@ -397,7 +397,7 @@ public final class Slider extends AbstractDwcComponent
    * @return The object itself
    */
   public Slider setOrientation(Orientation orientation) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       this.setAttribute("orientation", orientation.value);
     }
     this.orientation = orientation;
@@ -411,7 +411,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setPaintLabels(Boolean paint) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setPaintLabels(paint);
       } catch (BBjException e) {
@@ -429,7 +429,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setPaintTicks(Boolean paint) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setPaintTicks(paint);
       } catch (BBjException e) {
@@ -449,7 +449,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setSnapToTicks(Boolean snap) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setSnapToTicks(snap);
       } catch (BBjException e) {
@@ -467,7 +467,7 @@ public final class Slider extends AbstractDwcComponent
    * @return Returns this
    */
   public Slider setValue(Integer value) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setValue(value);
       } catch (BBjException e) {
@@ -488,7 +488,7 @@ public final class Slider extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.isTabTraversable();
       } catch (BBjException e) {
@@ -500,7 +500,7 @@ public final class Slider extends AbstractDwcComponent
 
   @Override
   public Slider setTabTraversable(Boolean traverse) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setTabTraversable(traverse);
       } catch (BBjException e) {
@@ -519,7 +519,7 @@ public final class Slider extends AbstractDwcComponent
 
   @Override
   public Slider setScrollWheelBehavior(MouseWheelCondition condition) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjSlider.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
       } catch (BBjException e) {

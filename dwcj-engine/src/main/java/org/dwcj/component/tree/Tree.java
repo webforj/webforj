@@ -46,9 +46,9 @@ public final class Tree extends AbstractDwcComponent implements HasEnable {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visibility flag, if set before adding the control to the form, so it's created
       // invisibly right away
-      ctrl = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1);
-      tree = (BBjTree) ctrl;
+      tree = (BBjTree) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);

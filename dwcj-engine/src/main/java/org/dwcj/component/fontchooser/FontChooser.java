@@ -35,9 +35,9 @@ public final class FontChooser extends AbstractDwcComponent implements HasEnable
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visbility flag
-      ctrl = w.addFontChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addFontChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1);
-      bbjFontChooser = (BBjFontChooser) ctrl;
+      bbjFontChooser = (BBjFontChooser) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);

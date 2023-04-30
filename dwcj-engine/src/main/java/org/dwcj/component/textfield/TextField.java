@@ -73,9 +73,9 @@ public final class TextField extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, flags);
-      bbjInputE = (BBjInputE) ctrl;
+      bbjInputE = (BBjInputE) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -84,7 +84,7 @@ public final class TextField extends AbstractDwcComponent
 
   public TextField onEditModify(Consumer<TextFieldModifyEvent> callback) {
 
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new TextFieldModifyEventSink(this);
       }
@@ -97,7 +97,7 @@ public final class TextField extends AbstractDwcComponent
 
 
   public Integer getCaretPos() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getCaretPosition();
       } catch (BBjException e) {
@@ -108,7 +108,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Integer getError() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getError();
       } catch (BBjException e) {
@@ -119,7 +119,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public String getEditString() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return new String(bbjInputE.getEditString(), StandardCharsets.UTF_8);
       } catch (BBjException e) {
@@ -130,7 +130,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Boolean isHighlight() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getHighlight();
       } catch (BBjException e) {
@@ -141,7 +141,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Boolean isInsertMode() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getInsertMode();
       } catch (BBjException e) {
@@ -152,7 +152,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Integer getLength() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.getLength();
       } catch (BBjException e) {
@@ -163,7 +163,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Integer getMargin() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getMargin();
       } catch (BBjException e) {
@@ -174,7 +174,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public String getMask() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getMask();
       } catch (BBjException e) {
@@ -186,7 +186,7 @@ public final class TextField extends AbstractDwcComponent
 
 
   public String getPadCharacter() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getPadCharacter();
       } catch (BBjException e) {
@@ -197,7 +197,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Boolean isPassEnter() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getPassEnter();
       } catch (BBjException e) {
@@ -208,7 +208,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public Boolean isPassTab() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getPassTab();
       } catch (BBjException e) {
@@ -219,7 +219,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public String getRestore() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjInputE.getRestore();
       } catch (BBjException e) {
@@ -232,7 +232,7 @@ public final class TextField extends AbstractDwcComponent
 
 
   public TextField restore() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.restore();
       } catch (BBjException e) {
@@ -243,7 +243,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField selectAll() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.selectAll();
       } catch (BBjException e) {
@@ -255,7 +255,7 @@ public final class TextField extends AbstractDwcComponent
 
 
   public TextField setCaretPos(Integer position) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setCaretPosition(position);
       } catch (BBjException e) {
@@ -267,7 +267,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setEditString(String edit) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setEditString(edit.getBytes(StandardCharsets.UTF_8));
       } catch (BBjException e) {
@@ -279,7 +279,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setHighlight(Boolean highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setHighlight(highlight);
       } catch (BBjException e) {
@@ -291,7 +291,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setInsertMode(Boolean insert) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setInsertMode(insert);
       } catch (BBjException e) {
@@ -303,7 +303,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setLength(Integer len) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setLength(len);
       } catch (BBjException e) {
@@ -315,7 +315,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setMargin(Integer marginWidth) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setMargin(marginWidth);
       } catch (BBjException e) {
@@ -327,9 +327,9 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setMask(String mask) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ((BBjInputE) ctrl).setMask(mask);
+        ((BBjInputE) control).setMask(mask);
       } catch (BBjException e) {
         App.consoleLog(e.getMessage());
         throw new RuntimeException(e);
@@ -340,7 +340,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setPadCharacter(String pad) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setPadCharacter(pad);
       } catch (BBjException e) {
@@ -352,7 +352,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setPassEnter(Boolean pass) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setPassEnter(pass);
       } catch (BBjException e) {
@@ -364,7 +364,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setPassTab(Boolean pass) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setPassTab(pass);
       } catch (BBjException e) {
@@ -376,7 +376,7 @@ public final class TextField extends AbstractDwcComponent
   }
 
   public TextField setRestore(String restore) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setRestore(restore);
       } catch (BBjException e) {
@@ -417,7 +417,7 @@ public final class TextField extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.isTabTraversable();
       } catch (BBjException e) {
@@ -429,7 +429,7 @@ public final class TextField extends AbstractDwcComponent
 
   @Override
   public TextField setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setTabTraversable(traversable);
       } catch (BBjException e) {
@@ -447,7 +447,7 @@ public final class TextField extends AbstractDwcComponent
 
   @Override
   public TextField setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setAlignment(alignment.getValue());
       } catch (BBjException e) {
@@ -466,7 +466,7 @@ public final class TextField extends AbstractDwcComponent
 
   @Override
   public TextField setHighlightOnFocus(Highlight highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjInputE.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {

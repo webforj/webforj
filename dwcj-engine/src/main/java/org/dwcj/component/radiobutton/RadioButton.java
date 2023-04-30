@@ -54,9 +54,9 @@ public final class RadioButton extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addRadioButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1, "", flags);
-      bbjRadioButton = (BBjRadioButton) ctrl;
+      bbjRadioButton = (BBjRadioButton) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -70,7 +70,7 @@ public final class RadioButton extends AbstractDwcComponent
    * @return the control itself
    */
   public RadioButton onChange(Consumer<RadioButtonCheckEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.checkEventSink == null) {
         this.checkEventSink = new RadioButtonCheckEventSink(this);
       }
@@ -87,7 +87,7 @@ public final class RadioButton extends AbstractDwcComponent
    * @return The ID of the control which has been added to a panel.
    */
   public Integer getButtonID() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjRadioButton.getID();
       } catch (BBjException e) {
@@ -105,14 +105,14 @@ public final class RadioButton extends AbstractDwcComponent
    * @return Enum value of the horizontal text position for the control.
    */
   public HorizontalTextPosition getHorizontalTextPosition() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return this.horizontalTextPosition;
     }
     return this.horizontalTextPosition;
   }
 
   public RadioButton setHorizontalTextPosition(HorizontalTextPosition position) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjRadioButton.setHorizontalTextPosition(position.position);
       } catch (BBjException e) {
@@ -129,7 +129,7 @@ public final class RadioButton extends AbstractDwcComponent
    * @return Boolean value representing the radio button's selection value
    */
   public Boolean isSelected() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjRadioButton.isSelected();
       } catch (BBjException e) {
@@ -147,7 +147,7 @@ public final class RadioButton extends AbstractDwcComponent
    * @return The control itself
    */
   public RadioButton setSelected(boolean selected) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjRadioButton.setSelected(selected);
       } catch (BBjException e) {
@@ -163,7 +163,7 @@ public final class RadioButton extends AbstractDwcComponent
    */
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return !bbjRadioButton.isEditable();
       } catch (BBjException e) {
@@ -178,7 +178,7 @@ public final class RadioButton extends AbstractDwcComponent
    */
   @Override
   public RadioButton setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjRadioButton.setEditable(!editable);
       } catch (BBjException e) {
@@ -199,7 +199,7 @@ public final class RadioButton extends AbstractDwcComponent
    */
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjRadioButton.isTabTraversable();
       } catch (BBjException e) {
@@ -214,7 +214,7 @@ public final class RadioButton extends AbstractDwcComponent
    */
   @Override
   public RadioButton setTabTraversable(Boolean traverse) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjRadioButton.setTabTraversable(traverse);
       } catch (BBjException e) {

@@ -53,7 +53,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
       // it's created invisibly right away
       tabCtrl = w.addTabCtrl(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1);
-      ctrl = tabCtrl;
+      control = tabCtrl;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -68,7 +68,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    */
   public TabbedPane add(String text) {
 
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         this.tabCtrl.addTab(text, -1);
       } catch (BBjException e) {
@@ -90,7 +90,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return the Tab Control object
    */
   public TabbedPane add(String text, Panel panel) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         parentPanel.add(panel);
         this.tabCtrl.addTab(text, WindowAccessor.getDefault().getBBjWindow(panel));
@@ -111,7 +111,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return The title of the tab
    */
   public String getTitleAt(int index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return this.tabCtrl.getTitleAt(index);
       } catch (BBjException e) {
@@ -127,7 +127,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return The number of tabs
    */
   public int getTabCount() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return this.tabCtrl.getNumTabs();
       } catch (BBjException e) {
@@ -145,7 +145,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return The control itself
    */
   public TabbedPane insert(int index, String text) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         this.tabCtrl.insertTab(index, text, -1);
       } catch (BBjException e) {
@@ -166,7 +166,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return The control itself
    */
   public TabbedPane insert(int index, String text, Panel panel) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         parentPanel.add(panel);
         this.tabCtrl.insertTab(index, text, WindowAccessor.getDefault().getBBjWindow(panel));
@@ -186,7 +186,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return The control itself
    */
   public TabbedPane remove(int index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         this.tabCtrl.removeTab(index);
       } catch (BBjException e) {
@@ -207,7 +207,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return the Tab Control object itself
    */
   public TabbedPane setPanelAt(int index, Panel panel) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         parentPanel.add(panel);
         this.tabCtrl.setControlAt(index, WindowAccessor.getDefault().getBBjWindow(panel));
@@ -227,7 +227,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    * @return The control itself
    */
   public TabbedPane selectIndex(int index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         this.tabCtrl.setSelectedIndex(index);
       } catch (BBjException e) {
@@ -246,7 +246,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
    */
 
   public TabbedPane onSelect(Consumer<TabSelectEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.tabSelectEventSink == null) {
         this.tabSelectEventSink = new TabSelectEventSink(this);
       }

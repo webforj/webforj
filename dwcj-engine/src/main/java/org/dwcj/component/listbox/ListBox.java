@@ -55,12 +55,12 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addListBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_250,
-          BASISNUMBER_250, "", flags);
-      ctrl.setAttribute("max-row-count", "25");
-      ctrl.setAttribute("open-width", "2500");
-      ctrl.setAttribute("button-height", "auto");
-      bbjListBox = (BBjListBox) ctrl;
+      control = w.addListBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_250, BASISNUMBER_250, "", flags);
+      control.setAttribute("max-row-count", "25");
+      control.setAttribute("open-width", "2500");
+      control.setAttribute("button-height", "auto");
+      bbjListBox = (BBjListBox) control;
       populate();
       catchUp();
     } catch (Exception e) {
@@ -112,9 +112,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @SuppressWarnings("unchecked")
   protected void populate() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        BBjListBox cb = (BBjListBox) ctrl;
+        BBjListBox cb = (BBjListBox) control;
         cb.removeAllItems();
         cb.insertItems(0, data2);
       } catch (BBjException e) {
@@ -126,7 +126,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
 
   public ListBox deselectAll() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListBox.deselectAll();
       } catch (BBjException e) {
@@ -137,7 +137,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   }
 
   public ListBox deselectIndex(int index) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListBox.deselectIndex(index);
       } catch (BBjException e) {
@@ -153,7 +153,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    * @return all values in the listBox
    */
   public Map<Object, String> getAllItems() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return this.values;
     }
     return Collections.emptyMap();
@@ -166,16 +166,16 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    * @return String item at the given key
    */
   public String getItem(Object key) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return values.get(key);
     }
     return null;
   }
 
   public String getItemAt(Integer idx) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        BBjListBox cb = (BBjListBox) ctrl;
+        BBjListBox cb = (BBjListBox) control;
         return cb.getItemAt(idx);
       } catch (BBjException e) {
         Environment.logError(e);
@@ -186,7 +186,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
 
   public Integer getItemCount() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListBox.getItemCount();
       } catch (BBjException e) {
@@ -202,7 +202,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    * @return boolean
    */
   public Boolean isMultipleSelection() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjListBox.getMultipleSelection();
       } catch (BBjException e) {
@@ -218,7 +218,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    * @return selected entry
    */
   public SimpleEntry<Object, String> getSelectedItem() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         String value = bbjListBox.getSelectedItem();
         return new SimpleEntry<>(getEntryByValue(value), value);
@@ -230,7 +230,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   }
 
   public SimpleEntry<Object, String> getEntryByValue(String value) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       Map<Object, String> map = this.values;
       for (Map.Entry<Object, String> entry : map.entrySet()) {
         if (Objects.equals(value, entry.getValue())) {
@@ -248,7 +248,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    * @return Map of the selected items
    */
   public Map<Object, String> getSelectedItems() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       Map<Object, String> map = new HashMap<>();
       try {
         Object[] indices = bbjListBox.getSelectedIndices().toArray();
@@ -298,7 +298,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    * @return ListBox
    */
   public ListBox onSelect(Consumer<ListBoxSelectEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.selectEventSink == null) {
         this.selectEventSink = new ListBoxSelectEventSink(this);
       }
@@ -310,7 +310,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   }
 
   public ListBox onDoubleClick(Consumer<ListBoxDoubleClickEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.doubleClickEventSink == null) {
         this.doubleClickEventSink = new ListBoxDoubleClickEventSink(this);
       }
@@ -329,9 +329,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
    */
 
   public ListBox removeAllItems() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).removeAllItems();
+        ((BBjListBox) this.control).removeAllItems();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -340,9 +340,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   }
 
   public ListBox removeItemAt(Integer idx) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).removeItemAt(idx);
+        ((BBjListBox) this.control).removeItemAt(idx);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -351,9 +351,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   }
 
   public ListBox selectIndex(Integer idx) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).selectIndex(idx);
+        ((BBjListBox) this.control).selectIndex(idx);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -363,7 +363,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
 
   public ListBox setMultipleSelection(Boolean multipleSelection) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjListBox.setMultipleSelection(multipleSelection);
       } catch (BBjException e) {
@@ -376,9 +376,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   public ListBox setTextAt(Integer idx, String text) {
     this.textAt = new SimpleEntry<>(idx, text);
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).setTextAt(idx, text);
+        ((BBjListBox) this.control).setTextAt(idx, text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -452,8 +452,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Integer getHorizontalScrollBarHeight() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).getHorizontalScrollBarHeight();
+    if (this.control != null) {
+      ((BBjListBox) this.control).getHorizontalScrollBarHeight();
     }
     return 0;
 
@@ -461,8 +461,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Integer getHorizontalScrollBarPosition() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).getHorizontalScrollBarPosition();
+    if (this.control != null) {
+      ((BBjListBox) this.control).getHorizontalScrollBarPosition();
     }
     return this.horizontalScrollBarPosition;
 
@@ -470,8 +470,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Integer getHorizontalScrollBarWidth() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).getHorizontalScrollBarWidth();
+    if (this.control != null) {
+      ((BBjListBox) this.control).getHorizontalScrollBarWidth();
     }
     return 0;
 
@@ -479,8 +479,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Integer getVerticalScrollBarHeight() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).getVerticalScrollBarHeight();
+    if (this.control != null) {
+      ((BBjListBox) this.control).getVerticalScrollBarHeight();
     }
     return 0;
 
@@ -488,8 +488,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Integer getVerticalScrollBarPosition() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).getVerticalScrollBarPosition();
+    if (this.control != null) {
+      ((BBjListBox) this.control).getVerticalScrollBarPosition();
     }
     return this.verticalScrollBarPosition;
 
@@ -497,8 +497,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Integer getVerticalScrollBarWidth() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).getVerticalScrollBarWidth();
+    if (this.control != null) {
+      ((BBjListBox) this.control).getVerticalScrollBarWidth();
     }
     return 0;
 
@@ -506,8 +506,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Boolean isHorizontalScrollBarVisible() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).isHorizontalScrollBarVisible();
+    if (this.control != null) {
+      ((BBjListBox) this.control).isHorizontalScrollBarVisible();
     }
     return false;
 
@@ -515,8 +515,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Boolean isVerticalScrollBarVisible() {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).isVerticalScrollBarVisible();
+    if (this.control != null) {
+      ((BBjListBox) this.control).isVerticalScrollBarVisible();
     }
     return false;
 
@@ -524,8 +524,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public ListBox setHorizontalScrollBarPosition(Integer position) {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).setHorizontalScrollBarPosition(position);
+    if (this.control != null) {
+      ((BBjListBox) this.control).setHorizontalScrollBarPosition(position);
     }
     this.horizontalScrollBarPosition = position;
     return this;
@@ -533,8 +533,8 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public ListBox setVerticalScrollBarPosition(Integer position) {
-    if (this.ctrl != null) {
-      ((BBjListBox) this.ctrl).setVerticalScrollBarPosition(position);
+    if (this.control != null) {
+      ((BBjListBox) this.control).setVerticalScrollBarPosition(position);
     }
     this.verticalScrollBarPosition = position;
     return this;
@@ -544,9 +544,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return !((BBjListBox) this.ctrl).isEditable();
+        return !((BBjListBox) this.control).isEditable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -556,9 +556,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public ListBox setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).setEditable(!editable);
+        ((BBjListBox) this.control).setEditable(!editable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -583,9 +583,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public ListBox setScrollWheelBehavior(MouseWheelCondition condition) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+        ((BBjListBox) this.control).setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -597,9 +597,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ((BBjListBox) this.ctrl).isTabTraversable();
+        return ((BBjListBox) this.control).isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -609,9 +609,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public ListBox setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).setTabTraversable(traversable);
+        ((BBjListBox) this.control).setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -628,9 +628,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
   @Override
   public ListBox setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjListBox) this.ctrl).setAlignment(alignment.getValue());
+        ((BBjListBox) this.control).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

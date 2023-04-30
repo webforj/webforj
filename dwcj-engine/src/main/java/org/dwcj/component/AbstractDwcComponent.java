@@ -80,9 +80,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   @Override
   public String getAttribute(String attribute) {
     // ask the component first
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        return ctrl.getAttribute(attribute);
+        return control.getAttribute(attribute);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -101,9 +101,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent setAttribute(String attribute, String value) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.setAttribute(attribute, value);
+        control.setAttribute(attribute, value);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -122,9 +122,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent removeAttribute(String attribute) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.removeAttribute(attribute);
+        control.removeAttribute(attribute);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -143,9 +143,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public Object getProperty(String property) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        return ctrl.getClientProperty(property);
+        return control.getClientProperty(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -162,9 +162,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent setProperty(String property, Object value) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.putClientProperty(property, value);
+        control.putClientProperty(property, value);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -181,9 +181,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public String getText() {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        return ctrl.getText();
+        return control.getText();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -199,9 +199,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent setText(String text) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.setText(text);
+        control.setText(text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -219,9 +219,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public String getStyle(String property) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        return ctrl.getStyle(property);
+        return control.getStyle(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -236,9 +236,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public String getComputedStyle(String property) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        return ctrl.getComputedStyle(property);
+        return control.getComputedStyle(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -253,9 +253,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent setStyle(String property, String value) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.setStyle(property, value);
+        control.setStyle(property, value);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -271,10 +271,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent removeStyle(String property) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
         // Current BBj implementation does not have a remove style method
-        ctrl.unsetStyle(property);
+        control.unsetStyle(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -293,9 +293,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent addClassName(String selector) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.addClass(selector);
+        control.addClass(selector);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -314,9 +314,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent removeClassName(String selector) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
-        ctrl.removeClass(selector);
+        control.removeClass(selector);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -334,9 +334,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
 
   protected Boolean isComponentEnabled() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ctrl.isEnabled();
+        return control.isEnabled();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -351,9 +351,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return The component itself
    */
   protected AbstractDwcComponent setComponentEnabled(boolean enabled) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ctrl.setEnabled(enabled);
+        control.setEnabled(enabled);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -369,9 +369,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public String getTooltipText() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ctrl.getToolTipText();
+        return control.getToolTipText();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -387,9 +387,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent setTooltipText(String text) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ctrl.setToolTipText(text);
+        control.setToolTipText(text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -405,9 +405,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public Boolean isVisible() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        return ctrl.isVisible();
+        return control.isVisible();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -424,9 +424,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   @Override
   public AbstractDwcComponent setVisible(Boolean visible) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ctrl.setVisible(visible);
+        control.setVisible(visible);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -442,9 +442,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return The component itself
    */
   protected AbstractDwcComponent focusComponent() throws DwcjRuntimeException {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ctrl.focus();
+        control.focus();
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -461,10 +461,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   protected AbstractDwcComponent setComponentTabTraversable(boolean value)
       throws DwcjRuntimeException {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        if (ctrl instanceof Focusable) {
-          ((Focusable) ctrl).setFocusable(value);
+        if (control instanceof Focusable) {
+          ((Focusable) control).setFocusable(value);
         }
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
@@ -491,50 +491,50 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
 
   protected void setControlTheme(Enum<?> theme) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
         switch (theme.toString()) {
           case "DEFAULT":
-            ctrl.setAttribute(STR_THEME, "default");
+            control.setAttribute(STR_THEME, "default");
             break;
           case "DANGER":
-            ctrl.setAttribute(STR_THEME, "danger");
+            control.setAttribute(STR_THEME, "danger");
             break;
           case "GRAY":
-            ctrl.setAttribute(STR_THEME, "gray");
+            control.setAttribute(STR_THEME, "gray");
             break;
           case "INFO":
-            ctrl.setAttribute(STR_THEME, "info");
+            control.setAttribute(STR_THEME, "info");
             break;
           case "PRIMARY":
-            ctrl.setAttribute(STR_THEME, "primary");
+            control.setAttribute(STR_THEME, "primary");
             break;
           case "SUCCESS":
-            ctrl.setAttribute(STR_THEME, "success");
+            control.setAttribute(STR_THEME, "success");
             break;
           case "WARNING":
-            ctrl.setAttribute(STR_THEME, "warning");
+            control.setAttribute(STR_THEME, "warning");
             break;
           case "OUTLINED_DANGER":
-            ctrl.setAttribute(STR_THEME, "outlined-danger");
+            control.setAttribute(STR_THEME, "outlined-danger");
             break;
           case "OUTLINED_DEFAULT":
-            ctrl.setAttribute(STR_THEME, "outlined-default");
+            control.setAttribute(STR_THEME, "outlined-default");
             break;
           case "OUTLINED_GRAY":
-            ctrl.setAttribute(STR_THEME, "outlined-gray");
+            control.setAttribute(STR_THEME, "outlined-gray");
             break;
           case "OUTLINED_INFO":
-            ctrl.setAttribute(STR_THEME, "outlined-info");
+            control.setAttribute(STR_THEME, "outlined-info");
             break;
           case "OUTLINED_SUCCESS":
-            ctrl.setAttribute(STR_THEME, "outlined-success");
+            control.setAttribute(STR_THEME, "outlined-success");
             break;
           case "OUTLINED_WARNING":
-            ctrl.setAttribute(STR_THEME, "outlined-warning");
+            control.setAttribute(STR_THEME, "outlined-warning");
             break;
           case "OUTLINED_PRIMARY":
-            ctrl.setAttribute(STR_THEME, "outlined-primary");
+            control.setAttribute(STR_THEME, "outlined-primary");
             break;
           default:
             // noop
@@ -553,29 +553,29 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @param theme Component-specific theme value
    */
   protected void setControlExpanse(Enum<?> expanse) {
-    if (ctrl != null) {
+    if (control != null) {
       try {
         switch (expanse.toString()) {
           case "LARGE":
-            ctrl.setAttribute(STR_EXPANSE, "l");
+            control.setAttribute(STR_EXPANSE, "l");
             break;
           case "MEDIUM":
-            ctrl.setAttribute(STR_EXPANSE, "m");
+            control.setAttribute(STR_EXPANSE, "m");
             break;
           case "SMALL":
-            ctrl.setAttribute(STR_EXPANSE, "s");
+            control.setAttribute(STR_EXPANSE, "s");
             break;
           case "XLARGE":
-            ctrl.setAttribute(STR_EXPANSE, "xl");
+            control.setAttribute(STR_EXPANSE, "xl");
             break;
           case "XSMALL":
-            ctrl.setAttribute(STR_EXPANSE, "xs");
+            control.setAttribute(STR_EXPANSE, "xs");
             break;
           case "XXSMALL":
-            ctrl.setAttribute(STR_EXPANSE, "xxs");
+            control.setAttribute(STR_EXPANSE, "xxs");
             break;
           case "XXXSMALL":
-            ctrl.setAttribute(STR_EXPANSE, "xxxs");
+            control.setAttribute(STR_EXPANSE, "xxxs");
             break;
           default:
             // noop
@@ -607,7 +607,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (!this.text.isEmpty()) {
       try {
-        ctrl.setText(this.text);
+        control.setText(this.text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -623,7 +623,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (!this.tooltipText.isEmpty()) {
       try {
-        ctrl.setToolTipText(this.tooltipText);
+        control.setToolTipText(this.tooltipText);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -702,8 +702,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   public void destroy() {
     this.destroyed = true;
     try {
-      if (ctrl != null && !ctrl.isDestroyed()) {
-        ctrl.destroy();
+      if (control != null && !control.isDestroyed()) {
+        control.destroy();
       }
     } catch (BBjException e) {
       Environment.logError(e);
