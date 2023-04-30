@@ -40,9 +40,9 @@ public final class Tree extends AbstractDwcComponent {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = 
         BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addTree(flags);
+      control = w.addTree(flags);
       createEventSinks();
-      bbjTree = (BBjTree) ctrl;
+      bbjTree = (BBjTree) control;
       catchUp();
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create Tree", e);
@@ -64,7 +64,7 @@ public final class Tree extends AbstractDwcComponent {
    * @return The component itself
    */
   public Tree addFocusListener(EventListener<FocusEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
       this.focusEventSink.setCallback();
     }
     dispatcher.addEventListener(FocusEvent.class, listener);
@@ -90,7 +90,7 @@ public final class Tree extends AbstractDwcComponent {
    */
   public Tree removeFocusListener(EventListener<FocusEvent> listener) {
     dispatcher.removeEventListener(FocusEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
       this.focusEventSink.removeCallback();
     }
     return this;
@@ -103,7 +103,7 @@ public final class Tree extends AbstractDwcComponent {
    * @return The component itself
    */
   public Tree addBlurListener(EventListener<BlurEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
       this.blurEventSink.setCallback();
     }
     dispatcher.addEventListener(BlurEvent.class, listener);
@@ -129,7 +129,7 @@ public final class Tree extends AbstractDwcComponent {
    */
   public Tree removeBlurListener(EventListener<BlurEvent> listener) {
     dispatcher.removeEventListener(BlurEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
       this.blurEventSink.removeCallback();
     }
     return this;
@@ -142,7 +142,7 @@ public final class Tree extends AbstractDwcComponent {
    * @return The component itself
    */
   public Tree addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseEnterEvent.class, listener);
@@ -168,7 +168,7 @@ public final class Tree extends AbstractDwcComponent {
    */
   public Tree removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.removeCallback();
     }
     return this;
@@ -181,7 +181,7 @@ public final class Tree extends AbstractDwcComponent {
    * @return The component itself
    */
   public Tree addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseExitEvent.class, listener);
@@ -207,7 +207,7 @@ public final class Tree extends AbstractDwcComponent {
    */
   public Tree removeMouseExitListener(EventListener<MouseExitEvent> listener) {
     dispatcher.removeEventListener(MouseExitEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.removeCallback();
     }
     return this;
@@ -220,7 +220,7 @@ public final class Tree extends AbstractDwcComponent {
    * @return The component itself
    */
   public Tree addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.setCallback();
     }
     dispatcher.addEventListener(RightMouseDownEvent.class, listener);
@@ -246,7 +246,7 @@ public final class Tree extends AbstractDwcComponent {
    */
   public Tree removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
     }
     return this;

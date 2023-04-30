@@ -32,9 +32,9 @@ public final class HtmlEdit extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, "", flags);
-      bbjHtmlEdit = (BBjHtmlEdit) ctrl;
+      control = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+          BASISNUMBER_1, BASISNUMBER_1, "", flags);
+      bbjHtmlEdit = (BBjHtmlEdit) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -343,7 +343,7 @@ public final class HtmlEdit extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjHtmlEdit.isTabTraversable();
       } catch (BBjException e) {
@@ -355,7 +355,7 @@ public final class HtmlEdit extends AbstractDwcComponent
 
   @Override
   public HtmlEdit setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjHtmlEdit.setTabTraversable(traversable);
       } catch (BBjException e) {

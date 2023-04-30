@@ -22,9 +22,9 @@ public class PopupMenu extends AbstractDwcComponent implements HasPopupMenu, Has
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      ctrl = (BBjControl) w.addPopupMenu();
+      control = (BBjControl) w.addPopupMenu();
       catchUp();
-      bbjPopupMenu = (BBjPopupMenu) ctrl;
+      bbjPopupMenu = (BBjPopupMenu) control;
     } catch (Exception e) {
       Environment.logError(e);
     }

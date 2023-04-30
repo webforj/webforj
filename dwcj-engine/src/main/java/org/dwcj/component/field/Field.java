@@ -64,9 +64,9 @@ public final class Field extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addEditBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, getText(), flags);
-      bbjEditBox = (BBjEditBox) this.ctrl;
+      bbjEditBox = (BBjEditBox) this.control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -76,7 +76,7 @@ public final class Field extends AbstractDwcComponent
 
 
   public Field onEditModify(Consumer<FieldModifyEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new FieldModifyEventSink(this);
       }
@@ -88,21 +88,21 @@ public final class Field extends AbstractDwcComponent
   }
 
   public String getEditType() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return bbjEditBox.getEditType();
     }
     return "";
   }
 
   public Integer getMaxLength() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return bbjEditBox.getMaxLength();
     }
     return this.maxLength;
   }
 
   public Boolean isPassHomeDelete() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjEditBox.getPassHomeDelete();
       } catch (BBjException e) {
@@ -113,7 +113,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   public String getSelectedText() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjEditBox.getSelectedText();
       } catch (BBjException e) {
@@ -129,7 +129,7 @@ public final class Field extends AbstractDwcComponent
    * Changed this to return a single string, otherwise could not get this to properly work -MH
    */
   public String getSelection() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjEditBox.getSelection().toArray().toString();
       } catch (BBjException e) {
@@ -142,7 +142,7 @@ public final class Field extends AbstractDwcComponent
 
 
   public boolean isPasswordVisible() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjEditBox.isPasswordVisible();
       } catch (BBjException e) {
@@ -153,7 +153,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   public Field select(Integer offset1, Integer offset2) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjEditBox.select(offset1, offset2);
     }
     return this;
@@ -162,7 +162,7 @@ public final class Field extends AbstractDwcComponent
 
 
   public Field setMaxLength(Integer length) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setMaxLength(length);
       } catch (BBjException e) {
@@ -174,7 +174,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   public Field setPassHomeDelete(Boolean pass) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setPassHomeDelete(pass);
       } catch (BBjException e) {
@@ -186,7 +186,7 @@ public final class Field extends AbstractDwcComponent
   }
 
   public Field setPasswordVisible(Boolean visible) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setPasswordVisible(visible);
       } catch (BBjException e) {
@@ -201,7 +201,7 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return !bbjEditBox.isEditable();
       } catch (BBjException e) {
@@ -213,7 +213,7 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Field setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setEditable(!editable);
       } catch (BBjException e) {
@@ -232,7 +232,7 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.isTabTraversable();
       } catch (BBjException e) {
@@ -244,7 +244,7 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Field setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setTabTraversable(traversable);
       } catch (BBjException e) {
@@ -263,7 +263,7 @@ public final class Field extends AbstractDwcComponent
   @Override
   public Field setTextAlignment(Alignment alignment) {
     // todo: why could an exception be thrown?
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setAlignment(alignment.getValue());
       } catch (BBjException e) {
@@ -282,7 +282,7 @@ public final class Field extends AbstractDwcComponent
 
   @Override
   public Field setHighlightOnFocus(Highlight highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjEditBox.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {

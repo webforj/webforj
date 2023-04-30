@@ -39,7 +39,7 @@ public class Panel extends AbstractWindow implements HasEnable {
       // todo honor visible flag if set before addition to panel
       wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, "", flags, Environment.getInstance().getSysGui().getAvailableContext());
-      ctrl = wnd;
+      control = wnd;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -57,7 +57,7 @@ public class Panel extends AbstractWindow implements HasEnable {
   @Override
   public Panel add(AbstractComponent... control) {
     for (AbstractComponent c : control) {
-      if (this.ctrl != null && Boolean.FALSE.equals(c.isDestroyed())) {
+      if (this.control != null && Boolean.FALSE.equals(c.isDestroyed())) {
         try {
           AnnotationProcessor processor = new AnnotationProcessor();
           processor.processControlAnnotations(c);
@@ -82,7 +82,7 @@ public class Panel extends AbstractWindow implements HasEnable {
    * @return the control itself
    */
   public Panel onClick(Consumer<WindowClickEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.divClickEventSink == null) {
         this.divClickEventSink = new WindowClickEventSink(this, callback);
       } else {

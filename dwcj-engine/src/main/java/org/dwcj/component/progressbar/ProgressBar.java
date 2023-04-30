@@ -31,9 +31,9 @@ public final class ProgressBar extends AbstractDwcComponent {
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      ctrl = w.addProgressBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addProgressBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1);
-      bbjProgressBar = (BBjProgressBar) ctrl;
+      bbjProgressBar = (BBjProgressBar) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -46,7 +46,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns the maximum range of the progress bar.
    */
   public Integer getMaximum() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.getMaximum();
       } catch (BBjException e) {
@@ -62,7 +62,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns the minimum range of the progress bar.
    */
   public Integer getMinimum() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.getMinimum();
       } catch (BBjException e) {
@@ -79,7 +79,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns 0 if horizontal, 1 if vertical.
    */
   public Integer getOrientation() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.getOrientation();
       } catch (BBjException e) {
@@ -96,7 +96,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    */
   @Override
   public String getText() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.getText();
       } catch (BBjException e) {
@@ -112,7 +112,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns the current value of the progress bar control.
    */
   public Integer getValue() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.getValue();
       } catch (BBjException e) {
@@ -129,7 +129,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    *         indeterminate).
    */
   public Boolean isIndeterminate() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.isIndeterminate();
       } catch (BBjException e) {
@@ -147,7 +147,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    *         be displayed).
    */
   public Boolean isStringPainted() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjProgressBar.isStringPainted();
       } catch (BBjException e) {
@@ -168,7 +168,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setIndeterminate(Boolean indeterminate) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setIndeterminate(indeterminate);
       } catch (BBjException e) {
@@ -185,7 +185,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setMaximum(Integer maximum) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setMaximum(maximum);
       } catch (BBjException e) {
@@ -203,7 +203,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setMinimum(Integer minimum) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setMinimum(minimum);
       } catch (BBjException e) {
@@ -221,7 +221,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setOrientation(Integer orientation) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setOrientation(orientation);
       } catch (BBjException e) {
@@ -240,7 +240,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setStringPainted(Boolean stringPainted) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setStringPainted(stringPainted);
       } catch (BBjException e) {
@@ -259,7 +259,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setProgressBarText(String text) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setText(text);
       } catch (BBjException e) {
@@ -277,7 +277,7 @@ public final class ProgressBar extends AbstractDwcComponent {
    * @return Returns this
    */
   public ProgressBar setValue(Integer value) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjProgressBar.setValue(value);
       } catch (BBjException e) {
