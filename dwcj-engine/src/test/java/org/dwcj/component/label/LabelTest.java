@@ -72,7 +72,7 @@ public class LabelTest {
     @DisplayName("Constructor with text and wrap")
     void textAndWrapConstructor() {
       Label component = new Label("text", false);
-      assertEquals(component.getText(), "text");
+      assertEquals("text", component.getText());
       assertFalse(component.isWrap());
     }
   }
