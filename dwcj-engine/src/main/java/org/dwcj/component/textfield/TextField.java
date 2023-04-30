@@ -449,7 +449,7 @@ public final class TextField extends AbstractDwcComponent
   public TextField setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        bbjInputE.setAlignment(alignment.textPosition);
+        bbjInputE.setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }
