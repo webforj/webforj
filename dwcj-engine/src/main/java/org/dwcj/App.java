@@ -19,6 +19,9 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
 
+
+
+
   /**
    * An enum for the default application themes.
    *
