@@ -11,12 +11,12 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.startup.type.BBjException;
+import java.lang.reflect.InvocationTargetException;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dwcj.component.TextAlignable.Alignment;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
