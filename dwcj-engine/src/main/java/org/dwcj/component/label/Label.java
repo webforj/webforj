@@ -59,7 +59,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  protected void create(AbstractWindow p) throws DwcjRuntimeException {
+  protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
@@ -196,7 +196,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
    * @return Returns this
    */
-  public Label setWrap(Boolean wrap) throws DwcjRuntimeException {
+  public Label setWrap(Boolean wrap){
     if (this.ctrl != null) {
       try {
         ((BBjStaticText) this.ctrl).setLineWrap(wrap);
@@ -222,7 +222,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  public Label setTextAlignment(Alignment alignment) throws DwcjRuntimeException {
+  public Label setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
         ((BBjStaticText) this.ctrl).setAlignment(alignment.getValue());
