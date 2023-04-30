@@ -396,7 +396,7 @@ public final class Button extends AbstractDwcComponent
   public Button setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        ((BBjButton) ctrl).setAlignment(alignment.textPosition);
+        ((BBjButton) ctrl).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

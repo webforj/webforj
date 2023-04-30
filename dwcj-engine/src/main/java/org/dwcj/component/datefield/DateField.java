@@ -681,7 +681,7 @@ public final class DateField extends AbstractDwcComponent
   public DateField setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        bbjDateEditBox.setAlignment(alignment.textPosition);
+        bbjDateEditBox.setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

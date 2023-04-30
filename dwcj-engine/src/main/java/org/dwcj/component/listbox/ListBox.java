@@ -630,7 +630,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   public ListBox setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        ((BBjListBox) this.ctrl).setAlignment(alignment.textPosition);
+        ((BBjListBox) this.ctrl).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

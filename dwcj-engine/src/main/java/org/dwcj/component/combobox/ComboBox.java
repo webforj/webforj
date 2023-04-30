@@ -473,7 +473,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   public ComboBox setTextAlignment(Alignment textAlignment) {
     if (this.ctrl != null) {
       try {
-        ((BBjListEdit) this.ctrl).setAlignment(textAlignment.textPosition);
+        ((BBjListEdit) this.ctrl).setAlignment(textAlignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

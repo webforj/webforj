@@ -760,7 +760,7 @@ public class NumberField extends AbstractDwcComponent
   public NumberField setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        numBox.setAlignment(alignment.textPosition);
+        numBox.setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

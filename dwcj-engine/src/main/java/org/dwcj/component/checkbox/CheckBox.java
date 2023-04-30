@@ -336,7 +336,7 @@ public final class CheckBox extends AbstractDwcComponent
   public CheckBox setTextAlignment(Alignment alignment) {
     if (this.ctrl != null) {
       try {
-        ((BBjCheckBox) this.ctrl).setAlignment(alignment.textPosition);
+        ((BBjCheckBox) this.ctrl).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }

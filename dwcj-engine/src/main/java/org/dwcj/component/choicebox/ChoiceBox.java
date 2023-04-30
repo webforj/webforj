@@ -529,7 +529,7 @@ public final class ChoiceBox extends AbstractListBox
   public ChoiceBox setTextAlignment(Alignment textAlignment) {
     if (this.ctrl != null) {
       try {
-        ((BBjListButton) this.ctrl).setAlignment(textAlignment.textPosition);
+        ((BBjListButton) this.ctrl).setAlignment(textAlignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }
