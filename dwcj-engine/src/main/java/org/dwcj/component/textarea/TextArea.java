@@ -73,9 +73,9 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addCEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addCEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, super.getText(), flags);
-      bbjCEdit = (BBjCEdit) ctrl;
+      bbjCEdit = (BBjCEdit) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -83,7 +83,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
   }
 
   public TextArea onEditModify(Consumer<TextAreaModifyEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new TextAreaModifyEventSink(this);
       }
@@ -103,7 +103,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea addParagraph(Integer index, String paragraph) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.addParagraph(index, paragraph);
       } catch (BBjException e) {
@@ -122,7 +122,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea appendToParagraph(Integer parNum, String text) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.appendToParagraph(parNum, text);
       } catch (BBjException e) {
@@ -138,7 +138,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Paragraph text from the MultilineEdit control in a List of strings.
    */
   public List<String> getAllParagraphs() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getAllParagraphs();
       } catch (BBjException e) {
@@ -156,7 +156,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the zero-based paragraph index in the MultilineEdit control
    */
   public Integer getCurrentParagraphIndex() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getCurrentParagraphIndex();
       } catch (BBjException e) {
@@ -175,7 +175,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         Bar).
    */
   public Boolean isHorizontalScrollable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getHorizontalScrollable();
       } catch (BBjException e) {
@@ -192,7 +192,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         key not ignored, true = ENTER key ignored).
    */
   public Boolean isIgnoreEnters() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getIgnoreEnters();
       } catch (BBjException e) {
@@ -209,7 +209,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         true = TAB key ignored).
    */
   public Boolean isIgnoreTabs() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getIgnoreTabs();
       } catch (BBjException e) {
@@ -226,7 +226,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         Limited).
    */
   public Boolean isLimitToOneParagraph() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getLimitToOneParagraph();
       } catch (BBjException e) {
@@ -243,7 +243,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the maximum number of lines that can be entered into the control (0 = no limit)
    */
   public Integer getLineCountLimit() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getLineCountLimit();
       } catch (BBjException e) {
@@ -260,7 +260,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         Wrapped).
    */
   public Boolean isLineWrap() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getLineWrap();
       } catch (BBjException e) {
@@ -276,7 +276,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the maximum number of characters allowed per paragraph in the control
    */
   public Integer getMaxParagraphSize() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getMaxParagraphSize();
       } catch (BBjException e) {
@@ -292,7 +292,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the maximum length of the text in the control.
    */
   public Integer getMaxLength() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return bbjCEdit.getMaxLength();
     }
     return 2147483647;
@@ -304,7 +304,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the number of paragraphs in the control.
    */
   public Integer getNumberOfParagraphs() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getNumberOfParagraphs();
       } catch (BBjException e) {
@@ -321,7 +321,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         Mode, true = In Overtype Mode).
    */
   public Boolean isOvertypeMode() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getOvertypeMode();
       } catch (BBjException e) {
@@ -339,7 +339,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the paragraph text in the control.
    */
   public String getParagraph(Integer parNum) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getParagraph(parNum);
       } catch (BBjException e) {
@@ -361,7 +361,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         (insertion point) is reported.
    */
   public List<String> getSelection() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getSelection();
       } catch (BBjException e) {
@@ -377,7 +377,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns the tab size of the control.
    */
   public Integer getTabSize() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getTabSize();
       } catch (BBjException e) {
@@ -395,7 +395,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         within control area (false = No Vertical Scroll Bar, true = Vertical Scroll Bar).
    */
   public Boolean isVerticalScrollable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getVerticalScrollable();
       } catch (BBjException e) {
@@ -412,7 +412,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    *         word boundaries; false = wrap at character boundaries).
    */
   public Boolean isWrapStyleWord() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjCEdit.getWrapStyleWord();
       } catch (BBjException e) {
@@ -431,7 +431,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @param off2 - Specifies the offset of characters where the highlight is to end.
    */
   public void highlight(Integer parIndex1, Integer off1, Integer parIndex2, Integer off2) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.highlight(parIndex1, off1, parIndex2, off2);
       } catch (BBjException e) {
@@ -451,7 +451,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * This method removes all paragraphs from the MultilineEdit control
    */
   public void removeAll() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.removeAll();
       } catch (BBjException e) {
@@ -467,7 +467,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea removeParagraph(Integer parIndex) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.removeParagraph(parIndex);
       } catch (BBjException e) {
@@ -489,7 +489,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setHorizontalScrollable(Boolean scroll) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setHorizontalScrollable(scroll);
       } catch (BBjException e) {
@@ -508,7 +508,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setIgnoreEnters(Boolean ignore) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setIgnoreEnters(ignore);
       } catch (BBjException e) {
@@ -527,7 +527,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setIgnoreTabs(Boolean ignore) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setIgnoreTabs(ignore);
       } catch (BBjException e) {
@@ -546,7 +546,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setLimitToOneParagraph(Boolean limit) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setLimitToOneParagraph(limit);
       } catch (BBjException e) {
@@ -565,7 +565,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setLineCountLimit(Integer limit) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setLineCountLimit(limit);
       } catch (BBjException e) {
@@ -583,7 +583,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setLineWrap(Boolean wrap) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setLineWrap(wrap);
       } catch (BBjException e) {
@@ -601,7 +601,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setMaxParagraphSize(Integer size) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setMaxParagraphSize(size);
       } catch (BBjException e) {
@@ -619,7 +619,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setMaxLength(Integer length) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setMaxLength(length);
       } catch (BBjException e) {
@@ -638,7 +638,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setOvertypeMode(Boolean overtype) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setOvertypeMode(overtype);
       } catch (BBjException e) {
@@ -656,7 +656,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setTabSize(Integer size) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setTabSize(size);
       } catch (BBjException e) {
@@ -676,7 +676,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setVerticalScrollable(Boolean scroll) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setVerticalScrollable(scroll);
       } catch (BBjException e) {
@@ -695,7 +695,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    * @return Returns this
    */
   public TextArea setWrapStyleWord(Boolean word) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setWrapStyleWord(word);
       } catch (BBjException e) {
@@ -710,7 +710,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return !bbjCEdit.isEditable();
       } catch (BBjException e) {
@@ -729,7 +729,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
    */
   @Override
   public TextArea setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setEditable(!editable);
       } catch (BBjException e) {
@@ -748,7 +748,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public TextArea setHighlightOnFocus(Highlight highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {
@@ -772,7 +772,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public TextArea setScrollWheelBehavior(MouseWheelCondition condition) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
       } catch (BBjException e) {
@@ -785,7 +785,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Integer getHorizontalScrollBarHeight() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.getHorizontalScrollBarHeight();
     }
     return 0;
@@ -794,7 +794,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Integer getHorizontalScrollBarPosition() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.getHorizontalScrollBarPosition();
     }
     return this.verticalScrollBarPosition;
@@ -803,7 +803,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Integer getHorizontalScrollBarWidth() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.getHorizontalScrollBarWidth();
     }
     return 0;
@@ -812,7 +812,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Integer getVerticalScrollBarHeight() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.getVerticalScrollBarHeight();
     }
     return 0;
@@ -821,7 +821,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Integer getVerticalScrollBarPosition() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.getVerticalScrollBarPosition();
     }
     return this.horizontalScrollBarPosition;
@@ -830,7 +830,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Integer getVerticalScrollBarWidth() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.getVerticalScrollBarWidth();
     }
     return 0;
@@ -839,7 +839,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Boolean isHorizontalScrollBarVisible() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.isHorizontalScrollBarVisible();
     }
     return false;
@@ -848,7 +848,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Boolean isVerticalScrollBarVisible() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.isVerticalScrollBarVisible();
     }
     return false;
@@ -857,7 +857,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public TextArea setHorizontalScrollBarPosition(Integer position) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.setHorizontalScrollBarPosition(position);
     }
     this.horizontalScrollBarPosition = position;
@@ -866,7 +866,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public TextArea setVerticalScrollBarPosition(Integer position) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjCEdit.setVerticalScrollBarPosition(position);
     }
     this.verticalScrollBarPosition = position;
@@ -875,7 +875,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.isTabTraversable();
       } catch (BBjException e) {
@@ -887,7 +887,7 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   @Override
   public TextArea setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjCEdit.setTabTraversable(traversable);
       } catch (BBjException e) {

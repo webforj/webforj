@@ -25,7 +25,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visibility flag, if set before adding the control to the form, so it's created
       // invisibly right away
-      ctrl = w.addColorChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addColorChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1);
       catchUp();
     } catch (Exception e) {

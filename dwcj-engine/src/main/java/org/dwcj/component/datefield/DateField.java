@@ -78,9 +78,9 @@ public final class DateField extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addInputD(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
+      control = w.addInputD(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, flags);
-      bbjDateEditBox = (BBjInputD) ctrl;
+      bbjDateEditBox = (BBjInputD) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -88,7 +88,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public DateField onEditModify(Consumer<DateFieldModifyEvent> callback) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       if (this.editModifyEventSink == null) {
         this.editModifyEventSink = new DateFieldModifyEventSink(this);
       }
@@ -104,7 +104,7 @@ public final class DateField extends AbstractDwcComponent
    *
    */
   public void calendar() {
-    ((BBjInputD) this.ctrl).calendar();
+    ((BBjInputD) this.control).calendar();
   }
 
   /**
@@ -114,7 +114,7 @@ public final class DateField extends AbstractDwcComponent
    *
    */
   public Boolean isBeep() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getBeep();
       } catch (BBjException e) {
@@ -130,7 +130,7 @@ public final class DateField extends AbstractDwcComponent
    * @returns Returns the position of the caret in the BBjInputD control.
    */
   public Integer getCaretPosition() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getCaretPosition();
       } catch (BBjException e) {
@@ -142,7 +142,7 @@ public final class DateField extends AbstractDwcComponent
 
   /* ==Throws an IOException - not sure if I handled this properly== */
   public String getEditString() throws IOException {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return new String(bbjDateEditBox.getEditString(), "UTF_8");
       } catch (BBjException e) {
@@ -167,7 +167,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Boolean isHighlighted() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getHighlight();
       } catch (BBjException e) {
@@ -178,7 +178,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Boolean isInsertMode() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getInsertMode();
       } catch (BBjException e) {
@@ -189,7 +189,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Integer getLength() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getLength();
       } catch (BBjException e) {
@@ -200,14 +200,14 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public String getLocale() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return bbjDateEditBox.getLocale();
     }
     return this.locale;
   }
 
   public Integer getMargin() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getMargin();
       } catch (BBjException e) {
@@ -218,7 +218,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public String getMask() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getMask();
       } catch (BBjException e) {
@@ -229,7 +229,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Boolean isPassEnter() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getPassEnter();
       } catch (BBjException e) {
@@ -240,7 +240,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Boolean isPassTab() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getPassTab();
       } catch (BBjException e) {
@@ -251,7 +251,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Boolean isPlusMinus() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getPlusMinus();
       } catch (BBjException e) {
@@ -262,7 +262,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public String getRestore() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getRestore();
       } catch (BBjException e) {
@@ -273,7 +273,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public Boolean isShowWeeks() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.getShowWeeks();
       } catch (BBjException e) {
@@ -326,7 +326,7 @@ public final class DateField extends AbstractDwcComponent
 
 
   public Boolean isValid() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return bbjDateEditBox.isValid();
       } catch (BBjException e) {
@@ -337,7 +337,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public DateField restore() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.restore();
       } catch (BBjException e) {
@@ -348,7 +348,7 @@ public final class DateField extends AbstractDwcComponent
   }
 
   public DateField selectAll() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.selectAll();
       } catch (BBjException e) {
@@ -363,7 +363,7 @@ public final class DateField extends AbstractDwcComponent
   public DateField setBeep(Boolean beep) {
     App.consoleLog("In Beep");
     this.beep = beep;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         App.consoleLog(this.beep.toString());
         bbjDateEditBox.setBeep(beep);
@@ -377,7 +377,7 @@ public final class DateField extends AbstractDwcComponent
   public DateField setCalendarSize(int width, int height) {
     this.cWidth = width;
     this.cHeight = height;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setCalendarSize(width, height);
       } catch (BBjException e) {
@@ -389,7 +389,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setCaretPosition(int position) {
     this.caretPos = position;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setCaretPosition(position);
       } catch (BBjException e) {
@@ -404,7 +404,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setEditString(String edit) {
     this.editString = edit;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setEditString(edit.getBytes());
       } catch (BBjException e) {
@@ -416,7 +416,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setHighlight(Boolean highlight) {
     this.highlight = highlight;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setHighlight(highlight);
       } catch (BBjException e) {
@@ -429,7 +429,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setInsertMode(Boolean insert) {
     this.insert = insert;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setInsertMode(insert);
       } catch (BBjException e) {
@@ -441,7 +441,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setLength(Integer length) {
     this.length = length;
-    if (ctrl != null) {
+    if (control != null) {
       try {
         bbjDateEditBox.setLength(length);
       } catch (BBjException e) {
@@ -454,7 +454,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setLocale(String locale) {
     this.locale = locale;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       bbjDateEditBox.setLocale(locale);
     }
     return this;
@@ -462,7 +462,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setMargin(Integer marginWidth) {
     this.margin = marginWidth;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setMargin(marginWidth);
       } catch (BBjException e) {
@@ -474,7 +474,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setMask(String mask) {
     this.mask = mask;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setMask(mask);
       } catch (BBjException e) {
@@ -486,7 +486,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setPassEnter(Boolean pass) {
     this.pEnter = pass;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setPassEnter(pass);
       } catch (BBjException e) {
@@ -498,7 +498,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setPassTab(Boolean pass) {
     this.pTab = pass;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setPassTab(pass);
       } catch (BBjException e) {
@@ -510,7 +510,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setRestore(String restore) {
     this.restore = restore;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setRestore(restore);
       } catch (BBjException e) {
@@ -522,7 +522,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setPlusMinus(Boolean plusMinus) {
     this.plusMinus = plusMinus;
-    if (ctrl != null) {
+    if (control != null) {
       try {
         bbjDateEditBox.setPlusMinus(plusMinus);
       } catch (BBjException e) {
@@ -534,7 +534,7 @@ public final class DateField extends AbstractDwcComponent
 
   public DateField setShowWeeks(boolean showWeeks) {
     this.showWeeks = showWeeks;
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setShowWeeks(showWeeks);
       } catch (BBjException e) {
@@ -600,7 +600,7 @@ public final class DateField extends AbstractDwcComponent
 
   @Override
   public Boolean isReadOnly() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         return !bbjDateEditBox.isEditable();
       } catch (BBjException e) {
@@ -612,7 +612,7 @@ public final class DateField extends AbstractDwcComponent
 
   @Override
   public DateField setReadOnly(Boolean editable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setEditable(!editable);
       } catch (BBjException e) {
@@ -631,7 +631,7 @@ public final class DateField extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.isTabTraversable();
       } catch (BBjException e) {
@@ -643,7 +643,7 @@ public final class DateField extends AbstractDwcComponent
 
   @Override
   public DateField setTabTraversable(Boolean traverse) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setTabTraversable(traverse);
       } catch (BBjException e) {
@@ -661,7 +661,7 @@ public final class DateField extends AbstractDwcComponent
 
   @Override
   public DateField setHighlightOnFocus(Highlight highlight) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setHighlightOnFocus(highlight.highlightType);
       } catch (BBjException e) {
@@ -679,7 +679,7 @@ public final class DateField extends AbstractDwcComponent
 
   @Override
   public DateField setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
         bbjDateEditBox.setAlignment(alignment.getValue());
       } catch (BBjException e) {
