@@ -3,6 +3,7 @@ package org.dwcj.component.label;
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.TextAlignable;
@@ -196,7 +197,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @param wrap - Specifies whether the lines will be wrapped (false = Not Wrapped, true = Wrapped)
    * @return Returns this
    */
-  public Label setWrap(Boolean wrap){
+  public Label setWrap(Boolean wrap) {
     if (this.ctrl != null) {
       try {
         ((BBjStaticText) this.ctrl).setLineWrap(wrap);
@@ -246,6 +247,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setText(String text) {
     super.setText(text);
     return this;
@@ -255,6 +257,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
@@ -264,6 +267,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
@@ -273,6 +277,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
@@ -282,6 +287,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
@@ -291,6 +297,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label addClassName(String selector) {
     super.addClassName(selector);
     return this;
@@ -300,6 +307,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
@@ -333,7 +341,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       this.setWrap(lineWrap);
     }
 
-    if (this.textAlignment != Alignment.MIDDLE) {
+    if (this.textAlignment != Alignment.LEFT) {
       this.setTextAlignment(this.textAlignment);
     }
   }
