@@ -225,7 +225,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   public Label setTextAlignment(Alignment alignment) throws DwcjRuntimeException {
     if (this.ctrl != null) {
       try {
-        ((BBjStaticText) this.ctrl).setAlignment(alignment.textPosition);
+        ((BBjStaticText) this.ctrl).setAlignment(alignment.getValue());
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }

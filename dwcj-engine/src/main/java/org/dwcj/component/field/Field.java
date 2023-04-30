@@ -265,7 +265,7 @@ public final class Field extends AbstractDwcComponent
     // todo: why could an exception be thrown?
     if (this.ctrl != null) {
       try {
-        bbjEditBox.setAlignment(alignment.textPosition);
+        bbjEditBox.setAlignment(alignment.getValue());
       } catch (BBjException e) {
         Environment.logError(e);
       }
