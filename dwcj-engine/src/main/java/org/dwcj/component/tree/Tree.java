@@ -39,7 +39,7 @@ public final class Tree extends AbstractDwcComponent {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = 
-        BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+        BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       control = w.addTree(flags);
       createEventSinks();
       bbjTree = (BBjTree) control;
@@ -317,15 +317,6 @@ public final class Tree extends AbstractDwcComponent {
   @Override
   public Tree setVisible(Boolean visible) {
     super.setVisible(visible);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Tree setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
     return this;
   }
 
