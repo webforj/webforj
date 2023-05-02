@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -133,11 +134,14 @@ public final class Button extends AbstractDwcComponent
     }
   }
 
+  public void setImage(String path) {
+    this.setImage(new File(path));
+  }
 
-  public void setImage(BufferedImage image) {
+  public void setImage(File file) {
     if (this.bbjButton != null) {
       try {
-        this.bbjButton.setImage(ImageUtil.convertImageToBBjImage(image, ""));
+        this.bbjButton.setImage(ImageUtil.convertFileToBBjImage(file));
       } catch (BBjException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
