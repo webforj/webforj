@@ -320,9 +320,11 @@ public final class Tree extends AbstractDwcComponent {
     return this;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  @Override
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
+  }
+
   @Override
   public Tree setTooltipText(String text) {
     super.setTooltipText(text);
