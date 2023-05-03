@@ -3,7 +3,6 @@ package org.dwcj.component.button;
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
@@ -27,37 +26,6 @@ import org.dwcj.utilities.ImageUtil;
 public final class Button extends AbstractDwcComponent
     implements HasFocus, TabTraversable, TextAlignable, HasEnable {
 
-
-
-  /*
-   * =====================================================================================
-   * Initialize the enums for Expanse and Theme if applicable to the control.
-   * =====================================================================================
-   */
-
-  /**
-   * Expanse options for the Button component.
-   */
-  public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL;
-  }
-
-  /**
-   * Theme options for the Button component.
-   */
-  public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, OUTLINED_WARNING
-  }
-
-
-
-  /*
-   * ===================================================================================== If a
-   * control has BBj integer constants, create an enum with parameterized constructors that
-   * correspond to these numeric constants in BBj.
-   * =====================================================================================
-   */
-
   /**
    * Vertical alignment options for the Button component.
    */
@@ -71,35 +39,11 @@ public final class Button extends AbstractDwcComponent
     }
   }
 
-
-
-  /*
-   * ===================================================================================== Create a
-   * member variable of the BBj component, casted from this.ctrl. Initialize any other
-   * control-specific events or member variables as needed. These extra member variables should be
-   * listed in the BBj documentation for each control.
-   * =====================================================================================
-   */
-
   private EventDispatcher dispatcher = new EventDispatcher();
   private ButtonClickEventSink clickEventsSink;
   private Boolean disableOnClick = false;
-
-  private Expanse expanse = null;
-  private Theme theme = Theme.DEFAULT;
   private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
   private BBjButton bbjButton;
-
-
-
-  /*
-   * ===================================================================================== This
-   * first section implements parameterized constructors, overrides the create() method, and
-   * implements methods for the control-specific behaviors, which often include getters and setters
-   * for control-specific member variables and/or functionality. Constructors initialize the
-   * inherited interface member variables.
-   * =====================================================================================
-   */
 
   public Button() {
     this("");
@@ -124,10 +68,9 @@ public final class Button extends AbstractDwcComponent
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      ctrl = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, super.getText(), flags);
+      control = w.addButton(super.getText(), flags);
       this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
-      this.bbjButton = (BBjButton) ctrl;
+      this.bbjButton = (BBjButton) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -156,7 +99,7 @@ public final class Button extends AbstractDwcComponent
    * @return The component itself
    */
   public Button addClickListener(EventListener<ButtonClickEvent> listener) {
-    if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
       this.clickEventsSink.setCallback();
     }
     dispatcher.addEventListener(ButtonClickEvent.class, listener);
@@ -183,7 +126,7 @@ public final class Button extends AbstractDwcComponent
    */
   public Button removeClickListener(EventListener<ButtonClickEvent> listener) {
     dispatcher.removeEventListener(ButtonClickEvent.class, listener);
-    if (this.ctrl != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
+    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
       this.clickEventsSink.removeCallback();
     }
     return this;
@@ -195,9 +138,9 @@ public final class Button extends AbstractDwcComponent
    * @return Boolean value
    */
   public Boolean isDisableOnClick() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).getDisableOnClick();
+        ((BBjButton) control).getDisableOnClick();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -212,9 +155,9 @@ public final class Button extends AbstractDwcComponent
    * @return Instance of the object to enable method chaining.
    */
   public Button setDisableOnClick(Boolean disable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setDisableOnClick(disable);
+        ((BBjButton) control).setDisableOnClick(disable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -230,7 +173,7 @@ public final class Button extends AbstractDwcComponent
    * @return Enum value of text's vertical alignment
    */
   public TextVerticalAlignment getVerticalAlignment() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       return this.verticalAlignment;
     }
     return this.verticalAlignment;
@@ -243,9 +186,9 @@ public final class Button extends AbstractDwcComponent
    * @return The Button itself
    */
   public Button setVerticalAlignment(TextVerticalAlignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setVerticalAlignment(alignment.alignment);
+        ((BBjButton) control).setVerticalAlignment(alignment.alignment);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -383,9 +326,9 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   public Boolean isTabTraversable() {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).isTabTraversable();
+        ((BBjButton) control).isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -395,9 +338,9 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   public Button setTabTraversable(Boolean traversable) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setTabTraversable(traversable);
+        ((BBjButton) control).setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -414,9 +357,9 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   public Button setTextAlignment(Alignment alignment) {
-    if (this.ctrl != null) {
+    if (this.control != null) {
       try {
-        ((BBjButton) ctrl).setAlignment(alignment.textPosition);
+        ((BBjButton) control).setAlignment(alignment.textPosition);
       } catch (BBjException e) {
         Environment.logError(e);
       }
