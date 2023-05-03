@@ -259,64 +259,6 @@ public final class Button extends AbstractDwcComponent
     return this;
   }
 
-
-
-  /*
-   * ===================================================================================== If Themes
-   * or Expanses are applicable for this control (if they have had Enums implemented for their
-   * respective options), create the methods to set these by calling the super method and returning
-   * this for chaining.
-   * =====================================================================================
-   */
-
-  /**
-   * Accessor to return the button object's current expanse.
-   *
-   * @return Expanse enum from the button class
-   */
-  public Expanse getExpanse() {
-    return this.expanse;
-  }
-
-  /**
-   * Mutator to change the expanse of a button that requires a specific button enum value.
-   *
-   * @param expanse button expanse enum value
-   * @return The button object itself
-   */
-  public Button setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
-    return this;
-  }
-
-  /**
-   * Accessor to return the button object's current theme.
-   *
-   * @return Expanse enum from the button class
-   */
-  public Theme getTheme() {
-    return this.theme;
-  }
-
-  /**
-   * Mutator to change the theme of a button that requires a specific button enum value.
-   *
-   * @param theme button theme enum value
-   * @return The button object itself
-   */
-  public Button setTheme(Theme theme) {
-    super.setControlTheme(theme);
-    return this;
-  }
-
-
-
-  /*
-   * ===================================================================================== Ensure
-   * that any interfaces which are applicable to the control have their methods overridden.
-   * =====================================================================================
-   */
-
   @Override
   public Button focus() {
     super.focusComponent();
@@ -359,11 +301,7 @@ public final class Button extends AbstractDwcComponent
   public Button setTextAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
-<<<<<<< HEAD
         ((BBjButton) control).setAlignment(alignment.getValue());
-=======
-        ((BBjButton) control).setAlignment(alignment.textPosition);
->>>>>>> 7154cfb (feat: removed some old implementations)
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -372,15 +310,8 @@ public final class Button extends AbstractDwcComponent
     return this;
   }
 
-  /*
-   * ===================================================================================== Finally,
-   * override the catchUp() method - this is done by calling the super method, and then catching up
-   * any control-specific member variables and/or interface variables for this control.
-   * =====================================================================================
-   */
 
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity, it's just a batch list of checks
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
@@ -403,14 +334,5 @@ public final class Button extends AbstractDwcComponent
     if (this.textAlignment != Alignment.MIDDLE) {
       this.setTextAlignment(this.textAlignment);
     }
-
-    if (this.expanse != null) {
-      this.setExpanse(this.expanse);
-    }
-
-    if (this.theme != Theme.DEFAULT) {
-      this.setTheme(this.theme);
-    }
-
   }
 }
