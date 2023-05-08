@@ -78,11 +78,6 @@ public class BBjWindowAdapter extends AbstractWindow implements HasEnable {
     return this;
   }
 
-  @Override 
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
-  }
-
   @Override
   public boolean isEnabled() {
     return super.isComponentEnabled();

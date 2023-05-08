@@ -14,7 +14,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 public abstract class AbstractSink {
   protected final AbstractDwcComponent component;
   protected final EventDispatcher dispatcher;
-  private BBjControl control = null;
+  protected BBjControl control = null;
   private final int eventType;
 
   /**

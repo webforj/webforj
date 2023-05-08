@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
@@ -12,6 +13,7 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.event.CheckedChangedEvent;
 import org.dwcj.component.event.CheckedEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
@@ -21,16 +23,13 @@ import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.UncheckedEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
-import org.dwcj.component.event.sink.CheckedEventSink;
+import org.dwcj.component.event.sink.CheckedChangedEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
-import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * A Checkbox component.
@@ -46,8 +45,8 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Enum that replaced the BBj constants required by the underlying BBj methods to more
-   * legible and developer-friendly options.
+   * Enum that replaced the BBj constants required by the underlying BBj methods to more legible and
+   * developer-friendly options.
    */
   public enum HorizontalTextPosition {
     RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
@@ -63,8 +62,7 @@ public final class CheckBox extends AbstractDwcComponent
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
-  private CheckedEventSink checkedEventSink;
-  private UncheckedEventSink uncheckedEventSink;
+  private CheckedChangedEventSink checkedChangedEventSink;
   private FocusEventSink focusEventSink;
   private BlurEventSink blurEventSink;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
@@ -97,8 +95,7 @@ public final class CheckBox extends AbstractDwcComponent
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
-      this.checkedEventSink = new CheckedEventSink(this, dispatcher);
-      this.uncheckedEventSink = new UncheckedEventSink(this, dispatcher);
+      this.checkedChangedEventSink = new CheckedChangedEventSink(this, dispatcher);
       this.focusEventSink = new FocusEventSink(this, dispatcher);
       this.blurEventSink = new BlurEventSink(this, dispatcher);
       this.catchUp();
@@ -115,7 +112,7 @@ public final class CheckBox extends AbstractDwcComponent
    */
   public CheckBox addCheckedListener(EventListener<CheckedEvent> listener) {
     if (this.control != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
-      this.checkedEventSink.setCallback();
+      this.checkedChangedEventSink.setCallback();
     }
     dispatcher.addEventListener(CheckedEvent.class, listener);
     return this;
@@ -141,7 +138,7 @@ public final class CheckBox extends AbstractDwcComponent
   public CheckBox removeCheckedListener(EventListener<CheckedEvent> listener) {
     dispatcher.removeEventListener(CheckedEvent.class, listener);
     if (this.control != null && this.dispatcher.getListenersCount(CheckedEvent.class) == 0) {
-      this.checkedEventSink.removeCallback();
+      this.checkedChangedEventSink.removeCallback();
     }
     return this;
   }
@@ -154,7 +151,7 @@ public final class CheckBox extends AbstractDwcComponent
    */
   public CheckBox addUncheckedListener(EventListener<UncheckedEvent> listener) {
     if (this.control != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
-      this.uncheckedEventSink.setCallback();
+      this.checkedChangedEventSink.setCallback();
     }
     dispatcher.addEventListener(UncheckedEvent.class, listener);
     return this;
@@ -180,7 +177,46 @@ public final class CheckBox extends AbstractDwcComponent
   public CheckBox removeUncheckedListener(EventListener<UncheckedEvent> listener) {
     dispatcher.removeEventListener(UncheckedEvent.class, listener);
     if (this.control != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
-      this.uncheckedEventSink.removeCallback();
+      this.checkedChangedEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a checked changed event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addCheckedChangedListener(EventListener<CheckedChangedEvent> listener) {
+    if (this.control != null && this.dispatcher.getListenersCount(CheckedChangedEvent.class) == 0) {
+      this.checkedChangedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(CheckedChangedEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addCheckedChangedListener method.
+   *
+   * @see Checkbox#addCheckedChangedLitener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox onCheckedChanged(EventListener<CheckedChangedEvent> listener) {
+    return addCheckedChangedListener(listener);
+  }
+
+  /**
+   * Removes a checked changed event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeCheckedChangedListener(EventListener<CheckedChangedEvent> listener) {
+    dispatcher.removeEventListener(CheckedChangedEvent.class, listener);
+    if (this.control != null && this.dispatcher.getListenersCount(CheckedChangedEvent.class) == 0) {
+      this.checkedChangedEventSink.removeCallback();
     }
     return this;
   }
@@ -448,53 +484,62 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setText(String text) {
     super.setText(text);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox removeClassName(String selector) {
     super.removeClassName(selector);
@@ -517,6 +562,7 @@ public final class CheckBox extends AbstractDwcComponent
    *
    * @return false if not editable, true if editable.
    */
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public Boolean isReadOnly() {
     if (this.control != null) {
@@ -535,6 +581,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @param editable if true the control is editable
    * @return this
    */
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setReadOnly(Boolean editable) {
     if (this.control != null) {
@@ -548,12 +595,14 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox focus() {
     super.focusComponent();
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public Boolean isTabTraversable() {
     if (this.control != null) {
@@ -566,6 +615,7 @@ public final class CheckBox extends AbstractDwcComponent
     return this.tabTraversable;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setTabTraversable(Boolean traversable) {
     if (this.control != null) {
@@ -579,16 +629,30 @@ public final class CheckBox extends AbstractDwcComponent
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public Alignment getTextAlignment() {
     return this.textAlignment;
   }
 
+  /**
+   * Uses the setHorizontalTextPosition of the control to align the text. Aligns right to right but
+   * left and middle to left.
+   *
+   * @param alignment the alignment of the text.
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setTextAlignment(Alignment alignment) {
     if (this.control != null) {
+      int value;
+      if (alignment.value == 32768) {
+        value = HorizontalTextPosition.RIGHT.position;
+      } else {
+        value = HorizontalTextPosition.LEFT.position;
+      }
       try {
-        ((BBjCheckBox) this.control).setAlignment(alignment.value);
+        ((BBjCheckBox) this.control).setHorizontalTextPosition(value);
       } catch (BBjException e) {
         Environment.logError(e);
       }
