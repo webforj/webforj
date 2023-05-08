@@ -1,9 +1,9 @@
 package org.dwcj.component;
 
 /**
- * On applicable controls, creates enum which helps facilitate underlying BBj constant integers for
- * vertical alignment behavior to legible enum values, and facilitates implementation of methods 
- * to interact with this behavior.
+ * On applicable components, creates enum which helps facilitate underlying BBj constant 
+ * integers for vertical alignment behavior to legible enum values, and facilitates 
+ * implementation of methods to interact with this behavior.
  */
 public interface VerticalAlignment {
 
@@ -30,7 +30,7 @@ public interface VerticalAlignment {
   }
 
   /**
-   * Sets the vertical alignment of the text within the control.
+   * Sets the vertical alignment of the text within the component.
    *
    * @param alignment Enum from list representing an internal BBj numeric constant
    * @return the control itself
