@@ -47,13 +47,13 @@ public abstract class ComponentAccessor {
   }
 
   /**
-   * @param ctrl - get the BBjControl under the AbstractDwcControl.
+   * @param ctrl - get the BBjControl under the AbstractDwcComponent.
    * @return - the BBjControl
    */
   public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl);
 
   /**
-   * Sets the BBjControl under the AbstractDwcControl.
+   *  Sets the BBjControl under the AbstractDwcComponent.
    *
    * @param component the component to access.
    * @param ctrl the new control.
