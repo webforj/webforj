@@ -27,7 +27,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   private MouseEnterEventSink mouseEnterEventSink;
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
-  private boolean lineWrap = true;
+  private boolean lineWrap = false;
 
   /**
    * Default Constructor to automatically create an empty label.
@@ -66,6 +66,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       control = w.addStaticText(getText(), flags);
+      ((BBjStaticText) control).setLineWrap(false);
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
@@ -338,7 +339,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     }
     super.catchUp();
     eventCatchUp();
-    if (!this.lineWrap) {
+    if (this.lineWrap) {
       this.setWrap(lineWrap);
     }
 
