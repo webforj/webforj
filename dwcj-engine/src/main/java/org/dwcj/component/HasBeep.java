@@ -6,7 +6,7 @@ package org.dwcj.component;
 public interface HasBeep {
 
   /**
-   * Set wether the control should beep when clicked.
+   * Set whether the component should beep when clicked.
    *
    * @param beep true if the control should beep, false otherwise
    * @return the control itself
@@ -14,9 +14,9 @@ public interface HasBeep {
   public HasBeep setBeep(boolean beep);
 
   /**
-   * Returns wether the control beeps.
+   * Returns whether the component beeps.
    *
-   * @return true if the control beeps, false otherwise
+   * @return true if the component beeps, false otherwise
    */
   public boolean getBeep();
 }
