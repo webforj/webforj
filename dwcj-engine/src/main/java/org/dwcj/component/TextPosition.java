@@ -1,9 +1,10 @@
 package org.dwcj.component;
 
 /**
- * On applicable controls, creates enum which helps facilitate underlying BBj constant integers for
- * text positon behavior to legible enum values, and facilitates implementation of methods 
- * to interact with this behavior.
+ * On applicable component, creates enum which helps facilitate underlying BBj constant 
+ * integers for text position behavior to legible enum values, and facilitates 
+ * implementation of methods to interact with this behavior. Text position is 
+ * the location of the text in relation to the component itself.
  */
 public interface TextPosition {
 
