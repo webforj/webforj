@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 
 import org.dwcj.Environment;
 import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.window.AbstractWindow;
 
 /**
@@ -16,7 +17,7 @@ public abstract class ComponentAccessor {
   protected ComponentAccessor() {}
 
   /**
-   * factory to obtain the instance of the accessor
+   * factory to obtain the instance of the accessor.
    *
    * @return - the accessor
    */
@@ -34,7 +35,7 @@ public abstract class ComponentAccessor {
   }
 
   /**
-   * Set the accessor instance into the static field
+   * Set the accessor instance into the static field.
    *
    * @param accessor - the accessor instance
    */
@@ -46,11 +47,20 @@ public abstract class ComponentAccessor {
   }
 
   /**
-   * @param ctrl - get the BBjControl under the AbstractDwcControl
+   * @param ctrl - get the BBjControl under the AbstractDwcControl.
    * @return - the BBjControl
    * @throws IllegalAccessException
    */
-  public abstract BBjControl getBBjControl(AbstractComponent ctrl) throws IllegalAccessException;
+  public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl) throws IllegalAccessException;
+
+  /**
+   *  Sets the BBjControl under the AbstractDwcControl.
+   *
+   * @param component the component to access.
+   * @param ctrl the new control.
+   * @throws IllegalAccessException
+   */
+  public abstract void setBBjControl(AbstractDwcComponent component, BBjControl ctrl) throws IllegalAccessException;
 
   public abstract void create(AbstractComponent ctrl, AbstractWindow panel)
       throws IllegalAccessException;

@@ -20,11 +20,6 @@ public abstract class AbstractComponent implements Component, HasDestroy {
   private String uuid = "";
 
   /*
-   * Underlying BBj control
-   */
-  protected BBjControl control;
-
-  /*
    * Members responsible for tracking ID attribute and user data
    */
   protected final Map<String, Object> userData = new HashMap<>();
@@ -50,17 +45,6 @@ public abstract class AbstractComponent implements Component, HasDestroy {
    * @param panel the panel to add this control on
    */
   protected abstract void create(AbstractWindow panel);
-
-  /**
-   * This method gets the underlying original BBj control It's package private and can only be
-   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
-   * controls.
-   *
-   * @return the underlying BBj control
-   */
-  BBjControl getControl() {
-    return this.control;
-  }
 
   public Object getUserData(String key) {
     return this.userData.get(key);
