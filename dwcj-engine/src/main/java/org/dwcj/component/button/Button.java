@@ -267,6 +267,11 @@ public final class Button extends AbstractDwcComponent
   }
 
   @Override
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
+  }
+
+  @Override
   public Button setTooltipText(String text) {
     super.setTooltipText(text);
     return this;

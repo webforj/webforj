@@ -84,6 +84,11 @@ public class BBjWindowAdapter extends AbstractWindow implements HasEnable {
   }
 
   @Override
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
+  }
+
+  @Override
   public BBjWindowAdapter setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
