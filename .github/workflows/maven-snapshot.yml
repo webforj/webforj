@@ -1,0 +1,81 @@
+name: Publish Snapshot
+on:
+  workflow_run:
+    workflows: ["Java Tests & Coverage"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    container: 'dwcjava/sandbox:000'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install gpg
+        run: apk add gnupg
+
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v1
+        env:
+           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+           PASSPHRASE: ''
+
+      - name: Install Maven
+        run: apk add maven
+
+      - name: Write maven settings
+        uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          servers: >
+            [
+              {
+                "id": "ossrh",
+                "username": "${{secrets.OSSRH_USERNAME}}",
+                "password": "${{secrets.OSSRH_TOKEN}}"
+              },
+              {
+                "id": "sonatype-nexus-snapshots",
+                "username": "${{secrets.OSSRH_USERNAME}}",
+                "password": "${{secrets.OSSRH_TOKEN}}"
+              },
+              {
+                "id": "sonatype-nexus-staging",
+                "username": "${{secrets.OSSRH_USERNAME}}",
+                "password": "${{secrets.OSSRH_TOKEN}}"
+              }
+            ]
+          profiles: >
+            [
+              {
+                "id": "ossrh",
+                "activation": {
+                  "activeByDefault": true
+                }
+              }
+            ]
+
+      - name: Install xmlstarlet
+        run : apk add xmlstarlet
+
+      - name: Extract BBj Version
+        run: |
+          version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
+            -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
+            dwcj-engine/pom.xml)
+          echo "bbj_version=$version" >> $GITHUB_ENV
+
+      - name: Install Maven Dependencies
+        run: >
+          mvn install:install-file "-Dfile=/opt/bbx/lib/BBjStartup.jar"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ env.bbj_version }}"
+          "-Dpackaging=jar" -q && mvn install:install-file
+          "-Dfile=/opt/bbx/lib/BBj.jar" "-DgroupId=com.basis.lib"
+          "-DartifactId=BBj" "-Dversion=${{ env.bbj_version }}" "-Dpackaging=jar" -q && mvn
+          install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ env.bbj_version }}"
+          "-Dpackaging=jar" -q && mvn install -q -DskipTests
+
+      - name: Publish to Apache Maven
+        run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q

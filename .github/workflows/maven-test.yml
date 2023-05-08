@@ -1,5 +1,5 @@
 name: Java Tests & Coverage
-'on':
+on:
   push:
     branches:
       - main
@@ -11,25 +11,32 @@ jobs:
     runs-on: ubuntu-latest
     container: 'dwcjava/sandbox:000'
     steps:
-      - name: Install Maven
-        run: apk add maven 
-        
       - uses: actions/checkout@v3
-          
-      - name: Adjust BBj version in POM
-        run: printf '%s\n' ',s/23.00/00.00/g' w q | ed ./dwcj-engine/pom.xml && cat ./dwcj-engine/pom.xml
-        
+
+      - name: Install xmlstarlet
+        run : apk add xmlstarlet
+
+      - name: Extract BBj Version
+        run: |
+          version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
+            -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
+            dwcj-engine/pom.xml)
+          echo "bbj_version=$version" >> $GITHUB_ENV
+
+      - name: Install Maven
+        run: apk add maven
+
       - name: Install Maven Dependencies
         run: >
           mvn install:install-file "-Dfile=/opt/bbx/lib/BBjStartup.jar"
-          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=00.00"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ env.bbj_version }}"
           "-Dpackaging=jar" -q && mvn install:install-file
           "-Dfile=/opt/bbx/lib/BBj.jar" "-DgroupId=com.basis.lib"
-          "-DartifactId=BBj" "-Dversion=00.00" "-Dpackaging=jar" -q && mvn
+          "-DartifactId=BBj" "-Dversion=${{ env.bbj_version }}" "-Dpackaging=jar" -q && mvn
           install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
-          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=00.00"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ env.bbj_version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
-          
+
       - name: Build with Maven
         run: mvn -B package -Pcoverage -q
 
@@ -46,7 +53,7 @@ jobs:
         run: |
          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
          echo "branches = ${{ steps.jacoco.outputs.branches }}"
-         
+
       - name: Upload JaCoCo coverage report as a workflow artifact
         uses: actions/upload-artifact@v2
         with:
