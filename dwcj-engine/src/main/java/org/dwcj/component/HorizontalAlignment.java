@@ -6,7 +6,7 @@ package org.dwcj.component;
  * text alignment behavior to legible enum values, and facilitates implementation of methods to
  * interact with this behavior.
  */
-public interface TextAlignable {
+public interface HorizontalAlignment {
 
   /**
    * Enum which represents the text alignment of a component.
@@ -35,7 +35,7 @@ public interface TextAlignable {
    *
    * @return Enum value of text alignment
    */
-  Alignment getTextAlignment();
+  Alignment getAlignment();
 
   /**
    * Sets the horizontal alignment of the text within the control.
@@ -43,6 +43,6 @@ public interface TextAlignable {
    * @param alignment Enum from list representing an internal BBj numeric constant
    * @return The control itself
    */
-  TextAlignable setTextAlignment(Alignment alignment);
+  HorizontalAlignment setAlignment(Alignment alignment);
 
 }
