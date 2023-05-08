@@ -289,6 +289,16 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
+  public Label setProperty(String property, Object value) {
+    super.setProperty(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
