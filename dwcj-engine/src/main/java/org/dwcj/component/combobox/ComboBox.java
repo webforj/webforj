@@ -9,8 +9,8 @@ import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.combobox.event.ComboBoxChangeEvent;
 import org.dwcj.component.combobox.event.ComboBoxCloseEvent;
 import org.dwcj.component.combobox.event.ComboBoxEditModifyEvent;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * ComboBoxEdit Control
  */
 public final class ComboBox extends AbstractListBox implements HasReadOnly, HasFocus,
-    HasMouseWheelCondition, HasEnable, TabTraversable, TextAlignable {
+    HasMouseWheelCondition, HasEnable, TabTraversable, HorizontalAlignment {
 
   private BBjListEdit bbjListEdit;
 
@@ -462,7 +462,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     if (this.control != null) {
       return this.textAlignment;
     }
@@ -470,7 +470,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   @Override
-  public ComboBox setTextAlignment(Alignment textAlignment) {
+  public ComboBox setHorizontalAlignment(Alignment textAlignment) {
     if (this.control != null) {
       try {
         ((BBjListEdit) this.control).setAlignment(textAlignment.getValue());
@@ -628,7 +628,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
 

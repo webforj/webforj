@@ -15,8 +15,8 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
@@ -24,8 +24,8 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
-public class NumberField extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, HasEnable, TextAlignable, TextHighlightable {
+public class NumberField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HasEnable, HorizontalAlignment, TextHighlightable {
 
   protected BBjInputN numBox;
 
@@ -752,12 +752,12 @@ public class NumberField extends AbstractDwcComponent
   }
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public NumberField setTextAlignment(Alignment alignment) {
+  public NumberField setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         numBox.setAlignment(alignment.getValue());
@@ -919,7 +919,7 @@ public class NumberField extends AbstractDwcComponent
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {

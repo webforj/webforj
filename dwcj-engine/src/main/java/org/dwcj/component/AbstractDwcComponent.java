@@ -65,7 +65,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected Boolean readOnly = null;
   protected Boolean wasFocused = null;
   protected Boolean tabTraversable = null;
-  protected TextAlignable.Alignment textAlignment = null;
+  protected HorizontalAlignment.Alignment textAlignment = null;
   protected Integer horizontalScrollBarPosition = null;
   protected Integer verticalScrollBarPosition = null;
   protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;

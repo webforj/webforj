@@ -10,9 +10,9 @@ import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.Scrollable;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
@@ -24,7 +24,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
 public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly,
-    HasFocus, HasMouseWheelCondition, TabTraversable, TextAlignable {
+    HasFocus, HasMouseWheelCondition, TabTraversable, HorizontalAlignment {
 
   private BBjListBox bbjListBox;
 
@@ -257,8 +257,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
           SimpleEntry<Object, String> entry = getEntryByValue(value);
           if (entry != null) {
             Object key = entry.getKey();
-            if (key != null)
-              map.put(key, value);
+            if (key != null) {
+                map.put(key, value);
+            }
           }
         }
       } catch (BBjException e) {
@@ -622,12 +623,12 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public ListBox setTextAlignment(Alignment alignment) {
+  public ListBox setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         ((BBjListBox) this.control).setAlignment(alignment.getValue());
@@ -646,8 +647,9 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
 
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
+        throw new IllegalAccessException("catchUp cannot be called twice");
+    }
     super.catchUp();
 
     if (!this.selectEvents.isEmpty()) {
@@ -693,7 +695,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
   }
 

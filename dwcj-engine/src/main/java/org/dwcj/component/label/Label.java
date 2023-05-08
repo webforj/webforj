@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.TextAlignable;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
@@ -21,7 +21,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 /** A label object. */
-public final class Label extends AbstractDwcComponent implements TextAlignable {
+public final class Label extends AbstractDwcComponent implements HorizontalAlignment {
 
   private EventDispatcher dispatcher = new EventDispatcher();
   private MouseEnterEventSink mouseEnterEventSink;
@@ -224,7 +224,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  public Label setTextAlignment(Alignment alignment) {
+  public Label setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         ((BBjStaticText) this.control).setAlignment(alignment.getValue());
@@ -240,7 +240,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * {@inheritDoc}
    */
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
@@ -353,7 +353,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
   }
 }
