@@ -3,8 +3,8 @@ package org.dwcj.component;
 
 /**
  * On applicable controls, creates enum which helps facilitate underlying BBj constant integers for
- * text alignment behavior to legible enum values, and facilitates implementation of methods to
- * interact with this behavior.
+ * horizontal alignment behavior to legible enum values, and facilitates implementation of methods 
+ * to interact with this behavior.
  */
 public interface HorizontalAlignment {
 
@@ -35,7 +35,7 @@ public interface HorizontalAlignment {
    *
    * @return Enum value of text alignment
    */
-  Alignment getAlignment();
+  Alignment getHorizontalAlignment();
 
   /**
    * Sets the horizontal alignment of the text within the control.
@@ -43,6 +43,6 @@ public interface HorizontalAlignment {
    * @param alignment Enum from list representing an internal BBj numeric constant
    * @return The control itself
    */
-  HorizontalAlignment setAlignment(Alignment alignment);
+  HorizontalAlignment setHorizontalAlignment(Alignment alignment);
 
 }
