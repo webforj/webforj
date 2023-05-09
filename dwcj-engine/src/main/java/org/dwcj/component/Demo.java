@@ -7,8 +7,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import org.dwcj.App;
 import org.dwcj.component.button.Button;
+import org.dwcj.component.button.sink.ButtonClickEventSink;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventController;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.label.Label;
 import org.dwcj.component.tree.Tree;
 import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Panel;
@@ -24,32 +28,54 @@ public class Demo extends App {
 
     frame.add(p);
 
-    Tree tree = new Tree(0, "Root");
+    Label label = new Label("Hello World");
 
-    EventListener<MouseEnterEvent> mel = e -> {
-      App.consoleLog("Mouse Enter");
-    };
+    Label l = label.onMouseEnter(e -> {
+      App.consoleLog("I was Hovered");
+      App.consoleLog("Juhu");
+    });
+
+    frame.add(label);
+
+    App.consoleLog(l.toString());
+
+    // Button button = new Button("Hello World");
+
+    // Button c = button.onMouseEnter(e -> {
+    // App.consoleLog("I was Hovered");
+    // App.consoleLog("Juhu");
+    // });
+
+    // frame.add(button);
+
+    // App.consoleLog(c.toString());
+
+    // Tree tree = new Tree(0, "Root");
+
+    // EventListener<MouseEnterEvent> mel = e -> {
+    // App.consoleLog("Mouse Enter");
+    // };
 
 
-    tree.addNode(1, 0, "Build").addNode(2, 0, "Res").addNode(3, 0, "Lib");
+    // tree.addNode(1, 0, "Build").addNode(2, 0, "Res").addNode(3, 0, "Lib");
 
 
-    tree.addNode(10, 1, "Build1");
-    tree.addNode(11, 1, "Build2");
-    tree.addNode(12, 1, "Build3");
+    // tree.addNode(10, 1, "Build1");
+    // tree.addNode(11, 1, "Build2");
+    // tree.addNode(12, 1, "Build3");
 
 
-    tree.addNode(20, 2, "Res1");
-    tree.addNode(21, 2, "Res2");
-    tree.addNode(22, 2, "Res3");
+    // tree.addNode(20, 2, "Res1");
+    // tree.addNode(21, 2, "Res2");
+    // tree.addNode(22, 2, "Res3");
 
 
-    tree.addNode(30, 3, "Lib1");
-    tree.addNode(31, 3, "Lib2");
-    tree.addNode(32, 3, "Lib3");
+    // tree.addNode(30, 3, "Lib1");
+    // tree.addNode(31, 3, "Lib2");
+    // tree.addNode(32, 3, "Lib3");
 
-    p.add(tree);
-    tree.onMouseEnter(mel);
+    // p.add(tree);
+    // tree.onMouseEnter(mel);
 
     // Button b = new Button("Image ?");
     // p.add(b);

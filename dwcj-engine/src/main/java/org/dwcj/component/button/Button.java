@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import java.io.File;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
@@ -13,9 +14,16 @@ import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.EventManager;
+import org.dwcj.component.event.HasMouseEnter;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import org.dwcj.utilities.ImageUtil;
 
@@ -24,7 +32,7 @@ import org.dwcj.utilities.ImageUtil;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, TextAlignable, HasEnable {
+    implements HasFocus, TabTraversable, TextAlignable, HasEnable, HasMouseEnter {
 
   /**
    * Vertical alignment options for the Button component.
@@ -39,11 +47,21 @@ public final class Button extends AbstractDwcComponent
     }
   }
 
-  private EventDispatcher dispatcher = new EventDispatcher();
-  private ButtonClickEventSink clickEventsSink;
-  private Boolean disableOnClick = false;
-  private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
+  // private EventDispatcher dispatcher = new EventDispatcher();
+  // private ButtonClickEventSink clickEventsSink;
+  // private MouseExitEventSink mouseExitEventSink;
+  // private RightMouseDownEventSink rightMouseDownEventSink;
+
+  private final EventManager<Button> eventManager = new EventManager<>(this);
+
+  // private final EventHandler<MouseEnterEvent> mouseEnterEventHandler =
+  // new EventHandler<>(new MouseEnterEventSink(this, dispatcher), MouseEnterEvent.class);
+
   private BBjButton bbjButton;
+
+  private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
+  private Boolean disableOnClick = false;
+
 
   public Button() {
     this("");
@@ -63,18 +81,26 @@ public final class Button extends AbstractDwcComponent
 
   @Override
   protected void create(AbstractWindow p) {
-
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       control = w.addButton(super.getText(), flags);
-      this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
+      createEventSinks();
       this.bbjButton = (BBjButton) control;
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
     }
+  }
+
+  private void createEventSinks() {
+    this.eventManager.addEvent(ButtonClickEventSink.class, ButtonClickEvent.class);
+    this.eventManager.addEvent(MouseExitEventSink.class, MouseExitEvent.class);
+    this.eventManager.addEvent(RightMouseDownEventSink.class, RightMouseDownEvent.class);
+    // this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
+    // this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+    // this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
   }
 
   public void setImage(String path) {
@@ -86,7 +112,6 @@ public final class Button extends AbstractDwcComponent
       try {
         this.bbjButton.setImage(ImageUtil.convertFileToBBjImage(file));
       } catch (BBjException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }
@@ -99,10 +124,7 @@ public final class Button extends AbstractDwcComponent
    * @return The component itself
    */
   public Button addClickListener(EventListener<ButtonClickEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
-      this.clickEventsSink.setCallback();
-    }
-    dispatcher.addEventListener(ButtonClickEvent.class, listener);
+    this.eventManager.addEventListener(ButtonClickEvent.class, listener);
     return this;
   }
 
@@ -125,10 +147,102 @@ public final class Button extends AbstractDwcComponent
    * @return The component itself
    */
   public Button removeClickListener(EventListener<ButtonClickEvent> listener) {
-    dispatcher.removeEventListener(ButtonClickEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
-      this.clickEventsSink.removeCallback();
-    }
+    this.eventManager.removeEventListener(ButtonClickEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public Button addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    this.eventManager.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public Button onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public Button removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    this.eventManager.removeEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the Button component.
+   *
+   * @param listener the event listener to be added
+   * @return The Button itself
+   */
+  public Button addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    this.eventManager.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseExitListener method.
+   *
+   * @see Button#addMouseExitListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The Button itself
+   */
+  public Button onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a MouseExit event from the Button component.
+   *
+   * @param listener the event listener to be removed
+   * @return The Button itself
+   */
+  public Button removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    this.eventManager.removeEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the Button component.
+   *
+   * @param listener the event listener to be added
+   * @return The Button itself
+   */
+  public Button addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    this.eventManager.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see Button#addRightMouseDownListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The Button itself
+   */
+  public Button onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a RightMouseDown event from the Button component.
+   *
+   * @param listener the event listener to be removed
+   * @return The Button itself
+   */
+  public Button removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    this.eventManager.removeEventListener(RightMouseDownEvent.class, listener);
     return this;
   }
 
@@ -140,7 +254,7 @@ public final class Button extends AbstractDwcComponent
   public Boolean isDisableOnClick() {
     if (this.control != null) {
       try {
-        ((BBjButton) control).getDisableOnClick();
+        this.bbjButton.getDisableOnClick();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -157,7 +271,7 @@ public final class Button extends AbstractDwcComponent
   public Button setDisableOnClick(Boolean disable) {
     if (this.control != null) {
       try {
-        ((BBjButton) control).setDisableOnClick(disable);
+        this.bbjButton.setDisableOnClick(disable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -173,9 +287,6 @@ public final class Button extends AbstractDwcComponent
    * @return Enum value of text's vertical alignment
    */
   public TextVerticalAlignment getVerticalAlignment() {
-    if (this.control != null) {
-      return this.verticalAlignment;
-    }
     return this.verticalAlignment;
   }
 
@@ -188,7 +299,7 @@ public final class Button extends AbstractDwcComponent
   public Button setVerticalAlignment(TextVerticalAlignment alignment) {
     if (this.control != null) {
       try {
-        ((BBjButton) control).setVerticalAlignment(alignment.alignment);
+        this.bbjButton.setVerticalAlignment(alignment.alignment);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -197,142 +308,174 @@ public final class Button extends AbstractDwcComponent
     return this;
   }
 
-
-  /*
-   * ===================================================================================== This
-   * section overrides the various base class abstract methods in the AbstractDwcjControl class.
-   * These need to be should for method chaining purposes (i.e.
-   * setExample().setExample2().setExample3() ).
-   * =====================================================================================
+  /**
+   * {@inheritDoc}
    */
-
-  @Override
-  public Button setText(String text) {
-    super.setText(text);
-    return this;
-  }
-
-  @Override
-  public Button setVisible(Boolean visible) {
-    super.setVisible(visible);
-    return this;
-  }
-
-  @Override
-  public Button setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
-  }
-
-  @Override
-  public Button setTooltipText(String text) {
-    super.setTooltipText(text);
-    return this;
-  }
-
-  @Override
-  public Button setAttribute(String attribute, String value) {
-    super.setAttribute(attribute, value);
-    return this;
-  }
-
-  @Override
-  public Button setStyle(String property, String value) {
-    super.setStyle(property, value);
-    return this;
-  }
-
-  @Override
-  public Button addClassName(String selector) {
-    super.addClassName(selector);
-    return this;
-  }
-
-  @Override
-  public Button removeClassName(String selector) {
-    super.removeClassName(selector);
-    return this;
-  }
-
-  @Override
-  public Button focus() {
-    super.focusComponent();
-    return this;
-  }
-
-
   @Override
   public Boolean isTabTraversable() {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).isTabTraversable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.tabTraversable;
+    return super.isComponentTabTraversable();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Button setTabTraversable(Boolean traversable) {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).setTabTraversable(traversable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.tabTraversable = traversable;
+    super.setComponentTabTraversable(traversable);
     return this;
   }
 
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Alignment getTextAlignment() {
     return this.textAlignment;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Button setTextAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
-        ((BBjButton) control).setAlignment(alignment.getValue());
+        this.bbjButton.setAlignment(alignment.getValue());
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
     this.textAlignment = alignment;
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Button focus() {
+    super.focusComponent();
+    return this;
+  }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Button setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button setText(String text) {
+    super.setText(text);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button setVisible(Boolean visible) {
+    super.setVisible(visible);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button setTooltipText(String text) {
+    super.setTooltipText(text);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button setAttribute(String attribute, String value) {
+    super.setAttribute(attribute, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button setProperty(String property, Object value) {
+    super.setProperty(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button setStyle(String property, String value) {
+    super.setStyle(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Button addClassName(String selector) {
+    super.addClassName(selector);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public Button removeClassName(String selector) {
+    super.removeClassName(selector);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
     }
-
     super.catchUp();
-
-    if (this.dispatcher.getListenersCount(ButtonClickEvent.class) > 0) {
-      this.clickEventsSink.setCallback();
-    }
+    this.eventManager.catchUp();
 
     if (Boolean.TRUE.equals(this.disableOnClick)) {
       this.setDisableOnClick(this.disableOnClick);
     }
 
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
-    }
-
     if (this.textAlignment != Alignment.MIDDLE) {
       this.setTextAlignment(this.textAlignment);
+    }
+
+    if (this.verticalAlignment != TextVerticalAlignment.CENTER) {
+      this.setVerticalAlignment(verticalAlignment);
     }
   }
 }

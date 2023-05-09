@@ -7,6 +7,7 @@ import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.TextAlignable;
+import org.dwcj.component.event.EventController;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
@@ -16,6 +17,7 @@ import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
@@ -23,9 +25,12 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 public final class Label extends AbstractDwcComponent implements TextAlignable {
 
   private EventDispatcher dispatcher = new EventDispatcher();
-  private MouseEnterEventSink mouseEnterEventSink;
-  private MouseExitEventSink mouseExitEventSink;
-  private RightMouseDownEventSink rightMouseDownEventSink;
+  private EventController<MouseEnterEvent> mouseEnterEventHandler =
+      new EventController<>(new MouseEnterEventSink(this, dispatcher), MouseEnterEvent.class);
+  private EventController<MouseExitEvent> mouseExitEventHandler =
+      new EventController<>(new MouseExitEventSink(this, dispatcher), MouseExitEvent.class);
+  private EventController<RightMouseDownEvent> rightMouseDownEventHandler = new EventController<>(
+      new RightMouseDownEventSink(this, dispatcher), RightMouseDownEvent.class);
   private boolean lineWrap = true;
 
   /**
@@ -65,9 +70,6 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
       control = w.addStaticText(getText(), flags);
-      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
-      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
-      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       throw new DwcjRuntimeException(e);
@@ -81,10 +83,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
-      this.mouseEnterEventSink.setCallback();
-    }
-    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    this.mouseEnterEventHandler.addEventListener(listener);
     return this;
   }
 
@@ -106,10 +105,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
-      this.mouseEnterEventSink.removeCallback();
-    }
+    this.mouseEnterEventHandler.removeEventListener(listener);
     return this;
   }
 
@@ -120,10 +116,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
-      this.mouseExitEventSink.setCallback();
-    }
-    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    this.mouseExitEventHandler.addEventListener(listener);
     return this;
   }
 
@@ -145,10 +138,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label removeMouseExitListener(EventListener<MouseExitEvent> listener) {
-    dispatcher.removeEventListener(MouseExitEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
-      this.mouseExitEventSink.removeCallback();
-    }
+    this.mouseExitEventHandler.removeEventListener(listener);
     return this;
   }
 
@@ -159,10 +149,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
-      this.rightMouseDownEventSink.setCallback();
-    }
-    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    this.rightMouseDownEventHandler.addEventListener(listener);
     return this;
   }
 
@@ -184,10 +171,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
-      this.rightMouseDownEventSink.removeCallback();
-    }
+    this.rightMouseDownEventHandler.removeEventListener(listener);
     return this;
   }
 
@@ -314,17 +298,9 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
   }
 
   private void eventCatchUp() {
-    if (this.dispatcher.getListenersCount(MouseEnterEvent.class) > 0) {
-      this.mouseEnterEventSink.setCallback();
-    }
-
-    if (this.dispatcher.getListenersCount(MouseExitEvent.class) > 0) {
-      this.mouseExitEventSink.setCallback();
-    }
-
-    if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
-      this.rightMouseDownEventSink.setCallback();
-    }
+    this.mouseEnterEventHandler.catchUp();
+    this.mouseExitEventHandler.catchUp();
+    this.rightMouseDownEventHandler.catchUp();
   }
 
   /**

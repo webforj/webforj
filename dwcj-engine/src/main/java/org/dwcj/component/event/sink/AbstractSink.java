@@ -29,11 +29,18 @@ public abstract class AbstractSink {
     this.component = component;
     this.dispatcher = dispatcher;
     this.eventType = eventType;
+  }
 
+  // checks if the control is null and tries to create it
+  private boolean isControl() {
+    if (this.control != null) {
+      return true;
+    }
     try {
-      control = ComponentAccessor.getDefault().getBBjControl(component);
+      this.control = ComponentAccessor.getDefault().getBBjControl(component);
+      return this.control != null;
     } catch (Exception e) {
-      throw new DwcjRuntimeException("Failed to get instantiate the Sink.", e);
+      return false;
     }
   }
 
@@ -41,8 +48,12 @@ public abstract class AbstractSink {
    * Method to set a callback on an underlying BBj control.
    */
   public void setCallback() {
+    if (!isControl()) {
+      return;
+    }
+
     try {
-      control.setCallback(eventType,
+      this.control.setCallback(eventType,
           Environment.getInstance().getDwcjHelper().getEventProxy(this, "handleEvent"), "onEvent");
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set callback.", e);
@@ -53,11 +64,19 @@ public abstract class AbstractSink {
    * Method to remove a callback on an underlying BBj control.
    */
   public void removeCallback() {
+    if (!isControl()) {
+      return;
+    }
+
     try {
       control.clearCallback(eventType);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to remove callback.", e);
     }
+  }
+
+  public EventDispatcher getEventDispatcher() {
+    return this.dispatcher;
   }
 
   /**

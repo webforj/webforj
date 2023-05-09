@@ -7,11 +7,11 @@ public class DwcjImage {
   // private File file;
 
   // DwcjImage(String path) {
-  //   this.file = new File(path);
-  // } 
+  // this.file = new File(path);
+  // }
 
   // DwcjImage(File file) {
-  //   this.file = file;
+  // this.file = file;
   // }
 
   public static DwcjImage loadImageFromBytes(byte[] bytes) {

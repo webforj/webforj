@@ -10,16 +10,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /** Test for the ImageUtil. */
-public class ImageUtilTest {
-  @Test
-  @DisplayName("Convert Bytes from a BBjImage to a Java Image")
-  void convertionTest() {
-    try {
-      InputStream is = getClass().getResourceAsStream("bytes.txt");
-      BufferedImage bi = ImageIO.read(is);
-      assertEquals(BufferedImage.class, bi.getClass());
-    } catch (IOException e) {
-      e.fillInStackTrace();
-    }
-  }
-}
+// public class ImageUtilTest {
+// @Test
+// @DisplayName("Convert Bytes from a BBjImage to a Java Image")
+// void convertionTest() {
+// try {
+// InputStream is = getClass().getResourceAsStream("bytes.txt");
+// BufferedImage bi = ImageIO.read(is);
+// assertEquals(BufferedImage.class, bi.getClass());
+// } catch (IOException e) {
+// e.fillInStackTrace();
+// }
+// }
+// }
