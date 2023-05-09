@@ -14,7 +14,7 @@ public interface HorizontalAlignment {
   enum Alignment {
     LEFT(8192), MIDDLE(16384), RIGHT(32768);
 
-    public final int value;
+    private final int value;
 
     private Alignment(int position) {
       this.value = position;
@@ -35,7 +35,7 @@ public interface HorizontalAlignment {
    *
    * @return Enum value of text alignment
    */
-  Alignment getHorizontalAlignment();
+  public Alignment getHorizontalAlignment();
 
   /**
    * Sets the horizontal alignment of the text within the component.
@@ -43,6 +43,6 @@ public interface HorizontalAlignment {
    * @param alignment Enum from list representing an internal BBj numeric constant
    * @return The component itself
    */
-  HorizontalAlignment setHorizontalAlignment(Alignment alignment);
+  public HorizontalAlignment setHorizontalAlignment(Alignment alignment);
 
 }
