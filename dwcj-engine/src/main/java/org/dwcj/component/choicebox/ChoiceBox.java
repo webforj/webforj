@@ -10,8 +10,8 @@ import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxCloseEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxOpenEvent;
@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * Combobox Control
  */
 public final class ChoiceBox extends AbstractListBox
-    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, HasEnable {
+    implements HasReadOnly, HasFocus, TabTraversable, HorizontalAlignment, HasEnable {
 
   private BBjListButton bbjListButton;
 
@@ -521,12 +521,12 @@ public final class ChoiceBox extends AbstractListBox
   }
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public ChoiceBox setTextAlignment(Alignment textAlignment) {
+  public ChoiceBox setHorizontalAlignment(Alignment textAlignment) {
     if (this.control != null) {
       try {
         ((BBjListButton) this.control).setAlignment(textAlignment.getValue());
@@ -658,7 +658,7 @@ public final class ChoiceBox extends AbstractListBox
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.selected != null) {

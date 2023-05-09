@@ -11,7 +11,7 @@ import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
+import org.dwcj.component.TextPosition;
 import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
 import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, HasEnable {
+    implements HasReadOnly, HasFocus, TabTraversable, TextPosition, HasEnable {
 
 
   /*
@@ -63,6 +63,7 @@ public final class CheckBox extends AbstractDwcComponent
   private CheckBoxCheckEventSink checkboxCheckEventSink;
   private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
   private Boolean checked = false;
+  private TextPosition.Position textPosition = TextPosition.Position.LEFT;
 
 
   /*
@@ -73,8 +74,6 @@ public final class CheckBox extends AbstractDwcComponent
   public CheckBox() {
     this.readOnly = false;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
-
   }
 
   /*
@@ -327,25 +326,23 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
 
-  @Override
-  public Alignment getTextAlignment() {
-    return this.textAlignment;
+
+  public Position getTextPosition() {
+    return this.textPosition;
   }
 
   @Override
-  public CheckBox setTextAlignment(Alignment alignment) {
+  public CheckBox setTextPosition(Position position) {
     if (this.control != null) {
       try {
-        ((BBjCheckBox) this.control).setAlignment(alignment.getValue());
+        ((BBjCheckBox) this.control).setHorizontalTextPosition(0);
       } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    this.textAlignment = alignment;
+    this.textPosition = position;
     return this;
   }
-
-
 
   /*
    * ===================================================================================== Finally,
@@ -392,9 +389,10 @@ public final class CheckBox extends AbstractDwcComponent
       this.setTabTraversable(this.tabTraversable);
     }
 
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+    if (this.textPosition != Position.LEFT) {
+      this.setTextPosition(this.textPosition);
     }
   }
+
 
 }

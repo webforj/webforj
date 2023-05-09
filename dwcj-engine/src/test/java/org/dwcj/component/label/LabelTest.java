@@ -17,7 +17,7 @@ import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.dwcj.component.TextAlignable.Alignment;
+import org.dwcj.component.HorizontalAlignment.Alignment;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
@@ -104,7 +104,7 @@ public class LabelTest {
       Label componentSpy = spy(component);
 
       componentSpy.setWrap(false);
-      componentSpy.setTextAlignment(Alignment.MIDDLE);
+      componentSpy.setHorizontalAlignment(Alignment.MIDDLE);
       componentSpy.onMouseEnter(e -> {
       });
       componentSpy.onMouseExit(e -> {
@@ -115,7 +115,7 @@ public class LabelTest {
       invokeCatchUp(componentSpy);
 
       verify(componentSpy, atLeast(2)).setWrap(false);
-      verify(componentSpy, atLeast(2)).setTextAlignment(Alignment.MIDDLE);
+      verify(componentSpy, atLeast(2)).setHorizontalAlignment(Alignment.MIDDLE);
     }
   }
 
@@ -155,8 +155,8 @@ public class LabelTest {
     @EnumSource(Alignment.class)
     @DisplayName("When control is defined")
     void whenControlIsDefined(Alignment align) throws BBjException {
-      component.setTextAlignment(align);
-      assertSame(component.getTextAlignment(), align);
+      component.setHorizontalAlignment(align);
+      assertSame(component.getHorizontalAlignment(), align);
 
       verify(control, times(1)).setAlignment(anyInt());
       verify(control, times(0)).getAlignment();
@@ -167,8 +167,8 @@ public class LabelTest {
     @DisplayName("When control is null")
     void whenControlIsNull(Alignment align) throws BBjException, IllegalAccessException {
       nullifyControl();
-      component.setTextAlignment(align);
-      assertSame(component.getTextAlignment(), align);
+      component.setHorizontalAlignment(align);
+      assertSame(component.getHorizontalAlignment(), align);
     }
 
     @ParameterizedTest
@@ -176,7 +176,7 @@ public class LabelTest {
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
     void reThrowDwcjRunTimeException(Alignment align) throws BBjException {
       doThrow(BBjException.class).when(control).setAlignment(anyInt());
-      assertThrows(DwcjRuntimeException.class, () -> component.setTextAlignment(align));
+      assertThrows(DwcjRuntimeException.class, () -> component.setHorizontalAlignment(align));
     }
   }
 

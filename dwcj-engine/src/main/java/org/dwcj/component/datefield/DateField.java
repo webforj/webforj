@@ -17,16 +17,16 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-public final class DateField extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, HasEnable, TextHighlightable, TextAlignable {
+public final class DateField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HasEnable, TextHighlightable, HorizontalAlignment {
 
   private BBjInputD bbjDateEditBox;
 
@@ -673,12 +673,12 @@ public final class DateField extends AbstractDwcComponent
   }
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public DateField setTextAlignment(Alignment alignment) {
+  public DateField setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         bbjDateEditBox.setAlignment(alignment.getValue());
@@ -841,7 +841,7 @@ public final class DateField extends AbstractDwcComponent
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {

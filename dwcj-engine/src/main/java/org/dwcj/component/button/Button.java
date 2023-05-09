@@ -8,8 +8,8 @@ import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
 import org.dwcj.component.event.EventDispatcher;
@@ -22,7 +22,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, TextAlignable, HasEnable {
+    implements HasFocus, TabTraversable, HorizontalAlignment, HasEnable {
 
 
 
@@ -388,12 +388,12 @@ public final class Button extends AbstractDwcComponent
 
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public Button setTextAlignment(Alignment alignment) {
+  public Button setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         ((BBjButton) control).setAlignment(alignment.getValue());
@@ -434,7 +434,7 @@ public final class Button extends AbstractDwcComponent
     }
 
     if (this.textAlignment != Alignment.MIDDLE) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.expanse != null) {

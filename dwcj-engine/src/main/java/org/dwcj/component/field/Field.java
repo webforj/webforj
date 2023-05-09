@@ -13,8 +13,8 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.FieldModifyEventSink;
@@ -22,8 +22,8 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
-public final class Field extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, HasEnable, TextAlignable, TextHighlightable {
+public final class Field extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HasEnable, HorizontalAlignment, TextHighlightable {
 
   private BBjEditBox bbjEditBox;
 
@@ -256,12 +256,12 @@ public final class Field extends AbstractDwcComponent
   }
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public Field setTextAlignment(Alignment alignment) {
+  public Field setHorizontalAlignment(Alignment alignment) {
     // todo: why could an exception be thrown?
     if (this.control != null) {
       try {
@@ -396,7 +396,7 @@ public final class Field extends AbstractDwcComponent
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {

@@ -11,8 +11,8 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextAlignable;
 import org.dwcj.component.TextHighlightable;
 import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
@@ -22,8 +22,8 @@ import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class TextField extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, TextAlignable, TextHighlightable, HasEnable {
+public final class TextField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HorizontalAlignment, TextHighlightable, HasEnable {
 
 
   private BBjInputE bbjInputE;
@@ -441,12 +441,12 @@ public final class TextField extends AbstractDwcComponent
   }
 
   @Override
-  public Alignment getTextAlignment() {
+  public Alignment getHorizontalAlignment() {
     return this.textAlignment;
   }
 
   @Override
-  public TextField setTextAlignment(Alignment alignment) {
+  public TextField setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         bbjInputE.setAlignment(alignment.getValue());
@@ -618,7 +618,7 @@ public final class TextField extends AbstractDwcComponent
     }
 
     if (this.textAlignment != Alignment.LEFT) {
-      this.setTextAlignment(this.textAlignment);
+      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {

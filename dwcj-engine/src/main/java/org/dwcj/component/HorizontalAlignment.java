@@ -2,11 +2,11 @@ package org.dwcj.component;
 
 
 /**
- * On applicable controls, creates enum which helps facilitate underlying BBj constant integers for
- * text alignment behavior to legible enum values, and facilitates implementation of methods to
- * interact with this behavior.
+ * Controls the horizontal alignment of the content within the component, 
+ * namely text and images. It does not alter the position of the entire 
+ * component itself.
  */
-public interface TextAlignable {
+public interface HorizontalAlignment {
 
   /**
    * Enum which represents the text alignment of a component.
@@ -14,7 +14,7 @@ public interface TextAlignable {
   enum Alignment {
     LEFT(8192), MIDDLE(16384), RIGHT(32768);
 
-    public final int value;
+    private final int value;
 
     private Alignment(int position) {
       this.value = position;
@@ -35,14 +35,14 @@ public interface TextAlignable {
    *
    * @return Enum value of text alignment
    */
-  Alignment getTextAlignment();
+  public Alignment getHorizontalAlignment();
 
   /**
-   * Sets the horizontal alignment of the text within the control.
+   * Sets the horizontal alignment of the text within the component.
    *
    * @param alignment Enum from list representing an internal BBj numeric constant
-   * @return The control itself
+   * @return The component itself
    */
-  TextAlignable setTextAlignment(Alignment alignment);
+  public HorizontalAlignment setHorizontalAlignment(Alignment alignment);
 
 }
