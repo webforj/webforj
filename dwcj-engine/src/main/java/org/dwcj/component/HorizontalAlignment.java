@@ -2,9 +2,9 @@ package org.dwcj.component;
 
 
 /**
- * On applicable components, creates enum which helps facilitate underlying BBj constant integers
- * for horizontal alignment behavior to legible enum values, and facilitates implementation of
- * methods to interact with this behavior.
+ * This method controls the horizontal alignment of the content within the 
+ * component, namely text and images. It does not alter the position of the entire 
+ * component itself.
  */
 public interface HorizontalAlignment {
 
