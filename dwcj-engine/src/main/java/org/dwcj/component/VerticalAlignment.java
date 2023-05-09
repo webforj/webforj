@@ -13,7 +13,7 @@ public interface VerticalAlignment {
   enum Alignment {
     TOP(8192), CENTER(16384), BOTTOM(32768);
 
-    public final int value;
+    private final int value;
 
     private Alignment(int position) {
       this.value = position;
