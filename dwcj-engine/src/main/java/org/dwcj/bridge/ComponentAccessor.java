@@ -49,18 +49,18 @@ public abstract class ComponentAccessor {
   /**
    * @param ctrl - get the BBjControl under the AbstractDwcControl.
    * @return - the BBjControl
-   * @throws IllegalAccessException
    */
-  public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl) throws IllegalAccessException;
+  public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl);
 
   /**
-   *  Sets the BBjControl under the AbstractDwcControl.
+   * Sets the BBjControl under the AbstractDwcControl.
    *
    * @param component the component to access.
    * @param ctrl the new control.
    * @throws IllegalAccessException
    */
-  public abstract void setBBjControl(AbstractDwcComponent component, BBjControl ctrl) throws IllegalAccessException;
+  public abstract void setBBjControl(AbstractDwcComponent component, BBjControl ctrl)
+      throws IllegalAccessException;
 
   public abstract void create(AbstractComponent ctrl, AbstractWindow panel)
       throws IllegalAccessException;

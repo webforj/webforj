@@ -3,6 +3,7 @@ package org.dwcj.component.label;
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.App;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
@@ -66,8 +67,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
-      control = w.addStaticText(getText(), flags);
-      ComponentAccessor.getDefault().setBBjControl(this, control);
+      this.setControl(w.addStaticText(getText(), flags));
       this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
       this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
       this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
@@ -77,6 +77,11 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
     }
   }
 
+  
+  private BBjStaticText getBbjControl() {
+    return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
+  }
+
   /**
    * Adds a MouseEnter event for the Label component.
    *
@@ -84,7 +89,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseEnterEvent.class, listener);
@@ -110,7 +115,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.removeCallback();
     }
     return this;
@@ -123,7 +128,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseExitEvent.class, listener);
@@ -149,7 +154,7 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label removeMouseExitListener(EventListener<MouseExitEvent> listener) {
     dispatcher.removeEventListener(MouseExitEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.removeCallback();
     }
     return this;
@@ -162,7 +167,8 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return The Label itself
    */
   public Label addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+    if (getBbjControl() != null
+        && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.setCallback();
     }
     dispatcher.addEventListener(RightMouseDownEvent.class, listener);
@@ -188,7 +194,8 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   public Label removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+    if (getBbjControl() != null
+        && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
     }
     return this;
@@ -201,9 +208,9 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    * @return Returns this
    */
   public Label setWrap(Boolean wrap) {
-    if (this.control != null) {
+    if (getBbjControl() != null) {
       try {
-        ((BBjStaticText) this.control).setLineWrap(wrap);
+        getBbjControl().setLineWrap(wrap);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -227,9 +234,9 @@ public final class Label extends AbstractDwcComponent implements TextAlignable {
    */
   @Override
   public Label setTextAlignment(Alignment alignment) {
-    if (this.control != null) {
+    if (getBbjControl() != null) {
       try {
-        ((BBjStaticText) this.control).setAlignment(alignment.getValue());
+        getBbjControl().setAlignment(alignment.getValue());
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }

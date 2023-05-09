@@ -95,7 +95,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    *
    * @param control the BBj control to set.
    */
-  void setControl(BBjControl control) {
+  protected void setControl(BBjControl control) {
     this.control = control;
   }
 
