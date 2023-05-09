@@ -1,10 +1,9 @@
 package org.dwcj.component;
 
 /**
- * On applicable component, creates enum which helps facilitate underlying BBj constant integers for
- * text position behavior to legible enum values, and facilitates implementation of methods to
- * interact with this behavior. Text position is the location of the text in relation to the
- * component itself.
+ * Manipulates the position of text and images within a component relative to other 
+ * elements of the component. For example, when used on a CheckBox, this interface's 
+ * methods will control on which side of the checkbox the text appears.
  */
 public interface TextPosition {
 
