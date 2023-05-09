@@ -9,12 +9,12 @@ package org.dwcj.component;
 public interface TextPosition {
 
   /**
-   * Enum which represents the text positon of a component.
+   * Enum which represents the text position of a component.
    */
   enum Position {
     LEFT(8192), RIGHT(32768);
 
-    public final int value;
+    private final int value;
 
     private Position(int position) {
       this.value = position;
