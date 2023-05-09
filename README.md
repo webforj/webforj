@@ -1,5 +1,9 @@
 # dwcj
 
+[![Java Tests & Coverage](https://github.com/DwcJava/engine/actions/workflows/maven-test.yml/badge.svg?branch=main)](https://github.com/DwcJava/engine/actions/workflows/maven-test.yml)
+[![Publish Snapshot](https://github.com/DwcJava/engine/actions/workflows/maven-snapshot.yml/badge.svg?branch=main)](https://github.com/DwcJava/engine/actions/workflows/maven-snapshot.yml)
+[![reviewdog](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml)
+
 Java API for BBj DWC Dynamic Web Client
 
 ## Setup Instructions
