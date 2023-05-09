@@ -34,12 +34,12 @@ public interface TextPosition {
    * Sets the position of the text within the control relative to other elements of the control.
    *
    * @param position Enum from list representing an internal BBj numeric constant
-   * @return the control ifself
+   * @return the control itself
    */
   public TextPosition setTextPosition(Position position);
 
   /**
-   * Returns a value indicating the text's position relativ to other elements of the control.
+   * Returns a value indicating the text's position relative to other elements of the control.
    *
    * @return Enum value of text position
    */
