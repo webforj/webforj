@@ -1,12 +1,12 @@
 package org.dwcj.component;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import java.lang.reflect.Method;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.AbstractWindow;
 
-import java.lang.reflect.Method;
 
 /**
  * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
@@ -16,17 +16,19 @@ final class ComponentAccessorImpl extends ComponentAccessor {
 
   public static final String YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD =
       ": You're not allowed to access this method!";
+  public static final String ORG_DWCJ = "org.dwcj.";
 
   @Override
-  public BBjControl getBBjControl(AbstractDwcComponent ctrl) throws IllegalAccessException {
+  public BBjControl getBBjControl(AbstractDwcComponent ctrl) {
 
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
-    if (caller.startsWith("org.dwcj."))
+    if (caller.startsWith(ORG_DWCJ)) {
       return ctrl.getControl();
+    }
 
     App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
-    throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
+    return null;
   }
 
   @Override
@@ -34,9 +36,9 @@ final class ComponentAccessorImpl extends ComponentAccessor {
       throws IllegalAccessException {
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
-    if (caller.startsWith("org.dwcj."))
+    if (caller.startsWith(ORG_DWCJ)) {
       component.setControl(ctrl);
-
+    }
     App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
     throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
   }
@@ -48,7 +50,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
 
-    if (caller.startsWith("org.dwcj.")) {
+    if (caller.startsWith(ORG_DWCJ)) {
       try {
         boolean found = false;
         Class<?> clazz = ctrl.getClass();
@@ -65,8 +67,9 @@ final class ComponentAccessorImpl extends ComponentAccessor {
             }
           }
 
-          if (!found)
+          if (!found) {
             clazz = clazz.getSuperclass();
+          }
         }
       } catch (Exception e) {
         Environment.logError(e);

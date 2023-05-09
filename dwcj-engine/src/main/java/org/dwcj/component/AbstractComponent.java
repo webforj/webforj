@@ -1,6 +1,5 @@
 package org.dwcj.component;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
