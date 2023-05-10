@@ -1,9 +1,9 @@
 package org.dwcj.component;
 
 /**
- * Manipulates the position of text and images within a component relative to other 
- * elements of the component. For example, when used on a CheckBox, this interface's 
- * methods will control on which side of the checkbox the text appears.
+ * Manipulates the position of text and images within a component relative to other elements of the
+ * component. For example, when used on a CheckBox, this interface's methods will control on which
+ * side of the checkbox the text appears.
  */
 public interface TextPosition {
 

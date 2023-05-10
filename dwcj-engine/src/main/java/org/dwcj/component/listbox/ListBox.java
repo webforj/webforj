@@ -258,7 +258,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
           if (entry != null) {
             Object key = entry.getKey();
             if (key != null) {
-                map.put(key, value);
+              map.put(key, value);
             }
           }
         }
@@ -648,7 +648,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   protected void catchUp() throws IllegalAccessException {
 
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
-        throw new IllegalAccessException("catchUp cannot be called twice");
+      throw new IllegalAccessException("catchUp cannot be called twice");
     }
     super.catchUp();
 
