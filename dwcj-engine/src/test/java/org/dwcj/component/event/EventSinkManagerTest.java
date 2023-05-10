@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /** EventHandler tests. */
 @ExtendWith(MockitoExtension.class)
-class EventControllerTest {
+class EventSinkManagerTest {
   @Mock
   MouseEnterEventSink sink;
 
@@ -22,7 +22,7 @@ class EventControllerTest {
   MouseEnterEvent event;
 
   @InjectMocks
-  EventController<MouseEnterEvent> controller;
+  EventSinkManager<MouseEnterEvent> controller;
 
   @BeforeEach
   void setUp() {

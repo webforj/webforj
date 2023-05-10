@@ -5,18 +5,18 @@ import org.dwcj.component.event.sink.AbstractSink;
 /**
  * EventController which handles the set and remove callback and the dispatcher.
  */
-public class EventController<T extends Event<?>> {
+public class EventSinkManager<T extends Event<?>> {
   private EventDispatcher dispatcher;
   private final AbstractSink sink;
   private final Class<T> event;
 
   /**
-   * Creates a new Eventhandler.
+   * Creates a new EventSinkManager.
    *
    * @param sink the corresponding sink to the event
    * @param event the corresponding event to the sink
    */
-  public EventController(AbstractSink sink, Class<T> event) {
+  public EventSinkManager(AbstractSink sink, Class<T> event) {
     this.sink = sink;
     this.dispatcher = sink.getEventDispatcher();
     this.event = event;
