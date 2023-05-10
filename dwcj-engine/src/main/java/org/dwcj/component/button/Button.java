@@ -20,6 +20,7 @@ import org.dwcj.component.event.HasMouseEnter;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -47,20 +48,12 @@ public final class Button extends AbstractDwcComponent
     }
   }
 
-  // private EventDispatcher dispatcher = new EventDispatcher();
-  // private ButtonClickEventSink clickEventsSink;
-  // private MouseExitEventSink mouseExitEventSink;
-  // private RightMouseDownEventSink rightMouseDownEventSink;
-
-  private final EventManager<Button> eventManager = new EventManager<>(this);
-
-  // private final EventHandler<MouseEnterEvent> mouseEnterEventHandler =
-  // new EventHandler<>(new MouseEnterEventSink(this, dispatcher), MouseEnterEvent.class);
 
   private BBjButton bbjButton;
-
   private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
   private Boolean disableOnClick = false;
+
+  private final EventManager<Button> eventManager = new EventManager<>(this);
 
 
   public Button() {
@@ -77,6 +70,7 @@ public final class Button extends AbstractDwcComponent
     super.setText(text);
     this.tabTraversable = true;
     this.textAlignment = Alignment.MIDDLE;
+    registerEvents();
   }
 
   @Override
@@ -86,7 +80,6 @@ public final class Button extends AbstractDwcComponent
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       control = w.addButton(super.getText(), flags);
-      createEventSinks();
       this.bbjButton = (BBjButton) control;
       catchUp();
     } catch (Exception e) {
@@ -94,13 +87,11 @@ public final class Button extends AbstractDwcComponent
     }
   }
 
-  private void createEventSinks() {
+  private void registerEvents() {
     this.eventManager.addEvent(ButtonClickEventSink.class, ButtonClickEvent.class);
     this.eventManager.addEvent(MouseExitEventSink.class, MouseExitEvent.class);
     this.eventManager.addEvent(RightMouseDownEventSink.class, RightMouseDownEvent.class);
-    // this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
-    // this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
-    // this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+    this.eventManager.addEvent(MouseEnterEventSink.class, MouseEnterEvent.class);
   }
 
   public void setImage(String path) {

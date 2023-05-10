@@ -1,67 +1,103 @@
 package org.dwcj.component.event;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import org.dwcj.App;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.sink.AbstractSink;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
-public class EventManager<T extends AbstractDwcComponent> {
+/** Manages Events for a Control. */
+public class EventManager<C extends AbstractDwcComponent> {
 
   private final EventDispatcher dispatcher = new EventDispatcher();
 
-  private final T control;
+  private final C control;
 
-  private final HashMap<Class<? extends Event<?>>, EventController<?>> events = new HashMap<>();
+  private HashMap<Class<? extends Event<?>>, EventController<? extends Event<?>>> events =
+      new HashMap<>();
 
-  public EventManager(T control) {
+  public EventManager(C control) {
     this.control = control;
   }
 
-  /** TODO. */
+  /**
+   * Adds a Event.
+   *
+   * @param <E> the Eventtype
+   * @param sink the Events sink
+   * @param event the Event
+   */
   public <E extends Event<?>> void addEvent(Class<? extends AbstractSink> sink, Class<E> event) {
     try {
       Constructor<?> constructor = sink.getConstructors()[0];
 
-      EventController<E> eventHandler =
+      EventController<E> eventController =
           new EventController<>(sink.cast(constructor.newInstance(control, dispatcher)), event);
-      this.events.put(event, eventHandler);
-    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | SecurityException e) {
-      App.consoleLog(e.toString());
+      this.events.put(event, eventController);
+    } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to add Event.", e);
     }
   }
 
+  /**
+   * Adds a listener.
+   *
+   * @param <T> type of the Event
+   * @param event the event class
+   * @param eventListener the listener
+   */
   public <T extends Event<?>> void addEventListener(Class<T> event,
       EventListener<T> eventListener) {
-    App.consoleLog(events.toString());
-    App.consoleLog(event.toString());
+    @SuppressWarnings("unchecked")
+    EventController<T> eventController = (EventController<T>) events.get(event);
 
-    App.consoleLog(events.get(event).toString());
-    // App.consoleLog(((EventHandler<T>) events.get(event)).toString());
+    if (eventController == null) {
+      return;
+    }
 
-    EventController<T> eventHandler = (EventController<T>) events.get(event);
-
-    eventHandler.addEventListener(eventListener);
+    eventController.addEventListener(eventListener);
   }
 
+  /**
+   * Removes a listener.
+   *
+   * @param <T> type of the Event
+   * @param event the event class
+   * @param eventListener the listener
+   */
   public <T extends Event<?>> void removeEventListener(Class<T> event,
       EventListener<T> eventListener) {
-    EventController<T> eventHandler = (EventController<T>) events.get(event);
-    eventHandler.removeEventListener(eventListener);
+    @SuppressWarnings("unchecked")
+    EventController<T> eventController = (EventController<T>) events.get(event);
+
+    if (eventController == null) {
+      return;
+    }
+
+    eventController.removeEventListener(eventListener);
   }
 
+  /**
+   * Calls the catchUp of the all the event controllers.
+   */
   public void catchUp() {
     if (events.isEmpty()) {
       return;
     }
 
-    for (EventController<?> eventHandler : events.values()) {
-      eventHandler.catchUp();
+    for (EventController<?> eventController : events.values()) {
+      eventController.catchUp();
     }
+  }
+
+  // Package private getter for testing
+  HashMap<Class<? extends Event<?>>, EventController<? extends Event<?>>> getEventMap() {
+    return this.events;
+  }
+
+  // Package private getter for testing
+  EventDispatcher getEventDispatcher() {
+    return this.dispatcher;
   }
 
 }
