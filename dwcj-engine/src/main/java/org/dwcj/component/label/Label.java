@@ -233,7 +233,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * {@inheritDoc}
    */
   @Override
-  public Label setTextAlignment(Alignment alignment) {
+  public Label setHorizontalAlignment(Alignment alignment) {
     if (getBbjControl() != null) {
       try {
         getBbjControl().setAlignment(alignment.getValue());
