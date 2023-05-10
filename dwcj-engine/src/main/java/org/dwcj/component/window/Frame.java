@@ -16,7 +16,7 @@ public class Frame extends AbstractWindow implements HasEnable {
   public Frame() throws DwcjAppInitializeException {
 
     try {
-      byte[] flags = new byte[] {(byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x88};
+      byte[] flags = new byte[] {(byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x80};
       BasisNumber b1 = BasisNumber.createBasisNumber(1);
       BasisNumber ctx = BasisNumber
           .createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());

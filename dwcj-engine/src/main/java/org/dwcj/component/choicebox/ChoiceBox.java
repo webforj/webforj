@@ -76,10 +76,6 @@ public final class ChoiceBox extends AbstractListBox
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       control = w.addListButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_250, BASISNUMBER_250, "", flags);
-      control.setAttribute("max-row-count", "25");
-      control.setAttribute("open-width", "2500");
-      control.setAttribute("button-height", "auto");
-      control.setAttribute("left", "calc( 50vw - 100px )");
       bbjListButton = (BBjListButton) control;
       populate();
       catchUp();
