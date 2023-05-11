@@ -1,12 +1,12 @@
 package org.dwcj.component;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import java.lang.reflect.Method;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.AbstractWindow;
 
-import java.lang.reflect.Method;
 
 /**
  * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
@@ -18,15 +18,15 @@ final class ComponentAccessorImpl extends ComponentAccessor {
       ": You're not allowed to access this method!";
 
   @Override
-  public BBjControl getBBjControl(AbstractComponent ctrl) throws IllegalAccessException {
+  public BBjControl getBBjControl(AbstractDwcComponent ctrl) {
 
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
-    if (caller.startsWith("org.dwcj."))
+    if (caller.startsWith("org.dwcj.")) {
       return ctrl.getControl();
-
+    }
     App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
-    throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
+    return null;
   }
 
   @Override
@@ -53,8 +53,9 @@ final class ComponentAccessorImpl extends ComponentAccessor {
             }
           }
 
-          if (!found)
+          if (!found) {
             clazz = clazz.getSuperclass();
+          }
         }
       } catch (Exception e) {
         Environment.logError(e);
