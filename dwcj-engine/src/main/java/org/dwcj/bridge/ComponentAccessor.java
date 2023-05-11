@@ -52,7 +52,7 @@ public abstract class ComponentAccessor {
    * @return - the BBjControl
    * @throws IllegalAccessException The exception thrown on illegal access.
    */
-  public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl);
+  public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl) throws IllegalAccessException;
 
   public abstract void create(AbstractComponent ctrl, AbstractWindow panel)
       throws IllegalAccessException;

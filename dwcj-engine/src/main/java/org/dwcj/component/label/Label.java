@@ -77,8 +77,12 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
   }
 
   
-  private BBjStaticText getBbjControl() {
-    return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
+  private BBjStaticText getBBjControl() {
+    try {
+      return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException(e);
+    }
   }
 
   /**
@@ -88,7 +92,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseEnterEvent.class, listener);
@@ -114,7 +118,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    */
   public Label removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
-    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.removeCallback();
     }
     return this;
@@ -127,7 +131,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseExitEvent.class, listener);
@@ -153,7 +157,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    */
   public Label removeMouseExitListener(EventListener<MouseExitEvent> listener) {
     dispatcher.removeEventListener(MouseExitEvent.class, listener);
-    if (getBbjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.removeCallback();
     }
     return this;
@@ -166,7 +170,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    if (getBbjControl() != null
+    if (getBBjControl() != null
         && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.setCallback();
     }
@@ -193,7 +197,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    */
   public Label removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
-    if (getBbjControl() != null
+    if (getBBjControl() != null
         && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
     }
@@ -207,9 +211,9 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return Returns this
    */
   public Label setWrap(Boolean wrap) {
-    if (getBbjControl() != null) {
+    if (getBBjControl() != null) {
       try {
-        getBbjControl().setLineWrap(wrap);
+        getBBjControl().setLineWrap(wrap);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -233,9 +237,9 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    */
   @Override
   public Label setHorizontalAlignment(Alignment alignment) {
-    if (getBbjControl() != null) {
+    if (getBBjControl() != null) {
       try {
-        getBbjControl().setAlignment(alignment.getValue());
+        getBBjControl().setAlignment(alignment.getValue());
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }

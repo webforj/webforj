@@ -18,7 +18,7 @@ final class ComponentAccessorImpl extends ComponentAccessor {
       ": You're not allowed to access this method!";
 
   @Override
-  public BBjControl getBBjControl(AbstractDwcComponent ctrl) {
+  public BBjControl getBBjControl(AbstractDwcComponent ctrl) throws IllegalAccessException {
 
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
@@ -26,7 +26,8 @@ final class ComponentAccessorImpl extends ComponentAccessor {
       return ctrl.getControl();
     }
     App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
-    return null;
+    throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
+
   }
 
   @Override
