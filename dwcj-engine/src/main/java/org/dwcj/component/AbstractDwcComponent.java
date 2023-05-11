@@ -1,5 +1,7 @@
 package org.dwcj.component;
 
+import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.Focusable;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import java.util.ArrayList;
@@ -8,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcjRuntimeException;
-import com.basis.bbj.proxies.sysgui.Focusable;
 
 /**
  * The base class for most DWC/BBj components. Extends the AbstractComponent class, and implements
@@ -70,6 +71,33 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected Integer verticalScrollBarPosition = null;
   protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
   protected TextHighlightable.Highlight textHighlight = null;
+
+  /*
+   * Underlying BBj control
+   */
+  protected BBjControl control;
+
+  /**
+   * This method gets the underlying original BBj control It's package private and can only be
+   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
+   * controls.
+   *
+   * @return the underlying BBj control
+   */
+  BBjControl getControl() {
+    return this.control;
+  }
+
+  /**
+   * This method sets the underlying original BBj control. It's package private and can only be
+   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
+   * controls.
+   *
+   * @param control the BBj control to set.
+   */
+  protected void setControl(BBjControl control) {
+    this.control = control;
+  }
 
   /**
    * Gets the value for a specific attribute in the component.
