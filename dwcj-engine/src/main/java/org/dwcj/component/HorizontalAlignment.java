@@ -2,9 +2,8 @@ package org.dwcj.component;
 
 
 /**
- * Controls the horizontal alignment of the content within the component, 
- * namely text and images. It does not alter the position of the entire 
- * component itself.
+ * Controls the horizontal alignment of the content within the component, namely text and images. It
+ * does not alter the position of the entire component itself.
  */
 public interface HorizontalAlignment {
 
