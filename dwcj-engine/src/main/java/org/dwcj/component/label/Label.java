@@ -76,7 +76,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
     }
   }
 
-  
+
   private BBjStaticText getBBjControl() {
     try {
       return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);

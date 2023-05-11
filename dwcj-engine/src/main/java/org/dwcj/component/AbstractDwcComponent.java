@@ -98,7 +98,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected void setControl(BBjControl control) {
     this.control = control;
   }
-  
+
   /**
    * Gets the value for a specific attribute in the component.
    *
