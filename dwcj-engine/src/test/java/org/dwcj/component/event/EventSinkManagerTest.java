@@ -1,8 +1,9 @@
 package org.dwcj.component.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,18 +26,23 @@ class EventSinkManagerTest {
   EventSinkManager<MouseEnterEvent> controller;
 
   @BeforeEach
-  void setUp() {
-    controller.setDispatcher(new EventDispatcher());
+  void setUp() throws IllegalAccessException {
+    FieldUtils.writeField(controller, "event", MouseEnterEvent.class, true);
+    FieldUtils.writeField(controller, "dispatcher", new EventDispatcher(), true);
   }
 
   @DisplayName("adding an eventListener")
   @Test
-  void addEventListener() {
+  void addEventListener() throws IllegalAccessException {
     EventListener<MouseEnterEvent> listener = e -> {
     };
 
     controller.addEventListener(listener);
     verify(sink, times(1)).setCallback();
+
+    EventDispatcher dispatcher =
+        (EventDispatcher) FieldUtils.readField(controller, "dispatcher", true);
+    assertEquals(1, dispatcher.getListenersCount(MouseEnterEvent.class));
   }
 
   @DisplayName("removing eventListener after being added.")
@@ -53,18 +59,22 @@ class EventSinkManagerTest {
 
   @DisplayName("removing one listener when they are more then one registered.")
   @Test
-  void removeEventListenerWhenMoreThenOneListenersAreRegistered() {
+  void removeEventListenerWhenMoreThenOneListenersAreRegistered() throws IllegalAccessException {
     EventListener<MouseEnterEvent> listener = e -> {
     };
 
-    EventListener<MouseEnterEvent> listener2 = e -> {
+    EventListener<MouseEnterEvent> listener2 = a -> {
     };
 
     controller.addEventListener(listener);
     controller.addEventListener(listener2);
 
-    controller.removeEventListener(listener);
 
+    controller.removeEventListener(listener);
+    EventDispatcher dispatcher =
+        (EventDispatcher) FieldUtils.readField(controller, "dispatcher", true);
+
+    assertEquals(1, dispatcher.getListenersCount(MouseEnterEvent.class));
     verify(sink, times(0)).removeCallback();
   }
 

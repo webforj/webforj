@@ -18,8 +18,9 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dwcj.component.HorizontalAlignment.Alignment;
-import org.dwcj.component.event.EventController;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.EventSinkManager;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
@@ -43,13 +44,13 @@ public class LabelTest {
   BBjStaticText control;
 
   @Mock
-  EventController<MouseEnterEvent> mouseEnterEventHandler;
+  EventSinkManager<MouseEnterEvent> mouseEnterEventHandler;
 
   @Mock
-  EventController<MouseExitEvent> mouseExitEventHandler;
+  EventSinkManager<MouseExitEvent> mouseExitEventHandler;
 
   @Mock
-  EventController<RightMouseDownEvent> rightMouseDownEventHandler;
+  EventSinkManager<RightMouseDownEvent> rightMouseDownEventHandler;
 
   @Spy
   EventDispatcher dispatcher;
@@ -114,6 +115,33 @@ public class LabelTest {
       verify(componentSpy, atLeast(2)).setWrap(false);
       verify(componentSpy, atLeast(2)).setHorizontalAlignment(Alignment.MIDDLE);
     }
+  }
+
+  @Test
+  @DisplayName("removing Listeners")
+  void removeListeners() {
+    Label componentSpy = spy(component);
+
+    EventListener<MouseEnterEvent> listener = e -> {
+    };
+    EventListener<MouseExitEvent> listener2 = e -> {
+    };
+    EventListener<RightMouseDownEvent> listener3 = e -> {
+    };
+
+
+    componentSpy.onMouseEnter(listener);
+    componentSpy.onMouseExit(listener2);
+    componentSpy.onRightMouseDown(listener3);
+
+    componentSpy.removeMouseEnterListener(listener);
+    componentSpy.removeMouseExitListener(listener2);
+    componentSpy.removeRightMouseDownListener(listener3);
+
+    verify(componentSpy, times(1)).removeMouseEnterListener(listener);
+    verify(componentSpy, times(1)).removeMouseExitListener(listener2);
+    verify(componentSpy, times(1)).removeRightMouseDownListener(listener3);
+
   }
 
   @Nested

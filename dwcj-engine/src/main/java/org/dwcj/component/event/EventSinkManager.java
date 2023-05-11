@@ -6,7 +6,7 @@ import org.dwcj.component.event.sink.AbstractSink;
  * EventController which handles the set and remove callback and the dispatcher.
  */
 public class EventSinkManager<T extends Event<?>> {
-  private EventDispatcher dispatcher;
+  private final EventDispatcher dispatcher;
   private final AbstractSink sink;
   private final Class<T> event;
 
@@ -51,9 +51,5 @@ public class EventSinkManager<T extends Event<?>> {
     if (this.dispatcher.getListenersCount(event) > 0) {
       this.sink.setCallback();
     }
-  }
-
-  void setDispatcher(EventDispatcher dispatcher) {
-    this.dispatcher = dispatcher;
   }
 }
