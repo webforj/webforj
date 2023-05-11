@@ -82,6 +82,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       control = w.addListEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_250, BASISNUMBER_250, "", flags);
+      control.setAttribute("field-height", "auto");
       this.bbjListEdit = (BBjListEdit) control;
       populate();
       catchUp();
