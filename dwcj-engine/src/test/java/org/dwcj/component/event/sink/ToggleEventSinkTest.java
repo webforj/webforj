@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * A class for testing the CheckChangedEvent.
+ * A class for testing the ToggleEvent.
  */
 class ToggleEventSinkTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
