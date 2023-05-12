@@ -25,7 +25,7 @@ class ToggleEventSinkTest {
   }
 
   @Test
-  @DisplayName("Test the CheckChangedEvent payload")
+  @DisplayName("Test the ToggleEvent payload")
   void payload() {
     ToggleEventSink sink = new ToggleEventSink(componentMock, dispatcher);
     dispatcher.addEventListener(ToggleEvent.class, e -> dispatchedEvent = e);
