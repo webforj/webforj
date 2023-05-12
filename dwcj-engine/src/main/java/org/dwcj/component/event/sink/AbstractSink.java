@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
+import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -16,6 +17,7 @@ public abstract class AbstractSink {
   protected final EventDispatcher dispatcher;
   private BBjControl control = null;
   private final int eventType;
+  private IDwcjBBjBridge dwcjHelper;
 
   /**
    * Constructor for the sink class.
@@ -29,10 +31,17 @@ public abstract class AbstractSink {
     this.component = component;
     this.dispatcher = dispatcher;
     this.eventType = eventType;
+    if (Environment.getInstance() != null) {
+      setHelper(Environment.getInstance().getDwcjHelper());
+    }
+  }
+
+  void setHelper(IDwcjBBjBridge dwcjHelper) {
+    this.dwcjHelper = dwcjHelper;
   }
 
   // checks if the control is null and tries to create it
-  private boolean isControl() {
+  protected boolean isControl() {
     if (this.control != null) {
       return true;
     }
@@ -53,8 +62,7 @@ public abstract class AbstractSink {
     }
 
     try {
-      this.control.setCallback(eventType,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "handleEvent"), "onEvent");
+      this.control.setCallback(eventType, dwcjHelper.getEventProxy(this, "handleEvent"), "onEvent");
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set callback.", e);
     }

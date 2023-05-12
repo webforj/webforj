@@ -38,7 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /** Label tests. */
 @ExtendWith(MockitoExtension.class)
-public class LabelTest {
+class LabelTest {
 
   @Mock
   BBjStaticText control;
