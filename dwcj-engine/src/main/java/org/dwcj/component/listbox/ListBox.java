@@ -258,7 +258,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
           if (entry != null) {
             Object key = entry.getKey();
             if (key != null) {
-              map.put(key, value);
+                map.put(key, value);
             }
           }
         }
