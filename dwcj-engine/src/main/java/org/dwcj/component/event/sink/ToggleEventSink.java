@@ -11,7 +11,7 @@ import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * This class will map the BBjCheckOnEvent event to a Java {@link CheckChangeEvent}.
+ * This class will map the BBjCheckOnEvent event to a Java {@link ToggleEvent}.
  */
 public class ToggleEventSink extends AbstractSink {
 
