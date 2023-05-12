@@ -1,7 +1,9 @@
 package org.dwcj.mocks;
 
 import com.basis.bbj.proxies.event.BBjCheckChangeEvent;
+import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 
 /**
  * A mock for the bbj change event.
@@ -9,14 +11,12 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 public class BBjCheckChangeEventMock implements BBjCheckChangeEvent {
 
   @Override
-  public com.basis.bbj.proxies.sysgui.BBjRadioButton getRadioButton()
-      throws com.basis.startup.type.BBjException {
+  public BBjRadioButton getRadioButton() throws com.basis.startup.type.BBjException {
     return null;
   }
 
   @Override
-  public com.basis.bbj.proxies.sysgui.BBjCheckBox getCheckBox()
-      throws com.basis.startup.type.BBjException {
+  public BBjCheckBox getCheckBox() throws com.basis.startup.type.BBjException {
     return null;
   }
 

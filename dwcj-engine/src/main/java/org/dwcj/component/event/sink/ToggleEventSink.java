@@ -6,21 +6,21 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.event.CheckChangedEvent;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * This class will map the BBjCheckOnEvent event to a Java {@link CheckChangeEvent}.
  */
-public class CheckChangedEventSink extends AbstractSink {
+public class ToggleEventSink extends AbstractSink {
 
-  public CheckChangedEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public ToggleEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_CHANGE);
   }
 
   /**
-   * Handles the BBj event and dispatches a new {@link CheckChangedEvent}.
+   * Handles the BBj event and dispatches a new {@link ToggleEvent}.
    *
    * @param ev A BBj check off event
    */
@@ -28,8 +28,8 @@ public class CheckChangedEventSink extends AbstractSink {
     try {
       BBjCheckChangeEvent event = (BBjCheckChangeEvent) ev;
       HashMap<String, Object> map = new HashMap<>();
-      map.put("checked", event.isChecked());
-      CheckChangedEvent dwcEv = new CheckChangedEvent(component, map);
+      map.put("toggled", event.isChecked());
+      ToggleEvent dwcEv = new ToggleEvent(component, map);
       this.dispatcher.dispatchEvent(dwcEv);
     } catch (BBjException e) {
       throw new DwcjRuntimeException(e);

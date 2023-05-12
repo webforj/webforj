@@ -2,8 +2,8 @@ package org.dwcj.component.event.sink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.dwcj.component.event.CheckChangedEvent;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.mocks.BBjCheckChangeEventMock;
 import org.dwcj.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 /**
  * A class for testing the CheckChangedEvent.
  */
-class CheckChangedEventSinkTest {
+class ToggleEventSinkTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjCheckChangeEventMock eventMock;
-  CheckChangedEvent dispatchedEvent;
+  ToggleEvent dispatchedEvent;
 
   @BeforeEach
   void setUp() {
@@ -27,11 +27,11 @@ class CheckChangedEventSinkTest {
   @Test
   @DisplayName("Test the CheckChangedEvent payload")
   void payload() {
-    CheckChangedEventSink sink = new CheckChangedEventSink(componentMock, dispatcher);
-    dispatcher.addEventListener(CheckChangedEvent.class, e -> dispatchedEvent = e);
+    ToggleEventSink sink = new ToggleEventSink(componentMock, dispatcher);
+    dispatcher.addEventListener(ToggleEvent.class, e -> dispatchedEvent = e);
     sink.handleEvent(eventMock);
 
-    assertEquals(eventMock.isChecked(), dispatchedEvent.isChecked());
+    assertEquals(eventMock.isChecked(), dispatchedEvent.isToggled());
 
   }
 }
