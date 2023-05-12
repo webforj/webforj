@@ -167,6 +167,9 @@ public class Panel extends AbstractWindow implements HasEnable {
       }
     }
 
+    //Added to remove unwanted overflow rules set by default on child window
+    this.setStyle("overflow", "unset");
+
   }
 
   /**
