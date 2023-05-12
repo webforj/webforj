@@ -20,6 +20,7 @@ import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.component.event.UncheckedEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.CheckedEventSink;
@@ -27,6 +28,7 @@ import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.event.sink.ToggleEventSink;
 import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -53,6 +55,7 @@ public final class CheckBox extends AbstractDwcComponent
   private BlurEventSink blurEventSink;
   private CheckedEventSink checkedEventSink;
   private UncheckedEventSink unCheckedEventSink;
+  private ToggleEventSink toggleEventSink;
   private TextPosition.Position textPosition = TextPosition.Position.RIGHT;
   private Boolean checked = false;
   private Boolean indeterminate = false;
@@ -85,6 +88,7 @@ public final class CheckBox extends AbstractDwcComponent
       this.blurEventSink = new BlurEventSink(this, dispatcher);
       this.checkedEventSink = new CheckedEventSink(this, dispatcher);
       this.unCheckedEventSink = new UncheckedEventSink(this, dispatcher);
+      this.toggleEventSink = new ToggleEventSink(this, dispatcher);
       this.catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -171,6 +175,48 @@ public final class CheckBox extends AbstractDwcComponent
     dispatcher.removeEventListener(UncheckedEvent.class, listener);
     if (this.control != null && this.dispatcher.getListenersCount(UncheckedEvent.class) == 0) {
       this.unCheckedEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds an toggle event for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public CheckBox addToggleListener(EventListener<ToggleEvent> listener) {
+    if (this.control != null && this.dispatcher.getListenersCount(ToggleEvent.class) == 0) {
+      this.toggleEventSink.setCallback();
+    }
+    dispatcher.addEventListener(ToggleEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addToggleListener method.
+   *
+   * @see Checkbox#addToggleListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public CheckBox onToggle(EventListener<ToggleEvent> listener) {
+    return addToggleListener(listener);
+  }
+
+  /**
+   * Removes an toggle event from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public CheckBox removeToggleListener(EventListener<ToggleEvent> listener) {
+    dispatcher.removeEventListener(ToggleEvent.class, listener);
+    if (this.control != null && this.dispatcher.getListenersCount(ToggleEvent.class) == 0) {
+      this.toggleEventSink.removeCallback();
     }
     return this;
   }
