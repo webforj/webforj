@@ -1,30 +1,33 @@
 package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.window.AbstractWindow;
+
 
 /**
  * The class to implement the RadioGroup in order to group radioButtons.
  */
 public class RadioGroup extends AbstractDwcComponent {
-  private List<RadioButton> radioButtonList = new ArrayList<>();
-  private BBjRadioGroup radioGroup;
+  private final List<RadioButton> radioButtonList = new ArrayList<>();
+  private BBjRadioGroup bbjRadioGroup;
+  private AbstractWindow pi;
 
   @Override
   protected void create(AbstractWindow p) {
     try {
-      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      ctrl = (BBjControl) w.addRadioGroup();
-      radioGroup = (BBjRadioGroup) ctrl;
+      pi = p;
+      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(pi);
+      bbjRadioGroup = w.addRadioGroup();
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -32,22 +35,48 @@ public class RadioGroup extends AbstractDwcComponent {
   }
 
   /**
+   * Empty constructor.
+   */
+  public RadioGroup add() {
+    return this;
+  }
+
+  /**
    * Constructor taking as many RadioButtons as possible in RadioGroup.
    */
-  public RadioGroup addRadioGroup(RadioButton... buttons) throws BBjException {
-    if (this.ctrl != null) {
-      radioButtonList.addAll(List.of(buttons));
+  public RadioGroup add(RadioButton... buttons) throws BBjException {
+    radioButtonList.addAll(List.of(buttons));
+
+    if (this.bbjRadioGroup != null) {
       for (RadioButton radioButton : radioButtonList) {
-        radioGroup.add(radioButton.bbjRadioButton);
+        if (Boolean.FALSE.equals(radioButton.getCaughtUp())) {
+          pi.add(radioButton);
+        }
+        try {
+          BBjControl chosenRadioButton = ComponentAccessor.getDefault().getBBjControl(radioButton);
+          bbjRadioGroup.add((BBjRadioButton) chosenRadioButton);
+        } catch (IllegalAccessException e) {
+          Environment.logError(e);
+        }
       }
     }
     return this;
   }
 
   /**
-   * Empty constructor.
+   * Remove the RadioButton given as an Argument.
+   *
+   * @return the component itself.
    */
-  public RadioGroup addRadioGroup() {
+  public RadioGroup remove(RadioButton radioButton) throws BBjException {
+    if (this.bbjRadioGroup != null) {
+      try {
+        BBjControl chosenRadioButton = ComponentAccessor.getDefault().getBBjControl(radioButton);
+        bbjRadioGroup.remove((BBjRadioButton) chosenRadioButton);
+      } catch (IllegalAccessException e) {
+        Environment.logError(e);
+      }
+    }
     return this;
   }
 
@@ -56,25 +85,19 @@ public class RadioGroup extends AbstractDwcComponent {
    *
    * @return The selected RadioButton.
    */
-    public RadioButton getSelected() throws BBjException {
-      radioGroup.getSelected();
-      for (RadioButton radioButton : radioButtonList) {
-        if(radioButton.isChecked()) {
+  public RadioButton getSelected() {
+    for (RadioButton radioButton : radioButtonList) {
+      try {
+        BBjControl chosenRadioButton = ComponentAccessor.getDefault().getBBjControl(radioButton);
+        String bbjRadioButtonId = String.valueOf(bbjRadioGroup.getSelected().getID());
+        if (String.valueOf(chosenRadioButton.getID()).equals(bbjRadioButtonId)) {
           return radioButton;
         }
+      } catch (BBjException | IllegalAccessException e) {
+        Environment.logError(e);
       }
-      return null;
     }
-
-
-  /**
-   * Remove the RadioButton given as an Argument.
-   *
-   * @return the component itself.
-   */
-  public RadioGroup remove(RadioButton button) throws BBjException {
-    radioGroup.remove(button.bbjRadioButton);
-    return this;
+    return null;
   }
 
   @Override
