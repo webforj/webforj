@@ -5,7 +5,7 @@
 
   <groupId>org.dwcj</groupId>
   <artifactId>dwcj-project</artifactId>
-  <version>0.17.0-SNAPSHOT</version>
+  <version>23.00</version>
 
   <packaging>pom</packaging>
 
