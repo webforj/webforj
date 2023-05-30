@@ -5,19 +5,23 @@ import com.basis.bbj.proxies.sysgui.BBjHtmlEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.basis.startup.type.sysgui.BBjColor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
@@ -42,7 +46,7 @@ public final class HtmlEdit extends AbstractDwcComponent
   private BlurEventSink blurEventSink;
   private FocusEventSink focusEventSink;
   private ModifyEventSink modifyEventSink;
-  
+
 
   private boolean isBasicToolbar = false;
   private List<String> basicToolBarStyles;
@@ -86,6 +90,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be added
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.setCallback();
@@ -101,6 +106,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be added
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit onMouseEnter(EventListener<MouseEnterEvent> listener) {
     return addMouseEnterListener(listener);
   }
@@ -111,6 +117,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be removed
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
     if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
@@ -125,6 +132,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be added
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit addMouseExitListener(EventListener<MouseExitEvent> listener) {
     if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
       this.mouseExitEventSink.setCallback();
@@ -140,6 +148,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be added
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit onMouseExit(EventListener<MouseExitEvent> listener) {
     return addMouseExitListener(listener);
   }
@@ -150,6 +159,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be removed
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit removeMouseExitListener(EventListener<MouseExitEvent> listener) {
     dispatcher.removeEventListener(MouseExitEvent.class, listener);
     if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
@@ -164,6 +174,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be added
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     if (getBBjControl() != null
         && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
@@ -180,6 +191,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be added
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);
   }
@@ -190,11 +202,96 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param listener the event listener to be removed
    * @return The HtmlEdit itself
    */
+  @ExcludeFromJacocoGeneratedReport
   public HtmlEdit removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
     if (getBBjControl() != null
         && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a focus event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit addFocusListener(EventListener<FocusEvent> listener) {
+    if (this.control != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.setCallback();
+    }
+    dispatcher.addEventListener(FocusEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addFocusListener method.
+   *
+   * @see HtmlEdit#addFocusListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
+  }
+
+  /**
+   * Removes a focus event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit removeFocusListener(EventListener<FocusEvent> listener) {
+    dispatcher.removeEventListener(FocusEvent.class, listener);
+    if (this.control != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a blur event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit addBlurListener(EventListener<BlurEvent> listener) {
+    if (this.control != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.setCallback();
+    }
+    dispatcher.addEventListener(BlurEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addBlurListener method.
+   *
+   * @see HtmlEdit#addBlurListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
+  }
+
+  /**
+   * Removes a blur event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit removeBlurListener(EventListener<BlurEvent> listener) {
+    dispatcher.removeEventListener(BlurEvent.class, listener);
+    if (this.control != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.removeCallback();
     }
     return this;
   }
