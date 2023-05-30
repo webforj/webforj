@@ -8,6 +8,7 @@ import com.basis.startup.type.BBjVector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
@@ -549,8 +550,30 @@ public final class HtmlEdit extends AbstractDwcComponent
       this.setBasicToolbar(this.isBasicToolbar);
     }
 
-    if (this.basicToolBarStyles.size() > 0){
+    if (!this.basicToolBarStyles.isEmpty()) {
       this.setBasicToolbarStyles(this.basicToolBarStyles);
+    }
+
+    if (!this.locale.equals("")) {
+      this.setLocale(this.locale);
+    }
+
+    if (!this.plainText.equals("")) {
+      this.setPlainText(this.plainText);
+    }
+
+    if (!this.spellCheckLanguage.equals("")) {
+      this.setSpellCheckLanguage(this.spellCheckLanguage);
+    }
+
+    if (!this.states.isEmpty()) {
+      for (Map.Entry<String, Boolean> entry : this.states.entrySet()) {
+        this.setState(entry.getKey(), entry.getValue());
+      }
+    }
+
+    if (this.isSpellChecked) {
+      this.setSpellChecked(this.isSpellChecked);
     }
   }
 
