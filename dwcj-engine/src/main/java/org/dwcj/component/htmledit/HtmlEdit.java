@@ -8,50 +8,57 @@ import com.basis.startup.type.BBjVector;
 import java.util.ArrayList;
 import java.util.List;
 import org.dwcj.Environment;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /** A htmlEdit object. */
 public final class HtmlEdit extends AbstractDwcComponent
     implements HasFocus, HasEnable, TabTraversable {
 
-  private BBjHtmlEdit bbjHtmlEdit;
-
   public enum Expanse {
     LARGE, MEDIUM, SMALL, XLARGE, XSMALL
   }
 
 
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      control = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, BASISNUMBER_1, "", flags);
-      bbjHtmlEdit = (BBjHtmlEdit) control;
+      this.setControl(w.addHtmlEdit(this.getText(), flags));
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
     }
   }
 
+  private BBjHtmlEdit getBBjControl() {
+    try {
+      return (BBjHtmlEdit) ComponentAccessor.getDefault().getBBjControl(this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException(e);
+    }
+  }
+
   /**
-   * This method returns a List of strings that specifies all available styles in the HtmlEdit
-   * toolbar.
+   * This method gets a List of strings that specifies all available styles in the HtmlEdit toolbar.
    *
    * @return List of strings that specifies all available styles in the HtmlEdit toolbar.
    */
   public List<String> getAllToolbarStyles() {
     try {
-      return bbjHtmlEdit.getAllToolbarStyles();
+      return getBBjControl().getAllToolbarStyles();
     } catch (BBjException e) {
       Environment.logError(e);
       return new ArrayList<>();
@@ -59,13 +66,13 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the list of available spell-check languages for a HtmlEdit control.
+   * This method gets the list of available spell-check languages for a HtmlEdit control.
    *
    * @return Returns a List of strings of available spell-check languages for a HtmlEdit control.
    */
   public List<String> getAvailableSpellCheckLanguages() {
     try {
-      return bbjHtmlEdit.getAvailableSpellCheckLanguages();
+      return getBBjControl().getAvailableSpellCheckLanguages();
     } catch (BBjException e) {
       Environment.logError(e);
       return new ArrayList<>();
@@ -73,15 +80,15 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns a List of strings that specifies all available editor states in the
-   * HTMLEditor toolbar.
+   * This method gets a List of strings that specifies all available editor states in the HTMLEditor
+   * toolbar.
    *
    * @return Returns a list of strings that specifies all available editor stattes in the HTMLEditor
    *         toolbar.
    */
   public List<String> getAvailableStates() {
     try {
-      return bbjHtmlEdit.getAvailableStates();
+      return getBBjControl().getAvailableStates();
     } catch (BBjException e) {
       Environment.logError(e);
       return new ArrayList<>();
@@ -90,15 +97,15 @@ public final class HtmlEdit extends AbstractDwcComponent
 
 
   /**
-   * This method returns a boolean that indicates whether this HtmlEdit control is currently set to
-   * use a basic toolbar.
+   * This method gets a boolean that indicates whether this HtmlEdit control is currently set to use
+   * a basic toolbar.
    *
    * @return Returns a boolean that indicates whether this HtmlEdit control is currently set to use
    *         a basic toolbar .
    */
   public boolean isBasicToolbar() {
     try {
-      return bbjHtmlEdit.getBasicToolbar();
+      return getBBjControl().getBasicToolbar();
     } catch (BBjException e) {
       Environment.logError(e);
       return false;
@@ -106,15 +113,15 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns a List of strings that specifies the styles to be included when the
-   * HtmlEdit basic toolbar is selected.
+   * This method gets a List of strings that specifies the styles to be included when the HtmlEdit
+   * basic toolbar is selected.
    *
    * @return Returns a List of strings that specifies the styles to be included when the HtmlEdit
    *         basic toolbar is selected.
    */
   public List<String> getBasicToolbarStyles() {
     try {
-      return bbjHtmlEdit.getBasicToolbarStyles();
+      return getBBjControl().getBasicToolbarStyles();
     } catch (BBjException e) {
       Environment.logError(e);
       return new ArrayList<>();
@@ -122,14 +129,14 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns a string representing the client type for this HTMLEdit control.
+   * This method gets a string representing the client type for this HTMLEdit control.
    *
    * @return Returns a string representing the client type for the HtmlEdit control ("Browser" (BUI
    *         or DWC), "Swing" (basic HTML 3.2), "JavaFX" (WebKit), "Chromium").
    */
   public String getClientType() {
     try {
-      return bbjHtmlEdit.getClientType();
+      return getBBjControl().getClientType();
     } catch (BBjException e) {
       Environment.logError(e);
       return null;
@@ -137,14 +144,14 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the client version for this BBjHtmlEdit control.
+   * This method gets the client version for this HtmlEdit control.
    *
    * @return Returns the version of the HtmlEdit control - the client versions will change over
    *         time.
    */
   public String getClientVersion() {
     try {
-      return bbjHtmlEdit.getClientVersion();
+      return getBBjControl().getClientVersion();
     } catch (BBjException e) {
       Environment.logError(e);
       return null;
@@ -152,22 +159,22 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the UI locale of an HTMLEdit control.
+   * This method gets the UI locale of an HTMLEdit control.
    *
    * @return A string representing the UI locale of the HTMLEdit control.
    */
   public String getLocale() {
-    return bbjHtmlEdit.getLocale();
+    return getBBjControl().getLocale();
   }
 
   /**
-   * This method returns the list of available UI Locales for an HTMLEdit control.
+   * This method gets the list of available UI Locales for an HTMLEdit control.
    *
    * @return a List of strings representing the available UI locales for an HTMLEdit control.
    */
   public List<String> getLocales() {
     try {
-      return bbjHtmlEdit.getLocales();
+      return getBBjControl().getLocales();
     } catch (BBjException e) {
       Environment.logError(e);
       return new ArrayList<>();
@@ -175,13 +182,13 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the plain text content of an HTMLEditor control, without any HTML markup.
+   * This method gets the plain text content of an HTMLEditor control, without any HTML markup.
    *
    * @return A string representing only the plaintext content of the HTML control.
    */
   public String getPlainText() {
     try {
-      return bbjHtmlEdit.getPlainText();
+      return getBBjControl().getPlainText();
     } catch (BBjException e) {
       Environment.logError(e);
       return null;
@@ -189,13 +196,13 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the spell-check language of an HTMLEdit control.
+   * This method gets the spell-check language of an HTMLEdit control.
    *
    * @return A string representing the spell-check language of an HTMLEdit control.
    */
   public String getSpellCheckLanguage() {
     try {
-      return bbjHtmlEdit.getSpellCheckLanguage();
+      return getBBjControl().getSpellCheckLanguage();
     } catch (BBjException e) {
       Environment.logError(e);
       return null;
@@ -203,14 +210,14 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns the Boolean value of a specified state in the HtmlEdit toolbar.
+   * This method gets the Boolean value of a specified state in the HtmlEdit toolbar.
    *
    * @param state specifying one of the state names from HTMLEdit::getAvailableStates
    * @return Boolean value of the specified state in the HtmlEdit toolbar.
    */
   public boolean getState(String state) {
     try {
-      return bbjHtmlEdit.getState(state);
+      return getBBjControl().getState(state);
     } catch (BBjException e) {
       Environment.logError(e);
       return false;
@@ -218,14 +225,14 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method returns a boolean that indicates whether spell-checking is currently enabled on
-   * this HTMLEdit control.
+   * This method gets a boolean that indicates whether spell-checking is currently enabled on this
+   * HTMLEdit control.
    *
    * @return a boolean representing whether or not spell-check is enabled on this control.
    */
   public boolean isSpellChecked() {
     try {
-      return bbjHtmlEdit.isSpellChecked();
+      return getBBjControl().isSpellChecked();
     } catch (BBjException e) {
       Environment.logError(e);
       return false;
@@ -233,7 +240,7 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method specifies whether this HTMLEdit control should use a basic toolbar
+   * This method specifies whether this HTMLEdit control should use a basic toolbar.
    *
    * @param basicToolbar - Boolean representing whether or not to use a basic toolbar, true for yes,
    *        false for no
@@ -241,7 +248,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    */
   public HtmlEdit setBasicToolbar(boolean basicToolbar) {
     try {
-      bbjHtmlEdit.setBasicToolbar(basicToolbar);
+      getBBjControl().setBasicToolbar(basicToolbar);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -249,7 +256,7 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method specifies the styles to be included when the HTMLEdit basic toolbar is used
+   * This method specifies the styles to be included when the HTMLEdit basic toolbar is used.
    *
    * @param styles - A List of styles to be shown when the basic toolbar is selected, should be an
    *        array of Strings
@@ -257,7 +264,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    */
   public HtmlEdit setBasicToolbarStyles(List<String> styles) {
     try {
-      bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
+      getBBjControl().setBasicToolbarStyles((BBjVector) styles);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -265,25 +272,25 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * Sets the UI locale of the HTMLEdit control
+   * Sets the UI locale of the HTMLEdit control.
    *
    * @param locale - A String representing the locale you wish to set the HTMLEdit to.
    * @return Returns this
    */
   public HtmlEdit setLocale(String locale) {
-    bbjHtmlEdit.setLocale(locale);
+    getBBjControl().setLocale(locale);
     return this;
   }
 
   /**
-   * Sets the text of an HtmlEdit control
+   * Sets the text of an HtmlEdit control.
    *
    * @param text - A String representing the text you wish to set.
    * @return Returns this
    */
   public HtmlEdit setPlainText(String text) {
     try {
-      bbjHtmlEdit.setPlainText(text);
+      getBBjControl().setPlainText(text);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -291,7 +298,7 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * Sets a specified state in the HtmlEdit toolbar to the specified boolean value
+   * Sets a specified state in the HtmlEdit toolbar to the specified boolean value.
    *
    * @param state - One of the state names from HtmlEdit::getAvailableStates()
    * @param value - Boolean value - true activates the specified state while false deactivates it.
@@ -300,7 +307,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    */
   public HtmlEdit setState(String state, boolean value) {
     try {
-      bbjHtmlEdit.setState(state, value);
+      getBBjControl().setState(state, value);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -308,14 +315,14 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * Specifies whether or not spell checking should be enabled in this HtmlEdit control
+   * Specifies whether or not spell checking should be enabled in this HtmlEdit control.
    *
    * @param spellChecked - boolean value - true enables spell checking, false disables it.
    * @return Returns this
    */
   public HtmlEdit setSpellChecked(boolean spellChecked) {
     try {
-      bbjHtmlEdit.setSpellChecked(spellChecked);
+      getBBjControl().setSpellChecked(spellChecked);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -330,7 +337,7 @@ public final class HtmlEdit extends AbstractDwcComponent
    */
   public HtmlEdit setSpellCheckLanguage(String language) {
     try {
-      bbjHtmlEdit.setSpellCheckLanguage(language);
+      getBBjControl().setSpellCheckLanguage(language);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -347,7 +354,7 @@ public final class HtmlEdit extends AbstractDwcComponent
   public Boolean isTabTraversable() {
     if (this.control != null) {
       try {
-        return bbjHtmlEdit.isTabTraversable();
+        return getBBjControl().isTabTraversable();
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -359,7 +366,7 @@ public final class HtmlEdit extends AbstractDwcComponent
   public HtmlEdit setTabTraversable(Boolean traversable) {
     if (this.control != null) {
       try {
-        bbjHtmlEdit.setTabTraversable(traversable);
+        getBBjControl().setTabTraversable(traversable);
       } catch (BBjException e) {
         Environment.logError(e);
       }
