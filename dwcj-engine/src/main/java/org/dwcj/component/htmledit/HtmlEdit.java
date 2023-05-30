@@ -16,6 +16,17 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.ModifyEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
@@ -23,6 +34,15 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 /** A htmlEdit object. */
 public final class HtmlEdit extends AbstractDwcComponent
     implements HasFocus, HasEnable, TabTraversable {
+
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
+  private BlurEventSink blurEventSink;
+  private FocusEventSink focusEventSink;
+  private ModifyEventSink modifyEventSink;
+  
 
   private boolean isBasicToolbar = false;
   private List<String> basicToolBarStyles;
@@ -58,6 +78,125 @@ public final class HtmlEdit extends AbstractDwcComponent
     } catch (IllegalAccessException e) {
       throw new DwcjRuntimeException(e);
     }
+  }
+
+  /**
+   * Adds a MouseEnter event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseEnterListener method.
+   *
+   * @see HtmlEdit#addMouseEnterListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Removes a MouseEnter event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addMouseExitListener method.
+   *
+   * @see HtmlEdit#addMouseExitListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Removes a MouseExit event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a MouseExit event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (getBBjControl() != null
+        && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addRightMouseDownListener method.
+   *
+   * @see HtmlEdit#addRightMouseDownListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Removes a RightMouseDown event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  public HtmlEdit removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (getBBjControl() != null
+        && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
+    }
+    return this;
   }
 
   /**
