@@ -1,9 +1,12 @@
 package org.dwcj.component.htmledit;
 
+
 import com.basis.bbj.proxies.sysgui.BBjHtmlEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import java.util.ArrayList;
+import java.util.List;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -12,9 +15,8 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
-import java.util.ArrayList;
-import java.util.List;
 
+/** A htmlEdit object. */
 public final class HtmlEdit extends AbstractDwcComponent
     implements HasFocus, HasEnable, TabTraversable {
 
