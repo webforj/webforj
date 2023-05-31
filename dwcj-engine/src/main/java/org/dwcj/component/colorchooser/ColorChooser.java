@@ -11,14 +11,12 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
-import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.*;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.radiobutton.RadioButton;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
@@ -105,6 +103,28 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
     if (this.getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  public ColorChooser addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    if (this.getBBjControl() != null
+      && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  public ColorChooser removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    dispatcher.removeEventListener(MouseExitEvent.class, listener);
+    if (this.getBBjControl() != null
+      && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
+      this.mouseExitEventSink.removeCallback();
     }
     return this;
   }
