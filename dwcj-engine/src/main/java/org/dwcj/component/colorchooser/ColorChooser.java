@@ -18,9 +18,10 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.awt.*;
 
 public final class ColorChooser extends AbstractDwcComponent implements HasEnable, HasFocus, TabTraversable {
-
-  private BBjColorChooser bbjColorChooser;
-  private BBjColor bbjColor;
+  private boolean areButtonsShown = true;
+  private String approveText = "OK";
+  private String cancelText = "Cancel";
+  private boolean isPreviewPanelVisible = true;
 
 
   public enum Expanse {
@@ -45,8 +46,6 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
 
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      // todo: honor visibility flag, if set before adding the control to the form, so it's created
-      // invisibly right away
       byte[] flags =
         BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       this.setControl(w.addColorChooser(new BBjColor(getColor()), flags));
@@ -54,6 +53,99 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     } catch (Exception e) {
       Environment.logError(e);
     }
+  }
+
+  public ColorChooser setPreviewPanelVisible(boolean visible) {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().setPreviewPanelVisible(visible);
+        this.isPreviewPanelVisible = visible;
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+  
+  public boolean getPreviewPanelVisible() {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().isPreviewPanelVisible();
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this.isPreviewPanelVisible;
+  }
+
+  public ColorChooser approveSelection() {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().approveSelection();
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  public ColorChooser setApproveButtonText(String approveText) {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().setApproveButtonText(approveText);
+        this.approveText = approveText;
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  public String getApproveButtonText() {
+    return this.approveText;
+  }
+
+  public ColorChooser setCancelButtonText(String cancelText) {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().setCancelButtonText(cancelText);
+        this.cancelText = cancelText;
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  public String getCancelButtonText() {
+    return this.cancelText;
+  }
+
+  public ColorChooser cancelSelection() {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().cancelSelection();
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  public boolean getControlButtonsAreShown() {
+    return areButtonsShown;
+  }
+
+  public ColorChooser setControlButtonsAreShown(Boolean areShown) {
+    if (getBBjControl() != null) {
+      try {
+        getBBjControl().setControlButtonsAreShown(areShown);
+        areButtonsShown = areShown;
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
   }
 
   @Override
@@ -66,7 +158,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
   public Boolean isTabTraversable() {
     if (getBBjControl() != null) {
       try {
-        bbjColorChooser.isTabTraversable();
+        getBBjControl().isTabTraversable();
       } catch(BBjException e) {
         throw new RuntimeException();
       }
@@ -78,7 +170,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
   public TabTraversable setTabTraversable(Boolean traversable) {
     if (getBBjControl() != null) {
       try {
-        bbjColorChooser.setTabTraversable(traversable);
+        getBBjControl().setTabTraversable(traversable);
       } catch (BBjException e) {
         throw new RuntimeException();
       }
