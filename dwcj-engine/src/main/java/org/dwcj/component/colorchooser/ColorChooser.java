@@ -66,7 +66,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     }
     return this;
   }
-  
+
   public boolean getPreviewPanelVisible() {
     if (getBBjControl() != null) {
       try {
@@ -262,7 +262,6 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     super.removeClassName(selector);
     return this;
   }
-
 
   public ColorChooser setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
