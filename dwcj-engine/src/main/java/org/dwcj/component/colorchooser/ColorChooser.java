@@ -11,6 +11,14 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
@@ -22,6 +30,11 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
   private String approveText = "OK";
   private String cancelText = "Cancel";
   private boolean isPreviewPanelVisible = true;
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private MouseEnterEventSink mouseEnterEventSink;
+  private MouseExitEventSink mouseExitEventSink;
+  private RightMouseDownEventSink rightMouseDownEventSink;
+  private FocusEventSink focusEventSink;
 
 
   public enum Expanse {
@@ -53,6 +66,47 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     } catch (Exception e) {
       Environment.logError(e);
     }
+  }
+
+  public ColorChooser addFocusListener(EventListener<FocusEvent> listener) {
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.setCallback();
+    }
+    dispatcher.addEventListener(FocusEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
+  }
+
+  public ColorChooser removeFocusListener(EventListener<FocusEvent> listener) {
+    dispatcher.removeEventListener(FocusEvent.class, listener);
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  public ColorChooser addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    if (this.getBBjControl() != null &&
+      this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  public ColorChooser removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+      this.mouseEnterEventSink.removeCallback();
+    }
+    return this;
   }
 
   public ColorChooser setPreviewPanelVisible(boolean visible) {
