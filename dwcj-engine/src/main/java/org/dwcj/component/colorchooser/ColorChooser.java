@@ -129,6 +129,28 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     return this;
   }
 
+  public ColorChooser addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    if (this.getBBjControl() != null
+      && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  public ColorChooser removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
+    if (this.getBBjControl() != null
+      && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+      this.rightMouseDownEventSink.removeCallback();
+    }
+    return this;
+  }
+
   public ColorChooser setPreviewPanelVisible(boolean visible) {
     if (getBBjControl() != null) {
       try {
