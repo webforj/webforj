@@ -12,10 +12,7 @@ import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.event.*;
-import org.dwcj.component.event.sink.FocusEventSink;
-import org.dwcj.component.event.sink.MouseEnterEventSink;
-import org.dwcj.component.event.sink.MouseExitEventSink;
-import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.event.sink.*;
 import org.dwcj.component.radiobutton.RadioButton;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -33,6 +30,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
   private MouseExitEventSink mouseExitEventSink;
   private RightMouseDownEventSink rightMouseDownEventSink;
   private FocusEventSink focusEventSink;
+  private BlurEventSink blurEventSink;
 
 
   public enum Expanse {
@@ -60,6 +58,11 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
       byte[] flags =
         BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       this.setControl(w.addColorChooser(new BBjColor(getColor()), flags));
+      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
+      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
+      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+      this.focusEventSink = new FocusEventSink(this, dispatcher);
+      this.blurEventSink = new BlurEventSink(this, dispatcher);
       catchUp();
     } catch (Exception e) {
       Environment.logError(e);
@@ -82,6 +85,26 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     dispatcher.removeEventListener(FocusEvent.class, listener);
     if (this.getBBjControl() != null && this.dispatcher.getListenersCount(FocusEvent.class) == 0) {
       this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  public ColorChooser addBlurListener(EventListener<BlurEvent> listener) {
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.setCallback();
+    }
+    dispatcher.addEventListener(BlurEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
+  }
+
+  public ColorChooser removeBlurListener(EventListener<BlurEvent> listener) {
+    dispatcher.removeEventListener(BlurEvent.class, listener);
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
+      this.blurEventSink.removeCallback();
     }
     return this;
   }
