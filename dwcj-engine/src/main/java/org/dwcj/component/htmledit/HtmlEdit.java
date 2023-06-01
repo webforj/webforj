@@ -31,6 +31,10 @@ import org.dwcj.component.event.sink.ModifyEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.htmledit.event.PageLoadedEvent;
+import org.dwcj.component.htmledit.event.StateChangeEvent;
+import org.dwcj.component.htmledit.sink.PageLoadedEventSink;
+import org.dwcj.component.htmledit.sink.StateChangeEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
@@ -45,6 +49,8 @@ public final class HtmlEdit extends AbstractDwcComponent
   private RightMouseDownEventSink rightMouseDownEventSink;
   private BlurEventSink blurEventSink;
   private FocusEventSink focusEventSink;
+  private PageLoadedEventSink pageLoadedEventSink;
+  private StateChangeEventSink stateChangeEventSink;
   private ModifyEventSink modifyEventSink;
 
 
@@ -281,6 +287,8 @@ public final class HtmlEdit extends AbstractDwcComponent
     return addBlurListener(listener);
   }
 
+
+
   /**
    * Removes a blur event from the HtmlEdit component.
    *
@@ -292,6 +300,94 @@ public final class HtmlEdit extends AbstractDwcComponent
     dispatcher.removeEventListener(BlurEvent.class, listener);
     if (this.control != null && this.dispatcher.getListenersCount(BlurEvent.class) == 0) {
       this.blurEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a PageLoaded event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit addPageLoadedListener(EventListener<PageLoadedEvent> listener) {
+    if (this.control != null && this.dispatcher.getListenersCount(PageLoadedEvent.class) == 0) {
+      this.pageLoadedEventSink.setCallback();
+    }
+    dispatcher.addEventListener(PageLoadedEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addPageLoadedListener method.
+   *
+   * @see HtmlEdit#addPageLoadedListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit onPageLoaded(EventListener<PageLoadedEvent> listener) {
+    return addPageLoadedListener(listener);
+  }
+
+  
+
+  /**
+   * Removes a PageLoaded event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit removePageLoadedListener(EventListener<PageLoadedEvent> listener) {
+    dispatcher.removeEventListener(PageLoadedEvent.class, listener);
+    if (this.control != null && this.dispatcher.getListenersCount(PageLoadedEvent.class) == 0) {
+      this.pageLoadedEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  /**
+   * Adds a StateChange event for the HtmlEdit component.
+   *
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit addStateChangeListener(EventListener<StateChangeEvent> listener) {
+    if (this.control != null && this.dispatcher.getListenersCount(StateChangeEvent.class) == 0) {
+      this.stateChangeEventSink.setCallback();
+    }
+    dispatcher.addEventListener(StateChangeEvent.class, listener);
+    return this;
+  }
+
+  /**
+   * Alias for the addStateChangeListener method.
+   *
+   * @see HtmlEdit#addStateChangeListener(EventListener)
+   * @param listener the event listener to be added
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit onStateChange(EventListener<StateChangeEvent> listener) {
+    return addStateChangeListener(listener);
+  }
+
+  
+
+  /**
+   * Removes a StateChange event from the HtmlEdit component.
+   *
+   * @param listener the event listener to be removed
+   * @return The HtmlEdit itself
+   */
+  @ExcludeFromJacocoGeneratedReport
+  public HtmlEdit removeStateChangeListener(EventListener<StateChangeEvent> listener) {
+    dispatcher.removeEventListener(StateChangeEvent.class, listener);
+    if (this.control != null && this.dispatcher.getListenersCount(StateChangeEvent.class) == 0) {
+      this.stateChangeEventSink.removeCallback();
     }
     return this;
   }
