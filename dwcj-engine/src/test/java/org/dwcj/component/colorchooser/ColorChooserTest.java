@@ -5,10 +5,12 @@ import com.basis.startup.type.BBjException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dwcj.component.Component;
+import org.dwcj.component.colorchooser.event.ColorChooserApproveEvent;
 import org.dwcj.component.colorchooser.event.ColorChooserChangeEvent;
 import org.dwcj.component.colorchooser.sink.ColorChooserApproveEventSink;
 import org.dwcj.component.colorchooser.sink.ColorChooserCancelEventSink;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -249,6 +251,91 @@ public class ColorChooserTest {
       doThrow(BBjException.class).when(control).cancelSelection();
       assertThrows(DwcjRuntimeException.class, () -> component.cancelSelection());
     }
+  }
+
+  @Nested
+  @DisplayName("Approve Events")
+  class Approve {
+    @Test
+    @DisplayName("AddListener when control is defined")
+    void addListenerWhenControlIsDefined()  {
+      EventListener<ColorChooserApproveEvent> listener = e -> {
+//        do nothing
+      };
+
+      component.onApprove(listener);
+      verify(colorChooserApproveEventSink, times(1)).setCallback();
+      verify(dispatcher, times(1)).addEventListener(ColorChooserApproveEvent.class, listener);
+    }
+
+    @Test
+    @DisplayName("AddListener when control is null")
+    void addListenerWhenControlIsNull() throws IllegalAccessException {
+      nullifyControl();
+      EventListener<ColorChooserApproveEvent> listener = e -> {
+        // do nothing
+      };
+
+      component.onApprove(listener);
+      verify(colorChooserApproveEventSink, times(0)).setCallback();
+      verify(dispatcher, times(1)).addEventListener(ColorChooserApproveEvent.class, listener);
+    }
+
+    @Test
+    @DisplayName("When dispatch has already ColorChooserApproveEventListener registered")
+    void whenDispatchHasAlreadyColoChooserApproveEventListenerRegistered() {
+      EventListener<ColorChooserApproveEvent> listener = e -> {
+        // do nothing
+      };
+      verify(colorChooserApproveEventSink, times(0)).setCallback();
+    }
+
+    @Test
+    @DisplayName("RemoveListener when control is defined")
+    void removeListenerWhenControlIsDefined() {
+      EventListener<ColorChooserApproveEvent> listener = e -> {
+        // do nothing
+      };
+      component.onApprove(listener);
+      component.removeColorChooserApproveListener(listener);
+
+      verify(colorChooserApproveEventSink, times(1)).removeCallback();
+      verify(dispatcher, times(1)).removeEventListener(ColorChooserApproveEvent.class, listener);
+    }
+
+    @Test
+    @DisplayName("removeListener when control is null")
+    void removeListenerWhenControlIsNull() throws IllegalAccessException {
+      nullifyControl();
+      EventListener<ColorChooserApproveEvent> listener = e -> {
+        // do nothing
+      };
+      component.onApprove(listener);
+      component.removeColorChooserApproveListener(listener);
+
+      verify(colorChooserApproveEventSink, times(0)).removeCallback();
+      verify(dispatcher, times(1)).removeEventListener(ColorChooserApproveEvent.class, listener);
+    }
+
+    @Test
+    @DisplayName("removeListener when dispatcher has alraedy more than one ColorChooserApproveEventListener registered")
+    void removeListenerWhenDispatcherHasAlreadyMoreThanOneColorChooserApproveEventListenerRegistered() {
+      EventListener<ColorChooserApproveEvent> listener = e -> {
+        // do nothing
+      };
+      EventListener<ColorChooserApproveEvent> listener2 = e -> {
+        // do nothing
+      };
+
+      component.onApprove(listener);
+      component.onApprove(listener2);
+      assertEquals(2, dispatcher.getListenersCount(ColorChooserApproveEvent.class));
+
+      component.removeColorChooserApproveListener(listener);
+      verify(colorChooserApproveEventSink, times(0)).removeCallback();
+      verify(dispatcher, times(1)).removeEventListener(ColorChooserApproveEvent.class, listener);
+    }
+
   }
 
 }
