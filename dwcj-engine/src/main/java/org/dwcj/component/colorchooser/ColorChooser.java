@@ -5,12 +5,14 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.sysgui.BBjColor;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.colorchooser.event.ColorChooserApproveEvent;
 import org.dwcj.component.event.*;
 import org.dwcj.component.event.sink.*;
 import org.dwcj.component.radiobutton.RadioButton;
@@ -41,10 +43,6 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING;
   }
 
-  public ColorChooser() {
-    this.tabTraversable = true;
-  }
-
   public ColorChooser(Color color) {
     this.setColor(color);
     this.tabTraversable = true;
@@ -67,6 +65,26 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     } catch (Exception e) {
       Environment.logError(e);
     }
+  }
+
+  public ColorChooser addColorChooserApproveListener(EventListener<ColorChooserApproveEvent> listener) {
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
+      this.focusEventSink.setCallback();
+    }
+    dispatcher.addEventListener(ColorChooserApproveEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onApprove(EventListener<ColorChooserApproveEvent> listener) {
+    return addColorChooserApproveListener(listener);
+  }
+
+  public ColorChooser removeColorChooserApproveListener(EventListener<ColorChooserApproveEvent> listener) {
+    dispatcher.removeEventListener(ColorChooserApproveEvent.class, listener);
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
+    }
+    return this;
   }
 
   public ColorChooser addFocusListener(EventListener<FocusEvent> listener) {
@@ -186,7 +204,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     return this;
   }
 
-  public boolean getPreviewPanelVisible() {
+  public boolean isPreviewPanelVisible() {
     if (getBBjControl() != null) {
       try {
         getBBjControl().isPreviewPanelVisible();
@@ -267,12 +285,14 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public HasFocus focus() {
     super.focusComponent();
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public Boolean isTabTraversable() {
     if (getBBjControl() != null) {
@@ -285,6 +305,7 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     return this.tabTraversable;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public TabTraversable setTabTraversable(Boolean traversable) {
     if (getBBjControl() != null) {
@@ -329,53 +350,62 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     return new Color(0, 0, 0);
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser setText(String text) {
     super.setText(text);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public boolean isEnabled() {
     return super.isComponentEnabled();
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public ColorChooser removeClassName(String selector) {
     super.removeClassName(selector);
@@ -392,4 +422,17 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
     return this;
   }
 
+  @Override
+  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
+  // of checks
+  protected void catchUp() throws IllegalAccessException {
+    if (Boolean.TRUE.equals(this.getCaughtUp()))
+      throw new IllegalAccessException("catchUp cannot be called twice");
+    super.catchUp();
+
+    if (Boolean.FALSE.equals(this.tabTraversable)) {
+      this.setTabTraversable(this.tabTraversable);
+    }
+
+  }
 }
