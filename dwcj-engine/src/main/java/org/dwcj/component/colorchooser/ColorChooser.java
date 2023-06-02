@@ -13,6 +13,7 @@ import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.colorchooser.event.ColorChooserApproveEvent;
+import org.dwcj.component.colorchooser.event.ColorChooserCancelEvent;
 import org.dwcj.component.event.*;
 import org.dwcj.component.event.sink.*;
 import org.dwcj.component.radiobutton.RadioButton;
@@ -82,6 +83,26 @@ public final class ColorChooser extends AbstractDwcComponent implements HasEnabl
   public ColorChooser removeColorChooserApproveListener(EventListener<ColorChooserApproveEvent> listener) {
     dispatcher.removeEventListener(ColorChooserApproveEvent.class, listener);
     if (this.getBBjControl() != null && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
+      this.focusEventSink.removeCallback();
+    }
+    return this;
+  }
+
+  public ColorChooser addColorChooserCancelListener(EventListener<ColorChooserCancelEvent> listener) {
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(ColorChooserCancelEvent.class) == 0) {
+      this.focusEventSink.setCallback();
+    }
+    dispatcher.addEventListener(ColorChooserCancelEvent.class, listener);
+    return this;
+  }
+
+  public ColorChooser onCancel(EventListener<ColorChooserCancelEvent> listener) {
+    return addColorChooserCancelListener(listener);
+  }
+
+  public ColorChooser removeColorChooserCancelListener(EventListener<ColorChooserCancelEvent> listener) {
+    dispatcher.removeEventListener(ColorChooserCancelEvent.class, listener);
+    if (this.getBBjControl() != null && this.dispatcher.getListenersCount(ColorChooserCancelEvent.class) == 0) {
       this.focusEventSink.removeCallback();
     }
     return this;
