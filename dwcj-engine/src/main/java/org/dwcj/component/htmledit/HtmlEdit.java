@@ -331,7 +331,7 @@ public final class HtmlEdit extends AbstractDwcComponent
     return addPageLoadedListener(listener);
   }
 
-  
+
 
   /**
    * Removes a PageLoaded event from the HtmlEdit component.
@@ -375,7 +375,7 @@ public final class HtmlEdit extends AbstractDwcComponent
     return addStateChangeListener(listener);
   }
 
-  
+
 
   /**
    * Removes a StateChange event from the HtmlEdit component.
@@ -867,6 +867,36 @@ public final class HtmlEdit extends AbstractDwcComponent
     return this;
   }
 
+  private void eventCatchUp() {
+    if (this.dispatcher.getListenersCount(MouseEnterEvent.class) > 0) {
+      this.mouseEnterEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(MouseExitEvent.class) > 0) {
+      this.mouseExitEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
+      this.rightMouseDownEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(PageLoadedEvent.class) > 0) {
+      this.pageLoadedEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(StateChangeEvent.class) > 0) {
+      this.stateChangeEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(BlurEvent.class) > 0) {
+      this.blurEventSink.setCallback();
+    }
+
+    if (this.dispatcher.getListenersCount(FocusEvent.class) > 0) {
+      this.focusEventSink.setCallback();
+    }
+  }
+
 
 
   @Override
@@ -877,7 +907,7 @@ public final class HtmlEdit extends AbstractDwcComponent
       throw new IllegalAccessException("catchUp cannot be called twice");
     }
     super.catchUp();
-
+    eventCatchUp();
     if (this.isBasicToolbar) {
       this.setBasicToolbar(this.isBasicToolbar);
     }
