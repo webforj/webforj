@@ -22,6 +22,7 @@ import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
@@ -60,7 +61,7 @@ public class HtmlEditTest {
   FocusEventSink focusEventSink;
 
   @Mock
-  FocusEventSink blurEventSink;
+  BlurEventSink blurEventSink;
 
   @Mock
   PageLoadedEventSink pageLoadedEventSink;
@@ -85,7 +86,7 @@ public class HtmlEditTest {
     @Test
     @DisplayName("Alltoolbar When control is defined")
     void allWhenControlisdefined() throws BBjException {
-      assertEquals(List.of(), component.getAllToolbarStyles());
+      component.getAllToolbarStyles();
       verify(control, times(1)).getAllToolbarStyles();
     }
 
@@ -99,7 +100,7 @@ public class HtmlEditTest {
     @Test
     @DisplayName("Basictoolbar When control is defined")
     void basicWhenControlisdefined() throws BBjException {
-      assertEquals(List.of(), component.getBasicToolbarStyles());
+      component.getBasicToolbarStyles();
       verify(control, times(1)).getBasicToolbarStyles();
     }
 
@@ -114,7 +115,6 @@ public class HtmlEditTest {
     @DisplayName("IsBasicToolbar when control is defined")
     void isBasicWhenControlIsDefined() throws BBjException, IllegalAccessException {
       component.setBasicToolbar(true);
-      assertTrue(component.isBasicToolbar());
 
       verify(control, times(1)).setBasicToolbar(anyBoolean());
       verify(control, times(0)).getBasicToolbar();
@@ -139,7 +139,7 @@ public class HtmlEditTest {
     @Test
     @DisplayName("SpellcheckLanguages When control is defined")
     void languagesWhenControlisdefined() throws BBjException {
-      assertEquals(List.of(), component.getAvailableSpellCheckLanguages());
+      component.getAvailableSpellCheckLanguages();
       verify(control, times(1)).getAvailableSpellCheckLanguages();
     }
 
@@ -153,7 +153,7 @@ public class HtmlEditTest {
     @Test
     @DisplayName("IsSpellchecked when control is defined")
     void spellCheckedWhenControlisdefined() throws BBjException {
-      assertEquals(false, component.isSpellChecked());
+      component.isSpellChecked();
       verify(control, times(1)).isSpellChecked();
     }
 
@@ -161,7 +161,25 @@ public class HtmlEditTest {
     @DisplayName("IsSpellchecked When control is null")
     void spellCheckedWhenControlIsNull() throws BBjException, IllegalAccessException {
       nullifyControl();
-      assertEquals(List.of(), component.isSpellChecked());
+      assertEquals(false, component.isSpellChecked());
+    }
+
+    @Test
+    @DisplayName("SetSpellchecked when control is defined")
+    void setSpellCheckedWhenControlIsDefined() throws BBjException {
+      component.setSpellChecked(true);
+      verify(control, times(1)).setSpellChecked(anyBoolean());
+      verify(control, times(0)).isSpellChecked();
+    }
+
+    @Test
+    @DisplayName("SetSpellchecked when control is null")
+    void setSpellCheckedWhenControlIsNull() throws BBjException, IllegalAccessException {
+      nullifyControl();
+      component.setSpellChecked(true);
+      assertTrue(component.isSpellChecked());
+      verify(control, times(0)).setSpellChecked(anyBoolean());
+      verify(control, times(0)).isSpellChecked();
     }
 
   }
@@ -173,7 +191,7 @@ public class HtmlEditTest {
     @Test
     @DisplayName("ClientType when control is defined")
     void typeWhenControlisdefined() throws BBjException {
-      assertEquals("", component.getClientType());
+      component.getClientType();
       verify(control, times(1)).getClientType();
     }
 
@@ -181,13 +199,13 @@ public class HtmlEditTest {
     @DisplayName("ClientType when control is null")
     void typeWhenControlIsNull() throws BBjException, IllegalAccessException {
       nullifyControl();
-      assertEquals(List.of(), component.getClientType());
+      assertEquals("", component.getClientType());
     }
 
     @Test
     @DisplayName("ClientVersion when control is defined")
     void versionWhenControlisdefined() throws BBjException {
-      assertEquals("", component.getClientVersion());
+      component.getClientVersion();
       verify(control, times(1)).getClientVersion();
     }
 
@@ -195,7 +213,7 @@ public class HtmlEditTest {
     @DisplayName("ClientVersion when control is null")
     void versionWhenControlIsNull() throws BBjException, IllegalAccessException {
       nullifyControl();
-      assertEquals(List.of(), component.getClientVersion());
+      assertEquals("", component.getClientVersion());
     }
 
   }
@@ -207,7 +225,7 @@ public class HtmlEditTest {
     @Test
     @DisplayName("Locale when control is defined")
     void typeWhenControlisdefined() throws BBjException {
-      assertEquals("", component.getLocale());
+      component.getLocale();
       verify(control, times(1)).getLocale();
     }
 
@@ -215,7 +233,7 @@ public class HtmlEditTest {
     @DisplayName("Locale when control is null")
     void typeWhenControlIsNull() throws BBjException, IllegalAccessException {
       nullifyControl();
-      assertEquals(List.of(), component.getLocale());
+      assertEquals("", component.getLocale());
     }
 
   }
@@ -225,15 +243,29 @@ public class HtmlEditTest {
   class PlainText {
 
     @Test
-    @DisplayName("When control is defined")
-    void whenControlisdefined() throws BBjException {
+    @DisplayName("Get when control is defined")
+    void getWhenControlisdefined() throws BBjException {
+      component.getPlainText();
+      verify(control, times(1)).getPlainText();
+    }
+
+    @Test
+    @DisplayName("Get when control is null")
+    void getWhenControlIsNull() throws BBjException, IllegalAccessException {
+      nullifyControl();
+      assertEquals("", component.getPlainText());
+    }
+
+    @Test
+    @DisplayName("Set when control is defined")
+    void setWhenControlisdefined() throws BBjException {
       component.setPlainText("test");
       verify(control, times(1)).setPlainText(anyString());
     }
 
     @Test
-    @DisplayName("When control is null")
-    void whenControlIsNull() throws BBjException, IllegalAccessException {
+    @DisplayName("Set when control is null")
+    void setWhenControlIsNull() throws BBjException, IllegalAccessException {
       nullifyControl();
       component.setPlainText("test");
 

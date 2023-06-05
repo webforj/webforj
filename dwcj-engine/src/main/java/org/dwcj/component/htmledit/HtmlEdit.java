@@ -55,7 +55,7 @@ public final class HtmlEdit extends AbstractDwcComponent
 
 
   private boolean isBasicToolbar = false;
-  private List<String> basicToolBarStyles;
+  private List<String> basicToolBarStyles = List.of();
   private String locale = "";
   private String plainText = "";
   private String spellCheckLanguage = "";
