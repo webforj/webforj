@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
@@ -26,6 +27,10 @@ import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.htmledit.HtmlEdit;
+import org.dwcj.component.htmledit.event.PageLoadedEvent;
+import org.dwcj.component.htmledit.event.StateChangeEvent;
+import org.dwcj.component.htmledit.sink.PageLoadedEventSink;
+import org.dwcj.component.htmledit.sink.StateChangeEventSink;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,6 +58,15 @@ public class HtmlEditTest {
 
   @Mock
   FocusEventSink focusEventSink;
+
+  @Mock
+  FocusEventSink blurEventSink;
+
+  @Mock
+  PageLoadedEventSink pageLoadedEventSink;
+
+  @Mock
+  StateChangeEventSink stateChangeEventSink;
 
   @Spy
   EventDispatcher dispatcher;
@@ -612,6 +626,279 @@ public class HtmlEditTest {
         component.removeFocusListener(listener);
         verify(focusEventSink, times(0)).removeCallback();
         verify(dispatcher, times(1)).removeEventListener(FocusEvent.class, listener);
+      }
+    }
+
+    @Nested
+    @DisplayName("Blur Events")
+    class Blur {
+
+      @Test
+      @DisplayName("addListener when control is defined")
+      void addListenerWhenControlIsDefined() {
+        EventListener<BlurEvent> listener = e -> {
+          // do nothing
+        };
+        component.onBlur(listener);
+
+        verify(blurEventSink, times(1)).setCallback();
+        verify(dispatcher, times(1)).addEventListener(BlurEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("addListener when control is null")
+      void addListenerWhenControlIsNull() throws IllegalAccessException {
+        nullifyControl();
+        EventListener<BlurEvent> listener = e -> {
+          // do nothing
+        };
+        component.onBlur(listener);
+        verify(blurEventSink, times(0)).setCallback();
+        verify(dispatcher, times(1)).addEventListener(BlurEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("addListener when dispatcher has already listener registered")
+      void addListenerWhenDispatcherHasAlreadyBlurEventListenerRegistered() {
+        EventListener<BlurEvent> listener = e -> {
+          // do nothing
+        };
+
+        dispatcher.addEventListener(BlurEvent.class, listener);
+        assertEquals(1, dispatcher.getListenersCount(BlurEvent.class));
+
+        component.onRightMouseDown(e -> {
+          // do nothing
+        });
+        verify(blurEventSink, times(0)).setCallback();
+      }
+
+      @Test
+      @DisplayName("removeListener when control is defined")
+      void removeListenerWhenControlIsDefined() {
+        EventListener<BlurEvent> listener = e -> {
+          // do nothing
+        };
+        component.onBlur(listener);
+        component.removeBlurListener(listener);
+
+        verify(blurEventSink, times(1)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(BlurEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("removeListener when control is null")
+      void removeListenerWhenControlIsNull() throws IllegalAccessException {
+        nullifyControl();
+        EventListener<BlurEvent> listener = e -> {
+          // do nothing
+        };
+        component.onBlur(listener);
+        component.removeBlurListener(listener);
+
+        verify(blurEventSink, times(0)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(BlurEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("removeListener when dispatcher has already more than one listener registered")
+      void removeListenerWhenDispatcherHasAlreadyMoreThanOneListenerRegistered() {
+        EventListener<BlurEvent> listener = e -> {
+          // do nothing
+        };
+        EventListener<BlurEvent> listener2 = e -> {
+          // do nothing
+        };
+
+        component.onBlur(listener);
+        component.onBlur(listener2);
+        assertEquals(2, dispatcher.getListenersCount(BlurEvent.class));
+
+        component.removeBlurListener(listener);
+        verify(blurEventSink, times(0)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(BlurEvent.class, listener);
+      }
+    }
+
+    @Nested
+    @DisplayName("PageLoaded Events")
+    class PageLoaded {
+
+      @Test
+      @DisplayName("addListener when control is defined")
+      void addListenerWhenControlIsDefined() {
+        EventListener<PageLoadedEvent> listener = e -> {
+          // do nothing
+        };
+        component.onPageLoaded(listener);
+
+        verify(pageLoadedEventSink, times(1)).setCallback();
+        verify(dispatcher, times(1)).addEventListener(PageLoadedEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("addListener when control is null")
+      void addListenerWhenControlIsNull() throws IllegalAccessException {
+        nullifyControl();
+        EventListener<PageLoadedEvent> listener = e -> {
+          // do nothing
+        };
+        component.onPageLoaded(listener);
+        verify(pageLoadedEventSink, times(0)).setCallback();
+        verify(dispatcher, times(1)).addEventListener(PageLoadedEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("addListener when dispatcher has already listener registered")
+      void addListenerWhenDispatcherHasAlreadyPageLoadedEventListenerRegistered() {
+        EventListener<PageLoadedEvent> listener = e -> {
+          // do nothing
+        };
+
+        dispatcher.addEventListener(PageLoadedEvent.class, listener);
+        assertEquals(1, dispatcher.getListenersCount(PageLoadedEvent.class));
+
+        component.onRightMouseDown(e -> {
+          // do nothing
+        });
+        verify(pageLoadedEventSink, times(0)).setCallback();
+      }
+
+      @Test
+      @DisplayName("removeListener when control is defined")
+      void removeListenerWhenControlIsDefined() {
+        EventListener<PageLoadedEvent> listener = e -> {
+          // do nothing
+        };
+        component.onPageLoaded(listener);
+        component.removePageLoadedListener(listener);
+
+        verify(pageLoadedEventSink, times(1)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(PageLoadedEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("removeListener when control is null")
+      void removeListenerWhenControlIsNull() throws IllegalAccessException {
+        nullifyControl();
+        EventListener<PageLoadedEvent> listener = e -> {
+          // do nothing
+        };
+        component.onPageLoaded(listener);
+        component.removePageLoadedListener(listener);
+
+        verify(pageLoadedEventSink, times(0)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(PageLoadedEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("removeListener when dispatcher has already more than one listener registered")
+      void removeListenerWhenDispatcherHasAlreadyMoreThanOneListenerRegistered() {
+        EventListener<PageLoadedEvent> listener = e -> {
+          // do nothing
+        };
+        EventListener<PageLoadedEvent> listener2 = e -> {
+          // do nothing
+        };
+
+        component.onPageLoaded(listener);
+        component.onPageLoaded(listener2);
+        assertEquals(2, dispatcher.getListenersCount(PageLoadedEvent.class));
+
+        component.removePageLoadedListener(listener);
+        verify(pageLoadedEventSink, times(0)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(PageLoadedEvent.class, listener);
+      }
+    }
+
+    @Nested
+    @DisplayName("StateChanged Events")
+    class StateChanged {
+
+      @Test
+      @DisplayName("addListener when control is defined")
+      void addListenerWhenControlIsDefined() {
+        EventListener<StateChangeEvent> listener = e -> {
+          // do nothing
+        };
+        component.onStateChange(listener);
+
+        verify(stateChangeEventSink, times(1)).setCallback();
+        verify(dispatcher, times(1)).addEventListener(StateChangeEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("addListener when control is null")
+      void addListenerWhenControlIsNull() throws IllegalAccessException {
+        nullifyControl();
+        EventListener<StateChangeEvent> listener = e -> {
+          // do nothing
+        };
+        component.onStateChange(listener);
+        verify(stateChangeEventSink, times(0)).setCallback();
+        verify(dispatcher, times(1)).addEventListener(StateChangeEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("addListener when dispatcher has already listener registered")
+      void addListenerWhenDispatcherHasAlreadyStateChangeEventListenerRegistered() {
+        EventListener<StateChangeEvent> listener = e -> {
+          // do nothing
+        };
+
+        dispatcher.addEventListener(StateChangeEvent.class, listener);
+        assertEquals(1, dispatcher.getListenersCount(StateChangeEvent.class));
+
+        component.onRightMouseDown(e -> {
+          // do nothing
+        });
+        verify(stateChangeEventSink, times(0)).setCallback();
+      }
+
+      @Test
+      @DisplayName("removeListener when control is defined")
+      void removeListenerWhenControlIsDefined() {
+        EventListener<StateChangeEvent> listener = e -> {
+          // do nothing
+        };
+        component.onStateChange(listener);
+        component.removeStateChangeListener(listener);
+
+        verify(stateChangeEventSink, times(1)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(StateChangeEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("removeListener when control is null")
+      void removeListenerWhenControlIsNull() throws IllegalAccessException {
+        nullifyControl();
+        EventListener<StateChangeEvent> listener = e -> {
+          // do nothing
+        };
+        component.onStateChange(listener);
+        component.removeStateChangeListener(listener);
+
+        verify(stateChangeEventSink, times(0)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(StateChangeEvent.class, listener);
+      }
+
+      @Test
+      @DisplayName("removeListener when dispatcher has already more than one listener registered")
+      void removeListenerWhenDispatcherHasAlreadyMoreThanOneListenerRegistered() {
+        EventListener<StateChangeEvent> listener = e -> {
+          // do nothing
+        };
+        EventListener<StateChangeEvent> listener2 = e -> {
+          // do nothing
+        };
+
+        component.onStateChange(listener);
+        component.onStateChange(listener2);
+        assertEquals(2, dispatcher.getListenersCount(StateChangeEvent.class));
+
+        component.removeStateChangeListener(listener);
+        verify(stateChangeEventSink, times(0)).removeCallback();
+        verify(dispatcher, times(1)).removeEventListener(StateChangeEvent.class, listener);
       }
     }
 
