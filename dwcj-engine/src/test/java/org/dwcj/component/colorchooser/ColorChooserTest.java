@@ -1,7 +1,11 @@
 package org.dwcj.component.colorchooser;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
@@ -10,6 +14,8 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjColorChooser;
 import com.basis.startup.type.BBjException;
+import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dwcj.component.colorchooser.event.ColorChooserApproveEvent;
@@ -30,8 +36,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 
 
 /** ColorChooser tests. */
@@ -66,28 +70,33 @@ public class ColorChooserTest {
     @Test
     @DisplayName("Constructor with color")
     void colorConstructor() {
-      ColorChooser component = new ColorChooser(new Color(255, 0, 0));
-      assertEquals(new Color(255, 0, 0), component.getColor());
+      ColorChooser component2 = new ColorChooser(new Color(255, 0, 0));
+      assertEquals(new Color(255, 0, 0), component2.getColor());
     }
   }
 
   @Nested
   @DisplayName("CatchUp behavior")
   class CatchUp {
-    void invokeCatchUp(ColorChooser component) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    void invokeCatchUp(ColorChooser component) throws NoSuchMethodException, 
+          IllegalAccessException, InvocationTargetException {
       MethodUtils.invokeMethod(component, true, "catchUp");
     }
+
     @Test
     @DisplayName("Calling it twice should not be allowed")
-    void callingTwiceShouldNotBeAllowed() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    void callingTwiceShouldNotBeAllowed() throws NoSuchMethodException, 
+            IllegalAccessException, InvocationTargetException {
       ColorChooser componentSpy = spy(component);
       invokeCatchUp(componentSpy);
 
       assertThrows(InvocationTargetException.class, () -> invokeCatchUp(componentSpy));
     }
+
     @Test
     @DisplayName("catchUp method")
-    void catchUpMethod() throws NoSuchMethodException, IllegalAccessException, BBjException, InvocationTargetException {
+    void catchUpMethod() throws NoSuchMethodException, IllegalAccessException, 
+            BBjException, InvocationTargetException {
       ColorChooser componentSpy = spy(component);
       componentSpy.setTabTraversable(true);
       componentSpy.onMouseEnter(e -> {});
@@ -141,6 +150,7 @@ public class ColorChooserTest {
       verify(control, times(1)).setApproveButtonText("approve!");
       verify(control, times(0)).getApproveButtonText();
     }
+
     @Test
     @DisplayName("When control is null")
     void whenControlIsNull() throws IllegalAccessException {
@@ -148,6 +158,7 @@ public class ColorChooserTest {
       component.setApproveButtonText("approve pls");
       assertEquals("approve pls", component.getApproveButtonText());
     }
+
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDwcjRuntimeException() throws Exception {
@@ -168,6 +179,7 @@ public class ColorChooserTest {
       verify(control, times(1)).setCancelButtonText("cancel");
       verify(control, times(0)).getCancelButtonText();
     }
+
     @Test
     @DisplayName("When control is null")
     void whenControlIsNull() throws IllegalAccessException {
@@ -175,6 +187,7 @@ public class ColorChooserTest {
       component.setCancelButtonText("cancel pls");
       assertEquals("cancel pls", component.getCancelButtonText());
     }
+
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDwcjRuntimeException() throws Exception {
@@ -194,6 +207,7 @@ public class ColorChooserTest {
       verify(control, times(1)).setControlButtonsAreShown(false);
       verify(control, times(0)).getControlButtonsAreShown();
     }
+
     @Test
     @DisplayName("When control is null")
     void whenControlIsNull() throws IllegalAccessException {
@@ -201,6 +215,7 @@ public class ColorChooserTest {
       component.setControlButtonsAreShown(false);
       assertFalse(component.getControlButtonsAreShown());
     }
+
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDwcjRuntimeException() throws Exception {
@@ -218,6 +233,7 @@ public class ColorChooserTest {
       component.approveSelection();
       verify(control, times(0)).approveSelection();
     }
+
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDwcjRuntimeException() throws Exception {
@@ -235,6 +251,7 @@ public class ColorChooserTest {
       component.cancelSelection();
       verify(control, times(0)).cancelSelection();
     }
+
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDecjRuntimeException() throws Exception {
@@ -250,13 +267,14 @@ public class ColorChooserTest {
     @DisplayName("AddListener when control is defined")
     void addListenerWhenControlIsDefined()  {
       EventListener<ColorChooserApproveEvent> listener = e -> {
-//        do nothing
+          // do nothing
       };
 
       component.onApprove(listener);
       verify(colorChooserApproveEventSink, times(1)).setCallback();
       verify(dispatcher, times(1)).addEventListener(ColorChooserApproveEvent.class, listener);
     }
+
     @Test
     @DisplayName("AddListener when control is null")
     void addListenerWhenControlIsNull() throws IllegalAccessException {
@@ -269,14 +287,13 @@ public class ColorChooserTest {
       verify(colorChooserApproveEventSink, times(0)).setCallback();
       verify(dispatcher, times(1)).addEventListener(ColorChooserApproveEvent.class, listener);
     }
+
     @Test
     @DisplayName("When dispatch has already ColorChooserApproveEventListener registered")
     void whenDispatchHasAlreadyColoChooserApproveEventListenerRegistered() {
-      EventListener<ColorChooserApproveEvent> listener = e -> {
-        // do nothing
-      };
       verify(colorChooserApproveEventSink, times(0)).setCallback();
-    }
+    } 
+
     @Test
     @DisplayName("RemoveListener when control is defined")
     void removeListenerWhenControlIsDefined() {
@@ -289,6 +306,7 @@ public class ColorChooserTest {
       verify(colorChooserApproveEventSink, times(1)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserApproveEvent.class, listener);
     }
+
     @Test
     @DisplayName("removeListener when control is null")
     void removeListenerWhenControlIsNull() throws IllegalAccessException {
@@ -302,9 +320,11 @@ public class ColorChooserTest {
       verify(colorChooserApproveEventSink, times(0)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserApproveEvent.class, listener);
     }
+
     @Test
-    @DisplayName("removeListener when dispatcher has already more than one ColorChooserApproveEventListener registered")
-    void removeListenerWhenDispatcherHasAlreadyMoreThanOneColorChooserApproveEventListenerRegistered() {
+    @DisplayName("removeListener when dispatcher has already more " 
+            + "than one ColorChooserApproveEventListener registered")
+    void removeWhenDispatcherHasAlreadyMoreThanOneColorChooserApproveEventListenerRegistered() {
       EventListener<ColorChooserApproveEvent> listener = e -> {
         // do nothing
       };
@@ -329,13 +349,14 @@ public class ColorChooserTest {
     @DisplayName("AddListener when control is defined")
     void addListenerWhenControlIsDefined()  {
       EventListener<ColorChooserChangeEvent> listener = e -> {
-//        do nothing
+          // do nothing
       };
 
       component.onChange(listener);
       verify(colorChooserChangeEventSink, times(1)).setCallback();
       verify(dispatcher, times(1)).addEventListener(ColorChooserChangeEvent.class, listener);
     }
+
     @Test
     @DisplayName("AddListener when control is null")
     void addListenerWhenControlIsNull() throws IllegalAccessException {
@@ -348,14 +369,13 @@ public class ColorChooserTest {
       verify(colorChooserChangeEventSink, times(0)).setCallback();
       verify(dispatcher, times(1)).addEventListener(ColorChooserChangeEvent.class, listener);
     }
+
     @Test
     @DisplayName("When dispatch has already ColorChooserChangeEventListener registered")
     void whenDispatchHasAlreadyColoChooserChangeEventListenerRegistered() {
-      EventListener<ColorChooserChangeEvent> listener = e -> {
-        // do nothing
-      };
       verify(colorChooserChangeEventSink, times(0)).setCallback();
     }
+
     @Test
     @DisplayName("RemoveListener when control is defined")
     void removeListenerWhenControlIsDefined() {
@@ -368,6 +388,7 @@ public class ColorChooserTest {
       verify(colorChooserChangeEventSink, times(1)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserChangeEvent.class, listener);
     }
+    
     @Test
     @DisplayName("removeListener when control is null")
     void removeListenerWhenControlIsNull() throws IllegalAccessException {
@@ -381,9 +402,11 @@ public class ColorChooserTest {
       verify(colorChooserChangeEventSink, times(0)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserChangeEvent.class, listener);
     }
+
     @Test
-    @DisplayName("removeListener when dispatcher has already more than one ColorChooserChangeEventListener registered")
-    void removeListenerWhenDispatcherHasAlreadyMoreThanOneColorChooserChangeEventListenerRegistered() {
+    @DisplayName("removeListener when dispatcher has already " 
+            + "more than one ColorChooserChangeEventListener registered")
+    void removeWhenDispatcherHasAlreadyMoreThanOneColorChooserChangeEventListenerRegistered() {
       EventListener<ColorChooserChangeEvent> listener = e -> {
         // do nothing
       };
@@ -408,13 +431,14 @@ public class ColorChooserTest {
     @DisplayName("AddListener when control is defined")
     void addListenerWhenControlIsDefined()  {
       EventListener<ColorChooserCancelEvent> listener = e -> {
-//        do nothing
+        // do nothing
       };
 
       component.onCancel(listener);
       verify(colorChooserCancelEventSink, times(1)).setCallback();
       verify(dispatcher, times(1)).addEventListener(ColorChooserCancelEvent.class, listener);
     }
+
     @Test
     @DisplayName("AddListener when control is null")
     void addListenerWhenControlIsNull() throws IllegalAccessException {
@@ -427,14 +451,13 @@ public class ColorChooserTest {
       verify(colorChooserCancelEventSink, times(0)).setCallback();
       verify(dispatcher, times(1)).addEventListener(ColorChooserCancelEvent.class, listener);
     }
+
     @Test
     @DisplayName("When dispatch has already ColorChooserCancelEventListener registered")
     void whenDispatchHasAlreadyColoChooserCancelEventListenerRegistered() {
-      EventListener<ColorChooserCancelEvent> listener = e -> {
-        // do nothing
-      };
       verify(colorChooserCancelEventSink, times(0)).setCallback();
     }
+
     @Test
     @DisplayName("RemoveListener when control is defined")
     void removeListenerWhenControlIsDefined() {
@@ -447,6 +470,7 @@ public class ColorChooserTest {
       verify(colorChooserCancelEventSink, times(1)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserCancelEvent.class, listener);
     }
+
     @Test
     @DisplayName("removeListener when control is null")
     void removeListenerWhenControlIsNull() throws IllegalAccessException {
@@ -460,9 +484,11 @@ public class ColorChooserTest {
       verify(colorChooserCancelEventSink, times(0)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserCancelEvent.class, listener);
     }
+
     @Test
-    @DisplayName("removeListener when dispatcher has already more than one ColorChooserCancelEventListener registered")
-    void removeListenerWhenDispatcherHasAlreadyMoreThanOneColorChooserCancelEventListenerRegistered() {
+    @DisplayName("removeListener when dispatcher has already" 
+            + "more than one ColorChooserCancelEventListener registered")
+    void removeWhenDispatcherHasAlreadyMoreThanOneColorChooserCancelEventListenerRegistered() {
       EventListener<ColorChooserCancelEvent> listener = e -> {
         // do nothing
       };
