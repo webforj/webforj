@@ -1,11 +1,13 @@
 package org.dwcj.component.colorchooser.event;
 
+import java.awt.Color;
+import java.util.Map;
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.event.Event;
 
-import java.awt.*;
-import java.util.Map;
-
+/**
+ * Approve Event for the ColorChooser Component.
+ */
 public class ColorChooserApproveEvent extends Event<AbstractComponent> {
 
   public ColorChooserApproveEvent(AbstractComponent component, Map<String, Object> payload) {
