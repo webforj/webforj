@@ -63,6 +63,7 @@ public class ColorChooserTest {
     FieldUtils.writeField(component, "control", null, true);
   }
 
+  @Nested
   @DisplayName("Constructor")
   class Constructor {
 
@@ -129,7 +130,7 @@ public class ColorChooserTest {
       component.setPreviewPanelVisible(false);
       assertFalse(component.isPreviewPanelVisible());
     }
-    
+
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDwcjRuntimeException() throws Exception {
