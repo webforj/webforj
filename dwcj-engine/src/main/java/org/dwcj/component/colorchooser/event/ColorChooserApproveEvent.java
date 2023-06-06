@@ -17,5 +17,4 @@ public class ColorChooserApproveEvent extends Event<AbstractComponent> {
   public Color getColor() {
     return (Color) this.getEventMap().get("color");
   }
-
 }
