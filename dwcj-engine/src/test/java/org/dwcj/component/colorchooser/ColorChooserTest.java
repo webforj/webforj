@@ -129,6 +129,7 @@ public class ColorChooserTest {
       component.setPreviewPanelVisible(false);
       assertFalse(component.isPreviewPanelVisible());
     }
+    
     @Test
     @DisplayName("When control throws BBjException, DwcjRuntimeException")
     void reThrowDwcjRuntimeException() throws Exception {
