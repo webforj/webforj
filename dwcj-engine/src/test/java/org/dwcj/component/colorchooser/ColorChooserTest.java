@@ -37,7 +37,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-
 /** ColorChooser tests. */
 @ExtendWith(MockitoExtension.class)
 public class ColorChooserTest {
@@ -78,14 +77,14 @@ public class ColorChooserTest {
   @Nested
   @DisplayName("CatchUp behavior")
   class CatchUp {
-    void invokeCatchUp(ColorChooser component) throws NoSuchMethodException, 
+    void invokeCatchUp(ColorChooser component) throws NoSuchMethodException,
           IllegalAccessException, InvocationTargetException {
       MethodUtils.invokeMethod(component, true, "catchUp");
     }
 
     @Test
     @DisplayName("Calling it twice should not be allowed")
-    void callingTwiceShouldNotBeAllowed() throws NoSuchMethodException, 
+    void callingTwiceShouldNotBeAllowed() throws NoSuchMethodException,
             IllegalAccessException, InvocationTargetException {
       ColorChooser componentSpy = spy(component);
       invokeCatchUp(componentSpy);
@@ -95,7 +94,7 @@ public class ColorChooserTest {
 
     @Test
     @DisplayName("catchUp method")
-    void catchUpMethod() throws NoSuchMethodException, IllegalAccessException, 
+    void catchUpMethod() throws NoSuchMethodException, IllegalAccessException,
             BBjException, InvocationTargetException {
       ColorChooser componentSpy = spy(component);
       componentSpy.setTabTraversable(true);
@@ -292,7 +291,7 @@ public class ColorChooserTest {
     @DisplayName("When dispatch has already ColorChooserApproveEventListener registered")
     void whenDispatchHasAlreadyColoChooserApproveEventListenerRegistered() {
       verify(colorChooserApproveEventSink, times(0)).setCallback();
-    } 
+    }
 
     @Test
     @DisplayName("RemoveListener when control is defined")
@@ -322,7 +321,7 @@ public class ColorChooserTest {
     }
 
     @Test
-    @DisplayName("removeListener when dispatcher has already more " 
+    @DisplayName("removeListener when dispatcher has already more "
             + "than one ColorChooserApproveEventListener registered")
     void removeWhenDispatcherHasAlreadyMoreThanOneColorChooserApproveEventListenerRegistered() {
       EventListener<ColorChooserApproveEvent> listener = e -> {
@@ -388,7 +387,7 @@ public class ColorChooserTest {
       verify(colorChooserChangeEventSink, times(1)).removeCallback();
       verify(dispatcher, times(1)).removeEventListener(ColorChooserChangeEvent.class, listener);
     }
-    
+
     @Test
     @DisplayName("removeListener when control is null")
     void removeListenerWhenControlIsNull() throws IllegalAccessException {
@@ -404,7 +403,7 @@ public class ColorChooserTest {
     }
 
     @Test
-    @DisplayName("removeListener when dispatcher has already " 
+    @DisplayName("removeListener when dispatcher has already "
             + "more than one ColorChooserChangeEventListener registered")
     void removeWhenDispatcherHasAlreadyMoreThanOneColorChooserChangeEventListenerRegistered() {
       EventListener<ColorChooserChangeEvent> listener = e -> {
@@ -486,7 +485,7 @@ public class ColorChooserTest {
     }
 
     @Test
-    @DisplayName("removeListener when dispatcher has already" 
+    @DisplayName("removeListener when dispatcher has already"
             + "more than one ColorChooserCancelEventListener registered")
     void removeWhenDispatcherHasAlreadyMoreThanOneColorChooserCancelEventListenerRegistered() {
       EventListener<ColorChooserCancelEvent> listener = e -> {
