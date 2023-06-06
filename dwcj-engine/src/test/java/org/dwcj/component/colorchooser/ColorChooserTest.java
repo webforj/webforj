@@ -40,22 +40,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /** ColorChooser tests. */
 @ExtendWith(MockitoExtension.class)
 public class ColorChooserTest {
-
   @Mock
   BBjColorChooser control;
-
   @Mock
   ColorChooserApproveEventSink colorChooserApproveEventSink;
-
   @Mock
   ColorChooserChangeEventSink colorChooserChangeEventSink;
-
   @Mock
   ColorChooserCancelEventSink colorChooserCancelEventSink;
-
   @Spy
   EventDispatcher dispatcher;
-
   @InjectMocks
   ColorChooser component;
 
