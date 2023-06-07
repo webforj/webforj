@@ -36,7 +36,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * The class itself extending the abstract DWC Component and implementing interfaces.
  */
 public final class ColorChooser extends AbstractDwcComponent
-      implements HasEnable, HasFocus, TabTraversable {
+  implements HasEnable, HasFocus, TabTraversable {
   private boolean areButtonsShown = true;
   private String approveText = "OK";
   private String cancelText = "Cancel";
@@ -52,18 +52,20 @@ public final class ColorChooser extends AbstractDwcComponent
    * Enum values with respective values for the expanse of colorChooser.
    */
   public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
+    LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL;
   }
 
   /**
    * Enum values with respective values for the theme of colorChooser.
    */
   public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
+    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING;
   }
+
   public ColorChooser() {
     this.tabTraversable = true;
   }
+
   public ColorChooser(Color color) {
     this.setColor(color);
     this.tabTraversable = true;
@@ -95,9 +97,9 @@ public final class ColorChooser extends AbstractDwcComponent
    * @return The colorChooser itself
    */
   public ColorChooser addColorChooserApproveListener(EventListener<ColorChooserApproveEvent>
-          listener) {
+                                                       listener) {
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
       this.focusEventSink.setCallback();
     }
     dispatcher.addEventListener(ColorChooserApproveEvent.class, listener);
@@ -122,10 +124,10 @@ public final class ColorChooser extends AbstractDwcComponent
    * @return The colorChooser itself
    */
   public ColorChooser removeColorChooserApproveListener(EventListener<ColorChooserApproveEvent>
-         listener) {
+                                                          listener) {
     dispatcher.removeEventListener(ColorChooserApproveEvent.class, listener);
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
+         && this.dispatcher.getListenersCount(ColorChooserApproveEvent.class) == 0) {
       this.focusEventSink.removeCallback();
     }
     return this;
@@ -138,9 +140,9 @@ public final class ColorChooser extends AbstractDwcComponent
    * @return The colorChooser itself
    */
   public ColorChooser addColorChooserCancelListener(EventListener<ColorChooserCancelEvent>
-          listener) {
+                                                      listener) {
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(ColorChooserCancelEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(ColorChooserCancelEvent.class) == 0) {
       this.focusEventSink.setCallback();
     }
     dispatcher.addEventListener(ColorChooserCancelEvent.class, listener);
@@ -165,10 +167,10 @@ public final class ColorChooser extends AbstractDwcComponent
    * @return The colorChooser itself
    */
   public ColorChooser removeColorChooserCancelListener(EventListener<ColorChooserCancelEvent>
-          listener) {
+                                                         listener) {
     dispatcher.removeEventListener(ColorChooserCancelEvent.class, listener);
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(ColorChooserCancelEvent.class) == 0) {
+         && this.dispatcher.getListenersCount(ColorChooserCancelEvent.class) == 0) {
       this.focusEventSink.removeCallback();
     }
     return this;
@@ -181,9 +183,9 @@ public final class ColorChooser extends AbstractDwcComponent
    * @return The colorChooser itself
    */
   public ColorChooser addColorChooserChangeListener(EventListener<ColorChooserChangeEvent>
-          listener) {
+                                                      listener) {
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(ColorChooserChangeEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(ColorChooserChangeEvent.class) == 0) {
       this.focusEventSink.setCallback();
     }
     return this;
@@ -207,10 +209,10 @@ public final class ColorChooser extends AbstractDwcComponent
    * @return The colorChooser itself
    */
   public ColorChooser removeColorChooserChangeListener(EventListener<ColorChooserChangeEvent>
-          listener) {
+                                                         listener) {
     dispatcher.removeEventListener(ColorChooserChangeEvent.class, listener);
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(ColorChooserChangeEvent.class) == 0) {
+         && this.dispatcher.getListenersCount(ColorChooserChangeEvent.class) == 0) {
       this.focusEventSink.removeCallback();
     }
     return this;
@@ -302,7 +304,7 @@ public final class ColorChooser extends AbstractDwcComponent
    */
   public ColorChooser addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     if (this.getBbjControl() != null
-        && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.setCallback();
     }
     dispatcher.addEventListener(MouseEnterEvent.class, listener);
@@ -329,7 +331,7 @@ public final class ColorChooser extends AbstractDwcComponent
   public ColorChooser removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
     dispatcher.removeEventListener(MouseEnterEvent.class, listener);
     if (this.getBbjControl() != null
-        && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
       this.mouseEnterEventSink.removeCallback();
     }
     return this;
@@ -384,7 +386,7 @@ public final class ColorChooser extends AbstractDwcComponent
    */
   public ColorChooser addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     if (this.getBbjControl() != null
-            && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.setCallback();
     }
     dispatcher.addEventListener(RightMouseDownEvent.class, listener);
@@ -411,7 +413,7 @@ public final class ColorChooser extends AbstractDwcComponent
   public ColorChooser removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
     dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
     if (this.getBbjControl() != null
-         && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
+          && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
       this.rightMouseDownEventSink.removeCallback();
     }
     return this;
@@ -633,7 +635,69 @@ public final class ColorChooser extends AbstractDwcComponent
   }
 
   /**
-   * the current color selection in the ColorChooser.
+   * Sets the currently displayed color in the ColorChooser.
+   *
+   * @param red the value of red color.
+   * @param green the value of green color.
+   * @param blue the value of blue color.
+   * @return the ColorChooser itself
+   */
+  public ColorChooser setRgbColor(float red, float green, float blue) {
+    if (getBbjControl() != null) {
+      try {
+        Color rgbColor = new Color(red, green, blue);
+        getBbjControl().setColor(new BBjColor(rgbColor));
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Sets the currently displayed color in the ColorChooser.
+   *
+   * @param red the value of red color.
+   * @param green the value of green color.
+   * @param blue the value of blue color.
+   * @param alpha the values in the range (0.0 - 1.0)
+   * @return the ColorChooser itself
+   */
+  public ColorChooser setRgbaColor(float red, float green, float blue, float alpha) {
+    if (getBbjControl() != null) {
+      try {
+        Color rgbColor = new Color(red, green, blue, alpha);
+        getBbjControl().setColor(new BBjColor(rgbColor));
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Sets the currently displayed color in the ColorChooser.
+   *
+   * @param hexCode characters representing each red, green and blue colors in hexadecimal.
+   * @return the ColorChooser itself
+   */
+  public ColorChooser setHexColor(String hexCode) {
+    if (getBbjControl() != null) {
+      try {
+        int hexRed = Integer.valueOf(hexCode.substring(0, 2), 16);
+        int hexGreen = Integer.valueOf(hexCode.substring(2, 4), 16);
+        int hexBlue = Integer.valueOf(hexCode.substring(4, 6), 16);
+        Color convertedColor = new Color(hexRed, hexGreen, hexBlue);
+        getBbjControl().setColor(new BBjColor(convertedColor));
+      } catch (BBjException e) {
+        throw new RuntimeException();
+      }
+    }
+    return this;
+  }
+
+  /**
+   * The current color selection in the ColorChooser.
    *
    * @return the current color selection in the ColorChooser.
    */
@@ -766,6 +830,5 @@ public final class ColorChooser extends AbstractDwcComponent
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
     }
-
   }
 }
