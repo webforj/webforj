@@ -52,16 +52,18 @@ public final class ColorChooser extends AbstractDwcComponent
    * Enum values with respective values for the expanse of colorChooser.
    */
   public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL;
+    LARGE, MEDIUM, SMALL, XLARGE, XSMALL, XXSMALL, XXXSMALL
   }
 
   /**
    * Enum values with respective values for the theme of colorChooser.
    */
   public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING;
+    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
   }
-
+  public ColorChooser() {
+    this.tabTraversable = true;
+  }
   public ColorChooser(Color color) {
     this.setColor(color);
     this.tabTraversable = true;
