@@ -9,6 +9,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.colorchooser.event.ColorChooserApproveEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractSink;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * Approve EventSINK for the ColorChooser Component.
@@ -25,11 +26,15 @@ public class ColorChooserApproveEventSink extends AbstractSink {
   * @param event using it to cast into BBjApproveEvent.
   * @throws BBjException to handle the event on BBj Side.
   */
-  public void handleEvent(BBjEvent event) throws BBjException {
+  public void handleEvent(BBjEvent event) {
     BBjColorChooserApproveEvent ev = (BBjColorChooserApproveEvent) event;
     HashMap<String, Object> map = new HashMap<>();
 
-    map.put("color", ev.getColor());
+    try {
+      map.put("color", ev.getColor());
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException();
+    }
 
     ColorChooserApproveEvent dwcEv = new ColorChooserApproveEvent(component, map);
     this.dispatcher.dispatchEvent(dwcEv);
