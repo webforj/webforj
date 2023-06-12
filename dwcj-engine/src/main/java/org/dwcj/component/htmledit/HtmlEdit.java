@@ -409,22 +409,6 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method gets the list of available spell-check languages for a HtmlEdit control.
-   *
-   * @return Returns a List of strings of available spell-check languages for a HtmlEdit control.
-   */
-  public List<String> getAvailableSpellCheckLanguages() {
-    if (getBBjControl() != null) {
-      try {
-        return getBBjControl().getAvailableSpellCheckLanguages();
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
-      }
-    }
-    return List.of();
-  }
-
-  /**
    * This method gets a List of strings that specifies all available editor states in the HTMLEditor
    * toolbar.
    *
@@ -562,22 +546,6 @@ public final class HtmlEdit extends AbstractDwcComponent
   }
 
   /**
-   * This method gets the spell-check language of an HTMLEdit control.
-   *
-   * @return A string representing the spell-check language of an HTMLEdit control.
-   */
-  public String getSpellCheckLanguage() {
-    if (getBBjControl() != null) {
-      try {
-        return getBBjControl().getSpellCheckLanguage();
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException();
-      }
-    }
-    return this.spellCheckLanguage;
-  }
-
-  /**
    * This method gets the Boolean value of a specified state in the HtmlEdit toolbar.
    *
    * @param state specifying one of the state names from HTMLEdit::getAvailableStates
@@ -592,24 +560,6 @@ public final class HtmlEdit extends AbstractDwcComponent
       }
     }
     return states.get(state);
-  }
-
-  /**
-   * This method gets a boolean that indicates whether spell-checking is currently enabled on this
-   * HTMLEdit control.
-   *
-   * @return a boolean representing whether or not spell-check is enabled on this control.
-   */
-  public boolean isSpellChecked() {
-    if (getBBjControl() != null) {
-      try {
-        return getBBjControl().isSpellChecked();
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException();
-      }
-    }
-
-    return this.isSpellChecked;
   }
 
   /**
@@ -664,10 +614,11 @@ public final class HtmlEdit extends AbstractDwcComponent
     return this;
   }
 
-  /**
-   * Sets the text of an HtmlEdit control.
+  /*
+   * * Sets the text of an HtmlEdit control.
    *
    * @param text - A String representing the text you wish to set.
+   *
    * @return Returns this
    */
   public HtmlEdit setPlainText(String text) {
@@ -702,23 +653,42 @@ public final class HtmlEdit extends AbstractDwcComponent
     return this;
   }
 
+  // ==============================================================================
+  // TODO: decide wether or not, and in what way, to implement spellcheck
+  // ==============================================================================
+  /**
+   * This method gets the spell-check language of an HTMLEdit control.
+   *
+   * @return A string representing the spell-check language of an HTMLEdit control.
+   */
+  /*
+   * public String getSpellCheckLanguage() { if (getBBjControl() != null) { try { return
+   * getBBjControl().getSpellCheckLanguage(); } catch (BBjException e) { throw new
+   * DwcjRuntimeException(); } } return this.spellCheckLanguage; }
+   */
+
+  /**
+   * This method gets the list of available spell-check languages for a HtmlEdit control.
+   *
+   * @return Returns a List of strings of available spell-check languages for a HtmlEdit control.
+   */
+  /*
+   * public List<String> getAvailableSpellCheckLanguages() { if (getBBjControl() != null) { try {
+   * return getBBjControl().getAvailableSpellCheckLanguages(); } catch (BBjException e) { throw new
+   * DwcjRuntimeException(e); } } return List.of(); }
+   */
+
   /**
    * Specifies whether or not spell checking should be enabled in this HtmlEdit control.
    *
    * @param spellChecked - boolean value - true enables spell checking, false disables it.
    * @return Returns this
    */
-  public HtmlEdit setSpellChecked(boolean spellChecked) {
-    if (getBBjControl() != null) {
-      try {
-        getBBjControl().setSpellChecked(spellChecked);
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException();
-      }
-    }
-    this.isSpellChecked = spellChecked;
-    return this;
-  }
+  /*
+   * public HtmlEdit setSpellChecked(boolean spellChecked) { if (getBBjControl() != null) { try {
+   * getBBjControl().setSpellChecked(spellChecked); } catch (BBjException e) { throw new
+   * DwcjRuntimeException(); } } this.isSpellChecked = spellChecked; return this; }
+   */
 
   /**
    * Sets the spell check language for this HtmlEdit control.
@@ -726,17 +696,27 @@ public final class HtmlEdit extends AbstractDwcComponent
    * @param language - String representing the desired language for spell checking
    * @return Returns this
    */
-  public HtmlEdit setSpellCheckLanguage(String language) {
-    if (getBBjControl() != null) {
-      try {
-        getBBjControl().setSpellCheckLanguage(language);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.spellCheckLanguage = language;
-    return this;
-  }
+  /*
+   * public HtmlEdit setSpellCheckLanguage(String language) { if (getBBjControl() != null) { try {
+   * getBBjControl().setSpellCheckLanguage(language); } catch (BBjException e) {
+   * Environment.logError(e); } } this.spellCheckLanguage = language; return this; }
+   */
+
+
+  /**
+   * This method gets a boolean that indicates whether spell-checking is currently enabled on this
+   * HTMLEdit control.
+   *
+   * @return a boolean representing whether or not spell-check is enabled on this control.
+   */
+  /*
+   * public boolean isSpellChecked() { if (getBBjControl() != null) { try { return
+   * getBBjControl().isSpellChecked(); } catch (BBjException e) { throw new DwcjRuntimeException();
+   * } }
+   *
+   * return this.isSpellChecked; }
+   */
+
 
   /**
    * {@inheritDoc}
@@ -924,19 +904,12 @@ public final class HtmlEdit extends AbstractDwcComponent
       this.setPlainText(this.plainText);
     }
 
-    if (!this.spellCheckLanguage.equals("")) {
-      this.setSpellCheckLanguage(this.spellCheckLanguage);
-    }
-
     if (!this.states.isEmpty()) {
       for (Map.Entry<String, Boolean> entry : this.states.entrySet()) {
         this.setState(entry.getKey(), entry.getValue());
       }
     }
 
-    if (this.isSpellChecked) {
-      this.setSpellChecked(this.isSpellChecked);
-    }
   }
 
 }
