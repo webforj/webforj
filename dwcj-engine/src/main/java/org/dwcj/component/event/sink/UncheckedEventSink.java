@@ -23,7 +23,7 @@ public class UncheckedEventSink extends AbstractSink {
    */
   public void handleEvent(BBjEvent ev) {
     HashMap<String, Object> map = new HashMap<>();
-    UncheckedEvent dwcEv = new UncheckedEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    UncheckedEvent dwcEv = new UncheckedEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

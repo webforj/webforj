@@ -31,7 +31,7 @@ public final class ButtonClickEventSink extends AbstractSink {
     map.put("x", event.getX());
     map.put("y", event.getY());
 
-    ButtonClickEvent dwcEv = new ButtonClickEvent((Button) this.component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    ButtonClickEvent dwcEv = new ButtonClickEvent((Button) this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

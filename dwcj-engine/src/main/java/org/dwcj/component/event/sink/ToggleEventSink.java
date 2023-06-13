@@ -29,8 +29,8 @@ public class ToggleEventSink extends AbstractSink {
       BBjCheckChangeEvent event = (BBjCheckChangeEvent) ev;
       HashMap<String, Object> map = new HashMap<>();
       map.put("toggled", event.isChecked());
-      ToggleEvent dwcEv = new ToggleEvent(component, map);
-      this.dispatcher.dispatchEvent(dwcEv);
+      ToggleEvent dwcEv = new ToggleEvent(this.getComponent(), map);
+      this.getEventDispatcher().dispatchEvent(dwcEv);
     } catch (BBjException e) {
       throw new DwcjRuntimeException(e);
     }

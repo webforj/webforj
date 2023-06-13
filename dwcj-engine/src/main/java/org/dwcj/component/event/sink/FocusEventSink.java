@@ -30,8 +30,8 @@ public class FocusEventSink extends AbstractSink {
     map.put("text", event.getText());
     map.put("temporary", event.isTemporary());
 
-    FocusEvent dwcEv = new FocusEvent(this.component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    FocusEvent dwcEv = new FocusEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 
 }

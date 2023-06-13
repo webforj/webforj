@@ -23,9 +23,7 @@ import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
-import org.dwcj.component.event.sink.MouseEnterEventSink;
-import org.dwcj.component.event.sink.MouseExitEventSink;
-import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.event.sink.EventSinkManager;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,19 +38,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /** Label tests. */
 @ExtendWith(MockitoExtension.class)
-public class LabelTest {
+class LabelTest {
 
   @Mock
   BBjStaticText control;
 
   @Mock
-  MouseEnterEventSink mouseEnterEventSink;
+  EventSinkManager<MouseEnterEvent> mouseEnterEventHandler;
 
   @Mock
-  MouseExitEventSink mouseExitEventSink;
+  EventSinkManager<MouseExitEvent> mouseExitEventHandler;
 
   @Mock
-  RightMouseDownEventSink rightMouseDownEventSink;
+  EventSinkManager<RightMouseDownEvent> rightMouseDownEventHandler;
 
   @Spy
   EventDispatcher dispatcher;
@@ -177,279 +175,6 @@ public class LabelTest {
     void reThrowDwcjRunTimeException(Alignment align) throws BBjException {
       doThrow(BBjException.class).when(control).setAlignment(anyInt());
       assertThrows(DwcjRuntimeException.class, () -> component.setHorizontalAlignment(align));
-    }
-  }
-
-  @Nested
-  @DisplayName("Mouse Enter Events")
-  class MouseEnter {
-
-    @Test
-    @DisplayName("addListener when control is defined")
-    void addListenerWhenControlIsDefined() {
-      EventListener<MouseEnterEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseEnter(listener);
-
-      verify(mouseEnterEventSink, times(1)).setCallback();
-      verify(dispatcher, times(1)).addEventListener(MouseEnterEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("addListener when control is null")
-    void addListenerWhenControlIsNull() throws IllegalAccessException {
-      nullifyControl();
-      EventListener<MouseEnterEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseEnter(listener);
-      verify(mouseEnterEventSink, times(0)).setCallback();
-      verify(dispatcher, times(1)).addEventListener(MouseEnterEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("addListener when dispatcher has already MouseEnterEvent listener registered")
-    void addListenerWhenDispatcherHasAlreadyMouseEnterEventListenerRegistered() {
-      EventListener<MouseEnterEvent> listener = e -> {
-        // do nothing
-      };
-
-      dispatcher.addEventListener(MouseEnterEvent.class, listener);
-      assertEquals(1, dispatcher.getListenersCount(MouseEnterEvent.class));
-
-      component.onMouseEnter(e -> {
-        // do nothing
-      });
-      verify(mouseEnterEventSink, times(0)).setCallback();
-    }
-
-    @Test
-    @DisplayName("removeListener when control is defined")
-    void removeListenerWhenControlIsDefined() {
-      EventListener<MouseEnterEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseEnter(listener);
-      component.removeMouseEnterListener(listener);
-
-      verify(mouseEnterEventSink, times(1)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(MouseEnterEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("removeListener when control is null")
-    void removeListenerWhenControlIsNull() throws IllegalAccessException {
-      nullifyControl();
-      EventListener<MouseEnterEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseEnter(listener);
-      component.removeMouseEnterListener(listener);
-
-      verify(mouseEnterEventSink, times(0)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(MouseEnterEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("removeListener when dispatcher has already more than one MouseEnterEvent listener registered")
-    void removeListenerWhenDispatcherHasAlreadyMoreThanOneMouseEnterEventListenerRegistered() {
-      EventListener<MouseEnterEvent> listener = e -> {
-        // do nothing
-      };
-      EventListener<MouseEnterEvent> listener2 = e -> {
-        // do nothing
-      };
-
-      component.onMouseEnter(listener);
-      component.onMouseEnter(listener2);
-      assertEquals(2, dispatcher.getListenersCount(MouseEnterEvent.class));
-
-      component.removeMouseEnterListener(listener);
-      verify(mouseEnterEventSink, times(0)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(MouseEnterEvent.class, listener);
-    }
-  }
-
-  @Nested
-  @DisplayName("Mouse Exit Events")
-  class MouseExit {
-
-    @Test
-    @DisplayName("addListener when control is defined")
-    void addListenerWhenControlIsDefined() {
-      EventListener<MouseExitEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseExit(listener);
-
-      verify(mouseExitEventSink, times(1)).setCallback();
-      verify(dispatcher, times(1)).addEventListener(MouseExitEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("addListener when control is null")
-    void addListenerWhenControlIsNull() throws IllegalAccessException {
-      nullifyControl();
-      EventListener<MouseExitEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseExit(listener);
-      verify(mouseExitEventSink, times(0)).setCallback();
-      verify(dispatcher, times(1)).addEventListener(MouseExitEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("addListener when dispatcher has already MouseExitEvent listener registered")
-    void addListenerWhenDispatcherHasAlreadyMouseExitEventListenerRegistered() {
-      EventListener<MouseExitEvent> listener = e -> {
-        // do nothing
-      };
-
-      dispatcher.addEventListener(MouseExitEvent.class, listener);
-      assertEquals(1, dispatcher.getListenersCount(MouseExitEvent.class));
-
-      component.onMouseExit(e -> {
-        // do nothing
-      });
-      verify(mouseExitEventSink, times(0)).setCallback();
-    }
-
-    @Test
-    @DisplayName("removeListener when control is defined")
-    void removeListenerWhenControlIsDefined() {
-      EventListener<MouseExitEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseExit(listener);
-      component.removeMouseExitListener(listener);
-
-      verify(mouseExitEventSink, times(1)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(MouseExitEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("removeListener when control is null")
-    void removeListenerWhenControlIsNull() throws IllegalAccessException {
-      nullifyControl();
-      EventListener<MouseExitEvent> listener = e -> {
-        // do nothing
-      };
-      component.onMouseExit(listener);
-      component.removeMouseExitListener(listener);
-
-      verify(mouseExitEventSink, times(0)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(MouseExitEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("removeListener when dispatcher has already more than one MouseExitEvent listener registered")
-    void removeListenerWhenDispatcherHasAlreadyMoreThanOneMouseExitEventListenerRegistered() {
-      EventListener<MouseExitEvent> listener = e -> {
-        // do nothing
-      };
-      EventListener<MouseExitEvent> listener2 = e -> {
-        // do nothing
-      };
-
-      component.onMouseExit(listener);
-      component.onMouseExit(listener2);
-      assertEquals(2, dispatcher.getListenersCount(MouseExitEvent.class));
-
-      component.removeMouseExitListener(listener);
-      verify(mouseExitEventSink, times(0)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(MouseExitEvent.class, listener);
-    }
-  }
-
-  @Nested
-  @DisplayName("Right Mouse Down Events")
-  class RightMouseDown {
-
-    @Test
-    @DisplayName("addListener when control is defined")
-    void addListenerWhenControlIsDefined() {
-      EventListener<RightMouseDownEvent> listener = e -> {
-        // do nothing
-      };
-      component.onRightMouseDown(listener);
-
-      verify(rightMouseDownEventSink, times(1)).setCallback();
-      verify(dispatcher, times(1)).addEventListener(RightMouseDownEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("addListener when control is null")
-    void addListenerWhenControlIsNull() throws IllegalAccessException {
-      nullifyControl();
-      EventListener<RightMouseDownEvent> listener = e -> {
-        // do nothing
-      };
-      component.onRightMouseDown(listener);
-      verify(rightMouseDownEventSink, times(0)).setCallback();
-      verify(dispatcher, times(1)).addEventListener(RightMouseDownEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("addListener when dispatcher has already RightMouseDownEvent listener registered")
-    void addListenerWhenDispatcherHasAlreadyRightMouseDownEventListenerRegistered() {
-      EventListener<RightMouseDownEvent> listener = e -> {
-        // do nothing
-      };
-
-      dispatcher.addEventListener(RightMouseDownEvent.class, listener);
-      assertEquals(1, dispatcher.getListenersCount(RightMouseDownEvent.class));
-
-      component.onRightMouseDown(e -> {
-        // do nothing
-      });
-      verify(rightMouseDownEventSink, times(0)).setCallback();
-    }
-
-    @Test
-    @DisplayName("removeListener when control is defined")
-    void removeListenerWhenControlIsDefined() {
-      EventListener<RightMouseDownEvent> listener = e -> {
-        // do nothing
-      };
-      component.onRightMouseDown(listener);
-      component.removeRightMouseDownListener(listener);
-
-      verify(rightMouseDownEventSink, times(1)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(RightMouseDownEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("removeListener when control is null")
-    void removeListenerWhenControlIsNull() throws IllegalAccessException {
-      nullifyControl();
-      EventListener<RightMouseDownEvent> listener = e -> {
-        // do nothing
-      };
-      component.onRightMouseDown(listener);
-      component.removeRightMouseDownListener(listener);
-
-      verify(rightMouseDownEventSink, times(0)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(RightMouseDownEvent.class, listener);
-    }
-
-    @Test
-    @DisplayName("removeListener when dispatcher has already more than one RightMouseDownEvent listener registered")
-    void removeListenerWhenDispatcherHasAlreadyMoreThanOneRightMouseDownEventListenerRegistered() {
-      EventListener<RightMouseDownEvent> listener = e -> {
-        // do nothing
-      };
-      EventListener<RightMouseDownEvent> listener2 = e -> {
-        // do nothing
-      };
-
-      component.onRightMouseDown(listener);
-      component.onRightMouseDown(listener2);
-      assertEquals(2, dispatcher.getListenersCount(RightMouseDownEvent.class));
-
-      component.removeRightMouseDownListener(listener);
-      verify(rightMouseDownEventSink, times(0)).removeCallback();
-      verify(dispatcher, times(1)).removeEventListener(RightMouseDownEvent.class, listener);
     }
   }
 }

@@ -13,6 +13,7 @@ import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.sink.EventSinkManager;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
@@ -20,14 +21,18 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-
 /** A label object. */
 public final class Label extends AbstractDwcComponent implements HorizontalAlignment {
 
   private EventDispatcher dispatcher = new EventDispatcher();
-  private MouseEnterEventSink mouseEnterEventSink;
-  private MouseExitEventSink mouseExitEventSink;
-  private RightMouseDownEventSink rightMouseDownEventSink;
+
+  private EventSinkManager<MouseEnterEvent> mouseEnterEventHandler =
+      new EventSinkManager<>(new MouseEnterEventSink(this, dispatcher), MouseEnterEvent.class);
+  private EventSinkManager<MouseExitEvent> mouseExitEventHandler =
+      new EventSinkManager<>(new MouseExitEventSink(this, dispatcher), MouseExitEvent.class);
+  private EventSinkManager<RightMouseDownEvent> rightMouseDownEventHandler = new EventSinkManager<>(
+      new RightMouseDownEventSink(this, dispatcher), RightMouseDownEvent.class);
+
   private boolean lineWrap = true;
 
   /**
@@ -66,21 +71,9 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
-      this.setControl(w.addStaticText(getText(), flags));
-      this.mouseEnterEventSink = new MouseEnterEventSink(this, dispatcher);
-      this.mouseExitEventSink = new MouseExitEventSink(this, dispatcher);
-      this.rightMouseDownEventSink = new RightMouseDownEventSink(this, dispatcher);
+      setControl(w.addStaticText(getText(), flags));
       catchUp();
     } catch (Exception e) {
-      throw new DwcjRuntimeException(e);
-    }
-  }
-
-
-  private BBjStaticText getBBjControl() {
-    try {
-      return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
-    } catch (IllegalAccessException e) {
       throw new DwcjRuntimeException(e);
     }
   }
@@ -92,10 +85,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
-      this.mouseEnterEventSink.setCallback();
-    }
-    dispatcher.addEventListener(MouseEnterEvent.class, listener);
+    this.mouseEnterEventHandler.addEventListener(listener);
     return this;
   }
 
@@ -117,10 +107,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    dispatcher.removeEventListener(MouseEnterEvent.class, listener);
-    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseEnterEvent.class) == 0) {
-      this.mouseEnterEventSink.removeCallback();
-    }
+    this.mouseEnterEventHandler.removeEventListener(listener);
     return this;
   }
 
@@ -131,10 +118,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
-      this.mouseExitEventSink.setCallback();
-    }
-    dispatcher.addEventListener(MouseExitEvent.class, listener);
+    this.mouseExitEventHandler.addEventListener(listener);
     return this;
   }
 
@@ -156,10 +140,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label removeMouseExitListener(EventListener<MouseExitEvent> listener) {
-    dispatcher.removeEventListener(MouseExitEvent.class, listener);
-    if (getBBjControl() != null && this.dispatcher.getListenersCount(MouseExitEvent.class) == 0) {
-      this.mouseExitEventSink.removeCallback();
-    }
+    this.mouseExitEventHandler.removeEventListener(listener);
     return this;
   }
 
@@ -170,11 +151,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    if (getBBjControl() != null
-        && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
-      this.rightMouseDownEventSink.setCallback();
-    }
-    dispatcher.addEventListener(RightMouseDownEvent.class, listener);
+    this.rightMouseDownEventHandler.addEventListener(listener);
     return this;
   }
 
@@ -196,11 +173,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @return The Label itself
    */
   public Label removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    dispatcher.removeEventListener(RightMouseDownEvent.class, listener);
-    if (getBBjControl() != null
-        && this.dispatcher.getListenersCount(RightMouseDownEvent.class) == 0) {
-      this.rightMouseDownEventSink.removeCallback();
-    }
+    this.rightMouseDownEventHandler.removeEventListener(listener);
     return this;
   }
 
@@ -337,17 +310,9 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
   }
 
   private void eventCatchUp() {
-    if (this.dispatcher.getListenersCount(MouseEnterEvent.class) > 0) {
-      this.mouseEnterEventSink.setCallback();
-    }
-
-    if (this.dispatcher.getListenersCount(MouseExitEvent.class) > 0) {
-      this.mouseExitEventSink.setCallback();
-    }
-
-    if (this.dispatcher.getListenersCount(RightMouseDownEvent.class) > 0) {
-      this.rightMouseDownEventSink.setCallback();
-    }
+    this.mouseEnterEventHandler.catchUp();
+    this.mouseExitEventHandler.catchUp();
+    this.rightMouseDownEventHandler.catchUp();
   }
 
   /**
@@ -360,12 +325,21 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
     }
     super.catchUp();
     eventCatchUp();
+
     if (!this.lineWrap) {
       this.setWrap(lineWrap);
     }
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
+    }
+  }
+
+  private BBjStaticText getBBjControl() {
+    try {
+      return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException(e);
     }
   }
 }

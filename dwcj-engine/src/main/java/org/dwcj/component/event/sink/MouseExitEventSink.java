@@ -26,7 +26,7 @@ public class MouseExitEventSink extends AbstractMouseEventSink {
     BBjMouseEvent event = (BBjMouseEvent) ev;
     HashMap<String, Object> map = super.buildPayload(event);
 
-    MouseExitEvent dwcEv = new MouseExitEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    MouseExitEvent dwcEv = new MouseExitEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

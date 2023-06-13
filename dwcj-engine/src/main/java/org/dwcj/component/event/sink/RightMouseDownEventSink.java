@@ -25,8 +25,8 @@ public class RightMouseDownEventSink extends AbstractMouseEventSink {
     BBjMouseEvent event = (BBjMouseEvent) ev;
     HashMap<String, Object> map = super.buildPayload(event);
 
-    RightMouseDownEvent dwcEv = new RightMouseDownEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    RightMouseDownEvent dwcEv = new RightMouseDownEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 
 }
