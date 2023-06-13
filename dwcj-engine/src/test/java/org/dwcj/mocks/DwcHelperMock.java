@@ -12,12 +12,12 @@ public class DwcHelperMock implements IDwcjBBjBridge {
 
   @Override
   public CustomObject getEventProxy(Object obj, String method) {
-    throw new UnsupportedOperationException("Unimplemented method 'getEventProxy'");
+    return new CustomObjectMock();
   }
 
   @Override
   public CustomObject getEventProxy(Object obj, String method, String eventclassname) {
-    throw new UnsupportedOperationException("Unimplemented method 'getEventProxy'");
+    return new CustomObjectMock();
   }
 
   @Override

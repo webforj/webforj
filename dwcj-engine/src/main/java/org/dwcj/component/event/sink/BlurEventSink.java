@@ -30,7 +30,7 @@ public class BlurEventSink extends AbstractSink {
     map.put("text", event.getText());
     map.put("client-validation-valid", event.isClientValidationValid());
 
-    BlurEvent dwcEv = new BlurEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    BlurEvent dwcEv = new BlurEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

@@ -25,8 +25,8 @@ public class MouseEnterEventSink extends AbstractMouseEventSink {
     BBjMouseEvent event = (BBjMouseEvent) ev;
     HashMap<String, Object> map = super.buildPayload(event);
 
-    MouseEnterEvent dwcEv = new MouseEnterEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    MouseEnterEvent dwcEv = new MouseEnterEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 
 }

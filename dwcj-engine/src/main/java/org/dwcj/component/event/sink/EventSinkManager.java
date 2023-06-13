@@ -5,53 +5,65 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 
 /**
- * EventController which handles the set and remove callback and the dispatcher.
+ * EventSinkManager is used to manage the event listeners (add/remove) for a BBjControl sink and the
+ * corresponding event.
+ *
+ * @param <T> the event type
  */
 public class EventSinkManager<T extends Event<?>> {
-  private final EventDispatcher dispatcher;
   private final AbstractSink sink;
   private final Class<T> event;
 
   /**
    * Creates a new EventSinkManager.
    *
-   * @param sink the corresponding sink to the event
-   * @param event the corresponding event to the sink
+   * @param sink The corresponding sink to the event
+   * @param event The corresponding event to the sink
    */
   public EventSinkManager(AbstractSink sink, Class<T> event) {
     this.sink = sink;
-    this.dispatcher = sink.getEventDispatcher();
     this.event = event;
   }
 
   /**
-   * Adds a event.
+   * Adds a event listener.
    *
-   * @param listener the event listener to be added
+   * @param listener The event listener to be added
    */
   public void addEventListener(EventListener<T> listener) {
-    this.dispatcher.addEventListener(event, listener);
+    getEventDispatcher().addEventListener(event, listener);
     this.sink.setCallback();
   }
 
   /**
-   * Removes a event.
+   * Removes a event listener.
    *
-   * @param listener the event listener to be removed
+   * @param listener The event listener to be removed
    */
   public void removeEventListener(EventListener<T> listener) {
-    this.dispatcher.removeEventListener(event, listener);
-    if (this.dispatcher.getListenersCount(event) == 0) {
+    EventDispatcher dispatcher = getEventDispatcher();
+
+    dispatcher.removeEventListener(event, listener);
+    if (dispatcher.getListenersCount(event) == 0) {
       this.sink.removeCallback();
     }
   }
 
   /**
-   * Sets the callback for the sink if the dispatcher holds any Event of type T.
+   * Catches up the sink with the current state of the event dispatcher.
    */
   public void catchUp() {
-    if (this.dispatcher.getListenersCount(event) > 0) {
+    if (getEventDispatcher().getListenersCount(event) > 0) {
       this.sink.setCallback();
     }
+  }
+
+  /**
+   * Get the event dispatcher instance.
+   *
+   * @return the event dispatcher instance.
+   */
+  EventDispatcher getEventDispatcher() {
+    return this.sink.getEventDispatcher();
   }
 }

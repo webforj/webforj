@@ -21,7 +21,6 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-
 /** A label object. */
 public final class Label extends AbstractDwcComponent implements HorizontalAlignment {
 
@@ -72,18 +71,9 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
-      control = w.addStaticText(getText(), flags);
+      setControl(w.addStaticText(getText(), flags));
       catchUp();
     } catch (Exception e) {
-      throw new DwcjRuntimeException(e);
-    }
-  }
-
-
-  private BBjStaticText getBBjControl() {
-    try {
-      return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
-    } catch (IllegalAccessException e) {
       throw new DwcjRuntimeException(e);
     }
   }
@@ -342,6 +332,14 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
+    }
+  }
+
+  private BBjStaticText getBBjControl() {
+    try {
+      return (BBjStaticText) ComponentAccessor.getDefault().getBBjControl(this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException(e);
     }
   }
 }

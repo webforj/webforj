@@ -117,33 +117,6 @@ class LabelTest {
     }
   }
 
-  @Test
-  @DisplayName("removing Listeners")
-  void removeListeners() {
-    Label componentSpy = spy(component);
-
-    EventListener<MouseEnterEvent> listener = e -> {
-    };
-    EventListener<MouseExitEvent> listener2 = e -> {
-    };
-    EventListener<RightMouseDownEvent> listener3 = e -> {
-    };
-
-
-    componentSpy.onMouseEnter(listener);
-    componentSpy.onMouseExit(listener2);
-    componentSpy.onRightMouseDown(listener3);
-
-    componentSpy.removeMouseEnterListener(listener);
-    componentSpy.removeMouseExitListener(listener2);
-    componentSpy.removeRightMouseDownListener(listener3);
-
-    verify(componentSpy, times(1)).removeMouseEnterListener(listener);
-    verify(componentSpy, times(1)).removeMouseExitListener(listener2);
-    verify(componentSpy, times(1)).removeRightMouseDownListener(listener3);
-
-  }
-
   @Nested
   @DisplayName("Wrap API")
   class Wrap {

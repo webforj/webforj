@@ -5,18 +5,16 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 
 /** Mock for the AbstractSink. */
-public class AbstractSinkMock extends AbstractSink {
+public class SinkMock extends AbstractSink {
 
-  public AbstractSinkMock() {
-    super(null, null, 0);
+  public SinkMock() {
+    super(null, new EventDispatcher(), 0);
   }
 
-  protected AbstractSinkMock(AbstractDwcComponent component, EventDispatcher dispatcher,
-      int eventType) {
+  protected SinkMock(AbstractDwcComponent component, EventDispatcher dispatcher, int eventType) {
     super(component, dispatcher, eventType);
   }
 
   @Override
   public void handleEvent(BBjEvent ev) {}
-
 }

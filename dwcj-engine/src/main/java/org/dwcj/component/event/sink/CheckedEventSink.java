@@ -23,7 +23,7 @@ public class CheckedEventSink extends AbstractSink {
    */
   public void handleEvent(BBjEvent ev) {
     HashMap<String, Object> map = new HashMap<>();
-    CheckedEvent dwcEv = new CheckedEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    CheckedEvent dwcEv = new CheckedEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

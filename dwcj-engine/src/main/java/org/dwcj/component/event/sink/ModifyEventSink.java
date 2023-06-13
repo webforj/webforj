@@ -27,7 +27,7 @@ public class ModifyEventSink extends AbstractSink {
 
     map.put("text", event.getText());
 
-    ModifyEvent dwcEv = new ModifyEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    ModifyEvent dwcEv = new ModifyEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

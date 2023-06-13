@@ -5,14 +5,8 @@ import org.dwcj.component.window.AbstractWindow;
 
 public class DwcComponentMock extends AbstractDwcComponent {
 
-  public DwcComponentMock() {
-
-  }
+  public DwcComponentMock() {}
 
   @Override
-  protected void create(AbstractWindow panel) {
-
-  }
-
-
+  protected void create(AbstractWindow panel) {}
 }

@@ -26,7 +26,7 @@ public class FieldKeypressEventSink extends AbstractKeypressEventSink {
   public void handleEvent(BBjEvent ev) {
     HashMap<String, Object> map = super.buildPayload(ev);
 
-    KeypressEvent dwcEv = new KeypressEvent(component, map);
-    this.dispatcher.dispatchEvent(dwcEv);
+    KeypressEvent dwcEv = new KeypressEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }
