@@ -1,6 +1,8 @@
-package org.dwcj.component.event;
+package org.dwcj.component.event.sink;
 
-import org.dwcj.component.event.sink.AbstractSink;
+import org.dwcj.component.event.Event;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
 
 /**
  * EventController which handles the set and remove callback and the dispatcher.

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.event.sink.EventSinkManager;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
