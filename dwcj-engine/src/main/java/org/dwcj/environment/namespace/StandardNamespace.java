@@ -3,10 +3,12 @@ package org.dwcj.environment.namespace;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.environment.namespace.event.NamespaceAccessEvent;
+import org.dwcj.environment.namespace.event.NamespaceChangeEvent;
 import org.dwcj.environment.namespace.event.NamespaceEvent;
-import org.dwcj.environment.namespace.sink.NamespaceEventSink;
-
+import org.dwcj.environment.namespace.event.NamespaceVariableAccessEvent;
+import org.dwcj.environment.namespace.event.NamespaceVariableChangeEvent;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -20,6 +22,12 @@ import java.util.function.Consumer;
 public abstract class StandardNamespace implements Namespace, CanLock {
 
   protected BBjNamespace ns;
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private NamespaceEventSink sink = new NamespaceEventSink(this, dispatcher);
+
+  BBjNamespace getBBjNamespace() {
+    return this.ns;
+  }
 
   @Override
   public void put(String key, Object value) throws NamespaceVarableLockedException {
@@ -104,8 +112,9 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    * @param consumer the consumer to notify
    * @return
    */
-  public StandardNamespace onChange(Consumer<NamespaceEvent> consumer) {
-    new NamespaceEventSink(ns, true, consumer);
+  public StandardNamespace onChange(NamespaceListener<NamespaceChangeEvent> listener) {
+    sink.setNamespaceChangeCallback();
+    dispatcher.addNamespaceEventListener(NamespaceChangeEvent.class, listener);
     return this;
   }
 
@@ -116,8 +125,9 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    * @param consumer the consumer to notify
    * @return
    */
-  public StandardNamespace onAccess(Consumer<NamespaceEvent> consumer) {
-    new NamespaceEventSink(ns, false, consumer);
+  public StandardNamespace onAccess(NamespaceListener<NamespaceAccessEvent> listener) {
+    sink.setNamespaceAccessCallback();
+    dispatcher.addNamespaceEventListener(NamespaceAccessEvent.class, listener);
     return this;
   }
 
@@ -127,8 +137,10 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    * @param consumer the consumer to notify
    * @return
    */
-  public StandardNamespace onVariableChange(String key, Consumer<NamespaceEvent> consumer) {
-    new NamespaceEventSink(ns, key, true, consumer);
+  public StandardNamespace onVariableAccess(String key,
+      NamespaceListener<NamespaceVariableAccessEvent> listener) {
+    sink.setVariableAccessCallback(key);
+    dispatcher.addNamespaceEventListener(NamespaceVariableAccessEvent.class, listener);
     return this;
   }
 
@@ -139,8 +151,10 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    * @param consumer the consumer to notify
    * @return
    */
-  public StandardNamespace onVariableAccess(String key, Consumer<NamespaceEvent> consumer) {
-    new NamespaceEventSink(ns, key, false, consumer);
+  public StandardNamespace onVariableChange(String key,
+      NamespaceListener<NamespaceVariableChangeEvent> listener) {
+    sink.setVariableChangeCallback(key);
+    dispatcher.addNamespaceEventListener(NamespaceVariableChangeEvent.class, listener);
     return this;
   }
 

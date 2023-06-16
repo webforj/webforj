@@ -1,18 +1,20 @@
 package org.dwcj.environment.namespace.event;
 
-public final class NamespaceEvent {
+import java.util.Map;
+import org.dwcj.component.event.Event;
+
+public class NamespaceEvent {
 
   private final String namespaceName;
   private final String variableName;
   private final Object oldValue;
   private final Object newValue;
 
-  public NamespaceEvent(String namespaceName, String variableName, Object oldValue,
-      Object newValue) {
-    this.namespaceName = namespaceName;
-    this.variableName = variableName;
-    this.oldValue = oldValue;
-    this.newValue = newValue;
+  public NamespaceEvent(Map<String, Object> data) {
+    this.namespaceName = (String) data.get("namespaceName");
+    this.variableName = (String) data.get("variableName");
+    this.oldValue = data.get("oldValue");
+    this.newValue = data.get("newValue");
   }
 
   public String getNamespaceName() {
