@@ -3,6 +3,7 @@ package org.dwcj.component.label;
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import org.dwcj.App;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
@@ -40,6 +41,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    */
   public Label() {
     this("");
+
   }
 
   /**
@@ -50,6 +52,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
   public Label(String text) {
     this.textAlignment = Alignment.LEFT;
     setText(text);
+
   }
 
   /**
@@ -236,6 +239,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
   @ExcludeFromJacocoGeneratedReport
   public Label setText(String text) {
     super.setText(text);
+
     return this;
   }
 
@@ -333,6 +337,10 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
     }
+  }
+
+  public void test() {
+    App.consoleLog("label log");
   }
 
   private BBjStaticText getBBjControl() {

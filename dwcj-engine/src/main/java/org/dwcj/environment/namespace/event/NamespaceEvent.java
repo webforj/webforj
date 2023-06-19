@@ -10,6 +10,7 @@ public class NamespaceEvent {
   private final Object oldValue;
   private final Object newValue;
 
+
   public NamespaceEvent(Map<String, Object> data) {
     this.namespaceName = (String) data.get("namespaceName");
     this.variableName = (String) data.get("variableName");

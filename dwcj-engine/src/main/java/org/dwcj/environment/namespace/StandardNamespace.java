@@ -3,6 +3,7 @@ package org.dwcj.environment.namespace;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import org.dwcj.App;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.environment.namespace.event.NamespaceAccessEvent;
 import org.dwcj.environment.namespace.event.NamespaceChangeEvent;
@@ -153,6 +154,8 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    */
   public StandardNamespace onVariableChange(String key,
       NamespaceListener<NamespaceVariableChangeEvent> listener) {
+    App.consoleError("test" + key);
+    App.consoleLog("test" + key);
     sink.setVariableChangeCallback(key);
     dispatcher.addNamespaceEventListener(NamespaceVariableChangeEvent.class, listener);
     return this;

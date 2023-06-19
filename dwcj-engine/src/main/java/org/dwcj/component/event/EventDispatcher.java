@@ -103,7 +103,7 @@ public class EventDispatcher {
   public <T extends NamespaceEvent> void addNamespaceEventListener(Class<T> eventClass,
       NamespaceListener<T> listener) {
     CopyOnWriteArrayList<NamespaceListener<?>> list = namespaceListeners.get(eventClass);
-
+    App.consoleLog("we are in the dispatcher for namespace");
     if (list == null) {
       list = new CopyOnWriteArrayList<>();
       namespaceListeners.put(eventClass, list);

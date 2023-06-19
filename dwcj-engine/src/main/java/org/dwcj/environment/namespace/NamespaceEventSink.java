@@ -1,6 +1,7 @@
 package org.dwcj.environment.namespace;
 
 import java.util.HashMap;
+import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.component.event.EventDispatcher;
@@ -57,6 +58,7 @@ public class NamespaceEventSink {
   }
 
   public NamespaceEventSink setVariableChangeCallback(String key) {
+    App.consoleLog(key);
     if (bbjNamespace != null) {
       try {
         bbjNamespace.setCallbackForVariableChange(key,
