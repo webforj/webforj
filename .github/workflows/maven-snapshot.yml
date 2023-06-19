@@ -77,5 +77,8 @@ jobs:
           "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ env.bbj_version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
+      - name: Reflect new version in POMs
+        run: mvn versions:set -DnewVersion=${{steps.tag.outputs.tag}}-SNAPSHOT
+
       - name: Publish to Apache Maven
         run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q
