@@ -63,7 +63,7 @@ public class EventSinkManager<T extends Event<?>> {
    *
    * @return the event dispatcher instance.
    */
-  EventDispatcher getEventDispatcher() {
+  public EventDispatcher getEventDispatcher() {
     return this.sink.getEventDispatcher();
   }
 }
