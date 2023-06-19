@@ -97,6 +97,9 @@ public final class CheckBox extends AbstractDwcComponent
 
   /**
    * Create a new checkbox component.
+   * 
+   * @param text Desired text for the checkbox.
+   * @param checked True if the checkbox should be created as checked, false otherwise.
    */
   public CheckBox(String text, boolean checked) {
     super();
@@ -465,9 +468,9 @@ public final class CheckBox extends AbstractDwcComponent
   }
 
   /**
-   * Returns wether or not the checkbox is indeterminate.
+   * Returns whether or not the checkbox is indeterminate.
    *
-   * @return A Boolean representing wether or not the checkbox is indeterminate.
+   * @return A Boolean representing whether or not the checkbox is indeterminate.
    */
   public boolean isIndeterminate() {
     return this.indeterminate;

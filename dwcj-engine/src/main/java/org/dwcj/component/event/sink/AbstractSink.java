@@ -51,9 +51,10 @@ public abstract class AbstractSink {
 
     if (theControl != null) {
       // in tests the dwcjHelper is not set so we need to check for null
-      IDwcjBBjBridge dwcjHelper = getDwcjHelper();
-      if (dwcjHelper == null)
+      dwcjHelper = getDwcjHelper();
+      if (dwcjHelper == null) {
         return;
+      }
       try {
         theControl.setCallback(eventType, getDwcjHelper().getEventProxy(this, "handleEvent"),
             "onEvent");
@@ -81,7 +82,7 @@ public abstract class AbstractSink {
   }
 
   /**
-   * Handle the BBj event and delegate it to the corresponding event listener to the java component.
+   * Handle the BBj event and delegate it to the corresponding event listener to the Java component.
    *
    * @param ev A BBj event
    */
@@ -106,18 +107,18 @@ public abstract class AbstractSink {
   }
 
   /**
-   * Set the instance of the dwcjHelper.
+   * Set the instance of the DwcjHelper.
    *
-   * @param dwcjHelper The dwcjHelper instance.
+   * @param dwcjHelper The DwcjHelper instance.
    */
   void setDwcjHelper(IDwcjBBjBridge dwcjHelper) {
     this.dwcjHelper = dwcjHelper;
   }
 
   /**
-   * Get the instance of the dwcjHelper.
+   * Get the instance of the DwcjHelper.
    *
-   * @return The dwcjHelper instance.
+   * @return The DwcjHelper instance.
    */
   IDwcjBBjBridge getDwcjHelper() {
     return this.dwcjHelper;
