@@ -50,6 +50,10 @@ public abstract class AbstractSink {
     BBjControl theControl = getBBjControl();
 
     if (theControl != null) {
+      // in tests the dwcjHelper is not set so we need to check for null
+      IDwcjBBjBridge dwcjHelper = getDwcjHelper();
+      if (dwcjHelper == null)
+        return;
       try {
         theControl.setCallback(eventType, getDwcjHelper().getEventProxy(this, "handleEvent"),
             "onEvent");

@@ -1,398 +1,704 @@
 package org.dwcj.component.checkbox;
 
-import com.basis.bbj.proxies.sysgui.BBjCheckBox;
-import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
-
-import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.TextPosition;
-import org.dwcj.component.checkbox.event.CheckBoxChangeEvent;
-import org.dwcj.component.checkbox.sink.CheckBoxCheckEventSink;
+import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.event.CheckedEvent;
+import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.MouseEnterEvent;
+import org.dwcj.component.event.MouseExitEvent;
+import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.ToggleEvent;
+import org.dwcj.component.event.UncheckedEvent;
+import org.dwcj.component.event.sink.BlurEventSink;
+import org.dwcj.component.event.sink.CheckedEventSink;
+import org.dwcj.component.event.sink.EventSinkManager;
+import org.dwcj.component.event.sink.FocusEventSink;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.event.sink.ToggleEventSink;
+import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
-import java.util.ArrayList;
-import java.util.function.Consumer;
 
+import com.basis.bbj.proxies.sysgui.BBjCheckBox;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
+
+/**
+ * A Checkbox component.
+ */
 public final class CheckBox extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, TextPosition, HasEnable {
+    implements HasFocus, TabTraversable, TextPosition, HasEnable {
 
-
-  /*
-   * =====================================================================================
-   * Initialize the enums for Expanse and Theme if applicable to the control.
-   * =====================================================================================
+  /**
+   * Expanse options for the checkbox.
    */
-
   public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL
-  }
+    /* The xlarge expanse as defined by the BBj standard */
+    XLARGE("xl"),
+    /* The large expanse as defined by the BBj standard */
+    LARGE("l"),
+    /* The medium expanse as defined by the BBj standard */
+    MEDIUM("m"),
+    /* The small expanse as defined by the BBj standard */
+    SMALL("s"),
+    /* The xsmall expanse as defined by the BBj standard */
+    XSMALL("xs");
 
+    private final String value;
 
+    Expanse(String value) {
+      this.value = value;
+    }
 
-  /*
-   * ===================================================================================== If a
-   * control has BBj integer constants, create an enum with parameterized constructors that
-   * correspond to these numeric constants in BBj.
-   * =====================================================================================
-   */
-  public enum HorizontalTextPosition {
-    RIGHT(4), LEFT(2), CENTER(0), LEADING(10), TRAILING(11);
-
-    public final Integer position;
-
-    private HorizontalTextPosition(Integer position) {
-      this.position = position;
+    /**
+     * Get the value of the expanse.
+     *
+     * @return The value of the expanse.
+     */
+    public String getValue() {
+      return this.value;
     }
   }
 
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private EventSinkManager<CheckedEvent> checkedEventSinkManager =
+      new EventSinkManager<>(new CheckedEventSink(this, dispatcher), CheckedEvent.class);
+  private EventSinkManager<UncheckedEvent> unCheckedEventSinkManager =
+      new EventSinkManager<>(new UncheckedEventSink(this, dispatcher), UncheckedEvent.class);
+  private EventSinkManager<ToggleEvent> toggleEventSinkManager =
+      new EventSinkManager<>(new ToggleEventSink(this, dispatcher), ToggleEvent.class);
+  private EventSinkManager<FocusEvent> focusEventSinkManager =
+      new EventSinkManager<>(new FocusEventSink(this, dispatcher), FocusEvent.class);
+  private EventSinkManager<BlurEvent> blurEventSinkManager =
+      new EventSinkManager<>(new BlurEventSink(this, dispatcher), BlurEvent.class);
+  private EventSinkManager<MouseEnterEvent> mouseEnterEventSinkManager =
+      new EventSinkManager<>(new MouseEnterEventSink(this, dispatcher), MouseEnterEvent.class);
+  private EventSinkManager<MouseExitEvent> mouseExitEventSinkManager =
+      new EventSinkManager<>(new MouseExitEventSink(this, dispatcher), MouseExitEvent.class);
+  private EventSinkManager<RightMouseDownEvent> rightMouseDownEventSinkManager =
+      new EventSinkManager<>(new RightMouseDownEventSink(this, dispatcher),
+          RightMouseDownEvent.class);
 
-  /*
-   * ===================================================================================== Create a
-   * member variable of the BBj component, casted from this.ctrl. Initialize any other
-   * control-specific events or member variables as needed. These extra member variables should be
-   * listed in the BBj documentation for each control.
-   * =====================================================================================
+  private TextPosition.Position textPosition = TextPosition.Position.RIGHT;
+  private Boolean checked = null;
+  private boolean indeterminate = false;
+  private Expanse expanse;
+
+  /**
+   * Create a new checkbox component.
    */
-  private ArrayList<Consumer<CheckBoxChangeEvent>> callbacks = new ArrayList<>();
-  private CheckBoxCheckEventSink checkboxCheckEventSink;
-  private HorizontalTextPosition horizontalTextPosition = HorizontalTextPosition.RIGHT;
-  private Boolean checked = false;
-  private TextPosition.Position textPosition = TextPosition.Position.LEFT;
-
-
-  /*
-   * =====================================================================================
-   * Constructor initializes the inherited interface member variables to their defaults
-   * =====================================================================================
-   */
-  public CheckBox() {
-    this.readOnly = false;
-    this.tabTraversable = true;
+  public CheckBox(String text, boolean checked) {
+    super();
+    this.setText(text);
+    this.checked = checked;
   }
 
-  /*
-   * ===================================================================================== This
-   * first section implements parameterized constructors, overrides the create() method, and
-   * implements methods for the control-specific behaviors, which often include getters and setters
-   * for control-specific member variables and/or functionality.
-   * =====================================================================================
+  /**
+   * Create a new checkbox component.
+   *
+   * @param text The text for the checkbox.
    */
+  public CheckBox(String text) {
+    this(text, false);
+  }
 
+  /**
+   * Create a new checkbox component.
+   */
+  public CheckBox() {
+    this("", false);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      control = w.addCheckBox(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, BASISNUMBER_1, "", flags);
+      setControl(w.addCheckBox("", flags));
       this.catchUp();
-    } catch (Exception e) {
-      Environment.logError(e);
+    } catch (IllegalAccessException | BBjException e) {
+      throw new DwcjRuntimeException("Failed to create the BBjCheckBox Control", e);
     }
   }
 
   /**
-   * register an event callback for a checkOn or checkOff event
+   * Add a {@link CheckedEvent} listener to the checkbox component.
    *
-   * @param callback A method to receive the onChange event
-   * @return the control itself
+   * @param listener the event listener to be added
+   * @return The checkbox itself
    */
-  public CheckBox onChange(Consumer<CheckBoxChangeEvent> callback) {
-    if (this.control != null) {
-      if (this.checkboxCheckEventSink == null) {
-        this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
-      }
-      this.checkboxCheckEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
-    }
+  public CheckBox addCheckedListener(EventListener<CheckedEvent> listener) {
+    this.checkedEventSinkManager.addEventListener(listener);
     return this;
   }
 
   /**
-   * This method returns the horizontal position of the text in the CheckBox control. The default
-   * horizontal text position is RIGHT.
+   * Alias for {@link #addCheckedListener(EventListener) addCheckedListener}.
    *
-   * @return This method returns the horizontal position of the text in the CheckBox control.
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addCheckedListener(EventListener)
    */
-  public HorizontalTextPosition getHorizontalTextPosition() {
-    if (this.control != null) {
-      return this.horizontalTextPosition;
-    }
-    return HorizontalTextPosition.RIGHT;
+  public CheckBox onChecked(EventListener<CheckedEvent> listener) {
+    return addCheckedListener(listener);
   }
 
-
-  public CheckBox setHorizontalTextPosition(HorizontalTextPosition position) {
-    if (this.control != null) {
-      try {
-        ((BBjCheckBox) this.control).setHorizontalTextPosition(position.position);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.horizontalTextPosition = position;
+  /**
+   * Remove a {@link CheckedEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeCheckedListener(EventListener<CheckedEvent> listener) {
+    this.checkedEventSinkManager.removeEventListener(listener);
     return this;
   }
 
-
   /**
-   * Returns whether the BBjCheckBox is checked on or off (false = not checked, true = checked).
+   * Add an {@link UncheckedEvent} listener for the checkbox component.
    *
-   * @return false if not checked, true if checked.
+   * @param listener the event listener to be added
+   * @return The checkbox itself
    */
-  public Boolean isChecked() {
-    if (this.control != null) {
-      try {
-        return ((BBjCheckBox) this.control).isSelected();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return false;
+  public CheckBox addUncheckedListener(EventListener<UncheckedEvent> listener) {
+    this.unCheckedEventSinkManager.addEventListener(listener);
+    return this;
   }
 
-  public CheckBox setChecked(Boolean checked) {
-    if (this.control != null) {
+  /**
+   * Alias for {@link #addUncheckedListener(EventListener) addUncheckedListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addUncheckedListener(EventListener)
+   */
+  public CheckBox onUnchecked(EventListener<UncheckedEvent> listener) {
+    return addUncheckedListener(listener);
+  }
+
+  /**
+   * Remove an {@link UncheckedEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeUncheckedListener(EventListener<UncheckedEvent> listener) {
+    this.unCheckedEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Add a {@link ToggleEvent} listener for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addToggleListener(EventListener<ToggleEvent> listener) {
+    this.toggleEventSinkManager.addEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #addToggleListener(EventListener) addToggleListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addToggleListener(EventListener)
+   */
+  public CheckBox onToggle(EventListener<ToggleEvent> listener) {
+    return addToggleListener(listener);
+  }
+
+  /**
+   * Remove a {@link ToggleEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeToggleListener(EventListener<ToggleEvent> listener) {
+    this.toggleEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Add a {@link FocusEvent} listener for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addFocusListener(EventListener<FocusEvent> listener) {
+    this.focusEventSinkManager.addEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #addFocusListener(EventListener) addFocusListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addFocusListener(EventListener)
+   */
+  public CheckBox onFocus(EventListener<FocusEvent> listener) {
+    return addFocusListener(listener);
+  }
+
+  /**
+   * Removes a {@link FocusEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeFocusListener(EventListener<FocusEvent> listener) {
+    this.focusEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Add a {@link BlurEvent} listener for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addBlurListener(EventListener<BlurEvent> listener) {
+    this.blurEventSinkManager.addEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #addBlurListener(EventListener) addBlurListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addBlurListener(EventListener)
+   */
+  public CheckBox onBlur(EventListener<BlurEvent> listener) {
+    return addBlurListener(listener);
+  }
+
+  /**
+   * Removes a {@link BlurEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeBlurListener(EventListener<BlurEvent> listener) {
+    this.blurEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Adds a {@link MouseEnterEvent} for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    this.mouseEnterEventSinkManager.addEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #addMouseEnterListener(EventListener) addMouseEnterListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addMouseEnterListener(EventListener)
+   */
+  public CheckBox onMouseEnter(EventListener<MouseEnterEvent> listener) {
+    return addMouseEnterListener(listener);
+  }
+
+  /**
+   * Remove a {@link MouseEnterEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
+    this.mouseEnterEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Add a {@link MouseExitEvent} for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addMouseExitListener(EventListener<MouseExitEvent> listener) {
+    this.mouseExitEventSinkManager.addEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #addMouseExitListener(EventListener) addMouseExitListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addMouseExitListener(EventListener)
+   */
+  public CheckBox onMouseExit(EventListener<MouseExitEvent> listener) {
+    return addMouseExitListener(listener);
+  }
+
+  /**
+   * Remove a {@link MouseExitEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeMouseExitListener(EventListener<MouseExitEvent> listener) {
+    this.mouseExitEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Add a {@link RightMouseDownEvent} for the checkbox component.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   */
+  public CheckBox addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    this.rightMouseDownEventSinkManager.addEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #addRightMouseDownListener(EventListener) addRightMouseDownListener}.
+   *
+   * @param listener the event listener to be added
+   * @return The checkbox itself
+   *
+   * @see Checkbox#addRightMouseDownListener(EventListener)
+   */
+  public CheckBox onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
+    return addRightMouseDownListener(listener);
+  }
+
+  /**
+   * Remove a {@link RightMouseDownEvent} listener from the checkbox component.
+   *
+   * @param listener the event listener to be removed
+   * @return The checkbox itself
+   */
+  public CheckBox removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
+    this.rightMouseDownEventSinkManager.removeEventListener(listener);
+    return this;
+  }
+
+  /**
+   * Checks or unchecks the checkbox.
+   *
+   * @param checked true if checked, false if unchecked.
+   *
+   * @return The checkbox itself
+   */
+  public CheckBox setChecked(boolean checked) {
+    BBjCheckBox checkbox = getBBjControl();
+
+    if (checkbox != null) {
       try {
-        ((BBjCheckBox) this.control).setSelected(checked);
+        checkbox.setSelected(checked);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
+
     this.checked = checked;
     return this;
   }
 
-
-
-  /*
-   * ===================================================================================== This
-   * section overrides the various base class abstract methods in the AbstractDwcjControl class.
-   * These need to be should for method chaining purposes (i.e.
-   * setExample().setExample2().setExample3() ).
-   * =====================================================================================
+  /**
+   * Checks if the checkbox is checked.
+   *
+   * @return false if not checked, true if checked.
    */
+  public boolean isChecked() {
+    BBjCheckBox checkbox = getBBjControl();
 
+    if (checkbox != null) {
+      try {
+        return checkbox.isSelected();
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
 
-  @Override
-  public CheckBox setText(String text) {
-    super.setText(text);
-    return this;
+    return this.checked;
   }
 
-  @Override
-  public CheckBox setVisible(Boolean visible) {
-    super.setVisible(visible);
-    return this;
-  }
-
-  @Override
-  public CheckBox setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
-  }
-
-  @Override
-  public CheckBox setTooltipText(String text) {
-    super.setTooltipText(text);
-    return this;
-  }
-
-  @Override
-  public CheckBox setAttribute(String attribute, String value) {
-    super.setAttribute(attribute, value);
-    return this;
-  }
-
-  @Override
-  public CheckBox setStyle(String property, String value) {
-    super.setStyle(property, value);
-    return this;
-  }
-
-  @Override
-  public CheckBox addClassName(String selector) {
-    super.addClassName(selector);
-    return this;
-  }
-
-  @Override
-  public CheckBox removeClassName(String selector) {
-    super.removeClassName(selector);
-    return this;
-  }
-
-
-
-  /*
-   * ===================================================================================== If Themes
-   * or Expanses are applicable for this control (if they have had Enums implemented for their
-   * respective options), create the methods to set these by calling the super method and returning
-   * this for chaining.
-   * =====================================================================================
+  /**
+   * Set the checkbox to be indeterminate.
+   *
+   * @param value When true then the checkbox's value is neither true nor false, but is instead
+   *        indeterminate, meaning that its state cannot be determined or stated in pure binary
+   *        terms.
+   *
+   * @return The checkbox itself
    */
+  public CheckBox setIndeterminate(boolean value) {
+    setProperty("indeterminate", value);
+    this.indeterminate = value;
+    return this;
+  }
 
+  /**
+   * Returns wether or not the checkbox is indeterminate.
+   *
+   * @return A Boolean representing wether or not the checkbox is indeterminate.
+   */
+  public boolean isIndeterminate() {
+    return this.indeterminate;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public CheckBox setTextPosition(Position position) {
+    BBjCheckBox checkbox = getBBjControl();
+
+    if (checkbox != null) {
+      try {
+        checkbox.setHorizontalTextPosition(0);
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    this.textPosition = position;
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Position getTextPosition() {
+    return this.textPosition;
+  }
+
+  /**
+   * Sets the expanse for the checkbox.
+   *
+   * @param expanse The checkbox expanse
+   * @return The checkbox itself
+   */
   public CheckBox setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
+    this.expanse = expanse;
+    setProperty("expanse", expanse.getValue());
     return this;
   }
 
-
-
-  /*
-   * ===================================================================================== Ensure
-   * that any interfaces which are applicable to the control have their methods overridden.
-   * =====================================================================================
-   */
-
   /**
-   * Returns whether the BBjCheckBox is editable (false = not editable, true = editable).
+   * Get the expanse of the checkbox.
    *
-   * @return false if not editable, true if editable.
+   * @return The expanse for the checkbox.
    */
-  @Override
-  public Boolean isReadOnly() {
-    if (this.control != null) {
-      try {
-        return !((BBjCheckBox) control).isEditable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.readOnly;
+  public Expanse getExpanse() {
+    return this.expanse;
   }
 
   /**
-   * this method sets whether the CheckBox can be edited. True is editable, false is uneditable.
-   *
-   * @param editable if true the control is editable
-   * @return this
+   * {@inheritDoc}
    */
-  @Override
-  public CheckBox setReadOnly(Boolean editable) {
-    if (this.control != null) {
-      try {
-        ((BBjCheckBox) this.control).setEditable(!editable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.readOnly = editable;
-    return this;
-  }
-
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox focus() {
     super.focusComponent();
     return this;
   }
 
-  @Override
-  public Boolean isTabTraversable() {
-    if (this.control != null) {
-      try {
-        return ((BBjCheckBox) control).isTabTraversable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.tabTraversable;
+  /**
+   * Check if the checkbox has focus.
+   *
+   * <p>
+   * The method will always reach the client to get the focus state. If the checkbox is not attached
+   * to a panel, the method will return false even if the checkbox {@link #focus()} method was
+   * called.
+   * </p>
+   *
+   * @return true if the checkbox has focus, false if not.
+   */
+  public boolean hasFocus() {
+    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public CheckBox setTabTraversable(Boolean traversable) {
-    if (this.control != null) {
-      try {
-        ((BBjCheckBox) this.control).setTabTraversable(traversable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.tabTraversable = traversable;
+    super.setComponentTabTraversable(traversable);
     return this;
   }
 
-
-
-  public Position getTextPosition() {
-    return this.textPosition;
-  }
-
-  @Override
-  public CheckBox setTextPosition(Position position) {
-    if (this.control != null) {
-      try {
-        ((BBjCheckBox) this.control).setHorizontalTextPosition(0);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textPosition = position;
-    return this;
-  }
-
-  /*
-   * ===================================================================================== Finally,
-   * override the catchUp() method - this is done by calling the super method, and then catching up
-   * any control-specific member variables and/or interface variables for this control.
-   * =====================================================================================
+  /**
+   * {@inheritDoc}
    */
-
-
+  @ExcludeFromJacocoGeneratedReport
   @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
+  public Boolean isTabTraversable() {
+    return super.isComponentTabTraversable();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox setText(String text) {
+    super.setText(text);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox setVisible(Boolean visible) {
+    super.setVisible(visible);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox setEnabled(boolean enabled) {
+    super.setComponentEnabled(enabled);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public boolean isEnabled() {
+    return super.isComponentEnabled();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox setTooltipText(String text) {
+    super.setTooltipText(text);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox setAttribute(String attribute, String value) {
+    super.setAttribute(attribute, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+
+  public CheckBox setProperty(String property, Object value) {
+    super.setProperty(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox setStyle(String property, String value) {
+    super.setStyle(property, value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox addClassName(String selector) {
+    super.addClassName(selector);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public CheckBox removeClassName(String selector) {
+    super.removeClassName(selector);
+    return this;
+  }
+
+  /**
+   * Get the event dispatcher instance for the checkbox.
+   *
+   * @return The instance of the event dispatcher.
+   */
+  EventDispatcher getEventDispatcher() {
+    return this.dispatcher;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
+
     super.catchUp();
 
     if (this.checked != null) {
       this.setChecked(this.checked);
     }
 
-    if (!this.callbacks.isEmpty()) {
-      this.checkboxCheckEventSink = new CheckBoxCheckEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.checkboxCheckEventSink.addCallback(this.callbacks.remove(0));
-      }
-    }
-
-
-    if (this.horizontalTextPosition != HorizontalTextPosition.RIGHT) {
-      try {
-        ((BBjCheckBox) control).setHorizontalTextPosition(horizontalTextPosition.position);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-      this.setHorizontalTextPosition(this.horizontalTextPosition);
-    }
-
-    if (Boolean.TRUE.equals(this.readOnly)) {
-      this.setReadOnly(true);
-    }
-
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textPosition != Position.LEFT) {
+    if (this.textPosition != Position.RIGHT) {
       this.setTextPosition(this.textPosition);
     }
   }
 
-
+  private BBjCheckBox getBBjControl() {
+    try {
+      return (BBjCheckBox) ComponentAccessor.getDefault().getBBjControl(this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException(e);
+    }
+  }
 }

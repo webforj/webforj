@@ -585,25 +585,25 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       try {
         switch (expanse.toString()) {
           case "LARGE":
-            control.setAttribute(STR_EXPANSE, "l");
+            control.putClientProperty(STR_EXPANSE, "l");
             break;
           case "MEDIUM":
-            control.setAttribute(STR_EXPANSE, "m");
+            control.putClientProperty(STR_EXPANSE, "m");
             break;
           case "SMALL":
-            control.setAttribute(STR_EXPANSE, "s");
+            control.putClientProperty(STR_EXPANSE, "s");
             break;
           case "XLARGE":
-            control.setAttribute(STR_EXPANSE, "xl");
+            control.putClientProperty(STR_EXPANSE, "xl");
             break;
           case "XSMALL":
-            control.setAttribute(STR_EXPANSE, "xs");
+            control.putClientProperty(STR_EXPANSE, "xs");
             break;
           case "XXSMALL":
-            control.setAttribute(STR_EXPANSE, "xxs");
+            control.putClientProperty(STR_EXPANSE, "xxs");
             break;
           case "XXXSMALL":
-            control.setAttribute(STR_EXPANSE, "xxxs");
+            control.putClientProperty(STR_EXPANSE, "xxxs");
             break;
           default:
             // noop
@@ -737,5 +737,4 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       Environment.logError(e);
     }
   }
-
 }
