@@ -34,8 +34,14 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
+javax.swing.JCheckBox
+
 /**
- * A Checkbox component.
+ * An implementation of a check box -- an item that can be selected or deselected, and which
+ * displays its state to the user. By convention, any number of check boxes in a group can be
+ * selected.
+ *
+ * @author Hyyan Abo Fakher
  */
 public final class CheckBox extends AbstractDwcComponent
     implements HasFocus, TabTraversable, TextPosition, HasEnable {
@@ -97,7 +103,7 @@ public final class CheckBox extends AbstractDwcComponent
 
   /**
    * Create a new checkbox component.
-   * 
+   *
    * @param text Desired text for the checkbox.
    * @param checked True if the checkbox should be created as checked, false otherwise.
    */
