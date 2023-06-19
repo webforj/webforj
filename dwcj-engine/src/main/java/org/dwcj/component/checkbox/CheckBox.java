@@ -1,5 +1,8 @@
 package org.dwcj.component.checkbox;
 
+import com.basis.bbj.proxies.sysgui.BBjCheckBox;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
@@ -30,10 +33,6 @@ import org.dwcj.component.event.sink.UncheckedEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
-
-import com.basis.bbj.proxies.sysgui.BBjCheckBox;
-import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
 
 /**
  * A Checkbox component.
@@ -417,7 +416,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @return The checkbox itself
    */
   public CheckBox setChecked(boolean checked) {
-    BBjCheckBox checkbox = getBBjControl();
+    BBjCheckBox checkbox = getBbjControl();
 
     if (checkbox != null) {
       try {
@@ -437,7 +436,7 @@ public final class CheckBox extends AbstractDwcComponent
    * @return false if not checked, true if checked.
    */
   public boolean isChecked() {
-    BBjCheckBox checkbox = getBBjControl();
+    BBjCheckBox checkbox = getBbjControl();
 
     if (checkbox != null) {
       try {
@@ -479,7 +478,7 @@ public final class CheckBox extends AbstractDwcComponent
    */
   @Override
   public CheckBox setTextPosition(Position position) {
-    BBjCheckBox checkbox = getBBjControl();
+    BBjCheckBox checkbox = getBbjControl();
 
     if (checkbox != null) {
       try {
@@ -629,7 +628,7 @@ public final class CheckBox extends AbstractDwcComponent
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
-
+  @Override
   public CheckBox setProperty(String property, Object value) {
     super.setProperty(property, value);
     return this;
@@ -694,7 +693,7 @@ public final class CheckBox extends AbstractDwcComponent
     }
   }
 
-  private BBjCheckBox getBBjControl() {
+  private BBjCheckBox getBbjControl() {
     try {
       return (BBjCheckBox) ComponentAccessor.getDefault().getBBjControl(this);
     } catch (IllegalAccessException e) {
