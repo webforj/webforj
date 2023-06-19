@@ -76,15 +76,9 @@ jobs:
           install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
           "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ env.bbj_version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
-
-      - name: Parse release nunber
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-        with:
-          strip_v: true
           
       - name: Reflect new version in POMs
-        run: mvn versions:set -DnewVersion=${{steps.tag.outputs.tag}}-SNAPSHOT
+        run: mvn versions:set -DnewVersion=${{ env.bbj_version }}-SNAPSHOT
 
       - name: Publish to Apache Maven
         run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q
