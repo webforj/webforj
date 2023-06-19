@@ -34,12 +34,17 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-javax.swing.JCheckBox
-
 /**
  * An implementation of a check box -- an item that can be selected or deselected, and which
  * displays its state to the user. By convention, any number of check boxes in a group can be
  * selected.
+ *
+ * <p>
+ * When clicked, a check mark appears inside the box, to indicate an affirmative choice (on). When
+ * clicked again, the check mark disappears, indicating a negative choice (off). Check boxes are
+ * used when more than one option may need to be checked or as an easy way to enable or disable a
+ * setting in a software program.
+ * </p>
  *
  * @author Hyyan Abo Fakher
  */
