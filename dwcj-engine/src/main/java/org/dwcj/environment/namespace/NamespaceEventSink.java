@@ -15,7 +15,6 @@ import com.basis.bbj.proxies.event.BBjNamespaceEvent;
 import com.basis.startup.type.BBjException;
 
 public class NamespaceEventSink {
-  private final StandardNamespace namespace;
   private EventDispatcher dispatcher;
   private BBjNamespace bbjNamespace;
   private IDwcjBBjBridge dwcjHelper;
@@ -23,9 +22,9 @@ public class NamespaceEventSink {
 
 
   NamespaceEventSink(StandardNamespace namespace, EventDispatcher dispatcher) {
-    this.namespace = namespace;
     this.dispatcher = dispatcher;
     this.bbjNamespace = namespace.getBBjNamespace();
+    App.consoleLog(bbjNamespace.getName());
     if (Environment.getInstance() != null) {
       setDwcjHelper(Environment.getInstance().getDwcjHelper());
     }
@@ -58,9 +57,9 @@ public class NamespaceEventSink {
   }
 
   public NamespaceEventSink setVariableChangeCallback(String key) {
-    App.consoleLog(key);
     if (bbjNamespace != null) {
       try {
+        App.consoleLog(key);
         bbjNamespace.setCallbackForVariableChange(key,
             getDwcjHelper().getEventProxy(this, "handleVariableChange"), ON_EVENT);
       } catch (BBjException e) {
@@ -93,23 +92,24 @@ public class NamespaceEventSink {
     return this.dispatcher;
   }
 
-  private void handleNameSpaceChange(BBjNamespaceEvent ev) {
+  public void handleNameSpaceChange(BBjNamespaceEvent ev) {
     NamespaceChangeEvent namespaceChangeEvent = new NamespaceChangeEvent(this.parseBBjEvent(ev));
     this.dispatcher.dispatchNamespaceEvent(namespaceChangeEvent);
   }
 
-  private void handleNameSpaceAccess(BBjNamespaceEvent ev) {
+  public void handleNameSpaceAccess(BBjNamespaceEvent ev) {
     NamespaceAccessEvent namespaceAccessEvent = new NamespaceAccessEvent(this.parseBBjEvent(ev));
     this.dispatcher.dispatchNamespaceEvent(namespaceAccessEvent);
   }
 
-  private void handleVariableChange(BBjNamespaceEvent ev) {
+  public void handleVariableChange(BBjNamespaceEvent ev) {
+    App.consoleLog("in handle");
     NamespaceVariableChangeEvent namespaceVariableChangeEvent =
         new NamespaceVariableChangeEvent(this.parseBBjEvent(ev));
     this.dispatcher.dispatchNamespaceEvent(namespaceVariableChangeEvent);
   }
 
-  private void handleVariableAccess(BBjNamespaceEvent ev) {
+  public void handleVariableAccess(BBjNamespaceEvent ev) {
     NamespaceVariableAccessEvent namespaceVariableAccessEvent =
         new NamespaceVariableAccessEvent(this.parseBBjEvent(ev));
     this.dispatcher.dispatchNamespaceEvent(namespaceVariableAccessEvent);
@@ -117,6 +117,7 @@ public class NamespaceEventSink {
 
 
   private HashMap<String, Object> parseBBjEvent(BBjNamespaceEvent ev) {
+    App.consoleLog(ev.toString());
     HashMap<String, Object> data = new HashMap<String, Object>();
     data.put("namespaceName", ev.getNamespaceName());
     data.put("variableName", ev.getVariableName());

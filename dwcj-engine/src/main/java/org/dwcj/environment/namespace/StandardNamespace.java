@@ -24,15 +24,16 @@ public abstract class StandardNamespace implements Namespace, CanLock {
 
   protected BBjNamespace ns;
   private EventDispatcher dispatcher = new EventDispatcher();
-  private NamespaceEventSink sink = new NamespaceEventSink(this, dispatcher);
+  private NamespaceEventSink sink;
 
-  BBjNamespace getBBjNamespace() {
+  public BBjNamespace getBBjNamespace() {
     return this.ns;
   }
 
   @Override
   public void put(String key, Object value) throws NamespaceVarableLockedException {
     try {
+
       ns.setValue(key, value);
     } catch (BBjException e) {
       throw new NamespaceVarableLockedException();
@@ -114,6 +115,9 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    * @return
    */
   public StandardNamespace onChange(NamespaceListener<NamespaceChangeEvent> listener) {
+    if (sink == null) {
+      sink = new NamespaceEventSink(this, dispatcher);
+    }
     sink.setNamespaceChangeCallback();
     dispatcher.addNamespaceEventListener(NamespaceChangeEvent.class, listener);
     return this;
@@ -127,6 +131,9 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    * @return
    */
   public StandardNamespace onAccess(NamespaceListener<NamespaceAccessEvent> listener) {
+    if (sink == null) {
+      sink = new NamespaceEventSink(this, dispatcher);
+    }
     sink.setNamespaceAccessCallback();
     dispatcher.addNamespaceEventListener(NamespaceAccessEvent.class, listener);
     return this;
@@ -140,6 +147,9 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    */
   public StandardNamespace onVariableAccess(String key,
       NamespaceListener<NamespaceVariableAccessEvent> listener) {
+    if (sink == null) {
+      sink = new NamespaceEventSink(this, dispatcher);
+    }
     sink.setVariableAccessCallback(key);
     dispatcher.addNamespaceEventListener(NamespaceVariableAccessEvent.class, listener);
     return this;
@@ -154,8 +164,9 @@ public abstract class StandardNamespace implements Namespace, CanLock {
    */
   public StandardNamespace onVariableChange(String key,
       NamespaceListener<NamespaceVariableChangeEvent> listener) {
-    App.consoleError("test" + key);
-    App.consoleLog("test" + key);
+    if (sink == null) {
+      sink = new NamespaceEventSink(this, dispatcher);
+    }
     sink.setVariableChangeCallback(key);
     dispatcher.addNamespaceEventListener(NamespaceVariableChangeEvent.class, listener);
     return this;

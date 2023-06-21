@@ -38,7 +38,8 @@ class public BBjEventProxy implements EventProxy
 
             rem eval retains the stack trace in case of an error:
             eval("o!."+#method!+"(ev!)")
-
+            
+            
             methodret
 
     methodend
@@ -53,7 +54,8 @@ class public DwcjHelper implements IDwcjBBjBridge
     methodend
     
     method public CustomObject getEventProxy(Object obj!, String method!, String eventClass!)
-        ep! = eval("new "+eventClass!+"(obj!, method!)")
+    
+    ep! = eval("new "+eventClass!+"(obj!, method!)")
         methodret ep!
     methodend
     

@@ -114,7 +114,7 @@ public class EventDispatcher {
 
   public <T extends NamespaceEvent> void dispatchNamespaceEvent(T event) {
     CopyOnWriteArrayList<NamespaceListener<?>> list = namespaceListeners.get(event.getClass());
-
+    App.consoleLog("We are dispatching a namespace event");
     if (list != null && !list.isEmpty()) {
       for (NamespaceListener<?> listener : list) {
         @SuppressWarnings("unchecked")
