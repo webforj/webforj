@@ -13,7 +13,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 /**
  * This class will map the BBjCheckOnEvent event to a Java {@link ToggleEvent}.
  */
-public class ToggleEventSink extends AbstractSink {
+public class ToggleEventSink extends AbstractEventSink {
 
   public ToggleEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_CHANGE);

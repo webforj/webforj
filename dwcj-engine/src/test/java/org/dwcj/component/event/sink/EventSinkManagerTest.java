@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class EventSinkManagerTest {
-  EventSinkManager<MouseEnterEvent> manager;
+  EventSinkListenerRegistry<MouseEnterEvent> manager;
   EventDispatcher dispatcher;
 
   @Mock
@@ -29,7 +29,7 @@ class EventSinkManagerTest {
   void setUp() {
     dispatcher = new EventDispatcher();
     doReturn(dispatcher).when(sink).getEventDispatcher();
-    manager = new EventSinkManager<>(sink, MouseEnterEvent.class);
+    manager = new EventSinkListenerRegistry<>(sink, MouseEnterEvent.class);
   }
 
   @Test

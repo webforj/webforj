@@ -1,4 +1,4 @@
-package org.dwcj.mocks;
+package org.dwcj.component.event.mocks;
 
 import com.basis.bbj.proxies.event.BBjCheckChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;

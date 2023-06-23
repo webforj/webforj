@@ -10,7 +10,7 @@ import org.dwcj.component.event.EventDispatcher;
 /**
  * This class will map the BBjCheckOnEvent event to a Java {@link CheckedEvent}.
  */
-public class CheckedEventSink extends AbstractSink {
+public class CheckedEventSink extends AbstractEventSink {
 
   public CheckedEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_ON);

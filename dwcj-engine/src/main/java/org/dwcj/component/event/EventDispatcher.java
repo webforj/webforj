@@ -2,7 +2,6 @@ package org.dwcj.component.event;
 
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.dwcj.App;
 
 /**
  * The EventDispatcher is minimalistic event manager that can be used to dispatch events to

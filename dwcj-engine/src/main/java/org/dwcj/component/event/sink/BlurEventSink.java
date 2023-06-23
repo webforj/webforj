@@ -11,7 +11,7 @@ import org.dwcj.component.event.EventDispatcher;
 /**
  * This class will map the BBjLostFocusEvent event to a Java {@link BlurEvent}.
  */
-public class BlurEventSink extends AbstractSink {
+public class BlurEventSink extends AbstractEventSink {
 
   public BlurEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_LOST_FOCUS);

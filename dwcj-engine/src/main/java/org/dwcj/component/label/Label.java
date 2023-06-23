@@ -13,7 +13,7 @@ import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
-import org.dwcj.component.event.sink.EventSinkManager;
+import org.dwcj.component.event.sink.EventSinkListenerRegistry;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
@@ -26,12 +26,15 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
 
   private EventDispatcher dispatcher = new EventDispatcher();
 
-  private EventSinkManager<MouseEnterEvent> mouseEnterEventHandler =
-      new EventSinkManager<>(new MouseEnterEventSink(this, dispatcher), MouseEnterEvent.class);
-  private EventSinkManager<MouseExitEvent> mouseExitEventHandler =
-      new EventSinkManager<>(new MouseExitEventSink(this, dispatcher), MouseExitEvent.class);
-  private EventSinkManager<RightMouseDownEvent> rightMouseDownEventHandler = new EventSinkManager<>(
-      new RightMouseDownEventSink(this, dispatcher), RightMouseDownEvent.class);
+  private EventSinkListenerRegistry<MouseEnterEvent> mouseEnterEventHandler =
+      new EventSinkListenerRegistry<>(new MouseEnterEventSink(this, dispatcher),
+          MouseEnterEvent.class);
+  private EventSinkListenerRegistry<MouseExitEvent> mouseExitEventHandler =
+      new EventSinkListenerRegistry<>(new MouseExitEventSink(this, dispatcher),
+          MouseExitEvent.class);
+  private EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventHandler =
+      new EventSinkListenerRegistry<>(new RightMouseDownEventSink(this, dispatcher),
+          RightMouseDownEvent.class);
 
   private boolean lineWrap = true;
 

@@ -11,7 +11,7 @@ import org.dwcj.component.event.ModifyEvent;
 /**
  * This class will map the BBjEditModifyEvent event to a Java {@link ModifyEvent}.
  */
-public class ModifyEventSink extends AbstractSink {
+public class ModifyEventSink extends AbstractEventSink {
 
   public ModifyEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_EDIT_MODIFY);

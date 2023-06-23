@@ -1,11 +1,10 @@
-package org.dwcj.component.event.sink;
+package org.dwcj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.mocks.BBjKeypressEventMock;
-import org.dwcj.mocks.DwcComponentMock;
+import org.dwcj.component.event.mocks.BBjKeypressEventMock;
+import org.dwcj.component.event.sink.FieldKeypressEventSink;
+import org.dwcj.component.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.Test;
 /**
  * A class for testing the FieldKeypressEvent.
  */
-class FieldKeypressEventSinkTest {
+class FieldKeypressEventTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjKeypressEventMock eventMock;

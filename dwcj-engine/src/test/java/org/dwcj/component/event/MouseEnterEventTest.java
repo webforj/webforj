@@ -1,20 +1,18 @@
-package org.dwcj.component.event.sink;
+package org.dwcj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.MouseEvent;
-import org.dwcj.component.event.MouseExitEvent;
-import org.dwcj.mocks.BBjMouseEventMock;
-import org.dwcj.mocks.DwcComponentMock;
+import org.dwcj.component.event.mocks.BBjMouseEventMock;
+import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.component.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * A class for testing the MouseExitEvent.
+ * A class for testing the MouseEnterEvent.
  */
-class MouseExitEventSinkTest {
+class MouseEnterEventTest {
   static DwcComponentMock componentMock = new DwcComponentMock();
   static EventDispatcher dispatcher = new EventDispatcher();
   BBjMouseEventMock eventMock;
@@ -26,10 +24,10 @@ class MouseExitEventSinkTest {
   }
 
   @Test
-  @DisplayName("Test the MouseExitEvent payload")
+  @DisplayName("Test the MouseEnterEvent payload")
   void payload() {
-    MouseExitEventSink sink = new MouseExitEventSink(componentMock, dispatcher);
-    dispatcher.addEventListener(MouseExitEvent.class, e -> dispatchedEvent = e);
+    MouseEnterEventSink sink = new MouseEnterEventSink(componentMock, dispatcher);
+    dispatcher.addEventListener(MouseEnterEvent.class, e -> dispatchedEvent = e);
     sink.handleEvent(eventMock);
 
     assertEquals(eventMock.getMouseButton(), dispatchedEvent.getMouseButton());

@@ -23,7 +23,7 @@ import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
-import org.dwcj.component.event.sink.EventSinkManager;
+import org.dwcj.component.event.sink.EventSinkListenerRegistry;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -44,13 +44,13 @@ class LabelTest {
   BBjStaticText control;
 
   @Mock
-  EventSinkManager<MouseEnterEvent> mouseEnterEventHandler;
+  EventSinkListenerRegistry<MouseEnterEvent> mouseEnterEventHandler;
 
   @Mock
-  EventSinkManager<MouseExitEvent> mouseExitEventHandler;
+  EventSinkListenerRegistry<MouseExitEvent> mouseExitEventHandler;
 
   @Mock
-  EventSinkManager<RightMouseDownEvent> rightMouseDownEventHandler;
+  EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventHandler;
 
   @Spy
   EventDispatcher dispatcher;

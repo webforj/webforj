@@ -1,11 +1,10 @@
-package org.dwcj.component.event.sink;
+package org.dwcj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.ToggleEvent;
-import org.dwcj.mocks.BBjCheckChangeEventMock;
-import org.dwcj.mocks.DwcComponentMock;
+import org.dwcj.component.event.mocks.BBjCheckChangeEventMock;
+import org.dwcj.component.event.sink.ToggleEventSink;
+import org.dwcj.component.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
