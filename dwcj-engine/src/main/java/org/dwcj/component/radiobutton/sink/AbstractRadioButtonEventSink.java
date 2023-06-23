@@ -1,26 +1,31 @@
-package org.dwcj.component.event.sink;
+package org.dwcj.component.radiobutton.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
-import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
-
+import java.lang.reflect.Field;
 import org.dwcj.Environment;
-import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
-import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.sink.EventSinkInterface;
+import org.dwcj.component.radiobutton.RadioButtonGroup;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The abstract sink is responsible for setting and removing the callback on the BBjControl.
+ * The AbstractRadioButtonEventSink sink implements the required logic for setting and removing the
+ * callback on a BBjRadioGroup. Subclasses must implement the handleEvent method which is
+ * responsible for delegating the BBj event to the corresponding event listener to the Java
+ * component.
  *
  * @author Hyyan Abo Fakher
+ * @since 23.01
  */
-public abstract class AbstractSink {
-  private final AbstractDwcComponent component;
+public abstract class AbstractRadioButtonEventSink implements EventSinkInterface {
+
+  private final RadioButtonGroup component;
   private EventDispatcher dispatcher;
   private final int eventType;
-  private BBjControl control = null;
+  private BBjRadioGroup control = null;
   private IDwcjBBjBridge dwcjHelper;
 
   /**
@@ -30,7 +35,7 @@ public abstract class AbstractSink {
    * @param dispatcher The events dispatcher
    * @param eventType The type of the BBj event
    */
-  protected AbstractSink(AbstractDwcComponent component, EventDispatcher dispatcher,
+  protected AbstractRadioButtonEventSink(RadioButtonGroup component, EventDispatcher dispatcher,
       int eventType) {
     this.component = component;
     this.dispatcher = dispatcher;
@@ -42,41 +47,38 @@ public abstract class AbstractSink {
   }
 
   /**
-   * Set a callback on an underlying BBj control.
-   *
-   * @throws DwcjRuntimeException if the callback cannot be set.
+   * {@inheritDoc}
    */
+  @Override
   public void setCallback() {
-    BBjControl theControl = getBBjControl();
+    BBjRadioGroup group = getBBjRadioGroup();
 
-    if (theControl != null) {
+    if (group != null) {
       // in tests the dwcjHelper is not set so we need to check for null
       dwcjHelper = getDwcjHelper();
       if (dwcjHelper == null) {
         return;
       }
       try {
-        theControl.setCallback(eventType, getDwcjHelper().getEventProxy(this, "handleEvent"),
-            "onEvent");
+        group.setCallback(eventType, getDwcjHelper().getEventProxy(this, "handleEvent"), "onEvent");
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to set BBjControl callback.", e);
+        throw new DwcjRuntimeException("Failed to set BBjRadioGroup callback.", e);
       }
     }
   }
 
   /**
-   * Remove a callback on an underlying BBj control.
-   *
-   * @throws DwcjRuntimeException if the callback cannot be removed.
+   * {@inheritDoc}
    */
+  @Override
   public void removeCallback() {
-    BBjControl theControl = getBBjControl();
+    BBjRadioGroup group = getBBjRadioGroup();
 
-    if (theControl != null) {
+    if (group != null) {
       try {
-        theControl.clearCallback(eventType);
+        group.clearCallback(eventType);
       } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to remove BBjControl callback.", e);
+        throw new DwcjRuntimeException("Failed to remove BBjRadioGroup callback.", e);
       }
     }
   }
@@ -98,11 +100,10 @@ public abstract class AbstractSink {
   }
 
   /**
-   * Get the event dispatcher instance.
-   *
-   * @return the event dispatcher instance.
+   * {@inheritDoc}
    */
-  protected EventDispatcher getEventDispatcher() {
+  @Override
+  public EventDispatcher getEventDispatcher() {
     return this.dispatcher;
   }
 
@@ -129,7 +130,7 @@ public abstract class AbstractSink {
    *
    * @return The Java component.
    */
-  protected AbstractDwcComponent getComponent() {
+  protected RadioButtonGroup getComponent() {
     return this.component;
   }
 
@@ -138,15 +139,18 @@ public abstract class AbstractSink {
    *
    * @return The BBjControl instance.
    */
-  private BBjControl getBBjControl() {
-    if (this.control != null) {
-      return this.control;
+  private BBjRadioGroup getBBjRadioGroup() {
+    if (control != null) {
+      return control;
     }
 
     try {
-      this.control = ComponentAccessor.getDefault().getBBjControl(component);
-    } catch (IllegalAccessException e) {
-      // pass
+      // TODO: implement this using the Accessor Pattern
+      Field field = RadioButtonGroup.class.getDeclaredField("group");
+      field.setAccessible(true); // NOSONAR
+      control = (BBjRadioGroup) field.get(component);
+    } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
+      throw new DwcjRuntimeException("Failed to get original BBjRadioGroup via reflection.", e);
     }
 
     return control;

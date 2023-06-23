@@ -11,7 +11,7 @@ import org.dwcj.component.event.FocusEvent;
 /**
  * The class will map the BBjGainedFocusEvent to a Java {@link FocusEvent}.
  */
-public class FocusEventSink extends AbstractSink {
+public class FocusEventSink extends AbstractEventSink {
 
   public FocusEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_GAINED_FOCUS);

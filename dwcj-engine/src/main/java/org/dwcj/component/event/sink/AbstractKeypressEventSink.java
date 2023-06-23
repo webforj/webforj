@@ -10,7 +10,7 @@ import org.dwcj.component.event.EventDispatcher;
  * An abstract class of a keypress event sink which would handle a BBjKeypressEvent and dispatch the
  * corresponding Java event.
  */
-public abstract class AbstractKeypressEventSink extends AbstractSink {
+public abstract class AbstractKeypressEventSink extends AbstractEventSink {
 
   protected AbstractKeypressEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
       int sysGuiConstant) {

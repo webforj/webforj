@@ -1,4 +1,4 @@
-package org.dwcj.mocks;
+package org.dwcj.component.mocks;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;

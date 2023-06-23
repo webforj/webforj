@@ -1,4 +1,4 @@
-package org.dwcj.mocks;
+package org.dwcj.component.mocks;
 
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.window.AbstractWindow;

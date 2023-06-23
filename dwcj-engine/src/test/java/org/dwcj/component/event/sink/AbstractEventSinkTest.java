@@ -11,9 +11,10 @@ import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.startup.type.BBjException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.mocks.EventSinkMock;
+import org.dwcj.component.mocks.DwcComponentMock;
+import org.dwcj.component.mocks.DwcHelperMock;
 import org.dwcj.exceptions.DwcjRuntimeException;
-import org.dwcj.mocks.DwcComponentMock;
-import org.dwcj.mocks.DwcHelperMock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractSinkTest {
+class AbstractEventSinkTest {
 
   @Mock
   DwcComponentMock component;
@@ -38,7 +39,7 @@ class AbstractSinkTest {
   DwcHelperMock dwcjHelper;
 
   @InjectMocks
-  SinkMock sink;
+  EventSinkMock sink;
 
   void nullifyControl() throws IllegalAccessException {
     FieldUtils.writeField(sink, "control", null, true);

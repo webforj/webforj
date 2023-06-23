@@ -5,13 +5,16 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 
 /**
- * EventSinkManager is used to manage the event listeners (add/remove) for a BBjControl sink and the
- * corresponding event.
+ * EventSinkListenerRegistry is used to manage the event listeners (add/remove) for a Control sink
+ * and the corresponding event.
  *
  * @param <T> the event type
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.01
  */
-public class EventSinkManager<T extends Event<?>> {
-  private final AbstractSink sink;
+public class EventSinkListenerRegistry<T extends Event<?>> {
+  private final EventSinkInterface sink;
   private final Class<T> event;
 
   /**
@@ -20,7 +23,7 @@ public class EventSinkManager<T extends Event<?>> {
    * @param sink The corresponding sink to the event
    * @param event The corresponding event to the sink
    */
-  public EventSinkManager(AbstractSink sink, Class<T> event) {
+  public EventSinkListenerRegistry(EventSinkInterface sink, Class<T> event) {
     this.sink = sink;
     this.event = event;
   }

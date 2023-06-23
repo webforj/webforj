@@ -7,12 +7,12 @@ import java.util.HashMap;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.sink.AbstractSink;
+import org.dwcj.component.event.sink.AbstractEventSink;
 
 /**
  * Sink class responsible for communication between BBj and java.
  */
-public final class ButtonClickEventSink extends AbstractSink {
+public final class ButtonClickEventSink extends AbstractEventSink {
 
   public ButtonClickEventSink(Button component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_BUTTON_PUSH);
