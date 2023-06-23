@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class RadioButtonTest {
+class RadioButtonTest {
 
   @Mock
   BBjRadioButton control;
