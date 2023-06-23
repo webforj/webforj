@@ -1,6 +1,7 @@
 package org.dwcj.component;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import org.dwcj.component.mocks.ComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
