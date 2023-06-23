@@ -149,5 +149,11 @@ class public DwcjHelper implements IDwcjBBjBridge
     method public String getWorkingDirectory()
         methodret DIR("")
     methodend
+    
+    method public String getQueryParam(String key!)
+        methodret clientenv(key!,err=no_data)
+        no_data:
+        methodret null()
+    methodend
 
 classend

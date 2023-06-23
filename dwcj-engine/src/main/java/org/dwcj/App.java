@@ -60,6 +60,15 @@ public abstract class App {
   }
 
   /**
+   * Get the current request instance.
+   *
+   * @return the current request instance
+   */
+  public static Request getRequest() {
+    return Request.getInstance();
+  }
+
+  /**
    * Set the application theme.
    *
    * @param theme The theme to set
