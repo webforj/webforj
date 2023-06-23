@@ -38,4 +38,5 @@ bbj/.buildpath
 bbj/.project
 
 .DS_Store
+*.versionsBackup
 
