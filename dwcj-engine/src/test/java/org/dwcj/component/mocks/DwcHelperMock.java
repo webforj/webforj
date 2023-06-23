@@ -50,4 +50,9 @@ public class DwcHelperMock implements IDwcjBBjBridge {
     return "";
   }
 
+  @Override
+  public String getQueryParam(String key) {
+    return "";
+  }
+
 }
