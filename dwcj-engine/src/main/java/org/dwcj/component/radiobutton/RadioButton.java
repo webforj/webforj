@@ -89,7 +89,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Configure when the radio button should be checked when it gains focus.
+   * Configure if the radio button should be checked when it gains focus.
    *
    * @param value the activation type
    * @see Activation
