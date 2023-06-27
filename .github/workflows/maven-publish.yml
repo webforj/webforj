@@ -1,13 +1,14 @@
 name: Maven Publish
 on:
   workflow_run:
-    workflows: ["Maven Test"]
+    workflows: ["Maven Test", "Bump Version"]
     types: [completed]
     branches: [main]
 
 jobs:
   setup:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       version: ${{ steps.extract-version.outputs.version }}
       version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
@@ -30,7 +31,6 @@ jobs:
   publish:
     needs: setup
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     container: "dwcjava/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
       - uses: actions/checkout@v3
