@@ -1,13 +1,37 @@
-name: Publish Release
+name: Maven Publish
 on:
-  push:
-    tags:
-      - '*'
+  workflow_run:
+    workflows: ["Maven Test"]
+    types: [completed]
+    branches: [main]
 
 jobs:
-  publish:
+  setup:
     runs-on: ubuntu-latest
-    container: 'dwcjava/sandbox:000'
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
+      version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install xmlstarlet
+        run: sudo apt update && sudo apt install -y xmlstarlet
+
+      - name: Extract BBj Version
+        id: extract-version
+        run: |
+          version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
+            -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
+            dwcj-engine/pom.xml)
+          version_without_suffix="${version%-SNAPSHOT}"
+          echo "::set-output name=version::$version"
+          echo "::set-output name=version-without-suffix::$version_without_suffix"
+  publish:
+    needs: setup
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    container: "dwcjava/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
       - uses: actions/checkout@v3
 
@@ -17,8 +41,8 @@ jobs:
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v1
         env:
-           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-           PASSPHRASE: ''
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ""
 
       - name: Install Maven
         run: apk add maven
@@ -54,35 +78,16 @@ jobs:
               }
             ]
 
-      - name: Install xmlstarlet
-        run : apk add xmlstarlet
-
-      - name: Extract BBj Version
-        run: |
-          version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
-            -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
-            dwcj-engine/pom.xml)
-          echo "bbj_version=$version" >> $GITHUB_ENV
-
       - name: Install Maven Dependencies
         run: >
           mvn install:install-file "-Dfile=/opt/bbx/lib/BBjStartup.jar"
-          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ env.bbj_version }}"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ needs.setup.outputs.version-without-suffix }}"
           "-Dpackaging=jar" -q && mvn install:install-file
           "-Dfile=/opt/bbx/lib/BBj.jar" "-DgroupId=com.basis.lib"
-          "-DartifactId=BBj" "-Dversion=${{ env.bbj_version }}" "-Dpackaging=jar" -q && mvn
+          "-DartifactId=BBj" "-Dversion=${{ needs.setup.outputs.version-without-suffix }}" "-Dpackaging=jar" -q && mvn
           install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
-          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ env.bbj_version }}"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ needs.setup.outputs.version-without-suffix }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
-
-      - name: Parse release nunber
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-        with:
-          strip_v: true
-
-      - name: Reflect new version in POMs
-        run: mvn versions:set -DnewVersion=${{steps.tag.outputs.tag}}
 
       - name: Publish to Apache Maven
         run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q

@@ -1,0 +1,61 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number"
+        required: true
+      createTag:
+        description: "Create a new release"
+        type: boolean
+        required: false
+        default: false
+      prerelease:
+        description: "Is prerelease ?"
+        type: boolean
+        required: false
+        default: false
+      draft:
+        description: "Is draft ?"
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  bumpVersion:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install xmlstarlet
+        run: sudo apt install -y xmlstarlet
+
+      - name: Install Maven
+        run: sudo apt install maven
+
+      - name: Bump version in POM files
+        run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }} -q
+
+      - name: Bump BBj Version dependencies
+        run: xmlstarlet ed --inplace -N pom="http://maven.apache.org/POM/4.0.0" -u "//pom:dependency[pom:groupId='com.basis.lib']/pom:version" -v "${{ github.event.inputs.version }}" ./dwcj-engine/pom.xml
+
+      - name: Commit & Push changes
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "build: bump version to ${{ github.event.inputs.version }}"
+          git push origin HEAD:${{ github.ref }}
+
+      - name: Create Release
+        if: ${{ github.event.inputs.createTag == 'true' }}
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          generateReleaseNotes: true
+          tag: ${{ github.event.inputs.version }}
+          name: Release v${{ github.event.inputs.version }}
+          draft: ${{ github.event.inputs.draft }}
+          prerelease: ${{ github.event.inputs.prerelease }}
