@@ -1,4 +1,4 @@
-name: Java Tests & Coverage
+name: Maven Test
 on:
   push:
     branches:
@@ -6,22 +6,35 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
-    container: 'dwcjava/sandbox:000'
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
+      version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Install xmlstarlet
-        run : apk add xmlstarlet
+        run: sudo apt update && sudo apt install -y xmlstarlet
 
       - name: Extract BBj Version
+        id: extract-version
         run: |
           version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
             -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
             dwcj-engine/pom.xml)
-          echo "bbj_version=$version" >> $GITHUB_ENV
+          version_without_suffix="${version%-SNAPSHOT}"
+          echo "::set-output name=version::$version"
+          echo "::set-output name=version-without-suffix::$version_without_suffix"
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    container: "dwcjava/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Install Maven
         run: apk add maven
@@ -29,12 +42,12 @@ jobs:
       - name: Install Maven Dependencies
         run: >
           mvn install:install-file "-Dfile=/opt/bbx/lib/BBjStartup.jar"
-          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ env.bbj_version }}"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ needs.setup.outputs.version-without-suffix }}"
           "-Dpackaging=jar" -q && mvn install:install-file
           "-Dfile=/opt/bbx/lib/BBj.jar" "-DgroupId=com.basis.lib"
-          "-DartifactId=BBj" "-Dversion=${{ env.bbj_version }}" "-Dpackaging=jar" -q && mvn
+          "-DartifactId=BBj" "-Dversion=${{ needs.setup.outputs.version-without-suffix }}" "-Dpackaging=jar" -q && mvn
           install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
-          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ env.bbj_version }}"
+          "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ needs.setup.outputs.version-without-suffix }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
       - name: Build with Maven
@@ -44,18 +57,18 @@ jobs:
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
         with:
-         badges-directory: badges
-         jacoco-csv-file: ./dwcj-engine/target/site/jacoco/jacoco.csv
-         generate-branches-badge: true
-         generate-summary: true
+          badges-directory: badges
+          jacoco-csv-file: ./dwcj-engine/target/site/jacoco/jacoco.csv
+          generate-branches-badge: true
+          generate-summary: true
 
       - name: Log coverage percentages to workflow output
         run: |
-         echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
-         echo "branches = ${{ steps.jacoco.outputs.branches }}"
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+          echo "branches = ${{ steps.jacoco.outputs.branches }}"
 
       - name: Upload JaCoCo coverage report as a workflow artifact
         uses: actions/upload-artifact@v2
         with:
-         name: jacoco-report
-         path: ./dwcj-engine/target/site/jacoco/
+          name: jacoco-report
+          path: ./dwcj-engine/target/site/jacoco/
