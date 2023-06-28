@@ -59,3 +59,4 @@ jobs:
           name: Release v${{ github.event.inputs.version }}
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.prerelease }}
+          makeLatest: ${{ github.event.inputs.prerelease == 'false' }}
