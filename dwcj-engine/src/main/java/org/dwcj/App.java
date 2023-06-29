@@ -1,6 +1,8 @@
 package org.dwcj;
 
+import com.basis.bbj.proxies.BBjBuiManager;
 import com.basis.startup.type.BBjException;
+import java.net.URL;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.GlobalNamespace;
@@ -334,6 +336,21 @@ public abstract class App {
    * still run
    */
   public void cleanup() {}
+
+
+  /**
+   * Sets the action that will occur when the current application terminates normally.
+   *
+   * @param url the url that will be called after termination.
+   */
+  public static void setTerminateAction(URL url) {
+    try {
+      BBjBuiManager buiManager = Environment.getInstance().getBBjAPI().getBuiManager();
+      buiManager.setEndAction(buiManager.urlAction(url.toString()));
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to set terminate action.", e); // NOSONAR
+    }
+  }
 
   /**
    * Override this method to implement your app behavior
