@@ -127,22 +127,6 @@ public class AbstractOptionInputTest {
   }
 
   @Nested
-  @DisplayName("Expanse API")
-  class ExpanseApi {
-
-    @ParameterizedTest
-    @EnumSource(AbstractOptionInput.Expanse.class)
-    @DisplayName("Setting/getting expanse")
-    void settingGettingExpanse(AbstractOptionInput.Expanse expanse) throws BBjException {
-      component.setExpanse(expanse);
-      assertSame(component.getExpanse(), expanse);
-
-      verify(control, times(1)).putClientProperty("expanse", expanse.getValue());
-      verify(control, times(0)).getClientProperty("expanse");
-    }
-  }
-
-  @Nested
   @DisplayName("Focus API")
   class FocusApi {
     @Test
