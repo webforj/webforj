@@ -1,6 +1,8 @@
 package org.dwcj;
 
 import com.basis.startup.type.BBjException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -13,6 +15,133 @@ import org.dwcj.utilities.Assets;
  * @author Hyyan Abo Fakher
  */
 public final class Page {
+
+  /**
+   * The type of groups availabel when setting the user properties.
+   */
+  public enum PropertyGroup {
+
+    /**
+     * Maps to browser cookies with a 30-day expiration.
+     */
+    USER_PROPERTIES_COOKIES(0),
+
+    /**
+     * Maps to browser local storage.
+     */
+    USER_PROPERTIES_STORAGE(1),
+
+    /**
+     * Maps to browser session storage.
+     */
+    USER_PROPERTIES_SESSION(-1);
+
+    private long value;
+
+    private PropertyGroup(long value) {
+      this.value = value;
+    }
+
+    /**
+     * Get the value of the enum.
+     *
+     * @return the value of the enum
+     */
+    public long getValue() {
+      return value;
+    }
+
+
+    /**
+     * Get the enum from the value.
+     *
+     * @param value the value of the enum
+     * @return the enum
+     */
+    public static PropertyGroup fromValue(long value) {
+      for (PropertyGroup group : PropertyGroup.values()) {
+        if (group.getValue() == value) {
+          return group;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+  }
+
+  /**
+   * Controls the set of domains that can read a given cookie.
+   * For more information, see Google's notes for Chrome 80+.
+   */
+  public enum PropertySamesite {
+
+    /**
+    * 
+    */
+    SAME_SITE_DEFAULT(""),
+
+    /**
+    *
+    */
+    SAME_SITE_LAX("Lax"),
+
+    /**
+    *
+    */
+    SAME_SITE_NONE("None"),
+
+    /**
+    *
+    */
+    SAME_SITE_STRICT("Strict");
+
+    private String value;
+
+    private PropertySamesite(String value) {
+      this.value = value;
+    }
+
+    /**
+     * Get the value of the enum.
+     *
+     * @return the value of the enum
+     */
+    public String getValue() {
+      return this.value;
+    }
+
+    /**
+     * Get the enum from the value.
+     *
+     * @param value the value of the enum
+     * @return the enum
+     */
+    public static PropertySamesite fromValue(String value) {
+      for (PropertySamesite samesite : PropertySamesite.values()) {
+        if (samesite.getValue().equals(value)) {
+          return samesite;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
 
   private Page() {}
 
@@ -641,5 +770,229 @@ public final class Page {
    */
   public Page reload() {
     return executeAsyncJs("window.location.reload();");
+  }
+
+  /**
+   * Stores a key/value pair in a specified client-side property group.
+   *
+   * @param group the group
+   * @param samesite to control the set of domains that can read a given cookie
+   * @param key the key to access your stored data
+   * @param value the value to be stored
+   * @return The current page instance
+   */
+  public Page setUserProperty(PropertyGroup group, PropertySamesite samesite, String key,
+      String value) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().setUserProperty(group.getValue(),
+          samesite.getValue(), key, value);
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set user property.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Stores a key/value pair in a specified client-side property group.
+   *
+   * @param group the group
+   * @param key the key to access your stored data
+   * @param value the value to be stored
+   * @return The current page instance
+   */
+  public Page setUserProperty(PropertyGroup group, String key, String value) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().setUserProperty(group.getValue(), key,
+          value);
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set user property.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Stores a key/value pair in a specified client-side property group.
+   *
+   * @param key the key to access your stored data
+   * @param value the value to be stored
+   * @return The current page instance
+   */
+  public Page setUserProperty(String key, String value) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().setUserProperty(key, value);
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set user property.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Returns the value of a client-side property for a specified key within a specified client-side
+   * property group.
+   *
+   * @param group the group
+   * @param key the key of the property
+   * @return the value or null in case of an error
+   */
+  public String getUserProperty(PropertyGroup group, String key) {
+    try {
+      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperty(group.getValue(),
+          key);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * Returns the value of a client-side property for a specified key within a specified client-side
+   * property group.
+   *
+   * @param key the key of the property
+   * @return the value or null in case of an error
+   */
+  public String getUserProperty(String key) {
+    try {
+      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperty(key);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * Clears all user properties in all groups.
+   *
+   * @return The current page instance
+   */
+  public Page clearUserProperties() {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().clearUserProperties();
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to clear user properties.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Clears all user properties for the given group.
+   *
+   * @param group the group which will be cleared.
+   * @return The current page instance
+   */
+  public Page clearUserProperties(PropertyGroup group) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().clearUserProperties(group.getValue());
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to clear user properties.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Returns all user properties.
+   *
+   * @return the map with all the properties.
+   */
+  public Map<String, String> getUserProperties() {
+    try {
+      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperties();
+    } catch (Exception e) {
+      return new HashMap<>();
+    }
+  }
+
+  /**
+   * Returns the stored user properties for the given keys.
+   *
+   * @param keys a collection of keys.
+   * @return a map with all keys and values.
+   */
+  public Map<String, String> getUserProperties(Collection<String> keys) {
+    try {
+      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperties(keys);
+    } catch (Exception e) {
+      return new HashMap<>();
+    }
+  }
+
+  /**
+   * Returns the stored user properties for the given group.
+   *
+   * @param group the propertie group which is querried.
+   * @return a map with all keys and values
+   */
+  public Map<String, String> getUserProperties(PropertyGroup group) {
+    try {
+      return Environment.getInstance().getBBjAPI().getThinClient()
+          .getUserProperties(group.getValue());
+    } catch (Exception e) {
+      return new HashMap<>();
+    }
+  }
+
+  /**
+   * Returns the stored user properties for the given group and keys.
+   *
+   * @param group the group which is searched
+   * @param keys the collection of keys
+   * @return a map with all found keys and values
+   */
+  public Map<String, String> getUserProperties(PropertyGroup group, Collection<String> keys) {
+    try {
+      return Environment.getInstance().getBBjAPI().getThinClient()
+          .getUserProperties(group.getValue(), keys);
+    } catch (Exception e) {
+      return new HashMap<>();
+    }
+  }
+
+  /**
+   * Sets all user properties.
+   *
+   * @param properties a map of key and value pairs.
+   * @return The current page instance
+   */
+  public Page setUserProperties(Map<String, String> properties) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().setUserProperties(properties);
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set user properties.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Sets all user properties to the given group.
+   *
+   * @param group the group the properties are saved in
+   * @param properties the map of properties to save
+   * @return The current page instance
+   */
+  public Page setUserProperties(PropertyGroup group, Map<String, String> properties) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().setUserProperties(group.getValue(),
+          properties);
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set user properties.", e); // NOSONAR
+    }
+    return this;
+  }
+
+  /**
+   * Saves the Map to the given group.
+   *
+   * @param group the group where it should be stored
+   * @param samesite samesite to control the set of domains that can read a given cookie
+   * @param properties the map with keys and values
+   * @return The current page instance
+   */
+  public Page setUserProperties(PropertyGroup group, PropertySamesite samesite,
+      Map<String, String> properties) {
+    try {
+      Environment.getInstance().getBBjAPI().getThinClient().setUserProperties(group.getValue(),
+          samesite.getValue(), properties);
+    } catch (Exception e) {
+      throw new DwcjRuntimeException("Failed to set user properties.", e); // NOSONAR
+    }
+    return this;
   }
 }
