@@ -1,6 +1,7 @@
 package org.dwcj.component;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.Editable;
 import com.basis.bbj.proxies.sysgui.Focusable;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
@@ -64,7 +65,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * Interface-controlled members
    * =============================================================================
    */
-  protected Boolean readOnly = null;
+  protected boolean readOnly = false;
   protected Boolean wasFocused = null;
   protected Boolean tabTraversable = null;
   protected HorizontalAlignment.Alignment textAlignment = null;
@@ -361,7 +362,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    *
    * @return True if component is enabled, false otherwise
    */
-
   protected Boolean isComponentEnabled() {
     if (this.control != null) {
       try {
@@ -389,6 +389,42 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
     this.enabled = enabled;
     return this;
+  }
+
+  /**
+   * Sets whether or not the component is read only.
+   *
+   * @param readOnly Desired boolean for read only status of component
+   * @return The component itself
+   */
+  protected AbstractDwcComponent setComponentReadOnly(boolean readOnly) {
+    if (this.control instanceof Editable) {
+      try {
+        ((Editable) control).setEditable(readOnly);
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    this.readOnly = readOnly;
+    return this;
+  }
+
+  /**
+   * Returns whether or not the component is read only.
+   *
+   * @return True if component is read only, false otherwise
+   */
+  protected Boolean isComponentReadOnly() {
+    if (this.control instanceof Editable) {
+      try {
+        return ((Editable) control).isEditable();
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    return this.readOnly;
   }
 
   /**
@@ -672,6 +708,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (!Boolean.TRUE.equals(this.enabled)) {
       this.setComponentEnabled(this.enabled);
+    }
+
+    if (this.readOnly) {
+      this.setComponentReadOnly(this.readOnly);
     }
 
     if (!this.tooltipText.isEmpty()) {
