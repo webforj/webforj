@@ -9,7 +9,7 @@ package org.dwcj.component;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public interface HasValue<T, V> {
+public interface HasValue<T extends Component, V> {
 
   /**
    * Returns the value of the component.
