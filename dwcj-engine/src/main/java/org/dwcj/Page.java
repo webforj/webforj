@@ -17,7 +17,7 @@ import org.dwcj.utilities.Assets;
 public final class Page {
 
   /**
-   * The type of groups availabel when setting the user properties.
+   * The type of groups available when setting the user properties.
    */
   public enum PropertyGroup {
 
@@ -84,22 +84,29 @@ public final class Page {
   public enum PropertySamesite {
 
     /**
-    * 
+    * The default SameSite behavior is set to Lax.
     */
     SAME_SITE_DEFAULT(""),
 
     /**
-    *
+    *This value provides a balance between security and usability. 
+    * The cookie will not be sent in cross-site requests that are initiated by 
+    * "top-level" navigation (e.g., clicking a link), but it will be sent in 
+    * "subsequent" requests that occur within the context of the site.
     */
     SAME_SITE_LAX("Lax"),
 
     /**
-    *
+    * This value allows the cookie to be sent in cross-site requests. 
+    * However, there is an additional requirement for secure transmission. 
+    * It means that the cookie will only be sent if the request is made over HTTPS.
     */
     SAME_SITE_NONE("None"),
 
     /**
-    *
+    * With this value, the cookie will only be sent in requests that originate from 
+    * the same site (site for which the cookie was set). It will not be sent in any cross-site 
+    * context, including when navigating from an external site or using subdomain links.
     */
     SAME_SITE_STRICT("Strict");
 
@@ -775,10 +782,10 @@ public final class Page {
   /**
    * Stores a key/value pair in a specified client-side property group.
    *
-   * @param group the group
-   * @param samesite to control the set of domains that can read a given cookie
-   * @param key the key to access your stored data
-   * @param value the value to be stored
+   * @param group Desired property group
+   * @param Samesite to control the set of domains that can read a given cookie
+   * @param key The key to access your stored data
+   * @param value The value to be stored
    * @return The current page instance
    */
   public Page setUserProperty(PropertyGroup group, PropertySamesite samesite, String key,
@@ -795,9 +802,9 @@ public final class Page {
   /**
    * Stores a key/value pair in a specified client-side property group.
    *
-   * @param group the group
-   * @param key the key to access your stored data
-   * @param value the value to be stored
+   * @param group Desired property group
+   * @param key The key to access your stored data
+   * @param value The value to be stored
    * @return The current page instance
    */
   public Page setUserProperty(PropertyGroup group, String key, String value) {
@@ -830,9 +837,9 @@ public final class Page {
    * Returns the value of a client-side property for a specified key within a specified client-side
    * property group.
    *
-   * @param group the group
-   * @param key the key of the property
-   * @return the value or null in case of an error
+   * @param group Desired property group
+   * @param key The key to access your stored data
+   * @return The user property, or null in case of an error
    */
   public String getUserProperty(PropertyGroup group, String key) {
     try {
@@ -847,8 +854,8 @@ public final class Page {
    * Returns the value of a client-side property for a specified key within a specified client-side
    * property group.
    *
-   * @param key the key of the property
-   * @return the value or null in case of an error
+   * @param key The key of the property
+   * @return The user property, or null in case of an error
    */
   public String getUserProperty(String key) {
     try {
@@ -875,7 +882,7 @@ public final class Page {
   /**
    * Clears all user properties for the given group.
    *
-   * @param group the group which will be cleared.
+   * @param group The property group which will be cleared.
    * @return The current page instance
    */
   public Page clearUserProperties(PropertyGroup group) {
@@ -890,7 +897,7 @@ public final class Page {
   /**
    * Returns all user properties.
    *
-   * @return the map with all the properties.
+   * @return Map with all user properties.
    */
   public Map<String, String> getUserProperties() {
     try {
@@ -903,8 +910,8 @@ public final class Page {
   /**
    * Returns the stored user properties for the given keys.
    *
-   * @param keys a collection of keys.
-   * @return a map with all keys and values.
+   * @param keys A collection of keys.
+   * @return A map with all keys and values.
    */
   public Map<String, String> getUserProperties(Collection<String> keys) {
     try {
@@ -917,8 +924,8 @@ public final class Page {
   /**
    * Returns the stored user properties for the given group.
    *
-   * @param group the propertie group which is querried.
-   * @return a map with all keys and values
+   * @param group The propertie group which is queried.
+   * @return A map with all keys and values
    */
   public Map<String, String> getUserProperties(PropertyGroup group) {
     try {
@@ -932,9 +939,9 @@ public final class Page {
   /**
    * Returns the stored user properties for the given group and keys.
    *
-   * @param group the group which is searched
-   * @param keys the collection of keys
-   * @return a map with all found keys and values
+   * @param group The group which is searched
+   * @param keys The collection of keys
+   * @return A map with all found keys and values
    */
   public Map<String, String> getUserProperties(PropertyGroup group, Collection<String> keys) {
     try {
@@ -948,7 +955,7 @@ public final class Page {
   /**
    * Sets all user properties.
    *
-   * @param properties a map of key and value pairs.
+   * @param properties A map of key and value pairs.
    * @return The current page instance
    */
   public Page setUserProperties(Map<String, String> properties) {
@@ -963,8 +970,8 @@ public final class Page {
   /**
    * Sets all user properties to the given group.
    *
-   * @param group the group the properties are saved in
-   * @param properties the map of properties to save
+   * @param group The group the properties are saved in
+   * @param properties The map of properties to save
    * @return The current page instance
    */
   public Page setUserProperties(PropertyGroup group, Map<String, String> properties) {
@@ -980,9 +987,9 @@ public final class Page {
   /**
    * Saves the Map to the given group.
    *
-   * @param group the group where it should be stored
-   * @param samesite samesite to control the set of domains that can read a given cookie
-   * @param properties the map with keys and values
+   * @param group The group where the properties should be stored
+   * @param samesite Samesite to control the set of domains that can read a given cookie
+   * @param properties The map with keys and values
    * @return The current page instance
    */
   public Page setUserProperties(PropertyGroup group, PropertySamesite samesite,
