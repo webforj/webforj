@@ -36,42 +36,11 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.01
  */
 public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & TabTraversable & TextPosition & HasEnable>
-    extends AbstractDwcComponent implements HasFocus, TabTraversable, TextPosition, HasEnable {
-
-  /**
-   * Expanse options for the component.
-   */
-  public enum Expanse {
-    /* The xlarge expanse as defined by the BBj standard */
-    XLARGE("xl"),
-    /* The large expanse as defined by the BBj standard */
-    LARGE("l"),
-    /* The medium expanse as defined by the BBj standard */
-    MEDIUM("m"),
-    /* The small expanse as defined by the BBj standard */
-    SMALL("s"),
-    /* The xsmall expanse as defined by the BBj standard */
-    XSMALL("xs");
-
-    private final String value;
-
-    Expanse(String value) {
-      this.value = value;
-    }
-
-    /**
-     * Get the value of the expanse.
-     *
-     * @return The value of the expanse.
-     */
-    public String getValue() {
-      return this.value;
-    }
-  }
+    extends AbstractDwcComponent
+    implements HasFocus, TabTraversable, TextPosition, HasEnable, HasExpanse<T, Expanse> {
 
   private TextPosition.Position textPosition = TextPosition.Position.RIGHT;
   private Boolean checked = null;
-  private Expanse expanse;
 
   private EventDispatcher dispatcher = new EventDispatcher();
   private EventSinkListenerRegistry<CheckedEvent> checkEventSinkListenerRegistry =
@@ -199,10 +168,10 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
    * @param expanse The component expanse
    * @return The component itself
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setExpanse(Expanse expanse) {
-    this.expanse = expanse;
-    setProperty("expanse", expanse.getValue());
-
+    setComponentExpanse(expanse);
     return getSelf();
   }
 
@@ -211,8 +180,10 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
    *
    * @return The expanse for the component.
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public Expanse getExpanse() {
-    return this.expanse;
+    return (Expanse) getComponentExpanse();
   }
 
   /**
