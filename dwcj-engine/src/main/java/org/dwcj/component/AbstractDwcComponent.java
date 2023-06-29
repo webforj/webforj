@@ -600,9 +600,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * Implementation to allow child components to utilize base class Expanse setters with their own
    * option-appropriate Enums.
    *
-   * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
-   *             {@link #setControlExpanse(Enum)} instead.
    * @param theme Component-specific theme value
+   * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
+   *             {@link #setComponentExpanse(Enum)} instead.
    */
   @Deprecated
   protected void setControlExpanse(Enum<?> expanse) {
