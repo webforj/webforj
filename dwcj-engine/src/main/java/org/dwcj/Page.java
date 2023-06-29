@@ -783,7 +783,7 @@ public final class Page {
    * Stores a key/value pair in a specified client-side property group.
    *
    * @param group Desired property group
-   * @param Samesite to control the set of domains that can read a given cookie
+   * @param samesite Controls the set of domains that can read a given cookie
    * @param key The key to access your stored data
    * @param value The value to be stored
    * @return The current page instance
