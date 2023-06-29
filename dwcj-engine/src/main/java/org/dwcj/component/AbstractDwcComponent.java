@@ -57,6 +57,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   private Enum<?> theme = null;
   private Enum<?> expanse = null;
+  private Enum<? extends ExpanseBase> componentExpanse = null;
 
   /*
    * =============================================================================
@@ -512,6 +513,27 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Sets the expanse for the component.
+   *
+   * @param expanse The component expanse
+   * @since 23.02
+   */
+  public <V extends Enum<V> & ExpanseBase> void setComponentExpanse(V expanse) {
+    this.componentExpanse = expanse;
+    setProperty("expanse", expanse.getValue());
+  }
+
+  /**
+   * Get the expanse of the component.
+   *
+   * @return The expanse for the component.
+   * @since 23.02
+   */
+  public Enum<? extends ExpanseBase> getComponentExpanse() {
+    return this.componentExpanse;
+  }
+
+  /**
    * Implementation to allow child components to utilize base class Theme setters with their own
    * option-appropriate Enums.
    *
@@ -578,8 +600,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * Implementation to allow child components to utilize base class Expanse setters with their own
    * option-appropriate Enums.
    *
+   * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
+   *             {@link #setControlExpanse(Enum)} instead.
    * @param theme Component-specific theme value
    */
+  @Deprecated
   protected void setControlExpanse(Enum<?> expanse) {
     if (control != null) {
       try {
