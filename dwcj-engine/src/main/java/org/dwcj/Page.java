@@ -1,5 +1,6 @@
 package org.dwcj;
 
+import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.startup.type.BBjException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -78,36 +79,35 @@ public final class Page {
   }
 
   /**
-   * Controls the set of domains that can read a given cookie.
-   * For more information, see Google's notes for Chrome 80+.
+   * Controls the set of domains that can read a given cookie. For more information, see Google's
+   * notes for Chrome 80+.
    */
   public enum PropertySamesite {
 
     /**
-    * The default SameSite behavior is set to Lax.
-    */
+     * The default SameSite behavior is set to Lax.
+     */
     SAME_SITE_DEFAULT(""),
 
     /**
-    *This value provides a balance between security and usability. 
-    * The cookie will not be sent in cross-site requests that are initiated by 
-    * "top-level" navigation (e.g., clicking a link), but it will be sent in 
-    * "subsequent" requests that occur within the context of the site.
-    */
+     * This value provides a balance between security and usability. The cookie will not be sent in
+     * cross-site requests that are initiated by "top-level" navigation (e.g., clicking a link), but
+     * it will be sent in "subsequent" requests that occur within the context of the site.
+     */
     SAME_SITE_LAX("Lax"),
 
     /**
-    * This value allows the cookie to be sent in cross-site requests. 
-    * However, there is an additional requirement for secure transmission. 
-    * It means that the cookie will only be sent if the request is made over HTTPS.
-    */
+     * This value allows the cookie to be sent in cross-site requests. However, there is an
+     * additional requirement for secure transmission. It means that the cookie will only be sent if
+     * the request is made over HTTPS.
+     */
     SAME_SITE_NONE("None"),
 
     /**
-    * With this value, the cookie will only be sent in requests that originate from 
-    * the same site (site for which the cookie was set). It will not be sent in any cross-site 
-    * context, including when navigating from an external site or using subdomain links.
-    */
+     * With this value, the cookie will only be sent in requests that originate from the same site
+     * (site for which the cookie was set). It will not be sent in any cross-site context, including
+     * when navigating from an external site or using subdomain links.
+     */
     SAME_SITE_STRICT("Strict");
 
     private String value;
@@ -150,7 +150,23 @@ public final class Page {
     }
   }
 
-  private Page() {}
+  BBjThinClient thinClient;
+
+
+  private Page() {
+    try {
+      thinClient = Environment.getInstance().getBBjAPI().getThinClient();
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to instantiate Page.", e);
+    }
+  }
+
+  /*
+   * only for testing
+   */
+  Page(BBjThinClient client) {
+    this.thinClient = client;
+  }
 
   /**
    * Get the current page instance.
@@ -791,8 +807,7 @@ public final class Page {
   public Page setUserProperty(PropertyGroup group, PropertySamesite samesite, String key,
       String value) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().setUserProperty(group.getValue(),
-          samesite.getValue(), key, value);
+      thinClient.setUserProperty(group.getValue(), samesite.getValue(), key, value);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set user property.", e); // NOSONAR
     }
@@ -809,8 +824,7 @@ public final class Page {
    */
   public Page setUserProperty(PropertyGroup group, String key, String value) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().setUserProperty(group.getValue(), key,
-          value);
+      thinClient.setUserProperty(group.getValue(), key, value);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set user property.", e); // NOSONAR
     }
@@ -826,7 +840,7 @@ public final class Page {
    */
   public Page setUserProperty(String key, String value) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().setUserProperty(key, value);
+      thinClient.setUserProperty(key, value);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set user property.", e); // NOSONAR
     }
@@ -843,8 +857,7 @@ public final class Page {
    */
   public String getUserProperty(PropertyGroup group, String key) {
     try {
-      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperty(group.getValue(),
-          key);
+      return thinClient.getUserProperty(group.getValue(), key);
     } catch (Exception e) {
       return null;
     }
@@ -859,7 +872,7 @@ public final class Page {
    */
   public String getUserProperty(String key) {
     try {
-      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperty(key);
+      return thinClient.getUserProperty(key);
     } catch (Exception e) {
       return null;
     }
@@ -872,7 +885,7 @@ public final class Page {
    */
   public Page clearUserProperties() {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().clearUserProperties();
+      thinClient.clearUserProperties();
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to clear user properties.", e); // NOSONAR
     }
@@ -887,7 +900,7 @@ public final class Page {
    */
   public Page clearUserProperties(PropertyGroup group) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().clearUserProperties(group.getValue());
+      thinClient.clearUserProperties(group.getValue());
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to clear user properties.", e); // NOSONAR
     }
@@ -901,7 +914,7 @@ public final class Page {
    */
   public Map<String, String> getUserProperties() {
     try {
-      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperties();
+      return thinClient.getUserProperties();
     } catch (Exception e) {
       return new HashMap<>();
     }
@@ -915,7 +928,7 @@ public final class Page {
    */
   public Map<String, String> getUserProperties(Collection<String> keys) {
     try {
-      return Environment.getInstance().getBBjAPI().getThinClient().getUserProperties(keys);
+      return thinClient.getUserProperties(keys);
     } catch (Exception e) {
       return new HashMap<>();
     }
@@ -929,8 +942,7 @@ public final class Page {
    */
   public Map<String, String> getUserProperties(PropertyGroup group) {
     try {
-      return Environment.getInstance().getBBjAPI().getThinClient()
-          .getUserProperties(group.getValue());
+      return thinClient.getUserProperties(group.getValue());
     } catch (Exception e) {
       return new HashMap<>();
     }
@@ -945,8 +957,7 @@ public final class Page {
    */
   public Map<String, String> getUserProperties(PropertyGroup group, Collection<String> keys) {
     try {
-      return Environment.getInstance().getBBjAPI().getThinClient()
-          .getUserProperties(group.getValue(), keys);
+      return thinClient.getUserProperties(group.getValue(), keys);
     } catch (Exception e) {
       return new HashMap<>();
     }
@@ -960,7 +971,7 @@ public final class Page {
    */
   public Page setUserProperties(Map<String, String> properties) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().setUserProperties(properties);
+      thinClient.setUserProperties(properties);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set user properties.", e); // NOSONAR
     }
@@ -976,8 +987,7 @@ public final class Page {
    */
   public Page setUserProperties(PropertyGroup group, Map<String, String> properties) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().setUserProperties(group.getValue(),
-          properties);
+      thinClient.setUserProperties(group.getValue(), properties);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set user properties.", e); // NOSONAR
     }
@@ -995,8 +1005,7 @@ public final class Page {
   public Page setUserProperties(PropertyGroup group, PropertySamesite samesite,
       Map<String, String> properties) {
     try {
-      Environment.getInstance().getBBjAPI().getThinClient().setUserProperties(group.getValue(),
-          samesite.getValue(), properties);
+      thinClient.setUserProperties(group.getValue(), samesite.getValue(), properties);
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to set user properties.", e); // NOSONAR
     }
