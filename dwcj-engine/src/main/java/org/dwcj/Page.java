@@ -173,7 +173,7 @@ public final class Page {
    *
    * @return the current page instance
    */
-  public static Page getInstance() {
+  public static Page getCurrent() {
     String key = "dwcj.page.instance";
     if (ObjectTable.contains(key)) {
       return (Page) ObjectTable.get(key);

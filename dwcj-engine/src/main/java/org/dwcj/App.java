@@ -58,7 +58,7 @@ public abstract class App {
    * @return the current page instance
    */
   public static Page getPage() {
-    return Page.getInstance();
+    return Page.getCurrent();
   }
 
   /**
