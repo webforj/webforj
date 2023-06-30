@@ -23,7 +23,7 @@ public final class ObjectTable {
    * @param value the contents to set in the field
    */
   public static void put(String key, Object value) {
-    Environment.getInstance().getBBjAPI().getObjectTable().put(key, value);
+    Environment.getCurrent().getBBjAPI().getObjectTable().put(key, value);
   }
 
   /**
@@ -35,7 +35,7 @@ public final class ObjectTable {
    */
   public static Object get(String key) {
     try {
-      return Environment.getInstance().getBBjAPI().getObjectTable().get(key);
+      return Environment.getCurrent().getBBjAPI().getObjectTable().get(key);
     } catch (BBjException e) {
       throw new NoSuchElementException("Element " + key + " does not exist!");
     }
@@ -62,7 +62,7 @@ public final class ObjectTable {
    * @param key the key of the variable to remove
    */
   public static void clear(String key) {
-    Environment.getInstance().getBBjAPI().getObjectTable().remove(key);
+    Environment.getCurrent().getBBjAPI().getObjectTable().remove(key);
   }
 
   /**
@@ -71,6 +71,6 @@ public final class ObjectTable {
    * @return the number of key-value mappings in this map
    */
   public static int size() {
-    return Environment.getInstance().getBBjAPI().getObjectTable().size();
+    return Environment.getCurrent().getBBjAPI().getObjectTable().size();
   }
 }

@@ -38,8 +38,8 @@ public abstract class AbstractEventSink implements EventSinkInterface {
     this.dispatcher = dispatcher;
     this.eventType = eventType;
 
-    if (Environment.getInstance() != null) {
-      setDwcjHelper(Environment.getInstance().getDwcjHelper());
+    if (Environment.getCurrent() != null) {
+      setDwcjHelper(Environment.getCurrent().getDwcjHelper());
     }
   }
 

@@ -29,7 +29,7 @@ public final class Environment {
     Environment.instanceMap.remove(Thread.currentThread().getName());
   }
 
-  public static Environment getInstance() {
+  public static Environment getCurrent() {
     return Environment.instanceMap.get(Thread.currentThread().getName());
   }
 

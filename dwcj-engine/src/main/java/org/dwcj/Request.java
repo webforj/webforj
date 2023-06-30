@@ -34,7 +34,7 @@ public final class Request {
    * @return The value of the query parameter with the provided key, null if not present.
    */
   public static String getQueryParam(String key) {
-    return Environment.getInstance().getDwcjHelper().getQueryParam(key);
+    return Environment.getCurrent().getDwcjHelper().getQueryParam(key);
   }
 
 }

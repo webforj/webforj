@@ -9,6 +9,6 @@ import org.dwcj.Environment;
 public final class GlobalNamespace extends StandardNamespace implements Namespace {
 
   public GlobalNamespace() {
-    ns = Environment.getInstance().getBBjAPI().getGlobalNamespace();
+    ns = Environment.getCurrent().getBBjAPI().getGlobalNamespace();
   }
 }

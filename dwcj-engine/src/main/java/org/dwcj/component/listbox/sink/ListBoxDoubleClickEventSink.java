@@ -25,8 +25,8 @@ public class ListBoxDoubleClickEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_DOUBLE_CLICK,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_DOUBLE_CLICK,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
           "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
@@ -42,8 +42,8 @@ public class ListBoxDoubleClickEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_DOUBLE_CLICK,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_DOUBLE_CLICK,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "doubleClickEvent"),
           "onEvent");
     } catch (Exception e) {
       Environment.logError(e);

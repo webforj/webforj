@@ -23,9 +23,8 @@ public final class TreeDeselectEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TREE_DESELECT,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "deselectEvent"),
-          "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_DESELECT,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "deselectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

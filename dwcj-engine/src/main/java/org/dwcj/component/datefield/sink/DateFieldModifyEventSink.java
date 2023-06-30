@@ -25,8 +25,8 @@ public final class DateFieldModifyEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
           "onEvent");
 
     } catch (Exception e) {
@@ -43,8 +43,8 @@ public final class DateFieldModifyEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_EDIT_MODIFY,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_EDIT_MODIFY,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
           "onEvent");
 
     } catch (Exception e) {

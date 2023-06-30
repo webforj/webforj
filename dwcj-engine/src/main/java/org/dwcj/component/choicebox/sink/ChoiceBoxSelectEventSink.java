@@ -25,8 +25,8 @@ public final class ChoiceBoxSelectEventSink {
 
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_SELECT,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -39,8 +39,8 @@ public final class ChoiceBoxSelectEventSink {
 
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_SELECT,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_SELECT,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

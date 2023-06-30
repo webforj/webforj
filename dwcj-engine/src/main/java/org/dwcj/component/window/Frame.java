@@ -18,9 +18,9 @@ public class Frame extends AbstractWindow implements HasEnable {
     try {
       byte[] flags = new byte[] {(byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x80};
       BasisNumber b1 = BasisNumber.createBasisNumber(1);
-      BasisNumber ctx = BasisNumber
-          .createBasisNumber(Environment.getInstance().getSysGui().getAvailableContext());
-      wnd = Environment.getInstance().getSysGui().addWindow(ctx, b1, b1, b1, b1, "Frame", flags);
+      BasisNumber ctx =
+          BasisNumber.createBasisNumber(Environment.getCurrent().getSysGui().getAvailableContext());
+      wnd = Environment.getCurrent().getSysGui().addWindow(ctx, b1, b1, b1, b1, "Frame", flags);
       control = wnd;
     } catch (NumberFormatException | BBjException e) {
       Environment.logError(e);

@@ -28,8 +28,8 @@ public final class TabSelectEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(btn);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TAB_SELECT, // NOSONAR
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TAB_SELECT, // NOSONAR
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
     } catch (Exception e) {
       Environment.logError(e);
@@ -45,8 +45,8 @@ public final class TabSelectEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tabControl);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_BUTTON_PUSH, // NOSONAR
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
     } catch (Exception e) {
       Environment.logError(e);

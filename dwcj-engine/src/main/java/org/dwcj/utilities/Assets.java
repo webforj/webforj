@@ -29,7 +29,7 @@ public class Assets {
    * @throws DwcjRuntimeException if an error occurred while reading the resource
    */
   public static String contentOf(String path) {
-    ClassLoader classLoader = Environment.getInstance().getClass().getClassLoader();
+    ClassLoader classLoader = Environment.getCurrent().getClass().getClassLoader();
     try (InputStream is = classLoader.getResourceAsStream(path)) {
       if (is == null) {
         throw new IllegalArgumentException("Resource not found: " + path);
@@ -50,7 +50,7 @@ public class Assets {
    * @return The URL of the Jetty Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
-    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerFilesURL", null);

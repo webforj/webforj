@@ -45,7 +45,7 @@ public class WelcomeApp extends App {
 
     try {
       cplist =
-          (ArrayList<String>) Environment.getInstance().getBBjAPI().getObjectTable().get("dwcjcp");
+          (ArrayList<String>) Environment.getCurrent().getBBjAPI().getObjectTable().get("dwcjcp");
     } catch (BBjException e) { //
     }
     if (cplist != null) {

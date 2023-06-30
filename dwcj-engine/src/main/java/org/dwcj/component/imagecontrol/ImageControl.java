@@ -27,7 +27,7 @@ public final class ImageControl extends AbstractDwcComponent {
   protected void create(AbstractWindow p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      BBjImage img = Environment.getInstance().getSysGui().getImageManager()
+      BBjImage img = Environment.getCurrent().getSysGui().getImageManager()
           .loadImageFromBytes(Base64.getDecoder().decode(CLEARPIXEL));
       bbjImageControl = w.addImageCtrl(img);
       control = bbjImageControl;
@@ -74,7 +74,7 @@ public final class ImageControl extends AbstractDwcComponent {
     }
     try {
       BBjImage img =
-          Environment.getInstance().getSysGui().getImageManager().loadImageFromBytes(data);
+          Environment.getCurrent().getSysGui().getImageManager().loadImageFromBytes(data);
       bbjImageControl.setImage(img);
     } catch (BBjException e) {
       Environment.logError(e);

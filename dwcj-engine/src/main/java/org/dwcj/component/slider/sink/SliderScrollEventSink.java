@@ -28,9 +28,8 @@ public class SliderScrollEventSink {
 
     try {
       bbjControl = ComponentAccessor.getDefault().getBBjControl(slide);
-      bbjControl.setCallback(Environment.getInstance().getBBjAPI().ON_CONTROL_SCROLL,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "onScrollEvent"),
-          "onEvent");
+      bbjControl.setCallback(Environment.getCurrent().getBBjAPI().ON_CONTROL_SCROLL,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "onScrollEvent"), "onEvent");
 
     } catch (Exception e) {
       Environment.logError(e);
