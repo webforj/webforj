@@ -65,7 +65,7 @@ public abstract class App {
    * @return the current request instance
    */
   public static Request getRequest() {
-    return Request.getInstance();
+    return Request.getCurrent();
   }
 
   /**

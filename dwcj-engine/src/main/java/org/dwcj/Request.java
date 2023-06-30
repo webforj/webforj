@@ -15,7 +15,7 @@ public final class Request {
    *
    * @return the current request instance
    */
-  public static Request getInstance() {
+  public static Request getCurrent() {
     String key = "dwcj.request.instance";
     if (ObjectTable.contains(key)) {
       return (Request) ObjectTable.get(key);
