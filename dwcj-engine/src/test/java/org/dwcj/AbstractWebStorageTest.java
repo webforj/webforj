@@ -2,14 +2,13 @@ package org.dwcj;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class AbstractWebStorageTest {
+class AbstractWebStorageTest {
   BBjThinClient thinClient = mock(BBjThinClient.class);
   AbstractWebStorage webStorage = new AbstractWebStorageMock(thinClient);
 
