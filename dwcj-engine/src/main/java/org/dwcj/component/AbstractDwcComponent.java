@@ -539,7 +539,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @param expanse The component expanse
    * @since 23.02
    */
-  public <V extends Enum<V> & ExpanseBase> void setComponentExpanse(V expanse) {
+  protected <V extends Enum<V> & ExpanseBase> void setComponentExpanse(V expanse) {
     this.componentExpanse = expanse;
     setProperty("expanse", expanse.getValue());
   }
@@ -550,7 +550,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return The expanse for the component.
    * @since 23.02
    */
-  public Enum<? extends ExpanseBase> getComponentExpanse() {
+  protected Enum<? extends ExpanseBase> getComponentExpanse() {
     return this.componentExpanse;
   }
 
