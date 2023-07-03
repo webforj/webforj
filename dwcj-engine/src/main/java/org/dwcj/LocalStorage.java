@@ -14,7 +14,7 @@ public class LocalStorage extends AbstractWebStorage {
     super(Environment.getCurrent().getBBjAPI().getThinClient(), WebStorageType.STORAGE);
   }
 
-  public LocalStorage(BBjThinClient thinClient) {
+  LocalStorage(BBjThinClient thinClient) {
     super(thinClient, WebStorageType.STORAGE);
   }
 

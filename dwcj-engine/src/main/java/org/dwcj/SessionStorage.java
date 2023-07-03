@@ -14,7 +14,7 @@ public class SessionStorage extends AbstractWebStorage {
     super(Environment.getCurrent().getBBjAPI().getThinClient(), WebStorageType.SESSION);
   }
 
-  public SessionStorage(BBjThinClient thinClient) {
+  SessionStorage(BBjThinClient thinClient) {
     super(thinClient, WebStorageType.SESSION);
   }
 
