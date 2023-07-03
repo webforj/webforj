@@ -352,6 +352,18 @@ public abstract class App {
     }
   }
 
+  public static CookieStorage getCookieStorage() {
+    return CookieStorage.getCurrent();
+  }
+
+  public static SessionStorage getSessionStorage() {
+    return SessionStorage.getCurrent();
+  }
+
+  public static LocalStorage getLocalStorage() {
+    return LocalStorage.getCurrent();
+  }
+
   /**
    * Override this method to implement your app behavior
    *
