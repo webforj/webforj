@@ -357,6 +357,33 @@ public abstract class App {
   public void cleanup() {}
 
   /**
+   * Get the CookieStorage.
+   *
+   * @return the CookieStorage instance
+   */
+  public static CookieStorage getCookieStorage() {
+    return CookieStorage.getCurrent();
+  }
+
+  /**
+   * Get the SessionStorage.
+   *
+   * @return the SessionStorage instance
+   */
+  public static SessionStorage getSessionStorage() {
+    return SessionStorage.getCurrent();
+  }
+
+  /**
+   * Get the LocalStorage.
+   *
+   * @return the LocalStorage instance
+   */
+  public static LocalStorage getLocalStorage() {
+    return LocalStorage.getCurrent();
+  }
+
+  /**
    * Override this method to implement your app behavior
    *
    * @throws DwcjAppInitializeException
