@@ -37,4 +37,8 @@ public final class Request {
     return Environment.getInstance().getDwcjHelper().getQueryParam(key);
   }
 
+  public static String getCookie(String key) {
+    return CookieStorage.getCurrent().get(key);
+  }
+
 }
