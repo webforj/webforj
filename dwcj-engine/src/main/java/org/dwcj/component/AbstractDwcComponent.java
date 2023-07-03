@@ -18,53 +18,12 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  */
 public abstract class AbstractDwcComponent extends AbstractComponent implements HasAttribute,
     HasText, HasClassName, HasStyle, HasTooltip, HasVisibility, HasProperty {
-
-  /*
-   * ============================================================================= Members
-   * implemented for interfacing with BBj methods/implementations
-   * =============================================================================
-   */
   public static final String STR_EXPANSE = "expanse";
   public static final String STR_THEME = "theme";
+
   protected static final BasisNumber BASISNUMBER_1 = BasisNumber.createBasisNumber(1);
   protected static final BasisNumber BASISNUMBER_25 = BasisNumber.createBasisNumber(25);
   protected static final BasisNumber BASISNUMBER_250 = BasisNumber.createBasisNumber(250);
-
-  /*
-   * ============================================================================= Members common to
-   * all inheriting components
-   * =============================================================================
-   */
-  private String text = "";
-  private Boolean visible = true;
-  private Boolean enabled = true;
-  private String tooltipText = "";
-
-  private final Map<String, String> styles = new HashMap<>();
-  private final List<String> removeStyles = new ArrayList<>();
-
-  private final List<String> cssClasses = new ArrayList<>();
-  private final List<String> removeCssClasses = new ArrayList<>();
-
-  private final Map<String, String> attributes = new HashMap<>();
-  private final List<String> removeAttributes = new ArrayList<>();
-
-  private final Map<String, Object> properties = new HashMap<>();
-
-  /*
-   * ============================================================================= Theme and Expanse
-   * variables which need to be enumerated in their respective child components
-   * =============================================================================
-   */
-  private Enum<?> theme = null;
-  private Enum<?> expanse = null;
-  private Enum<? extends ExpanseBase> componentExpanse = null;
-
-  /*
-   * =============================================================================
-   * Interface-controlled members
-   * =============================================================================
-   */
   protected boolean readOnly = false;
   protected Boolean wasFocused = null;
   protected Boolean tabTraversable = null;
@@ -73,54 +32,22 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected Integer verticalScrollBarPosition = null;
   protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
   protected TextHighlightable.Highlight textHighlight = null;
-
-  /*
-   * Underlying BBj control
-   */
   protected BBjControl control;
 
-  /**
-   * This method gets the underlying original BBj control It's package private and can only be
-   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
-   * controls.
-   *
-   * @return the underlying BBj control
-   */
-  BBjControl getControl() {
-    return this.control;
-  }
-
-  /**
-   * This method sets the underlying original BBj control. It's package private and can only be
-   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
-   * controls.
-   *
-   * @param control the BBj control to set.
-   */
-  protected void setControl(BBjControl control) {
-    this.control = control;
-  }
-
-  /**
-   * Gets the value for a specific attribute in the component.
-   *
-   * @param attribute the name of the attribute
-   * @return the attribute
-   */
-  @Override
-  public String getAttribute(String attribute) {
-    // ask the component first
-    if (control != null) {
-      try {
-        return control.getAttribute(attribute);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    // fall back to the internal list - will not return attributes that are added by
-    // default
-    return attributes.get(attribute);
-  }
+  private String text = "";
+  private Boolean visible = true;
+  private Boolean enabled = true;
+  private String tooltipText = "";
+  private final Map<String, String> styles = new HashMap<>();
+  private final List<String> removeStyles = new ArrayList<>();
+  private final List<String> cssClasses = new ArrayList<>();
+  private final List<String> removeCssClasses = new ArrayList<>();
+  private final Map<String, String> attributes = new HashMap<>();
+  private final List<String> removeAttributes = new ArrayList<>();
+  private final Map<String, Object> properties = new HashMap<>();
+  private Enum<?> theme = null;
+  private Enum<?> expanse = null;
+  private Enum<? extends ExpanseBase> componentExpanse = null;
 
   /**
    * Set the value for a specified component attribute.
@@ -145,6 +72,27 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Gets the value for a specific attribute in the component.
+   *
+   * @param attribute the name of the attribute
+   * @return the attribute
+   */
+  @Override
+  public String getAttribute(String attribute) {
+    // ask the component first
+    if (control != null) {
+      try {
+        return control.getAttribute(attribute);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    // fall back to the internal list - will not return attributes that are added by
+    // default
+    return attributes.get(attribute);
+  }
+
+  /**
    * Removes an attribute from the component.
    *
    * @param attribute the name of the attribute
@@ -163,24 +111,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       attributes.remove(attribute);
     }
     return this;
-  }
-
-  /**
-   * Gets the value for a property in the component.
-   *
-   * @param property the name of the property
-   * @return the value of the property
-   */
-  @Override
-  public Object getProperty(String property) {
-    if (control != null) {
-      try {
-        return control.getClientProperty(property);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return properties.get(property);
   }
 
   /**
@@ -205,20 +135,21 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets the text of the component.
+   * Gets the value for a property in the component.
    *
-   * @return Text of the component
+   * @param property the name of the property
+   * @return the value of the property
    */
   @Override
-  public String getText() {
+  public Object getProperty(String property) {
     if (control != null) {
       try {
-        return control.getText();
+        return control.getClientProperty(property);
       } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    return text;
+    return properties.get(property);
   }
 
   /**
@@ -240,6 +171,41 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       this.text = new String(text.getBytes());
     } else {
       this.text = "<null>";
+    }
+    return this;
+  }
+
+  /**
+   * Gets the text of the component.
+   *
+   * @return Text of the component
+   */
+  @Override
+  public String getText() {
+    if (control != null) {
+      try {
+        return control.getText();
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return text;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public AbstractDwcComponent setStyle(String property, String value) {
+    if (control != null) {
+      try {
+        control.setStyle(property, value);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    } else {
+      this.styles.put(property, value);
+      this.removeStyles.remove(property);
     }
     return this;
   }
@@ -276,24 +242,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     // fall back to the internal list - will not return styles that are added by
     // default
     return styles.get(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public AbstractDwcComponent setStyle(String property, String value) {
-    if (control != null) {
-      try {
-        control.setStyle(property, value);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    } else {
-      this.styles.put(property, value);
-      this.removeStyles.remove(property);
-    }
-    return this;
   }
 
   /**
@@ -358,19 +306,113 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Returns whether or not the component is enabled.
+   * Sets the tooltip text for a component.
    *
-   * @return True if component is enabled, false otherwise
+   * @param text A string with the tooltip text for the component
+   * @return The component itself
    */
-  protected Boolean isComponentEnabled() {
+  @Override
+  public AbstractDwcComponent setTooltipText(String text) {
     if (this.control != null) {
       try {
-        return control.isEnabled();
+        control.setToolTipText(text);
       } catch (BBjException e) {
         Environment.logError(e);
       }
     }
-    return enabled;
+    this.tooltipText = text;
+    return this;
+  }
+
+  /**
+   * Gets the tooltip text for a component.
+   *
+   * @return A string with the tooltip text for the component
+   */
+  @Override
+  public String getTooltipText() {
+    if (this.control != null) {
+      try {
+        return control.getToolTipText();
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return tooltipText;
+  }
+
+  /**
+   * Sets whether or not the is component is visible on the page, true if so false if not.
+   *
+   * @param visible for desired visibility of the component
+   *
+   * @return The component itself
+   */
+  @Override
+  public AbstractDwcComponent setVisible(Boolean visible) {
+    if (this.control != null) {
+      try {
+        control.setVisible(visible);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.visible = visible;
+    return this;
+  }
+
+  /**
+   * Gets whether or not the component is visible.
+   *
+   * @return The visibility of the component
+   */
+  @Override
+  public Boolean isVisible() {
+    if (this.control != null) {
+      try {
+        return control.isVisible();
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return visible;
+  }
+
+  /**
+   * Method to destroy a component.
+   */
+  @Override
+  public void destroy() {
+    this.destroyed = true;
+    try {
+      if (control != null && !control.isDestroyed()) {
+        control.destroy();
+      }
+    } catch (BBjException e) {
+      Environment.logError(e);
+    }
+  }
+
+  /**
+   * This method gets the underlying original BBj control It's package private and can only be
+   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
+   * controls.
+   *
+   * @return the underlying BBj control
+   */
+  BBjControl getControl() {
+    return this.control;
+  }
+
+  /**
+   * This method sets the underlying original BBj control. It's package private and can only be
+   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
+   * controls.
+   *
+   * @param control the BBj control to set.
+   */
+  protected void setControl(BBjControl control) {
+    this.control = control;
   }
 
   /**
@@ -389,6 +431,22 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
     this.enabled = enabled;
     return this;
+  }
+
+  /**
+   * Returns whether or not the component is enabled.
+   *
+   * @return True if component is enabled, false otherwise
+   */
+  protected Boolean isComponentEnabled() {
+    if (this.control != null) {
+      try {
+        return control.isEnabled();
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return enabled;
   }
 
   /**
@@ -425,79 +483,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
 
     return this.readOnly;
-  }
-
-  /**
-   * Gets the tooltip text for a component.
-   *
-   * @return A string with the tooltip text for the component
-   */
-  @Override
-  public String getTooltipText() {
-    if (this.control != null) {
-      try {
-        return control.getToolTipText();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return tooltipText;
-  }
-
-  /**
-   * Sets the tooltip text for a component.
-   *
-   * @param text A string with the tooltip text for the component
-   * @return The component itself
-   */
-  @Override
-  public AbstractDwcComponent setTooltipText(String text) {
-    if (this.control != null) {
-      try {
-        control.setToolTipText(text);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.tooltipText = text;
-    return this;
-  }
-
-  /**
-   * Gets whether or not the component is visible.
-   *
-   * @return The visibility of the component
-   */
-  @Override
-  public Boolean isVisible() {
-    if (this.control != null) {
-      try {
-        return control.isVisible();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return visible;
-  }
-
-  /**
-   * Sets whether or not the is component is visible on the page, true if so false if not.
-   *
-   * @param visible for desired visibility of the component
-   *
-   * @return The component itself
-   */
-  @Override
-  public AbstractDwcComponent setVisible(Boolean visible) {
-    if (this.control != null) {
-      try {
-        control.setVisible(visible);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.visible = visible;
-    return this;
   }
 
   /**
@@ -570,6 +555,50 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Implementation to allow child components to utilize base class Expanse setters with their own
+   * option-appropriate Enums.
+   *
+   * @param theme Component-specific theme value
+   * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
+   *             {@link #setComponentExpanse(Enum)} instead.
+   */
+  @Deprecated
+  protected void setControlExpanse(Enum<?> expanse) {
+    if (control != null) {
+      try {
+        switch (expanse.toString()) {
+          case "LARGE":
+            control.putClientProperty(STR_EXPANSE, "l");
+            break;
+          case "MEDIUM":
+            control.putClientProperty(STR_EXPANSE, "m");
+            break;
+          case "SMALL":
+            control.putClientProperty(STR_EXPANSE, "s");
+            break;
+          case "XLARGE":
+            control.putClientProperty(STR_EXPANSE, "xl");
+            break;
+          case "XSMALL":
+            control.putClientProperty(STR_EXPANSE, "xs");
+            break;
+          case "XXSMALL":
+            control.putClientProperty(STR_EXPANSE, "xxs");
+            break;
+          case "XXXSMALL":
+            control.putClientProperty(STR_EXPANSE, "xxxs");
+            break;
+          default:
+            // noop
+        }
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    this.expanse = expanse;
+  }
+
+  /**
    * Implementation to allow child components to utilize base class Theme setters with their own
    * option-appropriate Enums.
    *
@@ -633,50 +662,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Implementation to allow child components to utilize base class Expanse setters with their own
-   * option-appropriate Enums.
-   *
-   * @param theme Component-specific theme value
-   * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
-   *             {@link #setComponentExpanse(Enum)} instead.
-   */
-  @Deprecated
-  protected void setControlExpanse(Enum<?> expanse) {
-    if (control != null) {
-      try {
-        switch (expanse.toString()) {
-          case "LARGE":
-            control.putClientProperty(STR_EXPANSE, "l");
-            break;
-          case "MEDIUM":
-            control.putClientProperty(STR_EXPANSE, "m");
-            break;
-          case "SMALL":
-            control.putClientProperty(STR_EXPANSE, "s");
-            break;
-          case "XLARGE":
-            control.putClientProperty(STR_EXPANSE, "xl");
-            break;
-          case "XSMALL":
-            control.putClientProperty(STR_EXPANSE, "xs");
-            break;
-          case "XXSMALL":
-            control.putClientProperty(STR_EXPANSE, "xxs");
-            break;
-          case "XXXSMALL":
-            control.putClientProperty(STR_EXPANSE, "xxxs");
-            break;
-          default:
-            // noop
-        }
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.expanse = expanse;
-  }
-
-  /**
    * The catchUp method is used to replay attributes and settings that the API user might have added
    * to a component before its creation. A component is not created before it's added to a panel.
    * Anything that is added between instantiation of a component and its addition to a panel has to
@@ -685,8 +670,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @throws IllegalAccessException - thrown if an attempt is made to call this method more than
    *         once
    */
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
   @Override
   protected void catchUp() throws IllegalAccessException {
     if (Boolean.TRUE.equals(this.getCaughtUp())) {
@@ -784,22 +767,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (this.wasFocused != null) {
       this.focusComponent();
-    }
-  }
-
-
-  /**
-   * Method to destroy a component.
-   */
-  @Override
-  public void destroy() {
-    this.destroyed = true;
-    try {
-      if (control != null && !control.isDestroyed()) {
-        control.destroy();
-      }
-    } catch (BBjException e) {
-      Environment.logError(e);
     }
   }
 }
