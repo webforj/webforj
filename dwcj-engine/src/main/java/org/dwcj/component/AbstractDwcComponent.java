@@ -6,10 +6,16 @@ import com.basis.bbj.proxies.sysgui.Focusable;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
 import org.dwcj.Environment;
+import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -42,12 +48,79 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private final List<String> removeStyles = new ArrayList<>();
   private final List<String> cssClasses = new ArrayList<>();
   private final List<String> removeCssClasses = new ArrayList<>();
-  private final Map<String, String> attributes = new HashMap<>();
-  private final List<String> removeAttributes = new ArrayList<>();
+  private final Map<String, String> attributes = new ConcurrentHashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
   private Enum<?> theme = null;
   private Enum<?> expanse = null;
   private Enum<? extends ExpanseBase> componentExpanse = null;
+
+  /**
+   * Set the value for a property in the component.
+   *
+   * @param property the name of the property
+   * @param value the value to be set
+   * @return the component itself
+   *
+   * @throws DwcjRestrictedAccessException if the property is restricted
+   */
+  @Override
+  public AbstractDwcComponent setProperty(String property, Object value) {
+    List<String> restrictedProperties = getRestrictedProperties();
+    if (!restrictedProperties.isEmpty() && restrictedProperties.contains(property)) {
+      throw new DwcjRestrictedAccessException("Property " + property + " is restricted.");
+    }
+
+    return setUnrestrictedProperty(property, value);
+  }
+
+  /**
+   * Gets the value for a property in the component.
+   *
+   * @param property the name of the property
+   * @return the value of the property
+   */
+  @Override
+  public Object getProperty(String property) {
+    if (control != null) {
+      try {
+        return control.getClientProperty(property);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    }
+    return properties.get(property);
+  }
+
+  /**
+   * Gets all properties of the component.
+   *
+   * @return a map of all properties
+   * @since 23.02
+   */
+  public Map<String, Object> getProperties() {
+    return Collections.unmodifiableMap(properties);
+  }
+
+  /**
+   * The getRestrictedProperties returns a list of properties that are restricted by the component.
+   * The default implementation returns an empty ArrayList, which means that no properties are
+   * restricted. Some components might need to restrict properties to prevent the API user from
+   * setting properties that are supported by the component and has a already defined behavior.
+   *
+   * <p>
+   * If a property is restricted, it also means that the corresponding attribute version of that
+   * property is restricted. When converting property names to attribute names, the following
+   * process is followed: CamelCase property names are separated at each capital letter, and dashes
+   * are inserted between the words. For example, if the property name is "firstName", it would be
+   * converted to "first-name" as an attribute.
+   * </p>
+   *
+   * @return A list of restricted properties, or empty list if no properties are restricted.
+   * @since 23.02
+   */
+  public List<String> getRestrictedProperties() {
+    return new ArrayList<>();
+  }
 
   /**
    * Set the value for a specified component attribute.
@@ -55,20 +128,31 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @param attribute the name of the attribute
    * @param value the value to be set
    * @return the component itself
+   *
+   * @throws DwcjRestrictedAccessException if the attribute is restricted
    */
   @Override
   public AbstractDwcComponent setAttribute(String attribute, String value) {
-    if (control != null) {
-      try {
-        control.setAttribute(attribute, value);
-      } catch (BBjException e) {
-        Environment.logError(e);
+    List<String> restrictedProperties = getRestrictedProperties();
+
+    if (!restrictedProperties.isEmpty()) {
+      // Attribute names with dashes are converted to camelCase property names by capitalizing
+      // (except first word) the
+      // character following each dash, then removing the dashes. For example, the attribute
+      // first-name maps to firstName. The same mappings happen in reverse when converting property
+      // names to attribute names
+      String property = Arrays.stream(attribute.split("-"))
+          .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
+          .collect(Collectors.joining());
+
+      // JOptionPane.showMessageDialog(null, property, "Message", JOptionPane.INFORMATION_MESSAGE);
+
+      if (restrictedProperties.contains(property)) {
+        throw new DwcjRestrictedAccessException("Attribute " + attribute + " is restricted.");
       }
-    } else {
-      attributes.put(attribute, value);
-      removeAttributes.remove(attribute);
     }
-    return this;
+
+    return setUnrestrictedAttribute(attribute, value);
   }
 
   /**
@@ -84,7 +168,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       try {
         return control.getAttribute(attribute);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
     // fall back to the internal list - will not return attributes that are added by
@@ -104,52 +188,52 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       try {
         control.removeAttribute(attribute);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
-    } else {
-      removeAttributes.add(attribute);
-      attributes.remove(attribute);
     }
+
+    attributes.remove(attribute);
     return this;
   }
 
   /**
-   * Set the value for a property in the component.
+   * Gets all attributes of the component.
    *
-   * @param property the name of the property
-   * @param value the value to be set
-   * @return the component itself
+   * @return a map of all attributes
+   * @since 23.02
    */
-  @Override
-  public AbstractDwcComponent setProperty(String property, Object value) {
-    if (control != null) {
-      try {
-        control.putClientProperty(property, value);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    } else {
-      properties.put(property, value);
-    }
-    return this;
+  public Map<String, String> getAttributes() {
+    return Collections.unmodifiableMap(attributes);
   }
 
   /**
-   * Gets the value for a property in the component.
+   * The getRestrictedAttributes returns a list of attributes that are restricted by the component.
+   * The default implementation returns an empty ArrayList, which means that no attributes are
+   * restricted. Some components might need to restrict attributes to prevent the API user from
+   * setting attributes that are supported by the component and have an already defined behavior.
    *
-   * @param property the name of the property
-   * @return the value of the property
+   * <p>
+   * If an attribute is restricted, it also means that the corresponding property version of that
+   * attribute is restricted. When converting attribute names to property names, the following
+   * process is followed: dashed attribute names are converted to CamelCase property names by
+   * removing dashes and capitalizing the next letter of each word. For example, if the attribute
+   * name is "first-name", it would be converted to "firstName" as a property.
+   * </p>
+   *
+   * @return A list of restricted attributes, or empty list if no attributes are restricted.
+   * @since 23.02
    */
-  @Override
-  public Object getProperty(String property) {
-    if (control != null) {
-      try {
-        return control.getClientProperty(property);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
+  public List<String> getRestrictedAttributes() {
+    List<String> restrictedProperties = getRestrictedProperties();
+
+    if (!restrictedProperties.isEmpty()) {
+      return restrictedProperties.stream().map(property -> {
+        String[] words = property.split("(?=\\p{Upper})");
+        return Arrays.stream(words).map(String::toLowerCase).collect(Collectors.joining("-"));
+      }).collect(Collectors.toList());
     }
-    return properties.get(property);
+
+    return new ArrayList<>();
   }
 
   /**
@@ -416,6 +500,50 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Set the value for a property in the component. This method does not check if the property is
+   * restricted or not.
+   *
+   * @param property the name of the property
+   * @param value the value to be set
+   *
+   * @return the component itself
+   */
+  protected AbstractDwcComponent setUnrestrictedProperty(String property, Object value) {
+    if (control != null) {
+      try {
+        control.putClientProperty(property, value);
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    } else {
+      properties.put(property, value);
+    }
+    return this;
+  }
+
+  /**
+   * Set the value for a specified component attribute. This method does not check if the attribute
+   * is restricted or not.
+   *
+   * @param attribute the name of the attribute
+   * @param value the value to be set
+   *
+   * @return the component itself
+   */
+  protected AbstractDwcComponent setUnrestrictedAttribute(String attribute, String value) {
+    if (control != null) {
+      try {
+        control.setAttribute(attribute, value);
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    attributes.put(attribute, value);
+    return this;
+  }
+
+  /**
    * Sets whether or not the component is enabled.
    *
    * @param enabled Desired boolean for enabled status of component
@@ -541,7 +669,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   protected <V extends Enum<V> & ExpanseBase> void setComponentExpanse(V expanse) {
     this.componentExpanse = expanse;
-    setProperty("expanse", expanse.getValue());
+    setUnrestrictedProperty("expanse", expanse.getValue());
   }
 
   /**
@@ -707,19 +835,13 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (!this.attributes.isEmpty()) {
       for (Map.Entry<String, String> entry : this.attributes.entrySet()) {
-        this.setAttribute(entry.getKey(), entry.getValue());
-      }
-    }
-
-    if (!this.removeAttributes.isEmpty()) {
-      for (String attribute : this.removeAttributes) {
-        this.removeAttribute(attribute);
+        setUnrestrictedAttribute(entry.getKey(), entry.getValue());
       }
     }
 
     if (!this.properties.isEmpty()) {
       for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
-        this.setProperty(entry.getKey(), entry.getValue());
+        setUnrestrictedProperty(entry.getKey(), entry.getValue());
       }
     }
 

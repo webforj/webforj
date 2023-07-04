@@ -1,5 +1,8 @@
 package org.dwcj.component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.dwcj.component.window.AbstractWindow;
 
 public class AbstractDwcComponentMock extends AbstractDwcComponent
@@ -25,6 +28,11 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
   @Override
   public Boolean isReadOnly() {
     return isComponentReadOnly();
+  }
+
+  @Override
+  public List<String> getRestrictedProperties() {
+    return new ArrayList<>(Arrays.asList("expanse", "readonly", "doesNotExist"));
   }
 
   @Override
