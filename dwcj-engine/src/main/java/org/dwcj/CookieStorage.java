@@ -45,7 +45,7 @@ public class CookieStorage extends AbstractWebStorage {
    *
    * @param path the path the cookies will be stored.
    */
-  public void setCookiePath(String path) {
+  public static void setCookiePath(String path) {
     StringTable.put("!COOKIE_PATH", path);
   }
 }
