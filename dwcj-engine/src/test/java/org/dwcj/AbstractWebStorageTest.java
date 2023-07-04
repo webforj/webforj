@@ -132,14 +132,7 @@ class AbstractWebStorageTest {
 
   @Test
   void removeMultiple() {
-    final List<String> values = new ArrayList<>();
-
-    values.add("key1");
-    values.add("key2");
-    values.add("key3");
-    values.add("key4");
-
-    webStorage.remove(values);
+    webStorage.remove("key1", "key2", "key3", "key4");
 
     try {
       verify(thinClient, times(4)).setUserProperty(WebStorageType.COOKIES.getValue(), anyString(),
