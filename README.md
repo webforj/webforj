@@ -11,9 +11,9 @@ A robust and flexible framework that can help you deliver a modern and engaging 
 
 - **Event Handling**: Handle user interactions and events with ease using the DWCJ's event system. Respond to user actions and update the UI accordingly.
 
-- **CSS-in-Java**: Utilize a CSS-in-Java approach to style your components. Define styles using Java code, enabling a seamless integration between UI logic and styling.
+- **Component-Based**: Create reusable and composable components to build complex UIs. Components encapsulate their own state and logic, providing a modular and maintainable structure for your application.
 
-- **Server-Side Rendering**: Render your UI on the server side for improved initial load times and client-server communication.
+- **Reliable**: Our team in the United States and Europe have been building tools and technologies to help our clients fulfil their needs for over 35 years. We have consistently produced reliable and innovative technologies to ensure our clients have every tool in their kit needed to tackle modern, ever-changing needs.
 
 ## Documentation
 
