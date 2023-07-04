@@ -14,7 +14,7 @@ import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.dwcj.AbstractWebStorage.PropertySamesite;
+import org.dwcj.AbstractWebStorage.PropertySameSite;
 import org.dwcj.AbstractWebStorage.WebStorageType;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.Test;
@@ -28,11 +28,11 @@ class AbstractWebStorageTest {
 
   @Test
   void protectedAddWithSamesite() {
-    webStorage.add(PropertySamesite.SAME_SITE_STRICT, "key", "value");
+    webStorage.add(PropertySameSite.SAME_SITE_STRICT, "key", "value");
 
     try {
       verify(thinClient, times(1)).setUserProperty(WebStorageType.COOKIES.getValue(),
-          PropertySamesite.SAME_SITE_STRICT.getValue(), "key", "value");
+          PropertySameSite.SAME_SITE_STRICT.getValue(), "key", "value");
     } catch (BBjException e) {
       //
     }
@@ -47,11 +47,11 @@ class AbstractWebStorageTest {
     values.put("key3", "value3");
     values.put("key4", "value4");
 
-    webStorage.add(PropertySamesite.SAME_SITE_STRICT, values);
+    webStorage.add(PropertySameSite.SAME_SITE_STRICT, values);
 
     try {
       verify(thinClient, times(1)).setUserProperties(WebStorageType.COOKIES.getValue(),
-          PropertySamesite.SAME_SITE_STRICT.getValue(), values);
+          PropertySameSite.SAME_SITE_STRICT.getValue(), values);
     } catch (Exception e) {
       //
     }
@@ -63,7 +63,7 @@ class AbstractWebStorageTest {
 
     try {
       verify(thinClient, times(1)).setUserProperty(WebStorageType.COOKIES.getValue(),
-          PropertySamesite.SAME_SITE_DEFAULT.getValue(), "key", "value");
+          PropertySameSite.SAME_SITE_DEFAULT.getValue(), "key", "value");
     } catch (BBjException e) {
       //
     }
@@ -82,7 +82,7 @@ class AbstractWebStorageTest {
 
     try {
       verify(thinClient, times(1)).setUserProperties(WebStorageType.COOKIES.getValue(),
-          PropertySamesite.SAME_SITE_DEFAULT.getValue(), values);
+          PropertySameSite.SAME_SITE_DEFAULT.getValue(), values);
     } catch (Exception e) {
       //
     }
@@ -163,7 +163,7 @@ class AbstractWebStorageTest {
   @Test
   void addExceptionPath() throws BBjException {
     doThrow(BBjException.class).when(thinClient).setUserProperty(WebStorageType.COOKIES.getValue(),
-        PropertySamesite.SAME_SITE_DEFAULT.getValue(), "key", "value");
+        PropertySameSite.SAME_SITE_DEFAULT.getValue(), "key", "value");
 
     assertThrows(DwcjRuntimeException.class, () -> webStorage.add("key", "value"));
   }
@@ -179,7 +179,7 @@ class AbstractWebStorageTest {
     values.put("key4", "value4");
 
     doThrow(BBjException.class).when(thinClient).setUserProperties(
-        WebStorageType.COOKIES.getValue(), PropertySamesite.SAME_SITE_DEFAULT.getValue(), values);
+        WebStorageType.COOKIES.getValue(), PropertySameSite.SAME_SITE_DEFAULT.getValue(), values);
 
     assertThrows(DwcjRuntimeException.class, () -> webStorage.add(values));
   }

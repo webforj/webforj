@@ -29,14 +29,7 @@ public interface WebStorage {
    *
    * @param key the key of the value to be removed
    */
-  public void remove(String key);
-
-  /**
-   * Iterates throught the collection and calls remove for every entry.
-   *
-   * @param keys a collection of keys
-   */
-  public void remove(Collection<String> keys);
+  public void remove(String... key);
 
   /**
    * Tries to read the value for the given key.

@@ -22,15 +22,15 @@ public abstract class AbstractWebStorage implements WebStorage {
 
   @Override
   public void add(String key, String value) {
-    add(PropertySamesite.SAME_SITE_DEFAULT, key, value);
+    add(PropertySameSite.SAME_SITE_DEFAULT, key, value);
   }
 
   @Override
   public void add(Map<String, String> values) {
-    add(PropertySamesite.SAME_SITE_DEFAULT, values);
+    add(PropertySameSite.SAME_SITE_DEFAULT, values);
   }
 
-  protected void add(PropertySamesite samesite, String key, String value) {
+  protected void add(PropertySameSite samesite, String key, String value) {
     try {
       thinClient.setUserProperty(type.getValue(), samesite.getValue(), key, value);
     } catch (BBjException e) {
@@ -38,7 +38,7 @@ public abstract class AbstractWebStorage implements WebStorage {
     }
   }
 
-  protected void add(PropertySamesite samesite, Map<String, String> values) {
+  protected void add(PropertySameSite samesite, Map<String, String> values) {
     try {
       thinClient.setUserProperties(type.getValue(), samesite.getValue(), values);
     } catch (BBjException e) {
@@ -65,8 +65,7 @@ public abstract class AbstractWebStorage implements WebStorage {
     }
   }
 
-  @Override
-  public void remove(String key) {
+  private void remove(String key) {
     try {
       thinClient.setUserProperty(type.getValue(), key, null);
     } catch (BBjException e) {
@@ -75,7 +74,7 @@ public abstract class AbstractWebStorage implements WebStorage {
   }
 
   @Override
-  public void remove(Collection<String> keys) {
+  public void remove(String... keys) {
     for (String key : keys) {
       remove(key);
     }
@@ -124,21 +123,13 @@ public abstract class AbstractWebStorage implements WebStorage {
     public long getValue() {
       return value;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
   }
 
   /**
    * Controls the set of domains that can read a given cookie. For more information, see Google's
    * notes for Chrome 80+.
    */
-  public enum PropertySamesite {
+  protected enum PropertySameSite {
 
     /**
      * The default SameSite behavior is set to Lax.
@@ -168,7 +159,7 @@ public abstract class AbstractWebStorage implements WebStorage {
 
     private String value;
 
-    private PropertySamesite(String value) {
+    private PropertySameSite(String value) {
       this.value = value;
     }
 
@@ -178,30 +169,6 @@ public abstract class AbstractWebStorage implements WebStorage {
      * @return the value of the enum
      */
     public String getValue() {
-      return this.value;
-    }
-
-    /**
-     * Get the enum from the value.
-     *
-     * @param value the value of the enum
-     * @return the enum
-     */
-    public static PropertySamesite fromValue(String value) {
-      for (PropertySamesite samesite : PropertySamesite.values()) {
-        if (samesite.getValue().equals(value)) {
-          return samesite;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
       return this.value;
     }
   }
