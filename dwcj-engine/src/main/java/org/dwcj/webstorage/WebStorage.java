@@ -1,4 +1,4 @@
-package org.dwcj;
+package org.dwcj.webstorage;
 
 import java.util.Collection;
 import java.util.Map;

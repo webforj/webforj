@@ -1,8 +1,9 @@
-package org.dwcj;
+package org.dwcj.webstorage;
 
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.startup.type.BBjException;
 import java.util.Map;
+import org.dwcj.Environment;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
 import org.dwcj.exceptions.DwcjRuntimeException;

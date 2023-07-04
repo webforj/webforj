@@ -13,6 +13,9 @@ import org.dwcj.environment.namespace.PrivateNamespace;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 import org.dwcj.exceptions.DwcjException;
 import org.dwcj.exceptions.DwcjRuntimeException;
+import org.dwcj.webstorage.CookieStorage;
+import org.dwcj.webstorage.LocalStorage;
+import org.dwcj.webstorage.SessionStorage;
 
 /**
  * This is the central class representing an app. In order to implement an app, extend this class

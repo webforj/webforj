@@ -1,4 +1,4 @@
-package org.dwcj;
+package org.dwcj.webstorage;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,9 +14,9 @@ import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.dwcj.AbstractWebStorage.PropertySameSite;
-import org.dwcj.AbstractWebStorage.WebStorageType;
 import org.dwcj.exceptions.DwcjRuntimeException;
+import org.dwcj.webstorage.AbstractWebStorage.PropertySameSite;
+import org.dwcj.webstorage.AbstractWebStorage.WebStorageType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

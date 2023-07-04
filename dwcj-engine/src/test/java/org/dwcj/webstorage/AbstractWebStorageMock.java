@@ -1,7 +1,8 @@
-package org.dwcj;
+package org.dwcj.webstorage;
 
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.startup.type.BBjException;
+import org.dwcj.Environment;
 
 /**
  * AbstractWebStorageMock needed for Testing.

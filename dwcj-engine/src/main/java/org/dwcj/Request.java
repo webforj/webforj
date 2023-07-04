@@ -1,6 +1,7 @@
 package org.dwcj;
 
 import org.dwcj.environment.ObjectTable;
+import org.dwcj.webstorage.CookieStorage;
 
 /**
  * Represents the incoming request with the various pieces of information provided with the incoming
