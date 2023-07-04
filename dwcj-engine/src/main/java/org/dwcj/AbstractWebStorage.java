@@ -94,7 +94,7 @@ public abstract class AbstractWebStorage implements WebStorage {
   /**
    * The type of available web storages.
    */
-  public enum WebStorageType {
+  protected enum WebStorageType {
     /**
      * Maps to browser cookies with a 30-day expiration.
      */
@@ -123,22 +123,6 @@ public abstract class AbstractWebStorage implements WebStorage {
      */
     public long getValue() {
       return value;
-    }
-
-    /**
-     * Get the enum from the value.
-     *
-     * @param value the value of the enum
-     * @return the enum
-     */
-    public static WebStorageType fromValue(long value) {
-      for (WebStorageType type : WebStorageType.values()) {
-        if (type.getValue() == value) {
-          return type;
-        }
-      }
-
-      return null;
     }
 
     /**
