@@ -38,7 +38,7 @@ public class Panel extends AbstractWindow implements HasEnable {
       byte[] flags = new byte[] {(byte) 0x00, (byte) 0x10, (byte) 0x88, finalFlag};
       // todo honor visible flag if set before addition to panel
       wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, "", flags, Environment.getInstance().getSysGui().getAvailableContext());
+          BASISNUMBER_1, "", flags, Environment.getCurrent().getSysGui().getAvailableContext());
       control = wnd;
       catchUp();
     } catch (Exception e) {

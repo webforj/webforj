@@ -25,8 +25,8 @@ public class ComboBoxOpenEventSink {
 
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_OPEN,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "openEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -39,8 +39,8 @@ public class ComboBoxOpenEventSink {
 
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(cb);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_OPEN,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "openEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_OPEN,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "openEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

@@ -21,7 +21,7 @@ public final class PrivateNamespace extends StandardNamespace {
   public PrivateNamespace(String prefix, String name, Boolean fCreateIfMissing) {
     {
       try {
-        ns = Environment.getInstance().getBBjAPI().getNamespace(prefix, name, fCreateIfMissing);
+        ns = Environment.getCurrent().getBBjAPI().getNamespace(prefix, name, fCreateIfMissing);
       } catch (BBjException e) {
         if (Boolean.TRUE.equals(fCreateIfMissing))
           throw new RuntimeException(e);

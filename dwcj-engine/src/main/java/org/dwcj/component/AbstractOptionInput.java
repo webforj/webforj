@@ -40,7 +40,7 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
     implements HasFocus, TabTraversable, TextPosition, HasEnable, HasExpanse<T, Expanse> {
 
   private TextPosition.Position textPosition = TextPosition.Position.RIGHT;
-  private Boolean checked = null;
+  private boolean checked = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();
   private EventSinkListenerRegistry<CheckedEvent> checkEventSinkListenerRegistry =
@@ -72,24 +72,8 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
    */
   protected AbstractOptionInput(String text, boolean checked) {
     super();
-    this.setText(text);
-    this.checked = checked;
-  }
-
-  /**
-   * Create a new AbstractOptionInput component.
-   *
-   * @param text The text for the AbstractOptionInput.
-   */
-  protected AbstractOptionInput(String text) {
-    this(text, false);
-  }
-
-  /**
-   * Create a new AbstractOptionInput component.
-   */
-  protected AbstractOptionInput() {
-    this("", false);
+    setText(text);
+    setChecked(checked);
   }
 
   /**
@@ -655,7 +639,7 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
     this.mouseExitEventSinkListenerRegistry.catchUp();
     this.rightMouseDownEventSinkListenerRegistry.catchUp();
 
-    if (this.checked != null) {
+    if (this.checked) {
       this.setChecked(this.checked);
     }
 

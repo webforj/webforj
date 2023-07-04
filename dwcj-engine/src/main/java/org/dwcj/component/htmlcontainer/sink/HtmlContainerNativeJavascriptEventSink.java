@@ -29,7 +29,7 @@ public final class HtmlContainerNativeJavascriptEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(htmlv);
       bbjctrl.setCallback(SysGuiEventConstants.ON_NATIVE_JAVASCRIPT,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "onEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

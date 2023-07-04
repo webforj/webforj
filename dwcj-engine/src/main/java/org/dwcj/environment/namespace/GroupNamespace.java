@@ -8,6 +8,6 @@ import org.dwcj.Environment;
 public final class GroupNamespace extends StandardNamespace implements Namespace {
 
   public GroupNamespace() {
-    ns = Environment.getInstance().getBBjAPI().getGroupNamespace();
+    ns = Environment.getCurrent().getBBjAPI().getGroupNamespace();
   }
 }

@@ -27,8 +27,8 @@ public class NavLastEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(ng);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_NAV_FIRST,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "navLastEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_NAV_FIRST,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "navLastEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

@@ -25,8 +25,8 @@ public final class WindowClickEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(div);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_MOUSE_DOWN,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_MOUSE_DOWN,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
     } catch (Exception e) {
       Environment.logError(e);
@@ -40,8 +40,8 @@ public final class WindowClickEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(div);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_MOUSE_DOWN,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_MOUSE_DOWN,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "pushEvent"), "onEvent");
 
     } catch (Exception e) {
       Environment.logError(e);

@@ -54,7 +54,7 @@ public final class StringTable {
    */
   public static String get(String key) {
     try {
-      return Environment.getInstance().getBBjAPI().getStbl(key);
+      return Environment.getCurrent().getBBjAPI().getStbl(key);
     } catch (BBjException e) {
       throw new NoSuchElementException("Element " + key + " does not exist!");
     }
@@ -70,7 +70,7 @@ public final class StringTable {
    */
   public static String put(String key, String value) {
     try {
-      Environment.getInstance().getBBjAPI().setStbl(key, value);
+      Environment.getCurrent().getBBjAPI().setStbl(key, value);
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -84,7 +84,7 @@ public final class StringTable {
    */
   public static void clear(String key) {
     try {
-      Environment.getInstance().getBBjAPI().setStbl("!CLEAR", key);
+      Environment.getCurrent().getBBjAPI().setStbl("!CLEAR", key);
     } catch (BBjException e) {
       Environment.logError(e);
     }

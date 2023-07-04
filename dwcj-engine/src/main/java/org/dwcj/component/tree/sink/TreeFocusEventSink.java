@@ -24,8 +24,8 @@ public class TreeFocusEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_GAINED_FOCUS,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "gainedFocusEvent"),
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_GAINED_FOCUS,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "gainedFocusEvent"),
           "onEvent");
     } catch (Exception e) {
       Environment.logError(e);

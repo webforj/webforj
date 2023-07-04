@@ -25,8 +25,8 @@ public final class ListBoxSelectEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLICK,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_CLICK,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -41,8 +41,8 @@ public final class ListBoxSelectEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(listBox);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_LIST_CLICK,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LIST_CLICK,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

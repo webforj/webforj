@@ -24,8 +24,8 @@ public final class TreeSelectEventSink {
     BBjControl bbjctrl = null;
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-      bbjctrl.setCallback(Environment.getInstance().getBBjAPI().ON_TREE_SELECT,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_SELECT,
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "selectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

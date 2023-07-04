@@ -294,7 +294,8 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public RadioButtonGroup removeCheckListener(EventListener<RadioButtonGroupChangeEvent> listener) {
+  public RadioButtonGroup removeChangeListener(
+      EventListener<RadioButtonGroupChangeEvent> listener) {
     this.changedEventSinkListenerRegistry.removeEventListener(listener);
     return this;
   }

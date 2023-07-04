@@ -2,6 +2,7 @@ package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import java.util.Arrays;
 import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractOptionInput;
@@ -61,6 +62,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
 
   private Activation activation;
   private RadioButtonGroup group = null;
+  private boolean isSwitch = false;
 
   /**
    * Create a new radio button component.
@@ -78,14 +80,49 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
    * @param text The text for the radio button.
    */
   public RadioButton(String text) {
-    super(text);
+    this(text, false);
   }
 
   /**
    * Create a new radio button component.
    */
   public RadioButton() {
-    super();
+    this("");
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @param text The text for the radio button.
+   * @param checked True if the radio button should be created as checked, false otherwise.
+   *
+   * @return The created radio button with the switch style.
+   * @since 23.02
+   */
+  public static RadioButton Switch(String text, boolean checked) { // NOSONAR
+    return new RadioButton(text, checked).setSwitch(true);
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @param text The text for the radio button.
+   *
+   * @return The created radio button with the switch style.
+   * @since 23.02
+   */
+  public static RadioButton Switch(String text) { // NOSONAR
+    return RadioButton.Switch(text, false);
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @return The created radio button with the switch style.
+   * @since 23.02
+   */
+  public static RadioButton Switch() { // NOSONAR
+    return RadioButton.Switch("");
   }
 
   /**
@@ -95,7 +132,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
    * @see Activation
    */
   public RadioButton setActivation(Activation value) {
-    setProperty("activation", value.getValue());
+    setUnrestrictedProperty("activation", value.getValue());
     this.activation = value;
 
     return this;
@@ -158,6 +195,52 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
    */
   void setButtonGroup(RadioButtonGroup group) {
     this.group = group;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("activation", "autoValidate", "autoValidateOnLoad",
+        "autoWasValidated", "checked", "disabled", "expanse", "hasFocus", "invalid",
+        "invalidMessage", "label", "name", "readonly", "required", "switch", "tabTraversable",
+        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator", "value"));
+
+    return properties;
+  }
+
+  /**
+   * Render the radio button as a switch.
+   *
+   * <p>
+   * A switch component is a user interface element that represents a binary choice, such as turning
+   * something on or off. It visually resembles a physical switch that can be toggled between two
+   * states. It provides a clear visual indication of the current state, making it easy for users to
+   * understand and interact with the switch.
+   * </p>
+   *
+   * @param isSwitch When true, the radio button will be rendered as a switch
+   * @since 23.02
+   */
+  public RadioButton setSwitch(boolean isSwitch) {
+    this.isSwitch = isSwitch;
+    setUnrestrictedProperty("switch", isSwitch);
+    return this;
+  }
+
+  /**
+   * Check if the radio button is rendered as a switch.
+   *
+   * @return true when the radio button is rendered as a switch, false otherwise.
+   *
+   * @see #setSwitch(boolean)
+   * @since 23.02
+   */
+  public boolean isSwitch() {
+    return isSwitch;
   }
 
   /**

@@ -21,7 +21,7 @@ public final class Page {
    *
    * @return the current page instance
    */
-  public static Page getInstance() {
+  public static Page getCurrent() {
     String key = "dwcj.page.instance";
     if (ObjectTable.contains(key)) {
       return (Page) ObjectTable.get(key);
@@ -42,7 +42,7 @@ public final class Page {
    */
   public Page setTitle(String title) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setTitle(title);
+      Environment.getCurrent().getBBjAPI().getWebManager().setTitle(title);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set title.", e);
     }
@@ -58,7 +58,7 @@ public final class Page {
    */
   public String getTitle() {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getTitle();
+      return Environment.getCurrent().getBBjAPI().getWebManager().getTitle();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get title.", e);
     }
@@ -76,7 +76,7 @@ public final class Page {
    */
   public Page setMeta(String name, String content, Map<String, String> attributes) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -96,7 +96,7 @@ public final class Page {
    */
   public Page setMeta(String name, String content, String attributes) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -115,7 +115,7 @@ public final class Page {
    */
   public Page setMeta(String name, String content) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setMeta(name, content);
+      Environment.getCurrent().getBBjAPI().getWebManager().setMeta(name, content);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -140,7 +140,7 @@ public final class Page {
    */
   public Page setAttribute(String name, String value, String selector) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setAttribute(name, value, selector);
+      Environment.getCurrent().getBBjAPI().getWebManager().setAttribute(name, value, selector);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set attribute.", e);
     }
@@ -188,7 +188,7 @@ public final class Page {
    */
   public String getAttribute(String name, String selector) {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getAttribute(name, selector);
+      return Environment.getCurrent().getBBjAPI().getWebManager().getAttribute(name, selector);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get attribute.", e);
     }
@@ -222,7 +222,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -247,7 +247,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -300,7 +300,7 @@ public final class Page {
         css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -326,7 +326,7 @@ public final class Page {
         css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -381,7 +381,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
@@ -406,7 +406,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
@@ -460,7 +460,7 @@ public final class Page {
         script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
@@ -486,7 +486,7 @@ public final class Page {
         script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectScript(script, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
@@ -540,7 +540,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
@@ -565,7 +565,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getInstance().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+      Environment.getCurrent().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
@@ -609,7 +609,7 @@ public final class Page {
    */
   public Object executeJs(String script) {
     try {
-      return Environment.getInstance().getSysGui().executeScript(script);
+      return Environment.getCurrent().getSysGui().executeScript(script);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to execute script.", e); // NOSONAR
     }
@@ -625,7 +625,7 @@ public final class Page {
    */
   public Page executeAsyncJs(String script) {
     try {
-      Environment.getInstance().getSysGui().executeAsyncScript(script);
+      Environment.getCurrent().getSysGui().executeAsyncScript(script);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to execute async script.", e); // NOSONAR
     }

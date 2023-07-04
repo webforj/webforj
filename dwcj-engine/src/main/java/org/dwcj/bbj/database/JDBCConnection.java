@@ -9,6 +9,6 @@ public class JDBCConnection {
   private JDBCConnection() {}
 
   public static Connection getJDBCConnection(String databasename) throws Exception {
-    return Environment.getInstance().getBBjAPI().getJDBCConnection(databasename);
+    return Environment.getCurrent().getBBjAPI().getJDBCConnection(databasename);
   }
 }

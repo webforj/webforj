@@ -56,7 +56,7 @@ public abstract class App {
    * @return the current page instance
    */
   public static Page getPage() {
-    return Page.getInstance();
+    return Page.getCurrent();
   }
 
   /**
@@ -65,7 +65,7 @@ public abstract class App {
    * @return the current request instance
    */
   public static Request getRequest() {
-    return Request.getInstance();
+    return Request.getCurrent();
   }
 
   /**
@@ -76,7 +76,7 @@ public abstract class App {
    */
   public static void setTheme(String theme) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setTheme(theme);
+      Environment.getCurrent().getBBjAPI().getWebManager().setTheme(theme);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set theme.", e);
     }
@@ -102,7 +102,7 @@ public abstract class App {
    */
   public static String getTheme() {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getTheme();
+      return Environment.getCurrent().getBBjAPI().getWebManager().getTheme();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get theme.", e);
     }
@@ -117,7 +117,7 @@ public abstract class App {
    */
   public static void setDarkTheme(String darkTheme) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setDarkTheme(darkTheme);
+      Environment.getCurrent().getBBjAPI().getWebManager().setDarkTheme(darkTheme);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set dark theme.", e);
     }
@@ -131,7 +131,7 @@ public abstract class App {
    */
   public static String getDarkTheme() {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getDarkTheme();
+      return Environment.getCurrent().getBBjAPI().getWebManager().getDarkTheme();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get dark theme.", e);
     }
@@ -147,7 +147,7 @@ public abstract class App {
 
   public static void setLightTheme(String lightTheme) {
     try {
-      Environment.getInstance().getBBjAPI().getWebManager().setLightTheme(lightTheme);
+      Environment.getCurrent().getBBjAPI().getWebManager().setLightTheme(lightTheme);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set light theme.", e);
     }
@@ -162,7 +162,7 @@ public abstract class App {
 
   public static String getLightTheme() {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getLightTheme();
+      return Environment.getCurrent().getBBjAPI().getWebManager().getLightTheme();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get light theme.", e);
     }
@@ -176,7 +176,7 @@ public abstract class App {
    */
   public static String getApplicationName() {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getApplicationName();
+      return Environment.getCurrent().getBBjAPI().getWebManager().getApplicationName();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get application name.", e);
     }
@@ -188,7 +188,7 @@ public abstract class App {
    * @return The application protocol
    */
   public static String getProtocol() {
-    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
@@ -200,7 +200,7 @@ public abstract class App {
    * @return The application host
    */
   public static String getHost() {
-    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerHost", null);
@@ -212,7 +212,7 @@ public abstract class App {
    * @return The application port
    */
   public static String getPort() {
-    IDwcjBBjBridge helper = Environment.getInstance().getDwcjHelper();
+    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerPort", null);
@@ -226,7 +226,7 @@ public abstract class App {
    */
   public static String getUrl() {
     try {
-      return Environment.getInstance().getBBjAPI().getWebManager().getUrl();
+      return Environment.getCurrent().getBBjAPI().getWebManager().getUrl();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get application URL.", e);
     }
@@ -240,7 +240,7 @@ public abstract class App {
   public static void consoleLog(String output) {
     try {
 
-      Environment.getInstance().getSysGui().executeScript("console.log(\"" + output + "\")");
+      Environment.getCurrent().getSysGui().executeScript("console.log(\"" + output + "\")");
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -249,7 +249,7 @@ public abstract class App {
   public static void consoleError(String output) {
     try {
 
-      Environment.getInstance().getSysGui().executeScript("console.error(\"" + output + "\")");
+      Environment.getCurrent().getSysGui().executeScript("console.error(\"" + output + "\")");
     } catch (BBjException e) {
       Environment.logError(e);
     }
@@ -262,7 +262,7 @@ public abstract class App {
    * @return
    */
   public static int msgbox(String alert) {
-    return Environment.getInstance().getDwcjHelper().msgbox(alert, 0, "");
+    return Environment.getCurrent().getDwcjHelper().msgbox(alert, 0, "");
   }
 
   /**
@@ -272,7 +272,7 @@ public abstract class App {
    * @return
    */
   public static int msgbox(String alert, int options) {
-    return Environment.getInstance().getDwcjHelper().msgbox(alert, options, "");
+    return Environment.getCurrent().getDwcjHelper().msgbox(alert, options, "");
   }
 
   /**
@@ -283,7 +283,7 @@ public abstract class App {
    * @return
    */
   public static int msgbox(String alert, int options, String title) {
-    return Environment.getInstance().getDwcjHelper().msgbox(alert, options, title);
+    return Environment.getCurrent().getDwcjHelper().msgbox(alert, options, title);
   }
 
   /**
@@ -294,9 +294,9 @@ public abstract class App {
   public static void busy(boolean busy) {
     try {
       if (busy) {
-        Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setText("");
+        Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setText("");
       }
-      Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(busy);
+      Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(busy);
     } catch (BBjException e) {
       // ignore
     }
@@ -309,22 +309,22 @@ public abstract class App {
    */
   public static void busy(String busyText) {
     try {
-      Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setText(busyText);
-      Environment.getInstance().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(true);
+      Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setText(busyText);
+      Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(true);
     } catch (BBjException e) {
       // ignore
     }
   }
 
   private void preRun() {
-    Environment.getInstance().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
+    Environment.getCurrent().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
   }
 
   /**
    * Call this method to terminate your App.
    */
   public void terminate() {
-    Environment.getInstance().getBBjAPI().postPriorityCustomEvent("doTerminate", null);
+    Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("doTerminate", null);
     cleanup();
     Environment.cleanup();
   }

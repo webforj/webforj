@@ -30,7 +30,7 @@ public class HtmlContainerScriptFailEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
       bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_FAILED,
-          Environment.getInstance().getDwcjHelper().getEventProxy(this, "scriptFailedEvent"),
+          Environment.getCurrent().getDwcjHelper().getEventProxy(this, "scriptFailedEvent"),
           "onEvent");
 
     } catch (Exception e) {
