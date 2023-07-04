@@ -2,6 +2,7 @@ package org.dwcj;
 
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.startup.type.BBjException;
+import java.util.Map;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -47,5 +48,15 @@ public class CookieStorage extends AbstractWebStorage {
    */
   public static void setCookiePath(String path) {
     StringTable.put("!COOKIE_PATH", path);
+  }
+
+  @Override
+  public void add(PropertySameSite samesite, String key, String value) {
+    super.add(samesite, key, value);
+  }
+
+  @Override
+  public void add(PropertySameSite samesite, Map<String, String> values) {
+    super.add(samesite, values);
   }
 }
