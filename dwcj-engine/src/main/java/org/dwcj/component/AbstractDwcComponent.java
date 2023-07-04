@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import javax.swing.JOptionPane;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -48,10 +47,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private final List<String> removeStyles = new ArrayList<>();
   private final List<String> cssClasses = new ArrayList<>();
   private final List<String> removeCssClasses = new ArrayList<>();
-  private final Map<String, String> attributes = new ConcurrentHashMap<>();
-  private final Map<String, Object> properties = new HashMap<>();
   private Enum<?> theme = null;
   private Enum<?> expanse = null;
+  private final Map<String, String> attributes = new ConcurrentHashMap<>();
+  private final Map<String, Object> properties = new ConcurrentHashMap<>();
   private Enum<? extends ExpanseBase> componentExpanse = null;
 
   /**
@@ -67,7 +66,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   public AbstractDwcComponent setProperty(String property, Object value) {
     List<String> restrictedProperties = getRestrictedProperties();
     if (!restrictedProperties.isEmpty() && restrictedProperties.contains(property)) {
-      throw new DwcjRestrictedAccessException("Property " + property + " is restricted.");
+      throw new DwcjRestrictedAccessException(
+          "The property '" + property + "' is restricted and cannot be modified.");
     }
 
     return setUnrestrictedProperty(property, value);
@@ -85,9 +85,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       try {
         return control.getClientProperty(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
+
     return properties.get(property);
   }
 
@@ -136,19 +137,18 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     List<String> restrictedProperties = getRestrictedProperties();
 
     if (!restrictedProperties.isEmpty()) {
-      // Attribute names with dashes are converted to camelCase property names by capitalizing
-      // (except first word) the
+      // Attribute names with dashes are converted to camelCase property names by capitalizing the
       // character following each dash, then removing the dashes. For example, the attribute
       // first-name maps to firstName. The same mappings happen in reverse when converting property
       // names to attribute names
       String property = Arrays.stream(attribute.split("-"))
           .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
           .collect(Collectors.joining());
-
-      // JOptionPane.showMessageDialog(null, property, "Message", JOptionPane.INFORMATION_MESSAGE);
+      property = property.substring(0, 1).toLowerCase() + property.substring(1);
 
       if (restrictedProperties.contains(property)) {
-        throw new DwcjRestrictedAccessException("Attribute " + attribute + " is restricted.");
+        throw new DwcjRestrictedAccessException(
+            "The attribute " + attribute + " is restricted and cannot be modified.");
       }
     }
 
@@ -515,9 +515,9 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
-    } else {
-      properties.put(property, value);
     }
+
+    properties.put(property, value);
     return this;
   }
 

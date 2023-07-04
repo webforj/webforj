@@ -32,7 +32,7 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
 
   @Override
   public List<String> getRestrictedProperties() {
-    return new ArrayList<>(Arrays.asList("expanse", "readonly", "doesNotExist"));
+    return new ArrayList<>(Arrays.asList("expanse", "doesNotExist"));
   }
 
   @Override

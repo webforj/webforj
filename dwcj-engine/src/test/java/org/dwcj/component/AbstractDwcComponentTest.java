@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -137,8 +136,11 @@ public class AbstractDwcComponentTest {
     }
 
     @Test
-    @DisplayName("Setting/getting attributes when control throws BBjException a DwcjRuntimeException is thrown")
-    void settingGettingAttributesWhenControlThrowsBBjException() throws BBjException {
+    @DisplayName("""
+        Setting/getting attributes when control throws
+        BBjException a DwcjRuntimeException is thrown
+        """)
+    void settingGettingAttributesWhenControlThrowsBbjException() throws BBjException {
       doThrow(BBjException.class).when(control).setAttribute("key", "value");
       doThrow(BBjException.class).when(control).getAttribute("key");
 
@@ -146,22 +148,21 @@ public class AbstractDwcComponentTest {
       assertThrows(DwcjRuntimeException.class, () -> component.getAttribute("key"));
     }
 
-    // @Test
-    // @DisplayName("setAttribute will will throw DwcjRestrictedAccessException when attribute is
-    // restricted")
-    // void setAttributeWillThrowDwcjRestrictedAccessExceptionWhenAttributeIsRestricted()
-    // throws IllegalAccessException, BBjException {
-    // nullifyControl();
+    @Test
+    @DisplayName("""
+        setAttribute will will throw DwcjRestrictedAccessException when
+        attribute is restricted
+        """)
+    void setAttributeWillThrowDwcjRestrictedAccessExceptionWhenAttributeIsRestricted()
+        throws IllegalAccessException, BBjException {
+      nullifyControl();
 
-    // assertThrows(DwcjRestrictedAccessException.class,
-    // () -> component.setAttribute("does-not-exists", "value"));
-
-    // // List<String> restrictedAttributes = component.getRestrictedAttributes();
-    // // for (String restrictedAttribute : restrictedAttributes) {
-    // // assertThrows(DwcjRestrictedAccessException.class,
-    // // () -> component.setAttribute(restrictedAttribute, "value"));
-    // // }
-    // }
+      List<String> restrictedAttributes = component.getRestrictedAttributes();
+      for (String restrictedAttribute : restrictedAttributes) {
+        assertThrows(DwcjRestrictedAccessException.class,
+            () -> component.setAttribute(restrictedAttribute, "value"));
+      }
+    }
 
     @Test
     @DisplayName("Remove attribute when control is null")
@@ -190,24 +191,99 @@ public class AbstractDwcComponentTest {
     }
 
     @Test
-    @DisplayName("Remove attribute when control throws BBjException a DwcjRuntimeException is thrown")
-    void removeAttributeWhenControlThrowsBBjException() throws BBjException {
+    @DisplayName("""
+        Remove attribute when control throws
+        BBjException a DwcjRuntimeException is thrown
+        """)
+    void removeAttributeWhenControlThrowsBbjException() throws BBjException {
       doThrow(BBjException.class).when(control).removeAttribute("key");
       assertThrows(DwcjRuntimeException.class, () -> component.removeAttribute("key"));
     }
 
     @Test
     @DisplayName("catchup will re-apply attributes changes")
-    void catchupWillReApplyingAttributesChanges() throws BBjException, NoSuchMethodException,
+    void catchupWillReApplyingAttributesChanges() throws NoSuchMethodException,
+        IllegalAccessException, InvocationTargetException, BBjException {
+      component.setAttribute("key-1", "value-1");
+      component.setAttribute("key-2", "value-2");
+
+      component.removeAttribute("key-1");
+      invokeCatchUp(component);
+
+      verify(control, times(2)).setAttribute("key-2", "value-2");
+    }
+  }
+
+  @Nested
+  @DisplayName("Properties API")
+  class PropertiesApi {
+
+    @Test
+    @DisplayName("Setting/getting properties when control is null")
+    void settingGettingPropertiesWhenControlIsNull() throws IllegalAccessException, BBjException {
+      nullifyControl();
+
+      component.setProperty("key", "value");
+
+      assertSame("value", component.getProperty("key"));
+
+      verify(control, times(0)).putClientProperty("key", "value");
+      verify(control, times(0)).getClientProperty("key");
+    }
+
+    @Test
+    @DisplayName("Setting/getting properties when control is not null")
+    void settingGettingPropertiesWhenControlIsNotNull() throws BBjException {
+      doReturn("value").when(control).getClientProperty("key");
+
+      component.setProperty("key", "value");
+      assertSame("value", component.getProperty("key"));
+
+      verify(control, times(1)).putClientProperty("key", "value");
+      verify(control, times(1)).getClientProperty("key");
+    }
+
+    @Test
+    @DisplayName("""
+        Setting/getting properties when control throws
+        BBjException a DwcjRuntimeException is thrown
+        """)
+    void settingGettingPropertiesWhenControlThrowsBbjException() throws BBjException {
+      doThrow(BBjException.class).when(control).putClientProperty("key", "value");
+      doThrow(BBjException.class).when(control).getClientProperty("key");
+
+      assertThrows(DwcjRuntimeException.class, () -> component.setProperty("key", "value"));
+      assertThrows(DwcjRuntimeException.class, () -> component.getProperty("key"));
+    }
+
+    @Test
+    @DisplayName("""
+        setProperty will will throw DwcjRestrictedAccessException when
+        property is restricted
+        """)
+    void setPropertyWillThrowDwcjRestrictedAccessExceptionWhenPropertyIsRestricted()
+        throws IllegalAccessException, BBjException {
+      nullifyControl();
+
+      List<String> restrictedProperties = component.getRestrictedProperties();
+      for (String restrictedProperty : restrictedProperties) {
+        assertThrows(DwcjRestrictedAccessException.class,
+            () -> component.setProperty(restrictedProperty, "value"));
+      }
+    }
+
+    @Test
+    @DisplayName("catchup will re-apply properties changes")
+    void catchupWillReApplyingPropertiesChanges() throws BBjException, NoSuchMethodException,
         IllegalAccessException, InvocationTargetException {
-      AbstractDwcComponentMock spy = spy(component);
-      spy.setAttribute("key-1", "value");
-      spy.setAttribute("key-2", "value");
+      component.setProperty("key-1", "value-1");
+      component.setProperty("key-2", "value-2");
 
-      spy.removeAttribute("key-1");
-      invokeCatchUp(spy);
+      invokeCatchUp(component);
 
-      verify(spy, times(2)).setAttribute("key-2", "value");
+      verify(control, times(2)).putClientProperty("key-1", "value-1");
+      verify(control, times(2)).putClientProperty("key-2", "value-2");
     }
   }
 }
+

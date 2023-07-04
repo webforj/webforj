@@ -2,6 +2,7 @@ package org.dwcj.component.radiobutton;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import java.util.Arrays;
 import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractOptionInput;
@@ -95,7 +96,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
    * @see Activation
    */
   public RadioButton setActivation(Activation value) {
-    setProperty("activation", value.getValue());
+    setUnrestrictedProperty("activation", value.getValue());
     this.activation = value;
 
     return this;
@@ -158,6 +159,21 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
    */
   void setButtonGroup(RadioButtonGroup group) {
     this.group = group;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("activation", "autoValidate", "autoValidateOnLoad",
+        "autoWasValidated", "checked", "disabled", "expanse", "hasFocus", "invalid",
+        "invalidMessage", "label", "name", "readonly", "required", "switch", "tabTraversable",
+        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator", "value"));
+
+    return properties;
   }
 
   /**

@@ -2,6 +2,8 @@ package org.dwcj.component.checkbox;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import java.util.Arrays;
+import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractOptionInput;
 import org.dwcj.component.window.AbstractWindow;
@@ -63,7 +65,7 @@ public final class CheckBox extends AbstractOptionInput<CheckBox> {
    * @return The checkbox itself
    */
   public CheckBox setIndeterminate(boolean value) {
-    setProperty("indeterminate", value);
+    setUnrestrictedProperty("indeterminate", value);
     this.indeterminate = value;
     return this;
   }
@@ -75,6 +77,21 @@ public final class CheckBox extends AbstractOptionInput<CheckBox> {
    */
   public boolean isIndeterminate() {
     return this.indeterminate;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "checked", "disabled", "expanse", "hasFocus", "indeterminate", "invalid", "invalidMessage",
+        "label", "name", "readonly", "required", "tabTraversable", "valid", "validationIcon",
+        "validationPopoverDistance", "validationPopoverPlacement", "validationPopoverSkidding",
+        "validationStyle", "validator", "value"));
+
+    return properties;
   }
 
   /**
