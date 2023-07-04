@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -53,4 +54,22 @@ class RadioButtonTest {
     assertFalse(group.getButtons().get(1).isChecked());
     assertTrue(group.getButtons().get(2).isChecked());
   }
+
+  @Test
+  @DisplayName("setSwitch API")
+  void setSwitchStyleApi() throws BBjException {
+    component.setSwitch(true);
+    assertTrue(component.isSwitch());
+
+    verify(control, times(1)).putClientProperty("switch", true);
+    verify(control, times(0)).getClientProperty("switch");
+  }
+
+  @Test
+  @DisplayName("setSwitch Factory construction")
+  void setSwitchStyleFactory() throws BBjException {
+    RadioButton button = spy(RadioButton.Switch());
+    assertTrue(button.isSwitch());
+  }
+
 }
