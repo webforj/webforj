@@ -45,14 +45,14 @@ public final class CheckBox extends AbstractOptionInput<CheckBox> {
    * @param text The text for the checkbox.
    */
   public CheckBox(String text) {
-    super(text);
+    this(text, false);
   }
 
   /**
    * Create a new checkbox component.
    */
   public CheckBox() {
-    super();
+    this("");
   }
 
   /**
