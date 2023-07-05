@@ -248,14 +248,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       try {
         control.setText(text);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
-    if (text != null) {
-      this.text = new String(text.getBytes());
-    } else {
-      this.text = "<null>";
-    }
+
+    this.text = text;
     return this;
   }
 
@@ -270,10 +267,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       try {
         return control.getText();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
-    return text;
+
+    return text == null ? "" : text;
   }
 
   /**
@@ -805,12 +803,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
     super.catchUp();
 
-    if (!this.text.isEmpty()) {
-      try {
-        control.setText(this.text);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
+    if (this.text != null && !this.text.isEmpty()) {
+      setText(this.text);
     }
 
     if (!Boolean.TRUE.equals(this.visible)) {

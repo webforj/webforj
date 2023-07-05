@@ -285,5 +285,67 @@ public class AbstractDwcComponentTest {
       verify(control, times(2)).putClientProperty("key-2", "value-2");
     }
   }
+
+  @Nested
+  @DisplayName("Text API")
+  class TextApi {
+
+    @Test
+    @DisplayName("Setting/getting text when control is null")
+    void settingGettingTextWhenControlIsNull() throws IllegalAccessException, BBjException {
+      nullifyControl();
+
+      component.setText("value");
+      assertSame("value", component.getText());
+
+      verify(control, times(0)).setText("value");
+      verify(control, times(0)).getText();
+    }
+
+    @Test
+    @DisplayName("Setting/getting text when control is not null")
+    void settingGettingTextWhenControlIsNotNull() throws BBjException {
+      doReturn("value").when(control).getText();
+
+      component.setText("value");
+      assertSame("value", component.getText());
+
+      verify(control, times(1)).setText("value");
+      verify(control, times(1)).getText();
+    }
+
+    @Test
+    @DisplayName("When value is null then empty string is returned")
+    void whenValueIsNullThenEmptyStringIsReturned() throws IllegalAccessException {
+      nullifyControl();
+
+      component.setText(null);
+      assertSame("", component.getText());
+    }
+
+    @Test
+    @DisplayName("""
+        Setting/getting text when control throws
+        BBjException a DwcjRuntimeException is thrown
+        """)
+    void settingGettingTextWhenControlThrowsBbjException() throws BBjException {
+      doThrow(BBjException.class).when(control).setText("value");
+      doThrow(BBjException.class).when(control).getText();
+
+      assertThrows(DwcjRuntimeException.class, () -> component.setText("value"));
+      assertThrows(DwcjRuntimeException.class, () -> component.getText());
+    }
+
+    @Test
+    @DisplayName("catchup will re-apply text changes")
+    void catchupWillReApplyingTextChanges() throws BBjException, NoSuchMethodException,
+        IllegalAccessException, InvocationTargetException {
+      component.setText("value");
+
+      invokeCatchUp(component);
+
+      verify(control, times(2)).setText("value");
+    }
+  }
 }
 
