@@ -1,21 +1,25 @@
 package org.dwcj.component;
 
 /**
- * The HasPlaceholder interface provides methods to set and get the placeholder text for a component
- * that displays a placeholder when empty.
+ * Interface facilitates implementation of behaviors to modify a component's placeholder text.
+ *
+ * @param <T> the type of the component
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.02
  */
-public interface HasPlaceholder {
+public interface HasPlaceholder<T extends Component> {
 
   /**
-   * Sets the text to be displayed as the placeholder for the component.
+   * Sets the placeholder text for the component.
    *
-   * @param placeholder the text displayed
-   * @return the control itself
+   * @param placeholder the placeholder text to set
+   * @return the component itself
    */
-  HasPlaceholder setPlaceholder(String placeholder);
+  T setPlaceholder(String placeholder);
 
   /**
-   * Returns the placeholder text currently set for the control.
+   * Gets the placeholder text for the component.
    *
    * @return the placeholder text
    */
