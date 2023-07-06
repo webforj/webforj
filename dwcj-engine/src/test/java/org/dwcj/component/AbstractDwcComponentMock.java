@@ -6,7 +6,8 @@ import java.util.List;
 import org.dwcj.component.window.AbstractWindow;
 
 public class AbstractDwcComponentMock extends AbstractDwcComponent
-    implements HasExpanse<AbstractDwcComponentMock, Expanse>, HasReadOnly {
+    implements HasExpanse<AbstractDwcComponentMock, Expanse>, HasReadOnly,
+    HighlightableOnFocus<AbstractDwcComponentMock> {
 
   @Override
   public AbstractDwcComponentMock setExpanse(Expanse expanse) {
@@ -38,5 +39,16 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
   @Override
   protected void create(AbstractWindow panel) {
     throw new UnsupportedOperationException("Unimplemented method 'create'");
+  }
+
+  @Override
+  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+    return getComponentHighlightOnFocus();
+  }
+
+  @Override
+  public AbstractDwcComponentMock setHighlightOnFocus(HighlightableOnFocus.Behavior highlight) {
+    setComponentHighlightOnFocus(highlight);
+    return this;
   }
 }

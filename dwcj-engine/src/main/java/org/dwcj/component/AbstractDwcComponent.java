@@ -3,6 +3,7 @@ package org.dwcj.component;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.Editable;
 import com.basis.bbj.proxies.sysgui.Focusable;
+import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected Integer horizontalScrollBarPosition = null;
   protected Integer verticalScrollBarPosition = null;
   protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
-  protected TextHighlightable.Highlight textHighlight = null;
   protected BBjControl control;
 
   private String text = "";
@@ -49,6 +49,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private Enum<?> expanse = null;
   private final Map<String, String> attributes = new HashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
+  private HighlightableOnFocus.Behavior highlightOnFocus =
+      HighlightableOnFocus.Behavior.FOCUS_OR_KEY;
   private Enum<? extends ExpanseBase> componentExpanse = null;
 
   /**
@@ -641,6 +643,39 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Set the highlight behavior for the component's text when it receives focus.
+   *
+   * @param behavior The desired behavior for the component's text when it receives focus.
+   * @return The component itself.
+   */
+  protected AbstractDwcComponent setComponentHighlightOnFocus(
+      HighlightableOnFocus.Behavior behavior) {
+
+    if (this.control != null) {
+      try {
+        if (control instanceof TextControl) {
+          ((TextControl) control).setHighlightOnFocus(behavior.getValue());
+        }
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    this.highlightOnFocus = behavior;
+
+    return this;
+  }
+
+  /**
+   * Get the highlight behavior for the component's text when it receives focus.
+   *
+   * @return The highlight behavior for the component's text when it receives focus.
+   */
+  protected HighlightableOnFocus.Behavior getComponentHighlightOnFocus() {
+    return this.highlightOnFocus;
+  }
+
+  /**
    * Sets the expanse for the component.
    *
    * @param expanse The component expanse
@@ -864,6 +899,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (this.wasFocused != null) {
       this.focusComponent();
+    }
+
+    if (highlightOnFocus != HighlightableOnFocus.Behavior.FOCUS_OR_KEY) {
+      setComponentHighlightOnFocus(highlightOnFocus);
     }
   }
 }

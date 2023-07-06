@@ -8,7 +8,7 @@ import com.basis.util.common.BasisNumber;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
+import javax.swing.text.Highlighter.Highlight;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -17,7 +17,7 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
 import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -25,7 +25,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public class NumberField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HorizontalAlignment, TextHighlightable {
+    TabTraversable, HasEnable, HorizontalAlignment, HighlightableOnFocus<NumberField> {
 
   protected BBjInputN numBox;
 
@@ -64,7 +64,6 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
     this.readOnly = false;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
-    this.textHighlight = Highlight.HIGHLIGHT_NONE;
   }
 
   public NumberField() {
@@ -734,20 +733,13 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
   @Override
-  public Highlight getHighlightOnFocus() {
-    return this.textHighlight;
+  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+    return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public NumberField setHighlightOnFocus(Highlight highlight) {
-    if (this.control != null) {
-      try {
-        numBox.setHighlightOnFocus(highlight.highlightType);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textHighlight = highlight;
+  public NumberField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+    super.setComponentHighlightOnFocus(behavior);
     return this;
   }
 
@@ -920,10 +912,6 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
-    }
-
-    if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
-      this.setHighlightOnFocus(this.textHighlight);
     }
 
   }

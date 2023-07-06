@@ -6,7 +6,6 @@ import com.basis.startup.type.BBjException;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
@@ -15,7 +14,7 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.FieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -23,7 +22,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public final class Field extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HorizontalAlignment, TextHighlightable {
+    TabTraversable, HasEnable, HorizontalAlignment, HighlightableOnFocus<Field> {
 
   private BBjEditBox bbjEditBox;
 
@@ -54,7 +53,6 @@ public final class Field extends AbstractDwcComponent implements HasReadOnly, Ha
     this.readOnly = false;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
-    this.textHighlight = Highlight.HIGHLIGHT_NONE;
   }
 
 
@@ -276,20 +274,13 @@ public final class Field extends AbstractDwcComponent implements HasReadOnly, Ha
 
 
   @Override
-  public Highlight getHighlightOnFocus() {
-    return this.textHighlight;
+  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+    return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public Field setHighlightOnFocus(Highlight highlight) {
-    if (this.control != null) {
-      try {
-        bbjEditBox.setHighlightOnFocus(highlight.highlightType);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textHighlight = highlight;
+  public Field setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+    super.setComponentHighlightOnFocus(behavior);
     return this;
   }
 
@@ -397,10 +388,6 @@ public final class Field extends AbstractDwcComponent implements HasReadOnly, Ha
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
-    }
-
-    if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
-      this.setHighlightOnFocus(this.textHighlight);
     }
   }
 

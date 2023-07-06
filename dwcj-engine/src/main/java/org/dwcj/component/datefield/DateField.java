@@ -9,7 +9,7 @@ import com.basis.startup.type.sysgui.BBjColor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
+import javax.swing.text.Highlighter.Highlight;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
@@ -19,14 +19,14 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.datefield.event.DateFieldModifyEvent;
 import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 public final class DateField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, TextHighlightable, HorizontalAlignment {
+    TabTraversable, HasEnable, HighlightableOnFocus<DateField>, HorizontalAlignment {
 
   private BBjInputD bbjDateEditBox;
 
@@ -69,7 +69,6 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     this.readOnly = false;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
-    this.textHighlight = Highlight.HIGHLIGHT_NONE;
   }
 
   @Override
@@ -655,20 +654,13 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public Highlight getHighlightOnFocus() {
-    return this.textHighlight;
+  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+    return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public DateField setHighlightOnFocus(Highlight highlight) {
-    if (this.control != null) {
-      try {
-        bbjDateEditBox.setHighlightOnFocus(highlight.highlightType);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textHighlight = highlight;
+  public DateField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+    super.setComponentHighlightOnFocus(behavior);
     return this;
   }
 
@@ -842,10 +834,6 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
 
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
-    }
-
-    if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
-      this.setHighlightOnFocus(this.textHighlight);
     }
 
   }
