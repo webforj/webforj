@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.dwcj.Environment;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
@@ -49,8 +48,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private final List<String> removeCssClasses = new ArrayList<>();
   private Enum<?> theme = null;
   private Enum<?> expanse = null;
-  private final Map<String, String> attributes = new ConcurrentHashMap<>();
-  private final Map<String, Object> properties = new ConcurrentHashMap<>();
+  private final Map<String, String> attributes = new HashMap<>();
+  private final Map<String, Object> properties = new HashMap<>();
   private Enum<? extends ExpanseBase> componentExpanse = null;
 
   /**
@@ -190,9 +189,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
+    } else {
+      this.attributes.remove(attribute);
     }
 
-    attributes.remove(attribute);
     return this;
   }
 
@@ -513,9 +513,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
+    } else {
+      properties.put(property, value);
     }
 
-    properties.put(property, value);
     return this;
   }
 
@@ -535,9 +536,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
+    } else {
+      attributes.put(attribute, value);
     }
 
-    attributes.put(attribute, value);
     return this;
   }
 

@@ -40,6 +40,10 @@ public class AbstractDwcComponentTest {
     FieldUtils.writeField(component, "control", null, true);
   }
 
+  void unnullifyControl() throws IllegalAccessException {
+    FieldUtils.writeField(component, "control", control, true);
+  }
+
   void invokeCatchUp(AbstractDwcComponentMock component)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     MethodUtils.invokeMethod(component, true, "catchUp");
@@ -204,13 +208,16 @@ public class AbstractDwcComponentTest {
     @DisplayName("catchup will re-apply attributes changes")
     void catchupWillReApplyingAttributesChanges() throws NoSuchMethodException,
         IllegalAccessException, InvocationTargetException, BBjException {
+      nullifyControl();
+
       component.setAttribute("key-1", "value-1");
       component.setAttribute("key-2", "value-2");
 
-      component.removeAttribute("key-1");
+      unnullifyControl();
       invokeCatchUp(component);
 
-      verify(control, times(2)).setAttribute("key-2", "value-2");
+      verify(control, times(1)).setAttribute("key-1", "value-1");
+      verify(control, times(1)).setAttribute("key-2", "value-2");
     }
   }
 
@@ -276,13 +283,15 @@ public class AbstractDwcComponentTest {
     @DisplayName("catchup will re-apply properties changes")
     void catchupWillReApplyingPropertiesChanges() throws BBjException, NoSuchMethodException,
         IllegalAccessException, InvocationTargetException {
+      nullifyControl();
       component.setProperty("key-1", "value-1");
       component.setProperty("key-2", "value-2");
 
+      unnullifyControl();
       invokeCatchUp(component);
 
-      verify(control, times(2)).putClientProperty("key-1", "value-1");
-      verify(control, times(2)).putClientProperty("key-2", "value-2");
+      verify(control, times(1)).putClientProperty("key-1", "value-1");
+      verify(control, times(1)).putClientProperty("key-2", "value-2");
     }
   }
 
