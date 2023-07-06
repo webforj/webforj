@@ -92,16 +92,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
-   * Gets all properties of the component.
-   *
-   * @return a map of all properties
-   * @since 23.02
-   */
-  public Map<String, Object> getProperties() {
-    return Collections.unmodifiableMap(properties);
-  }
-
-  /**
    * The getRestrictedProperties returns a list of properties that are restricted by the component.
    * The default implementation returns an empty ArrayList, which means that no properties are
    * restricted. Some components might need to restrict properties to prevent the API user from
@@ -194,16 +184,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
     }
 
     return this;
-  }
-
-  /**
-   * Gets all attributes of the component.
-   *
-   * @return a map of all attributes
-   * @since 23.02
-   */
-  public Map<String, String> getAttributes() {
-    return Collections.unmodifiableMap(attributes);
   }
 
   /**
