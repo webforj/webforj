@@ -3,7 +3,6 @@ package org.dwcj.component.textfield;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
@@ -13,7 +12,7 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.textfield.event.TextFieldModifyEvent;
 import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -23,7 +22,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 public final class TextField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HorizontalAlignment, TextHighlightable, HasEnable {
+    TabTraversable, HorizontalAlignment, HighlightableOnFocus<TextField>, HasEnable {
 
 
   private BBjInputE bbjInputE;
@@ -64,7 +63,6 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     this.readOnly = false;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
-    this.textHighlight = Highlight.HIGHLIGHT_NONE;
   }
 
   @Override
@@ -460,20 +458,13 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
 
 
   @Override
-  public Highlight getHighlightOnFocus() {
-    return this.textHighlight;
+  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+    return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public TextField setHighlightOnFocus(Highlight highlight) {
-    if (this.control != null) {
-      try {
-        bbjInputE.setHighlightOnFocus(highlight.highlightType);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textHighlight = highlight;
+  public TextField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+    super.setComponentHighlightOnFocus(behavior);
     return this;
   }
 
@@ -620,11 +611,6 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     if (this.textAlignment != Alignment.LEFT) {
       this.setHorizontalAlignment(this.textAlignment);
     }
-
-    if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
-      this.setHighlightOnFocus(this.textHighlight);
-    }
-
   }
 
 

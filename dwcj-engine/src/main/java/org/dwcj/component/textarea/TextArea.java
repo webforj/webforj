@@ -13,7 +13,7 @@ import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.Scrollable;
 import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextHighlightable;
+import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import javax.swing.text.Highlighter.Highlight;
 
-public final class TextArea extends AbstractDwcComponent implements HasReadOnly, TextHighlightable,
-    HasFocus, HasMouseWheelCondition, Scrollable, TabTraversable, HasEnable {
+public final class TextArea extends AbstractDwcComponent
+    implements HasReadOnly, HighlightableOnFocus<TextArea>, HasFocus, HasMouseWheelCondition,
+    Scrollable, TabTraversable, HasEnable {
 
   private BBjCEdit bbjCEdit;
 
@@ -58,7 +60,6 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
   public TextArea() {
     this.readOnly = false;
-    this.textHighlight = Highlight.HIGHLIGHT_NONE;
     this.horizontalScrollBarPosition = 0;
     this.verticalScrollBarPosition = 0;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
@@ -742,20 +743,13 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
 
   @Override
-  public Highlight getHighlightOnFocus() {
-    return this.textHighlight;
+  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+    return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public TextArea setHighlightOnFocus(Highlight highlight) {
-    if (this.control != null) {
-      try {
-        bbjCEdit.setHighlightOnFocus(highlight.highlightType);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textHighlight = highlight;
+  public TextArea setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+    super.setComponentHighlightOnFocus(behavior);
     return this;
   }
 
@@ -1032,10 +1026,6 @@ public final class TextArea extends AbstractDwcComponent implements HasReadOnly,
 
     if (Boolean.TRUE.equals(this.readOnly)) {
       this.setReadOnly(this.readOnly);
-    }
-
-    if (this.textHighlight != Highlight.HIGHLIGHT_NONE) {
-      this.setHighlightOnFocus(this.textHighlight);
     }
 
     if (this.horizontalScrollBarPosition != 0) {

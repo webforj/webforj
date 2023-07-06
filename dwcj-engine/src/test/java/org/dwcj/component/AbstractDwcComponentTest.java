@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -16,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.dwcj.component.HighlightableOnFocus.Behavior;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -356,5 +358,43 @@ public class AbstractDwcComponentTest {
       verify(control, times(2)).setText("value");
     }
   }
+
+  @Nested
+  @DisplayName("HighlightOnFocus API")
+  class HighlightOnFocusApi {
+
+    @Test
+    @DisplayName("Setting/getting highlightOnFocus when control is null")
+    void settingGettingHighlightOnFocusWhenControlIsNull()
+        throws IllegalAccessException, BBjException {
+      nullifyControl();
+
+      component.setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL);
+      assertSame(HighlightableOnFocus.Behavior.ALL, component.getHighlightOnFocus());
+
+      verify(control, times(0)).setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL.getValue());
+      verify(control, times(0)).getHighlightOnFocus();
+    }
+
+    @Test
+    @DisplayName("Setting/getting highlightOnFocus when control is not null")
+    void settingGettingHighlightOnFocusWhenControlIsNotNull() throws BBjException {
+      component.setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL);
+      assertSame(HighlightableOnFocus.Behavior.ALL, component.getHighlightOnFocus());
+
+      verify(control, times(1)).setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL.getValue());
+      verify(control, times(0)).getHighlightOnFocus();
+    }
+
+    @Test
+    @DisplayName("catchup will re-apply highlightOnFocus changes")
+    void catchupWillReApplyingHighlightOnFocusChanges() throws BBjException, NoSuchMethodException,
+        IllegalAccessException, InvocationTargetException {
+      component.setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL);
+      invokeCatchUp(component);
+      verify(control, times(2)).setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL.getValue());
+    }
+  }
+
 }
 
