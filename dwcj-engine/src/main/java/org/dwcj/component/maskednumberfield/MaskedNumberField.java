@@ -1,4 +1,4 @@
-package org.dwcj.component.numberfield;
+package org.dwcj.component.maskednumberfield;
 
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -17,15 +17,15 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.maskednumberfield.event.MaskedNumberFieldModifyEvent;
+import org.dwcj.component.maskednumberfield.sink.MaskedNumberFieldModifyEventSink;
 import org.dwcj.component.HighlightableOnFocus;
-import org.dwcj.component.numberfield.event.NumberFieldModifyEvent;
-import org.dwcj.component.numberfield.sink.NumberFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
-public class NumberField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HorizontalAlignment, HighlightableOnFocus<NumberField> {
+public class MaskedNumberField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HasEnable, HorizontalAlignment, HighlightableOnFocus<MaskedNumberField> {
 
   protected BBjInputN numBox;
 
@@ -38,8 +38,8 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
 
-  protected ArrayList<Consumer<NumberFieldModifyEvent>> callbacks = new ArrayList<>();
-  protected NumberFieldModifyEventSink editModifyEventSink;
+  protected ArrayList<Consumer<MaskedNumberFieldModifyEvent>> callbacks = new ArrayList<>();
+  protected MaskedNumberFieldModifyEventSink editModifyEventSink;
 
 
   protected String commaChar = ",";
@@ -59,14 +59,14 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
 
 
 
-  public NumberField(String text) {
+  public MaskedNumberField(String text) {
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
     this.textAlignment = Alignment.LEFT;
   }
 
-  public NumberField() {
+  public MaskedNumberField() {
     this("");
   }
 
@@ -85,10 +85,10 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
     }
   }
 
-  public NumberField onEditModify(Consumer<NumberFieldModifyEvent> callback) {
+  public MaskedNumberField onEditModify(Consumer<MaskedNumberFieldModifyEvent> callback) {
     if (this.control != null) {
       if (this.editModifyEventSink == null) {
-        this.editModifyEventSink = new NumberFieldModifyEventSink(this);
+        this.editModifyEventSink = new MaskedNumberFieldModifyEventSink(this);
       }
       this.editModifyEventSink.addCallback(callback);
     } else {
@@ -369,7 +369,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *
    * @return Returns this
    */
-  public NumberField selectAll() {
+  public MaskedNumberField selectAll() {
     if (this.control != null) {
       try {
         numBox.selectAll();
@@ -387,7 +387,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param comma - Specifies the character to use for a comma.
    * @return Returns this
    */
-  public NumberField setCommaCharacter(String comma) {
+  public MaskedNumberField setCommaCharacter(String comma) {
     if (this.control != null) {
       try {
         numBox.setCommaCharacter(comma);
@@ -406,7 +406,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param dot - Specifies the character to use, which indicates the decimal point.
    * @return Returns this
    */
-  public NumberField setDotCharacter(String dot) {
+  public MaskedNumberField setDotCharacter(String dot) {
     if (this.control != null) {
       try {
         numBox.setDotCharacter(dot);
@@ -427,7 +427,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param edit - Specifies the EDIT string.
    * @return Returns this
    */
-  public NumberField setEditString(String edit) {
+  public MaskedNumberField setEditString(String edit) {
     if (this.control != null) {
       try {
         numBox.setEditString(edit.getBytes());
@@ -447,7 +447,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *        = Highlight)
    * @return Returns this
    */
-  public NumberField setHighlight(Boolean highlight) {
+  public MaskedNumberField setHighlight(Boolean highlight) {
     if (this.control != null) {
       try {
         numBox.setHighlight(highlight);
@@ -466,7 +466,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *        In insert mode)
    * @return Returns this
    */
-  public NumberField setInsertMode(Boolean insert) {
+  public MaskedNumberField setInsertMode(Boolean insert) {
     if (this.control != null) {
       try {
         numBox.setInsertMode(insert);
@@ -486,7 +486,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param len - Specifies the length of the text in the control.
    * @return Returns this
    */
-  public NumberField setLength(Integer len) {
+  public MaskedNumberField setLength(Integer len) {
     if (this.control != null) {
       try {
         numBox.setLength(len);
@@ -504,7 +504,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param marginWidth - Width of the left margin.
    * @return Returns this
    */
-  public NumberField setMargin(Integer marginWidth) {
+  public MaskedNumberField setMargin(Integer marginWidth) {
     if (this.control != null) {
       try {
         numBox.setMargin(marginWidth);
@@ -522,7 +522,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param mask - Specifies the mask that provides character-type verification.
    * @return Returns this
    */
-  public NumberField setMask(String mask) {
+  public MaskedNumberField setMask(String mask) {
     if (this.control != null) {
       try {
         numBox.setMask(mask);
@@ -542,7 +542,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *        Negative values are not accepted, true = Negative values are accepted).
    * @return Returns this
    */
-  public NumberField setNegatable(boolean negatable) {
+  public MaskedNumberField setNegatable(boolean negatable) {
     if (this.control != null) {
       try {
         numBox.setNegateable(negatable);
@@ -562,7 +562,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *        passed, true = Passed).
    * @return Returns this
    */
-  public NumberField setPassEnter(Boolean pass) {
+  public MaskedNumberField setPassEnter(Boolean pass) {
     if (this.control != null) {
       try {
         numBox.setPassEnter(pass);
@@ -582,7 +582,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *        = Not passed, true = Passed).
    * @return Returns this
    */
-  public NumberField setPassTab(Boolean pass) {
+  public MaskedNumberField setPassTab(Boolean pass) {
     if (this.control != null) {
       try {
         numBox.setPassEnter(pass);
@@ -601,7 +601,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param restore - Specifies the restore value.
    * @return Returns this
    */
-  public NumberField setRestore(float restore) {
+  public MaskedNumberField setRestore(float restore) {
     if (this.control != null) {
       try {
         numBox.setRestore(String.valueOf(restore));
@@ -621,7 +621,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    *        mode (false = No display, true = Display)
    * @return Returns this
    */
-  public NumberField setUseEditCommas(boolean useCommas) {
+  public MaskedNumberField setUseEditCommas(boolean useCommas) {
     if (this.control != null) {
       try {
         numBox.setUseEditCommas(useCommas);
@@ -642,7 +642,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @param value - Specifies the value to be set in the control.
    * @return Returns this
    */
-  public NumberField setValue(BigDecimal value) {
+  public MaskedNumberField setValue(BigDecimal value) {
     if (this.control != null) {
       try {
         numBox.setValue(BasisNumber.createBasisNumber(value));
@@ -654,12 +654,12 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
     return this;
   }
 
-  public NumberField setValue(float value) {
+  public MaskedNumberField setValue(float value) {
     setValue(BigDecimal.valueOf(value));
     return this;
   }
 
-  public NumberField setValue(int value) {
+  public MaskedNumberField setValue(int value) {
     setValue(BigDecimal.valueOf(value));
     return this;
   }
@@ -690,7 +690,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
    * @return Returns this
    */
   @Override
-  public NumberField setReadOnly(Boolean editable) {
+  public MaskedNumberField setReadOnly(Boolean editable) {
     if (this.control != null) {
       try {
         numBox.setEditable(!editable);
@@ -702,7 +702,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
   @Override
-  public NumberField focus() {
+  public MaskedNumberField focus() {
     super.focusComponent();
     return this;
   }
@@ -720,7 +720,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
   @Override
-  public NumberField setTabTraversable(Boolean traverse) {
+  public MaskedNumberField setTabTraversable(Boolean traverse) {
     if (this.control != null) {
       try {
         numBox.setTabTraversable(traverse);
@@ -738,7 +738,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
   @Override
-  public NumberField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+  public MaskedNumberField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
     super.setComponentHighlightOnFocus(behavior);
     return this;
   }
@@ -749,7 +749,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
   @Override
-  public NumberField setHorizontalAlignment(Alignment alignment) {
+  public MaskedNumberField setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         numBox.setAlignment(alignment.getValue());
@@ -764,19 +764,19 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
 
 
   @Override
-  public NumberField setText(String text) {
+  public MaskedNumberField setText(String text) {
     super.setText(text);
     return this;
   }
 
   @Override
-  public NumberField setVisible(Boolean visible) {
+  public MaskedNumberField setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
   @Override
-  public NumberField setEnabled(boolean enabled) {
+  public MaskedNumberField setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
@@ -787,43 +787,43 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
   }
 
   @Override
-  public NumberField setTooltipText(String text) {
+  public MaskedNumberField setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
   @Override
-  public NumberField setAttribute(String attribute, String value) {
+  public MaskedNumberField setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
   @Override
-  public NumberField setStyle(String property, String value) {
+  public MaskedNumberField setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
   @Override
-  public NumberField addClassName(String selector) {
+  public MaskedNumberField addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
   @Override
-  public NumberField removeClassName(String selector) {
+  public MaskedNumberField removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }
 
 
 
-  public NumberField setExpanse(Expanse expanse) {
+  public MaskedNumberField setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
     return this;
   }
 
-  public NumberField setTheme(Theme theme) {
+  public MaskedNumberField setTheme(Theme theme) {
     super.setControlTheme(theme);
     return this;
   }
@@ -839,7 +839,7 @@ public class NumberField extends AbstractDwcComponent implements HasReadOnly, Ha
     super.catchUp();
 
     if (!this.callbacks.isEmpty()) {
-      this.editModifyEventSink = new NumberFieldModifyEventSink(this);
+      this.editModifyEventSink = new MaskedNumberFieldModifyEventSink(this);
       while (!this.callbacks.isEmpty()) {
         this.editModifyEventSink.addCallback(this.callbacks.remove(0));
       }

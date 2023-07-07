@@ -1,4 +1,4 @@
-package org.dwcj.component.datefield;
+package org.dwcj.component.maskeddatefield;
 
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -19,14 +19,14 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.maskeddatefield.event.MaskedDateFieldModifyEvent;
+import org.dwcj.component.maskeddatefield.sink.MaskedDateFieldModifyEventSink;
 import org.dwcj.component.HighlightableOnFocus;
-import org.dwcj.component.datefield.event.DateFieldModifyEvent;
-import org.dwcj.component.datefield.sink.DateFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-public final class DateField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HighlightableOnFocus<DateField>, HorizontalAlignment {
+public final class MaskedDateField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HasEnable, HighlightableOnFocus<MaskedDateField>, HorizontalAlignment {
 
   private BBjInputD bbjDateEditBox;
 
@@ -38,8 +38,8 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING
   }
 
-  private ArrayList<Consumer<DateFieldModifyEvent>> callbacks = new ArrayList<>();
-  private DateFieldModifyEventSink editModifyEventSink;
+  private ArrayList<Consumer<MaskedDateFieldModifyEvent>> callbacks = new ArrayList<>();
+  private MaskedDateFieldModifyEventSink editModifyEventSink;
 
   private Boolean beep = false;
   private Integer cHeight = null;
@@ -60,11 +60,11 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
 
 
 
-  public DateField() {
+  public MaskedDateField() {
     this("");
   }
 
-  public DateField(String text) {
+  public MaskedDateField(String text) {
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
@@ -86,10 +86,10 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     }
   }
 
-  public DateField onEditModify(Consumer<DateFieldModifyEvent> callback) {
+  public MaskedDateField onEditModify(Consumer<MaskedDateFieldModifyEvent> callback) {
     if (this.control != null) {
       if (this.editModifyEventSink == null) {
-        this.editModifyEventSink = new DateFieldModifyEventSink(this);
+        this.editModifyEventSink = new MaskedDateFieldModifyEventSink(this);
       }
       this.editModifyEventSink.addCallback(callback);
     } else {
@@ -335,7 +335,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return true;
   }
 
-  public DateField restore() {
+  public MaskedDateField restore() {
     if (this.control != null) {
       try {
         bbjDateEditBox.restore();
@@ -346,7 +346,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField selectAll() {
+  public MaskedDateField selectAll() {
     if (this.control != null) {
       try {
         bbjDateEditBox.selectAll();
@@ -359,7 +359,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
 
 
 
-  public DateField setBeep(Boolean beep) {
+  public MaskedDateField setBeep(Boolean beep) {
     App.consoleLog("In Beep");
     this.beep = beep;
     if (this.control != null) {
@@ -373,7 +373,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setCalendarSize(int width, int height) {
+  public MaskedDateField setCalendarSize(int width, int height) {
     this.cWidth = width;
     this.cHeight = height;
     if (this.control != null) {
@@ -386,7 +386,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setCaretPosition(int position) {
+  public MaskedDateField setCaretPosition(int position) {
     this.caretPos = position;
     if (this.control != null) {
       try {
@@ -401,7 +401,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
 
 
 
-  public DateField setEditString(String edit) {
+  public MaskedDateField setEditString(String edit) {
     this.editString = edit;
     if (this.control != null) {
       try {
@@ -413,7 +413,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setHighlight(Boolean highlight) {
+  public MaskedDateField setHighlight(Boolean highlight) {
     this.highlight = highlight;
     if (this.control != null) {
       try {
@@ -426,7 +426,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
 
-  public DateField setInsertMode(Boolean insert) {
+  public MaskedDateField setInsertMode(Boolean insert) {
     this.insert = insert;
     if (this.control != null) {
       try {
@@ -438,7 +438,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setLength(Integer length) {
+  public MaskedDateField setLength(Integer length) {
     this.length = length;
     if (control != null) {
       try {
@@ -451,7 +451,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
 
-  public DateField setLocale(String locale) {
+  public MaskedDateField setLocale(String locale) {
     this.locale = locale;
     if (this.control != null) {
       bbjDateEditBox.setLocale(locale);
@@ -459,7 +459,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setMargin(Integer marginWidth) {
+  public MaskedDateField setMargin(Integer marginWidth) {
     this.margin = marginWidth;
     if (this.control != null) {
       try {
@@ -471,7 +471,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setMask(String mask) {
+  public MaskedDateField setMask(String mask) {
     this.mask = mask;
     if (this.control != null) {
       try {
@@ -483,7 +483,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setPassEnter(Boolean pass) {
+  public MaskedDateField setPassEnter(Boolean pass) {
     this.pEnter = pass;
     if (this.control != null) {
       try {
@@ -495,7 +495,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setPassTab(Boolean pass) {
+  public MaskedDateField setPassTab(Boolean pass) {
     this.pTab = pass;
     if (this.control != null) {
       try {
@@ -507,7 +507,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setRestore(String restore) {
+  public MaskedDateField setRestore(String restore) {
     this.restore = restore;
     if (this.control != null) {
       try {
@@ -519,7 +519,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setPlusMinus(Boolean plusMinus) {
+  public MaskedDateField setPlusMinus(Boolean plusMinus) {
     this.plusMinus = plusMinus;
     if (control != null) {
       try {
@@ -531,7 +531,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public DateField setShowWeeks(boolean showWeeks) {
+  public MaskedDateField setShowWeeks(boolean showWeeks) {
     this.showWeeks = showWeeks;
     if (this.control != null) {
       try {
@@ -547,7 +547,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
    * ==Unsure if simply casting this object to BBjColor is acceptable, likely need to control/check
    * input before passing?== -MH
    */
-  public DateField setTodayColor(Object color) {
+  public MaskedDateField setTodayColor(Object color) {
     try {
       bbjDateEditBox.setTodayColor((BBjColor) color);
     } catch (BBjException e) {
@@ -560,7 +560,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
    * ==Unsure if simply casting this object to BBjNumber is acceptable, likely need to control/check
    * input before passing?== -MH
    */
-  public DateField setValue(Object value) {
+  public MaskedDateField setValue(Object value) {
     try {
       bbjDateEditBox.setValue((BBjNumber) value);
     } catch (BBjException e) {
@@ -573,7 +573,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
    * ==Unsure if simply casting this object to BBjColor is acceptable, likely need to control/check
    * input before passing?== -MH
    */
-  public DateField setWeekdayColor(Object color) {
+  public MaskedDateField setWeekdayColor(Object color) {
     try {
       bbjDateEditBox.setWeekdayColor((BBjColor) color);
     } catch (BBjException e) {
@@ -586,7 +586,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
    * ==Unsure if simply casting this object to BBjColor is acceptable, likely need to control/check
    * input before passing?== -MH
    */
-  public DateField setWeekendColor(Object color) {
+  public MaskedDateField setWeekendColor(Object color) {
     try {
       bbjDateEditBox.setWeekendColor((BBjColor) color);
     } catch (BBjException e) {
@@ -610,7 +610,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public DateField setReadOnly(Boolean editable) {
+  public MaskedDateField setReadOnly(Boolean editable) {
     if (this.control != null) {
       try {
         bbjDateEditBox.setEditable(!editable);
@@ -623,7 +623,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public DateField focus() {
+  public MaskedDateField focus() {
     super.focusComponent();
     return this;
   }
@@ -641,7 +641,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public DateField setTabTraversable(Boolean traverse) {
+  public MaskedDateField setTabTraversable(Boolean traverse) {
     if (this.control != null) {
       try {
         bbjDateEditBox.setTabTraversable(traverse);
@@ -659,7 +659,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public DateField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+  public MaskedDateField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
     super.setComponentHighlightOnFocus(behavior);
     return this;
   }
@@ -670,7 +670,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public DateField setHorizontalAlignment(Alignment alignment) {
+  public MaskedDateField setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         bbjDateEditBox.setAlignment(alignment.getValue());
@@ -685,19 +685,19 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
 
 
   @Override
-  public DateField setText(String text) {
+  public MaskedDateField setText(String text) {
     super.setText(text);
     return this;
   }
 
   @Override
-  public DateField setVisible(Boolean visible) {
+  public MaskedDateField setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
   @Override
-  public DateField setEnabled(boolean enabled) {
+  public MaskedDateField setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
@@ -708,43 +708,43 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public DateField setTooltipText(String text) {
+  public MaskedDateField setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
   @Override
-  public DateField setAttribute(String attribute, String value) {
+  public MaskedDateField setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
   @Override
-  public DateField setStyle(String property, String value) {
+  public MaskedDateField setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
   @Override
-  public DateField addClassName(String selector) {
+  public MaskedDateField addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
   @Override
-  public DateField removeClassName(String selector) {
+  public MaskedDateField removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }
 
 
 
-  public DateField setExpanse(Expanse expanse) {
+  public MaskedDateField setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
     return this;
   }
 
-  public DateField setTheme(Theme theme) {
+  public MaskedDateField setTheme(Theme theme) {
     super.setControlTheme(theme);
     return this;
   }
@@ -758,7 +758,7 @@ public final class DateField extends AbstractDwcComponent implements HasReadOnly
     super.catchUp();
 
     if (!this.callbacks.isEmpty()) {
-      this.editModifyEventSink = new DateFieldModifyEventSink(this);
+      this.editModifyEventSink = new MaskedDateFieldModifyEventSink(this);
       while (!this.callbacks.isEmpty()) {
         this.editModifyEventSink.addCallback(this.callbacks.remove(0));
       }

@@ -1,30 +1,30 @@
-package org.dwcj.component.datefield.sink;
+package org.dwcj.component.maskednumberfield.sink;
 
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.datefield.DateField;
-import org.dwcj.component.datefield.event.DateFieldModifyEvent;
-
+import org.dwcj.component.maskednumberfield.MaskedNumberField;
+import org.dwcj.component.maskednumberfield.event.MaskedNumberFieldModifyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public final class DateFieldModifyEventSink {
 
-  private ArrayList<Consumer<DateFieldModifyEvent>> targets;
-  private final DateField dateEditBox;
+public class MaskedNumberFieldModifyEventSink {
+
+  private ArrayList<Consumer<MaskedNumberFieldModifyEvent>> targets;
+  private final MaskedNumberField numericBox;
 
   @SuppressWarnings({"static-access"})
-  public DateFieldModifyEventSink(DateField dateBox) {
+  public MaskedNumberFieldModifyEventSink(MaskedNumberField numBox) {
 
     this.targets = new ArrayList<>();
-    this.dateEditBox = dateBox;
+    this.numericBox = numBox;
 
     BBjControl bbjctrl = null;
     try {
-      bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_EDIT_MODIFY,
           Environment.getCurrent().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
           "onEvent");
@@ -34,15 +34,16 @@ public final class DateFieldModifyEventSink {
     }
   }
 
-  public DateFieldModifyEventSink(DateField dateBox, Consumer<DateFieldModifyEvent> callback) {
+  public MaskedNumberFieldModifyEventSink(MaskedNumberField numBox,
+      Consumer<MaskedNumberFieldModifyEvent> callback) {
 
     this.targets = new ArrayList<>();
     this.targets.add(callback);
-    this.dateEditBox = dateBox;
+    this.numericBox = numBox;
 
     BBjControl bbjctrl = null;
     try {
-      bbjctrl = ComponentAccessor.getDefault().getBBjControl(dateBox);
+      bbjctrl = ComponentAccessor.getDefault().getBBjControl(numBox);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_EDIT_MODIFY,
           Environment.getCurrent().getDwcjHelper().getEventProxy(this, "editModifyEvent"),
           "onEvent");
@@ -53,13 +54,13 @@ public final class DateFieldModifyEventSink {
   }
 
   public void editModifyEvent(BBjEditModifyEvent ev) { // NOSONAR
-    DateFieldModifyEvent dwcEv = new DateFieldModifyEvent(this.dateEditBox);
-    Iterator<Consumer<DateFieldModifyEvent>> it = targets.iterator();
+    MaskedNumberFieldModifyEvent dwcEv = new MaskedNumberFieldModifyEvent(this.numericBox);
+    Iterator<Consumer<MaskedNumberFieldModifyEvent>> it = targets.iterator();
     while (it.hasNext())
       it.next().accept(dwcEv);
   }
 
-  public void addCallback(Consumer<DateFieldModifyEvent> callback) {
+  public void addCallback(Consumer<MaskedNumberFieldModifyEvent> callback) {
     targets.add(callback);
   }
 }
