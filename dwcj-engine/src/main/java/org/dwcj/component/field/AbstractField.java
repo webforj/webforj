@@ -438,7 +438,7 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & TabTrav
   private boolean spellcheck = false;
 
   /**
-   * specify what if any permission the user agent has to provide automated assistance in filling
+   * Specify what if any permission the user agent has to provide automated assistance in filling
    * out form field values, as well as guidance to the browser as to the type of information
    * expected in the field.
    *
@@ -534,7 +534,7 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & TabTrav
   }
 
   /**
-   * Check if the field is spellcheck.
+   * Check if the field has spellcheck enabled.
    *
    * @return true if the field is spellcheck, false otherwise
    */
@@ -572,7 +572,7 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & TabTrav
   }
 
   /**
-   * When true should automatically have focus when the app has finished loading.
+   * When true, should automatically have focus when the app has finished loading.
    *
    * @param autofocus true to automatically have focus when the app has finished loading.
    * @return the component itself
