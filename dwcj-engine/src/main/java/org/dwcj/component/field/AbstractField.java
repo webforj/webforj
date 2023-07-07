@@ -3,6 +3,8 @@ package org.dwcj.component.field;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import java.util.Arrays;
+import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
@@ -750,6 +752,24 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & TabTrav
   public T removeClassName(String selector) {
     super.removeClassName(selector);
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("accept", "autoValidate", "autoValidateOnLoad",
+        "autoWasValidated", "autocomplete", "autocorrect", "autofocus", "disabled", "expanse",
+        "hasFocus", "highlightBehaviors", "invalid", "invalidMessage", "label", "max", "maxlength",
+        "min", "minlength", "multiple", "name", "passwordReveal", "pattern", "placeholder",
+        "readonly", "required", "showSpinners", "size", "spellcheck", "spinnable", "step",
+        "tabTraversable", "type", "valid", "validationIcon", "validationPopoverDistance",
+        "validationPopoverPlacement", "validationPopoverSkidding", "validationStyle", "validator",
+        "value"));
+
+    return properties;
   }
 
   /**
