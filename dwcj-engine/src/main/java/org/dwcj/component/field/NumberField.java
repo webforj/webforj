@@ -118,7 +118,9 @@ public final class NumberField extends AbstractField<NumberField, Double>
   }
 
   /**
-   * Specifies the granularity that the value must adhere.
+   * Specifies the granularity that the value must adhere. This effect is only
+   * applicable when using the arrow keys to modify a value, and not for direct
+   * numeric input into the component itself.
    *
    * @param step the step value for the granularity. If null, then no rules are forced.
    * @return the component
