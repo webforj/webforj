@@ -29,7 +29,7 @@ public class BBjKeypressEventMock implements BBjAbstractTextKeypressEvent {
 
   @Override
   public int getKeyCode() {
-    return 15;
+    return 13;
   }
 
   @Override
