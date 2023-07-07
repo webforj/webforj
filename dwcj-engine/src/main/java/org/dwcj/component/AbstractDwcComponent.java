@@ -3,6 +3,7 @@ package org.dwcj.component;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.Editable;
 import com.basis.bbj.proxies.sysgui.Focusable;
+import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
@@ -52,6 +53,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private HighlightableOnFocus.Behavior highlightOnFocus =
       HighlightableOnFocus.Behavior.FOCUS_OR_KEY;
   private Enum<? extends ExpanseBase> componentExpanse = null;
+  private HorizontalAlignment.Alignment alignment;
 
   /**
    * Set the value for a property in the component.
@@ -676,6 +678,36 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Set the component horizontal alignment.
+   *
+   * @param alignment Enum value of alignment
+   * @return the component itself
+   */
+  protected AbstractDwcComponent setComponentHorizontalAlignment(
+      HorizontalAlignment.Alignment alignment) {
+    this.alignment = alignment;
+
+    if (control instanceof TextAlignable) {
+      try {
+        ((TextAlignable) control).setAlignment(alignment.getValue());
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Get the components's horizontal alignment.
+   *
+   * @return the component's horizontal alignment
+   */
+  protected HorizontalAlignment.Alignment getComponentHorizontalAlignment() {
+    return this.alignment == null ? HorizontalAlignment.Alignment.LEFT : this.alignment;
+  }
+
+  /**
    * Sets the expanse for the component.
    *
    * @param expanse The component expanse
@@ -903,6 +935,10 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
 
     if (highlightOnFocus != HighlightableOnFocus.Behavior.FOCUS_OR_KEY) {
       setComponentHighlightOnFocus(highlightOnFocus);
+    }
+
+    if (this.alignment != null) {
+      this.setComponentHorizontalAlignment(this.alignment);
     }
   }
 }

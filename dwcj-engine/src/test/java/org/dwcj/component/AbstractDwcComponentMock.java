@@ -7,7 +7,7 @@ import org.dwcj.component.window.AbstractWindow;
 
 public class AbstractDwcComponentMock extends AbstractDwcComponent
     implements HasExpanse<AbstractDwcComponentMock, Expanse>, HasReadOnly,
-    HighlightableOnFocus<AbstractDwcComponentMock> {
+    HighlightableOnFocus<AbstractDwcComponentMock>, HorizontalAlignment<AbstractDwcComponentMock> {
 
   @Override
   public AbstractDwcComponentMock setExpanse(Expanse expanse) {
@@ -50,5 +50,16 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
   public AbstractDwcComponentMock setHighlightOnFocus(HighlightableOnFocus.Behavior highlight) {
     setComponentHighlightOnFocus(highlight);
     return this;
+  }
+
+  @Override
+  public AbstractDwcComponentMock setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return this;
+  }
+
+  @Override
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 }

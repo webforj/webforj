@@ -1,5 +1,6 @@
 package org.dwcj.component;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -396,5 +397,62 @@ public class AbstractDwcComponentTest {
     }
   }
 
+  @Nested
+  @DisplayName("Alignment API")
+  class AlignmentApi {
+
+    @Test
+    @DisplayName("set/get alignment when control is null")
+    void setGetAlignment() throws BBjException, IllegalAccessException {
+      nullifyControl();
+
+      component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT);
+      assertEquals(AbstractDwcComponentMock.Alignment.RIGHT, component.getHorizontalAlignment());
+
+      verify(control, times(0)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
+      verify(control, times(0)).getAlignment();
+    }
+
+    @Test
+    @DisplayName("set/get alignment when control is defined")
+    void setGetAlignmentWhenControlIsDefined() throws BBjException {
+      component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT);
+      assertEquals(AbstractDwcComponentMock.Alignment.RIGHT, component.getHorizontalAlignment());
+
+      verify(control, times(1)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
+      verify(control, times(0)).getAlignment();
+    }
+
+    @Test
+    @DisplayName("""
+        set alignment will re-throw a DwcjRuntimeException when a
+        BBjException is thrown by the control
+        """)
+    void settingAlignmentWhenControlThrowsBbjException() throws BBjException {
+      doThrow(BBjException.class).when(control).setAlignment(anyInt());
+      assertThrows(DwcjRuntimeException.class,
+          () -> component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT));
+    }
+
+
+    @Test
+    @DisplayName("catchup will reapply alignment changes")
+    void catchupWillReapplyAlignmentChanges() throws BBjException, IllegalAccessException,
+        NoSuchMethodException, InvocationTargetException {
+      nullifyControl();
+
+      component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT);
+      assertEquals(AbstractDwcComponentMock.Alignment.RIGHT, component.getHorizontalAlignment());
+
+      verify(control, times(0)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
+      verify(control, times(0)).getAlignment();
+
+      unnullifyControl();
+      invokeCatchUp(component);
+
+      verify(control, times(1)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
+      verify(control, times(0)).getAlignment();
+    }
+  }
 }
 
