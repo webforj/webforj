@@ -67,7 +67,7 @@ public final class TextField extends AbstractTextField<TextField>
   private String placeholder = "";
 
   /**
-   * Construct a new text field with the given type and value.
+   * Construct a new text field with the given type, label and value.
    *
    * @param type the type of field
    * @param label the label for the field
@@ -82,7 +82,7 @@ public final class TextField extends AbstractTextField<TextField>
   }
 
   /**
-   * Construct a new text field with the given type and empty value.
+   * Construct a new text field with the given type and label.
    *
    * @param type the type of field
    * @param label the label for the field
@@ -101,7 +101,7 @@ public final class TextField extends AbstractTextField<TextField>
   }
 
   /**
-   * Construct a new text field with the given type and empty value.
+   * Construct a new text field with the given label and value.
    *
    * @param label the label for the field
    * @param value the value for the field
@@ -111,7 +111,7 @@ public final class TextField extends AbstractTextField<TextField>
   }
 
   /**
-   * Construct a new text field with the given type and empty value.
+   * Construct a new text field with the given label.
    *
    * @param label the label for the field
    */
@@ -120,7 +120,7 @@ public final class TextField extends AbstractTextField<TextField>
   }
 
   /**
-   * Construct a new text field with the given type and empty value.
+   * Construct a new text field without any given data.
    */
   public TextField() {
     this("");
