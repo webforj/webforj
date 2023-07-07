@@ -28,10 +28,6 @@ import org.dwcj.component.HighlightableOnFocus;
  * formatted according to the user's locale as reported by their operating system.
  * </p>
  *
- * Modifications: - Added compareTime method to compare times without milliseconds. - Modified
- * setText method to compare times without milliseconds. - Modified setValue method to truncate the
- * time to seconds. - Modified getValue method to parse the time without milliseconds.
- *
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
