@@ -1,4 +1,4 @@
-package org.dwcj.component.textfield;
+package org.dwcj.component.maskedtextfield;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -12,17 +12,17 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.maskedtextfield.event.MaskedTextFieldModifyEvent;
+import org.dwcj.component.maskedtextfield.sink.MaskedTextFieldModifyEventSink;
 import org.dwcj.component.HighlightableOnFocus;
-import org.dwcj.component.textfield.event.TextFieldModifyEvent;
-import org.dwcj.component.textfield.sink.TextFieldModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class TextField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HorizontalAlignment, HighlightableOnFocus<TextField>, HasEnable {
+public final class MaskedTextField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
+    TabTraversable, HorizontalAlignment, HighlightableOnFocus<MaskedTextField>, HasEnable {
 
 
   private BBjInputE bbjInputE;
@@ -36,8 +36,8 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
 
-  private ArrayList<Consumer<TextFieldModifyEvent>> callbacks = new ArrayList<>();
-  private TextFieldModifyEventSink editModifyEventSink;
+  private ArrayList<Consumer<MaskedTextFieldModifyEvent>> callbacks = new ArrayList<>();
+  private MaskedTextFieldModifyEventSink editModifyEventSink;
 
   private Integer caretPos = 1;
   private String editString = "";
@@ -54,11 +54,11 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
 
 
 
-  public TextField() {
+  public MaskedTextField() {
     this("");
   }
 
-  public TextField(String text) {
+  public MaskedTextField(String text) {
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
@@ -80,11 +80,11 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     }
   }
 
-  public TextField onEditModify(Consumer<TextFieldModifyEvent> callback) {
+  public MaskedTextField onEditModify(Consumer<MaskedTextFieldModifyEvent> callback) {
 
     if (this.control != null) {
       if (this.editModifyEventSink == null) {
-        this.editModifyEventSink = new TextFieldModifyEventSink(this);
+        this.editModifyEventSink = new MaskedTextFieldModifyEventSink(this);
       }
       this.editModifyEventSink.addCallback(callback);
     } else {
@@ -229,7 +229,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
 
 
 
-  public TextField restore() {
+  public MaskedTextField restore() {
     if (this.control != null) {
       try {
         bbjInputE.restore();
@@ -240,7 +240,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField selectAll() {
+  public MaskedTextField selectAll() {
     if (this.control != null) {
       try {
         bbjInputE.selectAll();
@@ -252,7 +252,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
 
-  public TextField setCaretPos(Integer position) {
+  public MaskedTextField setCaretPos(Integer position) {
     if (this.control != null) {
       try {
         bbjInputE.setCaretPosition(position);
@@ -264,7 +264,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setEditString(String edit) {
+  public MaskedTextField setEditString(String edit) {
     if (this.control != null) {
       try {
         bbjInputE.setEditString(edit.getBytes(StandardCharsets.UTF_8));
@@ -276,7 +276,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setHighlight(Boolean highlight) {
+  public MaskedTextField setHighlight(Boolean highlight) {
     if (this.control != null) {
       try {
         bbjInputE.setHighlight(highlight);
@@ -288,7 +288,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setInsertMode(Boolean insert) {
+  public MaskedTextField setInsertMode(Boolean insert) {
     if (this.control != null) {
       try {
         bbjInputE.setInsertMode(insert);
@@ -300,7 +300,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setLength(Integer len) {
+  public MaskedTextField setLength(Integer len) {
     if (this.control != null) {
       try {
         bbjInputE.setLength(len);
@@ -312,7 +312,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setMargin(Integer marginWidth) {
+  public MaskedTextField setMargin(Integer marginWidth) {
     if (this.control != null) {
       try {
         bbjInputE.setMargin(marginWidth);
@@ -324,7 +324,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setMask(String mask) {
+  public MaskedTextField setMask(String mask) {
     if (control != null) {
       try {
         ((BBjInputE) control).setMask(mask);
@@ -337,7 +337,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setPadCharacter(String pad) {
+  public MaskedTextField setPadCharacter(String pad) {
     if (this.control != null) {
       try {
         bbjInputE.setPadCharacter(pad);
@@ -349,7 +349,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setPassEnter(Boolean pass) {
+  public MaskedTextField setPassEnter(Boolean pass) {
     if (this.control != null) {
       try {
         bbjInputE.setPassEnter(pass);
@@ -361,7 +361,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setPassTab(Boolean pass) {
+  public MaskedTextField setPassTab(Boolean pass) {
     if (this.control != null) {
       try {
         bbjInputE.setPassTab(pass);
@@ -373,7 +373,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
     return this;
   }
 
-  public TextField setRestore(String restore) {
+  public MaskedTextField setRestore(String restore) {
     if (this.control != null) {
       try {
         bbjInputE.setRestore(restore);
@@ -398,7 +398,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public TextField setReadOnly(Boolean editable) {
+  public MaskedTextField setReadOnly(Boolean editable) {
     try {
       bbjInputE.setEditable(!editable);
     } catch (BBjException e) {
@@ -408,7 +408,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public TextField focus() {
+  public MaskedTextField focus() {
     super.focusComponent();
     return this;
   }
@@ -426,7 +426,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public TextField setTabTraversable(Boolean traversable) {
+  public MaskedTextField setTabTraversable(Boolean traversable) {
     if (this.control != null) {
       try {
         bbjInputE.setTabTraversable(traversable);
@@ -444,7 +444,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public TextField setHorizontalAlignment(Alignment alignment) {
+  public MaskedTextField setHorizontalAlignment(Alignment alignment) {
     if (this.control != null) {
       try {
         bbjInputE.setAlignment(alignment.getValue());
@@ -463,7 +463,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public TextField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+  public MaskedTextField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
     super.setComponentHighlightOnFocus(behavior);
     return this;
   }
@@ -471,19 +471,19 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
 
 
   @Override
-  public TextField setText(String text) {
+  public MaskedTextField setText(String text) {
     super.setText(text);
     return this;
   }
 
   @Override
-  public TextField setVisible(Boolean visible) {
+  public MaskedTextField setVisible(Boolean visible) {
     super.setVisible(visible);
     return this;
   }
 
   @Override
-  public TextField setEnabled(boolean enabled) {
+  public MaskedTextField setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
     return this;
   }
@@ -494,44 +494,44 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  public TextField setTooltipText(String text) {
+  public MaskedTextField setTooltipText(String text) {
     super.setTooltipText(text);
     return this;
   }
 
   @Override
-  public TextField setAttribute(String attribute, String value) {
+  public MaskedTextField setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
     return this;
   }
 
   @Override
-  public TextField setStyle(String property, String value) {
+  public MaskedTextField setStyle(String property, String value) {
     super.setStyle(property, value);
     return this;
   }
 
   @Override
-  public TextField addClassName(String selector) {
+  public MaskedTextField addClassName(String selector) {
     super.addClassName(selector);
     return this;
   }
 
   @Override
-  public TextField removeClassName(String selector) {
+  public MaskedTextField removeClassName(String selector) {
     super.removeClassName(selector);
     return this;
   }
 
 
 
-  public TextField setExpanse(Expanse expanse) {
+  public MaskedTextField setExpanse(Expanse expanse) {
     super.setControlExpanse(expanse);
     return this;
   }
 
 
-  public TextField setTheme(Theme theme) {
+  public MaskedTextField setTheme(Theme theme) {
     super.setControlTheme(theme);
     return this;
   }
@@ -546,7 +546,7 @@ public final class TextField extends AbstractDwcComponent implements HasReadOnly
 
 
     if (!this.callbacks.isEmpty()) {
-      this.editModifyEventSink = new TextFieldModifyEventSink(this);
+      this.editModifyEventSink = new MaskedTextFieldModifyEventSink(this);
       while (!this.callbacks.isEmpty()) {
         this.editModifyEventSink.addCallback(this.callbacks.remove(0));
       }

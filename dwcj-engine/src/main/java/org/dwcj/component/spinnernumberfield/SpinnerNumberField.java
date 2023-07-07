@@ -8,11 +8,11 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasMouseWheelCondition;
-import org.dwcj.component.numberfield.NumberField;
+import org.dwcj.component.maskednumberfield.MaskedNumberField;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-public final class SpinnerNumberField extends NumberField implements HasMouseWheelCondition {
+public final class SpinnerNumberField extends MaskedNumberField implements HasMouseWheelCondition {
 
   private BBjInputNSpinner numBoxS;
 
