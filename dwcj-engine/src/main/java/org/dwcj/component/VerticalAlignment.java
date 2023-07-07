@@ -4,7 +4,7 @@ package org.dwcj.component;
  * Controls the vertical alignment of the content within the component, namely text and images. It
  * does not alter the position of the entire component itself.
  */
-public interface VerticalAlignment {
+public interface VerticalAlignment<T extends Component> {
 
   /**
    * Enum which represents the text alignment of a component.
@@ -34,7 +34,7 @@ public interface VerticalAlignment {
    * @param alignment Enum from list representing an internal BBj numeric constant
    * @return the control itself
    */
-  public VerticalAlignment setVerticalAlignment(Alignment alignment);
+  public T setVerticalAlignment(Alignment alignment);
 
   /**
    * Returns a value indication the text's vertical alignment.

@@ -4,8 +4,13 @@ package org.dwcj.component;
 /**
  * Controls the horizontal alignment of the content within the component, namely text and images. It
  * does not alter the position of the entire component itself.
+ *
+ * @param <T> The component type
+ *
+ * @since 23.02
+ * @author Hyyan Abo Fakher
  */
-public interface HorizontalAlignment {
+public interface HorizontalAlignment<T extends Component> {
 
   /**
    * Enum which represents the text alignment of a component.
@@ -30,18 +35,17 @@ public interface HorizontalAlignment {
   }
 
   /**
-   * Returns a value indicating the text's horizontal alignment.
-   *
-   * @return Enum value of text alignment
-   */
-  public Alignment getHorizontalAlignment();
-
-  /**
    * Sets the horizontal alignment of the text within the component.
    *
    * @param alignment Enum from list representing an internal BBj numeric constant
    * @return The component itself
    */
-  public HorizontalAlignment setHorizontalAlignment(Alignment alignment);
+  public T setHorizontalAlignment(Alignment alignment);
 
+  /**
+   * Returns a value indicating the text's horizontal alignment.
+   *
+   * @return Enum value of text alignment
+   */
+  public Alignment getHorizontalAlignment();
 }
