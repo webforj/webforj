@@ -2,28 +2,30 @@ package org.dwcj.component.event.sink;
 
 import com.basis.bbj.proxies.event.BBjAbstractTextKeypressEvent;
 import com.basis.bbj.proxies.event.BBjEvent;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.component.event.KeypressEvent;
+import org.dwcj.component.field.DwcjFieldComponent;
 
 /**
  * An abstract class of a keypress event sink which would handle a BBjKeypressEvent and dispatch the
  * corresponding Java event.
  */
-public abstract class AbstractKeypressEventSink extends AbstractEventSink {
+public class KeypressEventSink extends AbstractEventSink {
 
-  protected AbstractKeypressEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
-      int sysGuiConstant) {
-    super(component, dispatcher, sysGuiConstant);
+  public KeypressEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+    super(component, dispatcher,
+        component instanceof DwcjFieldComponent ? SysGuiEventConstants.ON_EDIT_KEYPRESS
+            : SysGuiEventConstants.ON_INPUT_KEYPRESS);
   }
 
   /**
-   * Helper method to build the payload for BBjKeyPressEvents.
-   *
-   * @param ev the event
-   * @return the payload
+   * {@inheritDoc}
    */
-  protected HashMap<String, Object> buildPayload(BBjEvent ev) {
+  @Override
+  public void handleEvent(BBjEvent ev) {
     HashMap<String, Object> map = new HashMap<>();
     BBjAbstractTextKeypressEvent event = (BBjAbstractTextKeypressEvent) ev;
 
@@ -33,7 +35,7 @@ public abstract class AbstractKeypressEventSink extends AbstractEventSink {
     map.put("controlKey", event.isControlDown());
     map.put("shiftKey", event.isShiftDown());
 
-    return map;
+    KeypressEvent dwcEv = new KeypressEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
-
 }
