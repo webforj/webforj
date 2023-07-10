@@ -24,6 +24,11 @@ abstract class AbstractTextField<T extends AbstractTextField<T>> extends Abstrac
   private int maxLength = 524288;
   private SelectionRange range = null;
 
+  protected AbstractTextField() {
+    super();
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
+  }
+
   /**
    * {@inheritDoc}
    */

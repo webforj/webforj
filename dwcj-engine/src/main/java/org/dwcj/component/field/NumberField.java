@@ -37,6 +37,7 @@ public final class NumberField extends AbstractField<NumberField, Double> implem
   public NumberField(String label, Double value) {
     super();
 
+    setComponentHorizontalAlignment(Alignment.RIGHT);
     setUnrestrictedProperty("type", "number");
     setLabel(label);
     setValue(value);
