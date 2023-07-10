@@ -25,8 +25,9 @@ import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-public final class MaskedDateField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HighlightableOnFocus<MaskedDateField>, HorizontalAlignment {
+public final class MaskedDateField extends AbstractDwcComponent
+    implements HasReadOnly, HasFocus, TabTraversable, HasEnable,
+    HighlightableOnFocus<MaskedDateField>, HorizontalAlignment<MaskedDateField> {
 
   private BBjInputD bbjDateEditBox;
 
@@ -62,13 +63,13 @@ public final class MaskedDateField extends AbstractDwcComponent implements HasRe
 
   public MaskedDateField() {
     this("");
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
   public MaskedDateField(String text) {
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
   }
 
   @Override
@@ -666,19 +667,12 @@ public final class MaskedDateField extends AbstractDwcComponent implements HasRe
 
   @Override
   public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
+    return getComponentHorizontalAlignment();
   }
 
   @Override
   public MaskedDateField setHorizontalAlignment(Alignment alignment) {
-    if (this.control != null) {
-      try {
-        bbjDateEditBox.setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
+    super.setComponentHorizontalAlignment(alignment);
     return this;
   }
 
@@ -830,10 +824,6 @@ public final class MaskedDateField extends AbstractDwcComponent implements HasRe
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
 
   }

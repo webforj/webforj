@@ -52,6 +52,11 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
     return this;
   }
 
+  public AbstractDwcComponentMock setDefaultHorizontalAlignment(Alignment alignment) {
+    setComponentDefaultHorizontalAlignment(alignment);
+    return this;
+  }
+
   @Override
   public AbstractDwcComponentMock setHorizontalAlignment(Alignment alignment) {
     setComponentHorizontalAlignment(alignment);

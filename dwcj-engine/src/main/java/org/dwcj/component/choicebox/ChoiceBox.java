@@ -6,6 +6,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
@@ -20,6 +21,7 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxChangeEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxCloseEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxOpenEventSink;
 import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
+import org.dwcj.component.label.Label;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
@@ -34,7 +36,7 @@ import java.util.function.Consumer;
  * Combobox Control
  */
 public final class ChoiceBox extends AbstractListBox
-    implements HasReadOnly, HasFocus, TabTraversable, HorizontalAlignment, HasEnable {
+    implements HasReadOnly, HasFocus, TabTraversable, HorizontalAlignment<ChoiceBox>, HasEnable {
 
   private BBjListButton bbjListButton;
 
@@ -64,7 +66,7 @@ public final class ChoiceBox extends AbstractListBox
   public ChoiceBox() {
     this.readOnly = false;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
   @Override
@@ -517,22 +519,23 @@ public final class ChoiceBox extends AbstractListBox
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
+  @ExcludeFromJacocoGeneratedReport
+  public ChoiceBox setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
-  public ChoiceBox setHorizontalAlignment(Alignment textAlignment) {
-    if (this.control != null) {
-      try {
-        ((BBjListButton) this.control).setAlignment(textAlignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = textAlignment;
-    return this;
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 
 
@@ -603,8 +606,9 @@ public final class ChoiceBox extends AbstractListBox
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
   protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
+    if (Boolean.TRUE.equals(this.getCaughtUp())) {
       throw new IllegalAccessException("catchUp cannot be called twice");
+    }
 
     super.catchUp();
 
@@ -652,10 +656,6 @@ public final class ChoiceBox extends AbstractListBox
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.selected != null) {

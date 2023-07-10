@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
@@ -14,6 +15,7 @@ import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
+import org.dwcj.component.label.Label;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -22,7 +24,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * A Push Button.
  */
 public final class Button extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, HorizontalAlignment, HasEnable {
+    implements HasFocus, TabTraversable, HorizontalAlignment<Button>, HasEnable {
 
 
 
@@ -99,6 +101,7 @@ public final class Button extends AbstractDwcComponent
 
   public Button() {
     this("");
+    setComponentDefaultHorizontalAlignment(Alignment.MIDDLE);
   }
 
   /**
@@ -110,7 +113,6 @@ public final class Button extends AbstractDwcComponent
   public Button(String text) {
     super.setText(text);
     this.tabTraversable = true;
-    this.textAlignment = Alignment.MIDDLE;
   }
 
   @Override
@@ -387,23 +389,25 @@ public final class Button extends AbstractDwcComponent
   }
 
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
-  }
-
-  @Override
+  @ExcludeFromJacocoGeneratedReport
   public Button setHorizontalAlignment(Alignment alignment) {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
+    setComponentHorizontalAlignment(alignment);
     return this;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
+  }
+
 
   /*
    * ===================================================================================== Finally,
@@ -431,10 +435,6 @@ public final class Button extends AbstractDwcComponent
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.MIDDLE) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
 
     if (this.expanse != null) {

@@ -32,7 +32,6 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   protected boolean readOnly = false;
   protected Boolean wasFocused = null;
   protected Boolean tabTraversable = null;
-  protected HorizontalAlignment.Alignment textAlignment = null;
   protected Integer horizontalScrollBarPosition = null;
   protected Integer verticalScrollBarPosition = null;
   protected HasMouseWheelCondition.MouseWheelCondition mouseWheelCondition = null;
@@ -53,7 +52,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private HighlightableOnFocus.Behavior highlightOnFocus =
       HighlightableOnFocus.Behavior.FOCUS_OR_KEY;
   private Enum<? extends ExpanseBase> componentExpanse = null;
-  private HorizontalAlignment.Alignment alignment;
+  private HorizontalAlignment.Alignment horizontalAlignment = null;
+  private HorizontalAlignment.Alignment defaultHorizontalAlignment = null;
 
   /**
    * Set the value for a property in the component.
@@ -678,6 +678,18 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Set the component default horizontal alignment.
+   *
+   * @param alignment Enum value of alignment
+   * @return the component itself
+   */
+  protected AbstractDwcComponent setComponentDefaultHorizontalAlignment(
+      HorizontalAlignment.Alignment alignment) {
+    this.defaultHorizontalAlignment = alignment;
+    return this;
+  }
+
+  /**
    * Set the component horizontal alignment.
    *
    * @param alignment Enum value of alignment
@@ -685,7 +697,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    */
   protected AbstractDwcComponent setComponentHorizontalAlignment(
       HorizontalAlignment.Alignment alignment) {
-    this.alignment = alignment;
+    this.horizontalAlignment = alignment;
 
     if (control instanceof TextAlignable) {
       try {
@@ -704,7 +716,19 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return the component's horizontal alignment
    */
   protected HorizontalAlignment.Alignment getComponentHorizontalAlignment() {
-    return this.alignment == null ? HorizontalAlignment.Alignment.LEFT : this.alignment;
+    if (control instanceof TextAlignable) {
+      try {
+        return HorizontalAlignment.Alignment.fromValue(((TextAlignable) control).getAlignment());
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
+      }
+    }
+
+    HorizontalAlignment.Alignment defaultAlignment =
+        this.defaultHorizontalAlignment == null ? HorizontalAlignment.Alignment.LEFT
+            : this.defaultHorizontalAlignment;
+
+    return this.horizontalAlignment == null ? defaultAlignment : this.horizontalAlignment;
   }
 
   /**
@@ -937,8 +961,8 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       setComponentHighlightOnFocus(highlightOnFocus);
     }
 
-    if (this.alignment != null) {
-      this.setComponentHorizontalAlignment(this.alignment);
+    if (horizontalAlignment != null && horizontalAlignment != defaultHorizontalAlignment) {
+      this.setComponentHorizontalAlignment(horizontalAlignment);
     }
   }
 }

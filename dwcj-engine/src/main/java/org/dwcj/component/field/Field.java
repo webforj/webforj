@@ -7,6 +7,7 @@ import com.basis.startup.type.BBjException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
@@ -14,6 +15,7 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.choicebox.ChoiceBox;
 import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.field.event.FieldModifyEvent;
 import org.dwcj.component.field.sink.FieldModifyEventSink;
@@ -22,7 +24,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public final class Field extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HorizontalAlignment, HighlightableOnFocus<Field> {
+    TabTraversable, HasEnable, HorizontalAlignment<Field>, HighlightableOnFocus<Field> {
 
   private BBjEditBox bbjEditBox;
 
@@ -52,7 +54,7 @@ public final class Field extends AbstractDwcComponent implements HasReadOnly, Ha
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
 
@@ -253,23 +255,23 @@ public final class Field extends AbstractDwcComponent implements HasReadOnly, Ha
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
+  @ExcludeFromJacocoGeneratedReport
+  public Field setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
-  public Field setHorizontalAlignment(Alignment alignment) {
-    // todo: why could an exception be thrown?
-    if (this.control != null) {
-      try {
-        bbjEditBox.setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
-    return this;
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 
 
@@ -384,10 +386,6 @@ public final class Field extends AbstractDwcComponent implements HasReadOnly, Ha
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
   }
 

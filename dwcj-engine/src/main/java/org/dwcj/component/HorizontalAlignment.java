@@ -34,6 +34,21 @@ public interface HorizontalAlignment<T extends Component> {
     public int getValue() {
       return value;
     }
+
+    /**
+     * Gets the enum value of the text alignment.
+     *
+     * @param value Integer value of text alignment
+     * @return Enum value of text alignment
+     */
+    public static Alignment fromValue(int value) {
+      for (Alignment alignment : values()) {
+        if (alignment.getValue() == value) {
+          return alignment;
+        }
+      }
+      return null;
+    }
   }
 
   /**

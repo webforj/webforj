@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
@@ -13,6 +14,7 @@ import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.Scrollable;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.label.Label;
 import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
@@ -24,7 +26,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
 public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly,
-    HasFocus, HasMouseWheelCondition, TabTraversable, HorizontalAlignment {
+    HasFocus, HasMouseWheelCondition, TabTraversable, HorizontalAlignment<ListBox> {
 
   private BBjListBox bbjListBox;
 
@@ -46,7 +48,7 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
     this.readOnly = false;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
   @Override
@@ -622,22 +624,23 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
   }
 
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
+  @ExcludeFromJacocoGeneratedReport
+  public ListBox setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
-  public ListBox setHorizontalAlignment(Alignment alignment) {
-    if (this.control != null) {
-      try {
-        ((BBjListBox) this.control).setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
-    return this;
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 
 
@@ -692,10 +695,6 @@ public final class ListBox extends AbstractListBox implements Scrollable, HasEna
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
   }
 

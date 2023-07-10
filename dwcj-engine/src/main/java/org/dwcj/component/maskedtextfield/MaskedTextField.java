@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import org.dwcj.App;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
@@ -12,6 +13,7 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.label.Label;
 import org.dwcj.component.maskedtextfield.event.MaskedTextFieldModifyEvent;
 import org.dwcj.component.maskedtextfield.sink.MaskedTextFieldModifyEventSink;
 import org.dwcj.component.HighlightableOnFocus;
@@ -21,8 +23,9 @@ import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class MaskedTextField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HorizontalAlignment, HighlightableOnFocus<MaskedTextField>, HasEnable {
+public final class MaskedTextField extends AbstractDwcComponent
+    implements HasReadOnly, HasFocus, TabTraversable, HorizontalAlignment<MaskedTextField>,
+    HighlightableOnFocus<MaskedTextField>, HasEnable {
 
 
   private BBjInputE bbjInputE;
@@ -62,7 +65,7 @@ public final class MaskedTextField extends AbstractDwcComponent implements HasRe
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
   @Override
@@ -438,23 +441,25 @@ public final class MaskedTextField extends AbstractDwcComponent implements HasRe
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
-  }
-
-  @Override
+  @ExcludeFromJacocoGeneratedReport
   public MaskedTextField setHorizontalAlignment(Alignment alignment) {
-    if (this.control != null) {
-      try {
-        bbjInputE.setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
+    setComponentHorizontalAlignment(alignment);
     return this;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
+  @Override
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
+  }
+
 
 
   @Override
@@ -606,10 +611,6 @@ public final class MaskedTextField extends AbstractDwcComponent implements HasRe
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
   }
 

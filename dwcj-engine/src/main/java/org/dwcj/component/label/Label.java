@@ -22,7 +22,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /** A label object. */
-public final class Label extends AbstractDwcComponent implements HorizontalAlignment {
+public final class Label extends AbstractDwcComponent implements HorizontalAlignment<Label> {
 
   private EventDispatcher dispatcher = new EventDispatcher();
 
@@ -42,7 +42,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * Default Constructor to automatically create an empty label.
    */
   public Label() {
-    this("");
+    this("", true);
   }
 
   /**
@@ -51,8 +51,7 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @param text String value for initial display text
    */
   public Label(String text) {
-    this.textAlignment = Alignment.LEFT;
-    setText(text);
+    this(text, true);
   }
 
   /**
@@ -62,8 +61,9 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * @param wrap Boolean value for linewrapping.
    */
   public Label(String text, boolean wrap) {
-    this(text);
-    this.setWrap(wrap);
+    setText(text);
+    setWrap(wrap);
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
   /**
@@ -212,24 +212,19 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Label setHorizontalAlignment(Alignment alignment) {
-    if (getBBjControl() != null) {
-      try {
-        getBBjControl().setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
-      }
-    }
-    this.textAlignment = alignment;
+    setComponentHorizontalAlignment(alignment);
     return this;
   }
 
   /**
    * {@inheritDoc}
    */
+  @ExcludeFromJacocoGeneratedReport
   @Override
   public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
+    return getComponentHorizontalAlignment();
   }
 
   /**
@@ -331,10 +326,6 @@ public final class Label extends AbstractDwcComponent implements HorizontalAlign
 
     if (!this.lineWrap) {
       this.setWrap(lineWrap);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
   }
 

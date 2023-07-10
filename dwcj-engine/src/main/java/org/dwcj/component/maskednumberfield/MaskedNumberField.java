@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import javax.swing.text.Highlighter.Highlight;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.HasEnable;
@@ -17,6 +18,7 @@ import org.dwcj.component.HasFocus;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.label.Label;
 import org.dwcj.component.maskednumberfield.event.MaskedNumberFieldModifyEvent;
 import org.dwcj.component.maskednumberfield.sink.MaskedNumberFieldModifyEventSink;
 import org.dwcj.component.HighlightableOnFocus;
@@ -24,8 +26,9 @@ import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
-public class MaskedNumberField extends AbstractDwcComponent implements HasReadOnly, HasFocus,
-    TabTraversable, HasEnable, HorizontalAlignment, HighlightableOnFocus<MaskedNumberField> {
+public class MaskedNumberField extends AbstractDwcComponent
+    implements HasReadOnly, HasFocus, TabTraversable, HasEnable,
+    HorizontalAlignment<MaskedNumberField>, HighlightableOnFocus<MaskedNumberField> {
 
   protected BBjInputN numBox;
 
@@ -63,7 +66,7 @@ public class MaskedNumberField extends AbstractDwcComponent implements HasReadOn
     setText(text);
     this.readOnly = false;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
+    setComponentHorizontalAlignment(Alignment.RIGHT);
   }
 
   public MaskedNumberField() {
@@ -743,22 +746,23 @@ public class MaskedNumberField extends AbstractDwcComponent implements HasReadOn
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    return this.textAlignment;
+  @ExcludeFromJacocoGeneratedReport
+  public MaskedNumberField setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
-  public MaskedNumberField setHorizontalAlignment(Alignment alignment) {
-    if (this.control != null) {
-      try {
-        numBox.setAlignment(alignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = alignment;
-    return this;
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 
 
@@ -908,10 +912,6 @@ public class MaskedNumberField extends AbstractDwcComponent implements HasReadOn
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
 
   }

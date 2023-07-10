@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasFocus;
@@ -11,6 +12,7 @@ import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
+import org.dwcj.component.choicebox.ChoiceBox;
 import org.dwcj.component.combobox.event.ComboBoxChangeEvent;
 import org.dwcj.component.combobox.event.ComboBoxCloseEvent;
 import org.dwcj.component.combobox.event.ComboBoxEditModifyEvent;
@@ -35,7 +37,7 @@ import java.util.function.Consumer;
  * ComboBoxEdit Control
  */
 public final class ComboBox extends AbstractListBox implements HasReadOnly, HasFocus,
-    HasMouseWheelCondition, HasEnable, TabTraversable, HorizontalAlignment {
+    HasMouseWheelCondition, HasEnable, TabTraversable, HorizontalAlignment<ComboBox> {
 
   private BBjListEdit bbjListEdit;
 
@@ -70,7 +72,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
     this.readOnly = false;
     this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
     this.tabTraversable = true;
-    this.textAlignment = Alignment.LEFT;
+    setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
   @Override
@@ -459,25 +461,23 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
     return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Alignment getHorizontalAlignment() {
-    if (this.control != null) {
-      return this.textAlignment;
-    }
-    return this.textAlignment;
+  @ExcludeFromJacocoGeneratedReport
+  public ComboBox setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @ExcludeFromJacocoGeneratedReport
   @Override
-  public ComboBox setHorizontalAlignment(Alignment textAlignment) {
-    if (this.control != null) {
-      try {
-        ((BBjListEdit) this.control).setAlignment(textAlignment.getValue());
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.textAlignment = textAlignment;
-    return this;
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 
 
@@ -623,10 +623,6 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
 
     if (Boolean.FALSE.equals(this.tabTraversable)) {
       this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.textAlignment != Alignment.LEFT) {
-      this.setHorizontalAlignment(this.textAlignment);
     }
 
 

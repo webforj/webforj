@@ -416,24 +416,28 @@ public class AbstractDwcComponentTest {
     @Test
     @DisplayName("set/get alignment when control is defined")
     void setGetAlignmentWhenControlIsDefined() throws BBjException {
+      doReturn(AbstractDwcComponentMock.Alignment.RIGHT.getValue()).when(control).getAlignment();
+
       component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT);
       assertEquals(AbstractDwcComponentMock.Alignment.RIGHT, component.getHorizontalAlignment());
 
       verify(control, times(1)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
-      verify(control, times(0)).getAlignment();
+      verify(control, times(1)).getAlignment();
     }
 
     @Test
     @DisplayName("""
-        set alignment will re-throw a DwcjRuntimeException when a
+        set/get alignment will re-throw a DwcjRuntimeException when a
         BBjException is thrown by the control
         """)
     void settingAlignmentWhenControlThrowsBbjException() throws BBjException {
       doThrow(BBjException.class).when(control).setAlignment(anyInt());
+      doThrow(BBjException.class).when(control).getAlignment();
+
       assertThrows(DwcjRuntimeException.class,
           () -> component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT));
+      assertThrows(DwcjRuntimeException.class, () -> component.getHorizontalAlignment());
     }
-
 
     @Test
     @DisplayName("catchup will reapply alignment changes")
@@ -451,6 +455,27 @@ public class AbstractDwcComponentTest {
       invokeCatchUp(component);
 
       verify(control, times(1)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
+      verify(control, times(0)).getAlignment();
+    }
+
+    @Test
+    @DisplayName("catchup will skip alignment changes if it is the default alignment")
+    void catchupWillSkipAlignmentChangesIfItIsTheDefaultAlignment() throws BBjException,
+        IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+      nullifyControl();
+
+      component.setDefaultHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT);
+      component.setHorizontalAlignment(AbstractDwcComponentMock.Alignment.RIGHT);
+
+      assertEquals(AbstractDwcComponentMock.Alignment.RIGHT, component.getHorizontalAlignment());
+
+      verify(control, times(0)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
+      verify(control, times(0)).getAlignment();
+
+      unnullifyControl();
+      invokeCatchUp(component);
+
+      verify(control, times(0)).setAlignment(AbstractDwcComponentMock.Alignment.RIGHT.getValue());
       verify(control, times(0)).getAlignment();
     }
   }

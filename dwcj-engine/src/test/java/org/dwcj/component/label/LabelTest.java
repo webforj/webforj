@@ -2,10 +2,8 @@ package org.dwcj.component.label;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
@@ -17,9 +15,7 @@ import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.dwcj.component.HorizontalAlignment.Alignment;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
@@ -29,8 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -102,7 +96,6 @@ class LabelTest {
       Label componentSpy = spy(component);
 
       componentSpy.setWrap(false);
-      componentSpy.setHorizontalAlignment(Alignment.MIDDLE);
       componentSpy.onMouseEnter(e -> {
       });
       componentSpy.onMouseExit(e -> {
@@ -113,7 +106,6 @@ class LabelTest {
       invokeCatchUp(componentSpy);
 
       verify(componentSpy, atLeast(2)).setWrap(false);
-      verify(componentSpy, atLeast(2)).setHorizontalAlignment(Alignment.MIDDLE);
     }
   }
 
@@ -143,38 +135,6 @@ class LabelTest {
     void reThrowDwcjRunTimeException() throws BBjException {
       doThrow(BBjException.class).when(control).setLineWrap(anyBoolean());
       assertThrows(DwcjRuntimeException.class, () -> component.setWrap(false));
-    }
-  }
-
-  @Nested
-  @DisplayName("Text Alignment API")
-  class TextAlignment {
-    @ParameterizedTest
-    @EnumSource(Alignment.class)
-    @DisplayName("When control is defined")
-    void whenControlIsDefined(Alignment align) throws BBjException {
-      component.setHorizontalAlignment(align);
-      assertSame(component.getHorizontalAlignment(), align);
-
-      verify(control, times(1)).setAlignment(anyInt());
-      verify(control, times(0)).getAlignment();
-    }
-
-    @ParameterizedTest
-    @EnumSource(Alignment.class)
-    @DisplayName("When control is null")
-    void whenControlIsNull(Alignment align) throws BBjException, IllegalAccessException {
-      nullifyControl();
-      component.setHorizontalAlignment(align);
-      assertSame(component.getHorizontalAlignment(), align);
-    }
-
-    @ParameterizedTest
-    @EnumSource(Alignment.class)
-    @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
-    void reThrowDwcjRunTimeException(Alignment align) throws BBjException {
-      doThrow(BBjException.class).when(control).setAlignment(anyInt());
-      assertThrows(DwcjRuntimeException.class, () -> component.setHorizontalAlignment(align));
     }
   }
 }
