@@ -1,5 +1,6 @@
 package org.dwcj.component;
 
+import com.basis.bbj.proxies.sysgui.TextAlignable;
 
 /**
  * Controls the horizontal alignment of the content within the component, namely text and images. It
@@ -16,7 +17,8 @@ public interface HorizontalAlignment<T extends Component> {
    * Enum which represents the text alignment of a component.
    */
   enum Alignment {
-    LEFT(8192), MIDDLE(16384), RIGHT(32768);
+    LEFT(TextAlignable.ALIGN_LEFT), MIDDLE(TextAlignable.ALIGN_CENTER), RIGHT(
+        TextAlignable.ALIGN_RIGHT);
 
     private final int value;
 
