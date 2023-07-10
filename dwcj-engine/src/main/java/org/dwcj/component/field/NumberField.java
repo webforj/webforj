@@ -5,6 +5,7 @@ import org.dwcj.component.HasMax;
 import org.dwcj.component.HasMin;
 import org.dwcj.component.HasPlaceholder;
 import org.dwcj.component.HighlightableOnFocus;
+import org.dwcj.component.HorizontalAlignment;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -18,9 +19,9 @@ import org.dwcj.component.HighlightableOnFocus;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class NumberField extends AbstractField<NumberField, Double>
-    implements HasMin<NumberField, Double>, HasMax<NumberField, Double>,
-    HasPlaceholder<NumberField>, HighlightableOnFocus<NumberField> {
+public final class NumberField extends AbstractField<NumberField, Double> implements
+    HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
+    HighlightableOnFocus<NumberField>, HorizontalAlignment<NumberField> {
 
   private Double min = null;
   private Double max = null;
@@ -118,9 +119,8 @@ public final class NumberField extends AbstractField<NumberField, Double>
   }
 
   /**
-   * Specifies the granularity that the value must adhere. This effect is only
-   * applicable when using the arrow keys to modify a value, and not for direct
-   * numeric input into the component itself.
+   * Specifies the granularity that the value must adhere. This effect is only applicable when using
+   * the arrow keys to modify a value, and not for direct numeric input into the component itself.
    *
    * @param step the step value for the granularity. If null, then no rules are forced.
    * @return the component
@@ -167,6 +167,16 @@ public final class NumberField extends AbstractField<NumberField, Double>
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
+  public NumberField setHighlightOnFocus(Behavior highlight) {
+    setComponentHighlightOnFocus(highlight);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public Behavior getHighlightOnFocus() {
     return getComponentHighlightOnFocus();
   }
@@ -176,8 +186,17 @@ public final class NumberField extends AbstractField<NumberField, Double>
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public NumberField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
+  public NumberField setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 }

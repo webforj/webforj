@@ -7,6 +7,7 @@ import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.HasMaxLength;
 import org.dwcj.component.HasMinLength;
 import org.dwcj.component.HighlightableOnFocus;
+import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.SelectionRange;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -17,7 +18,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.02
  */
 abstract class AbstractTextField<T extends AbstractTextField<T>> extends AbstractField<T, String>
-    implements HasMinLength<T>, HasMaxLength<T>, HighlightableOnFocus<T> {
+    implements HasMinLength<T>, HasMaxLength<T>, HighlightableOnFocus<T>, HorizontalAlignment<T> {
 
   private int minLength = 0;
   private int maxLength = 524288;
@@ -170,6 +171,25 @@ abstract class AbstractTextField<T extends AbstractTextField<T>> extends Abstrac
   public T setHighlightOnFocus(Behavior highlight) {
     setComponentHighlightOnFocus(highlight);
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public T setHorizontalAlignment(Alignment alignment) {
+    setComponentHorizontalAlignment(alignment);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Alignment getHorizontalAlignment() {
+    return getComponentHorizontalAlignment();
   }
 
   /**
