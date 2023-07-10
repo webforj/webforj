@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class TextFieldTest {
+class TextFieldTest {
 
   @Mock
   BBjEditBox control;

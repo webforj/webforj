@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class TimeFieldTest {
+class TimeFieldTest {
 
   @Mock
   BBjEditBox control;
