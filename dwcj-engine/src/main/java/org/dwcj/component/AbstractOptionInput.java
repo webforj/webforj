@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.CheckedEvent;
+import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
@@ -13,16 +13,16 @@ import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.ToggleEvent;
-import org.dwcj.component.event.UncheckedEvent;
+import org.dwcj.component.event.UncheckEvent;
 import org.dwcj.component.event.sink.BlurEventSink;
-import org.dwcj.component.event.sink.CheckedEventSink;
+import org.dwcj.component.event.sink.CheckEventSink;
 import org.dwcj.component.event.sink.EventSinkListenerRegistry;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.event.sink.ToggleEventSink;
-import org.dwcj.component.event.sink.UncheckedEventSink;
+import org.dwcj.component.event.sink.UncheckEventSink;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -43,11 +43,10 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
   private boolean checked = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();
-  private EventSinkListenerRegistry<CheckedEvent> checkEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new CheckedEventSink(this, dispatcher), CheckedEvent.class);
-  private EventSinkListenerRegistry<UncheckedEvent> uncheckEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new UncheckedEventSink(this, dispatcher),
-          UncheckedEvent.class);
+  private EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new CheckEventSink(this, dispatcher), CheckEvent.class);
+  private EventSinkListenerRegistry<UncheckEvent> uncheckEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new UncheckEventSink(this, dispatcher), UncheckEvent.class);
   private EventSinkListenerRegistry<ToggleEvent> toggleEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ToggleEventSink(this, dispatcher), ToggleEvent.class);
   private EventSinkListenerRegistry<FocusEvent> focusEventSinkListenerRegistry =
@@ -332,12 +331,12 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
   }
 
   /**
-   * Add a {@link CheckedEvent} listener to the component.
+   * Add a {@link CheckEvent} listener to the component.
    *
    * @param listener the event listener to be added
    * @return The component itself
    */
-  public T addCheckListener(EventListener<CheckedEvent> listener) {
+  public T addCheckListener(EventListener<CheckEvent> listener) {
     this.checkEventSinkListenerRegistry.addEventListener(listener);
     return getSelf();
   }
@@ -350,28 +349,28 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
    *
    * @see AbstractOptionInputTest#addCheckListener(EventListener)
    */
-  public T onCheck(EventListener<CheckedEvent> listener) {
+  public T onCheck(EventListener<CheckEvent> listener) {
     return addCheckListener(listener);
   }
 
   /**
-   * Remove a {@link CheckedEvent} listener from the component.
+   * Remove a {@link CheckEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public T removeCheckListener(EventListener<CheckedEvent> listener) {
+  public T removeCheckListener(EventListener<CheckEvent> listener) {
     this.checkEventSinkListenerRegistry.removeEventListener(listener);
     return getSelf();
   }
 
   /**
-   * Add an {@link UncheckedEvent} listener for the component.
+   * Add an {@link UncheckEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return The component itself
    */
-  public T addUncheckListener(EventListener<UncheckedEvent> listener) {
+  public T addUncheckListener(EventListener<UncheckEvent> listener) {
     this.uncheckEventSinkListenerRegistry.addEventListener(listener);
 
     return getSelf();
@@ -385,17 +384,17 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
    *
    * @see AbstractOptionInputTest#addUncheckListener(EventListener)
    */
-  public T onUncheck(EventListener<UncheckedEvent> listener) {
+  public T onUncheck(EventListener<UncheckEvent> listener) {
     return addUncheckListener(listener);
   }
 
   /**
-   * Remove an {@link UncheckedEvent} listener from the component.
+   * Remove an {@link UncheckEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public T removeUncheckListener(EventListener<UncheckedEvent> listener) {
+  public T removeUncheckListener(EventListener<UncheckEvent> listener) {
     this.uncheckEventSinkListenerRegistry.removeEventListener(listener);
 
     return getSelf();

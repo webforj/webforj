@@ -21,7 +21,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dwcj.component.TextPosition.Position;
 import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.CheckedEvent;
+import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.FocusEvent;
@@ -29,7 +29,7 @@ import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.ToggleEvent;
-import org.dwcj.component.event.UncheckedEvent;
+import org.dwcj.component.event.UncheckEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -187,9 +187,9 @@ public class AbstractOptionInputTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      EventListener<CheckedEvent> checkedListener = event -> {
+      EventListener<CheckEvent> checkListener = event -> {
       };
-      EventListener<UncheckedEvent> uncheckedListener = event -> {
+      EventListener<UncheckEvent> uncheckListener = event -> {
       };
       EventListener<ToggleEvent> toggleListener = event -> {
       };
@@ -204,8 +204,8 @@ public class AbstractOptionInputTest {
       EventListener<RightMouseDownEvent> rightMouseDownListener = event -> {
       };
 
-      component.onCheck(checkedListener);
-      component.onUncheck(uncheckedListener);
+      component.onCheck(checkListener);
+      component.onUncheck(uncheckListener);
       component.onToggle(toggleListener);
       component.onFocus(focusListener);
       component.onBlur(blurListener);
@@ -215,8 +215,8 @@ public class AbstractOptionInputTest {
 
       EventDispatcher dispatcher = component.getEventDispatcher();
 
-      assertEquals(1, dispatcher.getListenersCount(CheckedEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(UncheckedEvent.class));
+      assertEquals(1, dispatcher.getListenersCount(CheckEvent.class));
+      assertEquals(1, dispatcher.getListenersCount(UncheckEvent.class));
       assertEquals(1, dispatcher.getListenersCount(ToggleEvent.class));
       assertEquals(1, dispatcher.getListenersCount(FocusEvent.class));
       assertEquals(1, dispatcher.getListenersCount(BlurEvent.class));
@@ -224,8 +224,8 @@ public class AbstractOptionInputTest {
       assertEquals(1, dispatcher.getListenersCount(MouseExitEvent.class));
       assertEquals(1, dispatcher.getListenersCount(RightMouseDownEvent.class));
 
-      component.removeCheckListener(checkedListener);
-      component.removeUncheckListener(uncheckedListener);
+      component.removeCheckListener(checkListener);
+      component.removeUncheckListener(uncheckListener);
       component.removeToggleListener(toggleListener);
       component.removeFocusListener(focusListener);
       component.removeBlurListener(blurListener);
@@ -233,8 +233,8 @@ public class AbstractOptionInputTest {
       component.removeMouseExitListener(mouseExitListener);
       component.removeRightMouseDownListener(rightMouseDownListener);
 
-      assertEquals(0, dispatcher.getListenersCount(CheckedEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(UncheckedEvent.class));
+      assertEquals(0, dispatcher.getListenersCount(CheckEvent.class));
+      assertEquals(0, dispatcher.getListenersCount(UncheckEvent.class));
       assertEquals(0, dispatcher.getListenersCount(ToggleEvent.class));
       assertEquals(0, dispatcher.getListenersCount(FocusEvent.class));
       assertEquals(0, dispatcher.getListenersCount(BlurEvent.class));

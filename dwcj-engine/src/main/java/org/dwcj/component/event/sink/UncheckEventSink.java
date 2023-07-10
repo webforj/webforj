@@ -5,25 +5,25 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.UncheckedEvent;
+import org.dwcj.component.event.UncheckEvent;
 
 /**
- * This class will map the BBjCheckOffEvent event to a Java {@link UncheckedEvent}.
+ * This class will map the BBjCheckOffEvent event to a Java {@link UncheckEvent}.
  */
-public class UncheckedEventSink extends AbstractEventSink {
+public class UncheckEventSink extends AbstractEventSink {
 
-  public UncheckedEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public UncheckEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_OFF);
   }
 
   /**
-   * Handles the BBj event and dispatches a new {@link UncheckedEvent}.
+   * Handles the BBj event and dispatches a new {@link UncheckEvent}.
    *
    * @param ev A BBj check off event
    */
   public void handleEvent(BBjEvent ev) {
     HashMap<String, Object> map = new HashMap<>();
-    UncheckedEvent dwcEv = new UncheckedEvent(this.getComponent(), map);
+    UncheckEvent dwcEv = new UncheckEvent(this.getComponent(), map);
     this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }
