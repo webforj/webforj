@@ -1,6 +1,7 @@
 # The Dynamic Web Client for Java
 <p>
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DwcJava_engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DwcJava_engine)
 [![Java Tests & Coverage](https://github.com/DwcJava/engine/actions/workflows/maven-test.yml/badge.svg?branch=main)](https://github.com/DwcJava/engine/actions/workflows/maven-test.yml)
 [![Publish Snapshot](https://github.com/DwcJava/engine/actions/workflows/maven-publish.yml/badge.svg?branch=main)](https://github.com/DwcJava/engine/actions/workflows/maven-snapshot.yml)
 [![reviewdog](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml)
