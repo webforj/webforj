@@ -8,6 +8,6 @@ import org.dwcj.component.Component;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public interface DwcjFieldComponent extends Component{
+public interface DwcjFieldComponent extends Component {
 
 }
