@@ -73,6 +73,7 @@ public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFo
     super();
     setText(text);
     setChecked(checked);
+    setExpanse(Expanse.MEDIUM);
   }
 
   /**
