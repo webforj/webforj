@@ -23,6 +23,7 @@ public final class Button extends AbstractButton<Button> {
    * @param onClickListener the listener to be called when the button is clicked
    */
   public Button(String text, EventListener<ButtonClickEvent> onClickListener) {
+    super();
     setText(text);
     addClickListener(onClickListener);
   }
@@ -33,6 +34,7 @@ public final class Button extends AbstractButton<Button> {
    * @param text the text of the button
    */
   public Button(String text) {
+    super();
     setText(text);
   }
 

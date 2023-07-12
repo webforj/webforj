@@ -8,6 +8,7 @@ import org.dwcj.component.Expanse;
 import org.dwcj.component.HasEnable;
 import org.dwcj.component.HasExpanse;
 import org.dwcj.component.HasFocus;
+import org.dwcj.component.HasTheme;
 import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.TabTraversable;
 import org.dwcj.component.button.event.ButtonClickEvent;
@@ -34,8 +35,8 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.02
  */
 abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTraversable & HasEnable>
-    extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, HasEnable, HasExpanse<T, Expanse>, HorizontalAlignment<T> {
+    extends AbstractDwcComponent implements HasFocus, TabTraversable, HasEnable,
+    HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HorizontalAlignment<T> {
   private boolean disableOnClick = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();
@@ -55,6 +56,12 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
   private EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new RightMouseDownEventSink(this, dispatcher),
           RightMouseDownEvent.class);
+
+
+  protected AbstractButton() {
+    super();
+    setExpanse(Expanse.MEDIUM);
+  }
 
   /**
    * {@inheritDoc}
@@ -122,10 +129,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
   }
 
   /**
-   * Sets the expanse for the component.
-   *
-   * @param expanse The component expanse
-   * @return The component itself
+   * {@inheritDoc}
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
@@ -135,14 +139,31 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
   }
 
   /**
-   * Get the expanse of the component.
-   *
-   * @return The expanse for the component.
+   * {@inheritDoc}
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
   public Expanse getExpanse() {
     return (Expanse) getComponentExpanse();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public T setTheme(ButtonTheme theme) {
+    setComponentTheme(theme);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public ButtonTheme getTheme() {
+    return (ButtonTheme) getComponentTheme();
   }
 
   /**
