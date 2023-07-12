@@ -1,37 +1,40 @@
 package org.dwcj.component.button.event;
 
 import java.util.Map;
-import org.dwcj.component.button.Button;
+import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.Event;
 
 /**
- * A push, or click, event for the Button class.
+ * An event which fired when the user clicks on a button.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.02
  */
-public class ButtonClickEvent extends Event<Button> {
+public class ButtonClickEvent extends Event<AbstractDwcComponent> {
 
   /**
    * Creates a new event.
    *
-   * @param component the component
+   * @param abstractDwcComponent the component
    * @param payload the event map
    */
-  public ButtonClickEvent(Button component, Map<String, Object> payload) {
-    super(component, payload);
+  public ButtonClickEvent(AbstractDwcComponent abstractDwcComponent, Map<String, Object> payload) {
+    super(abstractDwcComponent, payload);
   }
 
   /**
-   * Getter for the x coordinate.
+   * Get the X location of the mouse within the button when the event occurred.
    *
-   * @return the x coordinate
+   * @return the X location of the mouse within the button.
    */
   public double getX() {
     return (double) this.getEventMap().get("x");
   }
 
   /**
-   * Getter for the y coordinate.
+   * Get the Y location of the mouse within the button when the event occurred.
    *
-   * @return the y coordinate
+   * @return the Y location of the mouse within the button.
    */
   public double getY() {
     return (double) this.getEventMap().get("y");

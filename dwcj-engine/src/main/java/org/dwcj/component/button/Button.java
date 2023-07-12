@@ -1,450 +1,61 @@
 package org.dwcj.component.button;
 
-import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
-import org.dwcj.Environment;
-import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
-import org.dwcj.component.label.Label;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-
 /**
- * A Push Button.
+ * An implementation of a "push" button.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.02
  */
-public final class Button extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, HorizontalAlignment<Button>, HasEnable {
-
-
-
-  /*
-   * =====================================================================================
-   * Initialize the enums for Expanse and Theme if applicable to the control.
-   * =====================================================================================
-   */
+public final class Button extends AbstractButton<Button> {
 
   /**
-   * Expanse options for the Button component.
-   */
-  public enum Expanse {
-    LARGE, MEDIUM, SMALL, XLARGE, XSMALL;
-  }
-
-  /**
-   * Theme options for the Button component.
-   */
-  public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, PRIMARY, SUCCESS, WARNING, OUTLINED_DANGER, OUTLINED_DEFAULT, OUTLINED_GRAY, OUTLINED_INFO, OUTLINED_SUCCESS, OUTLINED_PRIMARY, OUTLINED_WARNING
-  }
-
-
-
-  /*
-   * ===================================================================================== If a
-   * control has BBj integer constants, create an enum with parameterized constructors that
-   * correspond to these numeric constants in BBj.
-   * =====================================================================================
-   */
-
-  /**
-   * Vertical alignment options for the Button component.
-   */
-  public enum TextVerticalAlignment {
-    TOP(1), CENTER(0), BOTTOM(3);
-
-    public final Integer alignment;
-
-    private TextVerticalAlignment(Integer alignment) {
-      this.alignment = alignment;
-    }
-  }
-
-
-
-  /*
-   * ===================================================================================== Create a
-   * member variable of the BBj component, casted from this.ctrl. Initialize any other
-   * control-specific events or member variables as needed. These extra member variables should be
-   * listed in the BBj documentation for each control.
-   * =====================================================================================
-   */
-
-  private EventDispatcher dispatcher = new EventDispatcher();
-  private ButtonClickEventSink clickEventsSink;
-  private Boolean disableOnClick = false;
-
-  private Expanse expanse = null;
-  private Theme theme = Theme.DEFAULT;
-  private TextVerticalAlignment verticalAlignment = TextVerticalAlignment.CENTER;
-
-
-
-  /*
-   * ===================================================================================== This
-   * first section implements parameterized constructors, overrides the create() method, and
-   * implements methods for the control-specific behaviors, which often include getters and setters
-   * for control-specific member variables and/or functionality. Constructors initialize the
-   * inherited interface member variables.
-   * =====================================================================================
-   */
-
-  public Button() {
-    this("");
-    setComponentDefaultHorizontalAlignment(Alignment.MIDDLE);
-  }
-
-  /**
-   * Parameterized button constructor, accepts a string as an argument which will be the initial
-   * text displayed on the button.
+   * Construct the button with the given text.
    *
-   * @param text String value for initial button text
+   * @param text the text of the button
+   * @param onClickListener the listener to be called when the button is clicked
+   */
+  public Button(String text, EventListener<ButtonClickEvent> onClickListener) {
+    setText(text);
+    addClickListener(onClickListener);
+  }
+
+  /**
+   * Construct the button with the given text.
+   *
+   * @param text the text of the button
    */
   public Button(String text) {
-    super.setText(text);
-    this.tabTraversable = true;
+    setText(text);
   }
 
-  @Override
-  protected void create(AbstractWindow p) {
+  /**
+   * Construct the button with the given text.
+   */
+  public Button() {
+    this("");
+  }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void create(AbstractWindow window) {
     try {
-      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
+      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      control = w.addButton(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_1, super.getText(), flags);
-      this.clickEventsSink = new ButtonClickEventSink(this, dispatcher);
+      setControl(w.addButton(getText(), flags));
       catchUp();
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Failed to create the BBjButton Control", e);
     }
   }
-
-  /**
-   * Adds a click event for the Button component.
-   *
-   * @param listener The event
-   * @return The component itself
-   */
-  public Button addClickListener(EventListener<ButtonClickEvent> listener) {
-    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
-      this.clickEventsSink.setCallback();
-    }
-    dispatcher.addEventListener(ButtonClickEvent.class, listener);
-    return this;
-  }
-
-  /**
-   * Alias for the addClickEvent method.
-   *
-   * @see Button#removeClickEvent(EventListener)
-   * @param listener A method to receive the click event
-   * @return the control itself
-   */
-
-  public Button onClick(EventListener<ButtonClickEvent> listener) {
-    return addClickListener(listener);
-  }
-
-  /**
-   * Removes a click event from the Button component.
-   *
-   * @param listener The event to be removed
-   * @return The component itself
-   */
-  public Button removeClickListener(EventListener<ButtonClickEvent> listener) {
-    dispatcher.removeEventListener(ButtonClickEvent.class, listener);
-    if (this.control != null && this.dispatcher.getListenersCount(ButtonClickEvent.class) == 0) {
-      this.clickEventsSink.removeCallback();
-    }
-    return this;
-  }
-
-  /**
-   * Accessor for whether or not the button is disabled.
-   *
-   * @return Boolean value
-   */
-  public Boolean isDisableOnClick() {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).getDisableOnClick();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.disableOnClick;
-  }
-
-  /**
-   * Mutator for whether or not the button is disabled on click.
-   *
-   * @param disable Boolean value
-   * @return Instance of the object to enable method chaining.
-   */
-  public Button setDisableOnClick(Boolean disable) {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).setDisableOnClick(disable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.disableOnClick = disable;
-    return this;
-  }
-
-
-  /**
-   * Accessor for the vertical alignment of text within the button.
-   *
-   * @return Enum value of text's vertical alignment
-   */
-  public TextVerticalAlignment getVerticalAlignment() {
-    if (this.control != null) {
-      return this.verticalAlignment;
-    }
-    return this.verticalAlignment;
-  }
-
-  /**
-   * Mutator for the vertical alignment of text within the button.
-   *
-   * @param alignment TextVerticalAlignment enum value
-   * @return The Button itself
-   */
-  public Button setVerticalAlignment(TextVerticalAlignment alignment) {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).setVerticalAlignment(alignment.alignment);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.verticalAlignment = alignment;
-    return this;
-  }
-
-
-  /*
-   * ===================================================================================== This
-   * section overrides the various base class abstract methods in the AbstractDwcjControl class.
-   * These need to be should for method chaining purposes (i.e.
-   * setExample().setExample2().setExample3() ).
-   * =====================================================================================
-   */
-
-  @Override
-  public Button setText(String text) {
-    super.setText(text);
-    return this;
-  }
-
-  @Override
-  public Button setVisible(Boolean visible) {
-    super.setVisible(visible);
-    return this;
-  }
-
-  @Override
-  public Button setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
-    return this;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
-  }
-
-  @Override
-  public Button setTooltipText(String text) {
-    super.setTooltipText(text);
-    return this;
-  }
-
-  @Override
-  public Button setAttribute(String attribute, String value) {
-    super.setAttribute(attribute, value);
-    return this;
-  }
-
-  @Override
-  public Button setStyle(String property, String value) {
-    super.setStyle(property, value);
-    return this;
-  }
-
-  @Override
-  public Button addClassName(String selector) {
-    super.addClassName(selector);
-    return this;
-  }
-
-  @Override
-  public Button removeClassName(String selector) {
-    super.removeClassName(selector);
-    return this;
-  }
-
-
-
-  /*
-   * ===================================================================================== If Themes
-   * or Expanses are applicable for this control (if they have had Enums implemented for their
-   * respective options), create the methods to set these by calling the super method and returning
-   * this for chaining.
-   * =====================================================================================
-   */
-
-  /**
-   * Accessor to return the button object's current expanse.
-   *
-   * @return Expanse enum from the button class
-   */
-  public Expanse getExpanse() {
-    return this.expanse;
-  }
-
-  /**
-   * Mutator to change the expanse of a button that requires a specific button enum value.
-   *
-   * @param expanse button expanse enum value
-   * @return The button object itself
-   */
-  public Button setExpanse(Expanse expanse) {
-    super.setControlExpanse(expanse);
-    return this;
-  }
-
-  /**
-   * Accessor to return the button object's current theme.
-   *
-   * @return Expanse enum from the button class
-   */
-  public Theme getTheme() {
-    return this.theme;
-  }
-
-  /**
-   * Mutator to change the theme of a button that requires a specific button enum value.
-   *
-   * @param theme button theme enum value
-   * @return The button object itself
-   */
-  public Button setTheme(Theme theme) {
-    super.setControlTheme(theme);
-    return this;
-  }
-
-
-
-  /*
-   * ===================================================================================== Ensure
-   * that any interfaces which are applicable to the control have their methods overridden.
-   * =====================================================================================
-   */
-
-  @Override
-  public Button focus() {
-    super.focusComponent();
-    return this;
-  }
-
-
-  @Override
-  public Boolean isTabTraversable() {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).isTabTraversable();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.tabTraversable;
-  }
-
-  @Override
-  public Button setTabTraversable(Boolean traversable) {
-    if (this.control != null) {
-      try {
-        ((BBjButton) control).setTabTraversable(traversable);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.tabTraversable = traversable;
-    return this;
-  }
-
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Button setHorizontalAlignment(Alignment alignment) {
-    setComponentHorizontalAlignment(alignment);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public Alignment getHorizontalAlignment() {
-    return getComponentHorizontalAlignment();
-  }
-
-
-  /*
-   * ===================================================================================== Finally,
-   * override the catchUp() method - this is done by calling the super method, and then catching up
-   * any control-specific member variables and/or interface variables for this control.
-   * =====================================================================================
-   */
-
-  @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity, it's just a batch list of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-
-    super.catchUp();
-
-    if (this.dispatcher.getListenersCount(ButtonClickEvent.class) > 0) {
-      this.clickEventsSink.setCallback();
-    }
-
-    if (Boolean.TRUE.equals(this.disableOnClick)) {
-      this.setDisableOnClick(this.disableOnClick);
-    }
-
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.expanse != null) {
-      this.setExpanse(this.expanse);
-    }
-
-    if (this.theme != Theme.DEFAULT) {
-      this.setTheme(this.theme);
-    }
-
-  }
-
 }
