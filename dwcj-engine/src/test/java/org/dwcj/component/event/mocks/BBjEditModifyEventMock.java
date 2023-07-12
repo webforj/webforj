@@ -7,6 +7,7 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjInputN;
+import com.basis.bbj.proxies.sysgui.BBjInputT;
 import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import com.basis.startup.type.BBjException;
 
@@ -52,6 +53,11 @@ public class BBjEditModifyEventMock implements BBjEditModifyEvent {
 
   @Override
   public BBjInputN getInputN() throws BBjException {
+    return null;
+  }
+
+  @Override
+  public BBjInputT getInputT() throws BBjException {
     return null;
   }
 
