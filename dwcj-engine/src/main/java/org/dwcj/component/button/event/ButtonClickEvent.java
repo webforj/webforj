@@ -5,7 +5,7 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.Event;
 
 /**
- * An event which fired when the user clicks on a button.
+ * An event which is fired when the user clicks on a button.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
