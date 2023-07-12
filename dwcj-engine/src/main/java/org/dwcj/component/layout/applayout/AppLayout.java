@@ -1,12 +1,12 @@
-package org.dwcj.component.applayout;
+package org.dwcj.component.layout.applayout;
 
 import org.dwcj.component.HasAttribute;
 import org.dwcj.component.HasClassName;
 import org.dwcj.component.HasStyle;
 import org.dwcj.component.HasVisibility;
-import org.dwcj.component.applayout.event.AppLayoutDrawerCloseEvent;
-import org.dwcj.component.applayout.event.AppLayoutDrawerOpenEvent;
 import org.dwcj.component.event.EventListener;
+import org.dwcj.component.layout.applayout.event.AppLayoutDrawerCloseEvent;
+import org.dwcj.component.layout.applayout.event.AppLayoutDrawerOpenEvent;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeAttribute;

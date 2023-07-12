@@ -1,4 +1,4 @@
-package org.dwcj.component.flexlayout;
+package org.dwcj.component.layout.flexlayout;
 
 /**
  * Enum with possible values for the way the space inside the layout is distributed between and

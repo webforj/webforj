@@ -1,4 +1,4 @@
-package org.dwcj.component.flexlayout;
+package org.dwcj.component.layout.flexlayout;
 
 /**
  * Enum with the possible to set the distribution of space between and around content items along a

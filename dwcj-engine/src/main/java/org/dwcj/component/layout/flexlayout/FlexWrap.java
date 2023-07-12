@@ -1,4 +1,4 @@
-package org.dwcj.component.flexlayout;
+package org.dwcj.component.layout.flexlayout;
 
 /**
  * The flex-wrap property specifies whether the flex items are forced in a single line or can be

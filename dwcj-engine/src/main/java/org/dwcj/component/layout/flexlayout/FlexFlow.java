@@ -1,4 +1,4 @@
-package org.dwcj.component.flexlayout;
+package org.dwcj.component.layout.flexlayout;
 
 /**
  * The flex-flow property is a shorthand property for the flex-direction and flex-wrap properties.

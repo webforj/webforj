@@ -1,4 +1,4 @@
-package org.dwcj.component.flexlayout;
+package org.dwcj.component.layout.flexlayout;
 
 import java.util.Optional;
 import org.dwcj.component.AbstractComponent;
