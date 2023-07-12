@@ -6,7 +6,8 @@ import java.util.List;
 import org.dwcj.component.window.AbstractWindow;
 
 public class AbstractDwcComponentMock extends AbstractDwcComponent
-    implements HasExpanse<AbstractDwcComponentMock, Expanse>, HasReadOnly,
+    implements HasExpanse<AbstractDwcComponentMock, Expanse>,
+    HasTheme<AbstractDwcComponentMock, Theme>, HasReadOnly,
     HighlightableOnFocus<AbstractDwcComponentMock>, HorizontalAlignment<AbstractDwcComponentMock> {
 
   @Override
@@ -18,6 +19,17 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
   @Override
   public Expanse getExpanse() {
     return (Expanse) getComponentExpanse();
+  }
+
+  @Override
+  public AbstractDwcComponentMock setTheme(Theme theme) {
+    setComponentTheme(theme);
+    return this;
+  }
+
+  @Override
+  public Theme getTheme() {
+    return (Theme) getComponentTheme();
   }
 
   @Override
