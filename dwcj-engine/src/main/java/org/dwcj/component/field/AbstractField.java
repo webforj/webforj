@@ -440,6 +440,13 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & TabTrav
   private boolean spellcheck = false;
 
   /**
+   * Construct a new field.
+   */
+  protected AbstractField() {
+    setExpanse(Expanse.MEDIUM);
+  }
+
+  /**
    * Specify what if any permission the user agent has to provide automated assistance in filling
    * out form field values, as well as guidance to the browser as to the type of information
    * expected in the field.
