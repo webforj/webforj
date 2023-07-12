@@ -5,7 +5,7 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.label.Label;
+import org.dwcj.component.texts.Label;
 import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Panel;
 import org.dwcj.exceptions.DwcjAppInitializeException;

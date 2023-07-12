@@ -1,4 +1,4 @@
-package org.dwcj.component.label;
+package org.dwcj.component.texts;
 
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.bbj.proxies.sysgui.BBjWindow;

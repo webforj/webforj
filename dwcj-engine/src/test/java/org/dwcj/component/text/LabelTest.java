@@ -1,4 +1,4 @@
-package org.dwcj.component.label;
+package org.dwcj.component.text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,6 +20,7 @@ import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.EventSinkListenerRegistry;
+import org.dwcj.component.texts.Label;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

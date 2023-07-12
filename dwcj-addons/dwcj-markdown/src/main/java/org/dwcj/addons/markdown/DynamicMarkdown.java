@@ -2,7 +2,7 @@ package org.dwcj.addons.markdown;
 
 import org.dwcj.component.AbstractComponent;
 import org.dwcj.component.Component;
-import org.dwcj.component.label.Label;
+import org.dwcj.component.texts.Label;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.component.window.Panel;
 
