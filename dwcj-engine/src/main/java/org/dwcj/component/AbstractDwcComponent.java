@@ -52,6 +52,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private HighlightableOnFocus.Behavior highlightOnFocus =
       HighlightableOnFocus.Behavior.FOCUS_OR_KEY;
   private Enum<? extends ExpanseBase> componentExpanse = null;
+  private Enum<? extends ThemeBase> componentTheme = null;
   private HorizontalAlignment.Alignment horizontalAlignment = null;
   private HorizontalAlignment.Alignment defaultHorizontalAlignment = null;
 
@@ -797,12 +798,36 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   }
 
   /**
+   * Sets the theme for the component.
+   *
+   * @param expanse The component theme
+   * @since 23.02
+   */
+  protected <V extends Enum<V> & ThemeBase> void setComponentTheme(V theme) {
+    this.componentTheme = theme;
+    setUnrestrictedProperty("theme", theme.getValue());
+  }
+
+  /**
+   * Get the theme of the component.
+   *
+   * @return The theme for the component.
+   * @since 23.02
+   */
+  protected Enum<? extends ThemeBase> getComponentTheme() {
+    return this.componentTheme;
+  }
+
+  /**
    * Implementation to allow child components to utilize base class Theme setters with their own
    * option-appropriate Enums.
    *
    * @param theme Component-specific theme value
+   *
+   * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
+   *             {@link #setComponentTheme(Enum)} instead.
    */
-
+  @Deprecated
   protected void setControlTheme(Enum<?> theme) {
     if (control != null) {
       try {

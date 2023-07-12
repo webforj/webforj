@@ -18,7 +18,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.dwcj.component.HighlightableOnFocus.Behavior;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -65,6 +64,22 @@ public class AbstractDwcComponentTest {
 
       verify(control, times(1)).putClientProperty("expanse", expanse.getValue());
       verify(control, times(0)).getClientProperty("expanse");
+    }
+  }
+
+  @Nested
+  @DisplayName("Theme API")
+  class ThemeApi {
+
+    @ParameterizedTest
+    @EnumSource(Theme.class)
+    @DisplayName("Setting/getting theme")
+    void settingGettingExpanse(Theme theme) throws BBjException {
+      component.setTheme(theme);
+      assertSame(component.getTheme(), theme);
+
+      verify(control, times(1)).putClientProperty("theme", theme.getValue());
+      verify(control, times(0)).getClientProperty("theme");
     }
   }
 
