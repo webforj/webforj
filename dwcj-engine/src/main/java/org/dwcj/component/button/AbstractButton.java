@@ -188,7 +188,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
   }
 
   /**
-   * Set whether should be immediately disabled when the user clicks it.
+   * Set whether the button should be immediately disabled when the user clicks it.
    *
    * @param disableOnClick {@code true} to disable the button when the user clicks it
    *
