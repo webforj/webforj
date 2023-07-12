@@ -2,6 +2,8 @@ package org.dwcj.component.button;
 
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.startup.type.BBjException;
+import java.util.Arrays;
+import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Expanse;
@@ -532,6 +534,19 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
     this.rightMouseDownEventSinkListenerRegistry.removeEventListener(listener);
 
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autofocus", "disabled", "distance", "dropdownButtonWidth",
+        "expanse", "hasFocus", "label", "name", "selected", "skidding", "tabTraversable", "theme",
+        "toggleable", "value"));
+
+    return properties;
   }
 
   /**
