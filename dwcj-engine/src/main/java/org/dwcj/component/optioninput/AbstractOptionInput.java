@@ -1,9 +1,16 @@
-package org.dwcj.component;
+package org.dwcj.component.optioninput;
 
 import com.basis.bbj.proxies.sysgui.BBjToggleButton;
 import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
+import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.Expanse;
+import org.dwcj.component.HasEnable;
+import org.dwcj.component.HasExpanse;
+import org.dwcj.component.HasFocus;
+import org.dwcj.component.TabTraversable;
+import org.dwcj.component.TextPosition;
 import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.EventDispatcher;
@@ -35,7 +42,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & TabTraversable & TextPosition & HasEnable>
+abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & TabTraversable & TextPosition & HasEnable>
     extends AbstractDwcComponent
     implements HasFocus, TabTraversable, TextPosition, HasEnable, HasExpanse<T, Expanse> {
 

@@ -1,11 +1,10 @@
-package org.dwcj.component.checkbox;
+package org.dwcj.component.optioninput;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractOptionInput;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;

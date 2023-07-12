@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton;
+package org.dwcj.component.optioninput;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

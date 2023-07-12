@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton.sink;
+package org.dwcj.component.optioninput.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjSelectionChangeEvent;
@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.radiobutton.RadioButton;
-import org.dwcj.component.radiobutton.RadioButtonGroup;
-import org.dwcj.component.radiobutton.event.RadioButtonGroupChangeEvent;
+import org.dwcj.component.optioninput.RadioButton;
+import org.dwcj.component.optioninput.RadioButtonGroup;
+import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;
 
 /**
  * RadioButtonGroupChangeSink maps the BBjSelectionChangeEvent event to the Java

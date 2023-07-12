@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton.sink;
+package org.dwcj.component.optioninput.sink;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -9,9 +9,9 @@ import com.basis.bbj.proxies.event.BBjSelectionChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.startup.type.BBjException;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.radiobutton.RadioButton;
-import org.dwcj.component.radiobutton.RadioButtonGroup;
-import org.dwcj.component.radiobutton.event.RadioButtonGroupChangeEvent;
+import org.dwcj.component.optioninput.RadioButton;
+import org.dwcj.component.optioninput.RadioButtonGroup;
+import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

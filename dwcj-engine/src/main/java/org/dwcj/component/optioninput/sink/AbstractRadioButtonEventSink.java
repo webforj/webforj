@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton.sink;
+package org.dwcj.component.optioninput.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
@@ -8,7 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.sink.EventSinkInterface;
-import org.dwcj.component.radiobutton.RadioButtonGroup;
+import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**

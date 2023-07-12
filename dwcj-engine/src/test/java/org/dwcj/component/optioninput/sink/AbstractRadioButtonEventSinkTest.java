@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton.sink;
+package org.dwcj.component.optioninput.sink;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,8 +12,8 @@ import com.basis.startup.type.BBjException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.mocks.DwcHelperMock;
-import org.dwcj.component.radiobutton.RadioButtonGroup;
-import org.dwcj.component.radiobutton.mocks.RadioButtonEventSinkMock;
+import org.dwcj.component.optioninput.RadioButtonGroup;
+import org.dwcj.component.optioninput.mocks.RadioButtonEventSinkMock;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

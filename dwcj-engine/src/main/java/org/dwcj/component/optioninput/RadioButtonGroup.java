@@ -1,4 +1,4 @@
-package org.dwcj.component.radiobutton;
+package org.dwcj.component.optioninput;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
@@ -17,8 +17,8 @@ import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.sink.EventSinkListenerRegistry;
-import org.dwcj.component.radiobutton.event.RadioButtonGroupChangeEvent;
-import org.dwcj.component.radiobutton.sink.RadioButtonGroupChangeSink;
+import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;
+import org.dwcj.component.optioninput.sink.RadioButtonGroupChangeSink;
 import org.dwcj.component.window.AbstractWindow;
 import org.dwcj.exceptions.DwcjRuntimeException;
 

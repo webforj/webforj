@@ -1,4 +1,4 @@
-package org.dwcj.component.checkbox;
+package org.dwcj.component.optioninput;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;

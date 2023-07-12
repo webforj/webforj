@@ -1,9 +1,9 @@
-package org.dwcj.component.radiobutton.event;
+package org.dwcj.component.optioninput.event;
 
 import java.util.Map;
 import org.dwcj.component.event.Event;
-import org.dwcj.component.radiobutton.RadioButton;
-import org.dwcj.component.radiobutton.RadioButtonGroup;
+import org.dwcj.component.optioninput.RadioButton;
+import org.dwcj.component.optioninput.RadioButtonGroup;
 
 /**
  * An event that is fired when the radio button group changes selection.
