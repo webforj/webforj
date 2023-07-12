@@ -827,6 +827,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @deprecated The method is deprecated since v23.02 and will be removed in future versions. Use
    *             {@link #setComponentTheme(Enum)} instead.
    */
+  @Deprecated
   protected void setControlTheme(Enum<?> theme) {
     if (control != null) {
       try {
