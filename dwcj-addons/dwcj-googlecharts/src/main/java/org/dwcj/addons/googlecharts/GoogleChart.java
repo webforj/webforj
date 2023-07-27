@@ -302,8 +302,6 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   /**
    * Set the options to use when displaying the chart.
    *
-   * <p>
-   *
    * <pre>
    * {@code
    * JsonArray options = new JsonArray();
@@ -324,6 +322,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * }
    * </pre>
    *
+   * <p>
    * For more information on the options available, see the
    * <a href="https://developers.google.com/chart/interactive/docs/gallery">Google Visualization API
    * reference (Chart Gallery)</a>.
