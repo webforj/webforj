@@ -9,14 +9,21 @@ package org.dwcj.component;
 public enum Expanse implements ExpanseBase {
   /* The xlarge expanse as defined by the BBj Theme Engine. */
   XLARGE("xl"),
+
   /* The large expanse as defined by the BBj Theme Engine. */
   LARGE("l"),
+
   /* The medium expanse as defined by the BBj Theme Engine. */
   MEDIUM("m"),
+
   /* The small expanse as defined by the BBj Theme Engine. */
   SMALL("s"),
+
   /* The xsmall expanse as defined by the BBj Theme Engine. */
-  XSMALL("xs");
+  XSMALL("xs"),
+
+  /* No expanse is applied. */
+  NONE("");
 
   private final String value;
 
