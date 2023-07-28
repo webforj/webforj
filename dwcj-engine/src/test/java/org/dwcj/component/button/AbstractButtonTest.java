@@ -50,6 +50,15 @@ public class AbstractButtonTest {
     MethodUtils.invokeMethod(component, true, "catchUp");
   }
 
+  @Test
+  void testSetGetName() throws BBjException, IllegalAccessException {
+    nullifyControl();
+    assertEquals("", component.getName());
+
+    component.setName("name");
+    assertEquals("name", component.getName());
+  }
+
   @Nested
   @DisplayName("Focus API")
   class FocusApi {
@@ -113,7 +122,6 @@ public class AbstractButtonTest {
       assertThrows(DwcjRuntimeException.class, () -> component.isDisableOnClick());
     }
   }
-
 
   @Nested
   @DisplayName("Events API")

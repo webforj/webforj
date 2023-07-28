@@ -225,6 +225,34 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
   }
 
   /**
+   * Sets the button name which used for accessibility.
+   *
+   * <p>
+   * The name is used for accessibility. When the name is not explicitly set, the label will be 
+   * used by the browser instead. This is useful when the label of the button is only an icon, for
+   * instance.
+   * </p>
+   *
+   * @param name the name of the button
+   * @return the component itself
+   */
+  public T setName(String name) {
+    setUnrestrictedAttribute("name", name);
+    return getSelf();
+  }
+
+  /**
+   * Gets the button name.
+   *
+   * @return the name of the button
+   * @see #setName(String)
+   */
+  public String getName() {
+    String name = getAttribute("name");
+    return name == null ? "" : name;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
