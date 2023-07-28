@@ -9,16 +9,22 @@ package org.dwcj.component;
 public enum Theme implements ThemeBase {
   /* The danger theme as defined by the BBj Theme Engine. */
   DANGER("danger"),
+
   /* The default theme as defined by the BBj Theme Engine. */
   DEFAULT("default"),
+
   /* The gray theme as defined by the BBj Theme Engine. */
   GRAY("gray"),
+
   /* The info theme as defined by the BBj Theme Engine. */
   INFO("info"),
+
   /* The primary theme as defined by the BBj Theme Engine. */
   PRIMARY("primary"),
+
   /* The success theme as defined by the BBj Theme Engine. */
   SUCCESS("success"),
+
   /* The warning theme as defined by the BBj Theme Engine. */
   WARNING("warning");
 
