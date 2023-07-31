@@ -228,8 +228,8 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
    * Sets the button name which used for accessibility.
    *
    * <p>
-   * The name is used for accessibility. When the name is not explicitly set, the label will be 
-   * used by the browser instead. This is useful when the label of the button is only an icon, for
+   * The name is used for accessibility. When the name is not explicitly set, the label will be used
+   * by the browser instead. This is useful when the label of the button is only an icon, for
    * instance.
    * </p>
    *

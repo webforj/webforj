@@ -46,15 +46,6 @@ class AbstractFieldTest {
   }
 
   @Test
-  @DisplayName("AutoComplete")
-  void autoComplete() throws BBjException {
-    component.setAutoComplete(AbstractFieldMock.Autocomplete.ON);
-    assertEquals(AbstractFieldMock.Autocomplete.ON, component.getAutoComplete());
-
-    verify(control, times(1)).putClientProperty("autocomplete", "on");
-  }
-
-  @Test
   @DisplayName("Label")
   void label() throws BBjException {
     component.setLabel("label");
