@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Facilitates implementation of methods which allow for the toggle of read only status on a

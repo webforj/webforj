@@ -2,8 +2,8 @@ package org.dwcj.component.layout.flexlayout;
 
 import java.util.Optional;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.HasStyle;
 import org.dwcj.component.window.Panel;
+import org.dwcj.concern.HasStyle;
 
 /**
  * A flex layout.

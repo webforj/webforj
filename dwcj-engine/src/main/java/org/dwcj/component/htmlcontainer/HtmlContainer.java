@@ -8,9 +8,6 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadEvent;
@@ -19,6 +16,9 @@ import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventS
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadEventSink;
 import java.awt.*;
@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  * A HtmlContainer control
  */
 public final class HtmlContainer extends AbstractDwcComponent
-    implements HasFocus, HasEnable, TabTraversable {
+    implements HasFocus, HasEnable, HasTabTraversal {
 
   private BBjHtmlView bbjHtmlView;
 

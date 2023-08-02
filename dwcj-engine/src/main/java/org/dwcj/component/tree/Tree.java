@@ -8,7 +8,6 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
 import org.dwcj.component.tree.event.TreeCollapseEvent;
 import org.dwcj.component.tree.event.TreeDeselectEvent;
 import org.dwcj.component.tree.event.TreeDoubleClickEvent;
@@ -26,6 +25,7 @@ import org.dwcj.component.tree.sink.TreeFocusEventSink;
 import org.dwcj.component.tree.sink.TreeBlurEventSink;
 import org.dwcj.component.tree.sink.TreeSelectEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
 import org.dwcj.models.Icon;
 
 import java.util.ArrayList;

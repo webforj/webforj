@@ -7,9 +7,9 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.event.WindowClickEvent;
 import org.dwcj.component.window.sink.WindowClickEventSink;
+import org.dwcj.concern.HasEnable;
 
 
 /**

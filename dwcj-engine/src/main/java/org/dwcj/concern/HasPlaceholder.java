@@ -1,4 +1,6 @@
-package org.dwcj.component;
+package org.dwcj.concern;
+
+import org.dwcj.component.Component;
 
 /**
  * Interface facilitates implementation of behaviors to modify a component's placeholder text.

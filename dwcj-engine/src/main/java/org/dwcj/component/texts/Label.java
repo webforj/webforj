@@ -7,7 +7,6 @@ import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.event.MouseEnterEvent;
@@ -18,11 +17,12 @@ import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasHorizontalAlignment;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /** A label object. */
-public final class Label extends AbstractDwcComponent implements HorizontalAlignment<Label> {
+public final class Label extends AbstractDwcComponent implements HasHorizontalAlignment<Label> {
 
   private EventDispatcher dispatcher = new EventDispatcher();
 

@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * The HasProperty interface is used to set and retrieve properties of a component.

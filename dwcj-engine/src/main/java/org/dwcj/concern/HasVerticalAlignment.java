@@ -1,10 +1,12 @@
-package org.dwcj.component;
+package org.dwcj.concern;
+
+import org.dwcj.component.Component;
 
 /**
  * Controls the vertical alignment of the content within the component, namely text and images. It
  * does not alter the position of the entire component itself.
  */
-public interface VerticalAlignment<T extends Component> {
+public interface HasVerticalAlignment<T extends Component> {
 
   /**
    * Enum which represents the text alignment of a component.

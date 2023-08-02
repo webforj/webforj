@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface facilitating implementation of behavior to modify a specific CSS property to a provided

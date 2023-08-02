@@ -7,8 +7,6 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasReadOnly;
 import org.dwcj.component.navigator.event.NavigatorFirstEvent;
 import org.dwcj.component.navigator.event.NavigatorLastEvent;
 import org.dwcj.component.navigator.event.NavigatorNextEvent;
@@ -18,7 +16,8 @@ import org.dwcj.component.navigator.sink.NavLastEventSink;
 import org.dwcj.component.navigator.sink.NavNextEventSink;
 import org.dwcj.component.navigator.sink.NavPreviousEventSink;
 import org.dwcj.component.window.AbstractWindow;
-
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasReadOnly;
 import java.util.function.Consumer;
 
 public final class Navigator extends AbstractDwcComponent implements HasReadOnly {

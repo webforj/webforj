@@ -1,4 +1,6 @@
-package org.dwcj.component;
+package org.dwcj.concern;
+
+import org.dwcj.component.Component;
 
 /**
  * Interface that facilitates the implementation of text highlight behaviors for components when
@@ -9,7 +11,7 @@ package org.dwcj.component;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public interface HighlightableOnFocus<T extends Component> {
+public interface HasHighlightOnFocus<T extends Component> {
 
   /**
    * Enum representing different highlight behaviors for a component.

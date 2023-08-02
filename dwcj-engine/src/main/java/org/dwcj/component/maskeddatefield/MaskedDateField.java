@@ -14,20 +14,20 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.maskeddatefield.event.MaskedDateFieldModifyEvent;
 import org.dwcj.component.maskeddatefield.sink.MaskedDateFieldModifyEventSink;
-import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 public final class MaskedDateField extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, HasEnable,
-    HighlightableOnFocus<MaskedDateField>, HorizontalAlignment<MaskedDateField> {
+    implements HasReadOnly, HasFocus, HasTabTraversal, HasEnable,
+    HasHighlightOnFocus<MaskedDateField>, HasHorizontalAlignment<MaskedDateField> {
 
   private BBjInputD bbjDateEditBox;
 
@@ -655,12 +655,12 @@ public final class MaskedDateField extends AbstractDwcComponent
   }
 
   @Override
-  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+  public HasHighlightOnFocus.Behavior getHighlightOnFocus() {
     return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public MaskedDateField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+  public MaskedDateField setHighlightOnFocus(HasHighlightOnFocus.Behavior behavior) {
     super.setComponentHighlightOnFocus(behavior);
     return this;
   }

@@ -1,4 +1,7 @@
-package org.dwcj.component;
+package org.dwcj.concern;
+
+import org.dwcj.component.Component;
+import org.dwcj.component.ThemeBase;
 
 /**
  * Interface facilitates implementation of behaviors to modify a component's theme.

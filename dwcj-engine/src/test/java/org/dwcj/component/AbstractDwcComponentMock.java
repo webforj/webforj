@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasExpanse;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasTheme;
 
-public class AbstractDwcComponentMock extends AbstractDwcComponent
-    implements HasExpanse<AbstractDwcComponentMock, Expanse>,
-    HasTheme<AbstractDwcComponentMock, Theme>, HasReadOnly,
-    HighlightableOnFocus<AbstractDwcComponentMock>, HorizontalAlignment<AbstractDwcComponentMock> {
+public class AbstractDwcComponentMock extends AbstractDwcComponent implements
+    HasExpanse<AbstractDwcComponentMock, Expanse>, HasTheme<AbstractDwcComponentMock, Theme>,
+    HasReadOnly, HasHighlightOnFocus<AbstractDwcComponentMock>,
+    HasHorizontalAlignment<AbstractDwcComponentMock> {
 
   @Override
   public AbstractDwcComponentMock setExpanse(Expanse expanse) {
@@ -54,12 +59,12 @@ public class AbstractDwcComponentMock extends AbstractDwcComponent
   }
 
   @Override
-  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+  public HasHighlightOnFocus.Behavior getHighlightOnFocus() {
     return getComponentHighlightOnFocus();
   }
 
   @Override
-  public AbstractDwcComponentMock setHighlightOnFocus(HighlightableOnFocus.Behavior highlight) {
+  public AbstractDwcComponentMock setHighlightOnFocus(HasHighlightOnFocus.Behavior highlight) {
     setComponentHighlightOnFocus(highlight);
     return this;
   }

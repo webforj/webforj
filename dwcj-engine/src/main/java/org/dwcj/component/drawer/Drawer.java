@@ -1,7 +1,5 @@
 package org.dwcj.component.drawer;
 
-import org.dwcj.component.HasClassName;
-import org.dwcj.component.HasStyle;
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
 import org.dwcj.component.drawer.event.DrawerOpenEvent;
 import org.dwcj.component.event.EventListener;
@@ -9,6 +7,8 @@ import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.Panel;
+import org.dwcj.concern.HasClassName;
+import org.dwcj.concern.HasStyle;
 
 /**
  * The drawer component allows developers to create a container which slides into the viewport to

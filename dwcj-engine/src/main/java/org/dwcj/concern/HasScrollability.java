@@ -1,9 +1,9 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface which facilitates implementation of methods to handle controls with scrolling behavior.
  */
-public interface Scrollable {
+public interface HasScrollability {
 
   /**
    * This method returns the height of the horizontal scrollbar for a Scrollable Control.
@@ -69,7 +69,7 @@ public interface Scrollable {
    * @param position Integer pixel location of beginning of horizontal scrollbar
    * @return The control itself
    */
-  Scrollable setHorizontalScrollBarPosition(Integer position);
+  HasScrollability setHorizontalScrollBarPosition(Integer position);
 
   /**
    * This method sets the position of the vertical scrollbar for a Scrollable BBjControl.
@@ -77,5 +77,5 @@ public interface Scrollable {
    * @param position Integer pixel location of beginning of vertical scrollbar
    * @return The control itself
    */
-  Scrollable setVerticalScrollBarPosition(Integer position);
+  HasScrollability setVerticalScrollBarPosition(Integer position);
 }

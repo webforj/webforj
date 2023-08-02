@@ -1,6 +1,6 @@
 package org.dwcj.component.field;
 
-import org.dwcj.component.HasPlaceholder;
+import org.dwcj.concern.HasPlaceholder;
 
 /**
  * The TextField provides a user interface component to create a basic single-line text fields.

@@ -6,12 +6,6 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasMouseWheelCondition;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.choicebox.ChoiceBox;
 import org.dwcj.component.combobox.event.ComboBoxChangeEvent;
 import org.dwcj.component.combobox.event.ComboBoxCloseEvent;
@@ -25,6 +19,12 @@ import org.dwcj.component.combobox.sink.ComboBoxOpenEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasMouseWheelCondition;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * ComboBoxEdit Control
  */
 public final class ComboBox extends AbstractListBox implements HasReadOnly, HasFocus,
-    HasMouseWheelCondition, HasEnable, TabTraversable, HorizontalAlignment<ComboBox> {
+    HasMouseWheelCondition, HasEnable, HasTabTraversal, HasHorizontalAlignment<ComboBox> {
 
   private BBjListEdit bbjListEdit;
 

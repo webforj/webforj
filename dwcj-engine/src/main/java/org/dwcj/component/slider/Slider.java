@@ -7,14 +7,14 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasMouseWheelCondition;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.slider.event.SliderScrollEvent;
 import org.dwcj.component.slider.sink.SliderScrollEventSink;
 import org.dwcj.component.textarea.TextArea;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasMouseWheelCondition;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class Slider extends AbstractDwcComponent
-    implements HasFocus, HasMouseWheelCondition, TabTraversable, HasEnable {
+    implements HasFocus, HasMouseWheelCondition, HasTabTraversal, HasEnable {
 
   private BBjSlider bbjSlider;
 

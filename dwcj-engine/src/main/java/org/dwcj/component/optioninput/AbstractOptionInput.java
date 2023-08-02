@@ -6,11 +6,6 @@ import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasExpanse;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.TabTraversable;
-import org.dwcj.component.TextPosition;
 import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.EventDispatcher;
@@ -30,6 +25,11 @@ import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.event.sink.ToggleEventSink;
 import org.dwcj.component.event.sink.UncheckEventSink;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasExpanse;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.HasTextPosition;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -42,11 +42,11 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & TabTraversable & TextPosition & HasEnable>
+abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasTextPosition & HasEnable>
     extends AbstractDwcComponent
-    implements HasFocus, TabTraversable, TextPosition, HasEnable, HasExpanse<T, Expanse> {
+    implements HasFocus, HasTabTraversal, HasTextPosition, HasEnable, HasExpanse<T, Expanse> {
 
-  private TextPosition.Position textPosition = TextPosition.Position.RIGHT;
+  private HasTextPosition.Position textPosition = HasTextPosition.Position.RIGHT;
   private boolean checked = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();

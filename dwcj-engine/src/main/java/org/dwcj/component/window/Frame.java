@@ -3,7 +3,7 @@ package org.dwcj.component.window;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
-import org.dwcj.component.HasEnable;
+import org.dwcj.concern.HasEnable;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 

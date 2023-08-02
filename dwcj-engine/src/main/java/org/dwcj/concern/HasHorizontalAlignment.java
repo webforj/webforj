@@ -1,5 +1,6 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
+import org.dwcj.component.Component;
 import com.basis.bbj.proxies.sysgui.TextAlignable;
 
 /**
@@ -11,7 +12,7 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
  * @since 23.02
  * @author Hyyan Abo Fakher
  */
-public interface HorizontalAlignment<T extends Component> {
+public interface HasHorizontalAlignment<T extends Component> {
 
   /**
    * Enum which represents the text alignment of a component.

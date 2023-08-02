@@ -10,12 +10,6 @@ import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasExpanse;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.HasValue;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventListener;
@@ -34,6 +28,12 @@ import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasExpanse;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.HasValue;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -43,9 +43,9 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & TabTraversable & HasEnable & HasReadOnly, V>
+abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable & HasReadOnly, V>
     extends AbstractDwcComponent implements DwcjFieldComponent, HasEnable, HasReadOnly, HasFocus,
-    TabTraversable, HasExpanse<T, Expanse>, HasValue<T, V> {
+    HasTabTraversal, HasExpanse<T, Expanse>, HasValue<T, V> {
 
   private EventDispatcher dispatcher = new EventDispatcher();
   private EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =

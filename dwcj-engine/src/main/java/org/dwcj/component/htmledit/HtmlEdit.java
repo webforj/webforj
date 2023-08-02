@@ -7,16 +7,16 @@ import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class HtmlEdit extends AbstractDwcComponent
-    implements HasFocus, HasEnable, TabTraversable {
+    implements HasFocus, HasEnable, HasTabTraversal {
 
   private BBjHtmlEdit bbjHtmlEdit;
 

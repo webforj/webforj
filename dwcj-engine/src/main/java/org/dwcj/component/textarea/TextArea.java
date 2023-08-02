@@ -7,16 +7,16 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasMouseWheelCondition;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.Scrollable;
-import org.dwcj.component.TabTraversable;
-import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.textarea.event.TextAreaModifyEvent;
 import org.dwcj.component.textarea.sink.TextAreaModifyEventSink;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasMouseWheelCondition;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasScrollability;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,8 +25,8 @@ import java.util.function.Consumer;
 import javax.swing.text.Highlighter.Highlight;
 
 public final class TextArea extends AbstractDwcComponent
-    implements HasReadOnly, HighlightableOnFocus<TextArea>, HasFocus, HasMouseWheelCondition,
-    Scrollable, TabTraversable, HasEnable {
+    implements HasReadOnly, HasHighlightOnFocus<TextArea>, HasFocus, HasMouseWheelCondition,
+    HasScrollability, HasTabTraversal, HasEnable {
 
   private BBjCEdit bbjCEdit;
 
@@ -743,12 +743,12 @@ public final class TextArea extends AbstractDwcComponent
 
 
   @Override
-  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+  public HasHighlightOnFocus.Behavior getHighlightOnFocus() {
     return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public TextArea setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+  public TextArea setHighlightOnFocus(HasHighlightOnFocus.Behavior behavior) {
     super.setComponentHighlightOnFocus(behavior);
     return this;
   }

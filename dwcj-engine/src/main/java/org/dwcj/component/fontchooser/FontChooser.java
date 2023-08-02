@@ -7,7 +7,6 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
 import org.dwcj.component.fontchooser.event.FontChooserApproveEvent;
 import org.dwcj.component.fontchooser.event.FontChooserCancelEvent;
 import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
@@ -15,7 +14,7 @@ import org.dwcj.component.fontchooser.sink.FontChooserApproveEventSink;
 import org.dwcj.component.fontchooser.sink.FontChooserCancelEventSink;
 import org.dwcj.component.fontchooser.sink.FontChooserChangeEventSink;
 import org.dwcj.component.window.AbstractWindow;
-
+import org.dwcj.concern.HasEnable;
 import java.awt.*;
 import java.util.function.Consumer;
 

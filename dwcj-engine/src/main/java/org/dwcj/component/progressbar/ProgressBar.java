@@ -6,8 +6,8 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
 
 public final class ProgressBar extends AbstractDwcComponent {
 

@@ -5,8 +5,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.HasEnable;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
 
 /**
  * ********** IMPORTANT: ****************+ This class is only needed for using DWCJ Controls from

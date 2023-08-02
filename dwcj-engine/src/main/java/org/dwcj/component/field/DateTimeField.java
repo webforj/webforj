@@ -3,9 +3,9 @@ package org.dwcj.component.field;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.component.HasMax;
-import org.dwcj.component.HasMin;
-import org.dwcj.component.HighlightableOnFocus;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasMax;
+import org.dwcj.concern.HasMin;
 
 /**
  * The DateTimeField provides a user interface component that allows the user to enter both a date
@@ -33,7 +33,7 @@ import org.dwcj.component.HighlightableOnFocus;
  */
 public final class DateTimeField extends AbstractField<DateTimeField, LocalDateTime>
     implements HasMin<DateTimeField, LocalDateTime>, HasMax<DateTimeField, LocalDateTime>,
-    HighlightableOnFocus<DateTimeField> {
+    HasHighlightOnFocus<DateTimeField> {
 
   private LocalDateTime min = null;
   private LocalDateTime max = null;

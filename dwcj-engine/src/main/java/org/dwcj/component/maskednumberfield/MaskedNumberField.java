@@ -13,22 +13,22 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.maskednumberfield.event.MaskedNumberFieldModifyEvent;
 import org.dwcj.component.maskednumberfield.sink.MaskedNumberFieldModifyEventSink;
 import org.dwcj.component.texts.Label;
-import org.dwcj.component.HighlightableOnFocus;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 
 public class MaskedNumberField extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, TabTraversable, HasEnable,
-    HorizontalAlignment<MaskedNumberField>, HighlightableOnFocus<MaskedNumberField> {
+    implements HasReadOnly, HasFocus, HasTabTraversal, HasEnable,
+    HasHorizontalAlignment<MaskedNumberField>, HasHighlightOnFocus<MaskedNumberField> {
 
   protected BBjInputN numBox;
 
@@ -736,12 +736,12 @@ public class MaskedNumberField extends AbstractDwcComponent
   }
 
   @Override
-  public HighlightableOnFocus.Behavior getHighlightOnFocus() {
+  public HasHighlightOnFocus.Behavior getHighlightOnFocus() {
     return super.getComponentHighlightOnFocus();
   }
 
   @Override
-  public MaskedNumberField setHighlightOnFocus(HighlightableOnFocus.Behavior behavior) {
+  public MaskedNumberField setHighlightOnFocus(HasHighlightOnFocus.Behavior behavior) {
     super.setComponentHighlightOnFocus(behavior);
     return this;
   }

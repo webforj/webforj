@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasDestroy;
 
 /**
  * Abstract base class for all engine controls. Implements default behaviors for the implemented
