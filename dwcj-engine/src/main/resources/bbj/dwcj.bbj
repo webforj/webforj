@@ -56,7 +56,7 @@ determineClasspathEntries:
         pw$="admin123"
         Api! = BBjAdminFactory.getBBjAdmin("admin","admin123",err=*next)
         while Api! = null()
-            pw$=PROMPT("Enter the password for admin to discover Apps:","","Admin Access")
+            pw$=PROMPT("Enter the password for admin to discover Apps:","","Admin Access",mode="input-type=password")
             if pw$="" then release
             Api! = BBjAdminFactory.getBBjAdmin("admin",pw$,err=*next)
         wend
