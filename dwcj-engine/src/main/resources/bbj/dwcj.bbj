@@ -16,8 +16,15 @@ gosub checkDebugMode
 
 class$=""
 
-rem evaluate arguments
+rem check for debug
+DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
+
 for i=1 to 10
+    tmp$=argv(i,err=*break)
+    if cvs(tmp$,4)="DEBUG" then
+        DEBUG=1
+        continue
+    fi
     if len(tmp$)>6 and tmp$(1,6)="class=" then
         class$=tmp$(7)
         continue
@@ -49,18 +56,7 @@ terminate:
     release
 
 
-checkDebugMode:
-  DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
 
-  rem evaluate arguments
-  for i=1 to 10
-      tmp$=argv(i,err=*break)
-      if cvs(tmp$,4)="DEBUG" then
-          DEBUG=1
-          continue
-      fi
-  next
-return
 
 determineClasspathEntries:
         admin! = new Admin()
@@ -116,7 +112,6 @@ class_not_found:
 release
 
 dwcj_error:
-    gosub checkDebugMode
 
     if DEBUG=0 then
         a=msgbox("An error has occured!",48,"Error")
