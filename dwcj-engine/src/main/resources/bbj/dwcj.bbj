@@ -12,11 +12,8 @@ BBJAPI().getConfig().releaseOnLostConnection(0)
 
 DEBUG = 0
 dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
-gosub checkDebugMode
 
 class$=""
-
-rem check for debug
 DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
 
 for i=1 to 10
@@ -55,19 +52,14 @@ process_events,err=dwcj_error
 terminate:
     release
 
-
-
-
 determineClasspathEntries:
-        admin! = new Admin()
-        userCredentials! = admin!.getUserCredentials()
-        if (userCredentials! <> null()) then
-            Api! = BBjAdminFactory.getBBjAdmin(userCredentials!.getUser(),userCredentials!.getPassword())
-        endif
-        if (Api! = null()) then
-            a=msgbox( "Could not access application server")
-            release
-        endif
+        pw$="admin123"
+        Api! = BBjAdminFactory.getBBjAdmin("admin","admin123",err=*next)
+        while Api! = null()
+            pw$=PROMPT("Enter the password for admin to discover Apps:","","Admin Access")
+            if pw$="" then release
+            Api! = BBjAdminFactory.getBBjAdmin("admin",pw$,err=*next)
+        wend
         cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
         cp! = Api!.getClasspath(cp$)
 
@@ -83,7 +75,6 @@ determineClasspathEntries:
 
         BBjAPI().getObjectTable().put("dwcjcp",al!)
 return
-
 
 EscTrap:
     IF AND(CHR(TCB(19)),$08$)=$08$ THEN
