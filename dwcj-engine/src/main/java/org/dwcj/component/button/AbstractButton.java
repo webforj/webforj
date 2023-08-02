@@ -7,12 +7,6 @@ import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasExpanse;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasTheme;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
 import org.dwcj.component.event.BlurEvent;
@@ -28,6 +22,12 @@ import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasExpanse;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.HasTheme;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -36,9 +36,9 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTraversable & HasEnable>
-    extends AbstractDwcComponent implements HasFocus, TabTraversable, HasEnable,
-    HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HorizontalAlignment<T> {
+abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable>
+    extends AbstractDwcComponent implements HasFocus, HasTabTraversal, HasEnable,
+    HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T> {
   private boolean disableOnClick = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();
@@ -228,8 +228,8 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & TabTra
    * Sets the button name which used for accessibility.
    *
    * <p>
-   * The name is used for accessibility. When the name is not explicitly set, the label will be 
-   * used by the browser instead. This is useful when the label of the button is only an icon, for
+   * The name is used for accessibility. When the name is not explicitly set, the label will be used
+   * by the browser instead. This is useful when the label of the button is only an icon, for
    * instance.
    * </p>
    *

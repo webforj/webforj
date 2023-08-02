@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface that facilitates allowing a component to receive focus on the page.

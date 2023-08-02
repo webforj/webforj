@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * On applicable controls, creates enum which helps facilitate underlying BBj constant integers for

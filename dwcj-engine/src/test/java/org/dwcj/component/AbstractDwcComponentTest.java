@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.dwcj.concern.HasHighlightOnFocus;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -385,20 +386,20 @@ public class AbstractDwcComponentTest {
         throws IllegalAccessException, BBjException {
       nullifyControl();
 
-      component.setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL);
-      assertSame(HighlightableOnFocus.Behavior.ALL, component.getHighlightOnFocus());
+      component.setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL);
+      assertSame(HasHighlightOnFocus.Behavior.ALL, component.getHighlightOnFocus());
 
-      verify(control, times(0)).setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL.getValue());
+      verify(control, times(0)).setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL.getValue());
       verify(control, times(0)).getHighlightOnFocus();
     }
 
     @Test
     @DisplayName("Setting/getting highlightOnFocus when control is not null")
     void settingGettingHighlightOnFocusWhenControlIsNotNull() throws BBjException {
-      component.setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL);
-      assertSame(HighlightableOnFocus.Behavior.ALL, component.getHighlightOnFocus());
+      component.setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL);
+      assertSame(HasHighlightOnFocus.Behavior.ALL, component.getHighlightOnFocus());
 
-      verify(control, times(1)).setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL.getValue());
+      verify(control, times(1)).setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL.getValue());
       verify(control, times(0)).getHighlightOnFocus();
     }
 
@@ -406,9 +407,9 @@ public class AbstractDwcComponentTest {
     @DisplayName("catchup will re-apply highlightOnFocus changes")
     void catchupWillReApplyingHighlightOnFocusChanges() throws BBjException, NoSuchMethodException,
         IllegalAccessException, InvocationTargetException {
-      component.setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL);
+      component.setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL);
       invokeCatchUp(component);
-      verify(control, times(2)).setHighlightOnFocus(HighlightableOnFocus.Behavior.ALL.getValue());
+      verify(control, times(2)).setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL.getValue());
     }
   }
 

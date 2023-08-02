@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface which facilitates implementation of behavior that allows for access and mutation of

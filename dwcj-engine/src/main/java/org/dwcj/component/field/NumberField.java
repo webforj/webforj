@@ -1,11 +1,11 @@
 package org.dwcj.component.field;
 
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.component.HasMax;
-import org.dwcj.component.HasMin;
-import org.dwcj.component.HasPlaceholder;
-import org.dwcj.component.HighlightableOnFocus;
-import org.dwcj.component.HorizontalAlignment;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasMax;
+import org.dwcj.concern.HasMin;
+import org.dwcj.concern.HasPlaceholder;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -21,7 +21,7 @@ import org.dwcj.component.HorizontalAlignment;
  */
 public final class NumberField extends AbstractField<NumberField, Double> implements
     HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
-    HighlightableOnFocus<NumberField>, HorizontalAlignment<NumberField> {
+    HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
 
   private Double min = null;
   private Double max = null;

@@ -1,10 +1,10 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface facilitating the implementation of behavior to access and mutate a control's tab
  * traversal on a rendered page.
  */
-public interface TabTraversable {
+public interface HasTabTraversal {
 
   /**
    * Returns a boolean indicating whether or not the user can navigate to the control using the tab
@@ -21,5 +21,5 @@ public interface TabTraversable {
    *        Tab, False if not.
    * @return The control itself
    */
-  TabTraversable setTabTraversable(Boolean traversable);
+  HasTabTraversal setTabTraversable(Boolean traversable);
 }

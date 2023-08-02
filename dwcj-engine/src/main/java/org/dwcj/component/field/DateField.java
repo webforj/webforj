@@ -2,9 +2,9 @@ package org.dwcj.component.field;
 
 import java.time.LocalDate;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.component.HasMax;
-import org.dwcj.component.HasMin;
-import org.dwcj.component.HighlightableOnFocus;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasMax;
+import org.dwcj.concern.HasMin;
 
 /**
  * The DateField provides a user interface component that let the user enter a date, either with a
@@ -20,7 +20,7 @@ import org.dwcj.component.HighlightableOnFocus;
  * @since 23.02
  */
 public final class DateField extends AbstractField<DateField, LocalDate> implements
-    HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate>, HighlightableOnFocus<DateField> {
+    HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate>, HasHighlightOnFocus<DateField> {
 
   private LocalDate min = null;
   private LocalDate max = null;

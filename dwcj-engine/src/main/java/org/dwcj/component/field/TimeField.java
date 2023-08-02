@@ -3,9 +3,9 @@ package org.dwcj.component.field;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.component.HasMax;
-import org.dwcj.component.HasMin;
-import org.dwcj.component.HighlightableOnFocus;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasMax;
+import org.dwcj.concern.HasMin;
 
 /**
  * The TimeField provides a user interface component that designed to let the user easily enter a
@@ -22,7 +22,7 @@ import org.dwcj.component.HighlightableOnFocus;
  * @since 23.02
  */
 public final class TimeField extends AbstractField<TimeField, LocalTime> implements
-    HasMin<TimeField, LocalTime>, HasMax<TimeField, LocalTime>, HighlightableOnFocus<TimeField> {
+    HasMin<TimeField, LocalTime>, HasMax<TimeField, LocalTime>, HasHighlightOnFocus<TimeField> {
 
   private LocalTime min = null;
   private LocalTime max = null;

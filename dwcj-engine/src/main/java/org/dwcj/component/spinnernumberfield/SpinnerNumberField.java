@@ -6,10 +6,10 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasMouseWheelCondition;
 import org.dwcj.component.maskednumberfield.MaskedNumberField;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasMouseWheelCondition;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 public final class SpinnerNumberField extends MaskedNumberField implements HasMouseWheelCondition {

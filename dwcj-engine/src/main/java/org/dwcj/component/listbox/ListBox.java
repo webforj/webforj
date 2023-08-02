@@ -7,26 +7,27 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasMouseWheelCondition;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.Scrollable;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
 import org.dwcj.component.listbox.sink.ListBoxSelectEventSink;
 import org.dwcj.component.texts.Label;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasMouseWheelCondition;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasScrollability;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class ListBox extends AbstractListBox implements Scrollable, HasEnable, HasReadOnly,
-    HasFocus, HasMouseWheelCondition, TabTraversable, HorizontalAlignment<ListBox> {
+public final class ListBox extends AbstractListBox
+    implements HasScrollability, HasEnable, HasReadOnly, HasFocus, HasMouseWheelCondition,
+    HasTabTraversal, HasHorizontalAlignment<ListBox> {
 
   private BBjListBox bbjListBox;
 

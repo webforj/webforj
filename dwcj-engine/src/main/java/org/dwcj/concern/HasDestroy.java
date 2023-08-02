@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface which facilitates implementation of behavior that allows for the destruction of a

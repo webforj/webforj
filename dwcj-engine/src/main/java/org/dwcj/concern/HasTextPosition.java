@@ -1,11 +1,11 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Manipulates the position of text and images within a component relative to other elements of the
  * component. For example, when used on a CheckBox, this interface's methods will control on which
  * side of the checkbox the text appears.
  */
-public interface TextPosition {
+public interface HasTextPosition {
 
   /**
    * Enum which represents the text position of a component.
@@ -35,7 +35,7 @@ public interface TextPosition {
    * @param position Enum from list representing an internal BBj numeric constant
    * @return the control itself
    */
-  public TextPosition setTextPosition(Position position);
+  public HasTextPosition setTextPosition(Position position);
 
   /**
    * Returns a value indicating the text's position relative to other elements of the control.

@@ -3,15 +3,15 @@ package org.dwcj.addons.youtube;
 import java.util.HashMap;
 import java.util.Map;
 import org.dwcj.annotation.InlineStyleSheet;
-import org.dwcj.component.HasAttribute;
-import org.dwcj.component.HasClassName;
-import org.dwcj.component.HasStyle;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.HtmlViewAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasAttribute;
+import org.dwcj.concern.HasClassName;
+import org.dwcj.concern.HasStyle;
 
 /**
  * The Youtube component is a component that allows you to embed a youtube video in your

@@ -8,11 +8,6 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.HasEnable;
-import org.dwcj.component.HasFocus;
-import org.dwcj.component.HasReadOnly;
-import org.dwcj.component.HorizontalAlignment;
-import org.dwcj.component.TabTraversable;
 import org.dwcj.component.choicebox.event.ChoiceBoxChangeEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxCloseEvent;
 import org.dwcj.component.choicebox.event.ChoiceBoxOpenEvent;
@@ -24,6 +19,11 @@ import org.dwcj.component.choicebox.sink.ChoiceBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
 import org.dwcj.component.texts.Label;
 import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasReadOnly;
+import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -35,8 +35,8 @@ import java.util.function.Consumer;
 /**
  * Combobox Control
  */
-public final class ChoiceBox extends AbstractListBox
-    implements HasReadOnly, HasFocus, TabTraversable, HorizontalAlignment<ChoiceBox>, HasEnable {
+public final class ChoiceBox extends AbstractListBox implements HasReadOnly, HasFocus,
+    HasTabTraversal, HasHorizontalAlignment<ChoiceBox>, HasEnable {
 
   private BBjListButton bbjListButton;
 

@@ -1,9 +1,5 @@
 package org.dwcj.component.layout.applayout;
 
-import org.dwcj.component.HasAttribute;
-import org.dwcj.component.HasClassName;
-import org.dwcj.component.HasStyle;
-import org.dwcj.component.HasVisibility;
 import org.dwcj.component.event.EventListener;
 import org.dwcj.component.layout.applayout.event.AppLayoutDrawerCloseEvent;
 import org.dwcj.component.layout.applayout.event.AppLayoutDrawerOpenEvent;
@@ -12,6 +8,10 @@ import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.Panel;
+import org.dwcj.concern.HasAttribute;
+import org.dwcj.concern.HasClassName;
+import org.dwcj.concern.HasStyle;
+import org.dwcj.concern.HasVisibility;
 
 /**
  * AppLayout is a web component that provides a responsive layout for web apps.

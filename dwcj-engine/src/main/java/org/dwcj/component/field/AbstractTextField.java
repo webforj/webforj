@@ -4,11 +4,11 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.component.HasMaxLength;
-import org.dwcj.component.HasMinLength;
-import org.dwcj.component.HighlightableOnFocus;
-import org.dwcj.component.HorizontalAlignment;
 import org.dwcj.component.SelectionRange;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasMaxLength;
+import org.dwcj.concern.HasMinLength;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -18,7 +18,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.02
  */
 abstract class AbstractTextField<T extends AbstractTextField<T>> extends AbstractField<T, String>
-    implements HasMinLength<T>, HasMaxLength<T>, HighlightableOnFocus<T>, HorizontalAlignment<T> {
+    implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T> {
 
   private int minLength = 0;
   private int maxLength = 524288;

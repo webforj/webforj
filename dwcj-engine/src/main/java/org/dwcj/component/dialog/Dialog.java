@@ -1,7 +1,5 @@
 package org.dwcj.component.dialog;
 
-import org.dwcj.component.HasClassName;
-import org.dwcj.component.HasStyle;
 import org.dwcj.component.dialog.event.DialogCloseEvent;
 import org.dwcj.component.dialog.event.DialogOpenEvent;
 import org.dwcj.component.event.EventListener;
@@ -9,6 +7,8 @@ import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.Panel;
+import org.dwcj.concern.HasClassName;
+import org.dwcj.concern.HasStyle;
 
 /**
  * A dialog component.

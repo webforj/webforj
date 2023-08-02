@@ -14,6 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.dwcj.Environment;
+import org.dwcj.concern.HasAttribute;
+import org.dwcj.concern.HasClassName;
+import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasMouseWheelCondition;
+import org.dwcj.concern.HasProperty;
+import org.dwcj.concern.HasStyle;
+import org.dwcj.concern.HasText;
+import org.dwcj.concern.HasTooltip;
+import org.dwcj.concern.HasVisibility;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -49,12 +59,11 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
   private Enum<?> expanse = null;
   private final Map<String, String> attributes = new HashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
-  private HighlightableOnFocus.Behavior highlightOnFocus =
-      HighlightableOnFocus.Behavior.FOCUS_OR_KEY;
+  private HasHighlightOnFocus.Behavior highlightOnFocus = HasHighlightOnFocus.Behavior.FOCUS_OR_KEY;
   private Enum<? extends ExpanseBase> componentExpanse = null;
   private Enum<? extends ThemeBase> componentTheme = null;
-  private HorizontalAlignment.Alignment horizontalAlignment = null;
-  private HorizontalAlignment.Alignment defaultHorizontalAlignment = null;
+  private HasHorizontalAlignment.Alignment horizontalAlignment = null;
+  private HasHorizontalAlignment.Alignment defaultHorizontalAlignment = null;
 
   /**
    * Set the value for a property in the component.
@@ -652,7 +661,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return The component itself.
    */
   protected AbstractDwcComponent setComponentHighlightOnFocus(
-      HighlightableOnFocus.Behavior behavior) {
+      HasHighlightOnFocus.Behavior behavior) {
 
     if (this.control != null) {
       try {
@@ -674,7 +683,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    *
    * @return The highlight behavior for the component's text when it receives focus.
    */
-  protected HighlightableOnFocus.Behavior getComponentHighlightOnFocus() {
+  protected HasHighlightOnFocus.Behavior getComponentHighlightOnFocus() {
     return this.highlightOnFocus;
   }
 
@@ -685,7 +694,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return the component itself
    */
   protected AbstractDwcComponent setComponentDefaultHorizontalAlignment(
-      HorizontalAlignment.Alignment alignment) {
+      HasHorizontalAlignment.Alignment alignment) {
     this.defaultHorizontalAlignment = alignment;
     return this;
   }
@@ -697,7 +706,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    * @return the component itself
    */
   protected AbstractDwcComponent setComponentHorizontalAlignment(
-      HorizontalAlignment.Alignment alignment) {
+      HasHorizontalAlignment.Alignment alignment) {
     this.horizontalAlignment = alignment;
 
     if (control instanceof TextAlignable) {
@@ -716,17 +725,17 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
    *
    * @return the component's horizontal alignment
    */
-  protected HorizontalAlignment.Alignment getComponentHorizontalAlignment() {
+  protected HasHorizontalAlignment.Alignment getComponentHorizontalAlignment() {
     if (control instanceof TextAlignable) {
       try {
-        return HorizontalAlignment.Alignment.fromValue(((TextAlignable) control).getAlignment());
+        return HasHorizontalAlignment.Alignment.fromValue(((TextAlignable) control).getAlignment());
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
     }
 
-    HorizontalAlignment.Alignment defaultAlignment =
-        this.defaultHorizontalAlignment == null ? HorizontalAlignment.Alignment.LEFT
+    HasHorizontalAlignment.Alignment defaultAlignment =
+        this.defaultHorizontalAlignment == null ? HasHorizontalAlignment.Alignment.LEFT
             : this.defaultHorizontalAlignment;
 
     return this.horizontalAlignment == null ? defaultAlignment : this.horizontalAlignment;
@@ -982,7 +991,7 @@ public abstract class AbstractDwcComponent extends AbstractComponent implements 
       this.focusComponent();
     }
 
-    if (highlightOnFocus != HighlightableOnFocus.Behavior.FOCUS_OR_KEY) {
+    if (highlightOnFocus != HasHighlightOnFocus.Behavior.FOCUS_OR_KEY) {
       setComponentHighlightOnFocus(highlightOnFocus);
     }
 

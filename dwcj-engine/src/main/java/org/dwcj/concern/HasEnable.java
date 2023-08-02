@@ -1,4 +1,4 @@
-package org.dwcj.component;
+package org.dwcj.concern;
 
 /**
  * Interface that facilitates implementation of behavior which determines whether or not a control
