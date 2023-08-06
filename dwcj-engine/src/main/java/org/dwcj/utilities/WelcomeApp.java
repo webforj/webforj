@@ -1,8 +1,11 @@
 package org.dwcj.utilities;
 
 import com.basis.startup.type.BBjException;
+import java.util.ArrayList;
+import java.util.Set;
 import org.dwcj.App;
 import org.dwcj.Environment;
+import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.texts.Label;
@@ -10,9 +13,14 @@ import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Panel;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 
-import java.util.ArrayList;
-import java.util.Set;
-
+/**
+ * The Welcome App is an automatically created index of App classes.
+ */
+@InlineStyleSheet(/* css */"""
+    .BBjTopLevelWindow-center {
+      overflow: scroll
+    }
+     """)
 public class WelcomeApp extends App {
 
   private Frame panel;
@@ -45,7 +53,7 @@ public class WelcomeApp extends App {
 
     try {
       cplist =
-          (ArrayList<String>) Environment.getCurrent().getBBjAPI().getObjectTable().get("dwcjcp");
+        (ArrayList<String>) Environment.getCurrent().getBBjAPI().getObjectTable().get("dwcjcp");
     } catch (BBjException e) { //
     }
     if (cplist != null) {
@@ -69,13 +77,13 @@ public class WelcomeApp extends App {
 
     if (applist.isEmpty()) {
       panel.add(
-          new Label("<html><h2>Oops. Looks like there are no DWCJ Apps in your Classpath</h2>"));
+        new Label("<html><h2>Oops. Looks like there are no DWCJ Apps in your Classpath</h2>"));
       panel.add(new Label(
           "<html><p>Write your first App that extends <a href='https://dwcjava.github.io/engine/org/dwcj/App.html' target='_new'>org.dwcj.App</a>. Then "
-              + "build it and put it in the Classpath of the DWC app deployment.</p>"
-              + "<p>There is a <a href='https://github.com/DwcJava/engine' target='_new'>Readme in the project's home on GitHub</a> that explains the first steps.</p>"
-              + "<p>The <a href='https://github.com/BBj-Plugins/DWCJ' target='_new'>DWCJ BBjPlugin</a> allows you to configure the classpath and to set the start class for your app."
-              + "</p>"));
+          + "build it and put it in the Classpath of the DWC app deployment.</p>"
+          + "<p>There is a <a href='https://github.com/DwcJava/engine' target='_new'>Readme in the project's home on GitHub</a> that explains the first steps.</p>"
+          + "<p>The <a href='https://github.com/BBj-Plugins/DWCJ' target='_new'>DWCJ BBjPlugin</a> allows you to configure the classpath and to set the start class for your app."
+          + "</p>"));
     } else {
       panel.add(new Label("<html><h2>The following Apps are available in this Classpath:</h2>"));
 
@@ -97,10 +105,12 @@ public class WelcomeApp extends App {
       }
       panel.add(new Label(
           "<html><p>In production systems, you may want to set the classname as an argument "
-              + "to the deployed app to avoid the loading time by scanning the classpath!</p>"));
+          + "to the deployed app to avoid the loading time by scanning the classpath!</p>"));
     }
     panel.add(new Label(
-        "<html><p>If you do not see an App that you have created recently, please remember that you may have to compile / build it first in your IDE.</p>"));
+        "<html><p>If you do not see an App that you have created recently, "
+          + "please remember that you may have to compile / build it first in your IDE.</p>"
+        ));
   }
 
   private void onLaunchClick(ButtonClickEvent buttonPushEvent) {
@@ -109,6 +119,9 @@ public class WelcomeApp extends App {
     panel.setVisible(false);
 
     try {
+
+      Environment.getCurrent().getSysGui()
+        .executeScript("window.location=window.location+'?class=" + className + "'");
       Class.forName(className).getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       Environment.logError(e);
