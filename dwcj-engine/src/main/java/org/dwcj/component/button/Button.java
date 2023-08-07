@@ -1,6 +1,7 @@
 package org.dwcj.component.button;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import org.dwcj.annotation.tooling.MetaInf;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.event.EventListener;
@@ -14,6 +15,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
+@MetaInf(group = "dwc.form")
 public final class Button extends AbstractButton<Button> {
 
   /**

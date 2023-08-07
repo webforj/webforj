@@ -5,6 +5,7 @@ import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
+import org.dwcj.annotation.tooling.MetaInf;
 import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Expanse;
 import org.dwcj.component.button.event.ButtonClickEvent;
@@ -95,6 +96,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "behavior")
   @Override
   public T setTabTraversable(Boolean traversable) {
     super.setComponentTabTraversable(traversable);
@@ -114,6 +116,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "access")
   @Override
   public T setEnabled(boolean enabled) {
     super.setComponentEnabled(enabled);
@@ -134,6 +137,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @Override
+  @MetaInf(group = "display")
   @ExcludeFromJacocoGeneratedReport
   public T setExpanse(Expanse expanse) {
     setComponentExpanse(expanse);
@@ -153,6 +157,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @Override
+  @MetaInf(group = "display")
   @ExcludeFromJacocoGeneratedReport
   public T setTheme(ButtonTheme theme) {
     setComponentTheme(theme);
@@ -172,6 +177,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @Override
+  @MetaInf(group = "display")
   @ExcludeFromJacocoGeneratedReport
   public T setHorizontalAlignment(Alignment alignment) {
     setComponentHorizontalAlignment(alignment);
@@ -194,6 +200,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    *
    * @return the component itself
    */
+  @MetaInf(group = "behavior")
   public T setDisableOnClick(boolean disableOnClick) {
     if (this.control != null) {
       try {
@@ -236,6 +243,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * @param name the name of the button
    * @return the component itself
    */
+  @MetaInf(group = "access")
   public T setName(String name) {
     setUnrestrictedAttribute("name", name);
     return getSelf();
@@ -256,6 +264,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "display")
   @Override
   public T setText(String text) {
     super.setText(text);
@@ -267,6 +276,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "display")
   @Override
   public T setVisible(Boolean visible) {
     super.setVisible(visible);
@@ -278,6 +288,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "display")
   @Override
   public T setTooltipText(String text) {
     super.setTooltipText(text);
@@ -289,6 +300,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "display")
   @Override
   public T setAttribute(String attribute, String value) {
     super.setAttribute(attribute, value);
@@ -300,6 +312,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "display")
   @Override
   public T setProperty(String property, Object value) {
     super.setProperty(property, value);
@@ -311,6 +324,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
    * {@inheritDoc}
    */
   @ExcludeFromJacocoGeneratedReport
+  @MetaInf(group = "display")
   @Override
   public T setStyle(String property, String value) {
     super.setStyle(property, value);
