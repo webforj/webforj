@@ -1,5 +1,7 @@
 package org.dwcj.component.field;
 
+import org.dwcj.concern.HasPlaceholder;
+
 /**
  * The PasswordField provides a way for the user to securely enter a password.
  *
@@ -12,9 +14,12 @@ package org.dwcj.component.field;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class PasswordField extends AbstractTextField<PasswordField> {
+public final class PasswordField extends AbstractTextField<PasswordField>
+    implements HasPlaceholder<PasswordField> {
 
   private boolean passwordReveal = true;
+  private String placeholder = null;
+
 
   /**
    * Construct a new password field with the given label and password.
@@ -66,4 +71,26 @@ public final class PasswordField extends AbstractTextField<PasswordField> {
   public boolean isPasswordReveal() {
     return passwordReveal;
   }
+
+  /**
+   * Set the placeholder of field.
+   *
+   * @param placeholder the placeholder of field
+   * @return the field type
+   */
+  public PasswordField setPlaceholder(String placeholder) {
+    this.placeholder = placeholder;
+    setUnrestrictedProperty("placeholder", placeholder);
+    return this;
+  }
+
+  /**
+   * Get the placeholder of field.
+   *
+   * @return the placeholder of field
+   */
+  public String getPlaceholder() {
+    return placeholder;
+  }
 }
+
