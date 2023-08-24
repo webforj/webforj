@@ -1464,7 +1464,7 @@ public abstract class WebComponent extends AbstractComponent {
     key = "org.dwcj.WebComponent::scripts";
     attached = ObjectTable.contains(key);
     if (!attached) {
-      App.getPage().addInlineJavaScript("context://webcompoent/wcconnector.min.js", true,
+      App.getPage().addInlineJavaScript("context://webcomponent/wcconnector.min.js", true,
           "id=wc-scripts");
       ObjectTable.put(key, true);
     }
@@ -1566,10 +1566,13 @@ public abstract class WebComponent extends AbstractComponent {
     if (hv.getCaughtUp()) {
       if (async) {
         hv.executeAsyncScript(js.toString());
+        // App.consoleLog("async: " + js.toString());
       } else {
+        // App.consoleLog("sync: " + js.toString());
         return hv.executeScript(js.toString());
       }
     } else {
+      // App.consoleLog("for later: " + js.toString());
       asyncScripts.add(js.toString());
     }
 

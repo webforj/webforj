@@ -31,20 +31,49 @@ Dwcj.WcConnector = (() => {
     )(component, hv);
   }
 
+  function setWhenLoaded (webcomponent, prop, val, count) {
+      // console.log("setWhenLoaded"+webcomponent+"."+prop+"="+val+"; try "+count);
+      count=count+1;
+
+      //retry 20 times
+      if (count < 20 ) {
+        //first check if component itself is there
+        if ( typeof webcomponent === 'undefined')
+        {
+          setTimeout (function () {
+            setWhenLoaded (webcomponent, prop, val, count);
+          }, 25);
+          return;
+        }
+
+        // then check if property is available
+        // TODO: what to do when property is undefined by default, is there a different was to check?
+        if ( typeof webcomponent[prop] === 'undefined' )
+          {
+            setTimeout (function () {
+              setWhenLoaded (webcomponent, prop, val, count);
+              }, 25);
+            return;
+          }
+
+      }
+      webcomponent[prop] = val ;
+  }
+
   return {
     /**
      * Invoke a method on the component with the given id and arguments.
-     * 
+     *
      * The method name can be: An actual method name, "This" or "Expression".
-     * 
+     *
      * 1. If the method name is "This", the first argument is the property name and the second argument is the value to set.
      * 2. If the method name is "Expression", the first argument is the expression to execute.
      * 3. If the method name is an actual method name, the arguments are passed to the method.
-     * 
+     *
      * @param {string} id the id of the component
      * @param {string} method  the method to invoke
      * @param  {...any} args  the arguments to pass to the method
-     * 
+     *
      * @returns the result of the method invocation
      */
     invoke: (id, method, ...args) => {
@@ -60,7 +89,8 @@ Dwcj.WcConnector = (() => {
           return component[args[0]];
         } else if (len === 2) {
           // set property
-          component[args[0]] = args[1];
+          // component[args[0]] = args[1];
+          setWhenLoaded(component, args[0], args[1],0);
         }
       }
 
@@ -80,7 +110,7 @@ Dwcj.WcConnector = (() => {
 
     /**
      * Add an event listener to the component with the given id.
-     * 
+     *
      * @param {string} id the id of the component
      * @param {string} eventName the name of the event to listen to
      * @param {object} options the options to configure the event listener
@@ -96,12 +126,12 @@ Dwcj.WcConnector = (() => {
 
       if (component[`__dwcj__${eventName}__h`]) {
         console.warn(`Duplicated listener registration for event "${eventName}"`, id);
-        return; // stop 
+        return; // stop
       }
 
       if (!hv || !hv.basisDispatchCustomEvent) {
         console.warn(`"basisDispatchCustomEvent" is not defined`, id);
-        return; // stop 
+        return; // stop
       }
 
       const defaultOptions = Object.assign({
@@ -126,7 +156,7 @@ Dwcj.WcConnector = (() => {
         }
 
         if (defaultOptions.filter && !executeExpression(id, defaultOptions.filter)) {
-          return; // stop 
+          return; // stop
         }
 
         if (defaultOptions.detail) {
@@ -153,7 +183,7 @@ Dwcj.WcConnector = (() => {
 
     /**
      * Remove an event listener from the component with the given id.
-     * 
+     *
      * @param {string} id the id of the component
      * @param {string} eventName the name of the event to remove the listener from
      */
