@@ -31,35 +31,6 @@ Dwcj.WcConnector = (() => {
     )(component, hv);
   }
 
-  function setWhenLoaded (webcomponent, prop, val, count) {
-      // console.log("setWhenLoaded"+webcomponent+"."+prop+"="+val+"; try "+count);
-      count=count+1;
-
-      //retry 20 times
-      if (count < 20 ) {
-        //first check if component itself is there
-        if ( typeof webcomponent === 'undefined')
-        {
-          setTimeout (function () {
-            setWhenLoaded (webcomponent, prop, val, count);
-          }, 25);
-          return;
-        }
-
-        // then check if property is available
-        // TODO: what to do when property is undefined by default, is there a different was to check?
-        if ( typeof webcomponent[prop] === 'undefined' )
-          {
-            setTimeout (function () {
-              setWhenLoaded (webcomponent, prop, val, count);
-              }, 25);
-            return;
-          }
-
-      }
-      webcomponent[prop] = val ;
-  }
-
   return {
     /**
      * Invoke a method on the component with the given id and arguments.
@@ -76,10 +47,13 @@ Dwcj.WcConnector = (() => {
      *
      * @returns the result of the method invocation
      */
-    invoke: (id, method, ...args) => {
+    invoke: async (id, method, ...args) => {
       const hv = getHV(id);
       const component = getEl(id);
       const m = method.toLowerCase();
+      const componentName = component.tagName.toLowerCase();
+
+      await customElements.whenDefined(componentName);
 
       // set or get property
       if (m === 'this') {
@@ -89,8 +63,7 @@ Dwcj.WcConnector = (() => {
           return component[args[0]];
         } else if (len === 2) {
           // set property
-          // component[args[0]] = args[1];
-          setWhenLoaded(component, args[0], args[1],0);
+          component[args[0]] = args[1];
         }
       }
 
@@ -120,9 +93,12 @@ Dwcj.WcConnector = (() => {
      * @param {string} options.isAccepted the expression to determine if the event should be accepted
      * @param {string} options.detail the expression to determine the detail of the event
      */
-    addEventListener: (id, eventName, options = null) => {
+    addEventListener: async (id, eventName, options = null) => {
       const hv = getHV(id);
       const component = getEl(id);
+      const componentName = component.tagName.toLowerCase();
+
+      await customElements.whenDefined(componentName);
 
       if (component[`__dwcj__${eventName}__h`]) {
         console.warn(`Duplicated listener registration for event "${eventName}"`, id);
@@ -187,8 +163,12 @@ Dwcj.WcConnector = (() => {
      * @param {string} id the id of the component
      * @param {string} eventName the name of the event to remove the listener from
      */
-    removeEventListener: (id, eventName) => {
+    removeEventListener: async (id, eventName) => {
       const component = getEl(id);
+      const componentName = component.tagName.toLowerCase();
+
+      await customElements.whenDefined(componentName);
+      
       const handler = component[`__dwcj__${eventName}__h`];
       if (!handler) {
         console.warn(`[Dwcj.WcConnector] no event listener found for event "${eventName}" on component with id "${id}"`);
