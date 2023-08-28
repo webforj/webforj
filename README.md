@@ -41,6 +41,7 @@ The DWCJ's [HelloWorld repository](https://github.com/DwcJava/HelloWorldJava) co
       border: 1px dotted;
     }
       """)
+@AppTitle("DWCJ Hello World")
 public class HelloWorldJava extends App {
 
   @Override
@@ -52,8 +53,8 @@ public class HelloWorldJava extends App {
     Label label = new Label("Hello World!");
 
     Button btn = new Button("Say Hello");
-    btn.setTheme(Button.Theme.SUCCESS)
-        .setExpanse(Button.Expanse.XLARGE)
+    btn.setTheme(ButtonTheme.SUCCESS)
+        .setExpanse(Expanse.XLARGE)
         .onClick(e -> msgbox("Hello World!"));
 
     frame.add(label, btn);
