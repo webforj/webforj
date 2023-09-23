@@ -1,5 +1,6 @@
 package org.dwcj.addons.terminal;
 
+import org.dwcj.Page;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.window.AbstractWindow;
@@ -38,14 +39,8 @@ public class Terminal extends Panel {
         "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) {setTimeout (function () {whenTerminalLoaded (callback);}, 100);} else { callback (); }}";
     hv.injectScript(script);
 
-    script = "var link =  $doc.createElement('script');"
-        + "link.setAttribute('type','text/javascript');"
-        + "link.setAttribute('src','https://cdn.jsdelivr.net/npm/xterm@4.13.0/lib/xterm.js');"
-        + "document.head.appendChild(link);" + "var link2 =  $doc.createElement('link');"
-        + "link2.setAttribute('rel','stylesheet');"
-        + "link2.setAttribute('href','https://cdn.jsdelivr.net/npm/xterm@4.13.0/css/xterm.css');"
-        + "document.head.appendChild(link2);";
-    hv.executeScript(script);
+    Page.getCurrent().addInlineStyleSheet("context://xtermjs/xterm.css");
+    Page.getCurrent().addInlineJavaScript("context://xtermjs/xterm.js", true);
 
     script = "whenTerminalLoaded(function() {window.term = new window.Terminal();"
         + "window.term.open(document.getElementById('" + uuid + "'));"
