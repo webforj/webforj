@@ -1464,7 +1464,7 @@ public abstract class WebComponent extends AbstractComponent {
     key = "org.dwcj.WebComponent::scripts";
     attached = ObjectTable.contains(key);
     if (!attached) {
-      App.getPage().addInlineJavaScript("context://webcomponent/wcconnector.min.js", true,
+      App.getPage().addInlineJavaScript("context://webcomponent/wcconnector.js", true,
           "id=wc-scripts");
       ObjectTable.put(key, true);
     }
@@ -1529,7 +1529,7 @@ public abstract class WebComponent extends AbstractComponent {
       int len = args.length;
       if (len == 1) {
         // get property
-        js.append(String.valueOf(args[0]));
+        js.append(String.valueOf(new Gson().toJson(args[0])));
       } else if (len == 2) {
         // set property
         js.append("'" + args[0] + "',").append(new Gson().toJson(args[1]));

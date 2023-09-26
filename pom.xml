@@ -74,12 +74,12 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.4.0</version>
+        <version>5.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
-        <version>5.4.0</version>
+        <version>5.5.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -170,7 +170,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.6.0</version>
           <configuration>
             <detectJavaApiLink>false</detectJavaApiLink>
             <failOnError>false</failOnError>
