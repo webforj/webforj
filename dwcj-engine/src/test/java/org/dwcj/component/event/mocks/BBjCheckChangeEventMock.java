@@ -1,5 +1,7 @@
 package org.dwcj.component.event.mocks;
 
+import java.util.HashMap;
+import java.util.Map;
 import com.basis.bbj.proxies.event.BBjCheckChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.bbj.proxies.sysgui.BBjControl;
@@ -43,5 +45,10 @@ public class BBjCheckChangeEventMock implements BBjCheckChangeEvent {
   @Override
   public String getEventName() {
     return "test";
+  }
+
+  @Override
+  public Map<String, Object> getClientMap() {
+    return new HashMap<String, Object>();
   }
 }
