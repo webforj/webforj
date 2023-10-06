@@ -33,13 +33,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractFieldTest {
+class AbstractDwcFieldTest {
 
   @Mock
   BBjEditBox control;
 
   @InjectMocks
-  AbstractFieldMock component;
+  AbstractDwcFieldMock component;
 
   void nullifyControl() throws IllegalAccessException {
     FieldUtils.writeField(component, "control", null, true);
@@ -162,7 +162,7 @@ class AbstractFieldTest {
   @DisplayName("catchUp behavior")
   class CatchUp {
 
-    void invokeCatchUp(AbstractFieldMock component)
+    void invokeCatchUp(AbstractDwcFieldMock component)
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
       MethodUtils.invokeMethod(component, true, "catchUp");
     }
@@ -171,7 +171,7 @@ class AbstractFieldTest {
     @DisplayName("calling twice should not be allowed")
     void callingTwiceShouldNotBeAllowed()
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      AbstractFieldMock componentSpy = spy(component);
+      AbstractDwcFieldMock componentSpy = spy(component);
       invokeCatchUp(componentSpy);
       assertThrows(InvocationTargetException.class, () -> {
         invokeCatchUp(componentSpy);

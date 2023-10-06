@@ -17,7 +17,7 @@ import java.awt.Color;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class ColorField extends AbstractField<ColorField, Color> {
+public final class ColorField extends AbstractDwcField<ColorField, Color> {
 
   /**
    * Construct a new color field with the given label and value.

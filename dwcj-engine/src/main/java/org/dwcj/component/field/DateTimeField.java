@@ -31,7 +31,7 @@ import org.dwcj.concern.HasMin;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class DateTimeField extends AbstractField<DateTimeField, LocalDateTime>
+public final class DateTimeField extends AbstractDwcField<DateTimeField, LocalDateTime>
     implements HasMin<DateTimeField, LocalDateTime>, HasMax<DateTimeField, LocalDateTime>,
     HasHighlightOnFocus<DateTimeField> {
 

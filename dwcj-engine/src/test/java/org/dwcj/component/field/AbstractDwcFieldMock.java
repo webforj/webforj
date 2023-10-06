@@ -1,6 +1,6 @@
 package org.dwcj.component.field;
 
-public class AbstractFieldMock extends AbstractField<AbstractFieldMock, String> {
+public class AbstractDwcFieldMock extends AbstractDwcField<AbstractDwcFieldMock, String> {
 
   /**
    * {@inheritDoc}
@@ -14,7 +14,7 @@ public class AbstractFieldMock extends AbstractField<AbstractFieldMock, String> 
    * {@inheritDoc}
    */
   @Override
-  public AbstractFieldMock setValue(String value) {
+  public AbstractDwcFieldMock setValue(String value) {
     setText(value);
     return this;
   }

@@ -21,7 +21,7 @@ import org.dwcj.concern.HasMin;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class TimeField extends AbstractField<TimeField, LocalTime> implements
+public final class TimeField extends AbstractDwcField<TimeField, LocalTime> implements
     HasMin<TimeField, LocalTime>, HasMax<TimeField, LocalTime>, HasHighlightOnFocus<TimeField> {
 
   private LocalTime min = null;

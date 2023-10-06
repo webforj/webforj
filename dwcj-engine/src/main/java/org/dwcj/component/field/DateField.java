@@ -19,7 +19,7 @@ import org.dwcj.concern.HasMin;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class DateField extends AbstractField<DateField, LocalDate> implements
+public final class DateField extends AbstractDwcField<DateField, LocalDate> implements
     HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate>, HasHighlightOnFocus<DateField> {
 
   private LocalDate min = null;

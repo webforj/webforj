@@ -19,7 +19,7 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class NumberField extends AbstractField<NumberField, Double> implements
+public final class NumberField extends AbstractDwcField<NumberField, Double> implements
     HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
     HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
 

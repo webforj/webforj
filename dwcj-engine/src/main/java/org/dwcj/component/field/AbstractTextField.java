@@ -17,7 +17,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-abstract class AbstractTextField<T extends AbstractTextField<T>> extends AbstractField<T, String>
+abstract class AbstractTextField<T extends AbstractTextField<T>> extends AbstractDwcField<T, String>
     implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T> {
 
   private int minLength = 0;

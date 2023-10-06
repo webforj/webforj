@@ -38,12 +38,12 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /**
- * The Base class for all fields components.
+ * The Base class for all DWC fields components.
  *
  * @author Hyyan Abo Fakher
- * @since 23.02
+ * @since 23.05
  */
-abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable & HasReadOnly, V>
+abstract class AbstractDwcField<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable & HasReadOnly, V>
     extends AbstractDwcComponent implements DwcjFieldComponent, HasEnable, HasReadOnly, HasFocus,
     HasTabTraversal, HasExpanse<T, Expanse>, HasValue<T, V> {
 
@@ -75,7 +75,7 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & HasTabT
   /**
    * Construct a new field.
    */
-  protected AbstractField() {
+  protected AbstractDwcField() {
     setExpanse(Expanse.MEDIUM);
   }
 
@@ -443,7 +443,7 @@ abstract class AbstractField<T extends AbstractDwcComponent & HasFocus & HasTabT
   /**
    * Alias for {@link #addKeypressListener(EventListener) addKeypressListener}.
    *
-   * @see AbstractField #addKeypressListener(EventListener)
+   * @see AbstractDwcField #addKeypressListener(EventListener)
    * @param listener The event listener to be removed
    *
    * @return the component itself
