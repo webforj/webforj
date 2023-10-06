@@ -11,14 +11,14 @@ import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The AbstractEventSink sink implements the required logic for setting and removing the callback on
- * a BBjControl. Subclasses must implement the handleEvent method which is responsible for
+ * The AbstractDwcEventSink sink implements the required logic for setting and removing the callback
+ * on a BBjControl. Subclasses must implement the handleEvent method which is responsible for
  * delegating the BBj event to the corresponding event listener to the Java component.
  *
  * @author Hyyan Abo Fakher
- * @since 23.01
+ * @since 23.05
  */
-public abstract class AbstractEventSink implements DwcEventSink {
+public abstract class AbstractDwcEventSink implements DwcEventSink {
   private final AbstractDwcComponent component;
   private EventDispatcher dispatcher;
   private final int eventType;
@@ -32,7 +32,7 @@ public abstract class AbstractEventSink implements DwcEventSink {
    * @param dispatcher The events dispatcher
    * @param eventType The type of the BBj event
    */
-  protected AbstractEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
+  protected AbstractDwcEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
       int eventType) {
     this.component = component;
     this.dispatcher = dispatcher;

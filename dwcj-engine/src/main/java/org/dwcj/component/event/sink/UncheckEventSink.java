@@ -10,7 +10,7 @@ import org.dwcj.component.event.UncheckEvent;
 /**
  * This class will map the BBjCheckOffEvent event to a Java {@link UncheckEvent}.
  */
-public class UncheckEventSink extends AbstractEventSink {
+public class UncheckEventSink extends AbstractDwcEventSink {
 
   public UncheckEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_OFF);

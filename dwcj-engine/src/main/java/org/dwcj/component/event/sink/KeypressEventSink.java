@@ -13,7 +13,7 @@ import org.dwcj.component.field.DwcjFieldComponent;
  * An abstract class of a keypress event sink which would handle a BBjKeypressEvent and dispatch the
  * corresponding Java event.
  */
-public class KeypressEventSink extends AbstractEventSink {
+public class KeypressEventSink extends AbstractDwcEventSink {
 
   public KeypressEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
     super(component, dispatcher,
