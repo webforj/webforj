@@ -32,12 +32,12 @@ import org.dwcj.concern.HasTheme;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * An abstract button component implementation of {@link DwcButton}.
+ * An abstract dwc button component.
  *
  * @author Hyyan Abo Fakher
- * @since 23.02
+ * @since 23.05
  */
-abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable>
+abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable>
     extends AbstractDwcComponent implements HasFocus, HasTabTraversal, HasEnable,
     HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T> {
   private boolean disableOnClick = false;
@@ -61,7 +61,7 @@ abstract class AbstractButton<T extends AbstractDwcComponent & HasFocus & HasTab
           RightMouseDownEvent.class);
 
 
-  protected AbstractButton() {
+  protected AbstractDwcButton() {
     super();
     setExpanse(Expanse.MEDIUM);
   }

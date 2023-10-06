@@ -2,7 +2,7 @@ package org.dwcj.component.button;
 
 import org.dwcj.component.window.AbstractWindow;
 
-public class AbstractButtonMock extends AbstractButton<AbstractButtonMock> {
+public class AbstractDwcButtonMock extends AbstractDwcButton<AbstractDwcButtonMock> {
 
   @Override
   protected void create(AbstractWindow panel) {

@@ -16,7 +16,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @since 23.02
  */
 @MetaInf(group = "dwc.form")
-public final class Button extends AbstractButton<Button> {
+public final class Button extends AbstractDwcButton<Button> {
 
   /**
    * Construct the button with the given text.

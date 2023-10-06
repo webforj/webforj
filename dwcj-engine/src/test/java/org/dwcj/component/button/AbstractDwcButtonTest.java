@@ -32,13 +32,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class AbstractButtonTest {
+public class AbstractDwcButtonTest {
 
   @Mock
   BBjButton control;
 
   @InjectMocks
-  AbstractButtonMock component;
+  AbstractDwcButtonMock component;
 
   void nullifyControl() throws IllegalAccessException {
     FieldUtils.writeField(component, "control", null, true);
