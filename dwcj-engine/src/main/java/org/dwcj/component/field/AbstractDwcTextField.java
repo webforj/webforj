@@ -12,19 +12,20 @@ import org.dwcj.concern.HasMinLength;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The Base class for all fields components.
+ * The Base class for all DWC text fields components.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-abstract class AbstractTextField<T extends AbstractTextField<T>> extends AbstractDwcField<T, String>
+abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
+    extends AbstractDwcField<T, String>
     implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T> {
 
   private int minLength = 0;
   private int maxLength = 524288;
   private SelectionRange range = null;
 
-  protected AbstractTextField() {
+  protected AbstractDwcTextField() {
     super();
     setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }

@@ -14,7 +14,7 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class TextField extends AbstractTextField<TextField>
+public final class TextField extends AbstractDwcTextField<TextField>
     implements HasPlaceholder<TextField> {
 
   /**

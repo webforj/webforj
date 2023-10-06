@@ -14,7 +14,7 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class PasswordField extends AbstractTextField<PasswordField>
+public final class PasswordField extends AbstractDwcTextField<PasswordField>
     implements HasPlaceholder<PasswordField> {
 
   private boolean passwordReveal = true;

@@ -26,24 +26,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractTextFieldTest {
+class AbstractDwcTextFieldTest {
 
   @Mock
   BBjEditBox control;
 
   @InjectMocks
-  AbstractTextFieldMock component;
+  AbstractDwcTextFieldMock component;
 
   void nullifyControl() throws IllegalAccessException {
     FieldUtils.writeField(component, "control", null, true);
   }
 
-  void nullifyControl(AbstractTextFieldMock component) throws IllegalAccessException {
+  void nullifyControl(AbstractDwcTextFieldMock component) throws IllegalAccessException {
     FieldUtils.writeField(component, "control", null, true);
   }
 
 
-  void invokeCatchUp(AbstractTextFieldMock component)
+  void invokeCatchUp(AbstractDwcTextFieldMock component)
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     MethodUtils.invokeMethod(component, true, "catchUp");
   }
@@ -108,7 +108,7 @@ class AbstractTextFieldTest {
     @Test
     @DisplayName("setting/getting value when control is null")
     void settingGettingValueWhenControlIsNull() throws IllegalAccessException, BBjException {
-      AbstractTextFieldMock spy = spy(component);
+      AbstractDwcTextFieldMock spy = spy(component);
       nullifyControl(spy);
       spy.setValue("test");
       assertEquals("test", spy.getValue());
@@ -120,7 +120,7 @@ class AbstractTextFieldTest {
     @Test
     @DisplayName("setting/getting value when control is not null")
     void settingGettingValueWhenControlIsNotNull() throws BBjException {
-      AbstractTextFieldMock spy = spy(component);
+      AbstractDwcTextFieldMock spy = spy(component);
       doReturn("test").when(spy).getText();
       spy.setValue("test");
       assertEquals("test", spy.getValue());
@@ -180,7 +180,7 @@ class AbstractTextFieldTest {
     @DisplayName("catchup will reapply the selection")
     void catchup() throws BBjException, IllegalAccessException, NoSuchMethodException,
         InvocationTargetException {
-      AbstractTextFieldMock spy = spy(component);
+      AbstractDwcTextFieldMock spy = spy(component);
       nullifyControl(spy);
       spy.setSelectionRange(0, 10);
 
