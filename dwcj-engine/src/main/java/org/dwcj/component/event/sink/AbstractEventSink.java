@@ -18,7 +18,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public abstract class AbstractEventSink implements EventSinkInterface {
+public abstract class AbstractEventSink implements DwcEventSink {
   private final AbstractDwcComponent component;
   private EventDispatcher dispatcher;
   private final int eventType;

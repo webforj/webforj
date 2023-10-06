@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.sink.EventSinkInterface;
+import org.dwcj.component.event.sink.DwcEventSink;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -20,7 +20,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public abstract class AbstractRadioButtonEventSink implements EventSinkInterface {
+public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
 
   private final RadioButtonGroup component;
   private EventDispatcher dispatcher;

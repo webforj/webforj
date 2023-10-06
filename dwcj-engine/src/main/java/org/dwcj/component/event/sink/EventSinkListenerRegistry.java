@@ -14,7 +14,7 @@ import org.dwcj.component.event.EventListener;
  * @since 23.01
  */
 public class EventSinkListenerRegistry<T extends Event<?>> {
-  private final EventSinkInterface sink;
+  private final DwcEventSink sink;
   private final Class<T> event;
 
   /**
@@ -23,7 +23,7 @@ public class EventSinkListenerRegistry<T extends Event<?>> {
    * @param sink The corresponding sink to the event
    * @param event The corresponding event to the sink
    */
-  public EventSinkListenerRegistry(EventSinkInterface sink, Class<T> event) {
+  public EventSinkListenerRegistry(DwcEventSink sink, Class<T> event) {
     this.sink = sink;
     this.event = event;
   }
