@@ -1,8 +1,6 @@
 package org.dwcj.component.event.mocks;
 
 
-import java.util.HashMap;
-import java.util.Map;
 import com.basis.bbj.proxies.event.BBjMouseEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
@@ -100,10 +98,5 @@ public class BBjMouseEventMock implements BBjMouseEvent {
   @Override
   public boolean isShiftDown() {
     return true;
-  }
-
-  @Override
-  public Map<String, Object> getClientMap() {
-    return new HashMap<String, Object>();
   }
 }

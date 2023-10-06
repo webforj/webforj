@@ -1,7 +1,5 @@
 package org.dwcj.component.event.mocks;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.basis.bbj.proxies.event.BBjEditModifyEvent;
 import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.bbj.proxies.sysgui.BBjControl;
@@ -72,10 +70,4 @@ public class BBjEditModifyEventMock implements BBjEditModifyEvent {
   public String getText() {
     return "text";
   }
-
-  @Override
-  public Map<String, Object> getClientMap() {
-    return new HashMap<String, Object>();
-  }
-
 }
