@@ -380,7 +380,7 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addClickListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addClickListener(EventListener)
    */
   public T onClick(EventListener<ButtonClickEvent> listener) {
     return addClickListener(listener);
@@ -416,7 +416,7 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addFocusListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addFocusListener(EventListener)
    */
   public T onFocus(EventListener<FocusEvent> listener) {
     return addFocusListener(listener);
@@ -452,7 +452,7 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addBlurListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addBlurListener(EventListener)
    */
   public T onBlur(EventListener<BlurEvent> listener) {
     return addBlurListener(listener);
@@ -488,7 +488,7 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addMouseEnterListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addMouseEnterListener(EventListener)
    */
   public T onMouseEnter(EventListener<MouseEnterEvent> listener) {
     return addMouseEnterListener(listener);
@@ -524,7 +524,7 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addMouseExitListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addMouseExitListener(EventListener)
    */
   public T onMouseExit(EventListener<MouseExitEvent> listener) {
     return addMouseExitListener(listener);
@@ -560,7 +560,7 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addRightMouseDownListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addRightMouseDownListener(EventListener)
    */
   public T onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);

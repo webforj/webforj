@@ -42,13 +42,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class AbstractOptionInputTest {
+public class AbstractDwcOptionInputTest {
 
   @Mock
   BBjToggleButton control;
 
   @InjectMocks
-  AbstractOptionInputMock component;
+  AbstractDwcOptionInputMock component;
 
   void nullifyControl() throws IllegalAccessException {
     FieldUtils.writeField(component, "control", null, true);
@@ -148,7 +148,7 @@ public class AbstractOptionInputTest {
   @DisplayName("catchUp behavior")
   class CatchUp {
 
-    void invokeCatchUp(AbstractOptionInputMock component)
+    void invokeCatchUp(AbstractDwcOptionInputMock component)
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
       MethodUtils.invokeMethod(component, true, "catchUp");
     }
@@ -157,7 +157,7 @@ public class AbstractOptionInputTest {
     @DisplayName("calling twice should not be allowed")
     void callingTwiceShouldNotBeAllowed()
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      AbstractOptionInputMock componentSpy = spy(component);
+      AbstractDwcOptionInputMock componentSpy = spy(component);
       invokeCatchUp(componentSpy);
       assertThrows(InvocationTargetException.class, () -> {
         invokeCatchUp(componentSpy);
@@ -168,7 +168,7 @@ public class AbstractOptionInputTest {
     @DisplayName("catchup method")
     void catchup() throws BBjException, NoSuchMethodException, IllegalAccessException,
         InvocationTargetException {
-      AbstractOptionInputMock componentSpy = spy(component);
+      AbstractDwcOptionInputMock componentSpy = spy(component);
 
       componentSpy.setChecked(true);
       componentSpy.setTextPosition(Position.LEFT);

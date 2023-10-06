@@ -282,7 +282,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addChangeListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addChangeListener(EventListener)
    */
   public RadioButtonGroup onChange(EventListener<RadioButtonGroupChangeEvent> listener) {
     return addChangeListener(listener);

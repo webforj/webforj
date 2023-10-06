@@ -33,16 +33,16 @@ import org.dwcj.concern.HasTextPosition;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The AbstractOptionInput class is an abstract base class for input components that represent
- * options, such as checkboxes and radio buttons. It extends the AbstractDwcComponent class and
- * implements the HasFocus, TabTraversable, TextPosition, and HasEnable interfaces.
+ * The base class for input components that represent options, such as checkboxes and radio buttons.
+ * It extends the AbstractDwcComponent class and implements the HasFocus, TabTraversable,
+ * TextPosition, and HasEnable interfaces.
  *
- * @param <T> the concrete subclass that extends AbstractOptionInput
+ * @param <T> the concrete subclass that extends AbstractDwcOptionInput
  *
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasTextPosition & HasEnable>
+abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasTextPosition & HasEnable>
     extends AbstractDwcComponent
     implements HasFocus, HasTabTraversal, HasTextPosition, HasEnable, HasExpanse<T, Expanse> {
 
@@ -76,7 +76,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param text Desired text for the AbstractOptionInput.
    * @param checked True if the AbstractOptionInput should be created as checked, false otherwise.
    */
-  protected AbstractOptionInput(String text, boolean checked) {
+  protected AbstractDwcOptionInput(String text, boolean checked) {
     super();
     setText(text);
     setChecked(checked);
@@ -355,7 +355,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addCheckListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addCheckListener(EventListener)
    */
   public T onCheck(EventListener<CheckEvent> listener) {
     return addCheckListener(listener);
@@ -390,7 +390,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addUncheckListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addUncheckListener(EventListener)
    */
   public T onUncheck(EventListener<UncheckEvent> listener) {
     return addUncheckListener(listener);
@@ -426,7 +426,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addToggleListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addToggleListener(EventListener)
    */
   public T onToggle(EventListener<ToggleEvent> listener) {
     return addToggleListener(listener);
@@ -462,7 +462,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addFocusListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addFocusListener(EventListener)
    */
   public T onFocus(EventListener<FocusEvent> listener) {
     return addFocusListener(listener);
@@ -498,7 +498,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addBlurListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addBlurListener(EventListener)
    */
   public T onBlur(EventListener<BlurEvent> listener) {
     return addBlurListener(listener);
@@ -534,7 +534,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addMouseEnterListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addMouseEnterListener(EventListener)
    */
   public T onMouseEnter(EventListener<MouseEnterEvent> listener) {
     return addMouseEnterListener(listener);
@@ -570,7 +570,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addMouseExitListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addMouseExitListener(EventListener)
    */
   public T onMouseExit(EventListener<MouseExitEvent> listener) {
     return addMouseExitListener(listener);
@@ -606,7 +606,7 @@ abstract class AbstractOptionInput<T extends AbstractDwcComponent & HasFocus & H
    * @param listener the event listener to be added
    * @return The component itself
    *
-   * @see AbstractOptionInputTest#addRightMouseDownListener(EventListener)
+   * @see AbstractDwcOptionInputTest#addRightMouseDownListener(EventListener)
    */
   public T onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);

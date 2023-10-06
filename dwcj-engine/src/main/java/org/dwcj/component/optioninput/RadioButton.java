@@ -28,7 +28,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public final class RadioButton extends AbstractOptionInput<RadioButton> {
+public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
 
   /**
    * List of possible activation types supported by the radio button.
