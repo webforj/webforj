@@ -3,10 +3,14 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * Interface facilitates implementation of behaviors to modify a component's minimum value.
+ * An interface that enables modification of a component's minimum value.
  *
- * @param <T> the type of the component
- * @param <V> the type of the minimum value
+ * <p>
+ * This interface provides methods to set and retrieve the minimum possible value for the component.
+ * </p>
+ *
+ * @param <T> the type of the component that implements this interface.
+ * @param <V> the type of the minimum value.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -14,20 +18,18 @@ import org.dwcj.component.Component;
 public interface HasMin<T extends Component, V> {
 
   /**
-   * Set the minimum possible value for the component.
+   * Sets the minimum possible value for the component.
    *
-   * @param min the minimum value
+   * @param min the minimum value to set
    *
-   * @return the component itself
-   * @since 23.02
+   * @return the component itself.
    */
   public T setMin(V min);
 
   /**
-   * Returns the minimum possible value for the component.
+   * Retrieves the minimum possible value for the component.
    *
-   * @return the minimum component value
-   * @since 23.02
+   * @return the minimum value of the component.
    */
   public V getMin();
 }

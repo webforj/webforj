@@ -11,23 +11,23 @@ import org.dwcj.component.listbox.event.ListBoxDoubleClickEvent;
 import org.dwcj.component.listbox.event.ListBoxSelectEvent;
 import org.dwcj.component.listbox.sink.ListBoxDoubleClickEventSink;
 import org.dwcj.component.listbox.sink.ListBoxSelectEventSink;
-import org.dwcj.component.texts.Label;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasFocus;
+import org.dwcj.component.text.Label;
+import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasHorizontalAlignment;
-import org.dwcj.concern.HasMouseWheelCondition;
-import org.dwcj.concern.HasReadOnly;
-import org.dwcj.concern.HasScrollability;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasFocus;
+import org.dwcj.concern.legacy.LegacyHasMouseWheelCondition;
+import org.dwcj.concern.legacy.LegacyHasReadOnly;
+import org.dwcj.concern.legacy.LegacyHasScrollability;
+import org.dwcj.concern.legacy.LegacyHasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
 public final class ListBox extends AbstractListBox
-    implements HasScrollability, HasEnable, HasReadOnly, HasFocus, HasMouseWheelCondition,
-    HasTabTraversal, HasHorizontalAlignment<ListBox> {
+    implements LegacyHasScrollability, LegacyHasEnable, LegacyHasReadOnly, LegacyHasFocus,
+    LegacyHasMouseWheelCondition, LegacyHasTabTraversal, HasHorizontalAlignment<ListBox> {
 
   private BBjListBox bbjListBox;
 
@@ -53,7 +53,7 @@ public final class ListBox extends AbstractListBox
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
@@ -65,7 +65,7 @@ public final class ListBox extends AbstractListBox
       control.setAttribute("button-height", "auto");
       bbjListBox = (BBjListBox) control;
       populate();
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -649,12 +649,8 @@ public final class ListBox extends AbstractListBox
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     if (!this.selectEvents.isEmpty()) {
       this.selectEventSink = new ListBoxSelectEventSink(this);

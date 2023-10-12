@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import java.util.Map;
 import org.dwcj.addons.googlecharts.GoogleChart;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.webcomponent.annotation.EventExpressions;
 import org.dwcj.component.webcomponent.annotation.EventName;
 
@@ -15,7 +15,7 @@ import org.dwcj.component.webcomponent.annotation.EventName;
  */
 @EventName(value = "google-chart-select")
 @EventExpressions(detail = "event.detail = event.detail.chart.getSelection();")
-public final class GoogleChartSelectedEvent extends Event<GoogleChart> {
+public final class GoogleChartSelectedEvent extends ComponentEvent<GoogleChart> {
 
   /**
    * Construct new GoogleChartSelectedEvent.

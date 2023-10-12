@@ -6,25 +6,25 @@ import java.util.function.Consumer;
 import org.dwcj.Environment;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 import org.dwcj.component.window.event.WindowClickEvent;
 import org.dwcj.component.window.sink.WindowClickEventSink;
-import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.legacy.LegacyHasEnable;
 
 
 /**
  * This class represents a div container, which behaves as a panel and can be styled and hold other
  * divs (panels) and controls.
  */
-public class Panel extends AbstractWindow implements HasEnable {
+public class Panel extends Window implements LegacyHasEnable {
 
   private ArrayList<Consumer<WindowClickEvent>> callbacks = new ArrayList<>();
   private WindowClickEventSink divClickEventSink;
 
-  private final ArrayList<AbstractComponent> catchUpControls = new ArrayList<>();
+  private final ArrayList<Component> catchUpControls = new ArrayList<>();
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     BBjWindow w = p.getBBjWindow();
     try {
       byte finalFlag = 0x00;
@@ -40,7 +40,7 @@ public class Panel extends AbstractWindow implements HasEnable {
       wnd = w.addChildWindow(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, "", flags, Environment.getCurrent().getSysGui().getAvailableContext());
       control = wnd;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -55,8 +55,8 @@ public class Panel extends AbstractWindow implements HasEnable {
    * @return the panel itself
    */
   @Override
-  public Panel add(AbstractComponent... control) {
-    for (AbstractComponent c : control) {
+  public Panel add(Component... control) {
+    for (Component c : control) {
       if (this.control != null && Boolean.FALSE.equals(c.isDestroyed())) {
         try {
           AnnotationProcessor processor = new AnnotationProcessor();
@@ -150,11 +150,8 @@ public class Panel extends AbstractWindow implements HasEnable {
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     while (!this.catchUpControls.isEmpty()) {
       this.add(catchUpControls.remove(0));
@@ -176,7 +173,7 @@ public class Panel extends AbstractWindow implements HasEnable {
    * removes and destroys all controls within the Div.
    */
   protected void clear() {
-    for (AbstractComponent component : this.components.values()) {
+    for (Component component : this.components.values()) {
       component.destroy();
     }
     components.clear();

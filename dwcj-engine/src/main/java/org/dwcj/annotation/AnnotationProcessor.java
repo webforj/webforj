@@ -3,7 +3,7 @@ package org.dwcj.annotation;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.dwcj.App;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
 
@@ -60,7 +60,7 @@ public final class AnnotationProcessor {
    *
    * @param control The control to process
    */
-  public void processControlAnnotations(AbstractComponent control) {
+  public void processControlAnnotations(Component control) {
     processConfiguration(control, RunningPhase.POST_RUN);
     processLink(control);
     processStyleSheet(control);

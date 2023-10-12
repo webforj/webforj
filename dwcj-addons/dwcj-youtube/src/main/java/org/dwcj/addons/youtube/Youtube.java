@@ -8,7 +8,7 @@ import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.HtmlViewAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeName;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasAttribute;
 import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
@@ -55,7 +55,8 @@ import org.dwcj.concern.HasStyle;
       margin-left: -100%;
     }
     """)
-public class Youtube extends WebComponent implements HasClassName, HasStyle, HasAttribute {
+public class Youtube extends WebComponent
+    implements HasAttribute<Youtube>, HasClassName<Youtube>, HasStyle<Youtube> {
 
   /** The type of the content that will load in the player. */
   public enum ListType {
@@ -734,7 +735,7 @@ public class Youtube extends WebComponent implements HasClassName, HasStyle, Has
    * {@inheritDoc}
    */
   @Override
-  protected void onAttach(AbstractWindow panel) {
+  protected void onAttach(Window panel) {
     super.onAttach(panel);
     updateSrc();
   }

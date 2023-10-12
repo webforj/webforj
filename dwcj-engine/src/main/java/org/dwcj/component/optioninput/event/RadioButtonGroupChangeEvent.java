@@ -1,7 +1,7 @@
 package org.dwcj.component.optioninput.event;
 
 import java.util.Map;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.optioninput.RadioButton;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 
@@ -13,7 +13,7 @@ import org.dwcj.component.optioninput.RadioButtonGroup;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public class RadioButtonGroupChangeEvent extends Event<RadioButtonGroup> {
+public class RadioButtonGroupChangeEvent extends ComponentEvent<RadioButtonGroup> {
 
   /**
    * Creates a new event.

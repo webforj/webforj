@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import java.time.LocalDateTime;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +23,10 @@ class DateTimeFieldTest {
   @InjectMocks
   DateTimeField component = new DateTimeField();
 
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
-
   @Test
   @DisplayName("setText through IllegalArgumentException if text is not a valid date and time")
   void setTextValidatesDateTime() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     assertThrows(IllegalArgumentException.class, () -> component.setText("not a date and time"));
     assertThrows(IllegalArgumentException.class, () -> component.setText("2020-01-01"));
     assertThrows(IllegalArgumentException.class, () -> component.setText("2020-01-01T10:00:00Z"));
@@ -67,7 +63,7 @@ class DateTimeFieldTest {
   @Test
   @DisplayName("set/getValue")
   void setGetValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
 
     LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, 10, 0);
     component.setValue(dateTime);
@@ -82,7 +78,7 @@ class DateTimeFieldTest {
   @Test
   @DisplayName("setMin validates relationship with current value")
   void setMinValidatesCurrentValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     LocalDateTime currentValue = LocalDateTime.of(2021, 1, 1, 10, 0);
     LocalDateTime min = LocalDateTime.of(2022, 1, 1, 10, 0);
 
@@ -98,7 +94,7 @@ class DateTimeFieldTest {
   @Test
   @DisplayName("setMax validates relationship with current value")
   void setMaxValidatesCurrentValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
 
     LocalDateTime currentValue = LocalDateTime.of(2021, 1, 1, 10, 0);
     LocalDateTime max = LocalDateTime.of(2020, 1, 1, 10, 0);

@@ -1,7 +1,9 @@
 package org.dwcj.component;
 
 /**
- * Interface for components that support the expanse attribute.
+ * An interface for components that support the expanse attribute.
+ *
+ * @see HasExpense
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -9,9 +11,9 @@ package org.dwcj.component;
 public interface ExpanseBase {
 
   /**
-   * Get the current expanse.
+   * Gets the current expanse value.
    *
-   * @return the current expanse
+   * @return the current expanse value
    */
   public String getValue();
 }

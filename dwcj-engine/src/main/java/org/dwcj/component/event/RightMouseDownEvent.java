@@ -1,7 +1,7 @@
 package org.dwcj.component.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 
 /**
  * An event that is fired when the right mousebutton is pressed.
@@ -10,7 +10,7 @@ import org.dwcj.component.AbstractComponent;
  */
 public class RightMouseDownEvent extends MouseEvent {
 
-  public RightMouseDownEvent(AbstractComponent component, Map<String, Object> payload) {
+  public RightMouseDownEvent(Component component, Map<String, Object> payload) {
     super(component, payload);
   }
 }

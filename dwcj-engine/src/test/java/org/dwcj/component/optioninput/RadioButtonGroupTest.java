@@ -12,10 +12,8 @@ import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
-import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,13 +24,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class RadioButtonGroupTest {
+class RadioButtonGroupTest {
 
   @Mock
   BBjRadioGroup group;
 
   @Mock
-  AbstractWindow window;
+  Window window;
 
   @InjectMocks
   RadioButtonGroup component = new RadioButtonGroup();
@@ -70,7 +68,7 @@ public class RadioButtonGroupTest {
     @DisplayName("When button is already attached to a window")
     void whenButtonIsAlreadyAttachedToAWindow() throws BBjException, IllegalAccessException {
       RadioButton[] buttons = {spy(new RadioButton()), new RadioButton()};
-      when(buttons[0].getCaughtUp()).thenReturn(true);
+      when(buttons[0].isAttached()).thenReturn(true);
 
       component.add(buttons);
 
@@ -221,27 +219,6 @@ public class RadioButtonGroupTest {
         throws BBjException, IllegalAccessException {
       doThrow(BBjException.class).when(group).setName(any());
       assertThrows(DwcjRuntimeException.class, () -> component.setName("name"));
-    }
-  }
-
-  @Nested
-  @DisplayName("catchUp behavior")
-  class CatchUp {
-
-    void invokeCatchUp(RadioButtonGroup component)
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      MethodUtils.invokeMethod(component, true, "catchUp");
-    }
-
-    @Test
-    @DisplayName("calling twice should not be allowed")
-    void callingTwiceShouldNotBeAllowed()
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      RadioButtonGroup componentSpy = spy(component);
-      invokeCatchUp(componentSpy);
-      assertThrows(InvocationTargetException.class, () -> {
-        invokeCatchUp(componentSpy);
-      });
     }
   }
 }

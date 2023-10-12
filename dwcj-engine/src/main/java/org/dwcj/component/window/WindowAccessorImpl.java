@@ -11,7 +11,7 @@ import org.dwcj.bridge.WindowAccessor;
 final class WindowAccessorImpl extends WindowAccessor {
 
   @Override
-  public BBjWindow getBBjWindow(AbstractWindow panel) throws IllegalAccessException {
+  public BBjWindow getBBjWindow(Window panel) throws IllegalAccessException {
 
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();

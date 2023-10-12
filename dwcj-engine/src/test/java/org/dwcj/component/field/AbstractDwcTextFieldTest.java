@@ -13,8 +13,7 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.SelectionRange;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -34,21 +33,6 @@ class AbstractDwcTextFieldTest {
   @InjectMocks
   AbstractDwcTextFieldMock component;
 
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
-
-  void nullifyControl(AbstractDwcTextFieldMock component) throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
-
-
-  void invokeCatchUp(AbstractDwcTextFieldMock component)
-      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    MethodUtils.invokeMethod(component, true, "catchUp");
-  }
-
-
   @Nested
   @DisplayName("MaxLength API")
   class MaxLengthApi {
@@ -56,7 +40,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("setting/getting max length when control is null")
     void settingGettingMaxLengthWhenControlIsNull() throws IllegalAccessException, BBjException {
-      nullifyControl();
+      ReflectionUtils.nullifyControl(component);
       component.setMaxLength(10);
       assertEquals(10, component.getMaxLength());
 
@@ -82,7 +66,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("setting/getting min length when control is null")
     void settingGettingMinLengthWhenControlIsNull() throws IllegalAccessException, BBjException {
-      nullifyControl();
+      ReflectionUtils.nullifyControl(component);
       component.setMinLength(10);
       assertEquals(10, component.getMinLength());
 
@@ -109,7 +93,7 @@ class AbstractDwcTextFieldTest {
     @DisplayName("setting/getting value when control is null")
     void settingGettingValueWhenControlIsNull() throws IllegalAccessException, BBjException {
       AbstractDwcTextFieldMock spy = spy(component);
-      nullifyControl(spy);
+      ReflectionUtils.nullifyControl(spy);
       spy.setValue("test");
       assertEquals("test", spy.getValue());
 
@@ -137,7 +121,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("setting/getting selection when control is null")
     void settingGettingSelectionWhenControlIsNull() throws IllegalAccessException, BBjException {
-      nullifyControl(component);
+      ReflectionUtils.nullifyControl(component);
       component.setSelectionRange(0, 10);
 
       SelectionRange range = component.getSelectionRange();
@@ -177,22 +161,24 @@ class AbstractDwcTextFieldTest {
     }
 
     @Test
-    @DisplayName("catchup will reapply the selection")
+    @DisplayName("onAttach will reapply the selection")
     void catchup() throws BBjException, IllegalAccessException, NoSuchMethodException,
         InvocationTargetException {
-      AbstractDwcTextFieldMock spy = spy(component);
-      nullifyControl(spy);
-      spy.setSelectionRange(0, 10);
+      ReflectionUtils.nullifyControl(component);
+      component.setSelectionRange(0, 10);
 
-      invokeCatchUp(spy);
+      verify(control, times(0)).select(0, 10);
 
-      verify(spy, times(1)).setSelectionRange(0, 10);
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).select(0, 10);
     }
 
     @Test
     @DisplayName("getSelectedText when the control is null")
     void getSelectedTextWhenControlIsNull() throws IllegalAccessException, BBjException {
-      nullifyControl(component);
+      ReflectionUtils.nullifyControl(component);
       verify(control, times(0)).getSelectedText();
     }
 
@@ -213,7 +199,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("getSelectedText when control is null but range is set")
     void getSelectedTextWhenControlIsNullButRangeIsSet() throws IllegalAccessException {
-      nullifyControl(component);
+      ReflectionUtils.nullifyControl(component);
       component.setText("The quick brown fox jumps over the lazy dog");
       component.setSelectionRange(0, 10);
       assertEquals("The quick ", component.getSelectedText());
@@ -222,7 +208,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("getSelectedText when control is null but range is not set")
     void getSelectedTextWhenControlIsNullButRangeIsNotSet() throws IllegalAccessException {
-      nullifyControl(component);
+      ReflectionUtils.nullifyControl(component);
       component.setText("The quick brown fox jumps over the lazy dog");
       assertEquals("", component.getSelectedText());
     }

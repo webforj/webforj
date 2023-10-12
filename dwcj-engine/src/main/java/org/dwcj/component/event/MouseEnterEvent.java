@@ -1,7 +1,7 @@
 package org.dwcj.component.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 
 /**
  * An event that is fired when the mouse enters a component.
@@ -10,7 +10,7 @@ import org.dwcj.component.AbstractComponent;
  */
 public class MouseEnterEvent extends MouseEvent {
 
-  public MouseEnterEvent(AbstractComponent component, Map<String, Object> payload) {
+  public MouseEnterEvent(Component component, Map<String, Object> payload) {
     super(component, payload);
   }
 }

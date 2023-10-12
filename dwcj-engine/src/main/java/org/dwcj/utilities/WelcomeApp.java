@@ -8,7 +8,7 @@ import org.dwcj.Environment;
 import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.texts.Label;
+import org.dwcj.component.text.Label;
 import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Panel;
 import org.dwcj.exceptions.DwcjAppInitializeException;
@@ -112,7 +112,7 @@ public class WelcomeApp extends App {
   }
 
   private void onLaunchClick(ButtonClickEvent buttonPushEvent) {
-    String className = buttonPushEvent.getControl().getUserData("classname").toString();
+    String className = buttonPushEvent.getComponent().getUserData("classname").toString();
 
     panel.setVisible(false);
 

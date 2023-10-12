@@ -2,7 +2,7 @@ package org.dwcj.component.dialog;
 
 import org.dwcj.component.dialog.event.DialogCloseEvent;
 import org.dwcj.component.dialog.event.DialogOpenEvent;
-import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
@@ -16,7 +16,7 @@ import org.dwcj.concern.HasStyle;
  * @author Hyyan Abo Fakher
  */
 @NodeName("bbj-dialog")
-public class Dialog extends WebComponent implements HasClassName, HasStyle {
+public class Dialog extends WebComponent implements HasClassName<Dialog>, HasStyle<Dialog> {
 
   /**
    * The dialog alignments.
@@ -730,18 +730,18 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog addOpenListener(EventListener<DialogOpenEvent> listener) {
+  public Dialog addOpenListener(ComponentEventListener<DialogOpenEvent> listener) {
     addEventListener(DialogOpenEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addOpenListener(EventListener)}.
+   * Alias for {@link #addOpenListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog onOpen(EventListener<DialogOpenEvent> listener) {
+  public Dialog onOpen(ComponentEventListener<DialogOpenEvent> listener) {
     return addOpenListener(listener);
   }
 
@@ -751,7 +751,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog removeOpenListener(EventListener<DialogOpenEvent> listener) {
+  public Dialog removeOpenListener(ComponentEventListener<DialogOpenEvent> listener) {
     removeEventListener(DialogOpenEvent.class, listener);
     return this;
   }
@@ -762,18 +762,18 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog addCloseListener(EventListener<DialogCloseEvent> listener) {
+  public Dialog addCloseListener(ComponentEventListener<DialogCloseEvent> listener) {
     addEventListener(DialogCloseEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addCloseListener(EventListener)}.
+   * Alias for {@link #addCloseListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog onClose(EventListener<DialogCloseEvent> listener) {
+  public Dialog onClose(ComponentEventListener<DialogCloseEvent> listener) {
     return addCloseListener(listener);
   }
 
@@ -783,7 +783,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog removeCloseListener(EventListener<DialogCloseEvent> listener) {
+  public Dialog removeCloseListener(ComponentEventListener<DialogCloseEvent> listener) {
     removeEventListener(DialogCloseEvent.class, listener);
     return this;
   }

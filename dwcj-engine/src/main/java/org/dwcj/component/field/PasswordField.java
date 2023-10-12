@@ -20,7 +20,6 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   private boolean passwordReveal = true;
   private String placeholder = null;
 
-
   /**
    * Construct a new password field with the given label and password.
    *

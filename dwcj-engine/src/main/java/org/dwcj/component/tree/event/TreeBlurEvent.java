@@ -1,9 +1,9 @@
 package org.dwcj.component.tree.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.tree.Tree;
 
-public class TreeBlurEvent implements ComponentEvent {
+public class TreeBlurEvent implements ControlEvent {
   private final Tree control;
 
   public TreeBlurEvent(Tree cTree) {

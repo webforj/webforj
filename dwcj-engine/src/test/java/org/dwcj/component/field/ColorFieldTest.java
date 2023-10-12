@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import java.awt.Color;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +23,10 @@ class ColorFieldTest {
   @InjectMocks
   ColorField component = new ColorField();
 
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
-
   @Test
   @DisplayName("setText through IllegalArgumentException if text is not valid hex color")
   void setTextValidatesHex() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     assertThrows(IllegalArgumentException.class, () -> component.setText("#0000"));
     assertThrows(IllegalArgumentException.class, () -> component.setText("text"));
     assertDoesNotThrow(() -> component.setText("#000000"));
@@ -40,7 +36,7 @@ class ColorFieldTest {
   @Test
   @DisplayName("set/getValue")
   void setGetValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     component.setValue(Color.RED);
     assertEquals(Color.RED, component.getValue());
     assertEquals("#ff0000", component.getText());

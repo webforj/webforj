@@ -1,12 +1,12 @@
 package org.dwcj.component.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 
 /**
  * An event that is fired when a component loses focus.
  */
-public class BlurEvent extends Event<AbstractComponent> {
+public class BlurEvent extends ComponentEvent<Component> {
 
   /**
    * Creates a new Blur event.
@@ -14,7 +14,7 @@ public class BlurEvent extends Event<AbstractComponent> {
    * @param component the component that fired the event
    * @param payload the event map
    */
-  public BlurEvent(AbstractComponent component, Map<String, Object> payload) {
+  public BlurEvent(Component component, Map<String, Object> payload) {
     super(component, payload);
   }
 

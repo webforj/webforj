@@ -2,9 +2,9 @@ package org.dwcj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.dwcj.component.DwcComponentMock;
 import org.dwcj.component.event.mocks.BBjMouseEventMock;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
-import org.dwcj.component.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class RightMouseDownEvenTest {
   @DisplayName("Test the RightMouseDownEvent payload")
   void payload() {
     RightMouseDownEventSink sink = new RightMouseDownEventSink(componentMock, dispatcher);
-    dispatcher.addEventListener(RightMouseDownEvent.class, e -> dispatchedEvent = e);
+    dispatcher.addListener(RightMouseDownEvent.class, e -> dispatchedEvent = e);
     sink.handleEvent(eventMock);
 
     assertEquals(eventMock.getMouseButton(), dispatchedEvent.getMouseButton());

@@ -6,17 +6,17 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sink.TabSelectEventSink;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
 import org.dwcj.component.window.Panel;
-import org.dwcj.concern.HasEnable;
 import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
-public final class TabbedPane extends AbstractDwcComponent implements HasEnable {
+public final class TabbedPane extends LegacyDwcComponent implements LegacyHasEnable {
 
   /** Event sink for selection of a tab */
   private TabSelectEventSink tabSelectEventSink;
@@ -29,7 +29,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
   /** The tab control's expanse */
   private Expanse expanse = null;
   /** The panel which the tab control belongs to */
-  private AbstractWindow parentPanel;
+  private Window parentPanel;
   /** The currently selected tab */
   private int selected = 0;
 
@@ -44,7 +44,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
   protected BBjTabCtrl tabCtrl;
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       parentPanel = p;
@@ -53,7 +53,7 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
       tabCtrl = w.addTabCtrl(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1);
       control = tabCtrl;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -322,11 +322,8 @@ public final class TabbedPane extends AbstractDwcComponent implements HasEnable 
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
-
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     if (!this.callbacks.isEmpty()) {
       this.tabSelectEventSink = new TabSelectEventSink(this);

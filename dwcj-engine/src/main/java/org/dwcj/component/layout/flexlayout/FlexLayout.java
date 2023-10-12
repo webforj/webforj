@@ -1,7 +1,7 @@
 package org.dwcj.component.layout.flexlayout;
 
 import java.util.Optional;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 import org.dwcj.component.window.Panel;
 import org.dwcj.concern.HasStyle;
 
@@ -27,7 +27,7 @@ public class FlexLayout extends Panel {
    *
    * @param control the controls to add to the layout
    */
-  public FlexLayout(AbstractComponent... control) {
+  public FlexLayout(Component... control) {
     this();
     add(control);
   }
@@ -38,7 +38,7 @@ public class FlexLayout extends Panel {
    * @param controls the controls to add to the layout
    * @param direction the layout direction
    */
-  public FlexLayout(FlexDirection direction, AbstractComponent... controls) {
+  public FlexLayout(FlexDirection direction, Component... controls) {
     this(controls);
     setDirection(direction);
   }
@@ -48,7 +48,7 @@ public class FlexLayout extends Panel {
    *
    * @param builder the builder
    */
-  public FlexLayout(FlexLayoutBuilder builder, AbstractComponent... controls) {
+  public FlexLayout(FlexLayoutBuilder builder, Component... controls) {
     this(controls);
 
     boolean isInline = builder.isInline();
@@ -90,7 +90,7 @@ public class FlexLayout extends Panel {
    * @param controls the controls to add to the layout
    * @return the builder
    */
-  public static FlexLayoutBuilder create(AbstractComponent... controls) {
+  public static FlexLayoutBuilder create(Component... controls) {
     return new FlexLayoutBuilder(controls);
   }
 

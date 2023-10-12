@@ -1,27 +1,18 @@
 package org.dwcj.addons.markdown;
 
-import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.Component;
-import org.dwcj.component.texts.Label;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.component.window.Panel;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-
+import org.dwcj.component.Component;
+import org.dwcj.component.text.Label;
+import org.dwcj.component.window.Panel;
 
 public class DynamicMarkdown extends Panel {
 
   private final ArrayList<Component> ctrlList = new ArrayList<>();
-
-  @Override
-  protected void create(AbstractWindow p) {
-    super.create(p);
-  }
 
   @Override
   public DynamicMarkdown setText(String text) {
@@ -58,9 +49,9 @@ public class DynamicMarkdown extends Panel {
           continue;
         }
 
-        AbstractComponent ctrl;
+        Component ctrl;
         try {
-          ctrl = (AbstractComponent) c.getDeclaredConstructor().newInstance();
+          ctrl = (Component) c.getDeclaredConstructor().newInstance();
         } catch (Exception ex) {
           Label lbl =
               new Label("Class " + l + " cannot be instantiated! Is this a DWCJ control class?");

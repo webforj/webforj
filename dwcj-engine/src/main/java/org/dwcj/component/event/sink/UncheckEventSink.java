@@ -3,7 +3,7 @@ package org.dwcj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.UncheckEvent;
 
@@ -12,7 +12,7 @@ import org.dwcj.component.event.UncheckEvent;
  */
 public class UncheckEventSink extends AbstractDwcEventSink {
 
-  public UncheckEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public UncheckEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_OFF);
   }
 

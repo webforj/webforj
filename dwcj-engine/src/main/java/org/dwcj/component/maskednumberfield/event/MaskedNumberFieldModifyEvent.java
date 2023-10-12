@@ -1,9 +1,9 @@
 package org.dwcj.component.maskednumberfield.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.maskednumberfield.MaskedNumberField;
 
-public class MaskedNumberFieldModifyEvent implements ComponentEvent {
+public class MaskedNumberFieldModifyEvent implements ControlEvent {
 
   private final MaskedNumberField control;
 

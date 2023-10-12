@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -97,13 +97,12 @@ public final class CheckBox extends AbstractDwcOptionInput<CheckBox> {
    * {@inheritDoc}
    */
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       setControl(w.addCheckBox("", flags));
-      this.catchUp();
     } catch (IllegalAccessException | BBjException e) {
       throw new DwcjRuntimeException("Failed to create the BBjCheckBox Control", e);
     }

@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjLostFocusEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.EventDispatcher;
 
@@ -13,7 +13,7 @@ import org.dwcj.component.event.EventDispatcher;
  */
 public class BlurEventSink extends AbstractDwcEventSink {
 
-  public BlurEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public BlurEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_LOST_FOCUS);
   }
 

@@ -2,9 +2,10 @@ package org.dwcj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import org.dwcj.Environment;
-import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.Component;
+import org.dwcj.component.DwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
+import org.dwcj.component.window.Window;
 
 /**
  * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
@@ -26,7 +27,7 @@ public abstract class ComponentAccessor {
       return a;
     }
     try {
-      Class.forName(AbstractWindow.class.getName(), true, AbstractWindow.class.getClassLoader());
+      Class.forName(Window.class.getName(), true, Window.class.getClassLoader());
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -46,15 +47,26 @@ public abstract class ComponentAccessor {
   }
 
   /**
-   * Gets the BBjControl under the AbstractDwcControl.
+   * Gets the BBjControl under the DwcComponent.
    *
-   * @param ctrl - get the BBjControl under the AbstractDwcControl
+   * @param ctrl - get the BBjControl under the DwcComponent
    * @return - the BBjControl
    * @throws IllegalAccessException The exception thrown on illegal access.
+   * @deprecated Use {@link #getControl(DwcComponent)} instead.
    */
-  public abstract BBjControl getBBjControl(AbstractDwcComponent ctrl) throws IllegalAccessException;
+  @Deprecated(since = "23.05", forRemoval = true)
+  public abstract BBjControl getBBjControl(LegacyDwcComponent ctrl) throws IllegalAccessException;
 
-  public abstract void create(AbstractComponent ctrl, AbstractWindow panel)
-      throws IllegalAccessException;
+  /**
+   * Gets the BBjControl under the passed DwcComponent.
+   *
+   * @param component the component to get the BBjControl from.
+   *
+   * @return the BBjControl.
+   * @throws IllegalAccessException The exception thrown on illegal access.
+   */
+  public abstract BBjControl getControl(DwcComponent<?> component) throws IllegalAccessException;
+
+  public abstract void create(Component ctrl, Window panel) throws IllegalAccessException;
 }
 

@@ -2,7 +2,7 @@ package org.dwcj.component.dialog.event;
 
 import java.util.Map;
 import org.dwcj.component.dialog.Dialog;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.webcomponent.annotation.EventName;
 
 /**
@@ -11,7 +11,7 @@ import org.dwcj.component.webcomponent.annotation.EventName;
  * @author Hyyan Abo Fakher
  */
 @EventName("bbj-opened")
-public class DialogOpenEvent extends Event<Dialog> {
+public class DialogOpenEvent extends ComponentEvent<Dialog> {
 
   /**
    * Creates a new event.

@@ -3,8 +3,14 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * Interface that facilitates the implementation of text highlight behaviors for components when
- * they receive focus.
+ * An interface that facilitates the implementation of text highlighting behaviors for components
+ * when they receive focus.
+ *
+ * <p>
+ * This interface provides methods to control the behavior of text highlighting when a component
+ * receives focus. It defines different highlight behaviors and allows setting and querying the
+ * current behavior.
+ * </p>
  *
  * @param <T> The type of the implementing component.
  *

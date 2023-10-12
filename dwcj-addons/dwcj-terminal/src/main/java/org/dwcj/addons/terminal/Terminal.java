@@ -2,7 +2,7 @@ package org.dwcj.addons.terminal;
 
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.component.window.Panel;
 import org.dwcj.addons.terminal.events.TerminalKeyEvent;
 
@@ -21,8 +21,8 @@ public class Terminal extends Panel {
   private final ArrayList<Consumer<TerminalKeyEvent>> callbacks = new ArrayList<>();
 
   @Override
-  protected void create(AbstractWindow p) {
-    super.create(p);
+  protected void onCreate(Window p) {
+    super.onCreate(p);
 
     hv = new HtmlContainer("<div id='" + uuid + "'></div>");
     hv.setStyle("flex", "1");

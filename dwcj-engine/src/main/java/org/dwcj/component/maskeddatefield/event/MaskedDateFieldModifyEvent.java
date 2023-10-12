@@ -1,9 +1,9 @@
 package org.dwcj.component.maskeddatefield.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.maskeddatefield.MaskedDateField;
 
-public final class MaskedDateFieldModifyEvent implements ComponentEvent {
+public final class MaskedDateFieldModifyEvent implements ControlEvent {
   private final MaskedDateField control;
 
   public MaskedDateFieldModifyEvent(MaskedDateField cDateEditBox) {

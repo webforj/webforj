@@ -1,25 +1,29 @@
 package org.dwcj.concern;
 
+import org.dwcj.component.Component;
 
 /**
- * On applicable controls, helps facilitate tooltip functionality to facilitate implementation of
- * methods to interact with this behavior.
+ * An interface for implementing methods to set and retrieve tooltip text on a component.
+ *
+ * @param <T> the type of the component that implements this interface.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.05
  */
-public interface HasTooltip {
+public interface HasTooltip<T extends Component> {
 
   /**
-   * get the tooltip text property of the control.
+   * Retrieves the tooltip text property of the component.
    *
-   * @return the tooltip text
+   * @return the tooltip text of the component.
    */
   public String getTooltipText();
 
   /**
-   * Set the tooltip text of the control.
+   * Sets the tooltip text of the component.
    *
-   * @param tooltipText the tooltip text to set
-   * @return the control itself
+   * @param tooltipText the tooltip text to set.
+   * @return the component itself.
    */
-  public HasTooltip setTooltipText(String tooltipText);
-
+  public T setTooltipText(String tooltipText);
 }

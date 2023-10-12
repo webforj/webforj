@@ -6,7 +6,7 @@ import com.basis.resource.RecordSet;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.navigator.event.NavigatorFirstEvent;
 import org.dwcj.component.navigator.event.NavigatorLastEvent;
 import org.dwcj.component.navigator.event.NavigatorNextEvent;
@@ -15,12 +15,12 @@ import org.dwcj.component.navigator.sink.NavFirstEventSink;
 import org.dwcj.component.navigator.sink.NavLastEventSink;
 import org.dwcj.component.navigator.sink.NavNextEventSink;
 import org.dwcj.component.navigator.sink.NavPreviousEventSink;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasReadOnly;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasReadOnly;
 import java.util.function.Consumer;
 
-public final class Navigator extends AbstractDwcComponent implements HasReadOnly {
+public final class Navigator extends LegacyDwcComponent implements LegacyHasReadOnly {
 
   private BBjNavigator bbjNavigator;
 
@@ -38,14 +38,14 @@ public final class Navigator extends AbstractDwcComponent implements HasReadOnly
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visibility flag, if set before adding the control to the form, so it's created
       // invisibly right away
       control = w.addNavigator(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1, "");
-      catchUp();
+      onAttach();
       bbjNavigator = (BBjNavigator) control;
     } catch (Exception e) {
       Environment.logError(e);

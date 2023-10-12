@@ -1,12 +1,12 @@
 package org.dwcj.component.listbox.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.listbox.ListBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ListBoxSelectEvent implements ComponentEvent {
+public final class ListBoxSelectEvent implements ControlEvent {
 
   private final ListBox control;
 

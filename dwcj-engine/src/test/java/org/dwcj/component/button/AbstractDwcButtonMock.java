@@ -1,12 +1,9 @@
 package org.dwcj.component.button;
 
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 
 public class AbstractDwcButtonMock extends AbstractDwcButton<AbstractDwcButtonMock> {
 
   @Override
-  protected void create(AbstractWindow panel) {
-    throw new UnsupportedOperationException("Unimplemented method 'create'");
-  }
-
+  protected void onCreate(Window panel) {}
 }

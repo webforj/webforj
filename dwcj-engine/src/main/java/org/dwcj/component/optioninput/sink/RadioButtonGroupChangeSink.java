@@ -47,7 +47,7 @@ public class RadioButtonGroupChangeSink extends AbstractRadioButtonEventSink {
   }
 
   BBjControl getControl(RadioButton button) throws IllegalAccessException {
-    return ComponentAccessor.getDefault().getBBjControl(button);
+    return ComponentAccessor.getDefault().getControl(button);
   }
 
   private RadioButton getComponentFromControl(BBjRadioButton control) {

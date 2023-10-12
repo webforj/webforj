@@ -22,11 +22,11 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.annotation.JavaScript;
-import org.dwcj.component.AbstractComponent;
-import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.Component;
+import org.dwcj.component.LegacyDwcComponent;
+import org.dwcj.component.event.ComponentEvent;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.webcomponent.annotation.EventExpressions;
@@ -37,7 +37,7 @@ import org.dwcj.component.webcomponent.annotation.NodeAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeClassName;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.webcomponent.annotation.NodeProperty;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjComponentDestroyed;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -59,22 +59,23 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  *
  * @author Hyyan Abo Fakher
  */
-public abstract class WebComponent extends AbstractComponent {
+public abstract class WebComponent extends Component {
   private final HtmlContainer hv;
   private final String uuid = UUID.randomUUID().toString().substring(0, 8);
   private final Map<String, Object> properties = new HashMap<>();
   private final Map<String, String> attributes = new HashMap<>();
   private final ArrayList<String> asyncScripts = new ArrayList<>();
   private final ArrayList<String> registeredClientEvents = new ArrayList<>();
-  private final HashMap<String, Class<? extends Event<?>>> clientEventMap = new HashMap<>();
+  private final HashMap<String, Class<? extends ComponentEvent<?>>> clientEventMap =
+      new HashMap<>();
   private final Map<String, String> rawSlots = new HashMap<>();
-  private final Map<String, Entry<AbstractWindow, Boolean>> slots = new HashMap<>();
-  private final Map<AbstractComponent, Entry<String, Boolean>> controls = new HashMap<>();
+  private final Map<String, Entry<Window, Boolean>> slots = new HashMap<>();
+  private final Map<Component, Entry<String, Boolean>> controls = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final UnaryOperator<String> encode = (value) -> {
     return Base64.getEncoder().encodeToString(String.valueOf(value).getBytes());
   };
-  private AbstractWindow panel;
+  private Window panel;
 
   /**
    * Create a new instance of the web component.
@@ -114,23 +115,11 @@ public abstract class WebComponent extends AbstractComponent {
   }
 
   /**
-   * Check if the web component is attached to a panel.
-   *
-   * @return true if the web component is attached to a panel and not destroyed, false otherwise
-   */
-  public boolean isAttached() {
-    return panel != null && !isDestroyed();
-  }
-
-  /**
    * {@inheritDoc}
    */
   @Override
-  public void destroy() {
-    if (isDestroyed()) {
-      return;
-    }
-
+  protected void onDestroy() {
+    super.destroy();
     getHtmlContainer().destroy();
     properties.clear();
     attributes.clear();
@@ -139,9 +128,7 @@ public abstract class WebComponent extends AbstractComponent {
     clientEventMap.clear();
     slots.clear();
     rawSlots.clear();
-    dispatcher.clear();
-
-    super.destroy();
+    dispatcher.removeAllListeners();
   }
 
   /**
@@ -155,7 +142,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @param panel the panel that the web component is attached to
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
-  protected void onAttach(AbstractWindow panel) {
+  protected void onAttach(Window panel) {
     assertNotDestroyed();
   }
 
@@ -166,11 +153,11 @@ public abstract class WebComponent extends AbstractComponent {
    * @param panel the panel that the web component is detached from
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
-  protected void onFlush(AbstractWindow panel) {
+  protected void onFlush(Window panel) {
     assertNotDestroyed();
 
-    for (Map.Entry<String, Entry<AbstractWindow, Boolean>> entry : slots.entrySet()) {
-      AbstractWindow slotPanel = entry.getValue().getKey();
+    for (Map.Entry<String, Entry<Window, Boolean>> entry : slots.entrySet()) {
+      Window slotPanel = entry.getValue().getKey();
       if (slotPanel != null) {
         slotPanel.setVisible(true);
       }
@@ -184,7 +171,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the panel instance or null if the web component is not attached to any panel or
    *         destroyed
    */
-  protected AbstractWindow getPanel() {
+  protected Window getPanel() {
     if (!isDestroyed()) {
       return panel;
     }
@@ -485,8 +472,8 @@ public abstract class WebComponent extends AbstractComponent {
    * Add an event listener.
    *
    * <p>
-   * Event listeners are instances of {@link EventListener} that are invoked when an event is fired
-   * on the web component.
+   * Event listeners are instances of {@link ComponentEventListener} that are invoked when an event
+   * is fired on the web component.
    * </p>
    *
    * <p>
@@ -503,12 +490,12 @@ public abstract class WebComponent extends AbstractComponent {
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
-  protected <K extends Event<?>> void addEventListener(Class<K> eventClass,
-      EventListener<K> listener) {
+  protected <K extends ComponentEvent<?>> void addEventListener(Class<K> eventClass,
+      ComponentEventListener<K> listener) {
     assertNotDestroyed();
 
     String eventName = getEventName(eventClass);
-    dispatcher.addEventListener(eventClass, listener);
+    dispatcher.addListener(eventClass, listener);
     clientEventMap.put(eventName, eventClass);
 
     // register the event on the client side
@@ -546,17 +533,17 @@ public abstract class WebComponent extends AbstractComponent {
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
-  protected <K extends Event<?>> void removeEventListener(Class<K> eventClass,
-      EventListener<K> listener) {
+  protected <K extends ComponentEvent<?>> void removeEventListener(Class<K> eventClass,
+      ComponentEventListener<K> listener) {
     assertNotDestroyed();
 
     String eventName = getEventName(eventClass);
 
     clientEventMap.remove(eventName);
     registeredClientEvents.remove(eventName);
-    dispatcher.removeEventListener(eventClass, listener);
+    dispatcher.removeListener(eventClass, listener);
 
-    boolean shouldReachClient = dispatcher.getListenersCount(eventClass) == 0;
+    boolean shouldReachClient = dispatcher.getCount(eventClass) == 0;
 
     if (shouldReachClient) {
       String exp =
@@ -571,7 +558,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @param uuid the uuid of the control to get
    * @return the control
    */
-  protected AbstractComponent getControl(String uuid) {
+  protected Component getControl(String uuid) {
     return controls.entrySet().stream().filter(e -> e.getValue().getKey().equals(uuid))
         .map(e -> e.getKey()).findFirst().orElse(null);
   }
@@ -595,7 +582,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @throws IllegalArgumentException if the control is null, the control is the web component
    *         itself or the control is destroyed.
    */
-  protected String addControl(AbstractComponent control) {
+  protected String addControl(Component control) {
     assertNotDestroyed();
 
     if (control == null) {
@@ -619,8 +606,8 @@ public abstract class WebComponent extends AbstractComponent {
     controls.put(control, new SimpleEntry<>(newUuid, false));
 
     // add dwcj-ctrl attribute to the control to link it to the web component
-    if (control instanceof AbstractDwcComponent) {
-      ((AbstractDwcComponent) control).setAttribute("dwcj-ctrl", newUuid);
+    if (control instanceof LegacyDwcComponent) {
+      ((LegacyDwcComponent) control).setAttribute("dwcj-ctrl", newUuid);
     }
 
     if (control instanceof WebComponent) {
@@ -671,7 +658,7 @@ public abstract class WebComponent extends AbstractComponent {
     assertNotDestroyed();
 
     if (uuid != null) {
-      AbstractComponent control = getControl(uuid);
+      Component control = getControl(uuid);
       if (control != null) {
         controls.remove(control);
         control.destroy();
@@ -842,7 +829,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the slot panel
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
-  protected AbstractWindow getSlot(String slot) {
+  protected Window getSlot(String slot) {
     if (isDestroyed()) {
       return null;
     }
@@ -860,7 +847,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the default slot panel
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
-  protected AbstractWindow getSlot() {
+  protected Window getSlot() {
     return getSlot("__EMPTY_SLOT__");
   }
 
@@ -888,7 +875,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
    */
-  protected void addSlot(String slot, AbstractWindow panel, boolean destroy) {
+  protected void addSlot(String slot, Window panel, boolean destroy) {
     assertNotDestroyed();
 
     if (rawSlots.containsKey(slot)) {
@@ -901,8 +888,8 @@ public abstract class WebComponent extends AbstractComponent {
     }
 
     if (slots.containsKey(slot)) {
-      Entry<AbstractWindow, Boolean> entry = slots.get(slot);
-      AbstractWindow oldPanel = entry.getKey();
+      Entry<Window, Boolean> entry = slots.get(slot);
+      Window oldPanel = entry.getKey();
 
       // if the new panel is different from the old one, detach the old one
       if (!oldPanel.equals(panel)) {
@@ -959,9 +946,9 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
-   * @see #addSlot(String, AbstractWindow, boolean)
+   * @see #addSlot(String, Window, boolean)
    */
-  protected void addSlot(String slot, AbstractWindow panel) {
+  protected void addSlot(String slot, Window panel) {
     addSlot(slot, panel, true);
   }
 
@@ -973,9 +960,9 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the web component
    * @throws DwcjComponentDestroyed if the web component is destroyed
    * @throws IllegalArgumentException if the slot is already defined as a raw slot
-   * @see #addSlot(String, AbstractWindow, boolean)
+   * @see #addSlot(String, Window, boolean)
    */
-  protected void addSlot(AbstractWindow panel) {
+  protected void addSlot(Window panel) {
     addSlot("__EMPTY_SLOT__", panel);
   }
 
@@ -1004,8 +991,8 @@ public abstract class WebComponent extends AbstractComponent {
     }
 
     if (slots.containsKey(slot)) {
-      Entry<AbstractWindow, Boolean> entry = slots.get(slot);
-      AbstractWindow panelToRemove = entry.getKey();
+      Entry<Window, Boolean> entry = slots.get(slot);
+      Window panelToRemove = entry.getKey();
 
       // remove the slot attributes from the panel
       // Currently, BBjControl.removeAttributes() is not implemented
@@ -1430,7 +1417,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @throws DwcjComponentDestroyed if the web component is destroyed
    */
   @Override
-  protected void create(AbstractWindow panel) {
+  protected void onCreate(Window panel) {
     assertNotDestroyed();
 
     if (isAttached()) {
@@ -1475,8 +1462,8 @@ public abstract class WebComponent extends AbstractComponent {
     panel.add(hv);
 
     // loop over the slots and add them to the web component panel
-    for (Map.Entry<String, Entry<AbstractWindow, Boolean>> entry : slots.entrySet()) {
-      AbstractWindow slotPanel = entry.getValue().getKey();
+    for (Map.Entry<String, Entry<Window, Boolean>> entry : slots.entrySet()) {
+      Window slotPanel = entry.getValue().getKey();
       boolean isAttached = entry.getValue().getValue();
 
       if (slotPanel != null && !isAttached) {
@@ -1485,8 +1472,8 @@ public abstract class WebComponent extends AbstractComponent {
     }
 
     // loop over the controls and add them to the web component panel
-    for (Entry<AbstractComponent, Entry<String, Boolean>> entry : controls.entrySet()) {
-      AbstractComponent control = entry.getKey();
+    for (Entry<Component, Entry<String, Boolean>> entry : controls.entrySet()) {
+      Component control = entry.getKey();
       boolean isAttached = entry.getValue().getValue();
 
       if (control != null && !isAttached) {
@@ -1563,7 +1550,7 @@ public abstract class WebComponent extends AbstractComponent {
     }
 
     js.append(")"); // end of Dwcj.WcConnector.invoke
-    if (hv.getCaughtUp()) {
+    if (hv.isAttached()) {
       if (async) {
         hv.executeAsyncScript(js.toString());
         // App.consoleLog("async: " + js.toString());
@@ -1599,7 +1586,7 @@ public abstract class WebComponent extends AbstractComponent {
       String detail = (String) eventMap.get("detail");
       Map<String, Object> data =
           new Gson().fromJson(detail, new TypeToken<Map<String, Object>>() {}.getType());
-      Event<?> event = createEvent(clientEventMap.get(type), data);
+      ComponentEvent<?> event = createEvent(clientEventMap.get(type), data);
 
       if (event != null) {
         eventDispatcher.dispatchEvent(event);
@@ -1614,7 +1601,7 @@ public abstract class WebComponent extends AbstractComponent {
    * @return the event name
    * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
-  private String getEventName(Class<? extends Event<?>> eventClass) {
+  private String getEventName(Class<? extends ComponentEvent<?>> eventClass) {
     String eventName = null;
 
     if (eventClass.isAnnotationPresent(EventName.class)) {
@@ -1635,7 +1622,8 @@ public abstract class WebComponent extends AbstractComponent {
    *
    * @return the event
    */
-  private <E extends Event<?>> E createEvent(Class<E> eventClass, Map<String, Object> data) {
+  private <E extends ComponentEvent<?>> E createEvent(Class<E> eventClass,
+      Map<String, Object> data) {
     E event = null;
 
     Constructor<?>[] constructors = eventClass.getDeclaredConstructors();

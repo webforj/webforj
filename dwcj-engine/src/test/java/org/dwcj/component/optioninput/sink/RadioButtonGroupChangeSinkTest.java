@@ -38,7 +38,7 @@ class RadioButtonGroupChangeSinkTest {
     RadioButtonGroup component = new RadioButtonGroup(selectedComponent, deselectedComponent);
 
     EventDispatcher dispatcher = new EventDispatcher();
-    dispatcher.addEventListener(RadioButtonGroupChangeEvent.class, e -> dispatchedEvent = e);
+    dispatcher.addListener(RadioButtonGroupChangeEvent.class, e -> dispatchedEvent = e);
 
     RadioButtonGroupChangeSink sink = spy(new RadioButtonGroupChangeSink(component, dispatcher));
     when(sink.getControl(selectedComponent)).thenReturn(selectedControl);

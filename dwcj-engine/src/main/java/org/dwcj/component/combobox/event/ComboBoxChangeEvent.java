@@ -1,10 +1,10 @@
 package org.dwcj.component.combobox.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.combobox.ComboBox;
 
 
-public class ComboBoxChangeEvent implements ComponentEvent {
+public class ComboBoxChangeEvent implements ControlEvent {
 
   private final ComboBox control;
 

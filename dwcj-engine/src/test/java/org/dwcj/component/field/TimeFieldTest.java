@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import java.time.LocalTime;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +23,10 @@ class TimeFieldTest {
   @InjectMocks
   TimeField component = new TimeField();
 
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
-
   @Test
   @DisplayName("setText throws IllegalArgumentException if text is not a valid time")
   void setTextValidatesTime() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     assertThrows(IllegalArgumentException.class, () -> component.setText("not a time"));
     assertThrows(IllegalArgumentException.class, () -> component.setText("25:30"));
 
@@ -66,7 +62,7 @@ class TimeFieldTest {
   @Test
   @DisplayName("set/getValue")
   void setGetValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
 
     LocalTime time = LocalTime.of(12, 30);
     component.setValue(time);
@@ -81,7 +77,7 @@ class TimeFieldTest {
   @Test
   @DisplayName("setMin validates relationship with current value")
   void setMinValidatesCurrentValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     LocalTime currentValue = LocalTime.of(10, 0);
     LocalTime min = LocalTime.of(11, 0);
 
@@ -97,8 +93,7 @@ class TimeFieldTest {
   @Test
   @DisplayName("setMax validates relationship with current value")
   void setMaxValidatesCurrentValue() throws IllegalAccessException {
-    nullifyControl();
-
+    ReflectionUtils.nullifyControl(component);
     LocalTime currentValue = LocalTime.of(10, 0);
     LocalTime max = LocalTime.of(9, 0);
 

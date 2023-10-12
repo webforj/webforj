@@ -1,9 +1,9 @@
 package org.dwcj.component.navigator.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.navigator.Navigator;
 
-public final class NavigatorNextEvent implements ComponentEvent {
+public final class NavigatorNextEvent implements ControlEvent {
 
   private final Navigator control;
 

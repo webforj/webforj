@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -154,7 +154,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
     // belongs to a group and there is a button already checked
 
     RadioButtonGroup theGroup = getButtonGroup();
-    if (Boolean.FALSE.equals(this.getCaughtUp()) && theGroup != null) {
+    if (Boolean.FALSE.equals(this.isAttached()) && theGroup != null) {
       List<RadioButton> checkedButtons =
           theGroup.getButtons().stream().filter(RadioButton::getChecked).toList();
 
@@ -245,13 +245,12 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
    * {@inheritDoc}
    */
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       setControl(w.addRadioButton("", flags));
-      this.catchUp();
     } catch (IllegalAccessException | BBjException e) {
       throw new DwcjRuntimeException("Failed to create the BBjRadioButton Control", e);
     }

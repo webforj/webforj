@@ -1,9 +1,9 @@
 package org.dwcj.component.textarea.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.textarea.TextArea;
 
-public final class TextAreaModifyEvent implements ComponentEvent {
+public final class TextAreaModifyEvent implements ControlEvent {
   private final TextArea control;
 
   public TextAreaModifyEvent(TextArea cMultilineEdit) {

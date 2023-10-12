@@ -1,17 +1,25 @@
 package org.dwcj.concern;
 
+import org.dwcj.component.Component;
+
 /**
- * Interface facilitating implementation of behavior to modify a specific CSS property to a provided
- * value.
+ * An interface for handling CSS styles on a component.
+ *
+ * @param <T> the type of the component that implements this interface.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.05
  */
-public interface HasStyle {
+public interface HasStyle<T extends Component> {
 
   /**
    * Get the value of a CSS property.
    *
    * <p>
-   * This method is intended to be used to retrieve the value of a CSS property of a control.
+   * This method is intended to be used to retrieve the value of a CSS property of a component.
    * </p>
+   *
+   * @see #getComputedStyle(java.lang.String)
    *
    * @param property The CSS property to be retrieved
    * @return String containing the value of the CSS property
@@ -22,9 +30,12 @@ public interface HasStyle {
    * Get the computed value of a CSS property.
    *
    * <p>
-   * This method is intended to be used to retrieve the computed value of a CSS property of a
-   * control.
+   * This method is used to obtain the computed value of a CSS property for the component. The
+   * computed value represents the final value that is applied to the element after considering all
+   * styles applied to it, including styles inherited from parent elements and user-agent defaults.
    * </p>
+   *
+   * @see #getStyle(java.lang.String)
    *
    * @param property The CSS property to be retrieved
    * @return String containing all computed styles
@@ -35,22 +46,22 @@ public interface HasStyle {
    * Set a CSS property to a specific value.
    *
    * <p>
-   * This method is intended to be used to modify a single CSS property of a control.
+   * This method is intended to be used to modify a single CSS property of a component.
    * </p>
    *
    * @param property The CSS property to be changed
    * @param value The value to be assigned to the CSS property
    *
-   * @return The control itself
+   * @return @return The component itself.
    */
-  public HasStyle setStyle(String property, String value);
+  public T setStyle(String property, String value);
 
   /**
    * Removes a CSS property to a specific value.
    *
    * @param property The CSS property to be changed
    *
-   * @return The control itself
+   * @return @return The component itself.
    */
-  public HasStyle removeStyle(String property);
+  public T removeStyle(String property);
 }

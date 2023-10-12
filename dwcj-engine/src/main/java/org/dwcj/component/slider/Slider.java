@@ -6,23 +6,23 @@ import com.basis.startup.type.BBjException;
 
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.slider.event.SliderScrollEvent;
 import org.dwcj.component.slider.sink.SliderScrollEventSink;
 import org.dwcj.component.textarea.TextArea;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasFocus;
-import org.dwcj.concern.HasMouseWheelCondition;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasFocus;
+import org.dwcj.concern.legacy.LegacyHasMouseWheelCondition;
+import org.dwcj.concern.legacy.LegacyHasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public final class Slider extends AbstractDwcComponent
-    implements HasFocus, HasMouseWheelCondition, HasTabTraversal, HasEnable {
+public final class Slider extends LegacyDwcComponent implements LegacyHasFocus,
+    LegacyHasMouseWheelCondition, LegacyHasTabTraversal, LegacyHasEnable {
 
   private BBjSlider bbjSlider;
 
@@ -62,7 +62,7 @@ public final class Slider extends AbstractDwcComponent
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
 
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
@@ -71,7 +71,7 @@ public final class Slider extends AbstractDwcComponent
       control = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_250, BASISNUMBER_250, flags);
       bbjSlider = (BBjSlider) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -595,10 +595,8 @@ public final class Slider extends AbstractDwcComponent
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
 
     if (!this.callbacks.isEmpty()) {

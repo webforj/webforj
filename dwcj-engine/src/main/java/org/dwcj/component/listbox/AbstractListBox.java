@@ -3,12 +3,12 @@ package org.dwcj.component.listbox;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 
 import com.basis.startup.type.BBjVector;
 
 
-public abstract class AbstractListBox extends AbstractDwcComponent {
+public abstract class AbstractListBox extends LegacyDwcComponent {
 
   protected BBjVector data2 = new BBjVector();
   protected Map<Object, String> values = new HashMap<>();

@@ -2,7 +2,7 @@ package org.dwcj.component.drawer.event;
 
 import java.util.Map;
 import org.dwcj.component.drawer.Drawer;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.webcomponent.annotation.EventExpressions;
 import org.dwcj.component.webcomponent.annotation.EventName;
 
@@ -13,7 +13,7 @@ import org.dwcj.component.webcomponent.annotation.EventName;
  */
 @EventName(value = "bbj-drawer-opened")
 @EventExpressions(filter = "event.target.isSameNode(component)")
-public final class DrawerOpenEvent extends Event<Drawer> {
+public final class DrawerOpenEvent extends ComponentEvent<Drawer> {
 
   /**
    * Creates a new event.

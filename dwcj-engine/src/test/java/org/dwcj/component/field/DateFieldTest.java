@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import java.time.LocalDate;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +23,10 @@ class DateFieldTest {
   @InjectMocks
   DateField component = new DateField();
 
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
-
   @Test
   @DisplayName("setText through IllegalArgumentException if text is not valid date")
   void setTextValidatesHex() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     assertThrows(IllegalArgumentException.class, () -> component.setText("not a date"));
     assertThrows(IllegalArgumentException.class, () -> component.setText("20-13-01"));
 
@@ -66,7 +62,7 @@ class DateFieldTest {
   @Test
   @DisplayName("set/getValue")
   void setGetValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
 
     LocalDate date = LocalDate.of(2020, 1, 1);
     component.setValue(date);
@@ -81,7 +77,7 @@ class DateFieldTest {
   @Test
   @DisplayName("setMin validates relationship with current value")
   void setMinValidatesCurrentValue() throws IllegalAccessException {
-    nullifyControl();
+    ReflectionUtils.nullifyControl(component);
     LocalDate currentValue = LocalDate.of(2021, 1, 1);
     LocalDate min = LocalDate.of(2022, 1, 1);
 
@@ -97,8 +93,7 @@ class DateFieldTest {
   @Test
   @DisplayName("setMax validates relationship with current value")
   void setMaxValidatesCurrentValue() throws IllegalAccessException {
-    nullifyControl();
-
+    ReflectionUtils.nullifyControl(component);
     LocalDate currentValue = LocalDate.of(2021, 1, 1);
     LocalDate max = LocalDate.of(2020, 1, 1);
 

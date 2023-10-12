@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -15,7 +15,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  */
 public class ToggleEventSink extends AbstractDwcEventSink {
 
-  public ToggleEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public ToggleEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_CHECK_CHANGE);
   }
 

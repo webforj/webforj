@@ -1,6 +1,6 @@
 package org.dwcj.component.layout.applayout;
 
-import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.layout.applayout.event.AppLayoutDrawerCloseEvent;
 import org.dwcj.component.layout.applayout.event.AppLayoutDrawerOpenEvent;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
@@ -8,10 +8,10 @@ import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeAttribute;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.Panel;
-import org.dwcj.concern.HasAttribute;
-import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
-import org.dwcj.concern.HasVisibility;
+import org.dwcj.concern.legacy.LegacyHasAttribute;
+import org.dwcj.concern.legacy.LegacyHasClassName;
+import org.dwcj.concern.legacy.LegacyHasVisibility;
 
 /**
  * AppLayout is a web component that provides a responsive layout for web apps.
@@ -25,7 +25,7 @@ import org.dwcj.concern.HasVisibility;
 @NodeName("bbj-app-layout")
 @NodeAttribute(name = "fit-viewport")
 public class AppLayout extends WebComponent
-    implements HasClassName, HasStyle, HasVisibility, HasAttribute {
+    implements LegacyHasClassName, HasStyle, LegacyHasVisibility, LegacyHasAttribute {
 
   /**
    * The drawer placement.
@@ -584,7 +584,7 @@ public class AppLayout extends WebComponent
    * {@inheritDoc}
    */
   @Override
-  public HasClassName addClassName(String className) {
+  public LegacyHasClassName addClassName(String className) {
     addComponentClassName(className);
     return this;
   }
@@ -593,7 +593,7 @@ public class AppLayout extends WebComponent
    * {@inheritDoc}
    */
   @Override
-  public HasClassName removeClassName(String className) {
+  public LegacyHasClassName removeClassName(String className) {
     removeComponentClassName(className);
     return this;
   }
@@ -644,7 +644,7 @@ public class AppLayout extends WebComponent
    * {@inheritDoc}
    */
   @Override
-  public HasAttribute setAttribute(String attribute, String value) {
+  public LegacyHasAttribute setAttribute(String attribute, String value) {
     setComponentAttribute(attribute, value);
     return this;
   }
@@ -653,7 +653,7 @@ public class AppLayout extends WebComponent
    * {@inheritDoc}
    */
   @Override
-  public HasAttribute removeAttribute(String attribute) {
+  public LegacyHasAttribute removeAttribute(String attribute) {
     removeComponentAttribute(attribute);
     return this;
   }
@@ -681,18 +681,19 @@ public class AppLayout extends WebComponent
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout addDrawerOpenListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
+  public AppLayout addDrawerOpenListener(
+      ComponentEventListener<AppLayoutDrawerOpenEvent> listener) {
     addEventListener(AppLayoutDrawerOpenEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addDrawerOpenListener(EventListener)}.
+   * Alias for {@link #addDrawerOpenListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout onDrawerOpen(EventListener<AppLayoutDrawerOpenEvent> listener) {
+  public AppLayout onDrawerOpen(ComponentEventListener<AppLayoutDrawerOpenEvent> listener) {
     return addDrawerOpenListener(listener);
   }
 
@@ -702,7 +703,8 @@ public class AppLayout extends WebComponent
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout removeDrawerOpenListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
+  public AppLayout removeDrawerOpenListener(
+      ComponentEventListener<AppLayoutDrawerOpenEvent> listener) {
     removeEventListener(AppLayoutDrawerOpenEvent.class, listener);
     return this;
   }
@@ -713,18 +715,19 @@ public class AppLayout extends WebComponent
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout addDrawerCloseListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
+  public AppLayout addDrawerCloseListener(
+      ComponentEventListener<AppLayoutDrawerCloseEvent> listener) {
     addEventListener(AppLayoutDrawerCloseEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addDrawerCloseListener(EventListener)}.
+   * Alias for {@link #addDrawerCloseListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout onDrawerClose(EventListener<AppLayoutDrawerCloseEvent> listener) {
+  public AppLayout onDrawerClose(ComponentEventListener<AppLayoutDrawerCloseEvent> listener) {
     return addDrawerCloseListener(listener);
   }
 
@@ -734,7 +737,8 @@ public class AppLayout extends WebComponent
    * @param listener the listener
    * @return the app layout
    */
-  public AppLayout removeDrawerCloseListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
+  public AppLayout removeDrawerCloseListener(
+      ComponentEventListener<AppLayoutDrawerCloseEvent> listener) {
     removeEventListener(AppLayoutDrawerCloseEvent.class, listener);
     return this;
   }

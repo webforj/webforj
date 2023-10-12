@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,10 +24,6 @@ class NumberFieldTest {
 
   @InjectMocks
   NumberField component = new NumberField();
-
-  void nullifyControl(NumberField component) throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
 
   @Test
   @DisplayName("max")
@@ -68,7 +64,7 @@ class NumberFieldTest {
     @Test
     @DisplayName("set/get value when the control is null")
     void setGetValueNullControl() throws IllegalAccessException {
-      nullifyControl(component);
+      ReflectionUtils.nullifyControl(component);
       component.setValue(10d);
       assertEquals(10d, component.getValue());
     }

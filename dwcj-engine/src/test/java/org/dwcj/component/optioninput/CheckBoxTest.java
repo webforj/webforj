@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjCheckBox;
 import com.basis.startup.type.BBjException;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,17 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class CheckBoxTest {
+class CheckBoxTest {
 
   @Mock
   BBjCheckBox control;
 
   @InjectMocks
   CheckBox component;
-
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
 
   @Nested
   @DisplayName("Indeterminate API")
@@ -44,7 +40,7 @@ public class CheckBoxTest {
     @Test
     @DisplayName("When Control is null")
     void whenControlIsNull() throws BBjException, IllegalAccessException {
-      nullifyControl();
+      ReflectionUtils.nullifyControl(component);
       component.setIndeterminate(true);
       assertTrue(component.isIndeterminate());
     }
