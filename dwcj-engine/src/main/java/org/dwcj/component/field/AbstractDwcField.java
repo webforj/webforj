@@ -19,9 +19,9 @@ import org.dwcj.component.event.sink.KeypressEventSink;
 import org.dwcj.component.event.sink.ModifyEventSink;
 import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasExpanse;
+import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasReadOnly;
 import org.dwcj.concern.HasValue;
-import org.dwcj.concern.legacy.LegacyHasReadOnly;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -40,15 +40,14 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @see FocusableDwcComponent
  * @see FieldComponent
  * @see HasValue
- * @see LegacyHasReadOnly
  * @see HasExpanse
  *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
 abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly<T>, V>
-    extends FocusableDwcComponent<T>
-    implements FieldComponent, HasValue<T, V>, HasReadOnly<T>, HasExpanse<T, Expanse> {
+    extends FocusableDwcComponent<T> implements FieldComponent, HasValue<T, V>, HasReadOnly<T>,
+    HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -192,18 +191,12 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Check if the component has focus.
-   *
-   * <p>
-   * The method will always reach the client to get the focus state. If the component is not
-   * attached to a panel, the method will return false even if the component {@link #focus()} method
-   * was called.
-   * </p>
-   *
-   * @return true if the component has focus, false if not.
+   * {@inheritDoc}
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public boolean hasFocus() {
-    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
+    return componentHasFocus();
   }
 
   /**

@@ -189,6 +189,17 @@ public abstract class FocusableDwcComponent<T extends FocusableDwcComponent<T>>
   }
 
   /**
+   * Checks if the component has focus.
+   *
+   * @see HasFocusStatus
+   *
+   * @return true if the component has focus, false if not.
+   */
+  protected boolean componentHasFocus() {
+    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override

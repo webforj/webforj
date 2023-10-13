@@ -61,20 +61,6 @@ class AbstractDwcFieldTest {
   @DisplayName("Focus API")
   class FocusApi {
     @Test
-    @DisplayName("hasFocus when control is defined")
-    void hasFocusWhenControlIsDefined() throws BBjException {
-      doReturn("true").when(control).getClientProperty("hasFocus");
-      assertTrue(component.hasFocus());
-    }
-
-    @Test
-    @DisplayName("hasFocus when control is null")
-    void hasFocusWhenControlIsNull() throws BBjException, IllegalAccessException {
-      ReflectionUtils.nullifyControl(component);
-      assertFalse(component.hasFocus());
-    }
-
-    @Test
     @DisplayName("AutoFocus")
     void autoFocus() throws BBjException {
       component.setAutoFocus(true);

@@ -1,9 +1,11 @@
 package org.dwcj.component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -132,6 +134,20 @@ class FocusableDwcComponentTest {
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
       verify(control, times(1)).focus();
+    }
+
+    @Test
+    @DisplayName("componentHasFocus when control is defined")
+    void hasFocusWhenControlIsDefined() throws BBjException {
+      doReturn("true").when(control).getClientProperty("hasFocus");
+      assertTrue(component.componentHasFocus());
+    }
+
+    @Test
+    @DisplayName("componentHasFocus when control is null")
+    void hasFocusWhenControlIsNull() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      assertFalse(component.componentHasFocus());
     }
 
     @Test

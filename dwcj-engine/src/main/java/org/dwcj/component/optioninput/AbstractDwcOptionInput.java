@@ -16,6 +16,7 @@ import org.dwcj.component.event.sink.CheckEventSink;
 import org.dwcj.component.event.sink.ToggleEventSink;
 import org.dwcj.component.event.sink.UncheckEventSink;
 import org.dwcj.concern.HasExpanse;
+import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasTextPosition;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -38,7 +39,8 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.01
  */
 abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTextPosition<T>>
-    extends FocusableDwcComponent<T> implements HasTextPosition<T>, HasExpanse<T, Expanse> {
+    extends FocusableDwcComponent<T>
+    implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new CheckEventSink(this, getEventDispatcher()),
@@ -161,18 +163,12 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Check if the component has focus.
-   *
-   * <p>
-   * The method will always reach the client to get the focus state. If the component is not
-   * attached to a panel, the method will return false even if the component {@link #focus()} method
-   * was called.
-   * </p>
-   *
-   * @return true if the component has focus, false if not.
+   * {@inheritDoc}
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public boolean hasFocus() {
-    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
+    return componentHasFocus();
   }
 
   /**
