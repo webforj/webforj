@@ -3,7 +3,7 @@ package org.dwcj.component.layout.flexlayout;
 import java.util.Optional;
 import org.dwcj.component.Component;
 import org.dwcj.component.window.Panel;
-import org.dwcj.concern.HasStyle;
+import org.dwcj.concern.legacy.LegacyHasStyle;
 
 /**
  * A flex layout.
@@ -391,7 +391,7 @@ public class FlexLayout extends Panel {
    *
    * @return this layout
    */
-  public FlexLayout setItemOrder(int order, HasStyle control) {
+  public FlexLayout setItemOrder(int order, LegacyHasStyle control) {
     if (order == 0) {
       control.setStyle(FlexProperties.PROP_ORDER, "");
     } else {
@@ -407,7 +407,7 @@ public class FlexLayout extends Panel {
    * @param control the control
    * @return the order
    */
-  public int getItemOrder(HasStyle control) {
+  public int getItemOrder(LegacyHasStyle control) {
     String order = Optional.ofNullable(control.getStyle(FlexProperties.PROP_ORDER)).orElse("0");
 
     return Integer.parseInt(order);
@@ -434,17 +434,17 @@ public class FlexLayout extends Panel {
    * @return this layout
    * @throws IllegalArgumentException if the grow is negative
    */
-  public FlexLayout setItemGrow(double grow, HasStyle... items) {
+  public FlexLayout setItemGrow(double grow, LegacyHasStyle... items) {
     if (grow < 0) {
       throw new IllegalArgumentException("Flex grow cannot be negative");
     }
 
     if (grow == 0) {
-      for (HasStyle control : items) {
+      for (LegacyHasStyle control : items) {
         control.setStyle(FlexProperties.PROP_GROW, "");
       }
     } else {
-      for (HasStyle control : items) {
+      for (LegacyHasStyle control : items) {
         control.setStyle(FlexProperties.PROP_GROW, String.valueOf(grow));
       }
     }
@@ -458,7 +458,7 @@ public class FlexLayout extends Panel {
    * @param control the control
    * @return the flex grow
    */
-  public double getItemGrow(HasStyle control) {
+  public double getItemGrow(LegacyHasStyle control) {
     String grow = Optional.ofNullable(control.getStyle(FlexProperties.PROP_GROW)).orElse("0");
 
     return Double.parseDouble(grow);
@@ -476,12 +476,12 @@ public class FlexLayout extends Panel {
    *
    * @return this layout
    */
-  public FlexLayout setItemShrink(double shrink, HasStyle... items) {
+  public FlexLayout setItemShrink(double shrink, LegacyHasStyle... items) {
     if (shrink < 0) {
       throw new IllegalArgumentException("Flex shrink cannot be negative");
     }
 
-    for (HasStyle control : items) {
+    for (LegacyHasStyle control : items) {
       control.setStyle(FlexProperties.PROP_SHRINK, String.valueOf(shrink));
     }
 
@@ -494,7 +494,7 @@ public class FlexLayout extends Panel {
    * @param control the control
    * @return the flex shrink
    */
-  public double getItemShrink(HasStyle control) {
+  public double getItemShrink(LegacyHasStyle control) {
     String shrink = Optional.ofNullable(control.getStyle(FlexProperties.PROP_SHRINK)).orElse("1");
 
     return Double.parseDouble(shrink);
@@ -514,13 +514,13 @@ public class FlexLayout extends Panel {
    *
    * @return this layout
    */
-  public FlexLayout setItemBasis(String width, HasStyle... items) {
+  public FlexLayout setItemBasis(String width, LegacyHasStyle... items) {
     if (width == null) {
-      for (HasStyle control : items) {
+      for (LegacyHasStyle control : items) {
         control.setStyle(FlexProperties.PROP_BASIS, "");
       }
     } else {
-      for (HasStyle control : items) {
+      for (LegacyHasStyle control : items) {
         control.setStyle(FlexProperties.PROP_BASIS, width);
       }
     }
@@ -533,7 +533,7 @@ public class FlexLayout extends Panel {
    * @param control the control
    * @return the flex basis
    */
-  public String getItemBasis(HasStyle control) {
+  public String getItemBasis(LegacyHasStyle control) {
     return Optional.ofNullable(control.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
   }
 
@@ -552,13 +552,13 @@ public class FlexLayout extends Panel {
    *
    * @see #setAlignment(FlexAlignment)
    */
-  public FlexLayout setItemAlignment(FlexAlignment alignSelf, HasStyle... items) {
+  public FlexLayout setItemAlignment(FlexAlignment alignSelf, LegacyHasStyle... items) {
     if (alignSelf == null) {
-      for (HasStyle control : items) {
+      for (LegacyHasStyle control : items) {
         control.setStyle(FlexProperties.PROP_ALIGN_SELF, "");
       }
     } else {
-      for (HasStyle control : items) {
+      for (LegacyHasStyle control : items) {
         control.setStyle(FlexProperties.PROP_ALIGN_SELF, alignSelf.getValue());
       }
     }
@@ -572,7 +572,7 @@ public class FlexLayout extends Panel {
    * @param control the control
    * @return the alignment
    */
-  public FlexAlignment getItemAlignment(HasStyle control) {
+  public FlexAlignment getItemAlignment(LegacyHasStyle control) {
     String alignSelf = Optional.ofNullable(control.getStyle(FlexProperties.PROP_ALIGN_SELF))
         .orElse(FlexAlignment.getDefault().getValue());
 
