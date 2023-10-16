@@ -387,7 +387,7 @@ public class FlexLayout extends Panel {
    * </p>
    *
    * @param order the order
-   * @param control the component
+   * @param component the component
    *
    * @return this layout
    */
