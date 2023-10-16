@@ -9,9 +9,8 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.DwcHelperMock;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.mocks.DwcHelperMock;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.component.optioninput.mocks.RadioButtonEventSinkMock;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -41,10 +40,6 @@ class AbstractRadioButtonEventSinkTest {
 
   @InjectMocks
   RadioButtonEventSinkMock sink;
-
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(sink, "control", null, true);
-  }
 
   @Nested
   @DisplayName("setCallback")

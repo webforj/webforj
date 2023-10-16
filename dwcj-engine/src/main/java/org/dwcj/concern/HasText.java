@@ -1,26 +1,32 @@
 package org.dwcj.concern;
 
+import org.dwcj.component.Component;
 
 /**
- * Interface which facilitates controls that implement it the ability to set the text of the
- * control, if applicable, in a way that makes sense for the specific control itself.
+ * An interface that allows components to set and retrieve text in a way that makes sense for the
+ * specific component.
+ *
+ * @param <T> the type of the component that implements this interface.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.05
  */
-public interface HasText {
+public interface HasText<T extends Component> {
 
   /**
-   * get the text property of the control.
+   * Retrieves the text property of the component.
    *
-   * @return the text
+   * @return the text of the component.
    */
   public String getText();
 
   /**
-   * set the text of the control Each control implementing this interface has a text property, which
-   * might be visible in different ways (caption, title, contents of edit) or sometimes not visible
-   * at all.
+   * Sets the text of the component. Each component implementing this interface has a text property,
+   * which may be visible in different ways (caption, title, contents of edit) or sometimes not
+   * visible at all.
    *
-   * @param text the text to set
-   * @return the control itself
+   * @param text the text to set for the component.
+   * @return the component itself after configuring the text.
    */
-  public HasText setText(String text);
+  public T setText(String text);
 }

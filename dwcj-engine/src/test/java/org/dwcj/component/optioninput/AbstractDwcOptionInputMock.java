@@ -1,6 +1,6 @@
 package org.dwcj.component.optioninput;
 
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 
 public class AbstractDwcOptionInputMock extends AbstractDwcOptionInput<AbstractDwcOptionInputMock> {
 
@@ -9,8 +9,6 @@ public class AbstractDwcOptionInputMock extends AbstractDwcOptionInput<AbstractD
   }
 
   @Override
-  protected void create(AbstractWindow panel) {
-    throw new UnsupportedOperationException("Unimplemented method 'create'");
-  }
+  protected void onCreate(Window panel) {}
 
 }

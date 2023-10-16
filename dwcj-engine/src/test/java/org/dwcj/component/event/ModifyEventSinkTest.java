@@ -2,9 +2,9 @@ package org.dwcj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.dwcj.component.DwcComponentMock;
 import org.dwcj.component.event.mocks.BBjEditModifyEventMock;
 import org.dwcj.component.event.sink.ModifyEventSink;
-import org.dwcj.component.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class ModifyEventSinkTest {
   @DisplayName("Test the ModifyEvent payload")
   void payload() {
     ModifyEventSink sink = new ModifyEventSink(componentMock, dispatcher);
-    dispatcher.addEventListener(ModifyEvent.class, e -> dispatchedEvent = e);
+    dispatcher.addListener(ModifyEvent.class, e -> dispatchedEvent = e);
     sink.handleEvent(eventMock);
 
     assertEquals(eventMock.getText(), dispatchedEvent.getText());

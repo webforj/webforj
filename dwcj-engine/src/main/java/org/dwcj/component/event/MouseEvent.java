@@ -1,13 +1,13 @@
 package org.dwcj.component.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 
 
 /**
  * An event that is fired when the mouse enters or exits a component.
  */
-public class MouseEvent extends Event<AbstractComponent> {
+public class MouseEvent extends ComponentEvent<Component> {
 
   /**
    * Creates a new event.
@@ -15,7 +15,7 @@ public class MouseEvent extends Event<AbstractComponent> {
    * @param component the component that fired the event
    * @param payload the event map
    */
-  public MouseEvent(AbstractComponent component, Map<String, Object> payload) {
+  public MouseEvent(Component component, Map<String, Object> payload) {
     super(component, payload);
   }
 

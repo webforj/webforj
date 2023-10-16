@@ -1,9 +1,9 @@
 package org.dwcj.component.maskedtextfield.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.maskedtextfield.MaskedTextField;
 
-public class MaskedTextFieldModifyEvent implements ComponentEvent {
+public class MaskedTextFieldModifyEvent implements ControlEvent {
 
   private final MaskedTextField control;
 

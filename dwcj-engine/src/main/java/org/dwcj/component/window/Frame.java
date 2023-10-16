@@ -3,7 +3,7 @@ package org.dwcj.component.window;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import org.dwcj.Environment;
-import org.dwcj.concern.HasEnable;
+import org.dwcj.concern.legacy.LegacyHasEnable;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -11,7 +11,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * AppPanel is the core main application panel. It typically occupied the full browser real estate
  * and holds your app that consists of div container panels
  */
-public class Frame extends AbstractWindow implements HasEnable {
+public class Frame extends Window implements LegacyHasEnable {
 
   public Frame() throws DwcjAppInitializeException {
 
@@ -30,7 +30,7 @@ public class Frame extends AbstractWindow implements HasEnable {
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     // empty, needs override
   }
 

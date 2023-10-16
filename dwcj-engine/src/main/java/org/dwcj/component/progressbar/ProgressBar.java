@@ -5,11 +5,11 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
+import org.dwcj.component.LegacyDwcComponent;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
 
-public final class ProgressBar extends AbstractDwcComponent {
+public final class ProgressBar extends LegacyDwcComponent {
 
   private BBjProgressBar bbjProgressBar;
 
@@ -28,13 +28,13 @@ public final class ProgressBar extends AbstractDwcComponent {
 
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       control = w.addProgressBar(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1);
       bbjProgressBar = (BBjProgressBar) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -336,10 +336,8 @@ public final class ProgressBar extends AbstractDwcComponent {
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     if (Boolean.TRUE.equals(this.indeterminate)) {
       this.setIndeterminate(this.indeterminate);

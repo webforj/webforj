@@ -14,6 +14,21 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 /**
  * The Base class for all DWC text fields components.
  *
+ * <p>
+ * This abstract class serves as the foundation for all text field components within the framework.
+ * It extends the {@link AbstractDwcField} class and implements several interfaces for handling text
+ * field-specific properties and behaviors.
+ * </p>
+ *
+ * @param <T> The type of the component.
+ *
+ * @see AbstractDwcField
+ * @see HasMinLength
+ * @see HasMaxLength
+ * @see HasHighlightOnFocus
+ * @see HasHorizontalAlignment
+ * @see SelectionRange
+ *
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
@@ -84,13 +99,13 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
   }
 
   /**
-   * Select a range of text in the input field.
+   * Selects a range of text in the input field.
    *
    * @param range the range to select.
    * @return the text field instance.
    */
   public T setSelectionRange(SelectionRange range) {
-    BBjEditBox editbox = getBbjControl();
+    BBjEditBox editbox = inferControl();
 
     if (editbox != null) {
       editbox.select(range.getStart(), range.getEnd());
@@ -101,7 +116,7 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
   }
 
   /**
-   * Select a range of text in the input field.
+   * Selects a range of text in the input field given a starting and ending position.
    *
    * @param start the start of the selection range.
    * @param end the end of the selection range.
@@ -118,7 +133,7 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
    * @return the selection range.
    */
   public SelectionRange getSelectionRange() {
-    BBjEditBox editbox = getBbjControl();
+    BBjEditBox editbox = inferControl();
 
     if (editbox != null) {
       try {
@@ -142,7 +157,7 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
    * @return the selected text.
    */
   public String getSelectedText() {
-    BBjEditBox editbox = getBbjControl();
+    BBjEditBox editbox = inferControl();
 
     if (editbox != null) {
       try {
@@ -202,8 +217,8 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
    * {@inheritDoc}
    */
   @Override
-  protected void catchUp() throws IllegalAccessException {
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     if (this.range != null) {
       setSelectionRange(this.range);

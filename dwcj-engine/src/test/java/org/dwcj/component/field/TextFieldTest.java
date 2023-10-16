@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +23,6 @@ class TextFieldTest {
 
   @InjectMocks
   TextField component = new TextField();
-
-  void nullifyControl(TextField component) throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
 
   @ParameterizedTest
   @EnumSource(TextField.Type.class)

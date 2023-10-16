@@ -4,74 +4,59 @@ import com.basis.bbj.proxies.sysgui.BBjToggleButton;
 import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.AbstractDwcComponent;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.event.BlurEvent;
+import org.dwcj.component.FocusableDwcComponent;
 import org.dwcj.component.event.CheckEvent;
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
-import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.MouseEnterEvent;
-import org.dwcj.component.event.MouseExitEvent;
-import org.dwcj.component.event.RightMouseDownEvent;
+import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.EventSinkListenerRegistry;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.component.event.UncheckEvent;
-import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.CheckEventSink;
-import org.dwcj.component.event.sink.EventSinkListenerRegistry;
-import org.dwcj.component.event.sink.FocusEventSink;
-import org.dwcj.component.event.sink.MouseEnterEventSink;
-import org.dwcj.component.event.sink.MouseExitEventSink;
-import org.dwcj.component.event.sink.RightMouseDownEventSink;
 import org.dwcj.component.event.sink.ToggleEventSink;
 import org.dwcj.component.event.sink.UncheckEventSink;
-import org.dwcj.concern.HasEnable;
 import org.dwcj.concern.HasExpanse;
-import org.dwcj.concern.HasFocus;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasTextPosition;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The base class for input components that represent options, such as checkboxes and radio buttons.
- * It extends the AbstractDwcComponent class and implements the HasFocus, TabTraversable,
- * TextPosition, and HasEnable interfaces.
+ * The Base class for all DWC (DWCJ Web Components) option input components.
  *
- * @param <T> the concrete subclass that extends AbstractDwcOptionInput
+ * <p>
+ * This abstract class serves as the foundation for all option input components within the
+ * framework. It extends the {@link FocusableDwcComponent} class and implements various event
+ * handling interfaces for working with option input-specific properties and behaviors.
+ * </p>
+ *
+ * @param <T> The type of the component.
+ *
+ * @see FocusableDwcComponent
+ * @see HasTextPosition
+ * @see HasExpanse
  *
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasTextPosition & HasEnable>
-    extends AbstractDwcComponent
-    implements HasFocus, HasTabTraversal, HasTextPosition, HasEnable, HasExpanse<T, Expanse> {
+abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTextPosition<T>>
+    extends FocusableDwcComponent<T>
+    implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus {
+
+  private final EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new CheckEventSink(this, getEventDispatcher()),
+          CheckEvent.class);
+  private final EventSinkListenerRegistry<UncheckEvent> uncheckEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new UncheckEventSink(this, getEventDispatcher()),
+          UncheckEvent.class);
+  private final EventSinkListenerRegistry<ToggleEvent> toggleEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new ToggleEventSink(this, getEventDispatcher()),
+          ToggleEvent.class);
 
   private HasTextPosition.Position textPosition = HasTextPosition.Position.RIGHT;
   private boolean checked = false;
 
-  private EventDispatcher dispatcher = new EventDispatcher();
-  private EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new CheckEventSink(this, dispatcher), CheckEvent.class);
-  private EventSinkListenerRegistry<UncheckEvent> uncheckEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new UncheckEventSink(this, dispatcher), UncheckEvent.class);
-  private EventSinkListenerRegistry<ToggleEvent> toggleEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ToggleEventSink(this, dispatcher), ToggleEvent.class);
-  private EventSinkListenerRegistry<FocusEvent> focusEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new FocusEventSink(this, dispatcher), FocusEvent.class);
-  private EventSinkListenerRegistry<BlurEvent> blurEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new BlurEventSink(this, dispatcher), BlurEvent.class);
-  private EventSinkListenerRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new MouseEnterEventSink(this, dispatcher),
-          MouseEnterEvent.class);
-  private EventSinkListenerRegistry<MouseExitEvent> mouseExitEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new MouseExitEventSink(this, dispatcher),
-          MouseExitEvent.class);
-  private EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new RightMouseDownEventSink(this, dispatcher),
-          RightMouseDownEvent.class);
-
   /**
-   * Create a new AbstractOptionInput component.
+   * Creates a new AbstractOptionInput component.
    *
    * @param text Desired text for the AbstractOptionInput.
    * @param checked True if the AbstractOptionInput should be created as checked, false otherwise.
@@ -91,7 +76,7 @@ abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus 
    * @return The component itself
    */
   public T setChecked(boolean checked) {
-    BBjToggleButton theControl = getBbjControl();
+    BBjToggleButton theControl = inferControl();
 
     if (theControl != null) {
       try {
@@ -112,7 +97,7 @@ abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus 
    * @return false if not checked, true if checked.
    */
   public boolean isChecked() {
-    BBjToggleButton theControl = getBbjControl();
+    BBjToggleButton theControl = inferControl();
 
     if (theControl != null) {
       try {
@@ -130,7 +115,7 @@ abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus 
    */
   @Override
   public T setTextPosition(Position position) {
-    BBjToggleButton theControl = getBbjControl();
+    BBjToggleButton theControl = inferControl();
 
     if (theControl != null) {
       try {
@@ -167,460 +152,119 @@ abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus 
   }
 
   /**
-   * Get the expanse of the component.
+   * Gets the expanse of the component.
    *
    * @return The expanse for the component.
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
   public Expanse getExpanse() {
-    return (Expanse) getComponentExpanse();
+    return super.<Expanse>getComponentExpanse();
   }
 
   /**
    * {@inheritDoc}
    */
-  @ExcludeFromJacocoGeneratedReport
   @Override
-  public T focus() {
-    super.focusComponent();
-
-    return getSelf();
-  }
-
-  /**
-   * Check if the component has focus.
-   *
-   * <p>
-   * The method will always reach the client to get the focus state. If the component is not
-   * attached to a panel, the method will return false even if the component {@link #focus()} method
-   * was called.
-   * </p>
-   *
-   * @return true if the component has focus, false if not.
-   */
+  @ExcludeFromJacocoGeneratedReport
   public boolean hasFocus() {
-    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
+    return componentHasFocus();
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setTabTraversable(Boolean traversable) {
-    super.setComponentTabTraversable(traversable);
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public Boolean isTabTraversable() {
-    return super.isComponentTabTraversable();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setText(String text) {
-    super.setText(text);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setVisible(Boolean visible) {
-    super.setVisible(visible);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setTooltipText(String text) {
-    super.setTooltipText(text);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setAttribute(String attribute, String value) {
-    super.setAttribute(attribute, value);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setProperty(String property, Object value) {
-    super.setProperty(property, value);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T setStyle(String property, String value) {
-    super.setStyle(property, value);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T addClassName(String selector) {
-    super.addClassName(selector);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T removeClassName(String selector) {
-    super.removeClassName(selector);
-    return getSelf();
-  }
-
-  /**
-   * Get the event dispatcher instance for the component.
-   *
-   * @return The instance of the event dispatcher.
-   */
-  EventDispatcher getEventDispatcher() {
-    return this.dispatcher;
-  }
-
-  /**
-   * Add a {@link CheckEvent} listener to the component.
+   * Adds a {@link CheckEvent} listener to the component.
    *
    * @param listener the event listener to be added
-   * @return The component itself
+   * @return A registration object for removing the event listener
    */
-  public T addCheckListener(EventListener<CheckEvent> listener) {
-    this.checkEventSinkListenerRegistry.addEventListener(listener);
-    return getSelf();
+  public ListenerRegistration<CheckEvent> addCheckListener(
+      ComponentEventListener<CheckEvent> listener) {
+    return this.checkEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addCheckListener(EventListener) addCheckedListener}.
+   * Alias for {@link #addCheckListener(ComponentEventListener) addCheckedListener}.
    *
    * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addCheckListener(EventListener)
+   * @return A registration object for removing the event listener
    */
-  public T onCheck(EventListener<CheckEvent> listener) {
+  public ListenerRegistration<CheckEvent> onCheck(ComponentEventListener<CheckEvent> listener) {
     return addCheckListener(listener);
   }
 
   /**
-   * Remove a {@link CheckEvent} listener from the component.
+   * Removes a {@link CheckEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public T removeCheckListener(EventListener<CheckEvent> listener) {
+  public T removeCheckListener(ComponentEventListener<CheckEvent> listener) {
     this.checkEventSinkListenerRegistry.removeEventListener(listener);
     return getSelf();
   }
 
   /**
-   * Add an {@link UncheckEvent} listener for the component.
+   * Adds an {@link UncheckEvent} listener for the component.
    *
    * @param listener the event listener to be added
-   * @return The component itself
+   * @return A registration object for removing the event listener
    */
-  public T addUncheckListener(EventListener<UncheckEvent> listener) {
-    this.uncheckEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
+  public ListenerRegistration<UncheckEvent> addUncheckListener(
+      ComponentEventListener<UncheckEvent> listener) {
+    return this.uncheckEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addUncheckListener(EventListener) addUncheckedListener}.
+   * Alias for {@link #addUncheckListener(ComponentEventListener) addUncheckedListener}.
    *
    * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addUncheckListener(EventListener)
+   * @return A registration object for removing the event listener
    */
-  public T onUncheck(EventListener<UncheckEvent> listener) {
+  public ListenerRegistration<UncheckEvent> onUncheck(
+      ComponentEventListener<UncheckEvent> listener) {
     return addUncheckListener(listener);
   }
 
   /**
-   * Remove an {@link UncheckEvent} listener from the component.
+   * Removes an {@link UncheckEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public T removeUncheckListener(EventListener<UncheckEvent> listener) {
+  public T removeUncheckListener(ComponentEventListener<UncheckEvent> listener) {
     this.uncheckEventSinkListenerRegistry.removeEventListener(listener);
-
     return getSelf();
   }
 
   /**
-   * Add a {@link ToggleEvent} listener for the component.
+   * Adds a {@link ToggleEvent} listener for the component.
    *
    * @param listener the event listener to be added
-   * @return The component itself
+   * @return A registration object for removing the event listener
    */
-  public T addToggleListener(EventListener<ToggleEvent> listener) {
-    this.toggleEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
+  public ListenerRegistration<ToggleEvent> addToggleListener(
+      ComponentEventListener<ToggleEvent> listener) {
+    return this.toggleEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addToggleListener(EventListener) addToggleListener}.
+   * Alias for {@link #addToggleListener(ComponentEventListener) addToggleListener}.
    *
    * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addToggleListener(EventListener)
+   * @return A registration object for removing the event listener
    */
-  public T onToggle(EventListener<ToggleEvent> listener) {
+  public ListenerRegistration<ToggleEvent> onToggle(ComponentEventListener<ToggleEvent> listener) {
     return addToggleListener(listener);
   }
 
   /**
-   * Remove a {@link ToggleEvent} listener from the component.
+   * Removes a {@link ToggleEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public T removeToggleListener(EventListener<ToggleEvent> listener) {
+  public T removeToggleListener(ComponentEventListener<ToggleEvent> listener) {
     this.toggleEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link FocusEvent} listener for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addFocusListener(EventListener<FocusEvent> listener) {
-    this.focusEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addFocusListener(EventListener) addFocusListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addFocusListener(EventListener)
-   */
-  public T onFocus(EventListener<FocusEvent> listener) {
-    return addFocusListener(listener);
-  }
-
-  /**
-   * Removes a {@link FocusEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeFocusListener(EventListener<FocusEvent> listener) {
-    this.focusEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link BlurEvent} listener for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addBlurListener(EventListener<BlurEvent> listener) {
-    this.blurEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addBlurListener(EventListener) addBlurListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addBlurListener(EventListener)
-   */
-  public T onBlur(EventListener<BlurEvent> listener) {
-    return addBlurListener(listener);
-  }
-
-  /**
-   * Removes a {@link BlurEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeBlurListener(EventListener<BlurEvent> listener) {
-    this.blurEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Adds a {@link MouseEnterEvent} for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    this.mouseEnterEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addMouseEnterListener(EventListener) addMouseEnterListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addMouseEnterListener(EventListener)
-   */
-  public T onMouseEnter(EventListener<MouseEnterEvent> listener) {
-    return addMouseEnterListener(listener);
-  }
-
-  /**
-   * Remove a {@link MouseEnterEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    this.mouseEnterEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link MouseExitEvent} for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    this.mouseExitEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addMouseExitListener(EventListener) addMouseExitListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addMouseExitListener(EventListener)
-   */
-  public T onMouseExit(EventListener<MouseExitEvent> listener) {
-    return addMouseExitListener(listener);
-  }
-
-  /**
-   * Remove a {@link MouseExitEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeMouseExitListener(EventListener<MouseExitEvent> listener) {
-    this.mouseExitEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link RightMouseDownEvent} for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    this.rightMouseDownEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addRightMouseDownListener(EventListener) addRightMouseDownListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addRightMouseDownListener(EventListener)
-   */
-  public T onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
-    return addRightMouseDownListener(listener);
-  }
-
-  /**
-   * Remove a {@link RightMouseDownEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    this.rightMouseDownEventSinkListenerRegistry.removeEventListener(listener);
-
     return getSelf();
   }
 
@@ -629,22 +273,19 @@ abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus 
    * {@inheritDoc}
    */
   @Override
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    }
+  protected void attachControlCallbacks() {
+    super.attachControlCallbacks();
+    this.checkEventSinkListenerRegistry.attach();
+    this.uncheckEventSinkListenerRegistry.attach();
+    this.toggleEventSinkListenerRegistry.attach();
+  }
 
-    super.catchUp();
-
-    // catch up the event listeners
-    this.checkEventSinkListenerRegistry.catchUp();
-    this.uncheckEventSinkListenerRegistry.catchUp();
-    this.toggleEventSinkListenerRegistry.catchUp();
-    this.focusEventSinkListenerRegistry.catchUp();
-    this.blurEventSinkListenerRegistry.catchUp();
-    this.mouseEnterEventSinkListenerRegistry.catchUp();
-    this.mouseExitEventSinkListenerRegistry.catchUp();
-    this.rightMouseDownEventSinkListenerRegistry.catchUp();
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onAttach() {
+    super.onAttach();
 
     if (this.checked) {
       this.setChecked(this.checked);
@@ -655,19 +296,12 @@ abstract class AbstractDwcOptionInput<T extends AbstractDwcComponent & HasFocus 
     }
   }
 
-  protected BBjToggleButton getBbjControl() {
+  protected BBjToggleButton inferControl() {
     try {
-      return (BBjToggleButton) ComponentAccessor.getDefault().getBBjControl(this);
+      return (BBjToggleButton) ComponentAccessor.getDefault().getControl(this);
     } catch (IllegalAccessException e) {
       throw new DwcjRuntimeException(e);
     }
-  }
-
-  private T getSelf() {
-    @SuppressWarnings("unchecked")
-    T self = (T) this;
-
-    return self;
   }
 }
 

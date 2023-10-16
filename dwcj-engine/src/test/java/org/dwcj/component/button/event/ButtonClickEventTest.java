@@ -27,7 +27,7 @@ class ButtonClickEventTest {
     when(eventMock.getY()).thenReturn(2d);
 
     // Add event listener
-    dispatcher.addEventListener(ButtonClickEvent.class, e -> {
+    dispatcher.addListener(ButtonClickEvent.class, e -> {
       dispatchedEvent[0] = e;
     });
 

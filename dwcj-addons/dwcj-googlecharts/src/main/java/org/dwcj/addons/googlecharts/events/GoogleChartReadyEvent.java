@@ -2,7 +2,7 @@ package org.dwcj.addons.googlecharts.events;
 
 import java.util.Map;
 import org.dwcj.addons.googlecharts.GoogleChart;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.webcomponent.annotation.EventExpressions;
 import org.dwcj.component.webcomponent.annotation.EventName;
 
@@ -14,7 +14,7 @@ import org.dwcj.component.webcomponent.annotation.EventName;
  */
 @EventName(value = "google-chart-ready")
 @EventExpressions(detail = "event.detail = 'ready';")
-public final class GoogleChartReadyEvent extends Event<GoogleChart> {
+public final class GoogleChartReadyEvent extends ComponentEvent<GoogleChart> {
 
   /**
    * Construct new GoogleChartReadyEvent.

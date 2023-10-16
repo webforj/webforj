@@ -4,10 +4,10 @@ import com.basis.bbj.proxies.event.BBjAbstractTextKeypressEvent;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.component.field.DwcjFieldComponent;
+import org.dwcj.component.field.FieldComponent;
 
 /**
  * An abstract class of a keypress event sink which would handle a BBjKeypressEvent and dispatch the
@@ -15,9 +15,9 @@ import org.dwcj.component.field.DwcjFieldComponent;
  */
 public class KeypressEventSink extends AbstractDwcEventSink {
 
-  public KeypressEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public KeypressEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher,
-        component instanceof DwcjFieldComponent ? SysGuiEventConstants.ON_EDIT_KEYPRESS
+        component instanceof FieldComponent ? SysGuiEventConstants.ON_EDIT_KEYPRESS
             : SysGuiEventConstants.ON_INPUT_KEYPRESS);
   }
 

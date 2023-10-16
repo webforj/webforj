@@ -2,28 +2,17 @@ package org.dwcj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
-import java.lang.reflect.InvocationTargetException;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
-import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
-import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.ReflectionUtils;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.KeypressEvent;
 import org.dwcj.component.event.ModifyEvent;
-import org.dwcj.component.event.MouseEnterEvent;
-import org.dwcj.component.event.MouseExitEvent;
-import org.dwcj.component.event.RightMouseDownEvent;
-import org.dwcj.component.event.ToggleEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -40,10 +29,6 @@ class AbstractDwcFieldTest {
 
   @InjectMocks
   AbstractDwcFieldMock component;
-
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
 
   @Test
   @DisplayName("Label")
@@ -76,20 +61,6 @@ class AbstractDwcFieldTest {
   @DisplayName("Focus API")
   class FocusApi {
     @Test
-    @DisplayName("hasFocus when control is defined")
-    void hasFocusWhenControlIsDefined() throws BBjException {
-      doReturn("true").when(control).getClientProperty("hasFocus");
-      assertTrue(component.hasFocus());
-    }
-
-    @Test
-    @DisplayName("hasFocus when control is null")
-    void hasFocusWhenControlIsNull() throws BBjException, IllegalAccessException {
-      nullifyControl();
-      assertFalse(component.hasFocus());
-    }
-
-    @Test
     @DisplayName("AutoFocus")
     void autoFocus() throws BBjException {
       component.setAutoFocus(true);
@@ -106,76 +77,20 @@ class AbstractDwcFieldTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      EventListener<ModifyEvent> modifyListener = event -> {
+      ComponentEventListener<ModifyEvent> modifyListener = event -> {
       };
-      EventListener<KeypressEvent> keypressListener = event -> {
-      };
-      EventListener<MouseEnterEvent> mouseEnterListener = event -> {
-      };
-      EventListener<FocusEvent> focusListener = event -> {
-      };
-      EventListener<BlurEvent> blurListener = event -> {
-      };
-      EventListener<MouseExitEvent> mouseExitListener = event -> {
-      };
-      EventListener<RightMouseDownEvent> rightMouseDownListener = event -> {
+      ComponentEventListener<KeypressEvent> keypressListener = event -> {
       };
 
       component.onModify(modifyListener);
       component.onKeypress(keypressListener);
-      component.onFocus(focusListener);
-      component.onBlur(blurListener);
-      component.onMouseEnter(mouseEnterListener);
-      component.onMouseExit(mouseExitListener);
-      component.onRightMouseDown(rightMouseDownListener);
-
-      EventDispatcher dispatcher = component.getEventDispatcher();
-
-      assertEquals(1, dispatcher.getListenersCount(ModifyEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(KeypressEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(FocusEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(BlurEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(MouseEnterEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(MouseExitEvent.class));
-      assertEquals(1, dispatcher.getListenersCount(RightMouseDownEvent.class));
+      assertEquals(1, component.getEventListeners(ModifyEvent.class).size());
+      assertEquals(1, component.getEventListeners(KeypressEvent.class).size());
 
       component.removeModifyListener(modifyListener);
       component.removeKeypressListener(keypressListener);
-      component.removeFocusListener(focusListener);
-      component.removeBlurListener(blurListener);
-      component.removeMouseEnterListener(mouseEnterListener);
-      component.removeMouseExitListener(mouseExitListener);
-      component.removeRightMouseDownListener(rightMouseDownListener);
-
-      assertEquals(0, dispatcher.getListenersCount(ModifyEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(KeypressEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(ToggleEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(FocusEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(BlurEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(MouseEnterEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(MouseExitEvent.class));
-      assertEquals(0, dispatcher.getListenersCount(RightMouseDownEvent.class));
-    }
-  }
-
-  @Nested
-  @DisplayName("catchUp behavior")
-  class CatchUp {
-
-    void invokeCatchUp(AbstractDwcFieldMock component)
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      MethodUtils.invokeMethod(component, true, "catchUp");
-    }
-
-    @Test
-    @DisplayName("calling twice should not be allowed")
-    void callingTwiceShouldNotBeAllowed()
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      AbstractDwcFieldMock componentSpy = spy(component);
-      invokeCatchUp(componentSpy);
-      assertThrows(InvocationTargetException.class, () -> {
-        invokeCatchUp(componentSpy);
-      });
+      assertEquals(0, component.getEventListeners(ModifyEvent.class).size());
+      assertEquals(0, component.getEventListeners(KeypressEvent.class).size());
     }
   }
 }

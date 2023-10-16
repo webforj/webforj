@@ -3,10 +3,14 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * Interface facilitates implementation of behaviors to modify a component's maximum value.
+ * An interface that enables modification of a component's maximum value.
  *
- * @param <T> the type of the component
- * @param <V> the type of the maximum value
+ * <p>
+ * This interface provides methods to set and retrieve the maximum possible value for the component.
+ * </p>
+ *
+ * @param <T> the type of the component that implements this interface.
+ * @param <V> the type of the maximum value.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -14,20 +18,18 @@ import org.dwcj.component.Component;
 public interface HasMax<T extends Component, V> {
 
   /**
-   * Set the maximum possible value for the component.
+   * Sets the maximum possible value for the component.
    *
-   * @param max the maximum value
+   * @param max the maximum value to set
    *
    * @return the component itself
-   * @since 23.02
    */
   public T setMax(V max);
 
   /**
-   * Returns the maximum possible value for the component.
+   * Retrieves the maximum possible value for the component.
    *
-   * @return the maximum component value
-   * @since 23.02
+   * @return the maximum value of the component.
    */
   public V getMax();
 }

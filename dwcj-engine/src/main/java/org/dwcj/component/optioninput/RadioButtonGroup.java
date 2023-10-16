@@ -13,13 +13,14 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.Component;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
-import org.dwcj.component.event.sink.EventSinkListenerRegistry;
+import org.dwcj.component.event.EventSinkListenerRegistry;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;
 import org.dwcj.component.optioninput.sink.RadioButtonGroupChangeSink;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -55,10 +56,10 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public final class RadioButtonGroup extends AbstractDwcComponent implements Iterable<RadioButton> {
+public final class RadioButtonGroup extends Component implements Iterable<RadioButton> {
   private final List<RadioButton> buttons = new CopyOnWriteArrayList<>();
   private BBjRadioGroup group;
-  private AbstractWindow window;
+  private Window window;
   private String name;
 
   private EventDispatcher dispatcher = new EventDispatcher();
@@ -67,7 +68,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
           RadioButtonGroupChangeEvent.class);
 
   /**
-   * Create a RadioButtonGroup with a name and a list of RadioButtons.
+   * Creates a RadioButtonGroup with a name and a list of RadioButtons.
    *
    * @param name the name of the RadioButtonGroup.
    * @param buttons the list of RadioButtons to add.
@@ -78,7 +79,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Create a RadioButtonGroup with a name.
+   * Creates a RadioButtonGroup with a name.
    *
    * @param name the name of the RadioButtonGroup.
    */
@@ -87,7 +88,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Create a RadioButtonGroup with a list of RadioButtons.
+   * Creates a RadioButtonGroup with a list of RadioButtons.
    *
    * @param buttons the list of RadioButtons to add.
    */
@@ -96,29 +97,14 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Create a RadioButtonGroup.
+   * Creates a RadioButtonGroup.
    */
   public RadioButtonGroup() {
     this(UUID.randomUUID().toString(), new RadioButton[0]);
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void create(AbstractWindow p) {
-    try {
-      this.window = p;
-      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      group = w.addRadioGroup();
-      catchUp();
-    } catch (IllegalAccessException | BBjException e) {
-      throw new DwcjRuntimeException("Failed to create the BBjRadioGroup.", e);
-    }
-  }
-
-  /**
-   * Add a RadioButton or a list of RadioButtons to the RadioButtonGroup.
+   * Adds a RadioButton or a list of RadioButtons to the RadioButtonGroup.
    *
    * @param buttons the RadioButton or the list of RadioButtons to add.
    * @return the component itself.
@@ -131,13 +117,13 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
 
       if (this.group != null) {
         // if the button is not already attached to a window then we add it to the window.
-        if (Boolean.FALSE.equals(button.getCaughtUp())) {
+        if (Boolean.FALSE.equals(button.isAttached())) {
           this.window.add(button);
         }
 
         // add the button to the group
         try {
-          BBjControl buttonControl = ComponentAccessor.getDefault().getBBjControl(button);
+          BBjControl buttonControl = ComponentAccessor.getDefault().getControl(button);
           group.add((BBjRadioButton) buttonControl);
         } catch (IllegalAccessException | BBjException e) {
           throw new DwcjRuntimeException("Failed to add the BBjRadioButton to the BBjRadioGroup.",
@@ -150,7 +136,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Remove the RadioButton given as an Argument.
+   * Removes the RadioButton given as an Argument.
    *
    * @return the component itself.
    */
@@ -162,7 +148,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
       // remove the button from the group
       if (this.group != null) {
         try {
-          BBjControl buttonControl = ComponentAccessor.getDefault().getBBjControl(button);
+          BBjControl buttonControl = ComponentAccessor.getDefault().getControl(button);
           group.remove((BBjRadioButton) buttonControl);
         } catch (IllegalAccessException | BBjException e) {
           throw new DwcjRuntimeException(
@@ -175,7 +161,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Get the checked RadioButton from RadioButtonGroup.
+   * Gets the checked RadioButton from RadioButtonGroup.
    *
    * @return The checked RadioButton.
    */
@@ -197,7 +183,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
       try {
         BBjControl currentChecked = group.getSelected();
         for (RadioButton button : buttons) {
-          BBjControl buttonControl = ComponentAccessor.getDefault().getBBjControl(button);
+          BBjControl buttonControl = ComponentAccessor.getDefault().getControl(button);
           if (buttonControl != null && (buttonControl.getID() == currentChecked.getID())) {
             return button;
           }
@@ -211,7 +197,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Get the name of the RadioButtonGroup.
+   * Gets the name of the RadioButtonGroup.
    *
    * @return the name of the RadioButtonGroup.
    */
@@ -220,7 +206,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Set the name of the RadioButtonGroup.
+   * Sets the name of the RadioButtonGroup.
    *
    * @param name the name of the RadioButtonGroup.
    * @return the component itself.
@@ -240,7 +226,7 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Get the list of tracked radio buttons.
+   * Gets the list of tracked radio buttons.
    *
    * @return the list of added radio buttons.
    */
@@ -266,36 +252,35 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
   }
 
   /**
-   * Add a {@link RadioButtonGroupChangeEvent} listener to the component.
+   * Adds a {@link RadioButtonGroupChangeEvent} listener to the component.
    *
    * @param listener the event listener to be added
-   * @return The component itself
+   * @return A registration object for removing the event listener
    */
-  public RadioButtonGroup addChangeListener(EventListener<RadioButtonGroupChangeEvent> listener) {
-    this.changedEventSinkListenerRegistry.addEventListener(listener);
-    return this;
+  public ListenerRegistration<RadioButtonGroupChangeEvent> addChangeListener(
+      ComponentEventListener<RadioButtonGroupChangeEvent> listener) {
+    return changedEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addChangeListener(EventListener) addCheckedListener}.
+   * Alias for {@link #addChangeListener(ComponentEventListener) addCheckedListener}.
    *
    * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addChangeListener(EventListener)
+   * @return A registration object for removing the event listener
    */
-  public RadioButtonGroup onChange(EventListener<RadioButtonGroupChangeEvent> listener) {
+  public ListenerRegistration<RadioButtonGroupChangeEvent> onChange(
+      ComponentEventListener<RadioButtonGroupChangeEvent> listener) {
     return addChangeListener(listener);
   }
 
   /**
-   * Remove a {@link RadioButtonGroupChangeEvent} listener from the component.
+   * Removes a {@link RadioButtonGroupChangeEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
    */
   public RadioButtonGroup removeChangeListener(
-      EventListener<RadioButtonGroupChangeEvent> listener) {
+      ComponentEventListener<RadioButtonGroupChangeEvent> listener) {
     this.changedEventSinkListenerRegistry.removeEventListener(listener);
     return this;
   }
@@ -304,19 +289,34 @@ public final class RadioButtonGroup extends AbstractDwcComponent implements Iter
    * {@inheritDoc}
    */
   @Override
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
+  protected void onCreate(Window p) {
+    try {
+      this.window = p;
+      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
+      group = w.addRadioGroup();
+    } catch (IllegalAccessException | BBjException e) {
+      throw new DwcjRuntimeException("Failed to create the BBjRadioGroup.", e);
     }
+  }
 
-    super.catchUp();
-
-    this.changedEventSinkListenerRegistry.catchUp();
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    this.changedEventSinkListenerRegistry.attach();
 
     setName(this.name);
 
     if (!this.buttons.isEmpty()) {
       add(this.buttons.toArray(new RadioButton[0]));
     }
+  }
+
+  @Override
+  protected void onDestroy() {
+    // BBjRadioGroup has no destroy method.
+    // TODO : Ask Jim about whether this method should be implemented or not.
   }
 }

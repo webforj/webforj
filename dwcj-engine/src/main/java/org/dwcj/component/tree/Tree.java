@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.tree.event.TreeCollapseEvent;
 import org.dwcj.component.tree.event.TreeDeselectEvent;
 import org.dwcj.component.tree.event.TreeDoubleClickEvent;
@@ -24,15 +24,15 @@ import org.dwcj.component.tree.sink.TreeExpandEventSink;
 import org.dwcj.component.tree.sink.TreeFocusEventSink;
 import org.dwcj.component.tree.sink.TreeBlurEventSink;
 import org.dwcj.component.tree.sink.TreeSelectEventSink;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
 import org.dwcj.models.Icon;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class Tree extends AbstractDwcComponent implements HasEnable {
+public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
 
   private BBjTree tree;
 
@@ -41,7 +41,7 @@ public final class Tree extends AbstractDwcComponent implements HasEnable {
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visibility flag, if set before adding the control to the form, so it's created
@@ -49,7 +49,7 @@ public final class Tree extends AbstractDwcComponent implements HasEnable {
       control = w.addTree(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1);
       tree = (BBjTree) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }

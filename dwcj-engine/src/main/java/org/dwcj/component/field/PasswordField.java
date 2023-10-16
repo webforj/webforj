@@ -20,9 +20,8 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   private boolean passwordReveal = true;
   private String placeholder = null;
 
-
   /**
-   * Construct a new password field with the given label and password.
+   * Constructs a new password field with the given label and password.
    *
    * @param label the label for the field
    * @param password the value for the field
@@ -36,7 +35,7 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   }
 
   /**
-   * Construct a new password field with the given label.
+   * Constructs a new password field with the given label.
    *
    * @param label the label for the field
    */
@@ -45,14 +44,14 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   }
 
   /**
-   * Construct a new password field.
+   * Constructs a new password field.
    */
   public PasswordField() {
     this("");
   }
 
   /**
-   * Show or hide password reveal icon.
+   * Shows or hides password reveal icon.
    *
    * @param passwordReveal when true, password reveal icon is visible, otherwise it is hidden.
    * @return the component
@@ -64,7 +63,7 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   }
 
   /**
-   * Check if password reveal icon is visible.
+   * Checks if password reveal icon is visible.
    *
    * @return true if password reveal icon is visible
    */
@@ -73,10 +72,10 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   }
 
   /**
-   * Set the placeholder of field.
+   * Sets the placeholder of the field.
    *
    * @param placeholder the placeholder of field
-   * @return the field type
+   * @return the component itself
    */
   public PasswordField setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
@@ -85,9 +84,9 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   }
 
   /**
-   * Get the placeholder of field.
+   * Gets the placeholder of the field.
    *
-   * @return the placeholder of field
+   * @return the placeholder of the field
    */
   public String getPlaceholder() {
     return placeholder;

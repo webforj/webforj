@@ -1,9 +1,9 @@
 package org.dwcj.component.choicebox.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.choicebox.ChoiceBox;
 
-public class ChoiceBoxCloseEvent implements ComponentEvent {
+public class ChoiceBoxCloseEvent implements ControlEvent {
 
   private final ChoiceBox control;
 

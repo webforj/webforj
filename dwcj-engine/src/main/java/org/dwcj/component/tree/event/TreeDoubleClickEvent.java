@@ -1,9 +1,9 @@
 package org.dwcj.component.tree.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.tree.Tree;
 
-public class TreeDoubleClickEvent implements ComponentEvent {
+public class TreeDoubleClickEvent implements ControlEvent {
   private final Tree control;
 
   public TreeDoubleClickEvent(Tree cTree) {

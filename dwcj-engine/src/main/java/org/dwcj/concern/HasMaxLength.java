@@ -3,9 +3,14 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * Interface facilitates implementation of behaviors to modify a component's value maximum length.
+ * An interface for modifying the maximum length of a component's value.
  *
- * @param <T> the type of the component
+ * <p>
+ * This interface provides methods to set and retrieve the maximum length allowed for the
+ * component's value.
+ * </p>
+ *
+ * @param <T> the type of the component that implements this interface.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -13,17 +18,17 @@ import org.dwcj.component.Component;
 public interface HasMaxLength<T extends Component> {
 
   /**
-   * Returns the maximum length of the component's value.
+   * Retrieves the maximum length of the component's value.
    *
-   * @return the maximum length of the component value
+   * @return the maximum length
    */
   public int getMaxLength();
 
   /**
-   * Set the maximum length of the component value.
+   * Sets the maximum length of the component's value.
    *
-   * @param maxLength the maximum length to set for the component value
-   * @return the control itself
+   * @param maxLength the maximum length to set for the component's value.
+   * @return the component itself
    */
   public T setMaxLength(int maxLength);
 }

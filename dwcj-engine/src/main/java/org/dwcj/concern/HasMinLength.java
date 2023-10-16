@@ -3,9 +3,14 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * Interface facilitates implementation of behaviors to modify a component's value minimum length.
+ * An interface for modifying the minimum length of a component's value.
  *
- * @param <T> the type of the component
+ * <p>
+ * This interface provides methods to set and retrieve the minimum length required for the
+ * component's value.
+ * </p>
+ *
+ * @param <T> the type of the component that implements this interface.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -13,17 +18,17 @@ import org.dwcj.component.Component;
 public interface HasMinLength<T extends Component> {
 
   /**
-   * Returns the minimum length of the component's value.
+   * Retrieves the minimum length required for the component's value.
    *
-   * @return the minimum length of the component value
+   * @return the minimum length required for the component's value.
    */
   public int getMinLength();
 
   /**
-   * Set the minimum length of the component value.
+   * Sets the minimum length required for the component's value.
    *
-   * @param minLength the minimum length to set for the component value
-   * @return the control itself
+   * @param minLength the minimum length to set for the component's value
+   * @return the component itself.
    */
   public T setMinLength(int minLength);
 }

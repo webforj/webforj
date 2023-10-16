@@ -3,10 +3,14 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * Interface facilitates implementation of behaviors to modify a component value.
+ * An interface for modifying a component's value.
  *
- * @param <T> the type of the component
- * @param <V> the type of the value
+ * <p>
+ * This interface provides methods to set and retrieve the value for the component.
+ * </p>
+ *
+ * @param <T> the type of the component that implements this interface.
+ * @param <V> the type of the value.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -14,17 +18,17 @@ import org.dwcj.component.Component;
 public interface HasValue<T extends Component, V> {
 
   /**
-   * Returns the value of the component.
+   * Retrieves the value of the component.
    *
-   * @return the value of the component
+   * @return the value of the component.
    */
   public V getValue();
 
   /**
-   * Set the value of the component.
+   * Sets the value of the component.
    *
-   * @param value the value to set
-   * @return the control itself
+   * @param value the value to set.
+   * @return the component itself.
    */
   public T setValue(V value);
 }

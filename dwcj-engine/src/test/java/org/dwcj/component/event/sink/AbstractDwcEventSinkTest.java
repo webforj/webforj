@@ -9,11 +9,10 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.startup.type.BBjException;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.dwcj.component.DwcComponentMock;
+import org.dwcj.component.DwcHelperMock;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.mocks.EventSinkMock;
-import org.dwcj.component.mocks.DwcComponentMock;
-import org.dwcj.component.mocks.DwcHelperMock;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,10 +39,6 @@ class AbstractDwcEventSinkTest {
 
   @InjectMocks
   EventSinkMock sink;
-
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(sink, "control", null, true);
-  }
 
   @Nested
   @DisplayName("setCallback")

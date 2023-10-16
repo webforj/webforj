@@ -1,7 +1,7 @@
 package org.dwcj.component.event.mocks;
 
 import com.basis.bbj.proxies.event.BBjEvent;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
 
@@ -12,8 +12,7 @@ public class EventSinkMock extends AbstractDwcEventSink {
     super(null, new EventDispatcher(), 0);
   }
 
-  protected EventSinkMock(AbstractDwcComponent component, EventDispatcher dispatcher,
-      int eventType) {
+  protected EventSinkMock(DwcComponent<?> component, EventDispatcher dispatcher, int eventType) {
     super(component, dispatcher, eventType);
   }
 

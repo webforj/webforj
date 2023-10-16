@@ -7,7 +7,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptFailEvent;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerScriptLoadEvent;
@@ -15,10 +15,10 @@ import org.dwcj.component.htmlcontainer.event.HtmlContainerPageLoadEvent;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerNativeJavascriptEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptFailEventSink;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerScriptLoadEventSink;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasFocus;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasFocus;
+import org.dwcj.concern.legacy.LegacyHasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import org.dwcj.component.htmlcontainer.sink.HtmlContainerPageLoadEventSink;
 import java.awt.*;
@@ -28,8 +28,8 @@ import java.util.function.Consumer;
 /**
  * A HtmlContainer control
  */
-public final class HtmlContainer extends AbstractDwcComponent
-    implements HasFocus, HasEnable, HasTabTraversal {
+public final class HtmlContainer extends LegacyDwcComponent
+    implements LegacyHasFocus, LegacyHasEnable, LegacyHasTabTraversal {
 
   private BBjHtmlView bbjHtmlView;
 
@@ -65,7 +65,7 @@ public final class HtmlContainer extends AbstractDwcComponent
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
@@ -74,7 +74,7 @@ public final class HtmlContainer extends AbstractDwcComponent
           BASISNUMBER_1, BASISNUMBER_1, getText(), flags);
       control.setNoEdge(true);
       bbjHtmlView = (BBjHtmlView) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -473,11 +473,8 @@ public final class HtmlContainer extends AbstractDwcComponent
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp())) {
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    }
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     if (!this.scriptLoadedEvents.isEmpty()) {
       this.onScriptLoadSink = new HtmlContainerScriptLoadEventSink(this);

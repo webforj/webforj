@@ -14,7 +14,7 @@ class ButtonTest {
     Button button = new Button("Click Me", e -> {
     });
     assertEquals("Click Me", button.getText());
-    assertEquals(1, button.getEventDispatcher().getListenersCount(ButtonClickEvent.class));
+    assertEquals(1, button.getEventListeners(ButtonClickEvent.class).size());
   }
 
   @Test

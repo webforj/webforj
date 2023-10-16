@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -19,7 +19,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.05
  */
 public abstract class AbstractDwcEventSink implements DwcEventSink {
-  private final AbstractDwcComponent component;
+  private final DwcComponent<?> component;
   private EventDispatcher dispatcher;
   private final int eventType;
   private BBjControl control = null;
@@ -32,7 +32,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
    * @param dispatcher The events dispatcher
    * @param eventType The type of the BBj event
    */
-  protected AbstractDwcEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
+  protected AbstractDwcEventSink(DwcComponent<?> component, EventDispatcher dispatcher,
       int eventType) {
     this.component = component;
     this.dispatcher = dispatcher;
@@ -49,8 +49,8 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
    * @throws DwcjRuntimeException if the callback cannot be set.
    */
   @Override
-  public void setCallback() {
-    BBjControl theControl = getBBjControl();
+  public final void setCallback() {
+    BBjControl theControl = getBbjControl();
 
     if (theControl != null) {
       // in tests the dwcjHelper is not set so we need to check for null
@@ -68,13 +68,13 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Remove a callback on an underlying BBj control.
+   * Removes a callback on an underlying BBj control.
    *
    * @throws DwcjRuntimeException if the callback cannot be removed.
    */
   @Override
-  public void removeCallback() {
-    BBjControl theControl = getBBjControl();
+  public final void removeCallback() {
+    BBjControl theControl = getBbjControl();
 
     if (theControl != null) {
       try {
@@ -86,14 +86,15 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Handle the BBj event and delegate it to the corresponding event listener to the Java component.
+   * Handles the BBj event and delegates it to the corresponding event listener in the Java
+   * component.
    *
    * @param ev A BBj event
    */
   public abstract void handleEvent(BBjEvent ev);
 
   /**
-   * Set the event dispatcher instance.
+   * Sets the event dispatcher instance.
    *
    * @param dispatcher the event dispatcher instance.
    */
@@ -102,17 +103,17 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the event dispatcher instance.
+   * Gets the event dispatcher instance.
    *
    * @return the event dispatcher instance.
    */
   @Override
-  public EventDispatcher getEventDispatcher() {
+  public final EventDispatcher getEventDispatcher() {
     return this.dispatcher;
   }
 
   /**
-   * Set the instance of the DwcjHelper.
+   * Sets the instance of the DwcjHelper.
    *
    * @param dwcjHelper The DwcjHelper instance.
    */
@@ -121,7 +122,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the instance of the DwcjHelper.
+   * Gets the instance of the DwcjHelper.
    *
    * @return The DwcjHelper instance.
    */
@@ -130,26 +131,26 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the Java component.
+   * Gets the Java component.
    *
    * @return The Java component.
    */
-  protected AbstractDwcComponent getComponent() {
+  protected final DwcComponent<?> getComponent() {
     return this.component;
   }
 
   /**
-   * Get the instance of the underlying BBjControl.
+   * Gets the instance of the underlying BBjControl.
    *
    * @return The BBjControl instance.
    */
-  private BBjControl getBBjControl() {
+  private BBjControl getBbjControl() {
     if (this.control != null) {
       return this.control;
     }
 
     try {
-      this.control = ComponentAccessor.getDefault().getBBjControl(component);
+      this.control = ComponentAccessor.getDefault().getControl(component);
     } catch (IllegalAccessException e) {
       // pass
     }

@@ -12,21 +12,21 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 public interface DwcEventSink {
 
   /**
-   * Set a callback on an underlying BBj control.
+   * Sets a callback on an underlying BBj control.
    *
    * @throws DwcjRuntimeException if the callback cannot be set.
    */
   public void setCallback();
 
   /**
-   * Remove a callback on an underlying BBj control.
+   * Removes a callback on an underlying BBj control.
    *
    * @throws DwcjRuntimeException if the callback cannot be removed.
    */
   public void removeCallback();
 
   /**
-   * Get the event dispatcher instance.
+   * Gets the event dispatcher instance.
    *
    * @return the event dispatcher instance.
    */

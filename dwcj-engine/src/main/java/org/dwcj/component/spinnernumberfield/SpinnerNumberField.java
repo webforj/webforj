@@ -7,12 +7,13 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.maskednumberfield.MaskedNumberField;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasMouseWheelCondition;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasMouseWheelCondition;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
-public final class SpinnerNumberField extends MaskedNumberField implements HasMouseWheelCondition {
+public final class SpinnerNumberField extends MaskedNumberField
+    implements LegacyHasMouseWheelCondition {
 
   private BBjInputNSpinner numBoxS;
 
@@ -25,7 +26,7 @@ public final class SpinnerNumberField extends MaskedNumberField implements HasMo
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
@@ -34,7 +35,7 @@ public final class SpinnerNumberField extends MaskedNumberField implements HasMo
           BASISNUMBER_1, BASISNUMBER_1, flags);
       numBoxS = (BBjInputNSpinner) this.numBox;
       this.numBox = (BBjInputNSpinner) this.control;
-      super.catchUp();
+      super.onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -61,10 +62,8 @@ public final class SpinnerNumberField extends MaskedNumberField implements HasMo
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     if (this.mouseWheelCondition != MouseWheelCondition.DEFAULT) {
       this.setScrollWheelBehavior(this.mouseWheelCondition);

@@ -5,61 +5,46 @@ import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.annotation.tooling.MetaInf;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.Expanse;
+import org.dwcj.component.FocusableDwcComponent;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.EventListener;
-import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.MouseEnterEvent;
-import org.dwcj.component.event.MouseExitEvent;
-import org.dwcj.component.event.RightMouseDownEvent;
-import org.dwcj.component.event.sink.BlurEventSink;
-import org.dwcj.component.event.sink.EventSinkListenerRegistry;
-import org.dwcj.component.event.sink.FocusEventSink;
-import org.dwcj.component.event.sink.MouseEnterEventSink;
-import org.dwcj.component.event.sink.MouseExitEventSink;
-import org.dwcj.component.event.sink.RightMouseDownEventSink;
-import org.dwcj.concern.HasEnable;
+import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.EventSinkListenerRegistry;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.concern.HasExpanse;
-import org.dwcj.concern.HasFocus;
+import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasHorizontalAlignment;
-import org.dwcj.concern.HasTabTraversal;
 import org.dwcj.concern.HasTheme;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * An abstract dwc button component.
+ * An abstract DWC button component.
+ *
+ * <p>
+ * This class represents an abstract button component in the DWC client. It extends the
+ * {@link FocusableDwcComponent} class and implements several interfaces for handling properties
+ * related to its appearance and behavior.
+ * </p>
+ *
+ * @param <T> The type of the component.
+ * @see FocusableDwcComponent
+ * @see HasExpanse
+ * @see HasTheme
+ * @see HasHorizontalAlignment
  *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & HasTabTraversal & HasEnable>
-    extends AbstractDwcComponent implements HasFocus, HasTabTraversal, HasEnable,
-    HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T> {
+abstract class AbstractDwcButton<T extends FocusableDwcComponent<T>>
+    extends FocusableDwcComponent<T> implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>,
+    HasHorizontalAlignment<T>, HasFocusStatus {
   private boolean disableOnClick = false;
 
-  private EventDispatcher dispatcher = new EventDispatcher();
-  private EventSinkListenerRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ButtonClickEventSink(this, dispatcher),
+  private final EventSinkListenerRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new ButtonClickEventSink(this, getEventDispatcher()),
           ButtonClickEvent.class);
-  private EventSinkListenerRegistry<FocusEvent> focusEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new FocusEventSink(this, dispatcher), FocusEvent.class);
-  private EventSinkListenerRegistry<BlurEvent> blurEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new BlurEventSink(this, dispatcher), BlurEvent.class);
-  private EventSinkListenerRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new MouseEnterEventSink(this, dispatcher),
-          MouseEnterEvent.class);
-  private EventSinkListenerRegistry<MouseExitEvent> mouseExitEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new MouseExitEventSink(this, dispatcher),
-          MouseExitEvent.class);
-  private EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new RightMouseDownEventSink(this, dispatcher),
-          RightMouseDownEvent.class);
-
 
   protected AbstractDwcButton() {
     super();
@@ -69,75 +54,16 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
   /**
    * {@inheritDoc}
    */
-  @ExcludeFromJacocoGeneratedReport
   @Override
-  public T focus() {
-    super.focusComponent();
-
-    return getSelf();
-  }
-
-  /**
-   * Check if the component has focus.
-   *
-   * <p>
-   * The method will always reach the client to get the focus state. If the component is not
-   * attached to a panel, the method will return false even if the component {@link #focus()} method
-   * was called.
-   * </p>
-   *
-   * @return true if the component has focus, false if not.
-   */
+  @ExcludeFromJacocoGeneratedReport
   public boolean hasFocus() {
-    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "behavior")
-  @Override
-  public T setTabTraversable(Boolean traversable) {
-    super.setComponentTabTraversable(traversable);
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public Boolean isTabTraversable() {
-    return super.isComponentTabTraversable();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "access")
-  @Override
-  public T setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
+    return componentHasFocus();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  @MetaInf(group = "display")
   @ExcludeFromJacocoGeneratedReport
   public T setExpanse(Expanse expanse) {
     setComponentExpanse(expanse);
@@ -150,14 +76,13 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
   @Override
   @ExcludeFromJacocoGeneratedReport
   public Expanse getExpanse() {
-    return (Expanse) getComponentExpanse();
+    return super.<Expanse>getComponentExpanse();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  @MetaInf(group = "display")
   @ExcludeFromJacocoGeneratedReport
   public T setTheme(ButtonTheme theme) {
     setComponentTheme(theme);
@@ -170,14 +95,13 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
   @Override
   @ExcludeFromJacocoGeneratedReport
   public ButtonTheme getTheme() {
-    return (ButtonTheme) getComponentTheme();
+    return super.<ButtonTheme>getComponentTheme();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  @MetaInf(group = "display")
   @ExcludeFromJacocoGeneratedReport
   public T setHorizontalAlignment(Alignment alignment) {
     setComponentHorizontalAlignment(alignment);
@@ -194,17 +118,18 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
   }
 
   /**
-   * Set whether the button should be immediately disabled when the user clicks it.
+   * Sets whether the button should be immediately disabled when the user clicks it.
    *
    * @param disableOnClick {@code true} to disable the button when the user clicks it
    *
    * @return the component itself
    */
-  @MetaInf(group = "behavior")
   public T setDisableOnClick(boolean disableOnClick) {
-    if (this.control != null) {
+    BBjButton control = inferControl();
+
+    if (control != null) {
       try {
-        ((BBjButton) control).setDisableOnClick(disableOnClick);
+        control.setDisableOnClick(disableOnClick);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -220,9 +145,11 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @return {@code true} if the button is disabled when the user clicks it
    */
   public boolean isDisableOnClick() {
-    if (this.control != null) {
+    BBjButton control = inferControl();
+
+    if (control != null) {
       try {
-        ((BBjButton) control).getDisableOnClick();
+        control.getDisableOnClick();
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -243,7 +170,6 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param name the name of the button
    * @return the component itself
    */
-  @MetaInf(group = "access")
   public T setName(String name) {
     setUnrestrictedAttribute("name", name);
     return getSelf();
@@ -261,128 +187,24 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "display")
-  @Override
-  public T setText(String text) {
-    super.setText(text);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "display")
-  @Override
-  public T setVisible(Boolean visible) {
-    super.setVisible(visible);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "display")
-  @Override
-  public T setTooltipText(String text) {
-    super.setTooltipText(text);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "display")
-  @Override
-  public T setAttribute(String attribute, String value) {
-    super.setAttribute(attribute, value);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "display")
-  @Override
-  public T setProperty(String property, Object value) {
-    super.setProperty(property, value);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @MetaInf(group = "display")
-  @Override
-  public T setStyle(String property, String value) {
-    super.setStyle(property, value);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T addClassName(String selector) {
-    super.addClassName(selector);
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Override
-  public T removeClassName(String selector) {
-    super.removeClassName(selector);
-    return getSelf();
-  }
-
-  /**
-   * Get the event dispatcher instance for the component.
+   * Adds a {@link ButtonClickEvent} listener for the component.
    *
-   * @return The instance of the event dispatcher.
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
    */
-  EventDispatcher getEventDispatcher() {
-    return this.dispatcher;
+  public ListenerRegistration<ButtonClickEvent> addClickListener(
+      ComponentEventListener<ButtonClickEvent> listener) {
+    return this.clickEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Add a {@link ButtonClickEvent} listener for the component.
+   * Alias for {@link #addClickListener(ComponentEventListener) addButtonClickListener}.
    *
    * @param listener the event listener to be added
    * @return The component itself
    */
-  public T addClickListener(EventListener<ButtonClickEvent> listener) {
-    this.clickEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addClickListener(EventListener) addButtonClickListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addClickListener(EventListener)
-   */
-  public T onClick(EventListener<ButtonClickEvent> listener) {
+  public ListenerRegistration<ButtonClickEvent> onClick(
+      ComponentEventListener<ButtonClickEvent> listener) {
     return addClickListener(listener);
   }
 
@@ -392,189 +214,8 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * @param listener the event listener to be removed
    * @return The component itself
    */
-  public T removeClickListener(EventListener<ButtonClickEvent> listener) {
+  public T removeClickListener(ComponentEventListener<ButtonClickEvent> listener) {
     this.clickEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link FocusEvent} listener for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addFocusListener(EventListener<FocusEvent> listener) {
-    this.focusEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addFocusListener(EventListener) addFocusListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addFocusListener(EventListener)
-   */
-  public T onFocus(EventListener<FocusEvent> listener) {
-    return addFocusListener(listener);
-  }
-
-  /**
-   * Removes a {@link FocusEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeFocusListener(EventListener<FocusEvent> listener) {
-    this.focusEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link BlurEvent} listener for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addBlurListener(EventListener<BlurEvent> listener) {
-    this.blurEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addBlurListener(EventListener) addBlurListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addBlurListener(EventListener)
-   */
-  public T onBlur(EventListener<BlurEvent> listener) {
-    return addBlurListener(listener);
-  }
-
-  /**
-   * Removes a {@link BlurEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeBlurListener(EventListener<BlurEvent> listener) {
-    this.blurEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Adds a {@link MouseEnterEvent} for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    this.mouseEnterEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addMouseEnterListener(EventListener) addMouseEnterListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addMouseEnterListener(EventListener)
-   */
-  public T onMouseEnter(EventListener<MouseEnterEvent> listener) {
-    return addMouseEnterListener(listener);
-  }
-
-  /**
-   * Remove a {@link MouseEnterEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeMouseEnterListener(EventListener<MouseEnterEvent> listener) {
-    this.mouseEnterEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link MouseExitEvent} for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addMouseExitListener(EventListener<MouseExitEvent> listener) {
-    this.mouseExitEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addMouseExitListener(EventListener) addMouseExitListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addMouseExitListener(EventListener)
-   */
-  public T onMouseExit(EventListener<MouseExitEvent> listener) {
-    return addMouseExitListener(listener);
-  }
-
-  /**
-   * Remove a {@link MouseExitEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeMouseExitListener(EventListener<MouseExitEvent> listener) {
-    this.mouseExitEventSinkListenerRegistry.removeEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Add a {@link RightMouseDownEvent} for the component.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   */
-  public T addRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    this.rightMouseDownEventSinkListenerRegistry.addEventListener(listener);
-
-    return getSelf();
-  }
-
-  /**
-   * Alias for {@link #addRightMouseDownListener(EventListener) addRightMouseDownListener}.
-   *
-   * @param listener the event listener to be added
-   * @return The component itself
-   *
-   * @see AbstractDwcOptionInputTest#addRightMouseDownListener(EventListener)
-   */
-  public T onRightMouseDown(EventListener<RightMouseDownEvent> listener) {
-    return addRightMouseDownListener(listener);
-  }
-
-  /**
-   * Remove a {@link RightMouseDownEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeRightMouseDownListener(EventListener<RightMouseDownEvent> listener) {
-    this.rightMouseDownEventSinkListenerRegistry.removeEventListener(listener);
-
     return getSelf();
   }
 
@@ -595,26 +236,28 @@ abstract class AbstractDwcButton<T extends AbstractDwcComponent & HasFocus & Has
    * {@inheritDoc}
    */
   @Override
-  protected void catchUp() throws IllegalAccessException {
-    super.catchUp();
+  protected void attachControlCallbacks() {
+    super.attachControlCallbacks();
+    clickEventSinkListenerRegistry.attach();
+  }
 
-    // catch up the event listeners
-    clickEventSinkListenerRegistry.catchUp();
-    focusEventSinkListenerRegistry.catchUp();
-    blurEventSinkListenerRegistry.catchUp();
-    mouseEnterEventSinkListenerRegistry.catchUp();
-    mouseExitEventSinkListenerRegistry.catchUp();
-    rightMouseDownEventSinkListenerRegistry.catchUp();
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onAttach() {
+    super.onAttach();
 
     if (Boolean.TRUE.equals(disableOnClick)) {
       setDisableOnClick(disableOnClick);
     }
   }
 
-  private T getSelf() {
-    @SuppressWarnings("unchecked")
-    T self = (T) this;
-
-    return self;
+  private BBjButton inferControl() {
+    try {
+      return (BBjButton) ComponentAccessor.getDefault().getControl(this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException(e);
+    }
   }
 }

@@ -18,13 +18,13 @@ import org.dwcj.component.combobox.sink.ComboBoxEditModifyEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxOpenEventSink;
 import org.dwcj.component.combobox.sink.ComboBoxSelectEventSink;
 import org.dwcj.component.listbox.AbstractListBox;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasFocus;
+import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasHorizontalAlignment;
-import org.dwcj.concern.HasMouseWheelCondition;
-import org.dwcj.concern.HasReadOnly;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasFocus;
+import org.dwcj.concern.legacy.LegacyHasMouseWheelCondition;
+import org.dwcj.concern.legacy.LegacyHasReadOnly;
+import org.dwcj.concern.legacy.LegacyHasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,8 +36,9 @@ import java.util.function.Consumer;
 /**
  * ComboBoxEdit Control
  */
-public final class ComboBox extends AbstractListBox implements HasReadOnly, HasFocus,
-    HasMouseWheelCondition, HasEnable, HasTabTraversal, HasHorizontalAlignment<ComboBox> {
+public final class ComboBox extends AbstractListBox
+    implements LegacyHasReadOnly, LegacyHasFocus, LegacyHasMouseWheelCondition, LegacyHasEnable,
+    LegacyHasTabTraversal, HasHorizontalAlignment<ComboBox> {
 
   private BBjListEdit bbjListEdit;
 
@@ -76,7 +77,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
 
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
@@ -87,7 +88,7 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
       control.setAttribute("field-height", "auto");
       this.bbjListEdit = (BBjListEdit) control;
       populate();
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -589,10 +590,8 @@ public final class ComboBox extends AbstractListBox implements HasReadOnly, HasF
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
     this.eventCatchUp();
 
