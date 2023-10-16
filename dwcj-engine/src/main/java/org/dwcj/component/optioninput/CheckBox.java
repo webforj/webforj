@@ -29,7 +29,7 @@ public final class CheckBox extends AbstractDwcOptionInput<CheckBox> {
   private boolean indeterminate;
 
   /**
-   * Create a new checkbox component.
+   * Creates a new checkbox component.
    *
    * @param text Desired text for the checkbox.
    * @param checked True if the checkbox should be created as checked, false otherwise.
@@ -39,7 +39,7 @@ public final class CheckBox extends AbstractDwcOptionInput<CheckBox> {
   }
 
   /**
-   * Create a new checkbox component.
+   * Creates a new checkbox component.
    *
    * @param text The text for the checkbox.
    */
@@ -48,14 +48,14 @@ public final class CheckBox extends AbstractDwcOptionInput<CheckBox> {
   }
 
   /**
-   * Create a new checkbox component.
+   * Creates a new checkbox component.
    */
   public CheckBox() {
     this("");
   }
 
   /**
-   * Set the checkbox to be indeterminate.
+   * Sets the checkbox to be indeterminate.
    *
    * @param value When true then the checkbox's value is neither true nor false, but is instead
    *        indeterminate, meaning that its state cannot be determined or stated in pure binary

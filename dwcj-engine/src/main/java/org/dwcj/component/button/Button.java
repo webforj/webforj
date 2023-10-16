@@ -15,9 +15,9 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * A button in a user interface is a visual element that users can click or tap to initiate specific
  * actions or interactions within a software application or system. Buttons feature a label or icon
  * that provides a clear description of their intended function, helping users understand their
- * purpose. These UI component play a fundamental role in enabling user interactivity, making it
- * easier for users to navigate, component, and interact with the software, whether it's a simple
- * "Submit" button on a form or a more complex component within an UI.
+ * purpose. These UI components play a fundamental role in enabling user interactivity, making it
+ * easier for users to navigate and interact with the software, whether it's a simple "Submit"
+ * button on a form or a more complex component within an UI.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -26,7 +26,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
 public final class Button extends AbstractDwcButton<Button> {
 
   /**
-   * Construct the button with the given text.
+   * Construct the button with the given text and a {@link ButtonClickEvent}.
    *
    * @param text the text of the button
    * @param onClickListener the listener to be called when the button is clicked
@@ -48,7 +48,7 @@ public final class Button extends AbstractDwcButton<Button> {
   }
 
   /**
-   * Construct the button with the given text.
+   * Construct the button without any text set.
    */
   public Button() {
     this("");

@@ -49,7 +49,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
     }
 
     /**
-     * Get the value of the activation.
+     * Gets the value of the activation.
      *
      * @return the value of the activation
      */
@@ -63,7 +63,8 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   private boolean isSwitch = false;
 
   /**
-   * Create a new radio button component.
+   * Creates a new radio button component with a boolean to set its activated state and a string for
+   * its text.
    *
    * @param text Desired text for the radio button.
    * @param checked True if the radio button should be created as checked, false otherwise.
@@ -73,7 +74,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Create a new radio button component.
+   * Creates a new radio button component with a string for its text.
    *
    * @param text The text for the radio button.
    */
@@ -82,7 +83,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Create a new radio button component.
+   * Creates a new radio button component.
    */
   public RadioButton() {
     this("");
@@ -124,7 +125,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Configure if the radio button should be checked when it gains focus.
+   * Configures if the radio button should be checked when it gains focus.
    *
    * @param value the activation type
    * @see Activation
@@ -137,7 +138,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Get the activation type.
+   * Gets the activation type.
    *
    * @return the activation type
    */
@@ -177,7 +178,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Get the RadioButtonGroup which this RadioButton belongs to.
+   * Gets the RadioButtonGroup which this RadioButton belongs to.
    *
    * @return the RadioButtonGroup which this RadioButton belongs to or null if this RadioButton
    *         doesn't belong to any group
@@ -187,7 +188,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Set the RadioButtonGroup which this RadioButton belongs to.
+   * Sets the RadioButtonGroup which this RadioButton belongs to.
    *
    * @param group the RadioButtonGroup which this RadioButton belongs to
    */
@@ -211,7 +212,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Render the radio button as a switch.
+   * Renders the radio button as a switch.
    *
    * <p>
    * A switch component is a user interface element that represents a binary choice, such as turning
@@ -230,7 +231,7 @@ public final class RadioButton extends AbstractDwcOptionInput<RadioButton> {
   }
 
   /**
-   * Check if the radio button is rendered as a switch.
+   * Checks if the radio button is rendered as a switch.
    *
    * @return true when the radio button is rendered as a switch, false otherwise.
    *

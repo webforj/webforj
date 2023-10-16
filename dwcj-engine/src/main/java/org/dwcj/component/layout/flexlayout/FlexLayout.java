@@ -23,33 +23,33 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Create a new flex layout with the given controls.
+   * Creates a new flex layout with the given components.
    *
-   * @param control the controls to add to the layout
+   * @param component the components to add to the layout
    */
-  public FlexLayout(Component... control) {
+  public FlexLayout(Component... component) {
     this();
-    add(control);
+    add(component);
   }
 
   /**
-   * Create a new flex layout with the given controls.
+   * Creates a new flex layout with the given components.
    *
-   * @param controls the controls to add to the layout
+   * @param components the components to add to the layout
    * @param direction the layout direction
    */
-  public FlexLayout(FlexDirection direction, Component... controls) {
-    this(controls);
+  public FlexLayout(FlexDirection direction, Component... components) {
+    this(components);
     setDirection(direction);
   }
 
   /**
-   * Create a new flex layout using the given builder.
+   * Creates a new flex layout using the given builder.
    *
    * @param builder the builder
    */
-  public FlexLayout(FlexLayoutBuilder builder, Component... controls) {
-    this(controls);
+  public FlexLayout(FlexLayoutBuilder builder, Component... components) {
+    this(components);
 
     boolean isInline = builder.isInline();
     setInline(isInline);
@@ -76,7 +76,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Create a new flex layout builder.
+   * Creates a new flex layout builder.
    *
    * @return the builder
    */
@@ -85,18 +85,18 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Create a new flex layout builder.
+   * Creates a new flex layout builder.
    *
-   * @param controls the controls to add to the layout
+   * @param components the components to add to the layout
    * @return the builder
    */
-  public static FlexLayoutBuilder create(Component... controls) {
-    return new FlexLayoutBuilder(controls);
+  public static FlexLayoutBuilder create(Component... components) {
+    return new FlexLayoutBuilder(components);
   }
 
   /**
-   * When true, then the layout will be displayed inline , otherwise it will be display as block.
-   * The default value is false (block).
+   * When true, then the layout will be displayed inline, otherwise it will be display as block. The
+   * default value is false (block).
    *
    * @param inline true to display the layout inline, otherwise false
    * @return this layout
@@ -107,7 +107,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Check if the layout is inline or block displayed.
+   * Checks if the layout is inline or block displayed.
    *
    * @return true if the layout is inline, otherwise false
    */
@@ -116,7 +116,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout direction.
+   * Sets the layout direction.
    *
    * <p>
    * This establishes the main-axis, thus defining the direction items are placed in the layout. The
@@ -132,7 +132,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the layout direction.
+   * Gets the layout direction.
    *
    * @return the direction
    */
@@ -144,7 +144,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout wrap mode.
+   * Sets the layout wrap mode.
    *
    * <p>
    * By default, items will all try to fit onto one line. You can change that and allow the items to
@@ -163,7 +163,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the layout wrap mode.
+   * Gets the layout wrap mode.
    *
    * @return the wrap
    */
@@ -175,7 +175,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout flow.
+   * Sets the layout flow.
    *
    * <p>
    * This is a shorthand for setting both {@link #setDirection(FlexDirection)} and
@@ -194,7 +194,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the layout flow.
+   * Gets the layout flow.
    *
    * <p>
    * This is a shorthand for getting both {@link #getDirection()} and {@link #getWrap()} at the same
@@ -214,7 +214,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the {@link FlexJustifyContent} use by the layout.
+   * Sets the {@link FlexJustifyContent} use by the layout.
    *
    * <p>
    * This defines the alignment along the main axis. it helps distribute extra free space left over
@@ -232,7 +232,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the {@link FlexJustifyContent} use by the layout.
+   * Gets the {@link FlexJustifyContent} use by the layout.
    *
    * @return the justify content
    */
@@ -244,7 +244,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the {@link FlexAlignment} use by the layout.
+   * Sets the {@link FlexAlignment} use by the layout.
    *
    * <p>
    * Defines the default behaviour for how items are laid out along the cross axis on the current
@@ -261,7 +261,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the {@link FlexAlignment} use by the layout.
+   * Gets the {@link FlexAlignment} use by the layout.
    *
    * @return the align items
    */
@@ -273,7 +273,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the {@link FlexContentAlignment} use by the layout.
+   * Sets the {@link FlexContentAlignment} use by the layout.
    *
    * <p>
    * The aligns the layout's lines within when there is extra space in the cross-axis, similar to
@@ -296,7 +296,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the {@link FlexContentAlignment} use by the layout.
+   * Gets the {@link FlexContentAlignment} use by the layout.
    *
    * @return the align content
    */
@@ -308,7 +308,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the gap between items.
+   * Sets the gap between items.
    *
    * <p>
    * The gap property explicitly controls the space between items. It applies that spacing only
@@ -330,7 +330,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the gap between items.
+   * Gets the gap between items.
    *
    * @return the gap
    */
@@ -339,7 +339,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout margin.
+   * Sets the layout margin.
    *
    * @param margin the margin
    * @return this layout
@@ -350,7 +350,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout margin.
+   * Sets the layout margin.
    *
    * @return this layout
    */
@@ -359,7 +359,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout padding.
+   * Sets the layout padding.
    *
    * @param padding the padding
    * @return this layout
@@ -370,7 +370,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the layout padding.
+   * Sets the layout padding.
    *
    * @return the padding
    */
@@ -379,7 +379,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the order of given control.
+   * Sets the order of given control.
    *
    * <p>
    * By default, items will be laid out in the source order. However, the order property controls
@@ -387,22 +387,22 @@ public class FlexLayout extends Panel {
    * </p>
    *
    * @param order the order
-   * @param control the control
+   * @param control the component
    *
    * @return this layout
    */
-  public FlexLayout setItemOrder(int order, LegacyHasStyle control) {
+  public FlexLayout setItemOrder(int order, LegacyHasStyle component) {
     if (order == 0) {
-      control.setStyle(FlexProperties.PROP_ORDER, "");
+      component.setStyle(FlexProperties.PROP_ORDER, "");
     } else {
-      control.setStyle(FlexProperties.PROP_ORDER, String.valueOf(order));
+      component.setStyle(FlexProperties.PROP_ORDER, String.valueOf(order));
     }
 
     return this;
   }
 
   /**
-   * Get the order of given control.
+   * Gets the order of given control.
    *
    * @param control the control
    * @return the order
@@ -414,7 +414,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the flex grow for the given items.
+   * Sets the flex grow for the given items.
    *
    * <p>
    * The defines the ability for a control to grow if necessary. It accepts a numeric value that
@@ -453,7 +453,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the flex grow for the given control.
+   * Gets the flex grow for the given control.
    *
    * @param control the control
    * @return the flex grow
@@ -465,7 +465,7 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Set the flex shrink for the given items.
+   * Sets the flex shrink for the given items.
    *
    * <p>
    * The defines the ability for a control to shrink if necessary.
@@ -489,19 +489,19 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the flex shrink for the given control.
+   * Gets the flex shrink for the given component.
    *
-   * @param control the control
+   * @param component the component
    * @return the flex shrink
    */
-  public double getItemShrink(LegacyHasStyle control) {
-    String shrink = Optional.ofNullable(control.getStyle(FlexProperties.PROP_SHRINK)).orElse("1");
+  public double getItemShrink(LegacyHasStyle component) {
+    String shrink = Optional.ofNullable(component.getStyle(FlexProperties.PROP_SHRINK)).orElse("1");
 
     return Double.parseDouble(shrink);
   }
 
   /**
-   * Set the flex basis for the given items.
+   * Sets the flex basis for the given items.
    *
    * <p>
    * The defines the default size of an item before the remaining space is distributed. It can be a
@@ -528,17 +528,17 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the flex basis for the given control.
+   * Gets the flex basis for the given component.
    *
-   * @param control the control
+   * @param component the component
    * @return the flex basis
    */
-  public String getItemBasis(LegacyHasStyle control) {
-    return Optional.ofNullable(control.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
+  public String getItemBasis(LegacyHasStyle component) {
+    return Optional.ofNullable(component.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
   }
 
   /**
-   * Set the alignment of given items.
+   * Sets the alignment of given items.
    *
    * <p>
    * This allows the default alignment (or the one specified by
@@ -554,12 +554,12 @@ public class FlexLayout extends Panel {
    */
   public FlexLayout setItemAlignment(FlexAlignment alignSelf, LegacyHasStyle... items) {
     if (alignSelf == null) {
-      for (LegacyHasStyle control : items) {
-        control.setStyle(FlexProperties.PROP_ALIGN_SELF, "");
+      for (LegacyHasStyle component : items) {
+        component.setStyle(FlexProperties.PROP_ALIGN_SELF, "");
       }
     } else {
-      for (LegacyHasStyle control : items) {
-        control.setStyle(FlexProperties.PROP_ALIGN_SELF, alignSelf.getValue());
+      for (LegacyHasStyle component : items) {
+        component.setStyle(FlexProperties.PROP_ALIGN_SELF, alignSelf.getValue());
       }
     }
 
@@ -567,13 +567,13 @@ public class FlexLayout extends Panel {
   }
 
   /**
-   * Get the alignment of given control.
+   * Gets the alignment of given component.
    *
-   * @param control the control
+   * @param component the component
    * @return the alignment
    */
-  public FlexAlignment getItemAlignment(LegacyHasStyle control) {
-    String alignSelf = Optional.ofNullable(control.getStyle(FlexProperties.PROP_ALIGN_SELF))
+  public FlexAlignment getItemAlignment(LegacyHasStyle component) {
+    String alignSelf = Optional.ofNullable(component.getStyle(FlexProperties.PROP_ALIGN_SELF))
         .orElse(FlexAlignment.getDefault().getValue());
 
     return FlexAlignment.fromValue(alignSelf);

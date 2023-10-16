@@ -16,8 +16,9 @@ import org.dwcj.component.Component;
  * @since 23.05
  */
 public interface HasProperty<T extends Component> {
+
   /**
-   * Retrieve the value of the given property.
+   * Retrieves the value of the given property.
    *
    * @param property the key of the property
    * @return the retrieved value.
@@ -25,7 +26,7 @@ public interface HasProperty<T extends Component> {
   public Object getProperty(String property);
 
   /**
-   * Set a property value.
+   * Sets a property value.
    *
    * @param property the key of the property
    * @param value the value to be set

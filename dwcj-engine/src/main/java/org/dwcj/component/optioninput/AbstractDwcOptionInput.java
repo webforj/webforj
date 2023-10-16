@@ -21,7 +21,7 @@ import org.dwcj.concern.HasTextPosition;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * The Base class for all DWC (Dwcj Web Components) option input components.
+ * The Base class for all DWC (DWCJ Web Components) option input components.
  *
  * <p>
  * This abstract class serves as the foundation for all option input components within the
@@ -56,7 +56,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   private boolean checked = false;
 
   /**
-   * Create a new AbstractOptionInput component.
+   * Creates a new AbstractOptionInput component.
    *
    * @param text Desired text for the AbstractOptionInput.
    * @param checked True if the AbstractOptionInput should be created as checked, false otherwise.
@@ -152,7 +152,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Get the expanse of the component.
+   * Gets the expanse of the component.
    *
    * @return The expanse for the component.
    */
@@ -172,7 +172,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Add a {@link CheckEvent} listener to the component.
+   * Adds a {@link CheckEvent} listener to the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -193,7 +193,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Remove a {@link CheckEvent} listener from the component.
+   * Removes a {@link CheckEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
@@ -204,7 +204,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Add an {@link UncheckEvent} listener for the component.
+   * Adds an {@link UncheckEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -226,7 +226,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Remove an {@link UncheckEvent} listener from the component.
+   * Removes an {@link UncheckEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
@@ -237,7 +237,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Add a {@link ToggleEvent} listener for the component.
+   * Adds a {@link ToggleEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -258,7 +258,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
   }
 
   /**
-   * Remove a {@link ToggleEvent} listener from the component.
+   * Removes a {@link ToggleEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself

@@ -3,11 +3,11 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * An interface for controlling the enablement state of a component after it has been rendered on
- * the page.
+ * An interface for controlling the enabled state of a component after it has been rendered on the
+ * page.
  *
  * <p>
- * This interface provides methods to query and modify the enablement state of a component, allowing
+ * This interface provides methods to query and modify the enabled state of a component, allowing
  * you to determine whether it is currently enabled and set its enablement status.
  * </p>
  *

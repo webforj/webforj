@@ -4,7 +4,7 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when the right mousebutton is pressed.
+ * An event that is fired when the right mouse button is pressed.
  *
  * {@link MouseEvent}
  */

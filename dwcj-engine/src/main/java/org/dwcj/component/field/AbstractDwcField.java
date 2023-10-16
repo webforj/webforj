@@ -26,7 +26,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /**
- * The Base class for all field components.
+ * The base class for all field components.
  *
  * <p>
  * This abstract class serves as the foundation for all field components within the framework. It
@@ -62,14 +62,14 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   private boolean spellcheck = false;
 
   /**
-   * Construct a new field.
+   * Constructs a new field with a default medium expanse.
    */
   protected AbstractDwcField() {
     setExpanse(Expanse.MEDIUM);
   }
 
   /**
-   * Set the field's label.
+   * Sets the field's label.
    *
    * <p>
    * A field label is a descriptive text or title that is associated with the field. It provides a
@@ -90,7 +90,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Get the field's label.
+   * Gets the field's label.
    *
    * @return the field's label
    */
@@ -99,7 +99,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Set the field's required state.
+   * Sets the field's required state.
    *
    * <p>
    * A field is required when the user must provide a value before submitting a form. This is mainly
@@ -118,7 +118,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Check if the field is required.
+   * Checks if the field is required.
    *
    * @return true if the field is required, false otherwise
    */
@@ -127,7 +127,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Set whether the field's value may be checked for spelling errors.
+   * Sets whether the field's value may be checked for spelling errors.
    *
    * @param spellcheck true if the field's value may be checked for spelling errors, false
    *        otherwise.
@@ -141,7 +141,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Check if the field has spellcheck enabled.
+   * Checks if the field has spellcheck enabled.
    *
    * @return true if the field is spellcheck, false otherwise
    */
@@ -169,7 +169,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * When true, should automatically have focus when the app has finished loading.
+   * When true, the component should automatically have focus when the app has finished loading.
    *
    * @param autofocus true to automatically have focus when the app has finished loading.
    * @return the component itself
@@ -181,7 +181,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Check if the component should automatically have focus when the app has finished loading.
+   * Checks if the component should automatically have focus when the app has finished loading.
    *
    * @return true if the component should automatically have focus when the app has finished
    *         loading.
@@ -236,7 +236,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Add a {@link ModifyEvent} listener for the component.
+   * Adds a {@link ModifyEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -268,7 +268,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Add a {@link KeypressEvent} listener for the component.
+   * Adds a {@link KeypressEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -325,7 +325,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Get the instance of the underlying BBjEditBox control.
+   * Gets the instance of the underlying BBjEditBox control.
    *
    * @return the instance of the control
    */

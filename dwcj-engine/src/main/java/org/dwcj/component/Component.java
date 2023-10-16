@@ -61,8 +61,8 @@ public abstract class Component {
    * Allows users to include additional information within the component.
    *
    * <p>
-   * Added information are available only on the server side of the component and are not sent to
-   * the client.
+   * Added information is available only on the server side of the component and is not sent to the
+   * client.
    * </p>
    *
    * @param key Key of the data

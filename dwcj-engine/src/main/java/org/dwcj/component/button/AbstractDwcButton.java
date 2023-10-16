@@ -20,7 +20,7 @@ import org.dwcj.concern.HasTheme;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * An abstract dwc button component.
+ * An abstract DWC button component.
  *
  * <p>
  * This class represents an abstract button component in the DWC client. It extends the
@@ -118,7 +118,7 @@ abstract class AbstractDwcButton<T extends FocusableDwcComponent<T>>
   }
 
   /**
-   * Set whether the button should be immediately disabled when the user clicks it.
+   * Sets whether the button should be immediately disabled when the user clicks it.
    *
    * @param disableOnClick {@code true} to disable the button when the user clicks it
    *
@@ -187,7 +187,7 @@ abstract class AbstractDwcButton<T extends FocusableDwcComponent<T>>
   }
 
   /**
-   * Add a {@link ButtonClickEvent} listener for the component.
+   * Adds a {@link ButtonClickEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener

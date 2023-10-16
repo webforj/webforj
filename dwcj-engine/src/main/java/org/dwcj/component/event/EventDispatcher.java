@@ -124,7 +124,7 @@ public class EventDispatcher {
   }
 
   /**
-   * Dispatch event.
+   * Dispatches event.
    *
    * @param <T> the generic type
    * @param event the event

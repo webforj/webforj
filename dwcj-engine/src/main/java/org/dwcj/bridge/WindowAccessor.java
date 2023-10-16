@@ -15,7 +15,7 @@ public abstract class WindowAccessor {
   protected WindowAccessor() {}
 
   /**
-   * get the accessor instance to access the protected methods in the Dwcj Panel instances
+   * Gets the accessor instance to access the protected methods in the DWCJ Panel instances
    *
    * @return the accessor instance
    */
@@ -33,7 +33,7 @@ public abstract class WindowAccessor {
   }
 
   /**
-   * set the accessor instance for static access
+   * Sets the accessor instance for static access
    *
    * @param accessor the instance of the accessor implementation
    */

@@ -14,7 +14,7 @@ import org.dwcj.component.Component;
 public interface HasText<T extends Component> {
 
   /**
-   * Retrieves the text property of the control.
+   * Retrieves the text property of the component.
    *
    * @return the text of the component.
    */

@@ -68,7 +68,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Remove a callback on an underlying BBj control.
+   * Removes a callback on an underlying BBj control.
    *
    * @throws DwcjRuntimeException if the callback cannot be removed.
    */
@@ -86,14 +86,15 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Handle the BBj event and delegate it to the corresponding event listener to the Java component.
+   * Handles the BBj event and delegates it to the corresponding event listener in the Java
+   * component.
    *
    * @param ev A BBj event
    */
   public abstract void handleEvent(BBjEvent ev);
 
   /**
-   * Set the event dispatcher instance.
+   * Sets the event dispatcher instance.
    *
    * @param dispatcher the event dispatcher instance.
    */
@@ -102,7 +103,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the event dispatcher instance.
+   * Gets the event dispatcher instance.
    *
    * @return the event dispatcher instance.
    */
@@ -112,7 +113,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Set the instance of the DwcjHelper.
+   * Sets the instance of the DwcjHelper.
    *
    * @param dwcjHelper The DwcjHelper instance.
    */
@@ -121,7 +122,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the instance of the DwcjHelper.
+   * Gets the instance of the DwcjHelper.
    *
    * @return The DwcjHelper instance.
    */
@@ -130,7 +131,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the Java component.
+   * Gets the Java component.
    *
    * @return The Java component.
    */
@@ -139,7 +140,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Get the instance of the underlying BBjControl.
+   * Gets the instance of the underlying BBjControl.
    *
    * @return The BBjControl instance.
    */

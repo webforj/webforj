@@ -37,7 +37,7 @@ public interface HasTextPosition<T extends Component> {
   }
 
   /**
-   * Sets the position of the text within the control relative to other elements of the control.
+   * Sets the position of the text within the component relative to other elements of the component.
    *
    * @param position an enum representing an internal BBj numeric constant.
    * @return the component itself.
@@ -45,7 +45,7 @@ public interface HasTextPosition<T extends Component> {
   public T setTextPosition(Position position);
 
   /**
-   * Retrieves the value indicating the text's position relative to other elements of the control.
+   * Retrieves the value indicating the text's position relative to other elements of the component.
    *
    * @return an enum value representing text position.
    */

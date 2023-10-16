@@ -111,7 +111,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Set the drawer content.
+   * Sets the drawer content.
    *
    * @param content The drawer content.
    * @return the drawer
@@ -122,7 +122,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get the drawer content.
+   * Gets the drawer content.
    *
    * @return the drawer content
    */
@@ -131,7 +131,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Set Drawer auto focus.
+   * Sets Drawer auto focus.
    *
    * @param autoFocus When true then automatically focus the first focusable element in the drawer.
    * @return the drawer
@@ -142,7 +142,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get Drawer auto focus.
+   * Gets Drawer auto focus.
    *
    * @return the drawer auto focus
    */
@@ -151,7 +151,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Set Drawer label. (Used for accessibility)
+   * Sets Drawer label. (Used for accessibility)
    *
    * @param label The drawer label.
    * @return the drawer
@@ -162,7 +162,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get Drawer label.
+   * Gets Drawer label.
    *
    * @return the drawer label
    */
@@ -171,7 +171,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Set Drawer max size.
+   * Sets Drawer max size.
    *
    * @param maxSize The Drawer max width. Max width in case placement is `left` or `right` or max
    *        height in case placement is `top` or `bottom`.
@@ -183,7 +183,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get Drawer max size.
+   * Gets Drawer max size.
    *
    * @return the drawer max size
    */
@@ -192,7 +192,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Open or close the drawer.
+   * Opens or closes the drawer.
    *
    * @param opened When true, the drawer is shown.
    * @return the drawer
@@ -203,7 +203,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Open the drawer.
+   * Opens the drawer.
    *
    * @return the drawer
    */
@@ -212,7 +212,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Close the drawer.
+   * Closes the drawer.
    *
    * @return the drawer
    */
@@ -221,7 +221,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get Drawer opened.
+   * Gets Drawer opened.
    *
    * @return the drawer opened
    */
@@ -230,7 +230,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Set Drawer placement.
+   * Sets Drawer placement.
    *
    * @param placement The drawer placement.
    * @return the drawer
@@ -241,7 +241,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get Drawer placement.
+   * Gets Drawer placement.
    *
    * @return the drawer placement
    */
@@ -250,7 +250,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Set Drawer size.
+   * Sets Drawer size.
    *
    * @param size The Drawer size. Width in case placement is `left` or `right` or height in case
    *        placement is `top` or `bottom`.
@@ -262,7 +262,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Get Drawer size.
+   * Gets Drawer size.
    *
    * @return the drawer size
    */
@@ -323,7 +323,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Add Drawer opened listener.
+   * Adds Drawer opened listener.
    *
    * @param listener the listener
    * @return the drawer
@@ -344,7 +344,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Remove Drawer opened listener.
+   * Removes Drawer opened listener.
    *
    * @param listener the listener
    * @return the drawer
@@ -355,7 +355,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Add Drawer closed listener.
+   * Adds Drawer closed listener.
    *
    * @param listener the listener
    * @return the drawer
@@ -376,7 +376,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
   }
 
   /**
-   * Remove Drawer closed listener.
+   * Removes Drawer closed listener.
    *
    * @param listener the listener
    * @return the drawer

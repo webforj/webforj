@@ -5,7 +5,7 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * This class is the base class for all events fired by the controls.
+ * This class is the base class for all events fired by the components.
  *
  * @param <T> the generic type
  *
@@ -19,19 +19,19 @@ public class ComponentEvent<T extends Component> extends EventObject {
   /**
    * Instantiates a new event.
    *
-   * @param control the control
+   * @param component the component
    * @param eventMap the event map
    */
-  public ComponentEvent(T control, Map<String, Object> eventMap) {
-    super(control);
+  public ComponentEvent(T component, Map<String, Object> eventMap) {
+    super(component);
     this.eventMap = eventMap;
   }
 
   /**
-   * Get the event map sent by the control.
+   * Gets the event map sent by the component.
    *
    * <p>
-   * The event map is a serializable map from the original client event sent by the control.
+   * The event map is a serializable map from the original client event sent by the component.
    * </p>
    *
    * @return the event map

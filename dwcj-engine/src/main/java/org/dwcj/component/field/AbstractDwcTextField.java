@@ -99,7 +99,7 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
   }
 
   /**
-   * Select a range of text in the input field.
+   * Selects a range of text in the input field.
    *
    * @param range the range to select.
    * @return the text field instance.
@@ -116,7 +116,7 @@ abstract class AbstractDwcTextField<T extends AbstractDwcTextField<T>>
   }
 
   /**
-   * Select a range of text in the input field.
+   * Selects a range of text in the input field given a starting and ending position.
    *
    * @param start the start of the selection range.
    * @param end the end of the selection range.

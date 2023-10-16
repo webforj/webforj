@@ -3,8 +3,7 @@ package org.dwcj.concern;
 import org.dwcj.component.Component;
 
 /**
- * An interface that facilitates the implementation of text highlighting behaviors for components
- * when they receive focus.
+ * An interface for implementing text highlighting behaviors for components when they receive focus.
  *
  * <p>
  * This interface provides methods to control the behavior of text highlighting when a component
@@ -86,7 +85,7 @@ public interface HasHighlightOnFocus<T extends Component> {
   }
 
   /**
-   * Set the highlight behavior for the component's text when it receives focus.
+   * Sets the highlight behavior for the component's text when it receives focus.
    *
    * @param highlight The highlight behavior to set.
    * @return The component itself.
@@ -94,7 +93,7 @@ public interface HasHighlightOnFocus<T extends Component> {
   T setHighlightOnFocus(Behavior highlight);
 
   /**
-   * Get the current highlight behavior when the component's text receives focus.
+   * Gets the current highlight behavior when the component's text receives focus.
    *
    * @return The current highlight behavior.
    */

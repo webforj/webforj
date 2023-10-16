@@ -91,7 +91,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private Enum<? extends ThemeBase> theme = null;
 
   /**
-   * Set the value for a property in the component.
+   * Sets the value for a property in the component.
    *
    * @param property the name of the property
    * @param value the value to be set
@@ -130,7 +130,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * The getRestrictedProperties returns a list of properties that are restricted by the component.
    * The default implementation returns an empty ArrayList, which means that no properties are
    * restricted. Some components might need to restrict properties to prevent the API user from
-   * setting properties that are supported by the component and has a already defined behavior.
+   * setting properties that are supported by the component and have an already defined behavior.
    *
    * <p>
    * If a property is restricted, it also means that the corresponding attribute version of that
@@ -148,7 +148,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Set the value for a specified component attribute.
+   * Sets the value for a specified component attribute.
    *
    * @param attribute the name of the attribute
    * @param value the value to be set
@@ -522,7 +522,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Adds a MouseExit event for the component.
+   * Adds a RightMouseDown event for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -578,7 +578,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
 
   /**
    * This method sets the underlying original BBj control. It's package private and can only be
-   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
+   * accessed through the ControlAccessor. No API user / customer should ever work directly with BBj
    * controls.
    *
    * @param control the BBj control to set.
@@ -588,8 +588,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * This method gets the underlying original BBj control It's package private and can only be
-   * accessed through the ControlAccessor No API user / customer shall ever work directly with BBj
+   * This method gets the underlying original BBj control. It's package private and can only be
+   * accessed through the ControlAccessor. No API user / customer should ever work directly with BBj
    * controls.
    *
    * @return the underlying BBj control
@@ -599,7 +599,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Set the value for a property in the component. This method does not check if the property is
+   * Sets the value for a property in the component. This method does not check if the property is
    * restricted or not.
    *
    * @param property the name of the property
@@ -622,7 +622,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Set the value for a specified component attribute. This method does not check if the attribute
+   * Sets the value for a specified component attribute. This method does not check if the attribute
    * is restricted or not.
    *
    * @param attribute the name of the attribute
@@ -681,7 +681,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Set the highlight behavior for the component's text when it receives focus.
+   * Sets the highlight behavior for the component's text when it receives focus.
    *
    * @param behavior The desired behavior for the component's text when it receives focus.
    * @return The component itself.
@@ -703,7 +703,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Get the highlight behavior for the component's text when it receives focus.
+   * Gets the highlight behavior for the component's text when it receives focus.
    *
    * @return The highlight behavior for the component's text when it receives focus.
    */
@@ -712,7 +712,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Set the component default horizontal alignment.
+   * Sets the component's default horizontal alignment.
    *
    * @param alignment Enum value of alignment
    * @return The component itself.
@@ -723,7 +723,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Set the component horizontal alignment.
+   * Sets the component's horizontal alignment.
    *
    * @param alignment Enum value of alignment
    * @return The component itself.
@@ -743,7 +743,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Get the components's horizontal alignment.
+   * Gets the components's horizontal alignment.
    *
    * @return the component's horizontal alignment
    */
@@ -776,7 +776,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Get the expanse of the component.
+   * Gets the expanse of the component.
    *
    * @return The expanse for the component.
    */
@@ -801,7 +801,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Get the theme of the component.
+   * Gets the theme of the component.
    *
    * @return The theme for the component.
    */
@@ -830,7 +830,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Go through every supported EventSinkListenerRegistry and call the
+   * Goes through every supported EventSinkListenerRegistry and calls the
    * {@link EventSinkListenerRegistry#attach()} method.
    *
    * <p>

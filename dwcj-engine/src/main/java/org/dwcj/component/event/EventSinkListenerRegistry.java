@@ -27,7 +27,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   }
 
   /**
-   * Adds a event listener.
+   * Adds an event listener.
    *
    * @param listener The event listener to be added
    */
@@ -44,7 +44,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   }
 
   /**
-   * Removes a event listener.
+   * Removes an event listener.
    *
    * @param listener The event listener to be removed
    */
@@ -68,7 +68,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   }
 
   /**
-   * Get the event dispatcher instance.
+   * Gets the event dispatcher instance.
    *
    * @return the event dispatcher instance.
    */
@@ -77,7 +77,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   }
 
   /**
-   * Get the sink instance.
+   * Gets the sink instance.
    *
    * @return the sink instance.
    */
@@ -86,8 +86,8 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   }
 
   /**
-   * A custom Dwc listener registration that will can remove the callback from the sink when there
-   * are no more listeners registered for the event.
+   * A custom DWC listener registration that will remove the callback from the sink when there are
+   * no more listeners registered for the event.
    *
    * @author Hyyan Abo Fakher
    */

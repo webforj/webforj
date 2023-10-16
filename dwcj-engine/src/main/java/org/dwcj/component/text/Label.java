@@ -47,10 +47,10 @@ public final class Label extends DwcComponent<Label> implements HasHorizontalAli
   }
 
   /**
-   * Constructor used to give the label initial text and wether it is linewrapped or not.
+   * Constructor used to give the label initial text and whether it is line-wrapped or not.
    *
    * @param text String value for initial display text
-   * @param wrap Boolean value for linewrapping.
+   * @param wrap Boolean value for line wrapping.
    */
   public Label(String text, boolean wrap) {
     setText(text);
@@ -79,8 +79,8 @@ public final class Label extends DwcComponent<Label> implements HasHorizontalAli
   /**
    * Returns whether lines are wrapped in the label.
    *
-   * @return Returns whether the lines are wrapped in the component (false = Not Wrapped, true =
-   *         Wrapped).
+   * @return Returns whether the lines are wrapped in the component (false = not wrapped, true =
+   *         wrapped).
    */
   public boolean isWrap() {
     return this.lineWrap;

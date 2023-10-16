@@ -68,7 +68,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
           RadioButtonGroupChangeEvent.class);
 
   /**
-   * Create a RadioButtonGroup with a name and a list of RadioButtons.
+   * Creates a RadioButtonGroup with a name and a list of RadioButtons.
    *
    * @param name the name of the RadioButtonGroup.
    * @param buttons the list of RadioButtons to add.
@@ -79,7 +79,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Create a RadioButtonGroup with a name.
+   * Creates a RadioButtonGroup with a name.
    *
    * @param name the name of the RadioButtonGroup.
    */
@@ -88,7 +88,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Create a RadioButtonGroup with a list of RadioButtons.
+   * Creates a RadioButtonGroup with a list of RadioButtons.
    *
    * @param buttons the list of RadioButtons to add.
    */
@@ -97,14 +97,14 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Create a RadioButtonGroup.
+   * Creates a RadioButtonGroup.
    */
   public RadioButtonGroup() {
     this(UUID.randomUUID().toString(), new RadioButton[0]);
   }
 
   /**
-   * Add a RadioButton or a list of RadioButtons to the RadioButtonGroup.
+   * Adds a RadioButton or a list of RadioButtons to the RadioButtonGroup.
    *
    * @param buttons the RadioButton or the list of RadioButtons to add.
    * @return the component itself.
@@ -136,7 +136,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Remove the RadioButton given as an Argument.
+   * Removes the RadioButton given as an Argument.
    *
    * @return the component itself.
    */
@@ -161,7 +161,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Get the checked RadioButton from RadioButtonGroup.
+   * Gets the checked RadioButton from RadioButtonGroup.
    *
    * @return The checked RadioButton.
    */
@@ -197,7 +197,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Get the name of the RadioButtonGroup.
+   * Gets the name of the RadioButtonGroup.
    *
    * @return the name of the RadioButtonGroup.
    */
@@ -206,7 +206,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Set the name of the RadioButtonGroup.
+   * Sets the name of the RadioButtonGroup.
    *
    * @param name the name of the RadioButtonGroup.
    * @return the component itself.
@@ -226,7 +226,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Get the list of tracked radio buttons.
+   * Gets the list of tracked radio buttons.
    *
    * @return the list of added radio buttons.
    */
@@ -252,7 +252,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Add a {@link RadioButtonGroupChangeEvent} listener to the component.
+   * Adds a {@link RadioButtonGroupChangeEvent} listener to the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -274,7 +274,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Remove a {@link RadioButtonGroupChangeEvent} listener from the component.
+   * Removes a {@link RadioButtonGroupChangeEvent} listener from the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself

@@ -204,7 +204,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Use the passed panel in header slot.
+   * Uses the passed panel in header slot.
    *
    * @param header the header panel
    * @return the app layout
@@ -216,16 +216,16 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the header panel instance.
+   * Gets the header panel instance.
    *
-   * @return the app layout
+   * @return the header panel
    */
   public Panel getHeader() {
     return header;
   }
 
   /**
-   * Use the passed panel in drawer slot.
+   * Uses the passed panel in drawer slot.
    *
    * @param drawer the drawer panel
    * @return the app layout
@@ -237,16 +237,16 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the drawer panel instance.
+   * Gets the drawer panel instance.
    *
-   * @return the app layout
+   * @return the drawer panel
    */
   public Panel getDrawer() {
     return drawer;
   }
 
   /**
-   * Use the passed panel in content slot.
+   * Uses the passed panel in content slot.
    *
    * @param content the content panel
    * @return the app layout
@@ -258,16 +258,16 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the content panel instance.
+   * Gets the content panel instance.
    *
-   * @return the app layout
+   * @return the content panel
    */
   public Panel getContent() {
     return content;
   }
 
   /**
-   * Use the passed panel in footer slot.
+   * Uses the passed panel in footer slot.
    *
    * @param footer the footer panel
    * @return the app layout
@@ -279,16 +279,16 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the footer panel instance.
+   * Gets the footer panel instance.
    *
-   * @return the app layout
+   * @return the footer panel
    */
   public Panel getFooter() {
     return footer;
   }
 
   /**
-   * Open/close the drawer.
+   * Opens or closes the drawer based on the boolean passed.
    *
    * @param drawerOpened true to open the drawer, false to close it
    * @return the app layout
@@ -370,7 +370,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the drawer width.
+   * Gets the drawer width.
    *
    * @return the drawer width
    */
@@ -379,7 +379,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the drawer placement.
+   * Sets the drawer placement.
    *
    * @param drawerPlacement the drawer placement
    * @return the app layout
@@ -390,7 +390,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the drawer placement.
+   * Gets the drawer placement.
    *
    * @return the drawer placement
    */
@@ -417,7 +417,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the drawer breakpoint.
+   * Gets the drawer breakpoint.
    *
    * @return the drawer breakpoint
    */
@@ -426,7 +426,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the footer shadow.
+   * Sets the footer shadow.
    *
    * @param footerShadow the footer shadow
    * @return the app layout
@@ -437,7 +437,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the footer shadow.
+   * Gets the footer shadow.
    *
    * @return the footer shadow
    */
@@ -446,7 +446,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the footer fixed.
+   * Sets the footer fixed.
    *
    * @param footerFixed When true, the footer will be fixed at the top and won't move when the user
    *        scrolls.
@@ -467,7 +467,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the footer offscreen.
+   * Sets the footer offscreen.
    *
    * @param footerOffscreen When true, the footer position will be shifted to fit beside the opened
    *        drawer.
@@ -479,7 +479,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Check if the footer is offscreen.
+   * Checks if the footer is offscreen.
    *
    * @return true if the footer is offscreen, false otherwise
    */
@@ -488,7 +488,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the footer reveal.
+   * Sets the footer reveal.
    *
    * @param footerReveal When true, the footer will be revealed when the user scrolls down.
    * @return the app layout
@@ -499,7 +499,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Check if the footer is reveal.
+   * Checks if the footer is reveal.
    *
    * @return true if the footer is reveal, false otherwise
    */
@@ -508,7 +508,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the header shadow.
+   * Sets the header shadow.
    *
    * @param headerShadow the header shadow
    * @return the app layout
@@ -519,7 +519,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Get the header shadow.
+   * Gets the header shadow.
    *
    * @return the header shadow
    */
@@ -528,7 +528,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the header fixed.
+   * Sets the header fixed.
    *
    * @param headerFixed When true, the header will be fixed at the top and won't move when the user
    *        scrolls.
@@ -540,7 +540,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Check if the header is fixed.
+   * Checks if the header is fixed.
    *
    * @return true if the header is fixed, false otherwise
    */
@@ -549,7 +549,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the header offscreen.
+   * Sets the header offscreen.
    *
    * @param headerOffscreen When true, the header position will be shifted to fit beside the opened
    *        drawer.
@@ -561,7 +561,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Check if the header is offscreen.
+   * Checks if the header is offscreen.
    *
    * @return true if the header is offscreen, false otherwise
    */
@@ -570,7 +570,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Set the header reveal.
+   * Sets the header reveal.
    *
    * @param headerReveal When true, the header will be revealed when the user scrolls up.
    * @return the app layout
@@ -676,7 +676,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Add a listener for the drawer opened event.
+   * Adds a listener for the drawer opened event.
    *
    * @param listener the listener
    * @return the app layout
@@ -698,7 +698,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Remove a listener for the drawer opened event.
+   * Removes a listener for the drawer opened event.
    *
    * @param listener the listener
    * @return the app layout
@@ -710,7 +710,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Add a listener for the drawer closed event.
+   * Adds a listener for the drawer closed event.
    *
    * @param listener the listener
    * @return the app layout
@@ -732,7 +732,7 @@ public class AppLayout extends WebComponent
   }
 
   /**
-   * Remove a listener for the drawer closed event.
+   * Removes a listener for the drawer closed event.
    *
    * @param listener the listener
    * @return the app layout

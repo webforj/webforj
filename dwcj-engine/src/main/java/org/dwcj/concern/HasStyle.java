@@ -13,7 +13,7 @@ import org.dwcj.component.Component;
 public interface HasStyle<T extends Component> {
 
   /**
-   * Get the value of a CSS property.
+   * Gets the value of a CSS property.
    *
    * <p>
    * This method is intended to be used to retrieve the value of a CSS property of a component.
@@ -27,7 +27,7 @@ public interface HasStyle<T extends Component> {
   public String getStyle(String property);
 
   /**
-   * Get the computed value of a CSS property.
+   * Gets the computed value of a CSS property.
    *
    * <p>
    * This method is used to obtain the computed value of a CSS property for the component. The
@@ -43,7 +43,7 @@ public interface HasStyle<T extends Component> {
   public String getComputedStyle(String property);
 
   /**
-   * Set a CSS property to a specific value.
+   * Sets a CSS property to a specific value.
    *
    * <p>
    * This method is intended to be used to modify a single CSS property of a component.

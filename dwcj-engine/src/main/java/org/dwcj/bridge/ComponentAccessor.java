@@ -17,7 +17,7 @@ public abstract class ComponentAccessor {
   protected ComponentAccessor() {}
 
   /**
-   * factory to obtain the instance of the accessor.
+   * Factory to obtain the instance of the accessor.
    *
    * @return - the accessor
    */

@@ -125,7 +125,7 @@ public abstract class FocusableDwcComponent<T extends FocusableDwcComponent<T>>
   }
 
   /**
-   * Add a {@link FocusEvent} listener for the component.
+   * Adds a {@link FocusEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -157,7 +157,7 @@ public abstract class FocusableDwcComponent<T extends FocusableDwcComponent<T>>
   }
 
   /**
-   * Add a {@link BlurEvent} listener for the component.
+   * Adds a {@link BlurEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
