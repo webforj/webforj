@@ -3,6 +3,7 @@ package org.dwcj.component.layout.flexlayout;
 import java.util.Optional;
 import org.dwcj.component.Component;
 import org.dwcj.component.window.Panel;
+import org.dwcj.concern.HasStyle;
 import org.dwcj.concern.legacy.LegacyHasStyle;
 
 /**
@@ -390,8 +391,34 @@ public class FlexLayout extends Panel {
    * @param component the component
    *
    * @return this layout
+   *
+   * @deprecated Use {@link #setItemOrder(int, HasStyle)} instead.
    */
+  @Deprecated(since = "23.05", forRemoval = true)
   public FlexLayout setItemOrder(int order, LegacyHasStyle component) {
+    if (order == 0) {
+      component.setStyle(FlexProperties.PROP_ORDER, "");
+    } else {
+      component.setStyle(FlexProperties.PROP_ORDER, String.valueOf(order));
+    }
+
+    return this;
+  }
+
+  /**
+   * Sets the order of given control.
+   *
+   * <p>
+   * By default, items will be laid out in the source order. However, the order property controls
+   * the order in which they appear in the layout.
+   * </p>
+   *
+   * @param order the order
+   * @param component the component
+   *
+   * @return this layout
+   */
+  public FlexLayout setItemOrder(int order, HasStyle<?> component) {
     if (order == 0) {
       component.setStyle(FlexProperties.PROP_ORDER, "");
     } else {
@@ -406,8 +433,23 @@ public class FlexLayout extends Panel {
    *
    * @param control the control
    * @return the order
+   *
+   * @deprecated Use {@link #getItemOrder(HasStyle)} instead.
    */
+  @Deprecated(since = "23.05", forRemoval = true)
   public int getItemOrder(LegacyHasStyle control) {
+    String order = Optional.ofNullable(control.getStyle(FlexProperties.PROP_ORDER)).orElse("0");
+
+    return Integer.parseInt(order);
+  }
+
+  /**
+   * Gets the order of given control.
+   *
+   * @param control the control
+   * @return the order
+   */
+  public int getItemOrder(HasStyle<?> control) {
     String order = Optional.ofNullable(control.getStyle(FlexProperties.PROP_ORDER)).orElse("0");
 
     return Integer.parseInt(order);
@@ -433,7 +475,10 @@ public class FlexLayout extends Panel {
    *
    * @return this layout
    * @throws IllegalArgumentException if the grow is negative
+   *
+   * @deprecated Use {@link #setItemGrow(double, HasStyle)} instead.
    */
+  @Deprecated(since = "23.05", forRemoval = true)
   public FlexLayout setItemGrow(double grow, LegacyHasStyle... items) {
     if (grow < 0) {
       throw new IllegalArgumentException("Flex grow cannot be negative");
@@ -453,12 +498,66 @@ public class FlexLayout extends Panel {
   }
 
   /**
+   * Sets the flex grow for the given items.
+   *
+   * <p>
+   * The defines the ability for a control to grow if necessary. It accepts a numeric value that
+   * serves as a proportion. It dictates what amount of the available space inside the layout the
+   * control should take up.
+   * </p>
+   *
+   * <p>
+   * If all controls have flex-grow set to 1, the remaining space in the layout will be distributed
+   * equally to all controls. If one of the items has a value of 2, the remaining space would take
+   * up twice as much space as the others (or it will try to, at least).
+   * </p>
+   *
+   * @param grow the grow to set. If {@code 0} the flex grow is removed from the control
+   * @param items the items
+   *
+   * @return this layout
+   * @throws IllegalArgumentException if the grow is negative
+   */
+  public FlexLayout setItemGrow(double grow, HasStyle<?>... items) {
+    if (grow < 0) {
+      throw new IllegalArgumentException("Flex grow cannot be negative");
+    }
+
+    if (grow == 0) {
+      for (HasStyle<?> control : items) {
+        control.setStyle(FlexProperties.PROP_GROW, "");
+      }
+    } else {
+      for (HasStyle<?> control : items) {
+        control.setStyle(FlexProperties.PROP_GROW, String.valueOf(grow));
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets the flex grow for the given control.
+   *
+   * @param control the control
+   * @return the flex grow
+   *
+   * @deprecated Use {@link #getItemGrow(HasStyle)} instead.
+   */
+  @Deprecated(since = "23.05", forRemoval = true)
+  public double getItemGrow(LegacyHasStyle control) {
+    String grow = Optional.ofNullable(control.getStyle(FlexProperties.PROP_GROW)).orElse("0");
+
+    return Double.parseDouble(grow);
+  }
+
+  /**
    * Gets the flex grow for the given control.
    *
    * @param control the control
    * @return the flex grow
    */
-  public double getItemGrow(LegacyHasStyle control) {
+  public double getItemGrow(HasStyle<?> control) {
     String grow = Optional.ofNullable(control.getStyle(FlexProperties.PROP_GROW)).orElse("0");
 
     return Double.parseDouble(grow);
@@ -475,7 +574,10 @@ public class FlexLayout extends Panel {
    * @param items the items
    *
    * @return this layout
+   *
+   * @deprecated Use {@link #setItemShrink(double, HasStyle)} instead.
    */
+  @Deprecated(since = "23.05", forRemoval = true)
   public FlexLayout setItemShrink(double shrink, LegacyHasStyle... items) {
     if (shrink < 0) {
       throw new IllegalArgumentException("Flex shrink cannot be negative");
@@ -489,12 +591,51 @@ public class FlexLayout extends Panel {
   }
 
   /**
+   * Sets the flex shrink for the given items.
+   *
+   * <p>
+   * The defines the ability for a control to shrink if necessary.
+   * </p>
+   *
+   * @param shrink the shrink to set.
+   * @param items the items
+   *
+   * @return this layout
+   */
+  public FlexLayout setItemShrink(double shrink, HasStyle<?>... items) {
+    if (shrink < 0) {
+      throw new IllegalArgumentException("Flex shrink cannot be negative");
+    }
+
+    for (HasStyle<?> control : items) {
+      control.setStyle(FlexProperties.PROP_SHRINK, String.valueOf(shrink));
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets the flex shrink for the given component.
+   *
+   * @param component the component
+   * @return the flex shrink
+   *
+   * @deprecated Use {@link #getItemShrink(HasStyle)} instead.
+   */
+  @Deprecated(since = "23.05", forRemoval = true)
+  public double getItemShrink(LegacyHasStyle component) {
+    String shrink = Optional.ofNullable(component.getStyle(FlexProperties.PROP_SHRINK)).orElse("1");
+
+    return Double.parseDouble(shrink);
+  }
+
+  /**
    * Gets the flex shrink for the given component.
    *
    * @param component the component
    * @return the flex shrink
    */
-  public double getItemShrink(LegacyHasStyle component) {
+  public double getItemShrink(HasStyle<?> component) {
     String shrink = Optional.ofNullable(component.getStyle(FlexProperties.PROP_SHRINK)).orElse("1");
 
     return Double.parseDouble(shrink);
@@ -513,7 +654,10 @@ public class FlexLayout extends Panel {
    * @param items the items
    *
    * @return this layout
+   *
+   * @deprecated Use {@link #setItemBasis(String, HasStyle)} instead.
    */
+  @Deprecated(since = "23.05", forRemoval = true)
   public FlexLayout setItemBasis(String width, LegacyHasStyle... items) {
     if (width == null) {
       for (LegacyHasStyle control : items) {
@@ -528,12 +672,52 @@ public class FlexLayout extends Panel {
   }
 
   /**
+   * Sets the flex basis for the given items.
+   *
+   * <p>
+   * The defines the default size of an item before the remaining space is distributed. It can be a
+   * length (e.g. 20%, 5rem, etc.) or a keyword. for instance, the "auto" keyword means "look at my
+   * width or height property".
+   * </p>
+   *
+   * @param width the width to set. If {@code null} is passed then the flex-basis will be removed.
+   * @param items the items
+   *
+   * @return this layout
+   */
+  public FlexLayout setItemBasis(String width, HasStyle<?>... items) {
+    if (width == null) {
+      for (HasStyle<?> control : items) {
+        control.setStyle(FlexProperties.PROP_BASIS, "");
+      }
+    } else {
+      for (HasStyle<?> control : items) {
+        control.setStyle(FlexProperties.PROP_BASIS, width);
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Gets the flex basis for the given component.
+   *
+   * @param component the component
+   * @return the flex basis
+   *
+   * @deprecated Use {@link #getItemBasis(HasStyle)} instead.
+   */
+  @Deprecated(since = "23.05", forRemoval = true)
+  public String getItemBasis(LegacyHasStyle component) {
+    return Optional.ofNullable(component.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
+  }
+
+  /**
    * Gets the flex basis for the given component.
    *
    * @param component the component
    * @return the flex basis
    */
-  public String getItemBasis(LegacyHasStyle component) {
+  public String getItemBasis(HasStyle<?> component) {
     return Optional.ofNullable(component.getStyle(FlexProperties.PROP_BASIS)).orElse("auto");
   }
 
@@ -551,7 +735,10 @@ public class FlexLayout extends Panel {
    * @return this layout
    *
    * @see #setAlignment(FlexAlignment)
+   *
+   * @deprecated Use {@link #setItemAlignment(FlexAlignment, HasStyle)} instead.
    */
+  @Deprecated(since = "23.05", forRemoval = true)
   public FlexLayout setItemAlignment(FlexAlignment alignSelf, LegacyHasStyle... items) {
     if (alignSelf == null) {
       for (LegacyHasStyle component : items) {
@@ -567,12 +754,57 @@ public class FlexLayout extends Panel {
   }
 
   /**
+   * Sets the alignment of given items.
+   *
+   * <p>
+   * This allows the default alignment (or the one specified by
+   * {@link #setAlignment(FlexAlignment)}) to be overridden for individual items.
+   * </p>
+   *
+   * @param alignSelf the alignment
+   * @param items the items
+   *
+   * @return this layout
+   *
+   * @see #setAlignment(FlexAlignment)
+   */
+  public FlexLayout setItemAlignment(FlexAlignment alignSelf, HasStyle<?>... items) {
+    if (alignSelf == null) {
+      for (HasStyle<?> component : items) {
+        component.setStyle(FlexProperties.PROP_ALIGN_SELF, "");
+      }
+    } else {
+      for (HasStyle<?> component : items) {
+        component.setStyle(FlexProperties.PROP_ALIGN_SELF, alignSelf.getValue());
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets the alignment of given component.
+   *
+   * @param component the component
+   * @return the alignment
+   *
+   * @deprecated Use {@link #getItemAlignment(HasStyle)} instead.
+   */
+  @Deprecated(since = "23.05", forRemoval = true)
+  public FlexAlignment getItemAlignment(LegacyHasStyle component) {
+    String alignSelf = Optional.ofNullable(component.getStyle(FlexProperties.PROP_ALIGN_SELF))
+        .orElse(FlexAlignment.getDefault().getValue());
+
+    return FlexAlignment.fromValue(alignSelf);
+  }
+
+  /**
    * Gets the alignment of given component.
    *
    * @param component the component
    * @return the alignment
    */
-  public FlexAlignment getItemAlignment(LegacyHasStyle component) {
+  public FlexAlignment getItemAlignment(HasStyle<?> component) {
     String alignSelf = Optional.ofNullable(component.getStyle(FlexProperties.PROP_ALIGN_SELF))
         .orElse(FlexAlignment.getDefault().getValue());
 
