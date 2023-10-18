@@ -20,6 +20,7 @@ import org.dwcj.component.event.sink.ModifyEventSink;
 import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasExpanse;
 import org.dwcj.concern.HasFocusStatus;
+import org.dwcj.concern.HasLabel;
 import org.dwcj.concern.HasReadOnly;
 import org.dwcj.concern.HasValue;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -46,8 +47,8 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @since 23.05
  */
 abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly<T>, V>
-    extends FocusableDwcComponent<T> implements FieldComponent, HasValue<T, V>, HasReadOnly<T>,
-    HasExpanse<T, Expanse>, HasFocusStatus {
+    extends FocusableDwcComponent<T> implements FieldComponent, HasLabel<T>, HasValue<T, V>,
+    HasReadOnly<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -69,19 +70,9 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Sets the field's label.
-   *
-   * <p>
-   * A field label is a descriptive text or title that is associated with the field. It provides a
-   * brief explanation or prompt to help users understand the purpose or expected input for that
-   * particular field. Field labels are not only important for usability but also play a crucial
-   * role in accessibility, as they enable screen readers and assistive technologies to provide
-   * accurate information and facilitate keyboard navigation.
-   * </p>
-   *
-   * @param label the label
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public T setLabel(String label) {
     this.label = label;
     setUnrestrictedProperty("label", this.label);
@@ -90,10 +81,9 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   }
 
   /**
-   * Gets the field's label.
-   *
-   * @return the field's label
+   * {@inheritDoc}
    */
+  @Override
   public String getLabel() {
     return this.label;
   }
