@@ -1,9 +1,6 @@
 package org.dwcj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -32,11 +29,12 @@ class AbstractDwcFieldTest {
 
   @Test
   @DisplayName("Label")
-  void label() throws BBjException {
+  void label() throws BBjException, IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
     component.setLabel("label");
     assertEquals("label", component.getLabel());
 
-    verify(control, times(1)).putClientProperty("label", "label");
+    assertEquals("label", component.getProperty("label"));
   }
 
   @Test
