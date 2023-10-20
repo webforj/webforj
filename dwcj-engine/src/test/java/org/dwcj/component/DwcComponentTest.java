@@ -42,6 +42,16 @@ class DwcComponentTest {
   @InjectMocks
   DwcComponentMock component;
 
+  @Test
+  @DisplayName("placeholder")
+  void placeholder() throws IllegalAccessException, BBjException {
+    ReflectionUtils.nullifyControl(component);
+    component.setPlaceholder("placeholder");
+    assertEquals("placeholder", component.getPlaceholder());
+
+    assertEquals("placeholder", component.getProperty("placeholder"));
+  }
+
   @Nested
   @DisplayName("Expanse API")
   class ExpanseApi {

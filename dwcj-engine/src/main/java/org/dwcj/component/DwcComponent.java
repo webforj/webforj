@@ -23,6 +23,7 @@ import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.component.event.sink.MouseEnterEventSink;
 import org.dwcj.component.event.sink.MouseExitEventSink;
 import org.dwcj.component.event.sink.RightMouseDownEventSink;
+import org.dwcj.component.field.TextField;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.concern.HasAttribute;
 import org.dwcj.concern.HasClassName;
@@ -88,6 +89,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private HasHorizontalAlignment.Alignment defaultHorizontalAlignment = null;
   private HasHorizontalAlignment.Alignment horizontalAlignment = null;
   private Enum<? extends ExpanseBase> expanse = null;
+  private String placeholder = "";
   private Enum<? extends ThemeBase> theme = null;
 
   /**
@@ -681,6 +683,27 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
+   * Set the placeholder of component.
+   *
+   * @param placeholder the placeholder of the component.
+   * @return the component itself.
+   */
+  protected T setPlaceholder(String placeholder) {
+    this.placeholder = placeholder;
+    setUnrestrictedProperty("placeholder", placeholder);
+    return getSelf();
+  }
+
+  /**
+   * Get the placeholder of the component.
+   *
+   * @return the placeholder of component.
+   */
+  protected String getPlaceholder() {
+    return placeholder;
+  }
+
+  /**
    * Sets the highlight behavior for the component's text when it receives focus.
    *
    * @param behavior The desired behavior for the component's text when it receives focus.
@@ -819,7 +842,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public void onDestroy() {
+  protected void onDestroy() {
     try {
       if (control != null && !control.isDestroyed()) {
         control.destroy();
