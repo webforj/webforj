@@ -70,8 +70,7 @@ public class ListEvent extends ComponentEvent<DwcList<?>> {
 
     BBjVector indices = (BBjVector) selectedIndices;
     return Arrays.stream(indices.toArray())
-        .mapToInt(index -> Integer.parseInt(String.valueOf(index))).boxed()
-        .collect(Collectors.toList());
+        .mapToInt(index -> Integer.parseInt(String.valueOf(index))).boxed().toList();
   }
 
   /**
@@ -88,7 +87,6 @@ public class ListEvent extends ComponentEvent<DwcList<?>> {
     List<Integer> indices = getSelectedIndices();
     DwcList<?> component = (DwcList<?>) getComponent();
 
-    return indices.stream().map(component::getByIndex).filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    return indices.stream().map(component::getByIndex).filter(Objects::nonNull).toList();
   }
 }

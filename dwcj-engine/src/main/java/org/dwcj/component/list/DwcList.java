@@ -272,8 +272,8 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
    *         in the list.
    */
   public T insert(int index, String... items) {
-    return insert(index, Arrays.stream(items).map(item -> new ListItem(UUID.randomUUID(), item))
-        .collect(Collectors.toList()));
+    return insert(index,
+        Arrays.stream(items).map(item -> new ListItem(UUID.randomUUID(), item)).toList());
   }
 
   /**
@@ -735,7 +735,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
    */
   protected void catchupItemsChanges() {
     if (size() > 0) {
-      doBulkInsert(0, items.values().stream().collect(Collectors.toList()));
+      doBulkInsert(0, items.values().stream().toList());
     }
   }
 
@@ -768,8 +768,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
 
     if (list != null) {
       try {
-        List<String> itemValues =
-            items.stream().map(ListItem::getText).collect(Collectors.toList());
+        List<String> itemValues = items.stream().map(ListItem::getText).toList();
         list.insertItems(index, new BBjVector(itemValues));
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);

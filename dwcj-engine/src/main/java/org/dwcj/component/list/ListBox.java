@@ -219,8 +219,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
   @Override
   public List<ListItem> getSelectedItems() {
     List<Integer> indices = getSelectedIndices();
-    return indices.stream().map(i -> getByIndex(i.intValue())).filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    return indices.stream().map(i -> getByIndex(i.intValue())).filter(Objects::nonNull).toList();
   }
 
   /**
@@ -229,7 +228,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
   @Override
   public List<Object> getSelectedKeys() {
     List<ListItem> items = getSelectedItems();
-    return items.stream().map(ListItem::getKey).collect(Collectors.toList());
+    return items.stream().map(ListItem::getKey).toList();
   }
 
   /**
@@ -248,7 +247,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
       }
     }
 
-    return getInternalSelectedList().stream().map(i -> indexOf(i)).collect(Collectors.toList());
+    return getInternalSelectedList().stream().map(i -> indexOf(i)).toList();
   }
 
   /**
