@@ -22,7 +22,7 @@ public final class ListItem {
   private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
   /**
-   * Construct a list item with the given key and text.
+   * Constructs a list item with the given key and text.
    *
    * @param key the key
    * @param text the text
@@ -39,7 +39,7 @@ public final class ListItem {
   }
 
   /**
-   * Construct a list item with the given text.
+   * Constructs a list item with the given text.
    *
    * @param text the text
    */
@@ -48,7 +48,7 @@ public final class ListItem {
   }
 
   /**
-   * Get the key of the list item.
+   * Gets the key of the list item.
    *
    * @return the key
    */
@@ -57,7 +57,7 @@ public final class ListItem {
   }
 
   /**
-   * Get the text of the list item.
+   * Gets the text of the list item.
    *
    * @return the text
    */
@@ -66,7 +66,7 @@ public final class ListItem {
   }
 
   /**
-   * Set the text of the list item.
+   * Sets the text of the list item.
    *
    * @param text the text to set
    * @return the list item
@@ -80,7 +80,7 @@ public final class ListItem {
   }
 
   /**
-   * Add a property change listener.
+   * Adds a property change listener.
    *
    * @param listener the listener
    * @return the list item

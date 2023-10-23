@@ -18,7 +18,7 @@ import org.dwcj.component.list.event.ListCloseEvent;
 public final class ListCloseEventSink extends AbstractDwcEventSink {
 
   /**
-   * Constructs a new ListSelectEventSink with the given component and dispatcher.
+   * Constructs a new ListCloseEventSink with the given component and dispatcher.
    *
    * @param component the DwcList component
    * @param dispatcher the EventDispatcher

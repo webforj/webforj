@@ -46,8 +46,6 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
 
   /**
    * Constructs a new DwcSelectDropdown.
-   *
-   * @param label the label of the component
    */
   protected DwcSelectDropdown() {
     super();
@@ -138,7 +136,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Sets the dropdown min width.
+   * Sets the dropdown min width in pixels.
    *
    * @param width the minimum width of the component's list.
    * @return the component itself.
@@ -172,7 +170,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Sets the dropdown max height.
+   * Sets the dropdown max height in pixels.
    *
    * @param dropdownMaxHeight the maximum height of the component's list.
    * @return the component itself.
@@ -270,7 +268,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Add a {@link ListOpenEvent} listener for the component.
+   * Adds a {@link ListOpenEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -281,7 +279,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Add a {@link ListOpenEvent} listener for the component.
+   * Adds a {@link ListOpenEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -292,7 +290,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Remove a {@link ListOpenEvent} listener for the component.
+   * Removes a {@link ListOpenEvent} listener for the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
@@ -303,7 +301,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Add a {@link ListCloseEvent} listener for the component.
+   * Adds a {@link ListCloseEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -314,7 +312,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Add a {@link ListCloseEvent} listener for the component.
+   * Adds a {@link ListCloseEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -325,7 +323,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Remove a {@link ListCloseEvent} listener for the component.
+   * Removes a {@link ListCloseEvent} listener for the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself
@@ -336,7 +334,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Add a {@link ListClickListener} listener for the component.
+   * Adds a {@link ListClickListener} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -347,7 +345,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Add a {@link ListClickEvent} listener for the component.
+   * Adds a {@link ListClickEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -358,7 +356,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Remove a {@link ListClickEvent} listener for the component.
+   * Removes a {@link ListClickEvent} listener for the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself

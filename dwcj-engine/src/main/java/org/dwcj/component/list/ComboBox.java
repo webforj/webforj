@@ -32,7 +32,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * </p>
  *
  * <p>
- * ComboBoxs are commonly employed in various applications, such as data entry forms, search bars,
+ * ComboBoxes are commonly employed in various applications, such as data entry forms, search bars,
  * and selection menus, providing an intuitive and flexible way for users to make selections or
  * input information.
  * </p>
@@ -91,10 +91,10 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   }
 
   /**
-   * When false, then the user won't be able to changed the input's text.
+   * When false, the user won't be able to change the input's text.
    *
-   * @param allowCustomValue true to allow custom value. false otherwise
-   * @return true
+   * @param allowCustomValue true to allow custom value, false otherwise
+   * @return the component itself
    */
   public ComboBox setAllowCustomValue(boolean allowCustomValue) {
     this.allowCustomValue = allowCustomValue;
@@ -103,9 +103,9 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   }
 
   /**
-   * Check whether the user is allowed to enter custom value.
+   * Checks whether the user is allowed to enter custom value.
    *
-   * @return true if the user is allowed to enter custom value. false otherwise
+   * @return true if the user is allowed to enter custom value, false otherwise
    */
   public boolean isAllowCustomValue() {
     return allowCustomValue;

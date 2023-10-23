@@ -296,7 +296,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
   }
 
   /**
-   * Deselect the given item.
+   * Deselects the given item.
    *
    * @param item the item to deselect
    *

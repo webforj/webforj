@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.Expanse;
@@ -68,7 +67,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
   }
 
   /**
-   * Constructs a new DwcList.
+   * Constructs a new DwcList with a given label.
    *
    * @param label the label of the component
    */
@@ -78,7 +77,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
   }
 
   /**
-   * Constructs a new DwcList.
+   * Constructs a new DwcList with a given label and selection event listener.
    *
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
@@ -618,7 +617,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
   }
 
   /**
-   * Add a {@link ListSelectEvent} listener for the component.
+   * Adds a {@link ListSelectEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -629,7 +628,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
   }
 
   /**
-   * Add a {@link ListSelectEvent} listener for the component.
+   * Adds a {@link ListSelectEvent} listener for the component.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
@@ -640,7 +639,7 @@ public abstract class DwcList<T extends FocusableDwcComponent<T>> extends Focusa
   }
 
   /**
-   * Remove a {@link ListSelectEvent} listener for the component.
+   * Removes a {@link ListSelectEvent} listener for the component.
    *
    * @param listener the event listener to be removed
    * @return The component itself

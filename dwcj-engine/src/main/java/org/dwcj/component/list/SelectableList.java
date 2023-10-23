@@ -20,14 +20,14 @@ import org.dwcj.component.Component;
 public interface SelectableList<T extends Component> {
 
   /**
-   * Deselect the first selected item.
+   * Deselects the first selected item.
    *
    * @return the component itself
    */
   public T deselect();
 
   /**
-   * Select the given item.
+   * Selects the given item.
    *
    * @param item the item to select
    * @return the component itself
@@ -37,7 +37,7 @@ public interface SelectableList<T extends Component> {
   public T select(ListItem item);
 
   /**
-   * Select the item with the given key.
+   * Selects the item with the given key.
    *
    * @param key the key of the item to select
    * @return the component itself
@@ -47,7 +47,7 @@ public interface SelectableList<T extends Component> {
   public T selectKey(Object key);
 
   /**
-   * Select the item at the given index.
+   * Selects the item at the given index.
    *
    * @param index the index of the item to select
    * @return the component itself

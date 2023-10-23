@@ -35,7 +35,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   }
 
   /**
-   * Set the selection mode of the list box.
+   * Sets the selection mode of the list box.
    *
    * @param mode the selection mode
    * @return the component itself
@@ -43,7 +43,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public T setSelectionMode(SelectionMode mode);
 
   /**
-   * Deselect the first selected item.
+   * Deselects the first selected item.
    *
    * @return the component itself
    * @throws IllegalArgumentException if the given item is not in the list
@@ -59,7 +59,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public SelectionMode getSelectionMode();
 
   /**
-   * Deselect the given item.
+   * Deselects the given item.
    *
    * @param item the item to deselect
    *
@@ -71,7 +71,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public T deselect(ListItem item);
 
   /**
-   * Deselect the item with the given key.
+   * Deselects the item with the given key.
    *
    * @param key the key of the item to deselect
    * @return the component itself
@@ -82,7 +82,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public T deselectKey(Object key);
 
   /**
-   * Deselect the item at the given index.
+   * Deselects the item at the given index.
    *
    * @param index the index of the item to deselect
    * @return the component itself
@@ -94,14 +94,14 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public T deselectIndex(int index);
 
   /**
-   * Deselect all items in the list.
+   * Deselects all items in the list.
    *
    * @return the component itself
    */
   public T deselectAll();
 
   /**
-   * Select multiple items in the list.
+   * Selects multiple items in the list.
    *
    * @param items the items to select
    * @return the component itself
@@ -112,7 +112,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public T select(ListItem... items);
 
   /**
-   * Select multiple items with the given keys.
+   * Selects multiple items with the given keys.
    *
    * @param keys the keys of the items to select
    * @return the component itself
@@ -123,7 +123,7 @@ public interface MultipleSelectableList<T extends Component> extends SelectableL
   public T selectKeys(Object... keys);
 
   /**
-   * Select multiple items with the given indices.
+   * Selects multiple items with the given indices.
    *
    * @param indices the indexes of the items to select
    * @return the component itself
