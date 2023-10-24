@@ -23,7 +23,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class Button extends AbstractDwcButton<Button> {
+public final class Button extends DwcButton<Button> {
 
   /**
    * Construct the button with the given text and a {@link ButtonClickEvent}.

@@ -37,16 +37,16 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-abstract class AbstractDwcButton<T extends FocusableDwcComponent<T>>
-    extends FocusableDwcComponent<T> implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>,
-    HasHorizontalAlignment<T>, HasFocusStatus {
+public abstract class DwcButton<T extends FocusableDwcComponent<T>> extends FocusableDwcComponent<T>
+    implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
+    HasFocusStatus {
   private boolean disableOnClick = false;
 
   private final EventSinkListenerRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ButtonClickEventSink(this, getEventDispatcher()),
           ButtonClickEvent.class);
 
-  protected AbstractDwcButton() {
+  protected DwcButton() {
     super();
     setExpanse(Expanse.MEDIUM);
   }

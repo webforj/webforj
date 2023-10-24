@@ -24,13 +24,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractDwcButtonTest {
+class DwcButtonTest {
 
   @Mock
   BBjButton control;
 
   @InjectMocks
-  AbstractDwcButtonMock component;
+  DwcButtonMock component;
 
   @Test
   void testSetGetName() throws BBjException, IllegalAccessException {
