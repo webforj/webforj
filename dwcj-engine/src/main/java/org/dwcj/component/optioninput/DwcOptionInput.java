@@ -36,9 +36,9 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @see HasExpanse
  *
  * @author Hyyan Abo Fakher
- * @since 23.01
+ * @since 23.05
  */
-abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTextPosition<T>>
+public abstract class DwcOptionInput<T extends FocusableDwcComponent<T> & HasTextPosition<T>>
     extends FocusableDwcComponent<T>
     implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
@@ -61,7 +61,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
    * @param text Desired text for the AbstractOptionInput.
    * @param checked True if the AbstractOptionInput should be created as checked, false otherwise.
    */
-  protected AbstractDwcOptionInput(String text, boolean checked) {
+  protected DwcOptionInput(String text, boolean checked) {
     super();
     setText(text);
     setChecked(checked);
@@ -296,7 +296,7 @@ abstract class AbstractDwcOptionInput<T extends FocusableDwcComponent<T> & HasTe
     }
   }
 
-  protected BBjToggleButton inferControl() {
+  private BBjToggleButton inferControl() {
     try {
       return (BBjToggleButton) ComponentAccessor.getDefault().getControl(this);
     } catch (IllegalAccessException e) {

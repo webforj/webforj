@@ -2,9 +2,9 @@ package org.dwcj.component.optioninput;
 
 import org.dwcj.component.window.Window;
 
-public class AbstractDwcOptionInputMock extends AbstractDwcOptionInput<AbstractDwcOptionInputMock> {
+public class DwcOptionInputMock extends DwcOptionInput<DwcOptionInputMock> {
 
-  public AbstractDwcOptionInputMock() {
+  public DwcOptionInputMock() {
     super("", false);
   }
 

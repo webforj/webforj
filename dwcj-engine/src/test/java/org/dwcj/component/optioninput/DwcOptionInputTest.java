@@ -1,7 +1,6 @@
 package org.dwcj.component.optioninput;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,13 +33,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractDwcOptionInputTest {
+class DwcOptionInputTest {
 
   @Mock
   BBjToggleButton control;
 
   @InjectMocks
-  AbstractDwcOptionInputMock component;
+  DwcOptionInputMock component;
 
   @Nested
   @DisplayName("Checked API")

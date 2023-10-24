@@ -24,7 +24,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public final class CheckBox extends AbstractDwcOptionInput<CheckBox> {
+public final class CheckBox extends DwcOptionInput<CheckBox> {
 
   private boolean indeterminate;
 
