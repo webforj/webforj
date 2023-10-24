@@ -248,7 +248,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
    */
   @Override
   public Iterator<RadioButton> iterator() {
-    return buttons.iterator();
+    return Collections.unmodifiableList(buttons).iterator();
   }
 
   /**
