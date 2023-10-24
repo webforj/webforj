@@ -25,13 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AbstractDwcTextFieldTest {
+class DwcTextFieldTest {
 
   @Mock
   BBjEditBox control;
 
   @InjectMocks
-  AbstractDwcTextFieldMock component;
+  DwcTextFieldMock component;
 
   @Nested
   @DisplayName("MaxLength API")
@@ -92,7 +92,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("setting/getting value when control is null")
     void settingGettingValueWhenControlIsNull() throws IllegalAccessException, BBjException {
-      AbstractDwcTextFieldMock spy = spy(component);
+      DwcTextFieldMock spy = spy(component);
       ReflectionUtils.nullifyControl(spy);
       spy.setValue("test");
       assertEquals("test", spy.getValue());
@@ -104,7 +104,7 @@ class AbstractDwcTextFieldTest {
     @Test
     @DisplayName("setting/getting value when control is not null")
     void settingGettingValueWhenControlIsNotNull() throws BBjException {
-      AbstractDwcTextFieldMock spy = spy(component);
+      DwcTextFieldMock spy = spy(component);
       doReturn("test").when(spy).getText();
       spy.setValue("test");
       assertEquals("test", spy.getValue());

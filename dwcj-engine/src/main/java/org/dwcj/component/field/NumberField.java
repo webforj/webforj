@@ -19,7 +19,14 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class NumberField extends AbstractDwcField<NumberField, Double> implements
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public final class NumberField extends DwcFieldInitializer<NumberField, Double> implements
     HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
     HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
 
@@ -148,6 +155,7 @@ public final class NumberField extends AbstractDwcField<NumberField, Double> imp
    * @param placeholder the placeholder of field
    * @return the field type
    */
+  @Override
   public NumberField setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
     setUnrestrictedProperty("placeholder", placeholder);
@@ -159,6 +167,7 @@ public final class NumberField extends AbstractDwcField<NumberField, Double> imp
    *
    * @return the placeholder of field
    */
+  @Override
   public String getPlaceholder() {
     return placeholder;
   }

@@ -1,13 +1,8 @@
 package org.dwcj.component.field;
 
-import com.basis.bbj.proxies.sysgui.BBjEditBox;
-import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Expanse;
 import org.dwcj.component.FocusableDwcComponent;
 import org.dwcj.component.event.ComponentEventListener;
@@ -17,14 +12,11 @@ import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.ModifyEvent;
 import org.dwcj.component.event.sink.KeypressEventSink;
 import org.dwcj.component.event.sink.ModifyEventSink;
-import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasExpanse;
 import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasLabel;
 import org.dwcj.concern.HasReadOnly;
 import org.dwcj.concern.HasValue;
-import org.dwcj.exceptions.DwcjRuntimeException;
-import org.dwcj.utilities.BBjFunctionalityHelper;
 
 /**
  * The base class for all field components.
@@ -46,9 +38,9 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly<T>, V>
-    extends FocusableDwcComponent<T> implements FieldComponent, HasLabel<T>, HasValue<T, V>,
-    HasReadOnly<T>, HasExpanse<T, Expanse>, HasFocusStatus {
+public abstract class DwcField<T extends FocusableDwcComponent<T> & HasReadOnly<T>, V>
+    extends FocusableDwcComponent<T>
+    implements HasLabel<T>, HasValue<T, V>, HasReadOnly<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -65,7 +57,7 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
   /**
    * Constructs a new field with a default medium expanse.
    */
-  protected AbstractDwcField() {
+  protected DwcField() {
     setExpanse(Expanse.MEDIUM);
   }
 
@@ -294,36 +286,9 @@ abstract class AbstractDwcField<T extends FocusableDwcComponent<T> & HasReadOnly
    * {@inheritDoc}
    */
   @Override
-  protected void onCreate(Window p) {
-    try {
-      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addEditBox(getText(), flags));
-    } catch (BBjException | IllegalAccessException e) {
-      throw new DwcjRuntimeException("Failed to create BBjEditBox", e);
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
     this.modifyEventSinkListenerRegistry.attach();
     this.keypressEventSinkListenerRegistry.attach();
-  }
-
-  /**
-   * Gets the instance of the underlying BBjEditBox control.
-   *
-   * @return the instance of the control
-   */
-  protected BBjEditBox inferControl() {
-    try {
-      return (BBjEditBox) ComponentAccessor.getDefault().getControl(this);
-    } catch (IllegalAccessException e) {
-      throw new DwcjRuntimeException(e);
-    }
   }
 }

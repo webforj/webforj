@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.component.field.FieldComponent;
+import org.dwcj.component.field.DwcField;
 import org.dwcj.component.list.ComboBox;
 
 /**
@@ -18,7 +18,7 @@ public class KeypressEventSink extends AbstractDwcEventSink {
 
   public KeypressEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher,
-        (component instanceof FieldComponent) || (component instanceof ComboBox)
+        (component instanceof DwcField) || (component instanceof ComboBox)
             ? SysGuiEventConstants.ON_EDIT_KEYPRESS
             : SysGuiEventConstants.ON_INPUT_KEYPRESS);
   }
