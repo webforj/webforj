@@ -117,7 +117,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   @ExcludeFromJacocoGeneratedReport
   @Override
   public ComboBox setPlaceholder(String placeholder) {
-    return super.setPlaceholder(placeholder);
+    return super.setComponentPlaceholder(placeholder);
   }
 
   /**
@@ -126,7 +126,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   @ExcludeFromJacocoGeneratedReport
   @Override
   public String getPlaceholder() {
-    return super.getPlaceholder();
+    return super.getComponentPlaceholder();
   }
 
   /**

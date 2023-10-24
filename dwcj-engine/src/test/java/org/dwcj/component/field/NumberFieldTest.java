@@ -85,14 +85,5 @@ class NumberFieldTest {
 
       assertEquals(null, component.getValue());
     }
-
-    @Test
-    @DisplayName("placeholder")
-    void placeholder() throws IllegalAccessException, BBjException {
-      component.setPlaceholder("placeholder");
-      assertEquals("placeholder", component.getPlaceholder());
-
-      verify(control, times(1)).putClientProperty("placeholder", "placeholder");
-    }
   }
 }

@@ -46,8 +46,8 @@ class DwcComponentTest {
   @DisplayName("placeholder")
   void placeholder() throws IllegalAccessException, BBjException {
     ReflectionUtils.nullifyControl(component);
-    component.setPlaceholder("placeholder");
-    assertEquals("placeholder", component.getPlaceholder());
+    component.setComponentPlaceholder("placeholder");
+    assertEquals("placeholder", component.getComponentPlaceholder());
 
     assertEquals("placeholder", component.getProperty("placeholder"));
   }

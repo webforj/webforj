@@ -687,7 +687,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @param placeholder the placeholder of the component.
    * @return the component itself.
    */
-  protected T setPlaceholder(String placeholder) {
+  protected T setComponentPlaceholder(String placeholder) {
     this.placeholder = placeholder;
     setUnrestrictedProperty("placeholder", placeholder);
     return getSelf();
@@ -698,7 +698,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    *
    * @return the placeholder of component.
    */
-  protected String getPlaceholder() {
+  protected String getComponentPlaceholder() {
     return placeholder;
   }
 

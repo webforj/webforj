@@ -33,7 +33,6 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
   private Double min = null;
   private Double max = null;
   private Double step = null;
-  private String placeholder = null;
 
   /**
    * Construct a new text field with the given label and value.
@@ -156,10 +155,9 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    * @return the field type
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public NumberField setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-    setUnrestrictedProperty("placeholder", placeholder);
-    return this;
+    return setComponentPlaceholder(placeholder);
   }
 
   /**
@@ -168,8 +166,9 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    * @return the placeholder of field
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
-    return placeholder;
+    return getComponentPlaceholder();
   }
 
   /**

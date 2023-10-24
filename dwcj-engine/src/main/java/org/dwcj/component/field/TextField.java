@@ -1,5 +1,6 @@
 package org.dwcj.component.field;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.concern.HasPlaceholder;
 
 /**
@@ -156,15 +157,17 @@ public final class TextField extends DwcTextField<TextField> implements HasPlace
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public TextField setPlaceholder(String placeholder) {
-    return super.setPlaceholder(placeholder);
+    return super.setComponentPlaceholder(placeholder);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
-    return super.getPlaceholder();
+    return super.getComponentPlaceholder();
   }
 }

@@ -1,5 +1,6 @@
 package org.dwcj.component.field;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.concern.HasPlaceholder;
 
 /**
@@ -81,16 +82,18 @@ public final class PasswordField extends DwcTextField<PasswordField>
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public PasswordField setPlaceholder(String placeholder) {
-    return super.setPlaceholder(placeholder);
+    return super.setComponentPlaceholder(placeholder);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
-    return super.getPlaceholder();
+    return super.getComponentPlaceholder();
   }
 }
 
