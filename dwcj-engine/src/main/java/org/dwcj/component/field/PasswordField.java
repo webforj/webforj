@@ -18,7 +18,6 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
     implements HasPlaceholder<PasswordField> {
 
   private boolean passwordReveal = true;
-  private String placeholder = null;
 
   /**
    * Constructs a new password field with the given label and password.
@@ -72,24 +71,19 @@ public final class PasswordField extends AbstractDwcTextField<PasswordField>
   }
 
   /**
-   * Sets the placeholder of the field.
-   *
-   * @param placeholder the placeholder of field
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public PasswordField setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-    setUnrestrictedProperty("placeholder", placeholder);
-    return this;
+    return super.setPlaceholder(placeholder);
   }
 
   /**
-   * Gets the placeholder of the field.
-   *
-   * @return the placeholder of the field
+   * {@inheritDoc}
    */
+  @Override
   public String getPlaceholder() {
-    return placeholder;
+    return super.getPlaceholder();
   }
 }
 

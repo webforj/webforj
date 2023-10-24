@@ -8,6 +8,7 @@ import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.KeypressEvent;
 import org.dwcj.component.field.FieldComponent;
+import org.dwcj.component.list.ComboBox;
 
 /**
  * An abstract class of a keypress event sink which would handle a BBjKeypressEvent and dispatch the
@@ -17,7 +18,8 @@ public class KeypressEventSink extends AbstractDwcEventSink {
 
   public KeypressEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher,
-        component instanceof FieldComponent ? SysGuiEventConstants.ON_EDIT_KEYPRESS
+        (component instanceof FieldComponent) || (component instanceof ComboBox)
+            ? SysGuiEventConstants.ON_EDIT_KEYPRESS
             : SysGuiEventConstants.ON_INPUT_KEYPRESS);
   }
 

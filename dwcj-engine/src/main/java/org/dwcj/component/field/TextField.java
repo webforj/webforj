@@ -64,7 +64,6 @@ public final class TextField extends AbstractDwcTextField<TextField>
   }
 
   private Type type;
-  private String placeholder = "";
 
   /**
    * Construct a new text field with the given type, label and value.
@@ -148,23 +147,18 @@ public final class TextField extends AbstractDwcTextField<TextField>
   }
 
   /**
-   * Set the placeholder of field.
-   *
-   * @param placeholder the placeholder of field
-   * @return the field type
+   * {@inheritDoc}
    */
+  @Override
   public TextField setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-    setUnrestrictedProperty("placeholder", placeholder);
-    return this;
+    return super.setPlaceholder(placeholder);
   }
 
   /**
-   * Get the placeholder of field.
-   *
-   * @return the placeholder of field
+   * {@inheritDoc}
    */
+  @Override
   public String getPlaceholder() {
-    return placeholder;
+    return super.getPlaceholder();
   }
 }
