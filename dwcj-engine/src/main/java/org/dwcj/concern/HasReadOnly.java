@@ -1,24 +1,29 @@
 package org.dwcj.concern;
 
+import org.dwcj.component.Component;
+
 /**
- * Facilitates implementation of methods which allow for the toggle of read only status on a
- * control.
+ * An interface for implementing methods that allow toggling the read-only status on a component.
+ *
+ * @param <T> the type of the component that implements this interface.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.05
  */
-public interface HasReadOnly {
+public interface HasReadOnly<T extends Component> {
 
   /**
-   * Sets whether a user can edit the control.
+   * Sets whether a user can edit the component.
    *
-   * @param editable True to disable editing, false to enable editing.
-   * @return The control itself.
+   * @param readOnly true to disable editing, false to enable editing.
+   * @return the component itself after configuring the read-only status.
    */
-  HasReadOnly setReadOnly(Boolean editable);
+  T setReadOnly(boolean readOnly);
 
   /**
-   * Returns a value indicating whether or not a control is set to read only or not.
+   * Checks whether the component is set to read-only.
    *
-   * @return Boolean indicating whether or not the user can edit the control.
+   * @return true if the user cannot edit the component, false if editing is allowed.
    */
-  Boolean isReadOnly();
-
+  boolean isReadOnly();
 }

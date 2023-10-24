@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.window.AbstractWindow;
+import org.dwcj.component.window.Window;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -28,7 +28,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public final class RadioButton extends AbstractOptionInput<RadioButton> {
+public final class RadioButton extends DwcOptionInput<RadioButton> {
 
   /**
    * List of possible activation types supported by the radio button.
@@ -49,7 +49,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
     }
 
     /**
-     * Get the value of the activation.
+     * Gets the value of the activation.
      *
      * @return the value of the activation
      */
@@ -58,12 +58,13 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
     }
   }
 
-  private Activation activation;
+  private Activation activation = Activation.MANUAL;
   private RadioButtonGroup group = null;
   private boolean isSwitch = false;
 
   /**
-   * Create a new radio button component.
+   * Creates a new radio button component with a boolean to set its activated state and a string for
+   * its text.
    *
    * @param text Desired text for the radio button.
    * @param checked True if the radio button should be created as checked, false otherwise.
@@ -73,7 +74,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Create a new radio button component.
+   * Creates a new radio button component with a string for its text.
    *
    * @param text The text for the radio button.
    */
@@ -82,7 +83,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Create a new radio button component.
+   * Creates a new radio button component.
    */
   public RadioButton() {
     this("");
@@ -124,7 +125,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Configure if the radio button should be checked when it gains focus.
+   * Configures if the radio button should be checked when it gains focus.
    *
    * @param value the activation type
    * @see Activation
@@ -137,7 +138,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Get the activation type.
+   * Gets the activation type.
    *
    * @return the activation type
    */
@@ -154,7 +155,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
     // belongs to a group and there is a button already checked
 
     RadioButtonGroup theGroup = getButtonGroup();
-    if (Boolean.FALSE.equals(this.getCaughtUp()) && theGroup != null) {
+    if (Boolean.FALSE.equals(this.isAttached()) && theGroup != null) {
       List<RadioButton> checkedButtons =
           theGroup.getButtons().stream().filter(RadioButton::getChecked).toList();
 
@@ -177,7 +178,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Get the RadioButtonGroup which this RadioButton belongs to.
+   * Gets the RadioButtonGroup which this RadioButton belongs to.
    *
    * @return the RadioButtonGroup which this RadioButton belongs to or null if this RadioButton
    *         doesn't belong to any group
@@ -187,7 +188,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Set the RadioButtonGroup which this RadioButton belongs to.
+   * Sets the RadioButtonGroup which this RadioButton belongs to.
    *
    * @param group the RadioButtonGroup which this RadioButton belongs to
    */
@@ -211,7 +212,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Render the radio button as a switch.
+   * Renders the radio button as a switch.
    *
    * <p>
    * A switch component is a user interface element that represents a binary choice, such as turning
@@ -230,7 +231,7 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
   }
 
   /**
-   * Check if the radio button is rendered as a switch.
+   * Checks if the radio button is rendered as a switch.
    *
    * @return true when the radio button is rendered as a switch, false otherwise.
    *
@@ -245,13 +246,12 @@ public final class RadioButton extends AbstractOptionInput<RadioButton> {
    * {@inheritDoc}
    */
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
       setControl(w.addRadioButton("", flags));
-      this.catchUp();
     } catch (IllegalAccessException | BBjException e) {
       throw new DwcjRuntimeException("Failed to create the BBjRadioButton Control", e);
     }

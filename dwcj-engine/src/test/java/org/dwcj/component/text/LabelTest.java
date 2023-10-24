@@ -4,23 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
+import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.MouseEnterEvent;
-import org.dwcj.component.event.MouseExitEvent;
-import org.dwcj.component.event.RightMouseDownEvent;
-import org.dwcj.component.event.sink.EventSinkListenerRegistry;
-import org.dwcj.component.texts.Label;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,31 +23,17 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/** Label tests. */
 @ExtendWith(MockitoExtension.class)
 class LabelTest {
 
   @Mock
   BBjStaticText control;
 
-  @Mock
-  EventSinkListenerRegistry<MouseEnterEvent> mouseEnterEventHandler;
-
-  @Mock
-  EventSinkListenerRegistry<MouseExitEvent> mouseExitEventHandler;
-
-  @Mock
-  EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventHandler;
-
   @Spy
   EventDispatcher dispatcher;
 
   @InjectMocks
   Label component;
-
-  void nullifyControl() throws IllegalAccessException {
-    FieldUtils.writeField(component, "control", null, true);
-  }
 
   @Nested
   @DisplayName("Constructor")
@@ -71,42 +49,21 @@ class LabelTest {
   }
 
   @Nested
-  @DisplayName("catchUp behavior")
-  class CatchUp {
-
-    void invokeCatchUp(Label component)
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      MethodUtils.invokeMethod(component, true, "catchUp");
-    }
+  @DisplayName("OnAttach")
+  class OnAttach {
 
     @Test
-    @DisplayName("calling twice should not be allowed")
-    void callingTwiceShouldNotBeAllowed()
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-      Label componentSpy = spy(component);
-      invokeCatchUp(componentSpy);
-      assertThrows(InvocationTargetException.class, () -> {
-        invokeCatchUp(componentSpy);
-      });
-    }
-
-    @Test
-    @DisplayName("catchup method")
+    @DisplayName("OnAttach method")
     void catchup() throws BBjException, NoSuchMethodException, IllegalAccessException,
         InvocationTargetException {
-      Label componentSpy = spy(component);
 
-      componentSpy.setWrap(false);
-      componentSpy.onMouseEnter(e -> {
-      });
-      componentSpy.onMouseExit(e -> {
-      });
-      componentSpy.onRightMouseDown(e -> {
-      });
+      ReflectionUtils.nullifyControl(component);
+      component.setWrap(false);
 
-      invokeCatchUp(componentSpy);
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
 
-      verify(componentSpy, atLeast(2)).setWrap(false);
+      verify(control, times(1)).setLineWrap(false);
     }
   }
 
@@ -126,7 +83,7 @@ class LabelTest {
     @Test
     @DisplayName("When control is null")
     void whenControlIsNull() throws BBjException, IllegalAccessException {
-      nullifyControl();
+      ReflectionUtils.nullifyControl(component);
       component.setWrap(false);
       assertFalse(component.isWrap());
     }

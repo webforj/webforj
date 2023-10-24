@@ -7,7 +7,7 @@ import org.dwcj.addons.googlecharts.events.GoogleChartSelectedEvent;
 import org.dwcj.annotation.Attribute;
 import org.dwcj.annotation.JavaScript;
 import org.dwcj.annotation.Link;
-import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
@@ -31,7 +31,7 @@ import org.dwcj.concern.HasStyle;
     attributes = {@Attribute(name = "rel", value = "dns-prefetch")})
 @JavaScript(value = "https://cdn.jsdelivr.net/npm/@google-web-components/google-chart@5.0.3/+esm",
     attributes = {@Attribute(name = "type", value = "module")})
-public final class GoogleChart extends WebComponent implements HasStyle {
+public final class GoogleChart extends WebComponent implements HasStyle<GoogleChart> {
 
   /**
    * The type of the chart.
@@ -249,7 +249,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
   private final PropertyDescriptor<JsonArray> selectionProp =
       PropertyDescriptor.property("selection", null);
 
-  private EventListener<GoogleChartReadyEvent> firstRenderListener;
+  private ComponentEventListener<GoogleChartReadyEvent> firstRenderListener;
 
   /**
    * Create a new GoogleChart.
@@ -519,18 +519,19 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart addSelectedListener(EventListener<GoogleChartSelectedEvent> listener) {
+  public GoogleChart addSelectedListener(
+      ComponentEventListener<GoogleChartSelectedEvent> listener) {
     addEventListener(GoogleChartSelectedEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addSelectedListener(EventListener)}.
+   * Alias for {@link #addSelectedListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart onSelect(EventListener<GoogleChartSelectedEvent> listener) {
+  public GoogleChart onSelect(ComponentEventListener<GoogleChartSelectedEvent> listener) {
     return addSelectedListener(listener);
   }
 
@@ -540,7 +541,8 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart removeSelectedListener(EventListener<GoogleChartSelectedEvent> listener) {
+  public GoogleChart removeSelectedListener(
+      ComponentEventListener<GoogleChartSelectedEvent> listener) {
     removeEventListener(GoogleChartSelectedEvent.class, listener);
     return this;
   }
@@ -551,18 +553,18 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart addReadyListener(EventListener<GoogleChartReadyEvent> listener) {
+  public GoogleChart addReadyListener(ComponentEventListener<GoogleChartReadyEvent> listener) {
     addEventListener(GoogleChartReadyEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addReadyListener(EventListener)}.
+   * Alias for {@link #addReadyListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart onReady(EventListener<GoogleChartReadyEvent> listener) {
+  public GoogleChart onReady(ComponentEventListener<GoogleChartReadyEvent> listener) {
     return addReadyListener(listener);
   }
 
@@ -572,7 +574,7 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart removeReadyListener(EventListener<GoogleChartReadyEvent> listener) {
+  public GoogleChart removeReadyListener(ComponentEventListener<GoogleChartReadyEvent> listener) {
     removeEventListener(GoogleChartReadyEvent.class, listener);
     return this;
   }
@@ -581,19 +583,16 @@ public final class GoogleChart extends WebComponent implements HasStyle {
    * {@inheritDoc}
    */
   @Override
-  public void destroy() {
-    if (!super.isDestroyed()) {
-      // clean the window resize listener
-      StringBuilder sb = new StringBuilder();
-      sb.append("if (component && component.__dwcj_handleResize__) {");
-      sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
-      sb.append("}");
-      sb.append("return"); // to avoid auto wrapping
-
-      executeAsyncExpression(sb.toString());
-    }
-
+  protected void onDestroy() {
     super.destroy();
+    // clean the window resize listener
+    StringBuilder sb = new StringBuilder();
+    sb.append("if (component && component.__dwcj_handleResize__) {");
+    sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
+    sb.append("}");
+    sb.append("return"); // to avoid auto wrapping
+
+    executeAsyncExpression(sb.toString());
   }
 
   private void handleFirstRender(GoogleChartReadyEvent event) {

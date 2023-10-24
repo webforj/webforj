@@ -6,17 +6,17 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasFocus;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.component.LegacyDwcComponent;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasFocus;
+import org.dwcj.concern.legacy.LegacyHasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class HtmlEdit extends AbstractDwcComponent
-    implements HasFocus, HasEnable, HasTabTraversal {
+public final class HtmlEdit extends LegacyDwcComponent
+    implements LegacyHasFocus, LegacyHasEnable, LegacyHasTabTraversal {
 
   private BBjHtmlEdit bbjHtmlEdit;
 
@@ -27,7 +27,7 @@ public final class HtmlEdit extends AbstractDwcComponent
 
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
@@ -35,7 +35,7 @@ public final class HtmlEdit extends AbstractDwcComponent
       control = w.addHtmlEdit(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1, "", flags);
       bbjHtmlEdit = (BBjHtmlEdit) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -431,8 +431,8 @@ public final class HtmlEdit extends AbstractDwcComponent
   @Override
   @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
                                   // of checks
-  protected void catchUp() throws IllegalAccessException {
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
   }
 
 }

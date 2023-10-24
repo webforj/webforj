@@ -70,5 +70,4 @@ public class BBjEditModifyEventMock implements BBjEditModifyEvent {
   public String getText() {
     return "text";
   }
-
 }

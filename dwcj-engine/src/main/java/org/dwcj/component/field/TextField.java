@@ -1,5 +1,6 @@
 package org.dwcj.component.field;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.concern.HasPlaceholder;
 
 /**
@@ -14,8 +15,14 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class TextField extends AbstractTextField<TextField>
-    implements HasPlaceholder<TextField> {
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public final class TextField extends DwcTextField<TextField> implements HasPlaceholder<TextField> {
 
   /**
    * Describes the type of the input field.
@@ -64,7 +71,6 @@ public final class TextField extends AbstractTextField<TextField>
   }
 
   private Type type;
-  private String placeholder = "";
 
   /**
    * Construct a new text field with the given type, label and value.
@@ -148,23 +154,20 @@ public final class TextField extends AbstractTextField<TextField>
   }
 
   /**
-   * Set the placeholder of field.
-   *
-   * @param placeholder the placeholder of field
-   * @return the field type
+   * {@inheritDoc}
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public TextField setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-    setUnrestrictedProperty("placeholder", placeholder);
-    return this;
+    return super.setComponentPlaceholder(placeholder);
   }
 
   /**
-   * Get the placeholder of field.
-   *
-   * @return the placeholder of field
+   * {@inheritDoc}
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
-    return placeholder;
+    return super.getComponentPlaceholder();
   }
 }

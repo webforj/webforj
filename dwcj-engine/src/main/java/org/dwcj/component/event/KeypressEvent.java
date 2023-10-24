@@ -1,7 +1,7 @@
 package org.dwcj.component.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 
 /**
  * An event that is fired when a special key is pressed.
@@ -9,7 +9,7 @@ import org.dwcj.component.AbstractComponent;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public class KeypressEvent extends Event<AbstractComponent> {
+public class KeypressEvent extends ComponentEvent<Component> {
 
   // @formatter:off
   /**
@@ -155,7 +155,7 @@ public class KeypressEvent extends Event<AbstractComponent> {
    * @param component the component which fired the event
    * @param payload the payload of the event
    */
-  public KeypressEvent(AbstractComponent component, Map<String, Object> payload) {
+  public KeypressEvent(Component component, Map<String, Object> payload) {
     super(component, payload);
   }
 

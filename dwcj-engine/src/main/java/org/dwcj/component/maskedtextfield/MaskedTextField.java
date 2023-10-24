@@ -7,25 +7,25 @@ import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.maskedtextfield.event.MaskedTextFieldModifyEvent;
 import org.dwcj.component.maskedtextfield.sink.MaskedTextFieldModifyEventSink;
-import org.dwcj.component.texts.Label;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
-import org.dwcj.concern.HasFocus;
+import org.dwcj.component.text.Label;
+import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasHighlightOnFocus;
 import org.dwcj.concern.HasHorizontalAlignment;
-import org.dwcj.concern.HasReadOnly;
-import org.dwcj.concern.HasTabTraversal;
+import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.concern.legacy.LegacyHasFocus;
+import org.dwcj.concern.legacy.LegacyHasReadOnly;
+import org.dwcj.concern.legacy.LegacyHasTabTraversal;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 
-public final class MaskedTextField extends AbstractDwcComponent
-    implements HasReadOnly, HasFocus, HasTabTraversal, HasHorizontalAlignment<MaskedTextField>,
-    HasHighlightOnFocus<MaskedTextField>, HasEnable {
+public final class MaskedTextField extends LegacyDwcComponent
+    implements LegacyHasReadOnly, LegacyHasFocus, LegacyHasTabTraversal,
+    HasHorizontalAlignment<MaskedTextField>, HasHighlightOnFocus<MaskedTextField>, LegacyHasEnable {
 
 
   private BBjInputE bbjInputE;
@@ -69,7 +69,7 @@ public final class MaskedTextField extends AbstractDwcComponent
   }
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
@@ -77,7 +77,7 @@ public final class MaskedTextField extends AbstractDwcComponent
       control = w.addInputE(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, flags);
       bbjInputE = (BBjInputE) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }
@@ -544,10 +544,8 @@ public final class MaskedTextField extends AbstractDwcComponent
 
 
   @Override
-  protected void catchUp() throws IllegalAccessException {
-    if (Boolean.TRUE.equals(this.getCaughtUp()))
-      throw new IllegalAccessException("catchUp cannot be called twice");
-    super.catchUp();
+  protected void onAttach() {
+    super.onAttach();
 
 
     if (!this.callbacks.isEmpty()) {

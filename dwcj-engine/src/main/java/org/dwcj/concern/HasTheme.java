@@ -4,10 +4,16 @@ import org.dwcj.component.Component;
 import org.dwcj.component.ThemeBase;
 
 /**
- * Interface facilitates implementation of behaviors to modify a component's theme.
+ * An interface for modifying a component's theme.
  *
- * @param <T> the type of the component
- * @param <V> the type of the theme
+ * <p>
+ * This interface provides methods to set and retrieve the theme for the component.
+ * </p>
+ *
+ * @param <T> the type of the component that implements this interface.
+ * @param <V> the type of the theme.
+ *
+ * @see ThemeBase
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
@@ -15,17 +21,17 @@ import org.dwcj.component.ThemeBase;
 public interface HasTheme<T extends Component, V extends Enum<V> & ThemeBase> {
 
   /**
-   * Set the theme of the component.
+   * Sets the theme of the component.
    *
-   * @param theme the theme to set for the component
-   * @return the component itself
+   * @param theme the theme to set for the component.
+   * @return the component itself.
    */
   public T setTheme(V theme);
 
   /**
-   * Returns the theme of the component.
+   * Retrieves the theme of the component.
    *
-   * @return the theme of the component
+   * @return the theme of the component.
    */
   public V getTheme();
 }

@@ -1,7 +1,7 @@
 package org.dwcj.component.layout.applayout.event;
 
 import java.util.Map;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.layout.applayout.AppLayout;
 import org.dwcj.component.webcomponent.annotation.EventExpressions;
 import org.dwcj.component.webcomponent.annotation.EventName;
@@ -13,7 +13,7 @@ import org.dwcj.component.webcomponent.annotation.EventName;
  */
 @EventName(value = "bbj-drawer-opened")
 @EventExpressions(filter = "event.target.isSameNode(component)")
-public final class AppLayoutDrawerOpenEvent extends Event<AppLayout> {
+public final class AppLayoutDrawerOpenEvent extends ComponentEvent<AppLayout> {
 
   /**
    * Creates a new event.

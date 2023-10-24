@@ -6,20 +6,20 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.Environment;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.fontchooser.event.FontChooserApproveEvent;
 import org.dwcj.component.fontchooser.event.FontChooserCancelEvent;
 import org.dwcj.component.fontchooser.event.FontChooserChangeEvent;
 import org.dwcj.component.fontchooser.sink.FontChooserApproveEventSink;
 import org.dwcj.component.fontchooser.sink.FontChooserCancelEventSink;
 import org.dwcj.component.fontchooser.sink.FontChooserChangeEventSink;
-import org.dwcj.component.window.AbstractWindow;
-import org.dwcj.concern.HasEnable;
+import org.dwcj.component.window.Window;
+import org.dwcj.concern.legacy.LegacyHasEnable;
 import java.awt.*;
 import java.util.function.Consumer;
 
 
-public final class FontChooser extends AbstractDwcComponent implements HasEnable {
+public final class FontChooser extends LegacyDwcComponent implements LegacyHasEnable {
 
   private FontChooserApproveEventSink fontChooserApproveEventSink;
 
@@ -30,14 +30,14 @@ public final class FontChooser extends AbstractDwcComponent implements HasEnable
   private BBjFontChooser bbjFontChooser;
 
   @Override
-  protected void create(AbstractWindow p) {
+  protected void onCreate(Window p) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       // todo: honor visbility flag
       control = w.addFontChooser(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
           BASISNUMBER_1, BASISNUMBER_1);
       bbjFontChooser = (BBjFontChooser) control;
-      catchUp();
+      onAttach();
     } catch (Exception e) {
       Environment.logError(e);
     }

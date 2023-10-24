@@ -19,7 +19,14 @@ import org.dwcj.concern.HasMin;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class DateField extends AbstractField<DateField, LocalDate> implements
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public final class DateField extends DwcFieldInitializer<DateField, LocalDate> implements
     HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate>, HasHighlightOnFocus<DateField> {
 
   private LocalDate min = null;

@@ -4,16 +4,16 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjGainedFocusEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.FocusEvent;
 
 /**
  * The class will map the BBjGainedFocusEvent to a Java {@link FocusEvent}.
  */
-public class FocusEventSink extends AbstractEventSink {
+public class FocusEventSink extends AbstractDwcEventSink {
 
-  public FocusEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public FocusEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_GAINED_FOCUS);
   }
 

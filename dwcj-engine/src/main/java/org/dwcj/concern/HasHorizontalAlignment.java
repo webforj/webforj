@@ -1,13 +1,13 @@
 package org.dwcj.concern;
 
-import org.dwcj.component.Component;
 import com.basis.bbj.proxies.sysgui.TextAlignable;
+import org.dwcj.component.Component;
 
 /**
- * Controls the horizontal alignment of the content within the component, namely text and images. It
- * does not alter the position of the entire component itself.
+ * An interface for controlling the horizontal alignment of content within a component, such as text
+ * and images. This does not affect the position of the entire component itself.
  *
- * @param <T> The component type
+ * @param <T> The type of the component.
  *
  * @since 23.02
  * @author Hyyan Abo Fakher
@@ -15,7 +15,7 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 public interface HasHorizontalAlignment<T extends Component> {
 
   /**
-   * Enum which represents the text alignment of a component.
+   * Enum representing the text alignment options of a component.
    */
   enum Alignment {
     LEFT(TextAlignable.ALIGN_LEFT), MIDDLE(TextAlignable.ALIGN_CENTER), RIGHT(
@@ -30,7 +30,7 @@ public interface HasHorizontalAlignment<T extends Component> {
     /**
      * Gets the integer value of the text alignment.
      *
-     * @return Integer value of text alignment
+     * @return The integer value of text alignment.
      */
     public int getValue() {
       return value;
@@ -39,8 +39,8 @@ public interface HasHorizontalAlignment<T extends Component> {
     /**
      * Gets the enum value of the text alignment.
      *
-     * @param value Integer value of text alignment
-     * @return Enum value of text alignment
+     * @param value The integer value of text alignment.
+     * @return The enum value of text alignment.
      */
     public static Alignment fromValue(int value) {
       for (Alignment alignment : values()) {
@@ -53,17 +53,17 @@ public interface HasHorizontalAlignment<T extends Component> {
   }
 
   /**
-   * Sets the horizontal alignment of the text within the component.
+   * Sets the horizontal alignment of text within the component.
    *
-   * @param alignment Enum from list representing an internal BBj numeric constant
+   * @param alignment An enum representing an internal BBj numeric constant.
    * @return The component itself
    */
   public T setHorizontalAlignment(Alignment alignment);
 
   /**
-   * Returns a value indicating the text's horizontal alignment.
+   * Returns the value indicating the text's horizontal alignment.
    *
-   * @return Enum value of text alignment
+   * @return The enum value representing text alignment.
    */
   public Alignment getHorizontalAlignment();
 }

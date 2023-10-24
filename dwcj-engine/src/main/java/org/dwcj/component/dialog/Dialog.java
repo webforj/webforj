@@ -2,7 +2,7 @@ package org.dwcj.component.dialog;
 
 import org.dwcj.component.dialog.event.DialogCloseEvent;
 import org.dwcj.component.dialog.event.DialogOpenEvent;
-import org.dwcj.component.event.EventListener;
+import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
@@ -16,7 +16,7 @@ import org.dwcj.concern.HasStyle;
  * @author Hyyan Abo Fakher
  */
 @NodeName("bbj-dialog")
-public class Dialog extends WebComponent implements HasClassName, HasStyle {
+public class Dialog extends WebComponent implements HasClassName<Dialog>, HasStyle<Dialog> {
 
   /**
    * The dialog alignments.
@@ -103,7 +103,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
     }
 
     /**
-     * Get the value of the enum.
+     * Gets the value of the enum.
      *
      * @return the value
      */
@@ -112,7 +112,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
     }
 
     /**
-     * Get the enum from the value.
+     * Gets the enum from the value.
      *
      * @param value the value
      * @return the enum
@@ -176,7 +176,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
       PropertyDescriptor.property("theme", Theme.DEFAULT.getValue());
 
   /**
-   * Instantiates a new app layout.
+   * Instantiates a new Dialog.
    */
   public Dialog() {
     // Make sure to append the dialog to the end of the body to avoid
@@ -192,7 +192,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Use the passed panel in header slot.
+   * Uses the passed panel in the header slot.
    *
    * @param header the header panel
    * @return the dialog
@@ -204,7 +204,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the header panel instance.
+   * Gets the header panel instance.
    *
    * @return the app layout
    */
@@ -213,7 +213,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Use the passed panel in content slot.
+   * Uses the passed panel in the content slot.
    *
    * @param content the content panel
    * @return the dialog
@@ -226,7 +226,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the content panel instance.
+   * Gets the content panel instance.
    *
    * @return the content panel
    */
@@ -235,7 +235,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Use the passed panel in footer slot.
+   * Uses the passed panel in the footer slot.
    *
    * @param footer the footer panel
    * @return the dialog
@@ -247,7 +247,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the footer panel instance.
+   * Gets the footer panel instance.
    *
    * @return the footer panel
    */
@@ -256,7 +256,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog alignment.
+   * Sets the dialog alignment.
    *
    * @param alignment the alignment
    * @return the dialog
@@ -268,7 +268,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog alignment.
+   * Gets the dialog alignment.
    *
    * @return the alignment
    * @see Alignment
@@ -278,7 +278,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog autofocus.
+   * Sets the dialog autofocus.
    *
    * <p>
    * When true then automatically focus the first focusable element in the dialog.
@@ -293,7 +293,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog autofocus.
+   * Gets the dialog autofocus.
    *
    * @return the autofocus
    */
@@ -302,7 +302,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog backdrop.
+   * Sets whether the dialog will have a backdrop.
    *
    * <p>
    * When true then a backdrop will be displayed behind the dialog.
@@ -317,7 +317,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog backdrop.
+   * Gets whether the dialog has a backdrop.
    *
    * @return the backdrop
    */
@@ -326,7 +326,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog blurred.
+   * Sets whether the backdrop of the dialog should be blurred.
    *
    * <p>
    * When true then the dialog's backdrop will be blurred.
@@ -341,7 +341,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog blurred.
+   * Gets whether the dialog's backdrop is blurred.
    *
    * @return the blurred
    */
@@ -350,7 +350,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog breakpoint.
+   * Sets the dialog's breakpoint.
    *
    * <p>
    * A media query to control when the dialog will automatically flip to the full screen mode.When
@@ -367,7 +367,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog breakpoint.
+   * Gets the dialog's breakpoint.
    *
    * @return the breakpoint
    */
@@ -376,7 +376,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog cancel on esc key.
+   * Sets whether the dialog is cancelled when the escape key is pressed.
    *
    * <p>
    * When true then the dialog can be cancelled by pressing the esc key.
@@ -391,7 +391,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog cancel on esc key.
+   * Gets whether the dialog is cancelled when the escape key is pressed.
    *
    * @return the cancel on esc key
    */
@@ -400,7 +400,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog cancel on outside click.
+   * Sets whether the dialog cancels on outside click.
    *
    * <p>
    * When true then the dialog can be cancelled by clicking outside of it.
@@ -415,7 +415,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog cancel on outside click.
+   * Gets whether the dialog cancels on outside click.
    *
    * @return the cancel on outside click
    */
@@ -424,7 +424,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Disable closing the dialog by clicking outside or pressing the esc key.
+   * Sets whether closing the dialog by clicking outside or pressing the esc key is enabled.
    *
    * @param closeable the closeable
    * @return the dialog
@@ -438,7 +438,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog fullscreen.
+   * Sets the dialog to be fullscreen.
    *
    * <p>
    * When true then the dialog will be fullscreen.
@@ -453,7 +453,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog fullscreen.
+   * Gets whether the dialog is set to be fullscreen.
    *
    * @return the fullscreen
    */
@@ -462,7 +462,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog max height.
+   * Sets the dialog's max height.
    *
    * <p>
    * The maximum height of the dialog.
@@ -477,7 +477,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog max height.
+   * Gets the dialog's max height.
    *
    * @return the max height
    */
@@ -486,7 +486,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog max width.
+   * Sets the dialog's max width.
    *
    * <p>
    * The maximum width of the dialog.
@@ -501,7 +501,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog max width.
+   * Gets the dialog's max width.
    *
    * @return the max width
    */
@@ -510,7 +510,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Make the dialog moveable.
+   * Makes the dialog moveable.
    *
    * <p>
    * When true , then the dialog can be dragged to move it.
@@ -525,7 +525,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog moveable.
+   * Gets whether the dialog is moveable.
    *
    * @return the moveable
    */
@@ -534,7 +534,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Show the dialog.
+   * Shows the dialog.
    *
    * @return the dialog
    */
@@ -544,7 +544,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Hide the dialog.
+   * Hides the dialog.
    *
    * @return the dialog
    */
@@ -554,7 +554,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Check if the dialog is opened.
+   * Checks if the dialog is opened.
    *
    * @return true if the dialog is opened, false otherwise
    */
@@ -563,7 +563,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * specify the X position for the dialog.
+   * Specifies the X position for the dialog.
    *
    * @param posx the X position
    * @return the dialog
@@ -574,7 +574,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog X position.
+   * Gets the dialog X position.
    *
    * @return the X position
    */
@@ -583,7 +583,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * specify the Y position for the dialog.
+   * Specifies the Y position for the dialog.
    *
    * @param posy the Y position
    * @return the dialog
@@ -594,7 +594,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog Y position.
+   * Gets the dialog Y position.
    *
    * @return the Y position
    */
@@ -603,7 +603,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the number of pixels to take into count before the dialog is considered outside the
+   * Sets the number of pixels to take into account before the dialog is considered outside the
    * viewport.
    *
    * @param snapThreshold the snap threshold
@@ -615,7 +615,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog snap threshold.
+   * Gets the dialog snap threshold.
    *
    * @return the snap threshold
    */
@@ -624,7 +624,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog snap to edge.
+   * Sets whether the dialog will snap to the edge of the screen.
    *
    * <p>
    * When true ten the dialog cannot be dragged outside the viewport.
@@ -639,7 +639,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog snap to edge.
+   * Get whether the dialog will snap to the edge of the screen.
    *
    * @return the snap to edge
    */
@@ -648,7 +648,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Set the dialog theme.
+   * Sets the dialog's theme.
    *
    * <p>
    * The theme name to use for the dialog.
@@ -664,7 +664,7 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Get the dialog theme.
+   * Gets the dialog's theme.
    *
    * @return the theme
    */
@@ -725,65 +725,65 @@ public class Dialog extends WebComponent implements HasClassName, HasStyle {
   }
 
   /**
-   * Add a listener for the opened event.
+   * Adds a listener for the opened event.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog addOpenListener(EventListener<DialogOpenEvent> listener) {
+  public Dialog addOpenListener(ComponentEventListener<DialogOpenEvent> listener) {
     addEventListener(DialogOpenEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addOpenListener(EventListener)}.
+   * Alias for {@link #addOpenListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog onOpen(EventListener<DialogOpenEvent> listener) {
+  public Dialog onOpen(ComponentEventListener<DialogOpenEvent> listener) {
     return addOpenListener(listener);
   }
 
   /**
-   * Remove a listener for the opened event.
+   * Removes a listener for the opened event.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog removeOpenListener(EventListener<DialogOpenEvent> listener) {
+  public Dialog removeOpenListener(ComponentEventListener<DialogOpenEvent> listener) {
     removeEventListener(DialogOpenEvent.class, listener);
     return this;
   }
 
   /**
-   * Add a listener for the closed event.
+   * Adds a listener for the closed event.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog addCloseListener(EventListener<DialogCloseEvent> listener) {
+  public Dialog addCloseListener(ComponentEventListener<DialogCloseEvent> listener) {
     addEventListener(DialogCloseEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addCloseListener(EventListener)}.
+   * Alias for {@link #addCloseListener(ComponentEventListener)}.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog onClose(EventListener<DialogCloseEvent> listener) {
+  public Dialog onClose(ComponentEventListener<DialogCloseEvent> listener) {
     return addCloseListener(listener);
   }
 
   /**
-   * Remove a listener for the closed event.
+   * Removes a listener for the closed event.
    *
    * @param listener the listener
    * @return the dialog
    */
-  public Dialog removeCloseListener(EventListener<DialogCloseEvent> listener) {
+  public Dialog removeCloseListener(ComponentEventListener<DialogCloseEvent> listener) {
     removeEventListener(DialogCloseEvent.class, listener);
     return this;
   }

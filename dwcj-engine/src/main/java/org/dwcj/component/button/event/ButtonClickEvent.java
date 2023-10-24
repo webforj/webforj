@@ -1,8 +1,8 @@
 package org.dwcj.component.button.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractDwcComponent;
-import org.dwcj.component.event.Event;
+import org.dwcj.component.button.DwcButton;
+import org.dwcj.component.event.ComponentEvent;
 
 /**
  * An event which is fired when the user clicks on a button.
@@ -10,7 +10,7 @@ import org.dwcj.component.event.Event;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public class ButtonClickEvent extends Event<AbstractDwcComponent> {
+public class ButtonClickEvent extends ComponentEvent<DwcButton<?>> {
 
   /**
    * Creates a new event.
@@ -18,7 +18,7 @@ public class ButtonClickEvent extends Event<AbstractDwcComponent> {
    * @param abstractDwcComponent the component
    * @param payload the event map
    */
-  public ButtonClickEvent(AbstractDwcComponent abstractDwcComponent, Map<String, Object> payload) {
+  public ButtonClickEvent(DwcButton<?> abstractDwcComponent, Map<String, Object> payload) {
     super(abstractDwcComponent, payload);
   }
 

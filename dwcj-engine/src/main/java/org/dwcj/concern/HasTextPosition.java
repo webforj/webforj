@@ -1,14 +1,21 @@
 package org.dwcj.concern;
 
+import org.dwcj.component.Component;
+
 /**
- * Manipulates the position of text and images within a component relative to other elements of the
- * component. For example, when used on a CheckBox, this interface's methods will control on which
- * side of the checkbox the text appears.
+ * An interface for manipulating the position of text and images within a component relative to
+ * other elements of the component. For example, when used on a CheckBox, this interface's methods
+ * will control on which side of the checkbox the text appears.
+ *
+ * @param <T> the type of the component that implements this interface.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.05
  */
-public interface HasTextPosition {
+public interface HasTextPosition<T extends Component> {
 
   /**
-   * Enum which represents the text position of a component.
+   * Enum representing the text position options of a component.
    */
   enum Position {
     LEFT(8192), RIGHT(32768);
@@ -20,9 +27,9 @@ public interface HasTextPosition {
     }
 
     /**
-     * Gets the integer value of the text alignment.
+     * Gets the integer value of the text position.
      *
-     * @return Integer value of text alignment
+     * @return the integer value of text position
      */
     public int getValue() {
       return value;
@@ -30,17 +37,17 @@ public interface HasTextPosition {
   }
 
   /**
-   * Sets the position of the text within the control relative to other elements of the control.
+   * Sets the position of the text within the component relative to other elements of the component.
    *
-   * @param position Enum from list representing an internal BBj numeric constant
-   * @return the control itself
+   * @param position an enum representing an internal BBj numeric constant.
+   * @return the component itself.
    */
-  public HasTextPosition setTextPosition(Position position);
+  public T setTextPosition(Position position);
 
   /**
-   * Returns a value indicating the text's position relative to other elements of the control.
+   * Retrieves the value indicating the text's position relative to other elements of the component.
    *
-   * @return Enum value of text position
+   * @return an enum value representing text position.
    */
   public Position getTextPosition();
 }

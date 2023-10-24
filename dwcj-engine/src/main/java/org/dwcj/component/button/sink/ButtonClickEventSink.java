@@ -4,10 +4,10 @@ import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.button.DwcButton;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.event.EventDispatcher;
-import org.dwcj.component.event.sink.AbstractEventSink;
+import org.dwcj.component.event.sink.AbstractDwcEventSink;
 
 /**
  * This class will map the BBjButtonPushEvent event to a {@link ButtonClickEvent}.
@@ -15,9 +15,9 @@ import org.dwcj.component.event.sink.AbstractEventSink;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class ButtonClickEventSink extends AbstractEventSink {
+public final class ButtonClickEventSink extends AbstractDwcEventSink {
 
-  public ButtonClickEventSink(AbstractDwcComponent component, EventDispatcher dispatcher) {
+  public ButtonClickEventSink(DwcButton<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_BUTTON_PUSH);
   }
 
@@ -34,7 +34,7 @@ public final class ButtonClickEventSink extends AbstractEventSink {
     map.put("x", event.getX());
     map.put("y", event.getY());
 
-    ButtonClickEvent dwcEv = new ButtonClickEvent(getComponent(), map);
+    ButtonClickEvent dwcEv = new ButtonClickEvent((DwcButton<?>) getComponent(), map);
     getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

@@ -2,15 +2,15 @@ package org.dwcj.component.event.sink;
 
 import com.basis.bbj.proxies.event.BBjMouseEvent;
 import java.util.HashMap;
-import org.dwcj.component.AbstractDwcComponent;
+import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.EventDispatcher;
 
 /**
  * An abstract class of a mouse event sink which would handle a BBjMouseEvent and dispatch the
  * corresponding Java event.
  */
-public abstract class AbstractMouseEventSink extends AbstractEventSink {
-  protected AbstractMouseEventSink(AbstractDwcComponent component, EventDispatcher dispatcher,
+public abstract class AbstractMouseEventSink extends AbstractDwcEventSink {
+  protected AbstractMouseEventSink(DwcComponent<?> component, EventDispatcher dispatcher,
       int sysGuiConstant) {
     super(component, dispatcher, sysGuiConstant);
   }

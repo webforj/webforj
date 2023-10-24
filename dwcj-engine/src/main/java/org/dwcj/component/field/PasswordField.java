@@ -1,5 +1,6 @@
 package org.dwcj.component.field;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.concern.HasPlaceholder;
 
 /**
@@ -14,15 +15,20 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class PasswordField extends AbstractTextField<PasswordField>
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public final class PasswordField extends DwcTextField<PasswordField>
     implements HasPlaceholder<PasswordField> {
 
   private boolean passwordReveal = true;
-  private String placeholder = null;
-
 
   /**
-   * Construct a new password field with the given label and password.
+   * Constructs a new password field with the given label and password.
    *
    * @param label the label for the field
    * @param password the value for the field
@@ -36,7 +42,7 @@ public final class PasswordField extends AbstractTextField<PasswordField>
   }
 
   /**
-   * Construct a new password field with the given label.
+   * Constructs a new password field with the given label.
    *
    * @param label the label for the field
    */
@@ -45,14 +51,14 @@ public final class PasswordField extends AbstractTextField<PasswordField>
   }
 
   /**
-   * Construct a new password field.
+   * Constructs a new password field.
    */
   public PasswordField() {
     this("");
   }
 
   /**
-   * Show or hide password reveal icon.
+   * Shows or hides password reveal icon.
    *
    * @param passwordReveal when true, password reveal icon is visible, otherwise it is hidden.
    * @return the component
@@ -64,7 +70,7 @@ public final class PasswordField extends AbstractTextField<PasswordField>
   }
 
   /**
-   * Check if password reveal icon is visible.
+   * Checks if password reveal icon is visible.
    *
    * @return true if password reveal icon is visible
    */
@@ -73,24 +79,21 @@ public final class PasswordField extends AbstractTextField<PasswordField>
   }
 
   /**
-   * Set the placeholder of field.
-   *
-   * @param placeholder the placeholder of field
-   * @return the field type
+   * {@inheritDoc}
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public PasswordField setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-    setUnrestrictedProperty("placeholder", placeholder);
-    return this;
+    return super.setComponentPlaceholder(placeholder);
   }
 
   /**
-   * Get the placeholder of field.
-   *
-   * @return the placeholder of field
+   * {@inheritDoc}
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
-    return placeholder;
+    return super.getComponentPlaceholder();
   }
 }
 

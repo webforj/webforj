@@ -1,11 +1,11 @@
 package org.dwcj.component.htmlcontainer.event;
 
-import org.dwcj.component.ComponentEvent;
+import org.dwcj.component.ControlEvent;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 
 import java.util.Map;
 
-public final class HtmlContainerJavascriptEvent implements ComponentEvent {
+public final class HtmlContainerJavascriptEvent implements ControlEvent {
 
   private final HtmlContainer control;
 

@@ -1,14 +1,14 @@
 package org.dwcj.component.event;
 
 import java.util.Map;
-import org.dwcj.component.AbstractComponent;
+import org.dwcj.component.Component;
 
 /**
  * An event that is fired when a component is edited.
  */
-public class ModifyEvent extends Event<AbstractComponent> {
+public class ModifyEvent extends ComponentEvent<Component> {
 
-  public ModifyEvent(AbstractComponent component, Map<String, Object> payload) {
+  public ModifyEvent(Component component, Map<String, Object> payload) {
     super(component, payload);
   }
 

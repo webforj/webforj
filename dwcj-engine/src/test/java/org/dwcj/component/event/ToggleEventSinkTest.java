@@ -2,9 +2,9 @@ package org.dwcj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.dwcj.component.DwcComponentMock;
 import org.dwcj.component.event.mocks.BBjCheckChangeEventMock;
 import org.dwcj.component.event.sink.ToggleEventSink;
-import org.dwcj.component.mocks.DwcComponentMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class ToggleEventSinkTest {
   @DisplayName("Test the ToggleEvent payload")
   void payload() {
     ToggleEventSink sink = new ToggleEventSink(componentMock, dispatcher);
-    dispatcher.addEventListener(ToggleEvent.class, e -> dispatchedEvent = e);
+    dispatcher.addListener(ToggleEvent.class, e -> dispatchedEvent = e);
     sink.handleEvent(eventMock);
 
     assertEquals(eventMock.isChecked(), dispatchedEvent.isToggled());

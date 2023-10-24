@@ -19,14 +19,20 @@ import org.dwcj.concern.HasPlaceholder;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public final class NumberField extends AbstractField<NumberField, Double> implements
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public final class NumberField extends DwcFieldInitializer<NumberField, Double> implements
     HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
     HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
 
   private Double min = null;
   private Double max = null;
   private Double step = null;
-  private String placeholder = null;
 
   /**
    * Construct a new text field with the given label and value.
@@ -148,10 +154,10 @@ public final class NumberField extends AbstractField<NumberField, Double> implem
    * @param placeholder the placeholder of field
    * @return the field type
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public NumberField setPlaceholder(String placeholder) {
-    this.placeholder = placeholder;
-    setUnrestrictedProperty("placeholder", placeholder);
-    return this;
+    return setComponentPlaceholder(placeholder);
   }
 
   /**
@@ -159,8 +165,10 @@ public final class NumberField extends AbstractField<NumberField, Double> implem
    *
    * @return the placeholder of field
    */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
-    return placeholder;
+    return getComponentPlaceholder();
   }
 
   /**
