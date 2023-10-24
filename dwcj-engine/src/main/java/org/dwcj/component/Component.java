@@ -200,7 +200,7 @@ public abstract class Component {
    *
    * @param window The window to which this component is added.
    */
-  final void create(Window window) {
+  protected final void create(Window window) {
     if (this.isAttached()) {
       return;
     }
