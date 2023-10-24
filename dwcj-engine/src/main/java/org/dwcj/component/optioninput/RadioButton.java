@@ -58,7 +58,7 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
     }
   }
 
-  private Activation activation;
+  private Activation activation = Activation.MANUAL;
   private RadioButtonGroup group = null;
   private boolean isSwitch = false;
 
