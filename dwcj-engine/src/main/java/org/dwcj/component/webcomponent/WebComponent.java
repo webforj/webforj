@@ -1556,8 +1556,7 @@ public abstract class WebComponent extends Component {
     if (hv.isAttached()) {
       if (async) {
         hv.executeAsyncScript(js.toString());
-      } else {
-        App.consoleLog("sync: " + js.toString());
+      } else {        
         return hv.executeScript(js.toString());
       }
     } else {
