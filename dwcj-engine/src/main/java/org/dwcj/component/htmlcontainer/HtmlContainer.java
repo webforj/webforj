@@ -121,7 +121,7 @@ public final class HtmlContainer extends LegacyDwcComponent
   public void executeAsyncScript(String script) {
     if (this.control != null) {
       try {
-        bbjHtmlView.executeAsyncScript(script);
+        bbjHtmlView.executeAsyncScript(script, true);
       } catch (BBjException e) {
         Environment.logError(e);
       }
@@ -146,7 +146,7 @@ public final class HtmlContainer extends LegacyDwcComponent
   public Object executeScript(String script) {
     if (this.control != null) {
       try {
-        return bbjHtmlView.executeScript(script);
+        return bbjHtmlView.executeScript(script, true);
       } catch (BBjException e) {
         Environment.logError(e);
       }

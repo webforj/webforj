@@ -1453,7 +1453,7 @@ public abstract class WebComponent extends Component {
     key = "org.dwcj.WebComponent::scripts";
     attached = ObjectTable.contains(key);
     if (!attached) {
-      App.getPage().addInlineJavaScript("context://webcomponent/wcconnector.js", true,
+      App.getPage().addInlineJavaScript("context://webcomponent/wcconnector.min.js", true,
           "id=wc-scripts");
       ObjectTable.put(key, true);
     }
@@ -1506,9 +1506,9 @@ public abstract class WebComponent extends Component {
   private Object doInvoke(boolean async, String method, Object... args) {
     assertNotDestroyed();
 
-    // TODO: Ask Jim to add support for async calls using executeScript
     StringBuilder js = new StringBuilder();
-    js.append("Dwcj.WcConnector.invoke('").append(getUuid()).append("',");
+    js.append("(async () => { return await Dwcj.WcConnector.invoke('").append(getUuid())
+        .append("',");
 
     String methodLower = method.toLowerCase();
 
@@ -1552,16 +1552,14 @@ public abstract class WebComponent extends Component {
     }
 
     js.append(")"); // end of Dwcj.WcConnector.invoke
+    js.append("})();"); // end of async
     if (hv.isAttached()) {
       if (async) {
         hv.executeAsyncScript(js.toString());
-        // App.consoleLog("async: " + js.toString());
-      } else {
-        // App.consoleLog("sync: " + js.toString());
+      } else {        
         return hv.executeScript(js.toString());
       }
     } else {
-      // App.consoleLog("for later: " + js.toString());
       asyncScripts.add(js.toString());
     }
 

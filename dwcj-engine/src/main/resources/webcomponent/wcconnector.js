@@ -96,7 +96,7 @@ Dwcj.WcConnector = (() => {
 
       // execute an expression
       else if (m === 'exp') {
-        executeExpression(id, args[0]);
+        return executeExpression(id, args[0]);
       }
 
       // invoke a method on the component
