@@ -1,17 +1,18 @@
 package org.dwcj.addons.terminal;
 
-import org.dwcj.component.htmlcontainer.HtmlContainer;
-import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
-import org.dwcj.component.window.Window;
-import org.dwcj.component.window.Panel;
-import org.dwcj.addons.terminal.events.TerminalKeyEvent;
-
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
+import org.dwcj.addons.terminal.events.TerminalKeyEvent;
+import org.dwcj.component.htmlcontainer.HtmlContainer;
+import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
+import org.dwcj.component.window.Panel;
+import org.dwcj.component.window.Window;
 
+/**
+ * Terminal component based on XTerm.js
+ */
 public class Terminal extends Panel {
-
 
   private HtmlContainer hv;
   protected final String uuid = java.util.UUID.randomUUID().toString();
@@ -35,7 +36,9 @@ public class Terminal extends Panel {
     hv.injectScript(script, true);
 
     script =
-        "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) {setTimeout (function () {whenTerminalLoaded (callback);}, 100);} else { callback (); }}";
+        "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
+         + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
+         + "else { callback (); }}";
     hv.injectScript(script);
 
     script = "var link =  $doc.createElement('script');"
@@ -53,10 +56,10 @@ public class Terminal extends Panel {
         + "window.term.onKey(" + "function ({key, domEvent}) " + "{" + "send(domEvent);" + "})})";
     hv.executeScript(script);
 
-    hv.onJavascriptEvent(this::onJS);
+    hv.onJavascriptEvent(this::onJs);
   }
 
-  private void onJS(HtmlContainerJavascriptEvent htmlContainerJavascriptEvent) {
+  private void onJs(HtmlContainerJavascriptEvent htmlContainerJavascriptEvent) {
     String a = htmlContainerJavascriptEvent.getEventMap().get("key");
     keyBuffer.add(a);
 
@@ -73,19 +76,29 @@ public class Terminal extends Panel {
     return this;
   }
 
+  /**
+   * Write a string out to the terminal window.
+   *
+   * @param chunk The String to write.
+   * @return the component itself.
+   */
   public Terminal write(String chunk) {
 
-    if (chunk.contains("'"))
+    if (chunk.contains("'")) {
       chunk = chunk.replace("'", "\\'");
+    }
 
-    if (chunk.contains(")"))
+    if (chunk.contains(")")) {
       chunk = chunk.replace(")", "\\)");
+    }
 
-    if (chunk.contains("\r"))
+    if (chunk.contains("\r")) {
       chunk = chunk.replace("\r", "\\r");
+    }
 
-    if (chunk.contains("\n"))
+    if (chunk.contains("\n")) {
       chunk = chunk.replace("\n", "\\n\\r");
+    }
 
 
     String script = "whenTerminalLoaded(function() {window.term.write('" + chunk + "');})";
