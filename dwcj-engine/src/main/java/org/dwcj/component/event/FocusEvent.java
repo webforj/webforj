@@ -4,10 +4,11 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when an element gains focus, opposite of a blur event. It occurs 
- * when the user interacts with an element, typically by clicking inside an input field or 
- * navigating to it using the keyboard's tab key, causing the element to become active and 
- * ready to receive user input.
+ * An event that is fired when an element gains focus, opposite of a blur event. 
+ * 
+ * <p>This event occurs when the user interacts with an element, typically by clicking inside
+ * an input field or navigating to it using the keyboard's tab key, causing the element to 
+ * become active and ready to receive user input.</p>
  * 
  * @see BlurEvent
  */

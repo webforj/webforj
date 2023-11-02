@@ -4,9 +4,10 @@ import java.util.Map;
 import org.dwcj.component.list.DwcSelectDropdown;
 
 /**
- * This event is triggered when the user clicks an item from a List-based component. It provides
- * essential information about the selected item and allows developers to implement custom 
- * actions or responses when an item is chosen.
+ * This event is triggered when the user clicks an item from a List-based component. 
+ * 
+ * <p>It provides essential information about the selected item and allows developers to 
+ * implement custom actions or responses when an item is chosen.</p>
  *
  * @author Hyyan Abo Fakher
  * @since 23.05

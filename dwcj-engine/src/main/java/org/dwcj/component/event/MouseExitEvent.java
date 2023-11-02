@@ -5,8 +5,9 @@ import org.dwcj.component.Component;
 
 /**
  * An event that is fired when the mouse cursor exits the boundaries of an element. 
- * It occurs when the user moves the mouse pointer out of the boundaries of the specified 
- * element, indicating that the mouse has exited its area.
+ * 
+ * <p>It occurs when the user moves the mouse pointer out of the boundaries of the specified 
+ * element, indicating that the mouse has exited its area.</p>
  *
  * @see MouseEnterEvent
  * {@link MouseEvent}
