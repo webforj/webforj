@@ -5,7 +5,9 @@ import org.dwcj.component.button.DwcButton;
 import org.dwcj.component.event.ComponentEvent;
 
 /**
- * An event which is fired when the user clicks on a button.
+ * An event which is fired when the user clicks on a button. This event is essential for capturing
+ * user interactions with buttons on a web page, such as submitting forms, triggering actions, or
+ * navigating to different sections of the site.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02

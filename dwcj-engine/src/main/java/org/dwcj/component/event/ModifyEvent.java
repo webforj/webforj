@@ -4,7 +4,7 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when a component is edited.
+ * An event that is fired when a component is edited or modified.
  */
 public class ModifyEvent extends ComponentEvent<Component> {
 
