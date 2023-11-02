@@ -4,7 +4,16 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when a component loses focus.
+ * An event that is triggered when an element loses focus, opposite of a Focus event.
+ *
+ * <p>
+ * This event occurs when the user interacts with an element, such as clicking inside an input
+ * field, and then moves the focus away from that element, typically by clicking outside of it or
+ * tabbing to another element on the page. This event is useful when you want to detect when a user
+ * moves away from a particular element on a web page, such as an input field or a button.
+ * </p>
+ *
+ * @see FocusEvent
  */
 public class BlurEvent extends ComponentEvent<Component> {
 

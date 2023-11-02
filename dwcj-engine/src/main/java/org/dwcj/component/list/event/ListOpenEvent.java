@@ -6,6 +6,7 @@ import org.dwcj.component.list.DwcSelectDropdown;
 /**
  * An event which is fired when a list dropdown is opened.
  *
+ * @see ListCloseEvent
  * @author Hyyan Abo Fakher
  * @since 23.05
  */

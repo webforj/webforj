@@ -6,7 +6,7 @@ import org.dwcj.component.optioninput.RadioButton;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 
 /**
- * An event that is fired when the radio button group changes selection.
+ * An event that is fired when the selected radio button within a group is changed.
  *
  * @see RadioButtonGroup
  *

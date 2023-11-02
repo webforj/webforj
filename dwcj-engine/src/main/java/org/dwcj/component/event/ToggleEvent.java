@@ -4,7 +4,16 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when a component is toggled on or off.
+ * An event that is fired when an element or control changes its state between two possible states,
+ *
+ * <p>
+ * such as "on" and "off" or "visible" and "hidden." It can apply to various elements, such as
+ * buttons, dropdowns, menus, or modals. When a "toggle" event is triggered, the element switches
+ * its state from one option to another, reflecting the user's action or changing conditions.
+ * </p>
+ *
+ * @see CheckEvent
+ * @see UncheckEvent
  */
 public class ToggleEvent extends ComponentEvent<Component> {
   public ToggleEvent(Component component, Map<String, Object> payload) {

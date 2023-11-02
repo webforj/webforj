@@ -4,7 +4,16 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when a special key is pressed.
+ * A Keypress event is fired when a user presses a specific key on the keyboard while an element has
+ * focus.
+ *
+ * <p>
+ * This event is commonly used to capture and respond to user keyboard interactions. When a Keypress
+ * event is triggered,the key that was pressed can be determine using the key code, and a specific
+ * action or actions can be performed based on the user's input. For example, it can be used to
+ * validate user input in form fields, implement keyboard shortcuts, or trigger certain actions
+ * based on specific key combinations.
+ * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
