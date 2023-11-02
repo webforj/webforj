@@ -35,10 +35,9 @@ public class Terminal extends Panel {
         + "window.basisDispatchCustomEvent(event.target,custom);}";
     hv.injectScript(script, true);
 
-    script =
-        "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
-         + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
-         + "else { callback (); }}";
+    script = "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
+        + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
+        + "else { callback (); }}";
     hv.injectScript(script);
 
     script = "var link =  $doc.createElement('script');"

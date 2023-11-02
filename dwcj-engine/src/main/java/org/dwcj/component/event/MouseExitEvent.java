@@ -4,13 +4,14 @@ import java.util.Map;
 import org.dwcj.component.Component;
 
 /**
- * An event that is fired when the mouse cursor exits the boundaries of an element. 
- * 
- * <p>It occurs when the user moves the mouse pointer out of the boundaries of the specified 
- * element, indicating that the mouse has exited its area.</p>
+ * An event that is fired when the mouse cursor exits the boundaries of an element.
  *
- * @see MouseEnterEvent
- * {@link MouseEvent}
+ * <p>
+ * It occurs when the user moves the mouse pointer out of the boundaries of the specified element,
+ * indicating that the mouse has exited its area.
+ * </p>
+ *
+ * @see MouseEnterEvent {@link MouseEvent}
  */
 public class MouseExitEvent extends MouseEvent {
 

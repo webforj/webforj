@@ -5,11 +5,13 @@ import org.dwcj.component.Component;
 
 /**
  * An event that is fired when an element or checkbox is deselected or marked as "unchecked".
- *  
- * <p>This event is triggered when a user interacts with a checkbox, radio button, or any other 
- * form element to remove the "checked" state. It usually indicates that the associated action 
- * or state has been disabled or deactivated.</p>
- * 
+ *
+ * <p>
+ * This event is triggered when a user interacts with a checkbox, radio button, or any other form
+ * element to remove the "checked" state. It usually indicates that the associated action or state
+ * has been disabled or deactivated.
+ * </p>
+ *
  * @see CheckEvent
  * @see ToggleEvent
  */

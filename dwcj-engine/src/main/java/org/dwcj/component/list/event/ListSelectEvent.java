@@ -4,10 +4,11 @@ import java.util.Map;
 import org.dwcj.component.list.DwcList;
 
 /**
- * An event which is fired when the user selects an item from a list. 
- * 
- * <p>This event can be fired when an item is clicked on, or navigated to 
- * via keyboard interactions.</p>
+ * An event which is fired when the user selects an item from a list.
+ *
+ * <p>
+ * This event can be fired when an item is clicked on, or navigated to via keyboard interactions.
+ * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 23.05
