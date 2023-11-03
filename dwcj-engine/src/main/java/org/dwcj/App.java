@@ -18,6 +18,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  */
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
+  private boolean isInitialized = false;
 
   /**
    * An enum for the default application themes.
@@ -38,13 +39,24 @@ public abstract class App {
     }
   }
 
-  protected App() {
+  /**
+   * This is the main entry point for the application. It is called by the framework to initialize
+   * and should not be called directly.
+   *
+   * @throws DwcjAppInitializeException if failed to initialize the app
+   */
+  public final void initialize() throws DwcjAppInitializeException {
+    if (isInitialized) {
+      throw new DwcjAppInitializeException("App is already initialized.");
+    }
+
     preRun();
     try {
       AnnotationProcessor processor = new AnnotationProcessor();
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
       run();
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
+      isInitialized = true;
     } catch (DwcjException e) {
       Environment.logError(e);
     }

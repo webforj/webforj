@@ -46,6 +46,9 @@ Environment.init(BBjAPI(), h!)
 
 Class.forName(class$,err=class_not_found)
 app! = eval("new "+class$+"()",err=dwcj_error)
+app!.initialize()
+
+REM app! =  Class.forName(class$).getDeclaredConstructor().newInstance()
 
 process_events,err=dwcj_error
 
