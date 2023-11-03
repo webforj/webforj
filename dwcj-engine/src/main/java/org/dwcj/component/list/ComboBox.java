@@ -98,7 +98,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    */
   public ComboBox setAllowCustomValue(boolean allowCustomValue) {
     this.allowCustomValue = allowCustomValue;
-    setUnrestrictedProperty("custom-value", allowCustomValue);
+    setUnrestrictedProperty("customValue", allowCustomValue);
     return this;
   }
 

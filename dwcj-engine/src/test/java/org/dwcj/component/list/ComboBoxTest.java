@@ -30,7 +30,7 @@ class ComboBoxTest {
     component.setAllowCustomValue(true);
     assertEquals(true, component.isAllowCustomValue());
 
-    assertEquals(true, component.getProperty("custom-value"));
+    assertEquals(true, component.getProperty("customValue"));
   }
 
   @Nested
