@@ -254,6 +254,22 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    * {@inheritDoc}
    */
   @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("allowDeselection", "autoValidate", "autoValidateOnLoad",
+        "autoWasValidated", "disabled", "expanse", "hasFocus", "invalid", "invalidMessage", "items",
+        "label", "multiSelection", "multiSelectionByClick", "readonly", "renderer", "selected",
+        "tabTraversable", "typeToSelect", "typeToSelectCaseSensitive", "typeToSelectTimeout",
+        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator"));
+
+    return properties;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected void onCreate(Window window) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);

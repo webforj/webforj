@@ -1,6 +1,8 @@
 package org.dwcj.component.list;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import java.util.Arrays;
+import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.button.ButtonTheme;
@@ -89,6 +91,23 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
   @ExcludeFromJacocoGeneratedReport
   public ButtonTheme getTheme() {
     return super.<ButtonTheme>getComponentTheme();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "buttonHeight", "disabled", "distance", "expanse", "hasFocus", "invalid", "invalidMessage",
+        "itemLabel", "itemValue", "items", "label", "maxRowCount", "openHeight", "openWidth",
+        "opened", "placement", "readonly", "renderItemPrefix", "selected", "skidding", "theme",
+        "type", "typeToSelect", "typeToSelectCaseSensitive", "typeToSelectTimeout", "valid",
+        "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator"));
+
+    return properties;
   }
 
   /**

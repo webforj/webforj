@@ -1,6 +1,8 @@
 package org.dwcj.component.list;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import java.util.Arrays;
+import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.event.ComponentEventListener;
@@ -229,6 +231,23 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   public ComboBox removeKeypressListener(ComponentEventListener<KeypressEvent> listener) {
     keypressEventSinkListenerRegistry.removeEventListener(listener);
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "customValue", "disabled", "distance", "expanse", "fieldHeight", "hasFocus",
+        "highlightBehaviors", "invalid", "invalidMessage", "itemLabel", "itemValue", "items",
+        "label", "maxRowCount", "maxlength", "openHeight", "openWidth", "opened", "placeholder",
+        "placement", "readonly", "renderer", "selected", "skidding", "toggleOnEnter", "type",
+        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator", "value"));
+
+    return properties;
   }
 
   /**
