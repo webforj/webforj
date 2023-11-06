@@ -24,7 +24,7 @@ import org.dwcj.component.window.Window;
  */
 public abstract class Component {
 
-  private final Map<String, Object> userData = new HashMap<>();
+  private final Map<Object, Object> userData = new HashMap<>();
   private String uuid = "";
   private boolean attached = false;
   private boolean destroyed = false;
@@ -70,7 +70,7 @@ public abstract class Component {
    *
    * @return The component itself
    */
-  public Component setUserData(String key, Object data) {
+  public Component setUserData(Object key, Object data) {
     this.userData.put(key, data);
     return this;
   }
