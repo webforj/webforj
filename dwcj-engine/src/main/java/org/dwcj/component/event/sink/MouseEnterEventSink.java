@@ -11,7 +11,7 @@ import org.dwcj.component.event.MouseEnterEvent;
 /**
  * This class will map the BBjMouseEnterEvent event to a Java {@link MouseEnterEvent}.
  */
-public class MouseEnterEventSink extends AbstractMouseEventSink {
+public class MouseEnterEventSink extends MouseEventSink {
 
   public MouseEnterEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_MOUSE_ENTER);

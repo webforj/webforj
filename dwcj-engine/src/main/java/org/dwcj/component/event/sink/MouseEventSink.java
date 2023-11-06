@@ -9,8 +9,8 @@ import org.dwcj.component.event.EventDispatcher;
  * An abstract class of a mouse event sink which would handle a BBjMouseEvent and dispatch the
  * corresponding Java event.
  */
-public abstract class AbstractMouseEventSink extends AbstractDwcEventSink {
-  protected AbstractMouseEventSink(DwcComponent<?> component, EventDispatcher dispatcher,
+public abstract class MouseEventSink extends AbstractDwcEventSink {
+  protected MouseEventSink(DwcComponent<?> component, EventDispatcher dispatcher,
       int sysGuiConstant) {
     super(component, dispatcher, sysGuiConstant);
   }

@@ -11,7 +11,7 @@ import org.dwcj.component.event.RightMouseDownEvent;
 /**
  * This class will map the BBjRightMouseDownEvent event to a Java {@link MouseEvent}.
  */
-public class RightMouseDownEventSink extends AbstractMouseEventSink {
+public class RightMouseDownEventSink extends MouseEventSink {
 
   public RightMouseDownEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_RIGHT_MOUSE_DOWN);

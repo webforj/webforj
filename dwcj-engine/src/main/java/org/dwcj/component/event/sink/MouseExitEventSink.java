@@ -12,7 +12,7 @@ import org.dwcj.component.event.MouseExitEvent;
 /**
  * This class will map the BBjMouseExitEvent event to a Java {@link MouseExitEvent}.
  */
-public class MouseExitEventSink extends AbstractMouseEventSink {
+public class MouseExitEventSink extends MouseEventSink {
 
   public MouseExitEventSink(DwcComponent<?> component, EventDispatcher dispatcher) {
     super(component, dispatcher, SysGuiEventConstants.ON_MOUSE_EXIT);
