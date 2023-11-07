@@ -1,33 +1,39 @@
 package org.dwcj.component;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.dwcj.App;
-import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.Window;
-
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
- * class Pattern see Tulach, p.75ff
+ * Implementation of the ComponentAccessor that provides low-level access to BBj Controls for DWC
+ * components. This class ensures that only authorized callers from within the org.dwcj package can
+ * access the underlying BBjControl.
+ *
+ * @author Stephan Wald
+ * @author Hyyan Abo Fakher
+ *
+ * @see ComponentAccessor
  */
 final class ComponentAccessorImpl extends ComponentAccessor {
 
-  public static final String YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD =
-      ": You're not allowed to access this method!";
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public BBjControl getBBjControl(LegacyDwcComponent ctrl) throws IllegalAccessException {
+  public void create(Component component, Window window) throws IllegalAccessException {
+    verifyCaller();
 
-    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-    String caller = stack[2].getClassName();
-    if (caller.startsWith("org.dwcj.")) {
-      return ctrl.getControl();
+    try {
+      Method create = Component.class.getDeclaredMethod("create", Window.class);
+      create.setAccessible(true); // NOSONAR
+      create.invoke(component, window);
+    } catch (InvocationTargetException | NoSuchMethodException e) {
+      throw new DwcjRuntimeException(
+          String.format("Failed to create component '%s'.", component.getClass().getName()), e);
     }
-    App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
-    throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
-
   }
 
   /**
@@ -35,49 +41,28 @@ final class ComponentAccessorImpl extends ComponentAccessor {
    */
   @Override
   public BBjControl getControl(DwcComponent<?> component) throws IllegalAccessException {
-    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-    String caller = stack[2].getClassName();
-    if (caller.startsWith("org.dwcj.")) {
-      return component.getControl();
-    }
-    throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
+    verifyCaller();
+    return component.getControl();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  @SuppressWarnings("java:S3011") // allow increasing acessibility
-  public void create(Component ctrl, Window panel) throws IllegalAccessException {
+  public BBjControl getBBjControl(LegacyDwcComponent ctrl) throws IllegalAccessException {
+    verifyCaller();
+    return ctrl.getControl();
+  }
 
+  private void verifyCaller() throws IllegalAccessException {
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
-
-    if (caller.startsWith("org.dwcj.")) {
-      try {
-        boolean found = false;
-        Class<?> clazz = ctrl.getClass();
-        while (clazz != null && !found) {
-          Method[] methods = clazz.getDeclaredMethods();
-          for (Method method : methods) {
-            if (method.getName().equals("create") && method.getParameterCount() == 1
-                && method.getParameterTypes()[0]
-                    .equals(Class.forName("org.dwcj.component.window.Window"))) {
-              method.setAccessible(true);
-              method.invoke(ctrl, panel);
-              found = true;
-              break;
-            }
-          }
-
-          if (!found) {
-            clazz = clazz.getSuperclass();
-          }
-        }
-      } catch (Exception e) {
-        Environment.logError(e);
-      }
-      return;
+    if (!caller.startsWith("org.dwcj.")) {
+      throw new IllegalAccessException(
+          String.format("The class '%s' attempted unauthorized access to BBj Control. "
+              + "Access is restricted to classes within the 'org.dwcj' package hierarchy. "
+              + "Ensure that any class interacting with BBj Control adheres "
+              + "to this access control policy.", caller));
     }
-
-    App.consoleLog(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
-    throw new IllegalAccessException(caller + YOU_RE_NOT_ALLOWED_TO_ACCESS_THIS_METHOD);
   }
 }
