@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.dwcj.Environment;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventDispatcher;
@@ -90,6 +91,30 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private Enum<? extends ExpanseBase> expanse = null;
   private String placeholder = "";
   private Enum<? extends ThemeBase> theme = null;
+
+  static {
+    ComponentAccessor.setDefault(new ComponentAccessorImpl());
+  }
+
+  /**
+   * Sets the underling BBj Control.
+   *
+   * @param control the BBj control to set.
+   */
+  protected void setControl(BBjControl control) {
+    this.control = control;
+  }
+
+  /**
+   * This method gets the underlying original BBj control. It's package private and can only be
+   * accessed through the ControlAccessor. No API user / customer should ever work directly with BBj
+   * controls.
+   *
+   * @return the underlying BBj control
+   */
+  BBjControl getControl() {
+    return control;
+  }
 
   /**
    * Sets the value for a property in the component.
@@ -575,28 +600,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   protected final EventDispatcher getEventDispatcher() {
     return dispatcher;
-  }
-
-  /**
-   * This method sets the underlying original BBj control. It's package private and can only be
-   * accessed through the ControlAccessor. No API user / customer should ever work directly with BBj
-   * controls.
-   *
-   * @param control the BBj control to set.
-   */
-  protected void setControl(BBjControl control) {
-    this.control = control;
-  }
-
-  /**
-   * This method gets the underlying original BBj control. It's package private and can only be
-   * accessed through the ControlAccessor. No API user / customer should ever work directly with BBj
-   * controls.
-   *
-   * @return the underlying BBj control
-   */
-  BBjControl getControl() {
-    return control;
   }
 
   /**

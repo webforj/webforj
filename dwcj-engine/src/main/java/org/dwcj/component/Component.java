@@ -3,7 +3,6 @@ package org.dwcj.component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.Window;
 
 /**
@@ -29,10 +28,6 @@ public abstract class Component {
   private boolean attached = false;
   private boolean destroyed = false;
   private Window window;
-
-  static {
-    ComponentAccessor.setDefault(new ComponentAccessorImpl());
-  }
 
   /**
    * Retrieves a unique component ID generated on the server.
