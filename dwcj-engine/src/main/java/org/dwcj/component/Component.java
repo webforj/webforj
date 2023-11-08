@@ -1,8 +1,11 @@
 package org.dwcj.component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.dwcj.component.ComponentLifecycleObserver.LifecycleEvent;
 import org.dwcj.component.window.Window;
 
 /**
@@ -22,8 +25,8 @@ import org.dwcj.component.window.Window;
  * @since 23.05
  */
 public abstract class Component {
-
   private final Map<Object, Object> userData = new HashMap<>();
+  private final List<ComponentLifecycleObserver> lifecycleObservers = new ArrayList<>();
   private String uuid = "";
   private boolean attached = false;
   private boolean destroyed = false;
@@ -98,6 +101,10 @@ public abstract class Component {
     this.destroyed = true;
     this.window = null;
     this.onDestroy();
+
+    for (ComponentLifecycleObserver observer : lifecycleObservers) {
+      observer.onComponentLifecycleEvent(this, LifecycleEvent.DESTROY);
+    }
   }
 
   /**
@@ -130,6 +137,24 @@ public abstract class Component {
    */
   public final Window getWindow() {
     return this.window;
+  }
+
+  /**
+   * Adds a listener to receive notifications about lifecycle events of the component.
+   *
+   * @param observer The listener to add
+   */
+  public void addLifecycleObserver(ComponentLifecycleObserver observer) {
+    lifecycleObservers.add(observer);
+  }
+
+  /**
+   * Removes a listener from receiving notifications about lifecycle events of the component.
+   *
+   * @param observer The listener to remove
+   */
+  public void removeLifecycleObserver(ComponentLifecycleObserver observer) {
+    lifecycleObservers.remove(observer);
   }
 
   /**
@@ -201,7 +226,12 @@ public abstract class Component {
     }
 
     this.window = window;
+
     this.onCreate(window);
+    for (ComponentLifecycleObserver observer : lifecycleObservers) {
+      observer.onComponentLifecycleEvent(this, LifecycleEvent.CREATE);
+    }
+
     this.attached = true;
     this.onAttach();
   }
