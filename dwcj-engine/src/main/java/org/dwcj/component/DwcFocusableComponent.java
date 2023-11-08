@@ -1,18 +1,12 @@
 package org.dwcj.component;
 
-import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.bbj.proxies.sysgui.Focusable;
-import com.basis.startup.type.BBjException;
 import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.ListenerRegistration;
-import org.dwcj.component.event.sink.BlurEventSink;
-import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.concern.HasEnablement;
 import org.dwcj.concern.HasFocus;
-import org.dwcj.exceptions.DwcjRuntimeException;
+import org.dwcj.concern.HasFocusStatus;
 
 /**
  * An abstract class for typed DWC components that can receive focus and trigger focus-related
@@ -30,34 +24,15 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @since 23.05
  */
 public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
-    extends DwcComponent<T> implements HasEnablement<T>, HasFocus<T> {
-
-  private final EventSinkListenerRegistry<FocusEvent> focusEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new FocusEventSink(this, getEventDispatcher()),
-          FocusEvent.class);
-  private final EventSinkListenerRegistry<BlurEvent> blurEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new BlurEventSink(this, getEventDispatcher()),
-          BlurEvent.class);
-
-  private boolean enabled = true;
-  private boolean focusable = true;
-  private Boolean wasFocused = null;
+    extends DwcComponent<T> implements HasFocus<T>, HasEnablement<T> {
+  private final DwcFocusableMixin<T> focusMixin = new DwcFocusableMixin<>(this);
 
   /**
    * {@inheritDoc}
    */
   @Override
   public T setEnabled(boolean enabled) {
-    if (getControl() != null) {
-      try {
-        getControl().setEnabled(enabled);
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
-      }
-    }
-
-    this.enabled = enabled;
-    return getSelf();
+    return focusMixin.setEnabled(enabled);
   }
 
   /**
@@ -65,15 +40,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    */
   @Override
   public boolean isEnabled() {
-    if (getControl() != null) {
-      try {
-        return getControl().isEnabled();
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
-      }
-    }
-
-    return enabled;
+    return focusMixin.isEnabled();
   }
 
   /**
@@ -81,20 +48,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    */
   @Override
   public T setFocusable(boolean focusable) {
-    BBjControl control = getControl();
-
-    if (control != null) {
-      try {
-        if (control instanceof Focusable) {
-          ((Focusable) control).setFocusable(focusable);
-        }
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
-      }
-    }
-
-    this.focusable = focusable;
-    return getSelf();
+    return focusMixin.setFocusable(focusable);
   }
 
   /**
@@ -102,7 +56,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    */
   @Override
   public boolean isFocusable() {
-    return focusable;
+    return focusMixin.isFocusable();
   }
 
   /**
@@ -110,82 +64,41 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    */
   @Override
   public T focus() {
-    BBjControl control = getControl();
-
-    if (control != null) {
-      try {
-        control.focus();
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
-      }
-    }
-
-    this.wasFocused = true;
-    return getSelf();
+    return focusMixin.focus();
   }
 
   /**
-   * Adds a {@link FocusEvent} listener for the component.
-   *
-   * @param listener the event listener to be added
-   * @return A registration object for removing the event listener
+   * {@inheritDoc}
    */
+  @Override
   public ListenerRegistration<FocusEvent> addFocusListener(
       ComponentEventListener<FocusEvent> listener) {
-    return this.focusEventSinkListenerRegistry.addEventListener(listener);
+    return focusMixin.addFocusListener(listener);
   }
 
   /**
-   * Alias for {@link #addFocusListener(ComponentEventListener) addFocusListener}.
-   *
-   * @param listener the event listener to be added
-   * @return A registration object for removing the event listener
+   * {@inheritDoc}
    */
-  public ListenerRegistration<FocusEvent> onFocus(ComponentEventListener<FocusEvent> listener) {
-    return addFocusListener(listener);
-  }
-
-  /**
-   * Removes a {@link FocusEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
+  @Override
   public T removeFocusListener(ComponentEventListener<FocusEvent> listener) {
-    this.focusEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
+    return focusMixin.removeFocusListener(listener);
   }
 
   /**
-   * Adds a {@link BlurEvent} listener for the component.
-   *
-   * @param listener the event listener to be added
-   * @return A registration object for removing the event listener
+   * {@inheritDoc}
    */
+  @Override
   public ListenerRegistration<BlurEvent> addBlurListener(
       ComponentEventListener<BlurEvent> listener) {
-    return this.blurEventSinkListenerRegistry.addEventListener(listener);
+    return focusMixin.addBlurListener(listener);
   }
 
   /**
-   * Alias for {@link #addBlurListener(ComponentEventListener) addBlurListener}.
-   *
-   * @param listener the event listener to be added
-   * @return A registration object for removing the event listener
+   * {@inheritDoc}
    */
-  public ListenerRegistration<BlurEvent> onBlur(ComponentEventListener<BlurEvent> listener) {
-    return addBlurListener(listener);
-  }
-
-  /**
-   * Removes a {@link BlurEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
+  @Override
   public T removeBlurListener(ComponentEventListener<BlurEvent> listener) {
-    this.blurEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
+    return focusMixin.removeBlurListener(listener);
   }
 
   /**
@@ -196,7 +109,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    * @return true if the component has focus, false if not.
    */
   protected boolean componentHasFocus() {
-    return Boolean.valueOf(String.valueOf(getProperty("hasFocus")));
+    return focusMixin.hasFocus();
   }
 
   /**
@@ -205,9 +118,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
   @Override
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
-
-    focusEventSinkListenerRegistry.attach();
-    blurEventSinkListenerRegistry.attach();
+    focusMixin.attachControlCallbacks();
   }
 
   /**
@@ -216,13 +127,6 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
   @Override
   protected void onAttach() {
     super.onAttach();
-
-    if (!Boolean.TRUE.equals(enabled)) {
-      setEnabled(enabled);
-    }
-
-    if (this.wasFocused != null) {
-      this.focus();
-    }
+    focusMixin.onAttach();
   }
 }
