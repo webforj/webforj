@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-
+import org.dwcj.component.ComponentLifecycleObserver.LifecycleEvent;
 import org.dwcj.component.window.Window;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -101,5 +101,19 @@ class ComponentTest {
 
     spy.destroy();
     verify(spy).onDestroy();
+  }
+
+  @Test
+  @DisplayName("Test Lifecycle observers")
+  void testNotifyLifecycleObservers() throws IllegalAccessException {
+    ComponentLifecycleObserver observer = mock(ComponentLifecycleObserver.class);
+
+    component.addLifecycleObserver(observer);
+
+    component.create(null);
+    verify(observer).onComponentLifecycleEvent(component, LifecycleEvent.CREATE);
+
+    component.destroy();
+    verify(observer).onComponentLifecycleEvent(component, LifecycleEvent.DESTROY);
   }
 }
