@@ -5,7 +5,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.FocusableDwcComponent;
+import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
@@ -25,21 +25,21 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  *
  * <p>
  * This abstract class serves as the foundation for all option input components within the
- * framework. It extends the {@link FocusableDwcComponent} class and implements various event
+ * framework. It extends the {@link DwcFocusableComponent} class and implements various event
  * handling interfaces for working with option input-specific properties and behaviors.
  * </p>
  *
  * @param <T> The type of the component.
  *
- * @see FocusableDwcComponent
+ * @see DwcFocusableComponent
  * @see HasTextPosition
  * @see HasExpanse
  *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcOptionInput<T extends FocusableDwcComponent<T> & HasTextPosition<T>>
-    extends FocusableDwcComponent<T>
+public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTextPosition<T>>
+    extends DwcFocusableComponent<T>
     implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =

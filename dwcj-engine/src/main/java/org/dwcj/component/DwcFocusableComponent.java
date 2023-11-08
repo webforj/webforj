@@ -29,7 +29,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class FocusableDwcComponent<T extends FocusableDwcComponent<T>>
+public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
     extends DwcComponent<T> implements HasEnablement<T>, HasFocus<T> {
 
   private final EventSinkListenerRegistry<FocusEvent> focusEventSinkListenerRegistry =

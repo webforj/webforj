@@ -18,7 +18,7 @@ import java.util.UUID;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.FocusableDwcComponent;
+import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.ListenerRegistration;
@@ -44,7 +44,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcList<T extends FocusableDwcComponent<T>> extends FocusableDwcComponent<T>
+public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements Iterable<ListItem>, HasLabel<T>, HasExpanse<T, Expanse>, HasHorizontalAlignment<T>,
     SelectableList<T> {
   private static final String DUPLICATION_ITEM_MESSAGE = "Item is already in the list";

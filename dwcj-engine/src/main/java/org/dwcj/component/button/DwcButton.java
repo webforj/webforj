@@ -7,7 +7,7 @@ import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.FocusableDwcComponent;
+import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
 import org.dwcj.component.event.ComponentEventListener;
@@ -24,12 +24,12 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  *
  * <p>
  * This class represents an abstract button component in the DWC client. It extends the
- * {@link FocusableDwcComponent} class and implements several interfaces for handling properties
+ * {@link DwcFocusableComponent} class and implements several interfaces for handling properties
  * related to its appearance and behavior.
  * </p>
  *
  * @param <T> The type of the component.
- * @see FocusableDwcComponent
+ * @see DwcFocusableComponent
  * @see HasExpanse
  * @see HasTheme
  * @see HasHorizontalAlignment
@@ -37,7 +37,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcButton<T extends FocusableDwcComponent<T>> extends FocusableDwcComponent<T>
+public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
     HasFocusStatus {
   private boolean disableOnClick = false;

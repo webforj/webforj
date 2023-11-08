@@ -54,7 +54,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * </p>
  *
  * @see Component
- * @see FocusableDwcComponent
+ * @see DwcFocusableComponent
  *
  * @author Hyyan Abo Fakher
  * @since 23.05

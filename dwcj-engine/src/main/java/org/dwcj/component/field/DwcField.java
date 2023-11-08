@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.FocusableDwcComponent;
+import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.KeypressEvent;
@@ -23,14 +23,14 @@ import org.dwcj.concern.HasValue;
  *
  * <p>
  * This abstract class serves as the foundation for all field components within the framework. It
- * extends the {@link FocusableDwcComponent} class and implements several interfaces for handling
+ * extends the {@link DwcFocusableComponent} class and implements several interfaces for handling
  * field-specific properties and behaviors.
  * </p>
  *
  * @param <T> The type of the component.
  * @param <V> The type of value associated with the field.
  *
- * @see FocusableDwcComponent
+ * @see DwcFocusableComponent
  * @see FieldComponent
  * @see HasValue
  * @see HasExpanse
@@ -38,8 +38,8 @@ import org.dwcj.concern.HasValue;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcField<T extends FocusableDwcComponent<T> & HasReadOnly<T>, V>
-    extends FocusableDwcComponent<T>
+public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<T>, V>
+    extends DwcFocusableComponent<T>
     implements HasLabel<T>, HasValue<T, V>, HasReadOnly<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =

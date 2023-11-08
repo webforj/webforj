@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.FocusableDwcComponent;
+import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasReadOnly;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -20,7 +20,7 @@ import org.dwcj.utilities.BBjFunctionalityHelper;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-abstract class DwcFieldInitializer<T extends FocusableDwcComponent<T> & HasReadOnly<T>, V>
+abstract class DwcFieldInitializer<T extends DwcFocusableComponent<T> & HasReadOnly<T>, V>
     extends DwcField<T, V> {
 
   protected DwcFieldInitializer() {

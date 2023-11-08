@@ -2,7 +2,7 @@ package org.dwcj.component;
 
 import org.dwcj.component.window.Window;
 
-public class FocusableDwcComponentMock extends FocusableDwcComponent<FocusableDwcComponentMock> {
+public class DwcFocusableComponentMock extends DwcFocusableComponent<DwcFocusableComponentMock> {
 
   @Override
   protected void onCreate(Window window) {}
