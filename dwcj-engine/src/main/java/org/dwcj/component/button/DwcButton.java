@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.Expanse;
 import org.dwcj.component.DwcFocusableComponent;
+import org.dwcj.component.Expanse;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
 import org.dwcj.component.event.ComponentEventListener;
@@ -206,17 +206,6 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   public ListenerRegistration<ButtonClickEvent> onClick(
       ComponentEventListener<ButtonClickEvent> listener) {
     return addClickListener(listener);
-  }
-
-  /**
-   * Removes a {@link ButtonClickEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeClickListener(ComponentEventListener<ButtonClickEvent> listener) {
-    this.clickEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
   }
 
   /**

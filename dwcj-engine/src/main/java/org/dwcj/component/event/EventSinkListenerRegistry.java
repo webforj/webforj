@@ -44,21 +44,6 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   }
 
   /**
-   * Removes an event listener.
-   *
-   * @param listener The event listener to be removed
-   */
-  public void removeEventListener(ComponentEventListener<T> listener) {
-    EventDispatcher dispatcher = getEventDispatcher();
-    dispatcher.removeListener(event, listener);
-
-    // we should only invoke the sink when the listener count is 0
-    if (dispatcher.getCount(event) == 0) {
-      getSink().removeCallback();
-    }
-  }
-
-  /**
    * Catches up the sink with the current state of the event dispatcher.
    */
   public void attach() {

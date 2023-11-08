@@ -147,27 +147,9 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    * {@inheritDoc}
    */
   @Override
-  public T removeFocusListener(ComponentEventListener<FocusEvent> listener) {
-    this.focusEventSinkListenerRegistry.removeEventListener(listener);
-    return component.getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public ListenerRegistration<BlurEvent> addBlurListener(
       ComponentEventListener<BlurEvent> listener) {
     return this.blurEventSinkListenerRegistry.addEventListener(listener);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public T removeBlurListener(ComponentEventListener<BlurEvent> listener) {
-    this.blurEventSinkListenerRegistry.removeEventListener(listener);
-    return component.getSelf();
   }
 
   /**

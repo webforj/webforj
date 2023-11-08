@@ -17,7 +17,9 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
@@ -529,17 +531,18 @@ class DwcComponentTest {
     ComponentEventListener<RightMouseDownEvent> rightMouseDownListener = event -> {
     };
 
-    component.onMouseEnter(mouseEnterListener);
-    component.onMouseExit(mouseExitListener);
-    component.onRightMouseDown(rightMouseDownListener);
+    ListenerRegistration<MouseEnterEvent> r1 = component.onMouseEnter(mouseEnterListener);
+    ListenerRegistration<MouseExitEvent> r2 = component.onMouseExit(mouseExitListener);
+    ListenerRegistration<RightMouseDownEvent> r3 =
+        component.onRightMouseDown(rightMouseDownListener);
 
     assertEquals(1, component.getEventListeners(MouseEnterEvent.class).size());
     assertEquals(1, component.getEventListeners(MouseExitEvent.class).size());
     assertEquals(1, component.getEventListeners(RightMouseDownEvent.class).size());
 
-    component.removeMouseEnterListener(mouseEnterListener);
-    component.removeMouseExitListener(mouseExitListener);
-    component.removeRightMouseDownListener(rightMouseDownListener);
+    r1.remove();
+    r2.remove();
+    r3.remove();
 
     assertEquals(0, component.getEventListeners(MouseEnterEvent.class).size());
     assertEquals(0, component.getEventListeners(MouseExitEvent.class).size());

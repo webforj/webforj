@@ -14,6 +14,7 @@ import com.basis.startup.type.BBjException;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -96,10 +97,10 @@ class DwcButtonTest {
       ComponentEventListener<ButtonClickEvent> clickListener = event -> {
       };
 
-      component.onClick(clickListener);
+      ListenerRegistration<ButtonClickEvent> r = component.onClick(clickListener);
       assertEquals(1, component.getEventListeners(ButtonClickEvent.class).size());
 
-      component.removeClickListener(clickListener);
+      r.remove();
       assertEquals(0, component.getEventListeners(ButtonClickEvent.class).size());
     }
   }

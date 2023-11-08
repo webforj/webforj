@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.list.event.ListClickEvent;
 import org.dwcj.component.list.event.ListCloseEvent;
 import org.dwcj.component.list.event.ListOpenEvent;
@@ -191,17 +192,17 @@ class DwcSelectDropdownTest {
       ComponentEventListener<ListClickEvent> clickListener = event -> {
       };
 
-      component.onOpen(openListener);
-      component.onClose(closeListener);
-      component.onClick(clickListener);
+      ListenerRegistration<ListOpenEvent> r1 = component.onOpen(openListener);
+      ListenerRegistration<ListCloseEvent> r2 = component.onClose(closeListener);
+      ListenerRegistration<ListClickEvent> r3 = component.onClick(clickListener);
 
       assertEquals(1, component.getEventListeners(ListOpenEvent.class).size());
       assertEquals(1, component.getEventListeners(ListCloseEvent.class).size());
       assertEquals(1, component.getEventListeners(ListClickEvent.class).size());
 
-      component.removeOpenListener(openListener);
-      component.removeCloseListener(closeListener);
-      component.removeClickListener(clickListener);
+      r1.remove();
+      r2.remove();
+      r3.remove();
 
       assertEquals(0, component.getEventListeners(ListOpenEvent.class).size());
       assertEquals(0, component.getEventListeners(ListCloseEvent.class).size());

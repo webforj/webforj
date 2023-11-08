@@ -49,15 +49,15 @@ class EventSinkListenerRegistryTest {
       ComponentEventListener<MouseEnterEvent> listener2 = e -> {
       };
 
-      manager.addEventListener(listener1);
-      manager.addEventListener(listener2);
+      ListenerRegistration<MouseEnterEvent> r1 = manager.addEventListener(listener1);
+      ListenerRegistration<MouseEnterEvent> r2 = manager.addEventListener(listener2);
       assertEquals(2, dispatcher.getCount(MouseEnterEvent.class));
 
-      manager.removeEventListener(listener1);
+      r1.remove();
       assertEquals(1, dispatcher.getCount(MouseEnterEvent.class));
       verify(sink, times(0)).removeCallback();
 
-      manager.removeEventListener(listener2);
+      r2.remove();
       assertEquals(0, dispatcher.getCount(MouseEnterEvent.class));
       verify(sink, times(1)).removeCallback();
     }
@@ -83,17 +83,17 @@ class EventSinkListenerRegistryTest {
 
     @Test
     void clearControlCallbackWhenNoListeners() throws IllegalAccessException {
-      ListenerRegistration<MouseEnterEvent> registration1 = manager.addEventListener(e -> {
+      ListenerRegistration<MouseEnterEvent> r1 = manager.addEventListener(e -> {
       });
-      ListenerRegistration<MouseEnterEvent> registration2 = manager.addEventListener(e -> {
+      ListenerRegistration<MouseEnterEvent> r2 = manager.addEventListener(e -> {
       });
 
-      manager.removeEventListener(registration1.getListener());
+      r1.remove();
 
       assertEquals(1, dispatcher.getCount(MouseEnterEvent.class));
       verify(sink, times(0)).removeCallback();
 
-      registration2.remove();
+      r2.remove();
 
       assertEquals(0, dispatcher.getCount(MouseEnterEvent.class));
       verify(sink, times(1)).removeCallback();

@@ -18,8 +18,10 @@ import java.lang.reflect.InvocationTargetException;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.component.event.UncheckEvent;
+import org.dwcj.component.list.event.ListOpenEvent;
 import org.dwcj.concern.HasTextPosition.Position;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -148,18 +150,18 @@ class DwcOptionInputTest {
       ComponentEventListener<ToggleEvent> toggleListener = event -> {
       };
 
-      component.onCheck(checkListener);
-      component.onUncheck(uncheckListener);
-      component.onToggle(toggleListener);
+      ListenerRegistration<CheckEvent> r1 = component.onCheck(checkListener);
+      ListenerRegistration<UncheckEvent> r2 = component.onUncheck(uncheckListener);
+      ListenerRegistration<ToggleEvent> r3 = component.onToggle(toggleListener);
 
 
       assertEquals(1, component.getEventListeners(CheckEvent.class).size());
       assertEquals(1, component.getEventListeners(UncheckEvent.class).size());
       assertEquals(1, component.getEventListeners(ToggleEvent.class).size());
 
-      component.removeCheckListener(checkListener);
-      component.removeUncheckListener(uncheckListener);
-      component.removeToggleListener(toggleListener);
+      r1.remove();
+      r2.remove();
+      r3.remove();
 
       assertEquals(0, component.getEventListeners(CheckEvent.class).size());
       assertEquals(0, component.getEventListeners(UncheckEvent.class).size());

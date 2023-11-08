@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.Expanse;
 import org.dwcj.component.DwcFocusableComponent;
+import org.dwcj.component.Expanse;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.ListenerRegistration;
@@ -636,17 +636,6 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
   public ListenerRegistration<ListSelectEvent> onSelect(
       ComponentEventListener<ListSelectEvent> listener) {
     return addSelectListener(listener);
-  }
-
-  /**
-   * Removes a {@link ListSelectEvent} listener for the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeSelectListener(ComponentEventListener<ListSelectEvent> listener) {
-    selectEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
   }
 
   /**

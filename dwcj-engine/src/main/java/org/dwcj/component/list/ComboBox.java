@@ -190,17 +190,6 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   }
 
   /**
-   * Removes a {@link ModifyEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public ComboBox removeModifyListener(ComponentEventListener<ModifyEvent> listener) {
-    modifyEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a {@link KeypressEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -220,17 +209,6 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   public ListenerRegistration<KeypressEvent> onKeypress(
       ComponentEventListener<KeypressEvent> listener) {
     return addKeypressListener(listener);
-  }
-
-  /**
-   * Removes a {@link KeypressEvent} listener from the component.
-   *
-   * @param listener The event listener to be removed
-   * @return The component itself
-   */
-  public ComboBox removeKeypressListener(ComponentEventListener<KeypressEvent> listener) {
-    keypressEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
   }
 
   /**

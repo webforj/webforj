@@ -274,18 +274,6 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
-   * Removes a {@link RadioButtonGroupChangeEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public RadioButtonGroup removeChangeListener(
-      ComponentEventListener<RadioButtonGroupChangeEvent> listener) {
-    this.changedEventSinkListenerRegistry.removeEventListener(listener);
-    return this;
-  }
-
-  /**
    * {@inheritDoc}
    */
   @Override

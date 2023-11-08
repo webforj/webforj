@@ -290,17 +290,6 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Removes a {@link ListOpenEvent} listener for the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeOpenListener(ComponentEventListener<ListOpenEvent> listener) {
-    openEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a {@link ListCloseEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -323,17 +312,6 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
-   * Removes a {@link ListCloseEvent} listener for the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeCloseListener(ComponentEventListener<ListCloseEvent> listener) {
-    closeEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a {@link ListClickListener} listener for the component.
    *
    * @param listener the event listener to be added
@@ -353,17 +331,6 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   public ListenerRegistration<ListClickEvent> onClick(
       ComponentEventListener<ListClickEvent> listener) {
     return addClickListener(listener);
-  }
-
-  /**
-   * Removes a {@link ListClickEvent} listener for the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeClickListener(ComponentEventListener<ListClickEvent> listener) {
-    clickEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
   }
 
   /**

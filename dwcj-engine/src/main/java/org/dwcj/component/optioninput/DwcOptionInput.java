@@ -4,8 +4,8 @@ import com.basis.bbj.proxies.sysgui.BBjToggleButton;
 import com.basis.startup.type.BBjException;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.Expanse;
 import org.dwcj.component.DwcFocusableComponent;
+import org.dwcj.component.Expanse;
 import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
@@ -193,17 +193,6 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
   }
 
   /**
-   * Removes a {@link CheckEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeCheckListener(ComponentEventListener<CheckEvent> listener) {
-    this.checkEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds an {@link UncheckEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -226,17 +215,6 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
   }
 
   /**
-   * Removes an {@link UncheckEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeUncheckListener(ComponentEventListener<UncheckEvent> listener) {
-    this.uncheckEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a {@link ToggleEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -256,18 +234,6 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
   public ListenerRegistration<ToggleEvent> onToggle(ComponentEventListener<ToggleEvent> listener) {
     return addToggleListener(listener);
   }
-
-  /**
-   * Removes a {@link ToggleEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeToggleListener(ComponentEventListener<ToggleEvent> listener) {
-    this.toggleEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
 
   /**
    * {@inheritDoc}

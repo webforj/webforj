@@ -504,17 +504,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Removes a MouseEnter event from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeMouseEnterListener(ComponentEventListener<MouseEnterEvent> listener) {
-    mouseEnterEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a MouseExit event for the component.
    *
    * @param listener the event listener to be added
@@ -537,17 +526,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
-   * Removes a MouseExit event from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeMouseExitListener(ComponentEventListener<MouseExitEvent> listener) {
-    mouseExitEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a RightMouseDown event for the component.
    *
    * @param listener the event listener to be added
@@ -567,17 +545,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   public ListenerRegistration<RightMouseDownEvent> onRightMouseDown(
       ComponentEventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);
-  }
-
-  /**
-   * Removes a RightMouseDown event from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeRightMouseDownListener(ComponentEventListener<RightMouseDownEvent> listener) {
-    rightMouseDownEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
   }
 
   /**

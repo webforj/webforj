@@ -3,8 +3,8 @@ package org.dwcj.component.field;
 import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
-import org.dwcj.component.Expanse;
 import org.dwcj.component.DwcFocusableComponent;
+import org.dwcj.component.Expanse;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.KeypressEvent;
@@ -239,17 +239,6 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
   }
 
   /**
-   * Removes a {@link ModifyEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself
-   */
-  public T removeModifyListener(ComponentEventListener<ModifyEvent> listener) {
-    this.modifyEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
-  }
-
-  /**
    * Adds a {@link KeypressEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -269,17 +258,6 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
   public ListenerRegistration<KeypressEvent> onKeypress(
       ComponentEventListener<KeypressEvent> listener) {
     return addKeypressListener(listener);
-  }
-
-  /**
-   * Removes a {@link KeypressEvent} listener from the component.
-   *
-   * @param listener The event listener to be removed
-   * @return The component itself
-   */
-  public T removeKeypressListener(ComponentEventListener<KeypressEvent> listener) {
-    this.keypressEventSinkListenerRegistry.removeEventListener(listener);
-    return getSelf();
   }
 
   /**

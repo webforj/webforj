@@ -70,14 +70,6 @@ public interface HasFocus<T extends Component> {
   }
 
   /**
-   * Removes a {@link FocusEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself for chaining
-   */
-  public T removeFocusListener(ComponentEventListener<FocusEvent> listener);
-
-  /**
    * Adds a {@link BlurEvent} listener to the component.
    *
    * @param listener the event listener to be added
@@ -96,13 +88,4 @@ public interface HasFocus<T extends Component> {
       ComponentEventListener<BlurEvent> listener) {
     return addBlurListener(listener);
   }
-
-  /**
-   * Removes a {@link BlurEvent} listener from the component.
-   *
-   * @param listener the event listener to be removed
-   * @return The component itself for chaining
-   */
-  public T removeBlurListener(ComponentEventListener<BlurEvent> listener);
-
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -401,10 +402,10 @@ class DwcListTest {
       ComponentEventListener<ListSelectEvent> selectListener = event -> {
       };
 
-      component.onSelect(selectListener);
+      ListenerRegistration<ListSelectEvent> r = component.onSelect(selectListener);
       assertEquals(1, component.getEventListeners(ListSelectEvent.class).size());
 
-      component.removeSelectListener(selectListener);
+      r.remove();
       assertEquals(0, component.getEventListeners(ListSelectEvent.class).size());
     }
   }

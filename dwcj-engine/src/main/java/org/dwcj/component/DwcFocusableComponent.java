@@ -80,25 +80,9 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    * {@inheritDoc}
    */
   @Override
-  public T removeFocusListener(ComponentEventListener<FocusEvent> listener) {
-    return focusMixin.removeFocusListener(listener);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public ListenerRegistration<BlurEvent> addBlurListener(
       ComponentEventListener<BlurEvent> listener) {
     return focusMixin.addBlurListener(listener);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public T removeBlurListener(ComponentEventListener<BlurEvent> listener) {
-    return focusMixin.removeBlurListener(listener);
   }
 
   /**

@@ -17,6 +17,8 @@ import java.lang.reflect.InvocationTargetException;
 import org.dwcj.component.event.BlurEvent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.FocusEvent;
+import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -158,14 +160,14 @@ class DwcFocusableComponentTest {
       ComponentEventListener<BlurEvent> bluListener = event -> {
       };
 
-      component.onFocus(focusListener);
-      component.onBlur(bluListener);
+      ListenerRegistration<FocusEvent> r1 = component.onFocus(focusListener);
+      ListenerRegistration<BlurEvent> r2 = component.onBlur(bluListener);
 
       assertEquals(1, component.getEventListeners(FocusEvent.class).size());
       assertEquals(1, component.getEventListeners(BlurEvent.class).size());
 
-      component.removeFocusListener(focusListener);
-      component.removeBlurListener(bluListener);
+      r1.remove();
+      r2.remove();
 
       assertEquals(0, component.getEventListeners(FocusEvent.class).size());
       assertEquals(0, component.getEventListeners(BlurEvent.class).size());
