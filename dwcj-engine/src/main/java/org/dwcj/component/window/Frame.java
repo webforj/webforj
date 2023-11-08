@@ -36,17 +36,29 @@ public class Frame extends Window implements LegacyHasEnable {
 
   @Override
   public String getStyle(String property) {
-    return wnd.getPanelStyle(property);
+    try {
+      return wnd.getPanelStyle(property);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException(e);
+    }
   }
 
   @Override
   public String getComputedStyle(String property) {
-    return wnd.getPanelStyle(property);
+    try {
+      return wnd.getPanelStyle(property);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException(e);
+    }
   }
 
   @Override
   public Frame setStyle(String property, String value) {
-    wnd.setPanelStyle(property, value);
+    try {
+      wnd.setPanelStyle(property, value);
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException(e);
+    }
     return this;
   }
 
