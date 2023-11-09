@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.event.ComponentEventListener;
@@ -234,10 +233,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
-    } else {
-      this.attributes.remove(attribute);
     }
 
+    this.attributes.remove(attribute);
     return getSelf();
   }
 
@@ -313,12 +311,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         control.setStyle(property, value);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
-    } else {
-      this.styles.put(property, value);
-      this.removedStyles.remove(property);
     }
+
+    this.styles.put(property, value);
+    this.removedStyles.remove(property);
 
     return getSelf();
   }
@@ -332,7 +330,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         return control.getStyle(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
     // fall back to the internal list - will not return styles that are added by
@@ -349,7 +347,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         return control.getComputedStyle(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
     // fall back to the internal list - will not return styles that are added by
@@ -367,12 +365,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
         // Current BBj implementation does not have a remove style method
         control.unsetStyle(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
-    } else {
-      this.styles.remove(property);
-      this.removedStyles.add(property);
     }
+
+    this.styles.remove(property);
+    this.removedStyles.add(property);
 
     return getSelf();
   }
@@ -386,12 +384,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         control.addClass(selector);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
-    } else {
-      this.classNames.add(selector);
-      this.removedClassNames.remove(selector);
     }
+
+    this.classNames.add(selector);
+    this.removedClassNames.remove(selector);
 
     return getSelf();
   }
@@ -405,12 +403,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         control.removeClass(selector);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
-    } else {
-      this.removedClassNames.add(selector);
-      this.classNames.remove(selector);
     }
+
+    this.removedClassNames.add(selector);
+    this.classNames.remove(selector);
 
     return getSelf();
   }
@@ -424,7 +422,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         control.setToolTipText(text);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
 
@@ -441,7 +439,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         return control.getToolTipText();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
 
@@ -457,7 +455,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         control.setVisible(visible);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
 
@@ -474,7 +472,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       try {
         return control.isVisible();
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new DwcjRuntimeException(e);
       }
     }
 
@@ -585,9 +583,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
-    } else {
-      properties.put(property, value);
     }
+
+    properties.put(property, value);
 
     return getSelf();
   }
@@ -608,9 +606,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
-    } else {
-      attributes.put(attribute, value);
     }
+
+    attributes.put(attribute, value);
 
     return getSelf();
   }
@@ -815,9 +813,10 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     try {
       if (control != null && !control.isDestroyed()) {
         control.destroy();
+        control = null;
       }
     } catch (BBjException e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException(e);
     }
   }
 
@@ -861,38 +860,44 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
 
     if (!attributes.isEmpty()) {
-      for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      Map<String, String> clone = new HashMap<>(attributes);
+      for (Map.Entry<String, String> entry : clone.entrySet()) {
         setUnrestrictedAttribute(entry.getKey(), entry.getValue());
       }
     }
 
     if (!properties.isEmpty()) {
-      for (Map.Entry<String, Object> entry : properties.entrySet()) {
+      Map<String, Object> clone = new HashMap<>(properties);
+      for (Map.Entry<String, Object> entry : clone.entrySet()) {
         setUnrestrictedProperty(entry.getKey(), entry.getValue());
       }
     }
 
     if (!styles.isEmpty()) {
-      for (Map.Entry<String, String> entry : styles.entrySet()) {
+      Map<String, String> clone = new HashMap<>(styles);
+      for (Map.Entry<String, String> entry : clone.entrySet()) {
         setStyle(entry.getKey(), entry.getValue());
       }
     }
 
     if (!removedStyles.isEmpty()) {
-      for (String style : removedStyles) {
+      List<String> clone = new ArrayList<>(removedStyles);
+      for (String style : clone) {
         removeStyle(style);
       }
     }
 
     if (!classNames.isEmpty()) {
-      for (String cl : this.classNames) {
-        this.addClassName(cl);
+      List<String> clone = new ArrayList<>(classNames);
+      for (String cl : clone) {
+        addClassName(cl);
       }
     }
 
-    if (!this.removedClassNames.isEmpty()) {
-      for (String cl : removedClassNames) {
-        this.removeClassName(cl);
+    if (!removedClassNames.isEmpty()) {
+      List<String> clone = new ArrayList<>(removedClassNames);
+      for (String cl : clone) {
+        removeClassName(cl);
       }
     }
 

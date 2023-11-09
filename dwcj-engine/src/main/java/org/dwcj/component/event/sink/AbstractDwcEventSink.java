@@ -145,13 +145,13 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
    * @return The BBjControl instance.
    */
   private BBjControl getBbjControl() {
-    if (this.control != null) {
-      return this.control;
-    }
-
     try {
-      this.control = ComponentAccessor.getDefault().getControl(component);
-    } catch (IllegalAccessException e) {
+      if (control != null && !control.isDestroyed()) {
+        return control;
+      }
+
+      control = ComponentAccessor.getDefault().getControl(component);
+    } catch (BBjException | IllegalAccessException e) {
       // pass
     }
 
