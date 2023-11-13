@@ -2,6 +2,7 @@ package org.dwcj;
 
 import com.basis.startup.type.BBjException;
 import java.util.Map;
+import org.dwcj.concern.HasJsExecution;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.Assets;
@@ -12,7 +13,10 @@ import org.dwcj.utilities.Assets;
  *
  * @author Hyyan Abo Fakher
  */
-public final class Page {
+public final class Page implements HasJsExecution {
+
+  private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
+  private Environment environment = Environment.getCurrent();
 
   private Page() {}
 
@@ -34,6 +38,15 @@ public final class Page {
   }
 
   /**
+   * Get the current environment instance.
+   *
+   * @return the current environment instance
+   */
+  public Environment getEnvironment() {
+    return environment;
+  }
+
+  /**
    * Set the application title.
    *
    * @param title The title to set
@@ -42,7 +55,7 @@ public final class Page {
    */
   public Page setTitle(String title) {
     try {
-      Environment.getCurrent().getBBjAPI().getWebManager().setTitle(title);
+      getEnvironment().getBBjAPI().getWebManager().setTitle(title);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set title.", e);
     }
@@ -58,7 +71,7 @@ public final class Page {
    */
   public String getTitle() {
     try {
-      return Environment.getCurrent().getBBjAPI().getWebManager().getTitle();
+      return getEnvironment().getBBjAPI().getWebManager().getTitle();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get title.", e);
     }
@@ -76,7 +89,7 @@ public final class Page {
    */
   public Page setMeta(String name, String content, Map<String, String> attributes) {
     try {
-      Environment.getCurrent().getBBjAPI().getWebManager().setMeta(name, content, attributes);
+      getEnvironment().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -96,7 +109,7 @@ public final class Page {
    */
   public Page setMeta(String name, String content, String attributes) {
     try {
-      Environment.getCurrent().getBBjAPI().getWebManager().setMeta(name, content, attributes);
+      getEnvironment().getBBjAPI().getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -115,7 +128,7 @@ public final class Page {
    */
   public Page setMeta(String name, String content) {
     try {
-      Environment.getCurrent().getBBjAPI().getWebManager().setMeta(name, content);
+      getEnvironment().getBBjAPI().getWebManager().setMeta(name, content);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -140,7 +153,7 @@ public final class Page {
    */
   public Page setAttribute(String name, String value, String selector) {
     try {
-      Environment.getCurrent().getBBjAPI().getWebManager().setAttribute(name, value, selector);
+      getEnvironment().getBBjAPI().getWebManager().setAttribute(name, value, selector);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set attribute.", e);
     }
@@ -188,7 +201,7 @@ public final class Page {
    */
   public String getAttribute(String name, String selector) {
     try {
-      return Environment.getCurrent().getBBjAPI().getWebManager().getAttribute(name, selector);
+      return getEnvironment().getBBjAPI().getWebManager().getAttribute(name, selector);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get attribute.", e);
     }
@@ -222,7 +235,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -247,7 +260,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -300,7 +313,7 @@ public final class Page {
         css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -326,7 +339,7 @@ public final class Page {
         css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -381,7 +394,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
@@ -406,7 +419,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
@@ -460,7 +473,7 @@ public final class Page {
         script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectScript(script, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
@@ -486,7 +499,7 @@ public final class Page {
         script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectScript(script, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
@@ -540,7 +553,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
@@ -565,7 +578,7 @@ public final class Page {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      Environment.getCurrent().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+      getEnvironment().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
@@ -601,45 +614,45 @@ public final class Page {
   }
 
   /**
-   * Execute a script in the browser and return the result.
-   *
-   * @param script The script to execute
-   * @return The result of the script
-   * @throws DwcjRuntimeException If dwcj fails to execute the script
+   * {@inheritDoc}
    */
+  @Override
   public Object executeJs(String script) {
     try {
-      return Environment.getCurrent().getSysGui().executeScript(script);
+      return getEnvironment().getBBjAPI().getWebManager().executeScript(script);
     } catch (BBjException e) {
-      throw new DwcjRuntimeException("Failed to execute script.", e); // NOSONAR
+      throw new DwcjRuntimeException("Failed to execute script.", e);
     }
   }
 
   /**
-   * Execute a script in the browser without waiting for the result.
-   *
-   * @param script The script to execute
-   *
-   * @return The current page instance
-   * @throws DwcjRuntimeException If dwcj fails to execute the script
+   * {@inheritDoc}
    */
-  public Page executeAsyncJs(String script) {
+  @Override
+  public PendingResult<Object> executeJsAsync(String js) {
     try {
-      Environment.getCurrent().getSysGui().executeAsyncScript(script);
-    } catch (BBjException e) {
-      throw new DwcjRuntimeException("Failed to execute async script.", e); // NOSONAR
-    }
+      // create the handler if it doesn't exist
+      if (executeJsAsyncHandler == null) {
+        executeJsAsyncHandler = new PageExecuteJsAsyncHandler(getEnvironment());
+        executeJsAsyncHandler.register();
+      }
 
-    return this;
+      PendingResult<Object> result = new PendingResult<>();
+      int index = getEnvironment().getBBjAPI().getWebManager().executeAsyncScript(js);
+      executeJsAsyncHandler.getPendingResults().put(index, result);
+
+      return result;
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException("Failed to execute async script.", e);
+    }
   }
 
   /**
    * Reload the page in the browser.
    *
-   * @return The current page instance
    * @throws DwcjRuntimeException If dwcj fails to execute the script to reload the page
    */
-  public Page reload() {
-    return executeAsyncJs("window.location.reload();");
+  public void reload() {
+    executeJsAsync("window.location.reload();");
   }
 }
