@@ -8,7 +8,8 @@ import java.util.function.Function;
 /**
  * Represents an asynchronous operation that can be composed with other operations. This class is a
  * wrapper around {@link CompletableFuture}, providing a subset of its functionality while enabling
- * more straightforward composition and handling of asynchronous tasks.
+ * more straightforward composition and handling of asynchronous tasks. This class also provides 
+ * behavior similar to JavaScript promises. 
  *
  * @param <T> The type of the result produced by the asynchronous operation.
  *
