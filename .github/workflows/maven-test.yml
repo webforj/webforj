@@ -48,7 +48,7 @@ jobs:
           "-DartifactId=BBj" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q && mvn
           install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
           "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ needs.setup.outputs.version}}"
-          "-Dpackaging=jar" -q && -DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version}}"
+          "-Dpackaging=jar" -q && "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version}}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
       - name: Build with Maven
