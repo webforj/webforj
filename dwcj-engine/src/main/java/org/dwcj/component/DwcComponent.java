@@ -91,10 +91,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private String placeholder = "";
   private Enum<? extends ThemeBase> theme = null;
 
-  static {
-    ComponentAccessor.setDefault(new ComponentAccessorImpl());
-  }
-
   /**
    * Sets the underling BBj Control.
    *
