@@ -69,8 +69,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    */
   public ComboBox() {
     super();
-    setDropdownType("ComboBox");
-    setUnrestrictedProperty("fieldHeight", "");
+    configureLisType();
   }
 
   /**
@@ -80,6 +79,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    */
   public ComboBox(String label) {
     super(label);
+    configureLisType();
   }
 
   /**
@@ -90,6 +90,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    */
   public ComboBox(String label, ComponentEventListener<ListSelectEvent> selectListener) {
     super(label, selectListener);
+    configureLisType();
   }
 
   /**
@@ -251,5 +252,10 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create the BBjListEdit Control", e);
     }
+  }
+
+  private void configureLisType() {
+    setDropdownType("ComboBox");
+    setUnrestrictedProperty("fieldHeight", "");
   }
 }

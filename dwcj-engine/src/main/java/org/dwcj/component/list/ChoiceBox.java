@@ -51,8 +51,7 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
    */
   public ChoiceBox() {
     super();
-    setDropdownType("ChoiceBox");
-    setUnrestrictedProperty("buttonHeight", "");
+    configureLisType();
   }
 
   /**
@@ -62,6 +61,7 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
    */
   public ChoiceBox(String label) {
     super(label);
+    configureLisType();
   }
 
   /**
@@ -72,6 +72,7 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
    */
   public ChoiceBox(String label, ComponentEventListener<ListSelectEvent> selectListener) {
     super(label, selectListener);
+    configureLisType();
   }
 
   /**
@@ -123,5 +124,10 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
     } catch (Exception e) {
       throw new DwcjRuntimeException("Failed to create the BBjListButton Control", e);
     }
+  }
+
+  private void configureLisType() {
+    setDropdownType("ChoiceBox");
+    setUnrestrictedProperty("buttonHeight", "");
   }
 }
