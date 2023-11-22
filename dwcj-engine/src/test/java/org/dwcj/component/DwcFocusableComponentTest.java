@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -141,7 +142,7 @@ class DwcFocusableComponentTest {
     @Test
     @DisplayName("componentHasFocus when control is defined")
     void hasFocusWhenControlIsDefined() throws BBjException {
-      doReturn("true").when(control).getClientProperty("hasFocus");
+      doReturn("true").when(control).getProperty("hasFocus", Object.class);
       assertTrue(component.componentHasFocus());
     }
 

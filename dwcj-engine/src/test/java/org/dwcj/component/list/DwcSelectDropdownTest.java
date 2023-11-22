@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -65,10 +66,10 @@ class DwcSelectDropdownTest {
   @Test
   @DisplayName("isOpen should return true if the list is open, false otherwise")
   void shouldReturnTrueIfListIsOpen() throws IllegalAccessException, BBjException {
-    doReturn("true").when(control).getClientProperty("opened");
+    doReturn("true").when(control).getProperty("opened", Object.class);
     assertEquals(true, component.isOpened());
 
-    doReturn("false").when(control).getClientProperty("opened");
+    doReturn("false").when(control).getProperty("opened", Object.class);
     assertEquals(false, component.isOpened());
 
     ReflectionUtils.nullifyControl(component);
@@ -121,6 +122,25 @@ class DwcSelectDropdownTest {
 
     component.deselect();
     verify(control, times(1)).deselect();
+  }
+
+  @Test
+  @DisplayName("adding supported events")
+  void addingSupportedEvents() {
+    ComponentEventListener<ListOpenEvent> openListener = event -> {
+    };
+    ComponentEventListener<ListCloseEvent> closeListener = event -> {
+    };
+    ComponentEventListener<ListClickEvent> clickListener = event -> {
+    };
+
+    component.onOpen(openListener);
+    component.onClose(closeListener);
+    component.onClick(clickListener);
+
+    assertEquals(1, component.getEventListeners(ListOpenEvent.class).size());
+    assertEquals(1, component.getEventListeners(ListCloseEvent.class).size());
+    assertEquals(1, component.getEventListeners(ListClickEvent.class).size());
   }
 
   @Nested
@@ -213,10 +233,11 @@ class DwcSelectDropdownTest {
   @Test
   void shouldConfigureMaxRowCount() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
-    component.setMaxRowCount(5);
-    assertEquals(5, component.getMaxRowCount());
+    DwcSelectDropdownMock spy = spy(component);
+    spy.setMaxRowCount(5);
+    assertEquals(5, spy.getMaxRowCount());
 
-    assertEquals(5, component.getProperty("maxRowCount"));
+    assertEquals(5.0, component.getProperty("maxRowCount"));
   }
 
   @Test

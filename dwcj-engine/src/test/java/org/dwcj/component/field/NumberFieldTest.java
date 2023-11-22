@@ -30,7 +30,7 @@ class NumberFieldTest {
   void max() throws BBjException, IllegalAccessException {
     component.setMax(10d);
     assertEquals(10d, component.getMax());
-    verify(control, times(1)).putClientProperty("max", 10d);
+    verify(control, times(1)).setProperty("max", 10d);
   }
 
   @Test
@@ -38,7 +38,7 @@ class NumberFieldTest {
   void min() throws BBjException, IllegalAccessException {
     component.setMin(10d);
     assertEquals(10d, component.getMin());
-    verify(control, times(1)).putClientProperty("min", 10d);
+    verify(control, times(1)).setProperty("min", 10d);
   }
 
   @Test
@@ -46,7 +46,7 @@ class NumberFieldTest {
   void step() throws BBjException, IllegalAccessException {
     component.setStep(10d);
     assertEquals(10d, component.getStep());
-    verify(control, times(1)).putClientProperty("step", 10d);
+    verify(control, times(1)).setProperty("step", 10d);
   }
 
   @Test
@@ -54,7 +54,7 @@ class NumberFieldTest {
   void stepNull() throws BBjException, IllegalAccessException {
     component.setStep(null);
     assertEquals(null, component.getStep());
-    verify(control, times(1)).putClientProperty("step", "any");
+    verify(control, times(1)).setProperty("step", "any");
   }
 
   @Nested

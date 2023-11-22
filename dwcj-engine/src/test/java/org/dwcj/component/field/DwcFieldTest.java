@@ -44,7 +44,7 @@ class DwcFieldTest {
     component.setRequired(true);
     assertEquals(true, component.isRequired());
 
-    verify(control, times(1)).putClientProperty("required", true);
+    verify(control, times(1)).setProperty("required", true);
   }
 
   @Test
@@ -53,7 +53,7 @@ class DwcFieldTest {
     component.setSpellCheck(true);
     assertEquals(true, component.isSpellCheck());
 
-    verify(control, times(1)).putClientProperty("spellcheck", true);
+    verify(control, times(1)).setProperty("spellcheck", true);
   }
 
   @Nested
@@ -65,7 +65,7 @@ class DwcFieldTest {
       component.setAutoFocus(true);
       assertEquals(true, component.isAutoFocus());
 
-      verify(control, times(1)).putClientProperty("autofocus", true);
+      verify(control, times(1)).setProperty("autofocus", true);
     }
   }
 

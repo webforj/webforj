@@ -33,8 +33,8 @@ class CheckBoxTest {
       component.setIndeterminate(true);
       assertTrue(component.isIndeterminate());
 
-      verify(control, times(1)).putClientProperty("indeterminate", true);
-      verify(control, times(0)).getClientProperty("indeterminate");
+      verify(control, times(1)).setProperty("indeterminate", true);
+      verify(control, times(0)).getProperty("indeterminate");
     }
 
     @Test
