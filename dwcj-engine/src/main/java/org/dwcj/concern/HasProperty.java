@@ -34,24 +34,24 @@ public interface HasProperty<T extends Component> {
    *
    * @param <V> the type of the property value returned
    * @param property the key of the property
-   * @param typeOfT the type of the property value returned to convert the value to.
+   * @param typeOfV the type of the property value returned to convert the value to.
    *
    * @return the retrieved value.
    * @since 23.06
    */
-  public <V> V getProperty(String property, Type typeOfT);
+  public <V> V getProperty(String property, Type typeOfV);
 
   /**
    * Retrieves the value of the given property.
    *
    * @param <V> the type of the property value returned
-   * @param classOfT the type of the property value returned to convert the value to.
+   * @param classOfV the type of the property value returned to convert the value to.
    *
    * @return the retrieved value.
    * @since 23.06
    */
-  public default <V> V getProperty(String property, Class<V> classOfT) {
-    return getProperty(property, TypeToken.get(classOfT).getType());
+  public default <V> V getProperty(String property, Class<V> classOfV) {
+    return getProperty(property, TypeToken.get(classOfV).getType());
   }
 
   /**

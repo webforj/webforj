@@ -136,12 +136,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public <V> V getProperty(String property, Type typeOfT) {
+  public <V> V getProperty(String property, Type typeOfV) {
     BBjControl theControl = getControl();
 
     if (theControl != null) {
       try {
-        return (V) theControl.getProperty(property, typeOfT);
+        return (V) theControl.getProperty(property, typeOfV);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -149,7 +149,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       // convert to JSON and back to make sure we get the correct type of value as the original
       // implementation does in BBjWebComponent
       Gson gson = new Gson();
-      return gson.fromJson(gson.toJson(properties.get(property)), typeOfT);
+      return gson.fromJson(gson.toJson(properties.get(property)), typeOfV);
     }
   }
 
