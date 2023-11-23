@@ -17,7 +17,7 @@ import java.util.function.Function;
  * @since 23.05
  */
 public final class PendingResult<T> {
-  final CompletableFuture<T> future;
+  private final CompletableFuture<T> future;
 
   /**
    * Constructs a new PendingResult, initializing it with the {@link CompletableFuture} of an
@@ -163,6 +163,25 @@ public final class PendingResult<T> {
    */
   public boolean isCompletedExceptionally() {
     return future.isCompletedExceptionally();
+  }
+
+  /**
+   * Cancels this PendingResult, preventing it from completing.
+   *
+   * @return {@code true} if the operation was cancelled by this invocation, {@code false}
+   *         otherwise.
+   */
+  public boolean cancel() {
+    return future.cancel(true);
+  }
+
+  /**
+   * Checks whether this PendingResult has been cancelled.
+   *
+   * @return {@code true} if this operation was cancelled, {@code false} otherwise.
+   */
+  public boolean isCancelled() {
+    return future.isCancelled();
   }
 
   /**
