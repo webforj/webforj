@@ -5,13 +5,14 @@ import com.basis.bbj.proxies.sysgui.Editable;
 import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
+import com.google.gson.Gson;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventDispatcher;
@@ -135,16 +136,21 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public Object getProperty(String property) {
-    if (control != null) {
+  public <V> V getProperty(String property, Type typeOfV) {
+    BBjControl theControl = getControl();
+
+    if (theControl != null) {
       try {
-        return control.getClientProperty(property);
+        return (V) theControl.getProperty(property, typeOfV);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
+    } else {
+      // convert to JSON and back to make sure we get the correct type of value as the original
+      // implementation does in BBjWebComponent
+      Gson gson = new Gson();
+      return gson.fromJson(gson.toJson(properties.get(property)), typeOfV);
     }
-
-    return properties.get(property);
   }
 
   /**
@@ -575,7 +581,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   protected T setUnrestrictedProperty(String property, Object value) {
     if (control != null) {
       try {
-        control.putClientProperty(property, value);
+        control.setProperty(property, value);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }

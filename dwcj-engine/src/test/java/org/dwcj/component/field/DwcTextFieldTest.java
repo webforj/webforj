@@ -44,8 +44,8 @@ class DwcTextFieldTest {
       component.setMaxLength(10);
       assertEquals(10, component.getMaxLength());
 
-      verify(control, times(0)).putClientProperty("maxlength", 10);
-      verify(control, times(0)).getClientProperty("maxlength");
+      verify(control, times(0)).setProperty("maxlength", 10);
+      verify(control, times(0)).getProperty("maxlength");
     }
 
     @Test
@@ -54,8 +54,8 @@ class DwcTextFieldTest {
       component.setMaxLength(10);
       assertEquals(10, component.getMaxLength());
 
-      verify(control, times(1)).putClientProperty("maxlength", 10);
-      verify(control, times(0)).getClientProperty("maxlength");
+      verify(control, times(1)).setProperty("maxlength", 10);
+      verify(control, times(0)).getProperty("maxlength");
     }
   }
 
@@ -70,8 +70,8 @@ class DwcTextFieldTest {
       component.setMinLength(10);
       assertEquals(10, component.getMinLength());
 
-      verify(control, times(0)).putClientProperty("minlength", 10);
-      verify(control, times(0)).getClientProperty("minlength");
+      verify(control, times(0)).setProperty("minlength", 10);
+      verify(control, times(0)).getProperty("minlength");
     }
 
     @Test
@@ -80,8 +80,8 @@ class DwcTextFieldTest {
       component.setMinLength(10);
       assertEquals(10, component.getMinLength());
 
-      verify(control, times(1)).putClientProperty("minlength", 10);
-      verify(control, times(0)).getClientProperty("minlength");
+      verify(control, times(1)).setProperty("minlength", 10);
+      verify(control, times(0)).getProperty("minlength");
     }
   }
 

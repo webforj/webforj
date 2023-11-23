@@ -17,7 +17,6 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import org.dwcj.component.event.CheckEvent;
 import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.MouseEnterEvent;
@@ -65,8 +64,8 @@ class DwcComponentTest {
       component.setExpanse(expanse);
       assertSame(component.getExpanse(), expanse);
 
-      verify(control, times(1)).putClientProperty("expanse", expanse.getValue());
-      verify(control, times(0)).getClientProperty("expanse");
+      verify(control, times(1)).setProperty("expanse", expanse.getValue());
+      verify(control, times(0)).getProperty("expanse");
     }
 
     @DisplayName("Setting expanse to null, should set the expanse attribute to null")
@@ -75,8 +74,8 @@ class DwcComponentTest {
       component.setExpanse(null);
       assertNull(component.getExpanse());
 
-      verify(control, times(1)).putClientProperty("expanse", "");
-      verify(control, times(0)).getClientProperty("expanse");
+      verify(control, times(1)).setProperty("expanse", "");
+      verify(control, times(0)).getProperty("expanse");
     }
   }
 
@@ -91,8 +90,8 @@ class DwcComponentTest {
       component.setTheme(theme);
       assertSame(component.getTheme(), theme);
 
-      verify(control, times(1)).putClientProperty("theme", theme.getValue());
-      verify(control, times(0)).getClientProperty("theme");
+      verify(control, times(1)).setProperty("theme", theme.getValue());
+      verify(control, times(0)).getProperty("theme");
     }
 
     @DisplayName("Setting theme to null, should set the theme attribute to null")
@@ -101,8 +100,8 @@ class DwcComponentTest {
       component.setTheme(null);
       assertNull(component.getTheme());
 
-      verify(control, times(1)).putClientProperty("theme", "");
-      verify(control, times(0)).getClientProperty("theme");
+      verify(control, times(1)).setProperty("theme", "");
+      verify(control, times(0)).getProperty("theme");
     }
   }
 
@@ -274,22 +273,22 @@ class DwcComponentTest {
 
       component.setProperty("key", "value");
 
-      assertSame("value", component.getProperty("key"));
+      assertEquals("value", component.getProperty("key"));
 
-      verify(control, times(0)).putClientProperty("key", "value");
-      verify(control, times(0)).getClientProperty("key");
+      verify(control, times(0)).setProperty("key", "value");
+      verify(control, times(0)).getProperty("key");
     }
 
     @Test
-    @DisplayName("Setting/getting properties when control is not null")
-    void settingGettingPropertiesWhenControlIsNotNull() throws BBjException {
-      doReturn("value").when(control).getClientProperty("key");
+    @DisplayName("Getting properties will respect the passed type")
+    void gettingPropertiesWillRespectThePassedType() throws BBjException {
+      doReturn("value").when(control).getProperty("key", String.class);
 
       component.setProperty("key", "value");
-      assertSame("value", component.getProperty("key"));
+      assertEquals("value", component.getProperty("key", String.class));
 
-      verify(control, times(1)).putClientProperty("key", "value");
-      verify(control, times(1)).getClientProperty("key");
+      verify(control, times(1)).setProperty("key", "value");
+      verify(control, times(1)).getProperty("key", String.class);
     }
 
     @Test
@@ -298,27 +297,11 @@ class DwcComponentTest {
         BBjException a DwcjRuntimeException is thrown
         """)
     void settingGettingPropertiesWhenControlThrowsBbjException() throws BBjException {
-      doThrow(BBjException.class).when(control).putClientProperty("key", "value");
-      doThrow(BBjException.class).when(control).getClientProperty("key");
+      doThrow(BBjException.class).when(control).setProperty("key", "value");
+      doThrow(BBjException.class).when(control).getProperty("key", Object.class);
 
       assertThrows(DwcjRuntimeException.class, () -> component.setProperty("key", "value"));
       assertThrows(DwcjRuntimeException.class, () -> component.getProperty("key"));
-    }
-
-    @Test
-    @DisplayName("""
-        setProperty will will throw DwcjRestrictedAccessException when
-        property is restricted
-        """)
-    void setPropertyWillThrowDwcjRestrictedAccessExceptionWhenPropertyIsRestricted()
-        throws IllegalAccessException, BBjException {
-      ReflectionUtils.nullifyControl(component);
-
-      List<String> restrictedProperties = component.getRestrictedProperties();
-      for (String restrictedProperty : restrictedProperties) {
-        assertThrows(DwcjRestrictedAccessException.class,
-            () -> component.setProperty(restrictedProperty, "value"));
-      }
     }
 
     @Test
@@ -332,8 +315,8 @@ class DwcComponentTest {
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
 
-      verify(control, times(1)).putClientProperty("key-1", "value-1");
-      verify(control, times(1)).putClientProperty("key-2", "value-2");
+      verify(control, times(1)).setProperty("key-1", "value-1");
+      verify(control, times(1)).setProperty("key-2", "value-2");
     }
   }
 

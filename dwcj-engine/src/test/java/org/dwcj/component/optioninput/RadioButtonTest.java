@@ -36,8 +36,8 @@ class RadioButtonTest {
     component.setActivation(activation);
     assertSame(component.getActivation(), activation);
 
-    verify(control, times(1)).putClientProperty("activation", activation.getValue());
-    verify(control, times(0)).getClientProperty("activation");
+    verify(control, times(1)).setProperty("activation", activation.getValue());
+    verify(control, times(0)).getProperty("activation");
   }
 
   @Test
@@ -61,8 +61,8 @@ class RadioButtonTest {
     component.setSwitch(true);
     assertTrue(component.isSwitch());
 
-    verify(control, times(1)).putClientProperty("switch", true);
-    verify(control, times(0)).getClientProperty("switch");
+    verify(control, times(1)).setProperty("switch", true);
+    verify(control, times(0)).getProperty("switch");
   }
 
   @Test
