@@ -35,10 +35,10 @@ public interface HasProperty<T extends Component> {
    * @param <V> the type of the property value returned
    * @param property the key of the property
    * @param typeOfV the type to cast the returned value to. The method will attempt to convert the
-   *        value returned by the client to the appropriate Java data type. However, that this
-   *        conversion depends on various factors, and although it usually works out of the box,
-   *        there could be cases where it doesn't. So, providing a hint for the data type in such
-   *        situations is necessary.
+   *        value returned by the client to the appropriate Java data type. However, this conversion
+   *        depends on various factors, and although it usually works out of the box, there may be
+   *        cases where it doesn't. So, providing a specified data type in such situations is
+   *        necessary.
    *
    * @return the retrieved value.
    * @since 23.06
@@ -50,10 +50,10 @@ public interface HasProperty<T extends Component> {
    *
    * @param <V> the type of the property value returned
    * @param classOfV the type to cast the returned value to. The method will attempt to convert the
-   *        value returned by the client to the appropriate Java data type. However, that this
-   *        conversion depends on various factors, and although it usually works out of the box,
-   *        there could be cases where it doesn't. So, providing a hint for the data type in such
-   *        situations is necessary.
+   *        value returned by the client to the appropriate Java data type. However, this conversion
+   *        depends on various factors, and although it usually works out of the box, there may be
+   *        cases where it doesn't. So, providing a specified data type in such situations is
+   *        necessary.
    *
    * @return the retrieved value.
    * @since 23.06
