@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import org.dwcj.PendingResult;
 import org.dwcj.component.ComponentLifecycleObserver.LifecycleEvent;
 import org.dwcj.component.window.Window;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,5 +117,24 @@ class ComponentTest {
 
     component.destroy();
     verify(observer).onComponentLifecycleEvent(component, LifecycleEvent.DESTROY);
+  }
+
+  @Test
+  @DisplayName("whenAttached should immediately complete if component is already attached")
+  void testWhenAttachedAlreadyAttached() {
+    component.create(mock(Window.class));
+    PendingResult<Component> result = component.whenAttached();
+
+    assertTrue(result.isDone());
+  }
+
+  @Test
+  @DisplayName("whenAttached should complete when component is attached")
+  void testWhenAttachedCompletesUponAttachment() throws InterruptedException {
+    PendingResult<Component> result = component.whenAttached();
+
+    assertFalse(result.isDone());
+    component.create(mock(Window.class));
+    assertTrue(result.isDone());
   }
 }
