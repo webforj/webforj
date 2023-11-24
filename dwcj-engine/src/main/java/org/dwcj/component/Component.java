@@ -169,6 +169,8 @@ public abstract class Component {
    *
    * @return A {@link PendingResult} that completes when a component becomes attached. If a
    *         component has already been attached, the PendingResult will immediately complete.
+   *
+   * @since 23.06
    */
   public PendingResult<Component> whenAttached() {
     if (isAttached()) {
