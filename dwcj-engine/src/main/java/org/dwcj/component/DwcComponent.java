@@ -93,6 +93,22 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private Enum<? extends ThemeBase> theme = null;
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String geClientComponentId() {
+    if (isAttached()) {
+      try {
+        return getControl().getClientObjectID();
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException("Failed to get client object ID", e);
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Sets the underling BBj Control.
    *
    * @param control the BBj control to set.
