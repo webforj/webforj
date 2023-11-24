@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.dwcj.PendingResult;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.ComponentLifecycleObserver.LifecycleEvent;
 import org.dwcj.component.window.Window;
@@ -32,6 +33,7 @@ public abstract class Component {
   private boolean attached = false;
   private boolean destroyed = false;
   private Window window;
+  private final List<PendingResult<Component>> whenAttachedResults = new ArrayList<>();
 
   static {
     ComponentAccessor.setDefault(new ComponentAccessorImpl());
@@ -163,6 +165,22 @@ public abstract class Component {
   }
 
   /**
+   * Returns a {@link PendingResult} that completes when the named component is attached in the DOM.
+   *
+   * @return A {@link PendingResult} that completes when a component becomes attached. If a
+   *         component has already been attached, the PendingResult will immediately complete.
+   */
+  public PendingResult<Component> whenAttached() {
+    if (isAttached()) {
+      return PendingResult.completedWith(this);
+    }
+
+    PendingResult<Component> result = new PendingResult<>();
+    whenAttachedResults.add(result);
+    return result;
+  }
+
+  /**
    * Creates the component and adds it to the given window.
    *
    * <p>
@@ -239,5 +257,6 @@ public abstract class Component {
 
     this.attached = true;
     this.onAttach();
+    whenAttachedResults.forEach(r -> r.complete(this));
   }
 }
