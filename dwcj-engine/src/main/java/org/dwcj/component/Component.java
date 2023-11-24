@@ -61,6 +61,21 @@ public abstract class Component {
   }
 
   /**
+   * Retrieves the ID of the component's client-side counterpart.
+   *
+   * <p>
+   * If the component has a client-side counterpart, this method returns the ID of that component on
+   * the client side. If the component does not have a client-side counterpart, this method returns
+   * {@code null}.
+   * </p>
+   *
+   * @return The ID of the component's client-side counterpart.
+   */
+  public String geClientComponentId() {
+    return null;
+  }
+
+  /**
    * Allows users to include additional information within the component.
    *
    * <p>
