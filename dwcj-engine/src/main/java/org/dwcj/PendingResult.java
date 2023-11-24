@@ -185,6 +185,25 @@ public final class PendingResult<T> {
   }
 
   /**
+   * Returns a new PendingResult that is completed when all of the given PendingResults complete. If
+   * any of the given PendingResult complete exceptionally, then the returned PendingResult also
+   * does so.
+   *
+   * @param pendingResults the PendingResults
+   * @return a new PendingResult that is completed when all of the given PendingResults complete
+   *
+   * @since 23.06
+   */
+  public static PendingResult<Void> allOf(PendingResult<?>... pendingResults) {
+    CompletableFuture<?>[] futures = new CompletableFuture<?>[pendingResults.length];
+    for (int i = 0; i < pendingResults.length; i++) {
+      futures[i] = pendingResults[i].future;
+    }
+
+    return new PendingResult<>(CompletableFuture.allOf(futures));
+  }
+
+  /**
    * Creates and returns a new PendingResult that is already completed with the provided value. This
    * method is useful for returning a pre-completed asynchronous operation, similar to
    * {@link CompletableFuture#completedFuture(Object)}.
