@@ -104,4 +104,18 @@ class PendingResultTest {
     assertTrue(exception.get() instanceof RuntimeException);
     assertEquals("Failure", exception.get().getMessage());
   }
+
+  @Test
+  @DisplayName("allOf should wait for all PendingResults to complete")
+  void testAllOf() {
+    PendingResult<String> first = PendingResult.completedWith("first");
+    PendingResult<String> second = PendingResult.completedWith("second");
+    PendingResult<String> third =
+        PendingResult.completedExceptionallyWith(new RuntimeException("Error"));
+
+    PendingResult<Void> combined = PendingResult.allOf(first, second, third);
+
+    assertTrue(combined.isDone());
+    assertTrue(combined.isCompletedExceptionally());
+  }
 }
