@@ -70,6 +70,7 @@ public abstract class Component {
    * </p>
    *
    * @return The ID of the component's client-side counterpart.
+   * @since 23.06
    */
   public String geClientComponentId() {
     return null;
