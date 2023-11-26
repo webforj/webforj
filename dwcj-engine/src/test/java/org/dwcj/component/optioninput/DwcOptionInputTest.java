@@ -17,8 +17,8 @@ import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.event.CheckEvent;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.component.event.UncheckEvent;
 import org.dwcj.component.list.event.ListOpenEvent;
@@ -143,11 +143,11 @@ class DwcOptionInputTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      ComponentEventListener<CheckEvent> checkListener = event -> {
+      EventListener<CheckEvent> checkListener = event -> {
       };
-      ComponentEventListener<UncheckEvent> uncheckListener = event -> {
+      EventListener<UncheckEvent> uncheckListener = event -> {
       };
-      ComponentEventListener<ToggleEvent> toggleListener = event -> {
+      EventListener<ToggleEvent> toggleListener = event -> {
       };
 
       ListenerRegistration<CheckEvent> r1 = component.onCheck(checkListener);

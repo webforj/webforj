@@ -1,6 +1,6 @@
 package org.dwcj.component.event.sink;
 
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**

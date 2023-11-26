@@ -1,6 +1,7 @@
-package org.dwcj.component.event;
+package org.dwcj.dispatcher;
 
 import java.io.Serializable;
+import java.util.EventObject;
 
 /**
  * A tagging interface that all control event listeners must implement.
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * @since 23.05
  */
 @FunctionalInterface
-public interface ComponentEventListener<T extends ComponentEvent<?>>
+public interface EventListener<T extends EventObject>
     extends java.util.EventListener, Serializable {
 
   /**
@@ -19,5 +20,5 @@ public interface ComponentEventListener<T extends ComponentEvent<?>>
    *
    * @param event component event
    */
-  void onComponentEvent(T event);
+  void onEvent(T event);
 }

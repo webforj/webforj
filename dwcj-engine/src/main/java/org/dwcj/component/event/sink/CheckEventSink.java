@@ -5,7 +5,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.DwcComponent;
 import org.dwcj.component.event.CheckEvent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 
 /**
  * This class will map the BBjCheckOnEvent event to a Java {@link CheckEvent}.

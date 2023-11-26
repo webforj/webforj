@@ -5,11 +5,11 @@ import com.basis.bbj.proxies.event.BBjListClickEvent;
 import com.basis.bbj.proxies.event.BBjListSelectEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
 import org.dwcj.component.list.DwcList;
 import org.dwcj.component.list.DwcSelectDropdown;
 import org.dwcj.component.list.event.ListSelectEvent;
+import org.dwcj.dispatcher.EventDispatcher;
 
 /**
  * This class will map the BBjListSelectEvent event to a {@link ListSelectEvent}.

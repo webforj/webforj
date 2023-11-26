@@ -6,10 +6,10 @@ import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.button.ButtonTheme;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasTheme;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -70,7 +70,7 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  public ChoiceBox(String label, ComponentEventListener<ListSelectEvent> selectListener) {
+  public ChoiceBox(String label, EventListener<ListSelectEvent> selectListener) {
     super(label, selectListener);
     configureLisType();
   }

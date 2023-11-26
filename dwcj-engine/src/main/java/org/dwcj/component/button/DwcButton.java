@@ -10,13 +10,13 @@ import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.Expanse;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.concern.HasExpanse;
 import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasHorizontalAlignment;
 import org.dwcj.concern.HasTheme;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -193,18 +193,17 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ButtonClickEvent> addClickListener(
-      ComponentEventListener<ButtonClickEvent> listener) {
+      EventListener<ButtonClickEvent> listener) {
     return this.clickEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addClickListener(ComponentEventListener) addButtonClickListener}.
+   * Alias for {@link #addClickListener(EventListener) addButtonClickListener}.
    *
    * @param listener the event listener to be added
    * @return The component itself
    */
-  public ListenerRegistration<ButtonClickEvent> onClick(
-      ComponentEventListener<ButtonClickEvent> listener) {
+  public ListenerRegistration<ButtonClickEvent> onClick(EventListener<ButtonClickEvent> listener) {
     return addClickListener(listener);
   }
 

@@ -1,6 +1,9 @@
 package org.dwcj.component.event;
 
 import org.dwcj.component.event.sink.DwcEventSink;
+import org.dwcj.dispatcher.EventDispatcher;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * EventSinkListenerRegistry is used to manage the event listeners (add/remove) for a Control sink
@@ -31,7 +34,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    *
    * @param listener The event listener to be added
    */
-  public ListenerRegistration<T> addEventListener(ComponentEventListener<T> listener) {
+  public ListenerRegistration<T> addEventListener(EventListener<T> listener) {
     EventDispatcher dispatcher = getEventDispatcher();
     ListenerRegistration<T> registration = getEventDispatcher().addListener(event, listener);
 

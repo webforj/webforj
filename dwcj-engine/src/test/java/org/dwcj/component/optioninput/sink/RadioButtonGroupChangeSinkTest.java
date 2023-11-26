@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.event.BBjSelectionChangeEvent;
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.startup.type.BBjException;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.optioninput.RadioButton;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;

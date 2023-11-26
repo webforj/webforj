@@ -14,10 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.dwcj.component.event.ComponentEvent;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventSinkListenerRegistry;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
@@ -34,6 +31,9 @@ import org.dwcj.concern.HasStyle;
 import org.dwcj.concern.HasText;
 import org.dwcj.concern.HasTooltip;
 import org.dwcj.concern.HasVisibility;
+import org.dwcj.dispatcher.EventDispatcher;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
@@ -504,7 +504,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<MouseEnterEvent> addMouseEnterListener(
-      ComponentEventListener<MouseEnterEvent> listener) {
+      EventListener<MouseEnterEvent> listener) {
     return mouseEnterEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -515,7 +515,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<MouseEnterEvent> onMouseEnter(
-      ComponentEventListener<MouseEnterEvent> listener) {
+      EventListener<MouseEnterEvent> listener) {
     return addMouseEnterListener(listener);
   }
 
@@ -526,7 +526,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<MouseExitEvent> addMouseExitListener(
-      ComponentEventListener<MouseExitEvent> listener) {
+      EventListener<MouseExitEvent> listener) {
     return mouseExitEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -536,8 +536,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<MouseExitEvent> onMouseExit(
-      ComponentEventListener<MouseExitEvent> listener) {
+  public ListenerRegistration<MouseExitEvent> onMouseExit(EventListener<MouseExitEvent> listener) {
     return addMouseExitListener(listener);
   }
 
@@ -548,7 +547,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<RightMouseDownEvent> addRightMouseDownListener(
-      ComponentEventListener<RightMouseDownEvent> listener) {
+      EventListener<RightMouseDownEvent> listener) {
     return rightMouseDownEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -559,7 +558,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<RightMouseDownEvent> onRightMouseDown(
-      ComponentEventListener<RightMouseDownEvent> listener) {
+      EventListener<RightMouseDownEvent> listener) {
     return addRightMouseDownListener(listener);
   }
 
@@ -571,7 +570,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    *
    * @return the listeners
    */
-  public final <E extends ComponentEvent<?>> List<ComponentEventListener<E>> getEventListeners(
+  public final <E extends ComponentEvent<?>> List<EventListener<E>> getEventListeners(
       Class<E> eventClass) {
     return dispatcher.getListeners(eventClass);
   }

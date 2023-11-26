@@ -1,14 +1,20 @@
-package org.dwcj.component.event;
+package org.dwcj.dispatcher;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import org.dwcj.component.ComponentMock;
+import org.dwcj.component.event.ComponentEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +29,7 @@ class EventDispatcherTest {
 
   @Test
   void testAddListener() {
-    ComponentEventListener<ClickEvent> listener = event -> {
+    EventListener<ClickEvent> listener = event -> {
     };
     ListenerRegistration<ClickEvent> registration =
         dispatcher.addListener(ClickEvent.class, listener);
@@ -33,12 +39,11 @@ class EventDispatcherTest {
     // Check ListenerRegistration methods
     assertNotNull(registration);
     assertEquals(ClickEvent.class, registration.getEventClass());
-    assertFalse(registration.hasMore());
   }
 
   @Test
   void testRemoveListener() {
-    ComponentEventListener<ClickEvent> listener = event -> {
+    EventListener<ClickEvent> listener = event -> {
     };
     ListenerRegistration<ClickEvent> registration =
         dispatcher.addListener(ClickEvent.class, listener);
@@ -51,11 +56,11 @@ class EventDispatcherTest {
 
   @Test
   void testRemoveAllListenersOfType() {
-    ComponentEventListener<ClickEvent> clickListener1 = event -> {
+    EventListener<ClickEvent> clickListener1 = event -> {
     };
-    ComponentEventListener<ClickEvent> clickListener2 = event -> {
+    EventListener<ClickEvent> clickListener2 = event -> {
     };
-    ComponentEventListener<MouseEvent> mouseEvent = event -> {
+    EventListener<MouseEvent> mouseEvent = event -> {
     };
 
     dispatcher.addListener(ClickEvent.class, clickListener1);
@@ -70,11 +75,11 @@ class EventDispatcherTest {
 
   @Test
   void testRemoveAllListeners() {
-    ComponentEventListener<ClickEvent> clickListener1 = event -> {
+    EventListener<ClickEvent> clickListener1 = event -> {
     };
-    ComponentEventListener<ClickEvent> clickListener2 = event -> {
+    EventListener<ClickEvent> clickListener2 = event -> {
     };
-    ComponentEventListener<MouseEvent> mouseEvent = event -> {
+    EventListener<MouseEvent> mouseEvent = event -> {
     };
 
     dispatcher.addListener(ClickEvent.class, clickListener1);
@@ -88,35 +93,20 @@ class EventDispatcherTest {
   }
 
   @Test
-  void testListenersCount() {
-    ComponentEventListener<ClickEvent> listener1 = event -> {
+  void testGetEventListeners() {
+    EventListener<ClickEvent> clickListener1 = event -> {
     };
-    ComponentEventListener<ClickEvent> listener2 = event -> {
+    EventListener<ClickEvent> clickListener2 = event -> {
     };
-    ListenerRegistration<ClickEvent> registration1 =
-        dispatcher.addListener(ClickEvent.class, listener1);
-    ListenerRegistration<ClickEvent> registration2 =
-        dispatcher.addListener(ClickEvent.class, listener2);
+    EventListener<MouseEvent> mouseEvent = event -> {
+    };
 
-    assertEquals(2, dispatcher.getCount(ClickEvent.class));
+    dispatcher.addListener(ClickEvent.class, clickListener1);
+    dispatcher.addListener(ClickEvent.class, clickListener2);
+    dispatcher.addListener(MouseEvent.class, mouseEvent);
 
-    // Check ListenerRegistration methods
-    assertEquals(2, registration1.getCount());
-    assertEquals(2, registration2.getCount());
-
-    // Remove one of the listeners
-    registration1.remove();
-    assertEquals(1, dispatcher.getCount(ClickEvent.class));
-    assertEquals(1, registration2.getCount());
-
-    assertTrue(registration1.hasMore());
-    assertFalse(registration2.hasMore());
-
-    // Remove the other listener
-    registration2.remove();
-
-    assertFalse(registration1.hasMore());
-    assertFalse(registration2.hasMore());
+    assertEquals(2, dispatcher.getListeners(ClickEvent.class).size());
+    assertEquals(1, dispatcher.getListeners(MouseEvent.class).size());
   }
 
   @Test
@@ -132,7 +122,7 @@ class EventDispatcherTest {
     MouseEvent customMouseEvent = new MouseEvent(component, eventMap);
 
     // Create a listener that checks if the event data matches
-    ComponentEventListener<MouseEvent> listener = event -> {
+    EventListener<MouseEvent> listener = event -> {
       assertSame(eventMap, event.getData());
       assertSame(component, event.getComponent());
     };
@@ -142,20 +132,34 @@ class EventDispatcherTest {
   }
 
   @Test
-  void testGetEventListeners() {
-    ComponentEventListener<ClickEvent> clickListener1 = event -> {
-    };
-    ComponentEventListener<ClickEvent> clickListener2 = event -> {
-    };
-    ComponentEventListener<MouseEvent> mouseEvent = event -> {
-    };
+  void testDispatchEventWithFilter() {
+    // Create mock components and events for testing
+    ComponentMock component = new ComponentMock();
+    Map<String, Object> eventMap = new HashMap<>();
+    ClickEvent clickEvent = new ClickEvent(component, eventMap);
 
+    // Create mock listeners
+    EventListener<ClickEvent> clickListener1 = mock(EventListener.class);
+    EventListener<ClickEvent> clickListener2 = mock(EventListener.class);
+    EventListener<MouseEvent> mouseListener = mock(EventListener.class);
+
+    // Add listeners to the dispatcher
     dispatcher.addListener(ClickEvent.class, clickListener1);
     dispatcher.addListener(ClickEvent.class, clickListener2);
-    dispatcher.addListener(MouseEvent.class, mouseEvent);
+    dispatcher.addListener(MouseEvent.class, mouseListener);
 
-    assertEquals(2, dispatcher.getListeners(ClickEvent.class).size());
-    assertEquals(1, dispatcher.getListeners(MouseEvent.class).size());
+    // Define a filter that only allows the second click listener to be notified
+    BiPredicate<EventListener<ClickEvent>, ClickEvent> filter =
+        (listener, event) -> listener.equals(clickListener2);
+
+    // Dispatch the click event with the filter
+    dispatcher.dispatchEvent(clickEvent, filter);
+
+    verify(clickListener1, times(0)).onEvent(any(ClickEvent.class));
+    verify(mouseListener, times(0)).onEvent(any(MouseEvent.class));
+
+    // Verify that the second click listener was called exactly once
+    verify(clickListener2, times(1)).onEvent(clickEvent);
   }
 
   private class ClickEvent extends ComponentEvent<ComponentMock> {

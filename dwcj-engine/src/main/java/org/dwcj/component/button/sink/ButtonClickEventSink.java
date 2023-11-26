@@ -6,7 +6,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.button.DwcButton;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
 
 /**

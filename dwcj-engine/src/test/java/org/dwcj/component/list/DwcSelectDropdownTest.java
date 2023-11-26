@@ -16,8 +16,8 @@ import com.basis.startup.type.BBjVector;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.dwcj.component.ReflectionUtils;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.list.event.ListClickEvent;
 import org.dwcj.component.list.event.ListCloseEvent;
 import org.dwcj.component.list.event.ListOpenEvent;
@@ -127,11 +127,11 @@ class DwcSelectDropdownTest {
   @Test
   @DisplayName("adding supported events")
   void addingSupportedEvents() {
-    ComponentEventListener<ListOpenEvent> openListener = event -> {
+    EventListener<ListOpenEvent> openListener = event -> {
     };
-    ComponentEventListener<ListCloseEvent> closeListener = event -> {
+    EventListener<ListCloseEvent> closeListener = event -> {
     };
-    ComponentEventListener<ListClickEvent> clickListener = event -> {
+    EventListener<ListClickEvent> clickListener = event -> {
     };
 
     component.onOpen(openListener);
@@ -205,11 +205,11 @@ class DwcSelectDropdownTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      ComponentEventListener<ListOpenEvent> openListener = event -> {
+      EventListener<ListOpenEvent> openListener = event -> {
       };
-      ComponentEventListener<ListCloseEvent> closeListener = event -> {
+      EventListener<ListCloseEvent> closeListener = event -> {
       };
-      ComponentEventListener<ListClickEvent> clickListener = event -> {
+      EventListener<ListClickEvent> clickListener = event -> {
       };
 
       ListenerRegistration<ListOpenEvent> r1 = component.onOpen(openListener);

@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.event.BBjButtonPushEvent;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.sink.ButtonClickEventSink;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

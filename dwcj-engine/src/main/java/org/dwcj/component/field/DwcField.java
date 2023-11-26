@@ -5,10 +5,8 @@ import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.ModifyEvent;
 import org.dwcj.component.event.sink.KeypressEventSink;
 import org.dwcj.component.event.sink.ModifyEventSink;
@@ -17,6 +15,8 @@ import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasLabel;
 import org.dwcj.concern.HasReadOnly;
 import org.dwcj.concern.HasValue;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * The base class for all field components.
@@ -223,18 +223,17 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ModifyEvent> addModifyListener(
-      ComponentEventListener<ModifyEvent> listener) {
+  public ListenerRegistration<ModifyEvent> addModifyListener(EventListener<ModifyEvent> listener) {
     return this.modifyEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addModifyListener(ComponentEventListener) addModifyListener}.
+   * Alias for {@link #addModifyListener(EventListener) addModifyListener}.
    *
    * @param listener the event listener to be added
    * @return @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ModifyEvent> onModify(ComponentEventListener<ModifyEvent> listener) {
+  public ListenerRegistration<ModifyEvent> onModify(EventListener<ModifyEvent> listener) {
     return addModifyListener(listener);
   }
 
@@ -245,18 +244,17 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<KeypressEvent> addKeypressListener(
-      ComponentEventListener<KeypressEvent> listener) {
+      EventListener<KeypressEvent> listener) {
     return this.keypressEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addKeypressListener(ComponentEventListener) addKeypressListener}.
+   * Alias for {@link #addKeypressListener(EventListener) addKeypressListener}.
    *
    * @param listener The event listener to be removed
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<KeypressEvent> onKeypress(
-      ComponentEventListener<KeypressEvent> listener) {
+  public ListenerRegistration<KeypressEvent> onKeypress(EventListener<KeypressEvent> listener) {
     return addKeypressListener(listener);
   }
 

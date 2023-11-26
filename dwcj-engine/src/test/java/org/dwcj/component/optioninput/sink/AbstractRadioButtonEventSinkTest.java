@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
 import org.dwcj.component.DwcHelperMock;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.component.optioninput.mocks.RadioButtonEventSinkMock;
 import org.dwcj.exceptions.DwcjRuntimeException;

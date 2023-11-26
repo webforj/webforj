@@ -6,7 +6,7 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import java.util.HashMap;
 import org.dwcj.component.DwcComponent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 

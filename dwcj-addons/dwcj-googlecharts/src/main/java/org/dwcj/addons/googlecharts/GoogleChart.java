@@ -7,11 +7,11 @@ import org.dwcj.addons.googlecharts.events.GoogleChartSelectedEvent;
 import org.dwcj.annotation.Attribute;
 import org.dwcj.annotation.JavaScript;
 import org.dwcj.annotation.Link;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.concern.HasStyle;
+import org.dwcj.dispatcher.EventListener;
 
 /**
  * A simple implementation for Google Chart Web Component, this component is a wrapper for the
@@ -249,7 +249,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
   private final PropertyDescriptor<JsonArray> selectionProp =
       PropertyDescriptor.property("selection", null);
 
-  private ComponentEventListener<GoogleChartReadyEvent> firstRenderListener;
+  private EventListener<GoogleChartReadyEvent> firstRenderListener;
 
   /**
    * Create a new GoogleChart.
@@ -519,19 +519,18 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart addSelectedListener(
-      ComponentEventListener<GoogleChartSelectedEvent> listener) {
+  public GoogleChart addSelectedListener(EventListener<GoogleChartSelectedEvent> listener) {
     addEventListener(GoogleChartSelectedEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addSelectedListener(ComponentEventListener)}.
+   * Alias for {@link #addSelectedListener(EventListener)}.
    *
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart onSelect(ComponentEventListener<GoogleChartSelectedEvent> listener) {
+  public GoogleChart onSelect(EventListener<GoogleChartSelectedEvent> listener) {
     return addSelectedListener(listener);
   }
 
@@ -541,8 +540,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart removeSelectedListener(
-      ComponentEventListener<GoogleChartSelectedEvent> listener) {
+  public GoogleChart removeSelectedListener(EventListener<GoogleChartSelectedEvent> listener) {
     removeEventListener(GoogleChartSelectedEvent.class, listener);
     return this;
   }
@@ -553,18 +551,18 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart addReadyListener(ComponentEventListener<GoogleChartReadyEvent> listener) {
+  public GoogleChart addReadyListener(EventListener<GoogleChartReadyEvent> listener) {
     addEventListener(GoogleChartReadyEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addReadyListener(ComponentEventListener)}.
+   * Alias for {@link #addReadyListener(EventListener)}.
    *
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart onReady(ComponentEventListener<GoogleChartReadyEvent> listener) {
+  public GoogleChart onReady(EventListener<GoogleChartReadyEvent> listener) {
     return addReadyListener(listener);
   }
 
@@ -574,7 +572,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * @param listener the listener
    * @return The chart
    */
-  public GoogleChart removeReadyListener(ComponentEventListener<GoogleChartReadyEvent> listener) {
+  public GoogleChart removeReadyListener(EventListener<GoogleChartReadyEvent> listener) {
     removeEventListener(GoogleChartReadyEvent.class, listener);
     return this;
   }

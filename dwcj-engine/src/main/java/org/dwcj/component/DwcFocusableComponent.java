@@ -1,12 +1,12 @@
 package org.dwcj.component;
 
 import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.concern.HasEnablement;
 import org.dwcj.concern.HasFocus;
 import org.dwcj.concern.HasFocusStatus;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * An abstract class for typed DWC components that can receive focus and trigger focus-related
@@ -71,8 +71,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    * {@inheritDoc}
    */
   @Override
-  public ListenerRegistration<FocusEvent> addFocusListener(
-      ComponentEventListener<FocusEvent> listener) {
+  public ListenerRegistration<FocusEvent> addFocusListener(EventListener<FocusEvent> listener) {
     return focusMixin.addFocusListener(listener);
   }
 
@@ -80,8 +79,7 @@ public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
    * {@inheritDoc}
    */
   @Override
-  public ListenerRegistration<BlurEvent> addBlurListener(
-      ComponentEventListener<BlurEvent> listener) {
+  public ListenerRegistration<BlurEvent> addBlurListener(EventListener<BlurEvent> listener) {
     return focusMixin.addBlurListener(listener);
   }
 

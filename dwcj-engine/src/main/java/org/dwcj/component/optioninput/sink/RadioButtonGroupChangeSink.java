@@ -9,10 +9,10 @@ import com.basis.startup.type.BBjException;
 import java.util.HashMap;
 import java.util.List;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.optioninput.RadioButton;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;
+import org.dwcj.dispatcher.EventDispatcher;
 
 /**
  * RadioButtonGroupChangeSink maps the BBjSelectionChangeEvent event to the Java

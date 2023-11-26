@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.dwcj.component.DwcComponentMock;
 import org.dwcj.component.event.mocks.BBjMouseEventMock;
 import org.dwcj.component.event.sink.MouseExitEventSink;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

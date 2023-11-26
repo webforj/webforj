@@ -12,7 +12,7 @@ import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import org.dwcj.component.ReflectionUtils;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

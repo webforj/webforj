@@ -1,11 +1,12 @@
-package org.dwcj.component.event;
+package org.dwcj.dispatcher;
 
 import java.util.Collections;
+import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
+import java.util.function.BiPredicate;
 
 /**
  * The EventDispatcher is a minimalistic event manager that can be used to dispatch component events
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class EventDispatcher {
 
-  private final Map<Class<? extends ComponentEvent<?>>, CopyOnWriteArrayList<ComponentEventListener<?>>> listeners =
+  private final Map<Class<? extends EventObject>, CopyOnWriteArrayList<EventListener<?>>> listeners =
       new ConcurrentHashMap<>();
 
   /**
@@ -29,9 +30,9 @@ public class EventDispatcher {
    *
    * @return a ListenerRegistration object
    */
-  public <T extends ComponentEvent<?>> ListenerRegistration<T> addListener(Class<T> eventClass,
-      ComponentEventListener<T> listener) {
-    CopyOnWriteArrayList<ComponentEventListener<?>> list =
+  public <T extends EventObject> ListenerRegistration<T> addListener(Class<T> eventClass,
+      EventListener<T> listener) {
+    CopyOnWriteArrayList<EventListener<?>> list =
         listeners.computeIfAbsent(eventClass, k -> new CopyOnWriteArrayList<>());
     list.add(listener);
 
@@ -45,9 +46,9 @@ public class EventDispatcher {
    * @param eventClass the event class
    * @param listener the listener
    */
-  public <T extends ComponentEvent<?>> void removeListener(Class<T> eventClass,
-      ComponentEventListener<T> listener) {
-    CopyOnWriteArrayList<ComponentEventListener<?>> list =
+  public <T extends EventObject> void removeListener(Class<T> eventClass,
+      EventListener<T> listener) {
+    CopyOnWriteArrayList<EventListener<?>> list =
         listeners.computeIfAbsent(eventClass, k -> new CopyOnWriteArrayList<>());
     list.remove(listener);
   }
@@ -58,7 +59,7 @@ public class EventDispatcher {
    * @param <T> the generic type
    * @param eventClass the event class for which listeners should be removed
    */
-  public <T extends ComponentEvent<?>> void removeAllListeners(Class<T> eventClass) {
+  public <T extends EventObject> void removeAllListeners(Class<T> eventClass) {
     listeners.remove(eventClass);
   }
 
@@ -77,9 +78,9 @@ public class EventDispatcher {
    * @param listener the listener
    * @return true if the listener is registered, false otherwise
    */
-  public <T extends ComponentEvent<?>> boolean hasListener(Class<T> eventClass,
-      ComponentEventListener<T> listener) {
-    CopyOnWriteArrayList<ComponentEventListener<?>> list = listeners.get(eventClass);
+  public <T extends EventObject> boolean hasListener(Class<T> eventClass,
+      EventListener<T> listener) {
+    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
     return list != null && list.contains(listener);
   }
 
@@ -90,7 +91,7 @@ public class EventDispatcher {
    * @param eventClass the event class
    * @return true if there are listeners registered, false otherwise
    */
-  public <T extends ComponentEvent<?>> boolean hasListener(Class<T> eventClass) {
+  public <T extends EventObject> boolean hasListener(Class<T> eventClass) {
     return getCount(eventClass) > 0;
   }
 
@@ -102,14 +103,17 @@ public class EventDispatcher {
    *
    * @return the listeners
    */
-  public <T extends ComponentEvent<?>> List<ComponentEventListener<T>> getListeners(
-      Class<T> eventClass) {
-    CopyOnWriteArrayList<ComponentEventListener<?>> list = listeners.get(eventClass);
+  public <T extends EventObject> List<EventListener<T>> getListeners(Class<T> eventClass) {
+    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
 
-    @SuppressWarnings("unchecked")
-    List<ComponentEventListener<T>> typedList = list.stream()
-        .map(listener -> (ComponentEventListener<T>) listener).collect(Collectors.toList());
-    return Collections.unmodifiableList(typedList);
+    if (list == null) {
+      return Collections.emptyList();
+    } else {
+      @SuppressWarnings("unchecked")
+      List<EventListener<T>> typedList =
+          list.stream().map(listener -> (EventListener<T>) listener).toList();
+      return Collections.unmodifiableList(typedList);
+    }
   }
 
   /**
@@ -118,9 +122,33 @@ public class EventDispatcher {
    * @param eventClass the event class
    * @return the listeners count
    */
-  public int getCount(Class<? extends ComponentEvent<?>> eventClass) {
-    CopyOnWriteArrayList<ComponentEventListener<?>> list = listeners.get(eventClass);
+  public int getCount(Class<? extends EventObject> eventClass) {
+    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
     return (list != null) ? list.size() : 0;
+  }
+
+  /**
+   * Dispatches event with a custom filter that accepts both the listener and the event.
+   *
+   * @param <T> the generic type
+   * @param event the event
+   * @param filter a filter that accepts both the listener and the event
+   */
+  public <T extends EventObject> void dispatchEvent(T event,
+      BiPredicate<EventListener<T>, T> filter) {
+    // Get the list of listeners for the event class and execute the event
+    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(event.getClass());
+
+    if (list != null && !list.isEmpty()) {
+      for (EventListener<?> listener : list) {
+        @SuppressWarnings("unchecked")
+        EventListener<T> l = (EventListener<T>) listener;
+        // Check if the filter allows this listener to receive the event
+        if (filter.test(l, event)) {
+          l.onEvent(event);
+        }
+      }
+    }
   }
 
   /**
@@ -129,16 +157,8 @@ public class EventDispatcher {
    * @param <T> the generic type
    * @param event the event
    */
-  public <T extends ComponentEvent<?>> void dispatchEvent(T event) {
-    // Get the list of listeners for the event class and execute the event
-    CopyOnWriteArrayList<ComponentEventListener<?>> list = listeners.get(event.getClass());
-
-    if (list != null && !list.isEmpty()) {
-      for (ComponentEventListener<?> listener : list) {
-        @SuppressWarnings("unchecked")
-        ComponentEventListener<T> l = (ComponentEventListener<T>) listener;
-        l.onComponentEvent(event);
-      }
-    }
+  public <T extends EventObject> void dispatchEvent(T event) {
+    // Default behavior dispatches to all listeners
+    dispatchEvent(event, (listener, e) -> true);
   }
 }

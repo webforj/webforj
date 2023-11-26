@@ -19,14 +19,14 @@ import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.Expanse;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.component.list.sink.ListSelectEventSink;
 import org.dwcj.concern.HasExpanse;
 import org.dwcj.concern.HasHorizontalAlignment;
 import org.dwcj.concern.HasLabel;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -82,7 +82,7 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  protected DwcList(String label, ComponentEventListener<ListSelectEvent> selectListener) {
+  protected DwcList(String label, EventListener<ListSelectEvent> selectListener) {
     this(label);
     addSelectListener(selectListener);
   }
@@ -623,7 +623,7 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ListSelectEvent> addSelectListener(
-      ComponentEventListener<ListSelectEvent> listener) {
+      EventListener<ListSelectEvent> listener) {
     return selectEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -633,8 +633,7 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ListSelectEvent> onSelect(
-      ComponentEventListener<ListSelectEvent> listener) {
+  public ListenerRegistration<ListSelectEvent> onSelect(EventListener<ListSelectEvent> listener) {
     return addSelectListener(listener);
   }
 
