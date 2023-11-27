@@ -3,9 +3,9 @@ package org.dwcj.dispatcher;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BiPredicate;
 
 /**
@@ -17,7 +17,7 @@ import java.util.function.BiPredicate;
  */
 public class EventDispatcher {
 
-  private final Map<Class<? extends EventObject>, CopyOnWriteArrayList<EventListener<?>>> listeners =
+  private final ConcurrentHashMap<Class<? extends EventObject>, Queue<EventListener<?>>> listeners =
       new ConcurrentHashMap<>();
 
   /**
@@ -32,9 +32,9 @@ public class EventDispatcher {
    */
   public <T extends EventObject> ListenerRegistration<T> addListener(Class<T> eventClass,
       EventListener<T> listener) {
-    CopyOnWriteArrayList<EventListener<?>> list =
-        listeners.computeIfAbsent(eventClass, k -> new CopyOnWriteArrayList<>());
-    list.add(listener);
+    Queue<EventListener<?>> eventListeners =
+        listeners.computeIfAbsent(eventClass, k -> new ConcurrentLinkedQueue<>());
+    eventListeners.add(listener);
 
     return new ListenerRegistration<>(this, eventClass, listener);
   }
@@ -48,8 +48,8 @@ public class EventDispatcher {
    */
   public <T extends EventObject> void removeListener(Class<T> eventClass,
       EventListener<T> listener) {
-    CopyOnWriteArrayList<EventListener<?>> list =
-        listeners.computeIfAbsent(eventClass, k -> new CopyOnWriteArrayList<>());
+    Queue<EventListener<?>> list =
+        listeners.computeIfAbsent(eventClass, k -> new ConcurrentLinkedQueue<>());
     list.remove(listener);
   }
 
@@ -80,7 +80,7 @@ public class EventDispatcher {
    */
   public <T extends EventObject> boolean hasListener(Class<T> eventClass,
       EventListener<T> listener) {
-    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
+    Queue<EventListener<?>> list = listeners.get(eventClass);
     return list != null && list.contains(listener);
   }
 
@@ -104,7 +104,7 @@ public class EventDispatcher {
    * @return the listeners
    */
   public <T extends EventObject> List<EventListener<T>> getListeners(Class<T> eventClass) {
-    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
+    Queue<EventListener<?>> list = listeners.get(eventClass);
 
     if (list == null) {
       return Collections.emptyList();
@@ -123,7 +123,7 @@ public class EventDispatcher {
    * @return the listeners count
    */
   public int getCount(Class<? extends EventObject> eventClass) {
-    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(eventClass);
+    Queue<EventListener<?>> list = listeners.get(eventClass);
     return (list != null) ? list.size() : 0;
   }
 
@@ -137,7 +137,7 @@ public class EventDispatcher {
   public <T extends EventObject> void dispatchEvent(T event,
       BiPredicate<EventListener<T>, T> filter) {
     // Get the list of listeners for the event class and execute the event
-    CopyOnWriteArrayList<EventListener<?>> list = listeners.get(event.getClass());
+    Queue<EventListener<?>> list = listeners.get(event.getClass());
 
     if (list != null && !list.isEmpty()) {
       for (EventListener<?> listener : list) {
