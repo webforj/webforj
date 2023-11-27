@@ -1,8 +1,8 @@
 package org.dwcj.utilities;
 
 import com.basis.startup.type.BBjException;
-import java.util.ArrayList;
-import java.util.Set;
+
+import java.util.*;
 import org.dwcj.App;
 import org.dwcj.Environment;
 import org.dwcj.annotation.InlineStyleSheet;
@@ -11,6 +11,7 @@ import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.text.Label;
 import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Panel;
+import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 
 /**
@@ -24,7 +25,15 @@ import org.dwcj.exceptions.DwcjAppInitializeException;
 public class WelcomeApp extends App {
 
   private Frame panel;
+  private String baseUrl = "";
+  private String urlTail = "";
 
+  /**
+   * The App that is used as an index page when multiple classes extend App and none is pinned in
+   * the app deployment.
+   *
+   * @throws DwcjAppInitializeException when the initialization fails
+   */
   @Override
   public void run() throws DwcjAppInitializeException {
     panel = new Frame();
@@ -34,13 +43,29 @@ public class WelcomeApp extends App {
     panel.setStyle("max-width", "600px");
     panel.setStyle("margin-left", "calc( max(0px , 100vw / 2 - 300px ))");
 
-    Label headline = new Label("<html><h1>Welcome to DWCJ");
-    panel.add(headline);
+
+
+    String url = App.getUrl();
+    String name = App.getApplicationName();
+    this.baseUrl = url.substring(0, url.indexOf(name) + name.length());
+    if (url.length() > this.baseUrl.length()) {
+      this.urlTail = url.substring(this.baseUrl.length());
+      if (this.urlTail.startsWith("/")) {
+        this.urlTail = this.urlTail.substring(1);
+      }
+      while (urlTail.contains("/")) {
+        urlTail = urlTail.substring(0, urlTail.indexOf("/"));
+      }
+
+    }
 
     buildAppList();
 
   }
 
+  /**
+   * create the list of apps by scanning the classpath.
+   */
   private void buildAppList() {
 
     Label wait = new Label("please wait...");
@@ -49,7 +74,7 @@ public class WelcomeApp extends App {
 
     ArrayList<String> cplist = null;
     AppFinder af;
-    Set<String> applist = null;
+    SortedSet<String> applist = null;
 
     try {
       cplist =
@@ -68,12 +93,42 @@ public class WelcomeApp extends App {
       wait.setText("Could not determine deployed apps.");
     } else {
       wait.setVisible(false);
+      if (applist.size() == 1) {
+        launchClass(applist.first());
+        return;
+      }
+
+      // determine if route contains some application that can be launched
+      if (!this.urlTail.isBlank()) {
+        for (String entry : applist) {
+          try {
+            if (Class.forName(entry).getSimpleName().equals(this.urlTail)) {
+              // store base url in object table so that interested partied know of the automatic
+              // forwarding
+              ObjectTable.put("dwcj_base_url", this.baseUrl + "/" + this.urlTail);
+              launchClass(entry);
+              return;
+            }
+          } catch (ClassNotFoundException e) {
+            //ignore
+          }
+        }
+      }
+
       showAppList(applist);
     }
 
   }
 
+  /**
+   * Shows the list of classess that extend App.
+   *
+   * @param applist the list of apps found in the classpath
+   */
   private void showAppList(Set<String> applist) {
+
+    Label headline = new Label("<html><h1>Welcome to DWCJ");
+    panel.add(headline);
 
     if (applist.isEmpty()) {
       panel.add(
@@ -111,16 +166,38 @@ public class WelcomeApp extends App {
         + "please remember that you may have to compile / build it first in your IDE.</p>"));
   }
 
+  /**
+   * The event handler when the user clicks the button to launch one of the Apps.
+   *
+   * @param buttonPushEvent the event payload
+   */
   private void onLaunchClick(ButtonClickEvent buttonPushEvent) {
     String className = buttonPushEvent.getComponent().getUserData("classname").toString();
-
-    panel.setVisible(false);
-
+    String tail = "";
     try {
+      tail = Class.forName(className).getSimpleName();
+      App.getPage()
+          .executeJs("window.history.replaceState({},'title','" + baseUrl + "/" + tail + "');");
+      ObjectTable.put("dwcj_base_url", this.baseUrl + "/" + tail);
+      launchClass(className);
+    } catch (ClassNotFoundException e) {
+      // ignore
+    }
 
-      Environment.getCurrent().getSysGui()
-          .executeScript("window.location=window.location+'?class=" + className + "'");
-      Class.forName(className).getDeclaredConstructor().newInstance();
+  }
+
+
+  /**
+   * Launch the App class directly by instantiating it and calling initialize.
+   *
+   * @param className the fully qualified name of the app class.
+   */
+  private void launchClass(String className) {
+    panel.setVisible(false);
+    try {
+      App app = (App) Class.forName(className).getDeclaredConstructor().newInstance();
+      app.initialize();
+
     } catch (Exception e) {
       Environment.logError(e);
       msgbox("cannot launch app!", 0, "Error");
@@ -128,4 +205,5 @@ public class WelcomeApp extends App {
       panel.setVisible(false);
     }
   }
+
 }
