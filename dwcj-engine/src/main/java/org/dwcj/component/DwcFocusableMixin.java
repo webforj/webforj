@@ -4,15 +4,15 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.Focusable;
 import com.basis.startup.type.BBjException;
 import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.sink.BlurEventSink;
 import org.dwcj.component.event.sink.FocusEventSink;
 import org.dwcj.concern.HasEnablement;
 import org.dwcj.concern.HasFocus;
 import org.dwcj.concern.HasFocusStatus;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -138,8 +138,7 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    * {@inheritDoc}
    */
   @Override
-  public ListenerRegistration<FocusEvent> addFocusListener(
-      ComponentEventListener<FocusEvent> listener) {
+  public ListenerRegistration<FocusEvent> addFocusListener(EventListener<FocusEvent> listener) {
     return this.focusEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -147,8 +146,7 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    * {@inheritDoc}
    */
   @Override
-  public ListenerRegistration<BlurEvent> addBlurListener(
-      ComponentEventListener<BlurEvent> listener) {
+  public ListenerRegistration<BlurEvent> addBlurListener(EventListener<BlurEvent> listener) {
     return this.blurEventSinkListenerRegistry.addEventListener(listener);
   }
 

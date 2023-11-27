@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.ModifyEvent;
 import org.dwcj.component.event.sink.KeypressEventSink;
 import org.dwcj.component.event.sink.ModifyEventSink;
@@ -17,6 +15,8 @@ import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasHighlightOnFocus;
 import org.dwcj.concern.HasPlaceholder;
 import org.dwcj.concern.HasReadOnly;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -88,7 +88,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  public ComboBox(String label, ComponentEventListener<ListSelectEvent> selectListener) {
+  public ComboBox(String label, EventListener<ListSelectEvent> selectListener) {
     super(label, selectListener);
     configureLisType();
   }
@@ -175,18 +175,17 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ModifyEvent> addModifyListener(
-      ComponentEventListener<ModifyEvent> listener) {
+  public ListenerRegistration<ModifyEvent> addModifyListener(EventListener<ModifyEvent> listener) {
     return modifyEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addModifyListener(ComponentEventListener) addModifyListener}.
+   * Alias for {@link #addModifyListener(EventListener) addModifyListener}.
    *
    * @param listener the event listener to be added
    * @return @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ModifyEvent> onModify(ComponentEventListener<ModifyEvent> listener) {
+  public ListenerRegistration<ModifyEvent> onModify(EventListener<ModifyEvent> listener) {
     return addModifyListener(listener);
   }
 
@@ -197,18 +196,17 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<KeypressEvent> addKeypressListener(
-      ComponentEventListener<KeypressEvent> listener) {
+      EventListener<KeypressEvent> listener) {
     return keypressEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addKeypressListener(ComponentEventListener) addKeypressListener}.
+   * Alias for {@link #addKeypressListener(EventListener) addKeypressListener}.
    *
    * @param listener The event listener to be removed
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<KeypressEvent> onKeypress(
-      ComponentEventListener<KeypressEvent> listener) {
+  public ListenerRegistration<KeypressEvent> onKeypress(EventListener<KeypressEvent> listener) {
     return addKeypressListener(listener);
   }
 

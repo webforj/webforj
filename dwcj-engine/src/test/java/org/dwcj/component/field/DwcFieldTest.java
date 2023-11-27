@@ -7,9 +7,9 @@ import static org.mockito.Mockito.verify;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import org.dwcj.component.ReflectionUtils;
-import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.ModifyEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -76,9 +76,9 @@ class DwcFieldTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      ComponentEventListener<ModifyEvent> modifyListener = event -> {
+      EventListener<ModifyEvent> modifyListener = event -> {
       };
-      ComponentEventListener<KeypressEvent> keypressListener = event -> {
+      EventListener<KeypressEvent> keypressListener = event -> {
       };
 
       ListenerRegistration<ModifyEvent> r1 = component.onModify(modifyListener);

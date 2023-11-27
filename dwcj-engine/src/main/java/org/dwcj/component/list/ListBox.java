@@ -11,9 +11,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.component.window.Window;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -56,7 +56,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  public ListBox(String label, ComponentEventListener<ListSelectEvent> selectListener) {
+  public ListBox(String label, EventListener<ListSelectEvent> selectListener) {
     super(label, selectListener);
   }
 

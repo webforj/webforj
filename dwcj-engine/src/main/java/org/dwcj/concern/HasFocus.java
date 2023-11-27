@@ -2,9 +2,9 @@ package org.dwcj.concern;
 
 import org.dwcj.component.Component;
 import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * An interface for managing focus behavior of components.
@@ -55,17 +55,15 @@ public interface HasFocus<T extends Component> {
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<FocusEvent> addFocusListener(
-      ComponentEventListener<FocusEvent> listener);
+  public ListenerRegistration<FocusEvent> addFocusListener(EventListener<FocusEvent> listener);
 
   /**
-   * Alias for {@link #addFocusListener(ComponentEventListener) addFocusListener}.
+   * Alias for {@link #addFocusListener(EventListener) addFocusListener}.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public default ListenerRegistration<FocusEvent> onFocus(
-      ComponentEventListener<FocusEvent> listener) {
+  public default ListenerRegistration<FocusEvent> onFocus(EventListener<FocusEvent> listener) {
     return addFocusListener(listener);
   }
 
@@ -75,17 +73,15 @@ public interface HasFocus<T extends Component> {
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BlurEvent> addBlurListener(
-      ComponentEventListener<BlurEvent> listener);
+  public ListenerRegistration<BlurEvent> addBlurListener(EventListener<BlurEvent> listener);
 
   /**
-   * Alias for {@link #addBlurListener(ComponentEventListener) addBlurListener}.
+   * Alias for {@link #addBlurListener(EventListener) addBlurListener}.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public default ListenerRegistration<BlurEvent> onBlur(
-      ComponentEventListener<BlurEvent> listener) {
+  public default ListenerRegistration<BlurEvent> onBlur(EventListener<BlurEvent> listener) {
     return addBlurListener(listener);
   }
 }

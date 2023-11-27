@@ -25,8 +25,6 @@ import org.dwcj.annotation.JavaScript;
 import org.dwcj.component.Component;
 import org.dwcj.component.LegacyDwcComponent;
 import org.dwcj.component.event.ComponentEvent;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.htmlcontainer.HtmlContainer;
 import org.dwcj.component.htmlcontainer.event.HtmlContainerJavascriptEvent;
 import org.dwcj.component.webcomponent.annotation.EventExpressions;
@@ -38,6 +36,8 @@ import org.dwcj.component.webcomponent.annotation.NodeClassName;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.webcomponent.annotation.NodeProperty;
 import org.dwcj.component.window.Window;
+import org.dwcj.dispatcher.EventDispatcher;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjComponentDestroyed;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -474,8 +474,8 @@ public abstract class WebComponent extends Component {
    * Adds an event listener.
    *
    * <p>
-   * Event listeners are instances of {@link ComponentEventListener} that are invoked when an event
-   * is fired on the web component.
+   * Event listeners are instances of {@link EventListener} that are invoked when an event is fired
+   * on the web component.
    * </p>
    *
    * <p>
@@ -493,7 +493,7 @@ public abstract class WebComponent extends Component {
    * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
   protected <K extends ComponentEvent<?>> void addEventListener(Class<K> eventClass,
-      ComponentEventListener<K> listener) {
+      EventListener<K> listener) {
     assertNotDestroyed();
 
     String eventName = getEventName(eventClass);
@@ -536,7 +536,7 @@ public abstract class WebComponent extends Component {
    * @throws DwcjRuntimeException if the event class is not annotated with @EventName
    */
   protected <K extends ComponentEvent<?>> void removeEventListener(Class<K> eventClass,
-      ComponentEventListener<K> listener) {
+      EventListener<K> listener) {
     assertNotDestroyed();
 
     String eventName = getEventName(eventClass);

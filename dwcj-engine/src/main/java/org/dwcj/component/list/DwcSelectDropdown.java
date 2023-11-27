@@ -3,9 +3,7 @@ package org.dwcj.component.list;
 import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.ComponentAccessor;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.list.event.ListClickEvent;
 import org.dwcj.component.list.event.ListCloseEvent;
 import org.dwcj.component.list.event.ListOpenEvent;
@@ -13,6 +11,8 @@ import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.component.list.sink.ListClickEventSink;
 import org.dwcj.component.list.sink.ListCloseEventSink;
 import org.dwcj.component.list.sink.ListOpenEventSink;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -66,8 +66,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  protected DwcSelectDropdown(String label,
-      ComponentEventListener<ListSelectEvent> selectListener) {
+  protected DwcSelectDropdown(String label, EventListener<ListSelectEvent> selectListener) {
     super(label, selectListener);
   }
 
@@ -274,7 +273,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ListOpenEvent> addOpenListener(
-      ComponentEventListener<ListOpenEvent> listener) {
+      EventListener<ListOpenEvent> listener) {
     return openEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -284,8 +283,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ListOpenEvent> onOpen(
-      ComponentEventListener<ListOpenEvent> listener) {
+  public ListenerRegistration<ListOpenEvent> onOpen(EventListener<ListOpenEvent> listener) {
     return addOpenListener(listener);
   }
 
@@ -296,7 +294,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ListCloseEvent> addCloseListener(
-      ComponentEventListener<ListCloseEvent> listener) {
+      EventListener<ListCloseEvent> listener) {
     return closeEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -306,8 +304,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ListCloseEvent> onClose(
-      ComponentEventListener<ListCloseEvent> listener) {
+  public ListenerRegistration<ListCloseEvent> onClose(EventListener<ListCloseEvent> listener) {
     return addCloseListener(listener);
   }
 
@@ -318,7 +315,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<ListClickEvent> addClickListener(
-      ComponentEventListener<ListClickEvent> listener) {
+      EventListener<ListClickEvent> listener) {
     return clickEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -328,8 +325,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ListClickEvent> onClick(
-      ComponentEventListener<ListClickEvent> listener) {
+  public ListenerRegistration<ListClickEvent> onClick(EventListener<ListClickEvent> listener) {
     return addClickListener(listener);
   }
 

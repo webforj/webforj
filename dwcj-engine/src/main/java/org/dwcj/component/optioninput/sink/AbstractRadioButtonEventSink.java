@@ -6,9 +6,9 @@ import com.basis.startup.type.BBjException;
 import java.lang.reflect.Field;
 import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.sink.DwcEventSink;
 import org.dwcj.component.optioninput.RadioButtonGroup;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**

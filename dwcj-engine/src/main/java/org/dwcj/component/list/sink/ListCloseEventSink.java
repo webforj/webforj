@@ -4,10 +4,10 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjListCloseEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
 import org.dwcj.component.list.DwcSelectDropdown;
 import org.dwcj.component.list.event.ListCloseEvent;
+import org.dwcj.dispatcher.EventDispatcher;
 
 /**
  * This class will map the BBjListCloseEvent event to a {@link ListCloseEvent}.

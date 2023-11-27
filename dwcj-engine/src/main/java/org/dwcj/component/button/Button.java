@@ -3,8 +3,8 @@ package org.dwcj.component.button;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.window.Window;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.utilities.BBjFunctionalityHelper;
 
@@ -31,7 +31,7 @@ public final class Button extends DwcButton<Button> {
    * @param text the text of the button
    * @param onClickListener the listener to be called when the button is clicked
    */
-  public Button(String text, ComponentEventListener<ButtonClickEvent> onClickListener) {
+  public Button(String text, EventListener<ButtonClickEvent> onClickListener) {
     super();
     setText(text);
     addClickListener(onClickListener);

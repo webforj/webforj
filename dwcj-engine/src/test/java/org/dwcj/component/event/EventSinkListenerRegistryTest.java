@@ -6,6 +6,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.dwcj.component.event.sink.MouseEnterEventSink;
+import org.dwcj.dispatcher.EventDispatcher;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -44,9 +47,9 @@ class EventSinkListenerRegistryTest {
   class RemoveCallback {
     @Test
     void canRemoveEventListener() {
-      ComponentEventListener<MouseEnterEvent> listener1 = e -> {
+      EventListener<MouseEnterEvent> listener1 = e -> {
       };
-      ComponentEventListener<MouseEnterEvent> listener2 = e -> {
+      EventListener<MouseEnterEvent> listener2 = e -> {
       };
 
       ListenerRegistration<MouseEnterEvent> r1 = manager.addEventListener(listener1);
@@ -106,7 +109,7 @@ class EventSinkListenerRegistryTest {
 
     @Test
     void catchUpWithOneListenerRegistered() {
-      ComponentEventListener<MouseEnterEvent> listener = e -> {
+      EventListener<MouseEnterEvent> listener = e -> {
       };
 
       manager.addEventListener(listener);

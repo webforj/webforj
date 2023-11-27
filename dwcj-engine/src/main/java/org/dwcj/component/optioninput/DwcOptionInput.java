@@ -7,9 +7,7 @@ import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.DwcFocusableComponent;
 import org.dwcj.component.Expanse;
 import org.dwcj.component.event.CheckEvent;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.event.EventSinkListenerRegistry;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.component.event.UncheckEvent;
 import org.dwcj.component.event.sink.CheckEventSink;
@@ -18,6 +16,8 @@ import org.dwcj.component.event.sink.UncheckEventSink;
 import org.dwcj.concern.HasExpanse;
 import org.dwcj.concern.HasFocusStatus;
 import org.dwcj.concern.HasTextPosition;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -177,18 +177,17 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<CheckEvent> addCheckListener(
-      ComponentEventListener<CheckEvent> listener) {
+  public ListenerRegistration<CheckEvent> addCheckListener(EventListener<CheckEvent> listener) {
     return this.checkEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addCheckListener(ComponentEventListener) addCheckedListener}.
+   * Alias for {@link #addCheckListener(EventListener) addCheckedListener}.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<CheckEvent> onCheck(ComponentEventListener<CheckEvent> listener) {
+  public ListenerRegistration<CheckEvent> onCheck(EventListener<CheckEvent> listener) {
     return addCheckListener(listener);
   }
 
@@ -199,18 +198,17 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<UncheckEvent> addUncheckListener(
-      ComponentEventListener<UncheckEvent> listener) {
+      EventListener<UncheckEvent> listener) {
     return this.uncheckEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addUncheckListener(ComponentEventListener) addUncheckedListener}.
+   * Alias for {@link #addUncheckListener(EventListener) addUncheckedListener}.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<UncheckEvent> onUncheck(
-      ComponentEventListener<UncheckEvent> listener) {
+  public ListenerRegistration<UncheckEvent> onUncheck(EventListener<UncheckEvent> listener) {
     return addUncheckListener(listener);
   }
 
@@ -220,18 +218,17 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ToggleEvent> addToggleListener(
-      ComponentEventListener<ToggleEvent> listener) {
+  public ListenerRegistration<ToggleEvent> addToggleListener(EventListener<ToggleEvent> listener) {
     return this.toggleEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addToggleListener(ComponentEventListener) addToggleListener}.
+   * Alias for {@link #addToggleListener(EventListener) addToggleListener}.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ToggleEvent> onToggle(ComponentEventListener<ToggleEvent> listener) {
+  public ListenerRegistration<ToggleEvent> onToggle(EventListener<ToggleEvent> listener) {
     return addToggleListener(listener);
   }
 

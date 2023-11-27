@@ -2,7 +2,7 @@ package org.dwcj.component.event.mocks;
 
 import com.basis.bbj.proxies.event.BBjEvent;
 import org.dwcj.component.DwcComponent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
 
 /** Mock for the AbstractSink. */

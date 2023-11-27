@@ -7,7 +7,7 @@ import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.component.DwcComponent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**

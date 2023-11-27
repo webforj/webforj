@@ -1,7 +1,7 @@
 package org.dwcj.component.optioninput.mocks;
 
 import com.basis.bbj.proxies.event.BBjEvent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.component.optioninput.sink.AbstractRadioButtonEventSink;
 

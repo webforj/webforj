@@ -17,8 +17,8 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
@@ -507,11 +507,11 @@ class DwcComponentTest {
   @Test
   @DisplayName("Test mouse events")
   void testMouseEvents() {
-    ComponentEventListener<MouseEnterEvent> mouseEnterListener = event -> {
+    EventListener<MouseEnterEvent> mouseEnterListener = event -> {
     };
-    ComponentEventListener<MouseExitEvent> mouseExitListener = event -> {
+    EventListener<MouseExitEvent> mouseExitListener = event -> {
     };
-    ComponentEventListener<RightMouseDownEvent> rightMouseDownListener = event -> {
+    EventListener<RightMouseDownEvent> rightMouseDownListener = event -> {
     };
 
     ListenerRegistration<MouseEnterEvent> r1 = component.onMouseEnter(mouseEnterListener);

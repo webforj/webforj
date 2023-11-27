@@ -3,7 +3,7 @@ package org.dwcj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjMouseEvent;
 import java.util.HashMap;
 import org.dwcj.component.DwcComponent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 
 /**
  * An abstract class of a mouse event sink which would handle a BBjMouseEvent and dispatch the

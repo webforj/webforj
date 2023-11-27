@@ -2,13 +2,13 @@ package org.dwcj.component.drawer;
 
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
 import org.dwcj.component.drawer.event.DrawerOpenEvent;
-import org.dwcj.component.event.ComponentEventListener;
 import org.dwcj.component.webcomponent.PropertyDescriptor;
 import org.dwcj.component.webcomponent.WebComponent;
 import org.dwcj.component.webcomponent.annotation.NodeName;
 import org.dwcj.component.window.Panel;
 import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
+import org.dwcj.dispatcher.EventListener;
 
 /**
  * The drawer component allows developers to create a container which slides into the viewport to
@@ -328,18 +328,18 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * @param listener the listener
    * @return the drawer
    */
-  public Drawer addOpenListener(ComponentEventListener<DrawerOpenEvent> listener) {
+  public Drawer addOpenListener(EventListener<DrawerOpenEvent> listener) {
     addEventListener(DrawerOpenEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addOpenListener(ComponentEventListener)}.
+   * Alias for {@link #addOpenListener(EventListener)}.
    *
    * @param listener the listener
    * @return the drawer
    */
-  public Drawer onOpen(ComponentEventListener<DrawerOpenEvent> listener) {
+  public Drawer onOpen(EventListener<DrawerOpenEvent> listener) {
     return addOpenListener(listener);
   }
 
@@ -349,7 +349,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * @param listener the listener
    * @return the drawer
    */
-  public Drawer removeOpenListener(ComponentEventListener<DrawerOpenEvent> listener) {
+  public Drawer removeOpenListener(EventListener<DrawerOpenEvent> listener) {
     removeEventListener(DrawerOpenEvent.class, listener);
     return this;
   }
@@ -360,18 +360,18 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * @param listener the listener
    * @return the drawer
    */
-  public Drawer addCloseListener(ComponentEventListener<DrawerCloseEvent> listener) {
+  public Drawer addCloseListener(EventListener<DrawerCloseEvent> listener) {
     addEventListener(DrawerCloseEvent.class, listener);
     return this;
   }
 
   /**
-   * Alias for {@link #addCloseListener(ComponentEventListener)}.
+   * Alias for {@link #addCloseListener(EventListener)}.
    *
    * @param listener the listener
    * @return the drawer
    */
-  public Drawer onClose(ComponentEventListener<DrawerCloseEvent> listener) {
+  public Drawer onClose(EventListener<DrawerCloseEvent> listener) {
     return addCloseListener(listener);
   }
 
@@ -381,7 +381,7 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * @param listener the listener
    * @return the drawer
    */
-  public Drawer removeCloseListener(ComponentEventListener<DrawerCloseEvent> listener) {
+  public Drawer removeCloseListener(EventListener<DrawerCloseEvent> listener) {
     removeEventListener(DrawerCloseEvent.class, listener);
     return this;
   }

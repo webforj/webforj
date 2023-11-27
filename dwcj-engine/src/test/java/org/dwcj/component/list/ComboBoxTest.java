@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.basis.bbj.proxies.sysgui.BBjListEdit;
 import org.dwcj.component.ReflectionUtils;
-import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.component.event.KeypressEvent;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.ModifyEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -41,9 +41,9 @@ class ComboBoxTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      ComponentEventListener<ModifyEvent> modifyListener = event -> {
+      EventListener<ModifyEvent> modifyListener = event -> {
       };
-      ComponentEventListener<KeypressEvent> keypressListener = event -> {
+      EventListener<KeypressEvent> keypressListener = event -> {
       };
 
       ListenerRegistration<ModifyEvent> r1 = component.onModify(modifyListener);

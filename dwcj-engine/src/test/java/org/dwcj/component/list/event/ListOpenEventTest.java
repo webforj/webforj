@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.event.BBjListOpenEvent;
 import com.basis.startup.type.BBjVector;
 import java.util.List;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.list.ComboBox;
 import org.dwcj.component.list.sink.ListOpenEventSink;
 import org.junit.jupiter.api.DisplayName;

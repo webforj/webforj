@@ -14,13 +14,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Component;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.EventDispatcher;
 import org.dwcj.component.event.EventSinkListenerRegistry;
-import org.dwcj.component.event.ListenerRegistration;
 import org.dwcj.component.optioninput.event.RadioButtonGroupChangeEvent;
 import org.dwcj.component.optioninput.sink.RadioButtonGroupChangeSink;
 import org.dwcj.component.window.Window;
+import org.dwcj.dispatcher.EventDispatcher;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -258,18 +258,18 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<RadioButtonGroupChangeEvent> addChangeListener(
-      ComponentEventListener<RadioButtonGroupChangeEvent> listener) {
+      EventListener<RadioButtonGroupChangeEvent> listener) {
     return changedEventSinkListenerRegistry.addEventListener(listener);
   }
 
   /**
-   * Alias for {@link #addChangeListener(ComponentEventListener) addCheckedListener}.
+   * Alias for {@link #addChangeListener(EventListener) addCheckedListener}.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
   public ListenerRegistration<RadioButtonGroupChangeEvent> onChange(
-      ComponentEventListener<RadioButtonGroupChangeEvent> listener) {
+      EventListener<RadioButtonGroupChangeEvent> listener) {
     return addChangeListener(listener);
   }
 

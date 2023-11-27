@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.event.BBjMouseEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.DwcComponent;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.event.MouseExitEvent;
 
 

@@ -13,8 +13,8 @@ import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.startup.type.BBjException;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.component.event.ComponentEventListener;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -94,7 +94,7 @@ class DwcButtonTest {
     @Test
     @DisplayName("adding/removing supported events")
     void addingRemovingSupportedEvents() {
-      ComponentEventListener<ButtonClickEvent> clickListener = event -> {
+      EventListener<ButtonClickEvent> clickListener = event -> {
       };
 
       ListenerRegistration<ButtonClickEvent> r = component.onClick(clickListener);

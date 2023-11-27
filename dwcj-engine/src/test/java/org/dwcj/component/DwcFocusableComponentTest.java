@@ -16,9 +16,9 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import org.dwcj.component.event.BlurEvent;
-import org.dwcj.component.event.ComponentEventListener;
+import org.dwcj.dispatcher.EventListener;
 import org.dwcj.component.event.FocusEvent;
-import org.dwcj.component.event.ListenerRegistration;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -156,9 +156,9 @@ class DwcFocusableComponentTest {
     @Test
     @DisplayName("can handle focus events")
     void canHandleFocusEvents() {
-      ComponentEventListener<FocusEvent> focusListener = event -> {
+      EventListener<FocusEvent> focusListener = event -> {
       };
-      ComponentEventListener<BlurEvent> bluListener = event -> {
+      EventListener<BlurEvent> bluListener = event -> {
       };
 
       ListenerRegistration<FocusEvent> r1 = component.onFocus(focusListener);

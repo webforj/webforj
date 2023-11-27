@@ -11,7 +11,7 @@ import com.basis.bbj.proxies.sysgui.BBjStaticText;
 import com.basis.startup.type.BBjException;
 import org.dwcj.component.DwcComponentMock;
 import org.dwcj.component.DwcHelperMock;
-import org.dwcj.component.event.EventDispatcher;
+import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.event.mocks.EventSinkMock;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
