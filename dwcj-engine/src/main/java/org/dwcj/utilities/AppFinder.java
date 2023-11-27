@@ -2,12 +2,7 @@ package org.dwcj.utilities;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -49,7 +44,6 @@ public class AppFinder {
 
   /**
    * Find app implementations.
-   *
    * @return the list of classes extending App.
    */
   public SortedSet<String> getAppImplmentations() {

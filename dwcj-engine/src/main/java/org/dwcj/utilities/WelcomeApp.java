@@ -110,7 +110,7 @@ public class WelcomeApp extends App {
               return;
             }
           } catch (ClassNotFoundException e) {
-            // ignore
+            //ignore
           }
         }
       }
