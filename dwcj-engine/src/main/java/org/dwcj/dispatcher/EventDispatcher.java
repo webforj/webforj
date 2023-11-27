@@ -9,11 +9,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiPredicate;
 
 /**
- * The EventDispatcher is a minimalistic event manager that can be used to dispatch component events
- * to listeners.
+ * The EventDispatcher is a minimalistic event manager that can be used to dispatch events to
+ * listeners.
  *
  * @author Hyyan Abo Fakher
- * @since 23.05
+ * @since 23.06
  */
 public class EventDispatcher {
 

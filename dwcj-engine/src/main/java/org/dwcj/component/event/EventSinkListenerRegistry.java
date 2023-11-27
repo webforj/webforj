@@ -82,13 +82,12 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   private class DwcListenerRegistration extends ListenerRegistration<T> {
 
     DwcListenerRegistration(ListenerRegistration<T> registration) {
-      super(registration.getEventDispatcher(), registration.getEventClass(),
-          registration.getListener());
+      super(getEventDispatcher(), registration.getEventClass(), registration.getListener());
     }
 
     @Override
     public void remove() {
-      EventDispatcher dispatcher = getSink().getEventDispatcher();
+      EventDispatcher dispatcher = getEventDispatcher();
       dispatcher.removeListener(getEventClass(), getListener());
 
       if (dispatcher.getCount(getEventClass()) == 0) {

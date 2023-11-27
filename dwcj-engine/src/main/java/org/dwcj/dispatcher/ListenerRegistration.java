@@ -8,7 +8,7 @@ import java.util.EventObject;
  * @param <T> the generic type of the event
  *
  * @author Hyyan Abo Fakher
- * @since 23.05
+ * @since 23.06
  */
 public class ListenerRegistration<T extends EventObject> {
   private final EventDispatcher dispatcher;
@@ -58,7 +58,7 @@ public class ListenerRegistration<T extends EventObject> {
    *
    * @return the event dispatcher
    */
-  public EventDispatcher getEventDispatcher() {
+  EventDispatcher getEventDispatcher() {
     return dispatcher;
   }
 }

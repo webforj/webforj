@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.EventObject;
 
 /**
- * A tagging interface that all control event listeners must implement.
+ * A tagging interface that all event listeners must implement.
  *
  * @param <T> the generic type
  *
  * @author Hyyan Abo Fakher
- * @since 23.05
+ * @since 23.06
  */
 @FunctionalInterface
 public interface EventListener<T extends EventObject>
