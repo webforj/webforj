@@ -6,7 +6,9 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-
+/**
+ * AppFinder - scans Classpath to find App implementations.
+ */
 @SuppressWarnings({"java:S3740", "java:S3776"}) // allow raw types
 public class AppFinder {
 
@@ -40,7 +42,11 @@ public class AppFinder {
     }
   }
 
-  public Set<String> getAppImplmentations() {
+  /**
+   * Find app implementations.
+   * @return the list of classes extending App.
+   */
+  public SortedSet<String> getAppImplmentations() {
 
     if (this.cpEntriesToCheck != null) {
       for (String s : cpEntriesToCheck) {
@@ -62,14 +68,15 @@ public class AppFinder {
     // it's a JAR file
     if (currentDirectory.getName().endsWith(".jar")) {
       try {
-        if (currentDirectory.exists())
+        if (currentDirectory.exists()) {
           processJar(new ZipFile(currentDirectory));
+        }
       } catch (IOException e) {
         throw new RuntimeException(e); // NOSONAR
       }
     } else {
 
-      Set myDirectories = new HashSet();
+      Set<File> myDirectories = new HashSet<>();
 
       File[] myFiles = currentDirectory.listFiles();
 
