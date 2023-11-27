@@ -12,6 +12,7 @@ import java.util.EventObject;
  * @since 23.06
  */
 @FunctionalInterface
+@SuppressWarnings("squid:S2176")
 public interface EventListener<T extends EventObject>
     extends java.util.EventListener, Serializable {
 
