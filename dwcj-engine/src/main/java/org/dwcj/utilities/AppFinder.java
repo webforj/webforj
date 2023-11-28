@@ -49,6 +49,7 @@ public class AppFinder {
 
   /**
    * Find app implementations.
+   *
    * @return the list of classes extending App.
    */
   public SortedSet<String> getAppImplmentations() {
