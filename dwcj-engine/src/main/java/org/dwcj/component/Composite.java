@@ -101,6 +101,26 @@ public abstract class Composite<T extends Component> extends Component {
   @Override
   protected void onCreate(Window window) {
     window.add(getBoundComponent());
+    onDidCreate(component);
+  }
+
+  /**
+   * Called immediately after the bound {@link Component} has been created and added to the window.
+   * Subclasses must implement this method to perform additional setup or initialization specific to
+   * the component. This is an opportune moment to add child components to the bound component,
+   * apply settings, and make the component ready for interaction within the application.
+   *
+   * <p>
+   * This method is part of the component lifecycle and is invoked after the base class's
+   * {@code onCreate} method has completed the initial creation process. It allows the subclass to
+   * further refine the behavior and presentation of the component before it begins to handle user
+   * interactions or data processing.
+   * </p>
+   *
+   * @param container The instance of the component that has been created.
+   */
+  protected void onDidCreate(T container) {
+    // pass
   }
 
   /**
@@ -111,6 +131,30 @@ public abstract class Composite<T extends Component> extends Component {
     if (component != null) {
       component.destroy();
     }
+
+    onDidDestroy();
+  }
+
+  /**
+   * Called immediately after the container has been destroyed. Subclasses can implement this method
+   * to clean up resources or perform any other necessary teardown operations. This method serves as
+   * a notification that the component is no longer in a usable state.
+   *
+   * <p>
+   * This method is part of the component lifecycle and is invoked after the component has completed
+   * the destruction process, ensuring that any final actions that depend on the component being in
+   * a partially intact state can be completed.
+   * </p>
+   *
+   * <p>
+   * It is important to note that after this method is called, the component and its resources are
+   * considered to be released, even though further operations on the component can typically be
+   * done. Therefore, this method should only contain logic that is necessary for a safe and
+   * complete cleanup.
+   * </p>
+   */
+  protected void onDidDestroy() {
+    // pass
   }
 
   /**
