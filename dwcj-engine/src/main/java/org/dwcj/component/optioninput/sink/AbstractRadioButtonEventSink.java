@@ -4,8 +4,10 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.Field;
+import java.util.UUID;
 import org.dwcj.Environment;
 import org.dwcj.bridge.IDwcjBBjBridge;
+import org.dwcj.component.Component;
 import org.dwcj.component.event.sink.DwcEventSink;
 import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.dispatcher.EventDispatcher;
@@ -50,19 +52,29 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
    * {@inheritDoc}
    */
   @Override
-  public void setCallback() {
-    BBjRadioGroup group = getBBjRadioGroup();
-
-    if (group != null) {
-      // in tests the dwcjHelper is not set so we need to check for null
-      dwcjHelper = getDwcjHelper();
-      if (dwcjHelper == null) {
-        return;
-      }
+  public String setCallback(Object options) {
+    if (isConnected()) {
       try {
-        group.setCallback(eventType, getDwcjHelper().getEventProxy(this, "handleEvent"), "onEvent");
+        getBBjRadioGroup().setCallback(eventType,
+            getDwcjHelper().getEventProxy(this, "handleEvent"), "onEvent");
       } catch (BBjException e) {
         throw new DwcjRuntimeException("Failed to set BBjRadioGroup callback.", e);
+      }
+    }
+
+    return UUID.randomUUID().toString();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void removeCallback(String callbackId) {
+    if (isConnected()) {
+      try {
+        getBBjRadioGroup().clearCallback(eventType);
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException("Failed to remove BBjRadioGroup callback.", e);
       }
     }
   }
@@ -71,16 +83,16 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
    * {@inheritDoc}
    */
   @Override
-  public void removeCallback() {
-    BBjRadioGroup group = getBBjRadioGroup();
+  public final boolean isConnected() {
+    return getBBjRadioGroup() != null && getDwcjHelper() != null;
+  }
 
-    if (group != null) {
-      try {
-        group.clearCallback(eventType);
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException("Failed to remove BBjRadioGroup callback.", e);
-      }
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public final Component getComponent() {
+    return this.component;
   }
 
   /**
@@ -123,15 +135,6 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
    */
   IDwcjBBjBridge getDwcjHelper() {
     return this.dwcjHelper;
-  }
-
-  /**
-   * Get the Java component.
-   *
-   * @return The Java component.
-   */
-  protected RadioButtonGroup getComponent() {
-    return this.component;
   }
 
   /**

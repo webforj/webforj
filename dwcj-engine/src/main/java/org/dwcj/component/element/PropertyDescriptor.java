@@ -1,43 +1,14 @@
-package org.dwcj.component.webcomponent;
+package org.dwcj.component.element;
 
 /**
- * The PropertyDescriptor class is used to describe a property or an attribute of a web component.
- *
- * <pre>
- * {@code @NodeName("my-avatar")
- * public class MyAvatar extends WebComponent {
- *   public static final PropertyDescriptor<String> NAME =
- *       PropertyDescriptor.property("name", "Hyyan Abo Fakher");
- *   public static final PropertyDescriptor<Integer> SIZE =
- *       PropertyDescriptor.property("size", 100);
- *
- *   public MyAvatar setName(String name) {
- *     set(NAME, name);
- *     return this;
- *   }
- *
- *   public String getName() {
- *     return get(NAME);
- *   }
- *
- *   public MyAvatar setSize(Integer size) {
- *     set(SIZE, size);
- *     return this;
- *   }
- *
- *   public Integer getSize() {
- *     return get(SIZE);
- *   }
- * }
- * }
- * </pre>
+ * The PropertyDescriptor class is used to describe a property or an attribute of an element.
  *
  * @param <T> the type of the property
  *
- * @see WebComponent
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-public class PropertyDescriptor<T> {
+public final class PropertyDescriptor<T> {
   private final String name;
   private final T defaultValue;
   private final boolean isAttribute;
@@ -50,7 +21,6 @@ public class PropertyDescriptor<T> {
    * @param isAttribute true if the property is an attribute
    */
   public PropertyDescriptor(String name, T defaultValue, boolean isAttribute) {
-    super();
     this.name = name;
     this.defaultValue = defaultValue;
     this.isAttribute = isAttribute;
@@ -90,6 +60,21 @@ public class PropertyDescriptor<T> {
    */
   public boolean isProperty() {
     return !isAttribute;
+  }
+
+  /**
+   * Get the type of the property descriptor.
+   *
+   * @return the type of the property descriptor
+   */
+  Class<T> getType() {
+    if (defaultValue == null) {
+      return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    Class<T> type = (Class<T>) defaultValue.getClass();
+    return type;
   }
 
   /**

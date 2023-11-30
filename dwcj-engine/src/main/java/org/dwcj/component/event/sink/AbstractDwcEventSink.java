@@ -3,6 +3,8 @@ package org.dwcj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.CustomObject;
+import java.util.UUID;
 import org.dwcj.Environment;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
@@ -21,19 +23,20 @@ import org.dwcj.exceptions.DwcjRuntimeException;
 public abstract class AbstractDwcEventSink implements DwcEventSink {
   private final DwcComponent<?> component;
   private EventDispatcher dispatcher;
-  private final int eventType;
-  private BBjControl control = null;
+  private final Object eventType;
+  private BBjControl control;
   private IDwcjBBjBridge dwcjHelper;
 
   /**
-   * Constructor for the sink class.
+   * Constructor a new event sink for the given component and the BBj event type.
    *
    * @param component The Java component
    * @param dispatcher The events dispatcher
    * @param eventType The type of the BBj event
+   * @param options The options to be passed to the BBj event callback if the event supports options
    */
   protected AbstractDwcEventSink(DwcComponent<?> component, EventDispatcher dispatcher,
-      int eventType) {
+      Object eventType) {
     this.component = component;
     this.dispatcher = dispatcher;
     this.eventType = eventType;
@@ -44,27 +47,20 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Set a callback on an underlying BBj control.
-   *
-   * @throws DwcjRuntimeException if the callback cannot be set.
+   * {@inheritDoc}
    */
   @Override
-  public final void setCallback() {
-    BBjControl theControl = getBbjControl();
-
-    if (theControl != null) {
-      // in tests the dwcjHelper is not set so we need to check for null
-      dwcjHelper = getDwcjHelper();
-      if (dwcjHelper == null) {
-        return;
-      }
+  public final String setCallback(Object options) {
+    if (isConnected()) {
       try {
-        theControl.setCallback(eventType, getDwcjHelper().getEventProxy(this, "handleEvent"),
-            "onEvent");
+        CustomObject handler = getDwcjHelper().getEventProxy(this, "handleEvent");
+        return doSetCallback(getControl(), options, handler, "onEvent");
       } catch (BBjException e) {
         throw new DwcjRuntimeException("Failed to set BBjControl callback.", e);
       }
     }
+
+    return null;
   }
 
   /**
@@ -73,12 +69,10 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
    * @throws DwcjRuntimeException if the callback cannot be removed.
    */
   @Override
-  public final void removeCallback() {
-    BBjControl theControl = getBbjControl();
-
-    if (theControl != null) {
+  public final void removeCallback(String callbackId) {
+    if (isConnected()) {
       try {
-        theControl.clearCallback(eventType);
+        doRemoveCallback(getControl(), callbackId);
       } catch (BBjException e) {
         throw new DwcjRuntimeException("Failed to remove BBjControl callback.", e);
       }
@@ -92,6 +86,33 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
    * @param ev A BBj event
    */
   public abstract void handleEvent(BBjEvent ev);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public final boolean isConnected() {
+    return getControl() != null && getDwcjHelper() != null;
+  }
+
+  /**
+   * Gets the BBj event type.
+   *
+   * @return The BBj event type.
+   */
+  public final Object getEventType() {
+    return this.eventType;
+  }
+
+  /**
+   * Gets the Java component instance.
+   *
+   * @return The Java component.
+   */
+  @Override
+  public final DwcComponent<?> getComponent() {
+    return this.component;
+  }
 
   /**
    * Sets the event dispatcher instance.
@@ -131,12 +152,39 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
   }
 
   /**
-   * Gets the Java component.
+   * Do set a callback on the underlying BBj control.
    *
-   * @return The Java component.
+   * @param control The control
+   * @param options The options object
+   * @param handler The BBj CustomObject instance
+   * @param callback The callback method name as defined in the handler
+   *
+   * @return the callback id.
+   *
+   * @throws BBjException if the callback cannot be set.
    */
-  protected final DwcComponent<?> getComponent() {
-    return this.component;
+  protected String doSetCallback(BBjControl control, Object options, CustomObject handler,
+      String callback) throws BBjException {
+    if (control != null) {
+      control.setCallback(Integer.valueOf(String.valueOf(eventType)), handler, callback);
+      return UUID.randomUUID().toString();
+    }
+
+    return null;
+  }
+
+  /**
+   * Do remove a callback from underlying BBj control.
+   *
+   * @param control The control
+   * @param callbackId The callback id.
+   *
+   * @throws BBjException if the callback cannot be removed.
+   */
+  protected void doRemoveCallback(BBjControl control, String callbackId) throws BBjException {
+    if (control != null) {
+      control.clearCallback(Integer.valueOf(String.valueOf(eventType)));
+    }
   }
 
   /**
@@ -144,7 +192,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink {
    *
    * @return The BBjControl instance.
    */
-  private BBjControl getBbjControl() {
+  protected BBjControl getControl() {
     try {
       if (control != null && !control.isDestroyed()) {
         return control;

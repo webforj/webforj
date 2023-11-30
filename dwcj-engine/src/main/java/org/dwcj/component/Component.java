@@ -44,8 +44,7 @@ public abstract class Component {
    *
    * <p>
    * Each component receives a distinct ID upon initialization, serving as its server-side
-   * identifier. If the component is destroyed and then recreated, it obtains a fresh unique ID. If
-   * the component is destroyed, this method returns null.
+   * identifier.
    * </p>
    *
    * @return The component ID as a String.
@@ -135,7 +134,7 @@ public abstract class Component {
    *
    * @return True if the component is destroyed, false otherwise
    */
-  public final boolean isDestroyed() {
+  public boolean isDestroyed() {
     return this.destroyed;
   }
 
@@ -144,7 +143,7 @@ public abstract class Component {
    *
    * @return True if the component is attached to a window, false otherwise
    */
-  public final boolean isAttached() {
+  public boolean isAttached() {
     return this.attached;
   }
 
@@ -262,13 +261,17 @@ public abstract class Component {
    * @param window The window to which this component is added.
    */
   protected final void create(Window window) {
-    if (this.isAttached()) {
+    if (isDestroyed()) {
+      throw new IllegalStateException("Cannot create a destroyed component");
+    }
+
+    if (isAttached()) {
       return;
     }
 
     this.window = window;
 
-    this.onCreate(window);
+    onCreate(window);
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
       observer.onComponentLifecycleEvent(this, LifecycleEvent.CREATE);
     }

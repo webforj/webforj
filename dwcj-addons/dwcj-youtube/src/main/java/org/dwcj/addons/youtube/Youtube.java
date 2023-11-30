@@ -2,13 +2,13 @@ package org.dwcj.addons.youtube;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.dwcj.App;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.annotation.InlineStyleSheet;
-import org.dwcj.component.webcomponent.PropertyDescriptor;
-import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotation.HtmlViewAttribute;
-import org.dwcj.component.webcomponent.annotation.NodeAttribute;
-import org.dwcj.component.webcomponent.annotation.NodeName;
-import org.dwcj.component.window.Window;
+import org.dwcj.component.element.Element;
+import org.dwcj.component.element.ElementComposite;
+import org.dwcj.component.element.PropertyDescriptor;
+import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.concern.HasAttribute;
 import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
@@ -17,6 +17,7 @@ import org.dwcj.concern.HasStyle;
  * The Youtube component is a component that allows you to embed a youtube video in your
  * application.
  *
+ * <p>
  * For instance, to embed a youtube video in your application you can do the following:
  *
  * <pre>
@@ -29,16 +30,11 @@ import org.dwcj.concern.HasStyle;
  * youtube.setMute(true);
  * }
  * </pre>
+ * </p>
  *
  * @author Hyyan Abo Fakher
  */
-@HtmlViewAttribute(name = "dwcj-youtube-container")
 @NodeName("iframe")
-@NodeAttribute(name = "dwcj-youtube")
-@NodeAttribute(name = "frameborder", value = "0")
-@NodeAttribute(name = "allow",
-    value = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share")
-@NodeAttribute(name = "allowfullscreen", value = "true")
 @InlineStyleSheet(id = "dwcj-youtube-widget", once = true, value = /* css */ """
     [dwcj-youtube-container] {
       width: 100%;
@@ -55,7 +51,7 @@ import org.dwcj.concern.HasStyle;
       margin-left: -100%;
     }
     """)
-public class Youtube extends WebComponent
+public class Youtube extends ElementComposite
     implements HasAttribute<Youtube>, HasClassName<Youtube>, HasStyle<Youtube> {
 
   /** The type of the content that will load in the player. */
@@ -144,6 +140,24 @@ public class Youtube extends WebComponent
    */
   public Youtube() {
     super();
+
+    Element current = getElement();
+    current.setAttribute("dwcj-youtube", "");
+    current.setAttribute("frameborder", "0");
+    current.setAttribute("allow",
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;");
+    current.setAttribute("allowfullscreen", "true");
+
+    whenAttached().thenAccept(element -> {
+      updateSrc();
+      // wrap the component in a container to keep the aspect ratio
+      Element container = new Element();
+      container.setAttribute("dwcj-youtube-container", "");
+      container.add(this);
+
+      getWindow().add(container);
+      App.consoleLog("Youtube component added to the window");
+    });
   }
 
   /**
@@ -657,8 +671,9 @@ public class Youtube extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Youtube addClassName(String className) {
-    addComponentClassName(className);
+    getElement().addClassName(className);
     return this;
   }
 
@@ -666,8 +681,9 @@ public class Youtube extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Youtube removeClassName(String className) {
-    removeComponentClassName(className);
+    getElement().removeClassName(className);
     return this;
   }
 
@@ -675,8 +691,9 @@ public class Youtube extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Youtube setStyle(String property, String value) {
-    setComponentStyle(property, value);
+    getElement().setStyle(property, value);
     return this;
   }
 
@@ -684,16 +701,18 @@ public class Youtube extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getStyle(String property) {
-    return getComponentStyle(property);
+    return getElement().getStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Youtube removeStyle(String property) {
-    removeComponentStyle(property);
+    getElement().removeStyle(property);
     return this;
   }
 
@@ -701,24 +720,27 @@ public class Youtube extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getComputedStyle(String property) {
-    return getComponentComputedStyle(property);
+    return getElement().getComputedStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getAttribute(String attribute) {
-    return getComponentAttribute(attribute);
+    return getElement().getAttribute(attribute);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Youtube setAttribute(String attribute, String value) {
-    setComponentAttribute(attribute, value);
+    getElement().setAttribute(attribute, value);
     return this;
   }
 
@@ -726,18 +748,10 @@ public class Youtube extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Youtube removeAttribute(String attribute) {
-    removeComponentAttribute(attribute);
+    getElement().removeAttribute(attribute);
     return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void onAttach(Window panel) {
-    super.onAttach(panel);
-    updateSrc();
   }
 
   /**
@@ -749,9 +763,9 @@ public class Youtube extends WebComponent
     }
 
     if (Boolean.TRUE.equals(isControls())) {
-      setComponentStyle("pointer-events", "auto");
+      setStyle("pointer-events", "auto");
     } else {
-      setComponentStyle("pointer-events", "none");
+      setStyle("pointer-events", "none");
     }
 
     set(srcProp, getUrl());

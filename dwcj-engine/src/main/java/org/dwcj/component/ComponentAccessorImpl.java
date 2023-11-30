@@ -40,9 +40,36 @@ final class ComponentAccessorImpl extends ComponentAccessor {
    * {@inheritDoc}
    */
   @Override
-  public BBjControl getControl(DwcComponent<?> component) throws IllegalAccessException {
+  public BBjControl getControl(Component component) throws IllegalAccessException {
     verifyCaller();
-    return component.getControl();
+
+    if (component == null) {
+      throw new NullPointerException("Component cannot be null.");
+    }
+
+    try {
+      if (component instanceof LegacyDwcComponent) {
+        return ((LegacyDwcComponent) component).getControl();
+      } else if (component instanceof DwcComponent) {
+        return ((DwcComponent<?>) component).getControl();
+      } else if (component instanceof Composite) {
+        Method getBoundComponent = Composite.class.getDeclaredMethod("getBoundComponent");
+        getBoundComponent.setAccessible(true); // NOSONAR
+        Object boundComponent = getBoundComponent.invoke(component);
+
+        return getControl((Component) boundComponent);
+      } else {
+        throw new IllegalAccessException(
+            "Cannot find the underlying BBjControl for the given component: "
+                + component.getClass().getName());
+      }
+    } catch (NoSuchMethodException e) {
+      throw new IllegalAccessException("The Composite " + component.getClass().getName()
+          + " does not implement the 'initBoundComponent' method.");
+    } catch (SecurityException | IllegalArgumentException | InvocationTargetException e) {
+      throw new IllegalAccessException(
+          "Failed to access 'initBoundComponent' method for Composite component.");
+    }
   }
 
   /**

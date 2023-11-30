@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -78,16 +79,15 @@ class ComponentTest {
   }
 
   @Test
-  @DisplayName("If a component is destroyed, it can be created again")
+  @DisplayName("If a component is destroyed, it cannot be created again")
   void testComponentCreateThrowsIllegalAccessExceptionIfDestroyed() throws IllegalAccessException {
     Window window = mock(Window.class);
 
-    String id = component.getComponentId();
     component.create(window);
     component.destroy();
-    component.create(window);
 
-    assertNotEquals(id, component.getComponentId());
+
+    assertThrows(IllegalStateException.class, () -> component.create(window));
   }
 
   @Test

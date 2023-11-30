@@ -1,14 +1,17 @@
 package org.dwcj.component.drawer;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
+import org.dwcj.component.drawer.Drawer;
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
 import org.dwcj.component.drawer.event.DrawerOpenEvent;
-import org.dwcj.component.webcomponent.PropertyDescriptor;
-import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotation.NodeName;
-import org.dwcj.component.window.Panel;
+import org.dwcj.component.element.Element;
+import org.dwcj.component.element.ElementCompositeContainer;
+import org.dwcj.component.element.PropertyDescriptor;
+import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
 import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * The drawer component allows developers to create a container which slides into the viewport to
@@ -18,7 +21,8 @@ import org.dwcj.dispatcher.EventListener;
  * @author Hyyan Abo Fakher
  */
 @NodeName("bbj-drawer")
-public class Drawer extends WebComponent implements HasClassName<Drawer>, HasStyle<Drawer> {
+public class Drawer extends ElementCompositeContainer
+    implements HasClassName<Drawer>, HasStyle<Drawer> {
 
   /**
    * The drawer placement.
@@ -100,34 +104,13 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
       PropertyDescriptor.property("opened", false);
   private final PropertyDescriptor<String> placementProp =
       PropertyDescriptor.property("placement", Placement.LEFT.getValue());
-  private final PropertyDescriptor<String> sizeProp = PropertyDescriptor.property("size", "16EM");
+  private final PropertyDescriptor<String> sizeProp = PropertyDescriptor.property("size", "16em");
 
   /**
    * Instantiates a new drawer.
    */
   public Drawer() {
     super();
-    setContent(new Panel());
-  }
-
-  /**
-   * Sets the drawer content.
-   *
-   * @param content The drawer content.
-   * @return the drawer
-   */
-  public Drawer setContent(Panel content) {
-    addSlot(content);
-    return this;
-  }
-
-  /**
-   * Gets the drawer content.
-   *
-   * @return the drawer content
-   */
-  public Panel getContent() {
-    return (Panel) getSlot();
   }
 
   /**
@@ -274,8 +257,9 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Drawer addClassName(String className) {
-    addComponentClassName(className);
+    getElement().addClassName(className);
     return this;
   }
 
@@ -283,8 +267,9 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Drawer removeClassName(String className) {
-    removeComponentClassName(className);
+    getElement().removeClassName(className);
     return null;
   }
 
@@ -292,8 +277,9 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Drawer setStyle(String property, String value) {
-    setComponentStyle(property, value);
+    getElement().setStyle(property, value);
     return this;
   }
 
@@ -301,8 +287,9 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Drawer removeStyle(String property) {
-    removeComponentStyle(property);
+    getElement().removeStyle(property);
     return this;
   }
 
@@ -310,79 +297,63 @@ public class Drawer extends WebComponent implements HasClassName<Drawer>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getStyle(String property) {
-    return getComponentStyle(property);
+    return getElement().getStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getComputedStyle(String property) {
-    return getComponentComputedStyle(property);
+    return getElement().getComputedStyle(property);
   }
 
   /**
-   * Adds Drawer opened listener.
+   * Adds a listener for the opened event.
    *
    * @param listener the listener
-   * @return the drawer
+   * @return A registration object for removing the event listener
    */
-  public Drawer addOpenListener(EventListener<DrawerOpenEvent> listener) {
-    addEventListener(DrawerOpenEvent.class, listener);
-    return this;
+  public ListenerRegistration<DrawerOpenEvent> addOpenListener(
+      EventListener<DrawerOpenEvent> listener) {
+    return addEventListener(DrawerOpenEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addOpenListener(EventListener)}.
    *
    * @param listener the listener
-   * @return the drawer
+   * @return A registration object for removing the event listener
    */
-  public Drawer onOpen(EventListener<DrawerOpenEvent> listener) {
+  public ListenerRegistration<DrawerOpenEvent> onOpen(EventListener<DrawerOpenEvent> listener) {
     return addOpenListener(listener);
   }
 
   /**
-   * Removes Drawer opened listener.
+   * Adds a listener for the closed event.
    *
    * @param listener the listener
-   * @return the drawer
+   * @return A registration object for removing the event listener
    */
-  public Drawer removeOpenListener(EventListener<DrawerOpenEvent> listener) {
-    removeEventListener(DrawerOpenEvent.class, listener);
-    return this;
-  }
-
-  /**
-   * Adds Drawer closed listener.
-   *
-   * @param listener the listener
-   * @return the drawer
-   */
-  public Drawer addCloseListener(EventListener<DrawerCloseEvent> listener) {
-    addEventListener(DrawerCloseEvent.class, listener);
-    return this;
+  public ListenerRegistration<DrawerCloseEvent> addCloseListener(
+      EventListener<DrawerCloseEvent> listener) {
+    return addEventListener(DrawerCloseEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addCloseListener(EventListener)}.
    *
    * @param listener the listener
-   * @return the drawer
+   * @return A registration object for removing the event listener
    */
-  public Drawer onClose(EventListener<DrawerCloseEvent> listener) {
+  public ListenerRegistration<DrawerCloseEvent> onClose(EventListener<DrawerCloseEvent> listener) {
     return addCloseListener(listener);
   }
 
-  /**
-   * Removes Drawer closed listener.
-   *
-   * @param listener the listener
-   * @return the drawer
-   */
-  public Drawer removeCloseListener(EventListener<DrawerCloseEvent> listener) {
-    removeEventListener(DrawerCloseEvent.class, listener);
-    return this;
+  Element getOriginalElement() {
+    return getElement();
   }
 }

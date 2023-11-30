@@ -2,24 +2,25 @@ package org.dwcj.component.dialog.event;
 
 import java.util.Map;
 import org.dwcj.component.dialog.Dialog;
+import org.dwcj.component.element.annotation.EventName;
 import org.dwcj.component.event.ComponentEvent;
-import org.dwcj.component.webcomponent.annotation.EventName;
 
 /**
  * Emitted when the dialog is opened.
  *
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-@EventName("bbj-opened")
+@EventName("bbj-dialog-opened")
 public class DialogOpenEvent extends ComponentEvent<Dialog> {
 
   /**
-   * Creates a new event.
+   * Creates an open event.
    *
-   * @param control the control
+   * @param dialog the control
    * @param eventMap the event map
    */
-  public DialogOpenEvent(Dialog control, Map<String, Object> eventMap) {
-    super(control, eventMap);
+  public DialogOpenEvent(Dialog dialog, Map<String, Object> eventMap) {
+    super(dialog, eventMap);
   }
 }

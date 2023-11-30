@@ -1,22 +1,27 @@
 package org.dwcj.component.dialog;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
+import org.dwcj.component.Component;
 import org.dwcj.component.dialog.event.DialogCloseEvent;
 import org.dwcj.component.dialog.event.DialogOpenEvent;
-import org.dwcj.component.webcomponent.PropertyDescriptor;
-import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotation.NodeName;
-import org.dwcj.component.window.Panel;
+import org.dwcj.component.element.Element;
+import org.dwcj.component.element.ElementCompositeContainer;
+import org.dwcj.component.element.PropertyDescriptor;
+import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
 import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * A dialog component.
  *
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
 @NodeName("bbj-dialog")
-public class Dialog extends WebComponent implements HasClassName<Dialog>, HasStyle<Dialog> {
+public class Dialog extends ElementCompositeContainer
+    implements HasClassName<Dialog>, HasStyle<Dialog> {
 
   /**
    * The dialog alignments.
@@ -136,10 +141,10 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
     }
   }
 
-  // Panels
-  private Panel header;
-  private Panel content;
-  private Panel footer;
+  // Slots
+  private static final String HEADER_SLOT = "header";
+  private static final String CONTENT_SLOT = "content";
+  private static final String FOOTER_SLOT = "footer";
 
   // Properties
   private final PropertyDescriptor<String> alignmentProp =
@@ -184,82 +189,59 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
     // This call should be made very early in the lifecycle of the component
     // before any events are added because moving the element will remove all
     // the event listeners
-    executeAsyncExpression("document.body.appendChild(component)");
-
-    this.setHeader(new Panel());
-    this.setContent(new Panel());
-    this.setFooter(new Panel());
+    getElement().executeJsAsync("document.body.appendChild(component)");
   }
 
   /**
-   * Uses the passed panel in the header slot.
+   * Add the given component to the dialog header slot.
    *
-   * @param header the header panel
-   * @return the dialog
+   * @param component the component to add
+   * @return the component itself
    */
-  public Dialog setHeader(Panel header) {
-    this.header = header;
-    addSlot("header", header);
+  public Dialog addToHeader(Component... component) {
+    getElement().add(HEADER_SLOT, component);
     return this;
   }
 
   /**
-   * Gets the header panel instance.
-   *
-   * @return the app layout
+   * {@inheritDoc}
    */
-  public Panel getHeader() {
-    return header;
+  @Override
+  public void add(Component... components) {
+    getElement().add(CONTENT_SLOT, components);
   }
 
   /**
-   * Uses the passed panel in the content slot.
+   * Alias for {@link #add(Component)}.
    *
-   * @param content the content panel
-   * @return the dialog
+   * <p>
+   * Add the given component to the dialog content slot.
+   * </p>
+   *
+   * @param component the component to add
+   * @return the component itself
    */
-  public Dialog setContent(Panel content) {
-    this.content = content;
-    this.content.setStyle("overflow", "auto");
-    addSlot("content", content);
+  public Dialog addToContent(Component... component) {
+    add(component);
     return this;
   }
 
   /**
-   * Gets the content panel instance.
+   * Add the given component to the dialog footer slot.
    *
-   * @return the content panel
+   * @param component the component to add
+   * @return the component itself
    */
-  public Panel getContent() {
-    return content;
-  }
-
-  /**
-   * Uses the passed panel in the footer slot.
-   *
-   * @param footer the footer panel
-   * @return the dialog
-   */
-  public Dialog setFooter(Panel footer) {
-    this.footer = footer;
-    addSlot("footer", footer);
+  public Dialog addToFooter(Component... component) {
+    getElement().add(FOOTER_SLOT, component);
     return this;
-  }
-
-  /**
-   * Gets the footer panel instance.
-   *
-   * @return the footer panel
-   */
-  public Panel getFooter() {
-    return footer;
   }
 
   /**
    * Sets the dialog alignment.
    *
    * @param alignment the alignment
-   * @return the dialog
+   * @return the component itself
    * @see Alignment
    */
   public Dialog setAlignment(Alignment alignment) {
@@ -285,9 +267,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param autofocus the autofocus
-   * @return the dialog
+   * @return the component itself
    */
-  public Dialog setAutoFocus(boolean autofocus) {
+  public Dialog setAutofocus(boolean autofocus) {
     set(autoFocusProp, autofocus);
     return this;
   }
@@ -297,7 +279,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    *
    * @return the autofocus
    */
-  public boolean isAutoFocus() {
+  public boolean isAutofocus() {
     return get(autoFocusProp);
   }
 
@@ -309,7 +291,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param backdrop the backdrop
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setBackdrop(boolean backdrop) {
     set(backdropProp, backdrop);
@@ -333,7 +315,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param blurred the blurred
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setBlurred(boolean blurred) {
     set(blurredProp, blurred);
@@ -359,7 +341,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param breakpoint the breakpoint
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setBreakpoint(String breakpoint) {
     set(breakpointProp, breakpoint);
@@ -383,7 +365,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param cancelOnEscKey the cancel on esc key
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setCancelOnEscKey(boolean cancelOnEscKey) {
     set(cancelOnEscKeyProp, cancelOnEscKey);
@@ -407,7 +389,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param cancelOnOutsideClick the cancel on outside click
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setCancelOnOutsideClick(boolean cancelOnOutsideClick) {
     set(cancelOnOutsideClickProp, cancelOnOutsideClick);
@@ -427,13 +409,13 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * Sets whether closing the dialog by clicking outside or pressing the esc key is enabled.
    *
    * @param closeable the closeable
-   * @return the dialog
+   * @return the component itself
    * @see #setCancelOnOutsideClick(boolean)
    * @see #setCancelOnEscKey(boolean)
    */
   public Dialog setCloseable(boolean closeable) {
-    setCancelOnOutsideClick(false);
-    setCancelOnEscKey(false);
+    setCancelOnOutsideClick(closeable);
+    setCancelOnEscKey(closeable);
     return this;
   }
 
@@ -445,9 +427,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param fullscreen the fullscreen
-   * @return the dialog
+   * @return the component itself
    */
-  public Dialog setFullScreen(boolean fullscreen) {
+  public Dialog setFullscreen(boolean fullscreen) {
     set(fullscreenProp, fullscreen);
     return this;
   }
@@ -457,7 +439,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    *
    * @return the fullscreen
    */
-  public boolean isFullScreen() {
+  public boolean isFullscreen() {
     return get(fullscreenProp, true, Boolean.class);
   }
 
@@ -469,7 +451,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param maxHeight the max height
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setMaxHeight(String maxHeight) {
     set(maxHeightProp, maxHeight);
@@ -493,7 +475,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param maxWidth the max width
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setMaxWidth(String maxWidth) {
     set(maxWidthProp, maxWidth);
@@ -517,7 +499,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param moveable the moveable
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setMoveable(boolean moveable) {
     set(moveableProp, moveable);
@@ -536,9 +518,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
   /**
    * Shows the dialog.
    *
-   * @return the dialog
+   * @return the component itself
    */
-  public Dialog show() {
+  public Dialog open() {
     set(openedProp, true);
     return this;
   }
@@ -546,9 +528,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
   /**
    * Hides the dialog.
    *
-   * @return the dialog
+   * @return the component itself
    */
-  public Dialog hide() {
+  public Dialog close() {
     set(openedProp, false);
     return this;
   }
@@ -566,7 +548,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * Specifies the X position for the dialog.
    *
    * @param posx the X position
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setPosx(String posx) {
     set(posxProp, posx);
@@ -586,7 +568,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * Specifies the Y position for the dialog.
    *
    * @param posy the Y position
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setPosy(String posy) {
     set(posyProp, posy);
@@ -607,7 +589,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * viewport.
    *
    * @param snapThreshold the snap threshold
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setSnapThreshold(int snapThreshold) {
     set(snapThresholdProp, snapThreshold);
@@ -631,7 +613,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param snapToEdge the snap to edge
-   * @return the dialog
+   * @return the component itself
    */
   public Dialog setSnapToEdge(boolean snapToEdge) {
     set(snapToEdgeProp, snapToEdge);
@@ -655,7 +637,7 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * </p>
    *
    * @param theme the theme
-   * @return the dialog
+   * @return the component itself
    * @see Theme
    */
   public Dialog setTheme(Theme theme) {
@@ -676,8 +658,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Dialog addClassName(String className) {
-    addComponentClassName(className);
+    getElement().addClassName(className);
     return this;
   }
 
@@ -685,8 +668,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Dialog removeClassName(String className) {
-    removeComponentClassName(className);
+    getElement().removeClassName(className);
     return null;
   }
 
@@ -694,8 +678,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Dialog setStyle(String property, String value) {
-    setComponentStyle(property, value);
+    getElement().setStyle(property, value);
     return this;
   }
 
@@ -703,8 +688,9 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Dialog removeStyle(String property) {
-    removeComponentStyle(property);
+    getElement().removeStyle(property);
     return this;
   }
 
@@ -712,79 +698,63 @@ public class Dialog extends WebComponent implements HasClassName<Dialog>, HasSty
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getStyle(String property) {
-    return getComponentStyle(property);
+    return getElement().getStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getComputedStyle(String property) {
-    return getComponentComputedStyle(property);
+    return getElement().getComputedStyle(property);
   }
 
   /**
    * Adds a listener for the opened event.
    *
    * @param listener the listener
-   * @return the dialog
+   * @return A registration object for removing the event listener
    */
-  public Dialog addOpenListener(EventListener<DialogOpenEvent> listener) {
-    addEventListener(DialogOpenEvent.class, listener);
-    return this;
+  public ListenerRegistration<DialogOpenEvent> addOpenListener(
+      EventListener<DialogOpenEvent> listener) {
+    return addEventListener(DialogOpenEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addOpenListener(EventListener)}.
    *
    * @param listener the listener
-   * @return the dialog
+   * @return A registration object for removing the event listener
    */
-  public Dialog onOpen(EventListener<DialogOpenEvent> listener) {
+  public ListenerRegistration<DialogOpenEvent> onOpen(EventListener<DialogOpenEvent> listener) {
     return addOpenListener(listener);
-  }
-
-  /**
-   * Removes a listener for the opened event.
-   *
-   * @param listener the listener
-   * @return the dialog
-   */
-  public Dialog removeOpenListener(EventListener<DialogOpenEvent> listener) {
-    removeEventListener(DialogOpenEvent.class, listener);
-    return this;
   }
 
   /**
    * Adds a listener for the closed event.
    *
    * @param listener the listener
-   * @return the dialog
+   * @return A registration object for removing the event listener
    */
-  public Dialog addCloseListener(EventListener<DialogCloseEvent> listener) {
-    addEventListener(DialogCloseEvent.class, listener);
-    return this;
+  public ListenerRegistration<DialogCloseEvent> addCloseListener(
+      EventListener<DialogCloseEvent> listener) {
+    return addEventListener(DialogCloseEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addCloseListener(EventListener)}.
    *
    * @param listener the listener
-   * @return the dialog
+   * @return A registration object for removing the event listener
    */
-  public Dialog onClose(EventListener<DialogCloseEvent> listener) {
+  public ListenerRegistration<DialogCloseEvent> onClose(EventListener<DialogCloseEvent> listener) {
     return addCloseListener(listener);
   }
 
-  /**
-   * Removes a listener for the closed event.
-   *
-   * @param listener the listener
-   * @return the dialog
-   */
-  public Dialog removeCloseListener(EventListener<DialogCloseEvent> listener) {
-    removeEventListener(DialogCloseEvent.class, listener);
-    return this;
+  Element getOriginalElement() {
+    return getElement();
   }
 }

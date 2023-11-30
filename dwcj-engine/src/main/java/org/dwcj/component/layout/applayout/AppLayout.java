@@ -1,31 +1,34 @@
 package org.dwcj.component.layout.applayout;
 
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
+import org.dwcj.component.Component;
+import org.dwcj.component.element.Element;
+import org.dwcj.component.element.ElementCompositeContainer;
+import org.dwcj.component.element.PropertyDescriptor;
+import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.layout.applayout.event.AppLayoutDrawerCloseEvent;
 import org.dwcj.component.layout.applayout.event.AppLayoutDrawerOpenEvent;
-import org.dwcj.component.webcomponent.PropertyDescriptor;
-import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotation.NodeAttribute;
-import org.dwcj.component.webcomponent.annotation.NodeName;
-import org.dwcj.component.window.Panel;
+import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasStyle;
-import org.dwcj.concern.legacy.LegacyHasAttribute;
-import org.dwcj.concern.legacy.LegacyHasClassName;
-import org.dwcj.concern.legacy.LegacyHasVisibility;
+import org.dwcj.concern.HasVisibility;
 import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * AppLayout is a web component that provides a responsive layout for web apps.
  *
+ * <p>
  * The layout is responsive and it provides a header, a footer , a drawer, and content area. The
  * header and footer are fixed and the drawer slides in and out of the viewport and the content is
  * scrollable.
+ * </p>
  *
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
 @NodeName("bbj-app-layout")
-@NodeAttribute(name = "fit-viewport")
-public class AppLayout extends WebComponent
-    implements LegacyHasClassName, HasStyle, LegacyHasVisibility, LegacyHasAttribute {
+public class AppLayout extends ElementCompositeContainer
+    implements HasClassName<AppLayout>, HasStyle<AppLayout>, HasVisibility<AppLayout> {
 
   /**
    * The drawer placement.
@@ -153,11 +156,10 @@ public class AppLayout extends WebComponent
     }
   }
 
-  // Panels
-  private Panel header;
-  private Panel drawer;
-  private Panel content;
-  private Panel footer;
+  // Slots
+  private static final String HEADER_SLOT = "header";
+  private static final String DRAWER_SLOT = "drawer";
+  private static final String FOOTER_SLOT = "footer";
 
   // Property descriptors
   private final PropertyDescriptor<Boolean> drawerOpenProp =
@@ -180,7 +182,7 @@ public class AppLayout extends WebComponent
       PropertyDescriptor.property("footerOffscreen", true);
   private final PropertyDescriptor<Boolean> footerRevealProp =
       PropertyDescriptor.property("footerReveal", false);
-  private final PropertyDescriptor<String> headerSahdowProp =
+  private final PropertyDescriptor<String> headerShadowProp =
       PropertyDescriptor.property("headerShadow", Shadow.SCROLL.getValue());
   private final PropertyDescriptor<Boolean> headerFixedProp =
       PropertyDescriptor.property("headerFixed", true);
@@ -189,102 +191,60 @@ public class AppLayout extends WebComponent
   private final PropertyDescriptor<Boolean> headerRevealProp =
       PropertyDescriptor.property("headerReveal", false);
 
-  private boolean visible = true;
-
   /**
    * Instantiates a new app layout.
    */
   public AppLayout() {
     super();
-
-    this.setHeader(new Panel());
-    this.setDrawer(new Panel());
-    this.setContent(new Panel());
-    this.setFooter(new Panel());
+    getElement().setAttribute("fit-viewport", "");
   }
 
   /**
-   * Uses the passed panel in header slot.
+   * Add the given component to the applayout header slot.
    *
-   * @param header the header panel
-   * @return the app layout
+   * @param component the component to add
+   * @return the component itself
    */
-  public AppLayout setHeader(Panel header) {
-    this.header = header;
-    addSlot("header", header);
+  public AppLayout addToHeader(Component... component) {
+    getElement().add(HEADER_SLOT, component);
     return this;
   }
 
   /**
-   * Gets the header panel instance.
+   * Alias for {@link #add(Component)}.
    *
-   * @return the header panel
-   */
-  public Panel getHeader() {
-    return header;
-  }
-
-  /**
-   * Uses the passed panel in drawer slot.
+   * <p>
+   * Add the given component to the applayout content slot.
+   * </p>
    *
-   * @param drawer the drawer panel
-   * @return the app layout
+   * @param component the component to add
+   * @return the component itself
    */
-  public AppLayout setDrawer(Panel drawer) {
-    this.drawer = drawer;
-    addSlot("drawer", drawer);
+  public AppLayout addToContent(Component... component) {
+    add(component);
     return this;
   }
 
   /**
-   * Gets the drawer panel instance.
+   * Add the given component to the applayout drawer slot.
    *
-   * @return the drawer panel
+   * @param component the component to add
+   * @return the component itself
    */
-  public Panel getDrawer() {
-    return drawer;
-  }
-
-  /**
-   * Uses the passed panel in content slot.
-   *
-   * @param content the content panel
-   * @return the app layout
-   */
-  public AppLayout setContent(Panel content) {
-    this.content = content;
-    addSlot(content);
+  public AppLayout addToDrawer(Component... component) {
+    getElement().add(DRAWER_SLOT, component);
     return this;
   }
 
   /**
-   * Gets the content panel instance.
+   * Add the given component to the applayout footer slot.
    *
-   * @return the content panel
+   * @param component the component to add
+   * @return the component itself
    */
-  public Panel getContent() {
-    return content;
-  }
-
-  /**
-   * Uses the passed panel in footer slot.
-   *
-   * @param footer the footer panel
-   * @return the app layout
-   */
-  public AppLayout setFooter(Panel footer) {
-    this.footer = footer;
-    addSlot("footer", footer);
+  public AppLayout addToFooter(Component... component) {
+    getElement().add(FOOTER_SLOT, component);
     return this;
-  }
-
-  /**
-   * Gets the footer panel instance.
-   *
-   * @return the footer panel
-   */
-  public Panel getFooter() {
-    return footer;
   }
 
   /**
@@ -514,7 +474,7 @@ public class AppLayout extends WebComponent
    * @return the app layout
    */
   public AppLayout setHeaderShadow(Shadow headerShadow) {
-    set(headerSahdowProp, headerShadow.getValue());
+    set(headerShadowProp, headerShadow.getValue());
     return this;
   }
 
@@ -524,7 +484,7 @@ public class AppLayout extends WebComponent
    * @return the header shadow
    */
   public Shadow getHeaderShadow() {
-    return Shadow.fromValue(get(headerSahdowProp));
+    return Shadow.fromValue(get(headerShadowProp));
   }
 
   /**
@@ -581,11 +541,21 @@ public class AppLayout extends WebComponent
   }
 
   /**
+   * Checks if the header is reveal.
+   *
+   * @return true if the header is reveal, false otherwise
+   */
+  public boolean isHeaderReveal() {
+    return get(headerRevealProp);
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
-  public LegacyHasClassName addClassName(String className) {
-    addComponentClassName(className);
+  @ExcludeFromJacocoGeneratedReport
+  public AppLayout addClassName(String className) {
+    getElement().addClassName(className);
     return this;
   }
 
@@ -593,26 +563,19 @@ public class AppLayout extends WebComponent
    * {@inheritDoc}
    */
   @Override
-  public LegacyHasClassName removeClassName(String className) {
-    removeComponentClassName(className);
-    return this;
+  @ExcludeFromJacocoGeneratedReport
+  public AppLayout removeClassName(String className) {
+    getElement().removeClassName(className);
+    return null;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public AppLayout removeStyle(String property) {
-    removeComponentStyle(property);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
+  @ExcludeFromJacocoGeneratedReport
   public AppLayout setStyle(String property, String value) {
-    setComponentStyle(property, value);
+    getElement().setStyle(property, value);
     return this;
   }
 
@@ -620,122 +583,92 @@ public class AppLayout extends WebComponent
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
+  public AppLayout removeStyle(String property) {
+    getElement().removeStyle(property);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getStyle(String property) {
-    return getComponentStyle(property);
+    return getElement().getStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getComputedStyle(String property) {
-    return getComponentComputedStyle(property);
+    return getElement().getComputedStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public String getAttribute(String attribute) {
-    return getComponentAttribute(attribute);
+  public boolean isVisible() {
+    return getElement().isVisible();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public LegacyHasAttribute setAttribute(String attribute, String value) {
-    setComponentAttribute(attribute, value);
+  public AppLayout setVisible(boolean visible) {
+    getElement().setVisible(visible);
     return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public LegacyHasAttribute removeAttribute(String attribute) {
-    removeComponentAttribute(attribute);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Boolean isVisible() {
-    return visible;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public AppLayout setVisible(Boolean visible) {
-    this.visible = visible;
-    return setStyle("visibility", Boolean.TRUE.equals(visible) ? "visible" : "hidden");
   }
 
   /**
    * Adds a listener for the drawer opened event.
    *
    * @param listener the listener
-   * @return the app layout
+   * @return A registration object for removing the event listener
    */
-  public AppLayout addDrawerOpenListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
-    addEventListener(AppLayoutDrawerOpenEvent.class, listener);
-    return this;
+  public ListenerRegistration<AppLayoutDrawerOpenEvent> addDrawerOpenListener(
+      EventListener<AppLayoutDrawerOpenEvent> listener) {
+    return addEventListener(AppLayoutDrawerOpenEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addDrawerOpenListener(EventListener)}.
    *
    * @param listener the listener
-   * @return the app layout
+   * @return A registration object for removing the event listener
    */
-  public AppLayout onDrawerOpen(EventListener<AppLayoutDrawerOpenEvent> listener) {
+  public ListenerRegistration<AppLayoutDrawerOpenEvent> onDrawerOpen(
+      EventListener<AppLayoutDrawerOpenEvent> listener) {
     return addDrawerOpenListener(listener);
   }
 
   /**
-   * Removes a listener for the drawer opened event.
+   * Adds a listener for the drawer close event.
    *
    * @param listener the listener
-   * @return the app layout
+   * @return A registration object for removing the event listener
    */
-  public AppLayout removeDrawerOpenListener(EventListener<AppLayoutDrawerOpenEvent> listener) {
-    removeEventListener(AppLayoutDrawerOpenEvent.class, listener);
-    return this;
-  }
-
-  /**
-   * Adds a listener for the drawer closed event.
-   *
-   * @param listener the listener
-   * @return the app layout
-   */
-  public AppLayout addDrawerCloseListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
-    addEventListener(AppLayoutDrawerCloseEvent.class, listener);
-    return this;
+  public ListenerRegistration<AppLayoutDrawerCloseEvent> addDrawerCloseListener(
+      EventListener<AppLayoutDrawerCloseEvent> listener) {
+    return addEventListener(AppLayoutDrawerCloseEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addDrawerCloseListener(EventListener)}.
    *
    * @param listener the listener
-   * @return the app layout
+   * @return A registration object for removing the event listener
    */
-  public AppLayout onDrawerClose(EventListener<AppLayoutDrawerCloseEvent> listener) {
+  public ListenerRegistration<AppLayoutDrawerCloseEvent> onDrawerClose(
+      EventListener<AppLayoutDrawerCloseEvent> listener) {
     return addDrawerCloseListener(listener);
   }
 
-  /**
-   * Removes a listener for the drawer closed event.
-   *
-   * @param listener the listener
-   * @return the app layout
-   */
-  public AppLayout removeDrawerCloseListener(EventListener<AppLayoutDrawerCloseEvent> listener) {
-    removeEventListener(AppLayoutDrawerCloseEvent.class, listener);
-    return this;
+  Element getOriginalElement() {
+    return getElement();
   }
 }

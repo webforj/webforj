@@ -42,7 +42,8 @@ public class RadioButtonGroupChangeSink extends AbstractRadioButtonEventSink {
     map.put("checked", getComponentFromControl(event.getSelected()));
     map.put("unchecked", getComponentFromControl(event.getDeselected()));
 
-    RadioButtonGroupChangeEvent dwcEv = new RadioButtonGroupChangeEvent(getComponent(), map);
+    RadioButtonGroupChangeEvent dwcEv =
+        new RadioButtonGroupChangeEvent((RadioButtonGroup) getComponent(), map);
     getEventDispatcher().dispatchEvent(dwcEv);
   }
 
@@ -52,7 +53,7 @@ public class RadioButtonGroupChangeSink extends AbstractRadioButtonEventSink {
 
   private RadioButton getComponentFromControl(BBjRadioButton control) {
     if (control != null) {
-      List<RadioButton> buttons = getComponent().getRadioButtons();
+      List<RadioButton> buttons = ((RadioButtonGroup) getComponent()).getRadioButtons();
 
       for (RadioButton button : buttons) {
         try {

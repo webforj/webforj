@@ -75,19 +75,21 @@ public abstract class ComponentAccessor {
       throws IllegalAccessException;
 
   /**
-   * Retrieves the BBjControl for the specified DwcComponent.
+   * Retrieves the BBjControl for the specified Component.
    *
-   * @param component The DwcComponent for which to get the BBjControl.
+   * @param component The Component for which to get the BBjControl.
    * @return The associated BBjControl instance.
+   *
    * @throws IllegalAccessException If access to the control is not allowed.
    */
-  public abstract BBjControl getControl(DwcComponent<?> component) throws IllegalAccessException;
+  public abstract BBjControl getControl(Component component) throws IllegalAccessException;
 
   /**
-   * Creates a DWC component within the context of the specified window.
+   * Creates a component within the context of the specified window.
    *
-   * @param component The DWC component to create.
+   * @param component The component to create.
    * @param window The window within which the component is to be created.
+   *
    * @throws IllegalAccessException If the creation within the window is not permitted.
    */
   public abstract void create(Component component, Window window) throws IllegalAccessException;
