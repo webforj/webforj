@@ -721,7 +721,7 @@ public final class Element extends DwcContainer<Element>
     for (Object arg : arguments) {
       if (arg instanceof Component) {
         // For Component instances, get the client component ID
-        String clientComponentId = ((Component) arg).geClientComponentId();
+        String clientComponentId = ((Component) arg).getClientComponentId();
         jsonArgsArray.add("objects.get('" + clientComponentId + "')");
       } else {
         // For other arguments, serialize them

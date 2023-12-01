@@ -47,8 +47,8 @@ public abstract class Composite<T extends Component> extends Component {
    * {@inheritDoc}
    */
   @Override
-  public String geClientComponentId() {
-    return getBoundComponent().geClientComponentId();
+  public String getClientComponentId() {
+    return getBoundComponent().getClientComponentId();
   }
 
   /**

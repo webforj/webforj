@@ -96,7 +96,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public String geClientComponentId() {
+  public String getClientComponentId() {
     if (isAttached()) {
       try {
         return getControl().getClientObjectID();
