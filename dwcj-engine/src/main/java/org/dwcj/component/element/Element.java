@@ -389,8 +389,8 @@ public final class Element extends DwcContainer<Element>
    * @throws IllegalStateException if the given components is destroyed.
    */
   public void add(String slot, Component... component) {
-    add(component);
     slots.computeIfAbsent(slot, k -> new ArrayList<>()).addAll(List.of(component));
+    add(component);
   }
 
   /**
