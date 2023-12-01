@@ -19,7 +19,7 @@ import org.dwcj.exceptions.DwcjAppInitializeException;
  */
 @InlineStyleSheet(/* css */"""
     .BBjTopLevelWindow-center {
-      overflow: scroll
+      overflow: auto
     }
      """)
 public class WelcomeApp extends App {
