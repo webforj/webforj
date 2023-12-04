@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.dwcj.component.element.Element;
+import org.dwcj.component.element.event.DebouncePhase;
 import org.dwcj.component.element.event.ElementEvent;
 import org.dwcj.component.element.event.ElementEventOptions;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
@@ -86,10 +87,26 @@ public final class ElementEventSink extends AbstractDwcEventSink {
     BBjWebEventOptions controlOptions = theControl.newEventOptions();
     ElementEventOptions elementOptions = (ElementEventOptions) options;
 
+    // Set the code and filter
     controlOptions.setCode(elementOptions.getCode());
     controlOptions.setFilter(elementOptions.getFilter());
+
+    // Add the items
     for (Entry<String, String> entry : elementOptions.getItems().entrySet()) {
       controlOptions.addItem(entry.getKey(), entry.getValue());
+    }
+
+    // Set the debounce/throttle options
+    if (elementOptions.isDebounce()) {
+      DebouncePhase phase = elementOptions.getDebouncePhase();
+      boolean leading = phase.equals(DebouncePhase.LEADING) || phase.equals(DebouncePhase.BOTH);
+      boolean trailing = phase.equals(DebouncePhase.TRAILING) || phase.equals(DebouncePhase.BOTH);
+
+      controlOptions.setDebounce(elementOptions.getDebounceTimeout(), leading, trailing);
+    } else if (elementOptions.isThrottle()) {
+      controlOptions.setThrottle(elementOptions.getThrottleTimeout());
+    } else {
+      controlOptions.setImmediate();
     }
 
     int id = theControl.setCallback(type, handler, callback, controlOptions);

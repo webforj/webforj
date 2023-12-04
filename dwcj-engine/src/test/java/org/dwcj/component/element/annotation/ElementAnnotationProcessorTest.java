@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 import org.dwcj.component.Component;
 import org.dwcj.component.element.ElementComposite;
+import org.dwcj.component.element.event.DebouncePhase;
 import org.dwcj.component.element.event.ElementEventOptions;
 import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -85,7 +86,8 @@ class ElementAnnotationProcessorTest {
   void shouldProcessEventOptionsAnnotation() {
     @EventOptions(code = "123", filter = "sampleFilter",
         map = {@EventOptions.EventMapItem(key = "key1", exp = "expr1"),
-            @EventOptions.EventMapItem(key = "key2", exp = "expr2")})
+            @EventOptions.EventMapItem(key = "key2", exp = "expr2")},
+        debounce = @EventOptions.DebounceSettings(value = 100, phase = DebouncePhase.BOTH))
     class Listener {
     }
 
@@ -96,6 +98,8 @@ class ElementAnnotationProcessorTest {
     assertEquals("sampleFilter", eventOptions.getFilter());
     assertEquals("expr1", eventOptions.getItem("key1"));
     assertEquals("expr2", eventOptions.getItem("key2"));
+    assertEquals(100, eventOptions.getDebounceTimeout());
+    assertEquals(DebouncePhase.BOTH, eventOptions.getDebouncePhase());
   }
 
   @Test

@@ -31,7 +31,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-class ElementSinkTest {
+class ElementEventSinkTest {
 
   @Test
   @DisplayName("Test the payload of the event")
@@ -83,6 +83,7 @@ class ElementSinkTest {
 
     Element component = mock(Element.class);
     ElementEventOptions componentOptions = new ElementEventOptions(items, code, filter);
+    componentOptions.setDebounce(100);
 
     String eventType = "click";
     ElementEventSink sink = new ElementEventSink(component, eventType, new EventDispatcher());

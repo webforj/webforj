@@ -75,12 +75,24 @@ public final class ElementAnnotationProcessor {
     ElementEventOptions options = new ElementEventOptions();
 
     if (annotation != null) {
+      // Set code and filter
+      options.setCode(annotation.code());
+      options.setFilter(annotation.filter());
+
+      // Add the data
       for (EventOptions.EventMapItem dataItem : annotation.map()) {
         options.addItem(dataItem.key(), dataItem.exp());
       }
 
-      options.setCode(annotation.code());
-      options.setFilter(annotation.filter());
+      // Set debounce
+      if (annotation.debounce().value() >= 0) {
+        options.setDebounce(annotation.debounce().value(), annotation.debounce().phase());
+      }
+
+      // Set throttle
+      if (annotation.throttle() >= 0) {
+        options.setThrottle(annotation.throttle());
+      }
     }
 
     return options;

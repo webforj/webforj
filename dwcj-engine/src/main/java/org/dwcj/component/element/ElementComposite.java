@@ -44,7 +44,6 @@ public abstract class ElementComposite extends Composite<Element> {
   private final Map<ListenerRegistration<ElementEvent>, EventListener<? extends ComponentEvent<?>>> listenerRegistrations =
       new HashMap<>();
 
-
   /**
    * Gets the listeners for the given event class.
    *
@@ -230,8 +229,10 @@ public abstract class ElementComposite extends Composite<Element> {
     // 3. The options passed to the method
     ElementEventOptions eventOptionsFromEvent =
         ElementAnnotationProcessor.processEventOptions(eventClass);
+
     ElementEventOptions eventOptionsFromListener =
         ElementAnnotationProcessor.processEventOptions(listener.getClass());
+
     ElementEventOptions eventOptions = (new ElementEventOptions()).mergeWith(eventOptionsFromEvent,
         eventOptionsFromListener, options);
 

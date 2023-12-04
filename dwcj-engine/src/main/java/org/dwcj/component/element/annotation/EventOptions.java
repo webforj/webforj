@@ -6,6 +6,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.dwcj.component.element.event.DebouncePhase;
 
 /**
  * Annotation to configure ElementEventOptions.
@@ -13,8 +14,7 @@ import java.lang.annotation.Target;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER,
-    ElementType.LOCAL_VARIABLE})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
@@ -38,6 +38,21 @@ public @interface EventOptions {
   }
 
   /**
+   * Configures the event debounce behavior.
+   *
+   * @param Hyyan Abo Fakher
+   * @since 23.06
+   */
+  public @interface DebounceSettings {
+
+    /** The debounce delay in milliseconds. */
+    int value();
+
+    /** The debounce phase. */
+    DebouncePhase phase() default DebouncePhase.TRAILING;
+  }
+
+  /**
    * The event data as an array of {@link EventMapItem}, representing key-expression pairs.
    *
    * @return The event items to be added.
@@ -57,5 +72,19 @@ public @interface EventOptions {
    * @return The JavaScript filter expression for the event.
    */
   String filter() default "";
+
+  /**
+   * The debounce configuration for the event.
+   *
+   * @return The debounce configuration for the event.
+   */
+  DebounceSettings debounce() default @DebounceSettings(value = -1, phase = DebouncePhase.TRAILING);
+
+  /**
+   * The throttle configuration for the event.
+   *
+   * @return The throttle configuration for the event.
+   */
+  int throttle() default -1;
 }
 
