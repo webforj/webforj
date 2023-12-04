@@ -14,8 +14,8 @@ import org.dwcj.component.event.ComponentEvent;
  * @since 23.06
  */
 @EventName(value = "google-chart-select")
-@EventOptions(map = {
-    @EventOptions.EventMapItem(key = "selection", exp = "event.detail.chart.getSelection();")})
+@EventOptions(
+    data = {@EventOptions.EventData(key = "selection", exp = "event.detail.chart.getSelection();")})
 public final class GoogleChartSelectedEvent extends ComponentEvent<GoogleChart> {
 
   /**

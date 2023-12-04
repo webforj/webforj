@@ -85,8 +85,8 @@ class ElementAnnotationProcessorTest {
   @DisplayName("should process @EventOptions annotation")
   void shouldProcessEventOptionsAnnotation() {
     @EventOptions(code = "123", filter = "sampleFilter",
-        map = {@EventOptions.EventMapItem(key = "key1", exp = "expr1"),
-            @EventOptions.EventMapItem(key = "key2", exp = "expr2")},
+        data = {@EventOptions.EventData(key = "key1", exp = "expr1"),
+            @EventOptions.EventData(key = "key2", exp = "expr2")},
         debounce = @EventOptions.DebounceSettings(value = 100, phase = DebouncePhase.BOTH))
     class Listener {
     }
@@ -96,8 +96,8 @@ class ElementAnnotationProcessorTest {
 
     assertEquals("123", eventOptions.getCode());
     assertEquals("sampleFilter", eventOptions.getFilter());
-    assertEquals("expr1", eventOptions.getItem("key1"));
-    assertEquals("expr2", eventOptions.getItem("key2"));
+    assertEquals("expr1", eventOptions.getData("key1"));
+    assertEquals("expr2", eventOptions.getData("key2"));
     assertEquals(100, eventOptions.getDebounceTimeout());
     assertEquals(DebouncePhase.BOTH, eventOptions.getDebouncePhase());
   }
@@ -113,6 +113,6 @@ class ElementAnnotationProcessorTest {
 
     assertEquals("", eventOptions.getCode());
     assertEquals("", eventOptions.getFilter());
-    assertTrue(eventOptions.getItems().isEmpty());
+    assertTrue(eventOptions.getDataMap().isEmpty());
   }
 }

@@ -92,7 +92,7 @@ public final class ElementEventSink extends AbstractDwcEventSink {
     controlOptions.setFilter(elementOptions.getFilter());
 
     // Add the items
-    for (Entry<String, String> entry : elementOptions.getItems().entrySet()) {
+    for (Entry<String, String> entry : elementOptions.getDataMap().entrySet()) {
       controlOptions.addItem(entry.getKey(), entry.getValue());
     }
 

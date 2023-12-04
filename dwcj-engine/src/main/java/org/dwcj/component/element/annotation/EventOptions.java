@@ -25,7 +25,7 @@ public @interface EventOptions {
    * @author Hyyan Abo Fakher
    * @since 23.05
    */
-  public @interface EventMapItem {
+  public @interface EventData {
 
     /** Name of item data to create. */
     String key();
@@ -53,11 +53,11 @@ public @interface EventOptions {
   }
 
   /**
-   * The event data as an array of {@link EventMapItem}, representing key-expression pairs.
+   * The event data as an array of {@link EventData}, representing key-expression pairs.
    *
    * @return The event items to be added.
    */
-  EventMapItem[] map() default {};
+  EventData[] data() default {};
 
   /**
    * The JavaScript code to be executed when the event is fired.

@@ -80,8 +80,8 @@ public final class ElementAnnotationProcessor {
       options.setFilter(annotation.filter());
 
       // Add the data
-      for (EventOptions.EventMapItem dataItem : annotation.map()) {
-        options.addItem(dataItem.key(), dataItem.exp());
+      for (EventOptions.EventData dataItem : annotation.data()) {
+        options.addData(dataItem.key(), dataItem.exp());
       }
 
       // Set debounce

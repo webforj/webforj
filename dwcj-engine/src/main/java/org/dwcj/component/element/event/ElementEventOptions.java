@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public final class ElementEventOptions {
 
-  private final Map<String, String> items;
+  private final Map<String, String> data;
   private String code;
   private String filter;
   private int debounceTimeout = 0;
@@ -30,12 +30,12 @@ public final class ElementEventOptions {
   /**
    * Creates a new instance of the event options.
    *
-   * @param items The event items.
+   * @param data The event data.
    * @param code The event code.
    * @param filter The event filter.
    */
-  public ElementEventOptions(Map<String, String> items, String code, String filter) {
-    this.items = items == null ? new HashMap<>() : items;
+  public ElementEventOptions(Map<String, String> data, String code, String filter) {
+    this.data = data == null ? new HashMap<>() : data;
     setCode(code);
     setFilter(filter);
   }
@@ -67,7 +67,7 @@ public final class ElementEventOptions {
   }
 
   /**
-   * Adds an item to the event options.
+   * Adds an data item to the event options.
    *
    * <p>
    * The event options are used to pass data from the client to the server when an event is fired.
@@ -81,19 +81,19 @@ public final class ElementEventOptions {
    *
    * @return The options instance.
    */
-  public ElementEventOptions addItem(String name, String expression) {
-    items.put(name, expression);
+  public ElementEventOptions addData(String name, String expression) {
+    data.put(name, expression);
     return this;
   }
 
   /**
-   * Retrieves an item from the event options.
+   * Retrieves a data item from the event options.
    *
    * @param name The name of the item to retrieve.
    * @return The item value.
    */
-  public String getItem(String name) {
-    return items.get(name);
+  public String getData(String name) {
+    return data.get(name);
   }
 
   /**
@@ -101,8 +101,8 @@ public final class ElementEventOptions {
    *
    * @return Unmodifiable map of event items.
    */
-  public Map<String, String> getItems() {
-    return Collections.unmodifiableMap(items);
+  public Map<String, String> getDataMap() {
+    return Collections.unmodifiableMap(data);
   }
 
   /**
@@ -328,7 +328,7 @@ public final class ElementEventOptions {
     for (ElementEventOptions option : options) {
       if (option != null) {
         // Merge items
-        this.items.putAll(option.getItems());
+        this.data.putAll(option.getDataMap());
 
         // Override code and filter if present in the currentOption
         if (!option.getCode().isEmpty()) {
@@ -359,7 +359,7 @@ public final class ElementEventOptions {
    */
   @Override
   public String toString() {
-    return "ElementEventOptions{" + "items=" + items + ", code='" + code + '\'' + ", filter='"
+    return "ElementEventOptions{" + "items=" + data + ", code='" + code + '\'' + ", filter='"
         + filter + '\'' + ", debounceTimeout=" + debounceTimeout + ", debouncePhase="
         + debouncePhase + ", throttleTimeout=" + throttleTimeout + ", isDebounce=" + isDebounce
         + ", isThrottle=" + isThrottle + '}';
