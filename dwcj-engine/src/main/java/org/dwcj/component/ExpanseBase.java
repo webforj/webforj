@@ -9,11 +9,4 @@ package org.dwcj.component;
  * @since 23.02
  */
 public interface ExpanseBase {
-
-  /**
-   * Gets the current expanse value.
-   *
-   * @return the current expanse value
-   */
-  public String getValue();
 }

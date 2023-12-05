@@ -1,5 +1,6 @@
 package org.dwcj.component.layout.applayout;
 
+import com.google.gson.annotations.SerializedName;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.Component;
 import org.dwcj.component.element.Element;
@@ -35,60 +36,16 @@ public class AppLayout extends ElementCompositeContainer
    */
   public enum DrawerPlacement {
     /** The drawer is placed on the right side. */
-    RIGHT("right"),
+    @SerializedName("right")
+    RIGHT,
 
     /** The drawer is placed on the left side. */
-    LEFT("left"),
+    @SerializedName("left")
+    LEFT,
 
     /** The drawer is hidden. */
-    HIDDEN("hidden");
-
-    /** The drawer placement value. */
-    private final String value;
-
-    /**
-     * Instantiates a new drawer placement.
-     *
-     * @param value the value
-     */
-    DrawerPlacement(String value) {
-      this.value = value;
-    }
-
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    public String getValue() {
-      return value;
-    }
-
-    /**
-     * Gets the drawer placement from value.
-     *
-     * @param value the value to parse
-     * @return the drawer placement
-     */
-    public static DrawerPlacement fromValue(String value) {
-      for (DrawerPlacement placement : DrawerPlacement.values()) {
-        if (placement.getValue().equals(value)) {
-          return placement;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * Gets the drawer placement value as string.
-     *
-     * @return the string
-     */
-    @Override
-    public String toString() {
-      return value;
-    }
+    @SerializedName("hidden")
+    HIDDEN;
   }
 
   /**
@@ -98,62 +55,18 @@ public class AppLayout extends ElementCompositeContainer
     /**
      * No shadow is applied.
      */
-    HIDDEN("none"),
+    @SerializedName("none")
+    HIDDEN,
     /**
      * The shadow is applied when the content is scrolled.
      */
-    SCROLL("scroll"),
+    @SerializedName("scroll")
+    SCROLL,
     /**
      * The shadow is always applied.
      */
-    ALWAYS("always");
-
-    /** The header shadow value. */
-    private final String value;
-
-    /**
-     * Instantiates a new header shadow.
-     *
-     * @param value the value
-     */
-    Shadow(String value) {
-      this.value = value;
-    }
-
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    public String getValue() {
-      return value;
-    }
-
-    /**
-     * Gets the header shadow from value.
-     *
-     * @param value the value to parse
-     * @return the header shadow
-     */
-    public static Shadow fromValue(String value) {
-      for (Shadow shadow : Shadow.values()) {
-        if (shadow.getValue().equals(value)) {
-          return shadow;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * Gets the header shadow value as string.
-     *
-     * @return the string
-     */
-    @Override
-    public String toString() {
-      return value;
-    }
+    @SerializedName("always")
+    ALWAYS;
   }
 
   // Slots
@@ -170,20 +83,20 @@ public class AppLayout extends ElementCompositeContainer
       PropertyDescriptor.property("drawerOverlay", false);
   private final PropertyDescriptor<String> drawerWidthProp =
       PropertyDescriptor.property("drawerWidth", "16em");
-  private final PropertyDescriptor<String> drawerPlacementProp =
-      PropertyDescriptor.property("drawerPlacement", DrawerPlacement.LEFT.getValue());
+  private final PropertyDescriptor<DrawerPlacement> drawerPlacementProp =
+      PropertyDescriptor.property("drawerPlacement", DrawerPlacement.LEFT);
   private final PropertyDescriptor<String> drawerBreakPointProp =
       PropertyDescriptor.property("drawerBreakpoint", "(max-width: 800px)");
-  private final PropertyDescriptor<String> footerShadowProp =
-      PropertyDescriptor.property("footerShadow", Shadow.HIDDEN.getValue());
+  private final PropertyDescriptor<Shadow> footerShadowProp =
+      PropertyDescriptor.property("footerShadow", Shadow.HIDDEN);
   private final PropertyDescriptor<Boolean> footerFixedProp =
       PropertyDescriptor.property("footerFixed", true);
   private final PropertyDescriptor<Boolean> footerOffscreenProp =
       PropertyDescriptor.property("footerOffscreen", true);
   private final PropertyDescriptor<Boolean> footerRevealProp =
       PropertyDescriptor.property("footerReveal", false);
-  private final PropertyDescriptor<String> headerShadowProp =
-      PropertyDescriptor.property("headerShadow", Shadow.SCROLL.getValue());
+  private final PropertyDescriptor<Shadow> headerShadowProp =
+      PropertyDescriptor.property("headerShadow", Shadow.SCROLL);
   private final PropertyDescriptor<Boolean> headerFixedProp =
       PropertyDescriptor.property("headerFixed", true);
   private final PropertyDescriptor<Boolean> headerOffscreenProp =
@@ -345,7 +258,7 @@ public class AppLayout extends ElementCompositeContainer
    * @return the app layout
    */
   public AppLayout setDrawerPlacement(DrawerPlacement drawerPlacement) {
-    set(drawerPlacementProp, drawerPlacement.getValue());
+    set(drawerPlacementProp, drawerPlacement);
     return this;
   }
 
@@ -355,7 +268,7 @@ public class AppLayout extends ElementCompositeContainer
    * @return the drawer placement
    */
   public DrawerPlacement getDrawerPlacement() {
-    return DrawerPlacement.fromValue(get(drawerPlacementProp));
+    return get(drawerPlacementProp);
   }
 
   /**
@@ -392,7 +305,7 @@ public class AppLayout extends ElementCompositeContainer
    * @return the app layout
    */
   public AppLayout setFooterShadow(Shadow footerShadow) {
-    set(footerShadowProp, footerShadow.getValue());
+    set(footerShadowProp, footerShadow);
     return this;
   }
 
@@ -402,7 +315,7 @@ public class AppLayout extends ElementCompositeContainer
    * @return the footer shadow
    */
   public Shadow getFooterShadow() {
-    return Shadow.fromValue(get(footerShadowProp));
+    return get(footerShadowProp);
   }
 
   /**
@@ -474,7 +387,7 @@ public class AppLayout extends ElementCompositeContainer
    * @return the app layout
    */
   public AppLayout setHeaderShadow(Shadow headerShadow) {
-    set(headerShadowProp, headerShadow.getValue());
+    set(headerShadowProp, headerShadow);
     return this;
   }
 
@@ -484,7 +397,7 @@ public class AppLayout extends ElementCompositeContainer
    * @return the header shadow
    */
   public Shadow getHeaderShadow() {
-    return Shadow.fromValue(get(headerShadowProp));
+    return get(headerShadowProp);
   }
 
   /**

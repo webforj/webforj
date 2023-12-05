@@ -14,8 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
 class DrawerTest {
   Drawer component;
@@ -33,20 +31,11 @@ class DrawerTest {
     void shouldSetGetProperties() {
       try {
         PropertyDescriptorTester.run(Drawer.class, component, descriptor -> {
-          return !Arrays.asList("placement", "opened").contains(descriptor.getName());
+          return !Arrays.asList("opened").contains(descriptor.getName());
         });
       } catch (Exception e) {
         fail("PropertyDescriptor test failed: " + e.getMessage());
       }
-    }
-
-    @ParameterizedTest
-    @EnumSource(Drawer.Placement.class)
-    void shouldSetGetPlacement(Drawer.Placement placement) {
-      component.setPlacement(placement);
-
-      assertEquals(placement, component.getPlacement());
-      assertEquals(placement.getValue(), component.getOriginalElement().getProperty("placement"));
     }
 
     @Test

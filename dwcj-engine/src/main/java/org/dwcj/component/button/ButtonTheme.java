@@ -1,82 +1,83 @@
 package org.dwcj.component.button;
 
+import com.google.gson.annotations.SerializedName;
 import org.dwcj.component.ThemeBase;
 
 /**
- * Supported button themes as defined by the BBj Theme Engine.
+ * Supported button themes as defined by the Dwc Theme Engine.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
 public enum ButtonTheme implements ThemeBase {
   /**
-   * The danger theme as defined by the BBj Theme Engine.
+   * The danger theme as defined by the Dwc Theme Engine.
    **/
-  DANGER("danger"),
+  @SerializedName("danger")
+  DANGER,
   /**
-   * The outlined-danger theme as defined by the BBj Theme Engine.
+   * The outlined-danger theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_DANGER("outlined-danger"),
+  @SerializedName("outlined-danger")
+  OUTLINED_DANGER,
   /**
-   * The default theme as defined by the BBj Theme Engine.
+   * The default theme as defined by the Dwc Theme Engine.
    **/
-  DEFAULT("default"),
+  @SerializedName("default")
+  DEFAULT,
   /**
-   * The outlined-default theme as defined by the BBj Theme Engine.
+   * The outlined-default theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_DEFAULT("outlined-default"),
+  @SerializedName("outlined-default")
+  OUTLINED_DEFAULT,
   /**
-   * The gray theme as defined by the BBj Theme Engine.
+   * The gray theme as defined by the Dwc Theme Engine.
    **/
-  GRAY("gray"),
+  @SerializedName("gray")
+  GRAY,
   /**
-   * The outlined-gray theme as defined by the BBj Theme Engine.
+   * The outlined-gray theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_GRAY("outlined-gray"),
+  @SerializedName("outlined-gray")
+  OUTLINED_GRAY,
   /**
-   * The info theme as defined by the BBj Theme Engine.
+   * The info theme as defined by the Dwc Theme Engine.
    **/
-  INFO("info"),
+  @SerializedName("info")
+  INFO,
   /**
-   * The outlined-info theme as defined by the BBj Theme Engine.
+   * The outlined-info theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_INFO("outlined-info"),
+  @SerializedName("outlined-info")
+  OUTLINED_INFO,
   /**
-   * The primary theme as defined by the BBj Theme Engine.
+   * The primary theme as defined by the Dwc Theme Engine.
    **/
-  PRIMARY("primary"),
+  @SerializedName("primary")
+  PRIMARY,
   /**
-   * The outlined-primary theme as defined by the BBj Theme Engine.
+   * The outlined-primary theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_PRIMARY("outlined-primary"),
+  @SerializedName("outlined-primary")
+  OUTLINED_PRIMARY,
   /**
-   * The success theme as defined by the BBj Theme Engine.
+   * The success theme as defined by the Dwc Theme Engine.
    **/
-  SUCCESS("success"),
+  @SerializedName("success")
+  SUCCESS,
   /**
-   * The outlined-success theme as defined by the BBj Theme Engine.
+   * The outlined-success theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_SUCCESS("outlined-success"),
+  @SerializedName("outlined-success")
+  OUTLINED_SUCCESS,
   /**
-   * The warning theme as defined by the BBj Theme Engine.
+   * The warning theme as defined by the Dwc Theme Engine.
    **/
-  WARNING("warning"),
+  @SerializedName("warning")
+  WARNING,
   /**
-   * The outlined-warning theme as defined by the BBj Theme Engine.
+   * The outlined-warning theme as defined by the Dwc Theme Engine.
    **/
-  OUTLINED_WARNING("outlined-warning");
-
-  private final String value;
-
-  ButtonTheme(String value) {
-    this.value = value;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getValue() {
-    return this.value;
-  }
+  @SerializedName("outlined-warning")
+  OUTLINED_WARNING;
 }

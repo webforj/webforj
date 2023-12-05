@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
 import java.util.List;
 import org.dwcj.component.Component;
 import org.dwcj.component.element.PropertyDescriptorTester;
@@ -16,8 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
 class AppLayoutTest {
 
@@ -35,41 +32,10 @@ class AppLayoutTest {
     @Test
     void shouldSetGetProperties() {
       try {
-        PropertyDescriptorTester.run(AppLayout.class, component, descriptor -> {
-          return !Arrays.asList("drawerPlacement", "footerShadow", "headerShadow")
-              .contains(descriptor.getName());
-        });
+        PropertyDescriptorTester.run(AppLayout.class, component);
       } catch (Exception e) {
         fail("PropertyDescriptor test failed: " + e.getMessage());
       }
-    }
-
-    @ParameterizedTest
-    @EnumSource(AppLayout.DrawerPlacement.class)
-    void shouldSetGetDrawerPlacement(AppLayout.DrawerPlacement placement) {
-      component.setDrawerPlacement(placement);
-
-      assertEquals(placement, component.getDrawerPlacement());
-      assertEquals(placement.getValue(),
-          component.getOriginalElement().getProperty("drawerPlacement"));
-    }
-
-    @ParameterizedTest
-    @EnumSource(AppLayout.Shadow.class)
-    void shouldSetGetFooterShadow(AppLayout.Shadow shadow) {
-      component.setFooterShadow(shadow);
-
-      assertEquals(shadow, component.getFooterShadow());
-      assertEquals(shadow.getValue(), component.getOriginalElement().getProperty("footerShadow"));
-    }
-
-    @ParameterizedTest
-    @EnumSource(AppLayout.Shadow.class)
-    void shouldSetGetHeaderShadow(AppLayout.Shadow shadow) {
-      component.setHeaderShadow(shadow);
-
-      assertEquals(shadow, component.getHeaderShadow());
-      assertEquals(shadow.getValue(), component.getOriginalElement().getProperty("headerShadow"));
     }
   }
 

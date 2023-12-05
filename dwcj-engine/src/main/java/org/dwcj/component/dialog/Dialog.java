@@ -1,7 +1,9 @@
 package org.dwcj.component.dialog;
 
+import com.google.gson.annotations.SerializedName;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.Component;
+import org.dwcj.component.Theme;
 import org.dwcj.component.dialog.event.DialogCloseEvent;
 import org.dwcj.component.dialog.event.DialogOpenEvent;
 import org.dwcj.component.element.Element;
@@ -28,117 +30,16 @@ public class Dialog extends ElementCompositeContainer
    */
   public enum Alignment {
     /** The dialog will be aligned to the bottom of the screen. */
-    BOTTOM("bottom"),
+    @SerializedName("bottom")
+    BOTTOM,
 
     /** The dialog will be aligned to the center of the screen. */
-    CENTER("center"),
+    @SerializedName("center")
+    CENTER,
 
     /** The dialog will be aligned to the top of the screen. */
-    TOP("top");
-
-    private final String value;
-
-    Alignment(String value) {
-      this.value = value;
-    }
-
-    /**
-     * Get the value of the enum.
-     *
-     * @return the value
-     */
-    public String getValue() {
-      return value;
-    }
-
-    /**
-     * Get the enum from the value.
-     *
-     * @param value the value
-     * @return the enum
-     */
-    public static Alignment fromValue(String value) {
-      for (Alignment alignment : Alignment.values()) {
-        if (alignment.value.equalsIgnoreCase(value)) {
-          return alignment;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-      return value;
-    }
-  }
-
-  /**
-   * The dialog themes.
-   */
-  public enum Theme {
-    /** The dialog will be themed as a danger dialog. */
-    DANGER("danger"),
-
-    /** The dialog will be themed as a default dialog. */
-    DEFAULT("default"),
-
-    /** The dialog will be themed as a gray dialog. */
-    GRAY("gray"),
-
-    /** The dialog will be themed as an info dialog. */
-    INFO("info"),
-
-    /** The dialog will be themed as a primary dialog. */
-    PRIMARY("primary"),
-
-    /** The dialog will be themed as a success dialog. */
-    SUCCESS("success"),
-
-    /** The dialog will be themed as a warning dialog. */
-    WARNING("warning");
-
-    private final String value;
-
-    Theme(String value) {
-      this.value = value;
-    }
-
-    /**
-     * Gets the value of the enum.
-     *
-     * @return the value
-     */
-    public String getValue() {
-      return value;
-    }
-
-    /**
-     * Gets the enum from the value.
-     *
-     * @param value the value
-     * @return the enum
-     */
-    public static Theme fromValue(String value) {
-      for (Theme theme : Theme.values()) {
-        if (theme.value.equalsIgnoreCase(value)) {
-          return theme;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-      return value;
-    }
+    @SerializedName("top")
+    TOP;
   }
 
   // Slots
@@ -147,8 +48,8 @@ public class Dialog extends ElementCompositeContainer
   private static final String FOOTER_SLOT = "footer";
 
   // Properties
-  private final PropertyDescriptor<String> alignmentProp =
-      PropertyDescriptor.property("alignment", Alignment.CENTER.getValue());
+  private final PropertyDescriptor<Alignment> alignmentProp =
+      PropertyDescriptor.property("alignment", Alignment.CENTER);
   private final PropertyDescriptor<Boolean> autoFocusProp =
       PropertyDescriptor.property("autofocus", false);
   private final PropertyDescriptor<Boolean> backdropProp =
@@ -177,8 +78,8 @@ public class Dialog extends ElementCompositeContainer
       PropertyDescriptor.property("snapThreshold", 0);
   private final PropertyDescriptor<Boolean> snapToEdgeProp =
       PropertyDescriptor.property("snapToEdge", true);
-  private final PropertyDescriptor<String> theme =
-      PropertyDescriptor.property("theme", Theme.DEFAULT.getValue());
+  private final PropertyDescriptor<Theme> theme =
+      PropertyDescriptor.property("theme", Theme.DEFAULT);
 
   /**
    * Instantiates a new Dialog.
@@ -245,7 +146,7 @@ public class Dialog extends ElementCompositeContainer
    * @see Alignment
    */
   public Dialog setAlignment(Alignment alignment) {
-    set(alignmentProp, alignment.getValue());
+    set(alignmentProp, alignment);
     return this;
   }
 
@@ -256,7 +157,7 @@ public class Dialog extends ElementCompositeContainer
    * @see Alignment
    */
   public Alignment getAlignment() {
-    return Alignment.fromValue(get(alignmentProp));
+    return get(alignmentProp);
   }
 
   /**
@@ -641,7 +542,7 @@ public class Dialog extends ElementCompositeContainer
    * @see Theme
    */
   public Dialog setTheme(Theme theme) {
-    set(this.theme, theme.getValue());
+    set(this.theme, theme);
     return this;
   }
 
@@ -651,7 +552,7 @@ public class Dialog extends ElementCompositeContainer
    * @return the theme
    */
   public Theme getTheme() {
-    return Theme.fromValue(get(theme));
+    return get(theme);
   }
 
   /**

@@ -1,5 +1,6 @@
 package org.dwcj.addons.googlecharts;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,14 +48,16 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/areachart">Area
      *      Chart</a>
      **/
-    AREA("area"),
+    @SerializedName("area")
+    AREA,
     /**
      * A bar chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/barchart">Bar
      *      Chart</a>
      **/
-    BAR("bar"),
+    @SerializedName("bar")
+    BAR,
     /**
      * A bubble chart.
      *
@@ -62,7 +65,8 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/bubblechart">Bubble
      *      Chart</a>
      **/
-    BUBBLE("bubble"),
+    @SerializedName("bubble")
+    BUBBLE,
     /**
      * A calendar chart.
      *
@@ -70,7 +74,8 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/calendar">Calendar
      *      Chart</a>
      **/
-    CALENDAR("calendar"),
+    @SerializedName("calendar")
+    CALENDAR,
     /**
      * A candlestick chart.
      *
@@ -78,7 +83,8 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/candlestickchart">Candlestick
      *      Chart</a>
      **/
-    CANDLESTICK("candlestick"),
+    @SerializedName("candlestick")
+    CANDLESTICK,
     /**
      * A column chart.
      *
@@ -86,35 +92,40 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/columnchart">Column
      *      Chart</a>
      **/
-    COLUMN("column"),
+    @SerializedName("column")
+    COLUMN,
     /**
      * A combo chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/combochart">Combo
      *      Chart</a>
      **/
-    COMBO("combo"),
+    @SerializedName("combo")
+    COMBO,
     /**
      * A gantt chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/ganttchart">Gantt
      *      Chart</a>
      **/
-    GANTT("gantt"),
+    @SerializedName("gantt")
+    GANTT,
     /**
      * A gauge chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/gauge">Gauge
      *      Chart</a>
      **/
-    GAUGE("gauge"),
+    @SerializedName("gauge")
+    GAUGE,
     /**
      * A geo chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/geochart">Geo
      *      Chart</a>
      **/
-    GEO("geo"),
+    @SerializedName("geo")
+    GEO,
     /**
      * A histogram chart.
      *
@@ -122,28 +133,32 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/histogram">Histogram
      *      Chart</a>
      **/
-    HISTOGRAM("histogram"),
+    @SerializedName("histogram")
+    HISTOGRAM,
     /**
      * A line chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/linechart">Line
      *      Chart</a>
      **/
-    LINE("line"),
+    @SerializedName("line")
+    LINE,
     /**
      * A map chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/map">Map
      *      Chart</a>
      **/
-    ORG("org"),
+    @SerializedName("org")
+    ORG,
     /**
      * A pie chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/piechart">Pie
      *      Chart</a>
      **/
-    PIE("pie"),
+    @SerializedName("pie")
+    PIE,
     /**
      * A scatter chart.
      *
@@ -151,7 +166,8 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/scatterchart">Scatter
      *      Chart</a>
      **/
-    SANKEY("sankey"),
+    @SerializedName("sankey")
+    SANKEY,
     /**
      * A scatter chart.
      *
@@ -159,7 +175,8 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/scatterchart">Scatter
      *      Chart</a>
      **/
-    SCATTER("scatter"),
+    @SerializedName("scatter")
+    SCATTER,
     /**
      * A stepped area chart.
      *
@@ -167,14 +184,16 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      "https://developers.google.com/chart/interactive/docs/gallery/steppedareachart">Stepped
      *      Area Chart</a>
      **/
-    STEPPED_AREA("stepped-area"),
+    @SerializedName("stepped-area")
+    STEPPED_AREA,
     /**
      * A table chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/table">Table
      *      Chart</a>
      **/
-    TABLE("table"),
+    @SerializedName("table")
+    TABLE,
     /**
      * A timeline chart.
      *
@@ -185,65 +204,28 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
      *      href=https://developers.google.com/chart/interactive/docs/datesandtimes#dates-and-times-using-the-date-string-representation>Timeline
      *      Chart Date Format</a>
      **/
-    TIMELINE("timeline"),
+    @SerializedName("timeline")
+    TIMELINE,
     /**
      * A treemap chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/treemap">Treemap
      *      Chart</a>
      **/
-    TREEMAP("treemap"),
+    @SerializedName("treemap")
+    TREEMAP,
     /**
      * A word tree chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/wordtree">Word
      *      Tree Chart</a>
      **/
-    WORDTREE("wordtree");
-
-    private final String chartType;
-
-    Type(String type) {
-      this.chartType = type;
-    }
-
-    /**
-     * Get the value of the type.
-     *
-     * @return The value of the type.
-     */
-    public String getValue() {
-      return chartType;
-    }
-
-    /**
-     * Get the type from the value.
-     *
-     * @param type The value of the type.
-     * @return The type.
-     */
-    public static Type fromValue(String type) {
-      for (Type t : Type.values()) {
-        if (t.chartType.equalsIgnoreCase(type)) {
-          return t;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-      return chartType;
-    }
+    @SerializedName("wordtree")
+    WORDTREE;
   }
 
   // Properties
-  private final PropertyDescriptor<String> typeProp =
-      PropertyDescriptor.property("type", Type.BAR.getValue());
+  private final PropertyDescriptor<Type> typeProp = PropertyDescriptor.property("type", Type.BAR);
   private final PropertyDescriptor<List<Object>> dataProp =
       PropertyDescriptor.property("data", new ArrayList<>());
   private final PropertyDescriptor<Map<String, Object>> optionProp =
@@ -286,7 +268,7 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
    *      Visualization API reference (Chart Gallery)</a>
    */
   public GoogleChart setType(Type type) {
-    set(typeProp, type.getValue());
+    set(typeProp, type);
     return this;
   }
 
@@ -297,7 +279,7 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
    * @see Type
    */
   public Type getType() {
-    return Type.fromValue(get(typeProp));
+    return get(typeProp);
   }
 
   /**

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class DialogTest {
@@ -40,29 +39,11 @@ class DialogTest {
     void shouldSetGetProperties() {
       try {
         PropertyDescriptorTester.run(Dialog.class, component, descriptor -> {
-          return !Arrays.asList("alignment", "theme", "opened").contains(descriptor.getName());
+          return !Arrays.asList("opened").contains(descriptor.getName());
         });
       } catch (Exception e) {
         fail("PropertyDescriptor test failed: " + e.getMessage());
       }
-    }
-
-    @ParameterizedTest
-    @EnumSource(Dialog.Alignment.class)
-    void shouldSetGetAlignment(Dialog.Alignment alignment) {
-      component.setAlignment(alignment);
-
-      assertEquals(alignment, component.getAlignment());
-      assertEquals(alignment.getValue(), component.getOriginalElement().getProperty("alignment"));
-    }
-
-    @ParameterizedTest
-    @EnumSource(Dialog.Theme.class)
-    void shouldSetGetTheme(Dialog.Theme theme) {
-      component.setTheme(theme);
-
-      assertEquals(theme, component.getTheme());
-      assertEquals(theme.getValue(), component.getOriginalElement().getProperty("theme"));
     }
 
     @Test

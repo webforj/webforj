@@ -1,5 +1,6 @@
 package org.dwcj.component.drawer;
 
+import com.google.gson.annotations.SerializedName;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.component.drawer.Drawer;
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
@@ -29,69 +30,28 @@ public class Drawer extends ElementCompositeContainer
    */
   public enum Placement {
     /** The drawer will be placed at the top of the viewport. */
-    TOP("top"),
+    @SerializedName("top")
+    TOP,
 
     /** The drawer will be placed at the top center of the viewport. */
-    TOP_CENTER("top-center"),
+    @SerializedName("top-center")
+    TOP_CENTER,
 
     /** The drawer will be placed at the bottom of the viewport. */
-    BOTTOM("bottom"),
+    @SerializedName("bottom")
+    BOTTOM,
 
     /** The drawer will be placed at the bottom center of the viewport. */
-    BOTTOM_CENTER("bottom-center"),
+    @SerializedName("bottom-center")
+    BOTTOM_CENTER,
 
     /** The drawer will be placed at the left of the viewport. */
-    LEFT("left"),
+    @SerializedName("left")
+    LEFT,
 
     /** The drawer will be placed at the right of the viewport. */
-    RIGHT("right");
-
-    /** The drawer placement value. */
-    private final String value;
-
-    /**
-     * Instantiates a new drawer placement.
-     *
-     * @param value the value
-     */
-    Placement(String value) {
-      this.value = value;
-    }
-
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    public String getValue() {
-      return value;
-    }
-
-    /**
-     * Gets the drawer placement from value.
-     *
-     * @param value the value to parse
-     * @return the drawer placement
-     */
-    public static Placement fromValue(String value) {
-      for (Placement placement : Placement.values()) {
-        if (placement.getValue().equals(value)) {
-          return placement;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * Gets the drawer placement value as string.
-     *
-     * @return the string
-     */
-    @Override
-    public String toString() {
-      return value;
-    }
+    @SerializedName("right")
+    RIGHT;
   }
 
   private final PropertyDescriptor<Boolean> autoFocusProp =
@@ -102,8 +62,8 @@ public class Drawer extends ElementCompositeContainer
       PropertyDescriptor.property("maxSize", "100%");
   private final PropertyDescriptor<Boolean> openedProp =
       PropertyDescriptor.property("opened", false);
-  private final PropertyDescriptor<String> placementProp =
-      PropertyDescriptor.property("placement", Placement.LEFT.getValue());
+  private final PropertyDescriptor<Placement> placementProp =
+      PropertyDescriptor.property("placement", Placement.LEFT);
   private final PropertyDescriptor<String> sizeProp = PropertyDescriptor.property("size", "16em");
 
   /**
@@ -219,7 +179,7 @@ public class Drawer extends ElementCompositeContainer
    * @return the drawer
    */
   public Drawer setPlacement(Placement placement) {
-    set(placementProp, placement.getValue());
+    set(placementProp, placement);
     return this;
   }
 
@@ -229,7 +189,7 @@ public class Drawer extends ElementCompositeContainer
    * @return the drawer placement
    */
   public Placement getPlacement() {
-    return Placement.fromValue(get(placementProp));
+    return get(placementProp);
   }
 
   /**
