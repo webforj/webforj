@@ -17,7 +17,7 @@ public final class ElementAnnotationProcessor {
   private ElementAnnotationProcessor() {}
 
   /**
-   * Gets the node name from the webcomponent class annotation.
+   * Gets the node name from the class annotation.
    *
    * @see NodeName
    *
