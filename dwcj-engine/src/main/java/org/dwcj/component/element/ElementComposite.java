@@ -67,10 +67,19 @@ public abstract class ElementComposite extends Composite<Element> {
   protected final Element initBoundComponent() {
     Element element = super.getBoundComponent();
     if (element == null) {
-      return new Element(ElementAnnotationProcessor.processNodeName(getClass()));
+      return new Element(getNodeName());
     }
 
     return element;
+  }
+
+  /**
+   * Gets the node name of the element.
+   *
+   * @return the node name
+   */
+  protected String getNodeName() {
+    return ElementAnnotationProcessor.processNodeName(getClass());
   }
 
   /**
