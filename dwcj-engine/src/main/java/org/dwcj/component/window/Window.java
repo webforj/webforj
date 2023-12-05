@@ -34,16 +34,16 @@ public abstract class Window extends LegacyDwcComponent {
    */
   public Window add(Component... ctrl) {
     for (Component c : ctrl) {
-      if (Boolean.FALSE.equals(c.isDestroyed())) {
-        try {
-          AnnotationProcessor processor = new AnnotationProcessor();
-          processor.processControlAnnotations(c);
-          ComponentAccessor.getDefault().create(c, this);
-          components.put(c.getComponentId(), c);
-        } catch (IllegalAccessException e) {
-          Environment.logError(e);
-        }
+      // if (Boolean.FALSE.equals(c.isDestroyed())) {
+      try {
+        AnnotationProcessor processor = new AnnotationProcessor();
+        processor.processControlAnnotations(c);
+        ComponentAccessor.getDefault().create(c, this);
+        components.put(c.getComponentId(), c);
+      } catch (IllegalAccessException e) {
+        Environment.logError(e);
       }
+      // }
     }
     return this;
   }

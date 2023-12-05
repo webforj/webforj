@@ -7,13 +7,13 @@ import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasExpanse;
 import org.dwcj.concern.HasHighlightOnFocus;
 import org.dwcj.concern.HasHorizontalAlignment;
+import org.dwcj.concern.HasReadOnly;
 import org.dwcj.concern.HasTheme;
-import org.dwcj.concern.legacy.LegacyHasReadOnly;
 
-public class DwcComponentMock extends DwcComponent<DwcComponentMock> implements
-    HasExpanse<DwcComponentMock, Expanse>, HasTheme<DwcComponentMock, Theme>, LegacyHasReadOnly,
-    HasHighlightOnFocus<DwcComponentMock>, HasHorizontalAlignment<DwcComponentMock> {
-
+public class DwcComponentMock extends DwcComponent<DwcComponentMock>
+    implements HasExpanse<DwcComponentMock, Expanse>, HasTheme<DwcComponentMock, Theme>,
+    HasReadOnly<DwcComponentMock>, HasHighlightOnFocus<DwcComponentMock>,
+    HasHorizontalAlignment<DwcComponentMock> {
   @Override
   public DwcComponentMock setExpanse(Expanse expanse) {
     setComponentExpanse(expanse);
@@ -37,13 +37,13 @@ public class DwcComponentMock extends DwcComponent<DwcComponentMock> implements
   }
 
   @Override
-  public DwcComponentMock setReadOnly(Boolean readonly) {
+  public DwcComponentMock setReadOnly(boolean readonly) {
     setComponentReadOnly(readonly);
     return this;
   }
 
   @Override
-  public Boolean isReadOnly() {
+  public boolean isReadOnly() {
     return isComponentReadOnly();
   }
 
@@ -54,7 +54,7 @@ public class DwcComponentMock extends DwcComponent<DwcComponentMock> implements
 
   @Override
   protected void onCreate(Window panel) {
-    throw new UnsupportedOperationException("Unimplemented method 'create'");
+    // pass
   }
 
   @Override

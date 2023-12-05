@@ -96,7 +96,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public String geClientComponentId() {
+  public String getClientComponentId() {
     if (isAttached()) {
       try {
         return getControl().getClientObjectID();
@@ -778,7 +778,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   protected <V extends Enum<V> & ExpanseBase> T setComponentExpanse(V expanse) {
     this.expanse = expanse;
-    setUnrestrictedProperty("expanse", expanse == null ? "" : expanse.getValue());
+    setUnrestrictedProperty("expanse",
+        expanse == null || Expanse.NONE.equals(expanse) ? "" : expanse);
     return getSelf();
   }
 
@@ -788,8 +789,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return The expanse for the component.
    */
   protected <V extends ExpanseBase> V getComponentExpanse() {
+    Expanse none = Expanse.NONE;
     if (this.expanse == null) {
-      return null;
+      return (V) none;
     }
 
     @SuppressWarnings("unchecked")
@@ -804,7 +806,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   protected <V extends Enum<V> & ThemeBase> void setComponentTheme(V theme) {
     this.theme = theme;
-    setUnrestrictedProperty("theme", theme == null ? "" : theme.getValue());
+    setUnrestrictedProperty("theme", theme == null ? "" : theme);
   }
 
   /**

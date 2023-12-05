@@ -17,12 +17,11 @@ import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import org.dwcj.component.ReflectionUtils;
 import org.dwcj.component.event.CheckEvent;
-import org.dwcj.dispatcher.EventListener;
-import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.ToggleEvent;
 import org.dwcj.component.event.UncheckEvent;
-import org.dwcj.component.list.event.ListOpenEvent;
 import org.dwcj.concern.HasTextPosition.Position;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,6 +41,26 @@ class DwcOptionInputTest {
 
   @InjectMocks
   DwcOptionInputMock component;
+
+  @Test
+  @DisplayName("adding supported events")
+  void addingSupportedEvents() {
+    EventListener<CheckEvent> checkListener = event -> {
+    };
+    EventListener<UncheckEvent> uncheckListener = event -> {
+    };
+    EventListener<ToggleEvent> toggleListener = event -> {
+    };
+
+    component.onCheck(checkListener);
+    component.onUncheck(uncheckListener);
+    component.onToggle(toggleListener);
+
+
+    assertEquals(1, component.getEventListeners(CheckEvent.class).size());
+    assertEquals(1, component.getEventListeners(UncheckEvent.class).size());
+    assertEquals(1, component.getEventListeners(ToggleEvent.class).size());
+  }
 
   @Nested
   @DisplayName("Checked API")

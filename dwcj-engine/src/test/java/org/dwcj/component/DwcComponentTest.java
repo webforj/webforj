@@ -17,12 +17,12 @@ import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import org.dwcj.dispatcher.EventListener;
-import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.component.event.MouseEnterEvent;
 import org.dwcj.component.event.MouseExitEvent;
 import org.dwcj.component.event.RightMouseDownEvent;
 import org.dwcj.concern.HasHighlightOnFocus;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRestrictedAccessException;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
@@ -64,15 +64,15 @@ class DwcComponentTest {
       component.setExpanse(expanse);
       assertSame(component.getExpanse(), expanse);
 
-      verify(control, times(1)).setProperty("expanse", expanse.getValue());
+      verify(control, times(1)).setProperty("expanse", Expanse.NONE.equals(expanse) ? "" : expanse);
       verify(control, times(0)).getProperty("expanse");
     }
 
-    @DisplayName("Setting expanse to null, should set the expanse attribute to null")
+    @DisplayName("Setting expanse to null, should set the expanse attribute to empty string")
     @Test
-    void settingExpanseToNullShouldSetTheExpanseAttributeToNull() throws BBjException {
+    void settingExpanseToNullShouldSetTheExpanseAttributeToEmptyString() throws BBjException {
       component.setExpanse(null);
-      assertNull(component.getExpanse());
+      assertEquals(Expanse.NONE, component.getExpanse());
 
       verify(control, times(1)).setProperty("expanse", "");
       verify(control, times(0)).getProperty("expanse");
@@ -90,7 +90,7 @@ class DwcComponentTest {
       component.setTheme(theme);
       assertSame(component.getTheme(), theme);
 
-      verify(control, times(1)).setProperty("theme", theme.getValue());
+      verify(control, times(1)).setProperty("theme", theme);
       verify(control, times(0)).getProperty("theme");
     }
 

@@ -1,20 +1,21 @@
 package org.dwcj.addons.googlecharts.events;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import java.util.List;
 import java.util.Map;
 import org.dwcj.addons.googlecharts.GoogleChart;
+import org.dwcj.component.element.annotation.EventName;
+import org.dwcj.component.element.annotation.EventOptions;
 import org.dwcj.component.event.ComponentEvent;
-import org.dwcj.component.webcomponent.annotation.EventExpressions;
-import org.dwcj.component.webcomponent.annotation.EventName;
 
 /**
  * Emitted when data is selected in the chart.
  *
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
 @EventName(value = "google-chart-select")
-@EventExpressions(detail = "event.detail = event.detail.chart.getSelection();")
+@EventOptions(
+    data = {@EventOptions.EventData(key = "selection", exp = "event.detail.chart.getSelection();")})
 public final class GoogleChartSelectedEvent extends ComponentEvent<GoogleChart> {
 
   /**
@@ -32,8 +33,11 @@ public final class GoogleChartSelectedEvent extends ComponentEvent<GoogleChart> 
    *
    * @return the selected data as JsonArray
    */
-  public JsonArray getSelection() {
-    Map<String, Object> detail = getData();
-    return new Gson().fromJson(detail.get("detail").toString(), JsonArray.class);
+  public List<Object> getSelection() {
+    @SuppressWarnings("unchecked")
+    List<Object> selection = (List<Object>) getData().get("selection");
+
+    return selection;
   }
+
 }

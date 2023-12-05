@@ -6,8 +6,8 @@ import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.button.DwcButton;
 import org.dwcj.component.button.event.ButtonClickEvent;
-import org.dwcj.dispatcher.EventDispatcher;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
+import org.dwcj.dispatcher.EventDispatcher;
 
 /**
  * This class will map the BBjButtonPushEvent event to a {@link ButtonClickEvent}.

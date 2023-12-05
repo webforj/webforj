@@ -2,6 +2,7 @@ package org.dwcj.component.optioninput.sink;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -63,7 +64,7 @@ class AbstractRadioButtonEventSinkTest {
   class RemoveCallback {
     @Test
     void callClearCallbackOnUnderlyingControl() throws IllegalAccessException, BBjException {
-      sink.removeCallback();
+      sink.removeCallback(anyString());;
       verify(control, times(1)).clearCallback(0);
     }
 
@@ -71,7 +72,7 @@ class AbstractRadioButtonEventSinkTest {
     void throwDwcjRuntimeExceptionWhenClearCallbackFails()
         throws IllegalAccessException, BBjException {
       doThrow(BBjException.class).when(control).clearCallback(0);
-      assertThrows(DwcjRuntimeException.class, () -> sink.removeCallback());
+      assertThrows(DwcjRuntimeException.class, () -> sink.removeCallback(anyString()));
     }
   }
 }

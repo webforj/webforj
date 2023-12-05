@@ -1,44 +1,39 @@
 package org.dwcj.component;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * Supported themes as defined by the BBj Theme Engine.
+ * Supported themes as defined by the Dwc Theme Engine.
  *
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
 public enum Theme implements ThemeBase {
-  /* The danger theme as defined by the BBj Theme Engine. */
-  DANGER("danger"),
+  /* The danger theme as defined by the Dwc Theme Engine. */
+  @SerializedName("danger")
+  DANGER,
 
-  /* The default theme as defined by the BBj Theme Engine. */
-  DEFAULT("default"),
+  /* The default theme as defined by the Dwc Theme Engine. */
+  @SerializedName("default")
+  DEFAULT,
 
-  /* The gray theme as defined by the BBj Theme Engine. */
-  GRAY("gray"),
+  /* The gray theme as defined by the Dwc Theme Engine. */
+  @SerializedName("gray")
+  GRAY,
 
-  /* The info theme as defined by the BBj Theme Engine. */
-  INFO("info"),
+  /* The info theme as defined by the Dwc Theme Engine. */
+  @SerializedName("info")
+  INFO,
 
-  /* The primary theme as defined by the BBj Theme Engine. */
-  PRIMARY("primary"),
+  /* The primary theme as defined by the Dwc Theme Engine. */
+  @SerializedName("primary")
+  PRIMARY,
 
-  /* The success theme as defined by the BBj Theme Engine. */
-  SUCCESS("success"),
+  /* The success theme as defined by the Dwc Theme Engine. */
+  @SerializedName("success")
+  SUCCESS,
 
-  /* The warning theme as defined by the BBj Theme Engine. */
-  WARNING("warning");
-
-  private final String value;
-
-  Theme(String value) {
-    this.value = value;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getValue() {
-    return this.value;
-  }
+  /* The warning theme as defined by the Dwc Theme Engine. */
+  @SerializedName("warning")
+  WARNING;
 }

@@ -2,24 +2,25 @@ package org.dwcj.component.dialog.event;
 
 import java.util.Map;
 import org.dwcj.component.dialog.Dialog;
+import org.dwcj.component.element.annotation.EventName;
 import org.dwcj.component.event.ComponentEvent;
-import org.dwcj.component.webcomponent.annotation.EventName;
 
 /**
  * Emitted when the dialog is closed.
  *
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-@EventName("bbj-closed")
+@EventName("bbj-dialog-closed")
 public class DialogCloseEvent extends ComponentEvent<Dialog> {
 
   /**
-   * Creates a new event.
+   * Creates a close event.
    *
-   * @param control the control
+   * @param dialog the dialog
    * @param eventMap the event map
    */
-  public DialogCloseEvent(Dialog control, Map<String, Object> eventMap) {
-    super(control, eventMap);
+  public DialogCloseEvent(Dialog dialog, Map<String, Object> eventMap) {
+    super(dialog, eventMap);
   }
 }

@@ -101,7 +101,7 @@ public abstract class LegacyDwcComponent extends Component
   public Object getProperty(String property) {
     if (control != null) {
       try {
-        return control.getClientProperty(property);
+        return control.getProperty(property);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -493,7 +493,7 @@ public abstract class LegacyDwcComponent extends Component
   protected LegacyDwcComponent setUnrestrictedProperty(String property, Object value) {
     if (control != null) {
       try {
-        control.putClientProperty(property, value);
+        control.setProperty(property, value);
       } catch (BBjException e) {
         throw new DwcjRuntimeException(e);
       }
@@ -739,7 +739,7 @@ public abstract class LegacyDwcComponent extends Component
    */
   protected <V extends Enum<V> & ExpanseBase> void setComponentExpanse(V expanse) {
     this.componentExpanse = expanse;
-    setUnrestrictedProperty("expanse", expanse.getValue());
+    setUnrestrictedProperty("expanse", expanse);
   }
 
   /**
@@ -804,7 +804,7 @@ public abstract class LegacyDwcComponent extends Component
    */
   protected <V extends Enum<V> & ThemeBase> void setComponentTheme(V theme) {
     this.componentTheme = theme;
-    setUnrestrictedProperty("theme", theme.getValue());
+    setUnrestrictedProperty("theme", theme);
   }
 
   /**

@@ -11,11 +11,4 @@ import org.dwcj.concern.HasTheme;
  * @since 23.02
  */
 public interface ThemeBase {
-
-  /**
-   * Retrieves the current theme.
-   *
-   * @return the current theme of the component.
-   */
-  public String getValue();
 }

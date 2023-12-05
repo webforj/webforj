@@ -1,17 +1,23 @@
 package org.dwcj.addons.googlecharts;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.dwcj.addons.googlecharts.events.GoogleChartReadyEvent;
 import org.dwcj.addons.googlecharts.events.GoogleChartSelectedEvent;
 import org.dwcj.annotation.Attribute;
+import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.annotation.JavaScript;
-import org.dwcj.annotation.Link;
-import org.dwcj.component.webcomponent.PropertyDescriptor;
-import org.dwcj.component.webcomponent.WebComponent;
-import org.dwcj.component.webcomponent.annotation.NodeName;
+import org.dwcj.component.element.Element;
+import org.dwcj.component.element.ElementComposite;
+import org.dwcj.component.element.PropertyDescriptor;
+import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.concern.HasStyle;
 import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
  * A simple implementation for Google Chart Web Component, this component is a wrapper for the
@@ -22,16 +28,12 @@ import org.dwcj.dispatcher.EventListener;
  *      Gallery</a>
  *
  * @author Hyyan Abo Fakher
+ * @since 23.06
  */
 @NodeName("google-chart")
-@Link(value = "https://www.gstatic.com", id = "gstatic-preconnect",
-    attributes = {@Attribute(name = "rel", value = "preconnect"),
-        @Attribute(name = "crossorigin", value = "")})
-@Link(value = "https://www.gstatic.com", id = "gstatic-dns-prefetch",
-    attributes = {@Attribute(name = "rel", value = "dns-prefetch")})
 @JavaScript(value = "https://cdn.jsdelivr.net/npm/@google-web-components/google-chart@5.0.3/+esm",
     attributes = {@Attribute(name = "type", value = "module")})
-public final class GoogleChart extends WebComponent implements HasStyle<GoogleChart> {
+public final class GoogleChart extends ElementComposite implements HasStyle<GoogleChart> {
 
   /**
    * The type of the chart.
@@ -46,14 +48,16 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/areachart">Area
      *      Chart</a>
      **/
-    AREA("area"),
+    @SerializedName("area")
+    AREA,
     /**
      * A bar chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/barchart">Bar
      *      Chart</a>
      **/
-    BAR("bar"),
+    @SerializedName("bar")
+    BAR,
     /**
      * A bubble chart.
      *
@@ -61,7 +65,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/bubblechart">Bubble
      *      Chart</a>
      **/
-    BUBBLE("bubble"),
+    @SerializedName("bubble")
+    BUBBLE,
     /**
      * A calendar chart.
      *
@@ -69,7 +74,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/calendar">Calendar
      *      Chart</a>
      **/
-    CALENDAR("calendar"),
+    @SerializedName("calendar")
+    CALENDAR,
     /**
      * A candlestick chart.
      *
@@ -77,7 +83,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/candlestickchart">Candlestick
      *      Chart</a>
      **/
-    CANDLESTICK("candlestick"),
+    @SerializedName("candlestick")
+    CANDLESTICK,
     /**
      * A column chart.
      *
@@ -85,35 +92,40 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/columnchart">Column
      *      Chart</a>
      **/
-    COLUMN("column"),
+    @SerializedName("column")
+    COLUMN,
     /**
      * A combo chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/combochart">Combo
      *      Chart</a>
      **/
-    COMBO("combo"),
+    @SerializedName("combo")
+    COMBO,
     /**
      * A gantt chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/ganttchart">Gantt
      *      Chart</a>
      **/
-    GANTT("gantt"),
+    @SerializedName("gantt")
+    GANTT,
     /**
      * A gauge chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/gauge">Gauge
      *      Chart</a>
      **/
-    GAUGE("gauge"),
+    @SerializedName("gauge")
+    GAUGE,
     /**
      * A geo chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/geochart">Geo
      *      Chart</a>
      **/
-    GEO("geo"),
+    @SerializedName("geo")
+    GEO,
     /**
      * A histogram chart.
      *
@@ -121,28 +133,32 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/histogram">Histogram
      *      Chart</a>
      **/
-    HISTOGRAM("histogram"),
+    @SerializedName("histogram")
+    HISTOGRAM,
     /**
      * A line chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/linechart">Line
      *      Chart</a>
      **/
-    LINE("line"),
+    @SerializedName("line")
+    LINE,
     /**
      * A map chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/map">Map
      *      Chart</a>
      **/
-    ORG("org"),
+    @SerializedName("org")
+    ORG,
     /**
      * A pie chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/piechart">Pie
      *      Chart</a>
      **/
-    PIE("pie"),
+    @SerializedName("pie")
+    PIE,
     /**
      * A scatter chart.
      *
@@ -150,7 +166,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/scatterchart">Scatter
      *      Chart</a>
      **/
-    SANKEY("sankey"),
+    @SerializedName("sankey")
+    SANKEY,
     /**
      * A scatter chart.
      *
@@ -158,7 +175,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/scatterchart">Scatter
      *      Chart</a>
      **/
-    SCATTER("scatter"),
+    @SerializedName("scatter")
+    SCATTER,
     /**
      * A stepped area chart.
      *
@@ -166,14 +184,16 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      "https://developers.google.com/chart/interactive/docs/gallery/steppedareachart">Stepped
      *      Area Chart</a>
      **/
-    STEPPED_AREA("stepped-area"),
+    @SerializedName("stepped-area")
+    STEPPED_AREA,
     /**
      * A table chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/table">Table
      *      Chart</a>
      **/
-    TABLE("table"),
+    @SerializedName("table")
+    TABLE,
     /**
      * A timeline chart.
      *
@@ -184,81 +204,43 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
      *      href=https://developers.google.com/chart/interactive/docs/datesandtimes#dates-and-times-using-the-date-string-representation>Timeline
      *      Chart Date Format</a>
      **/
-    TIMELINE("timeline"),
+    @SerializedName("timeline")
+    TIMELINE,
     /**
      * A treemap chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/treemap">Treemap
      *      Chart</a>
      **/
-    TREEMAP("treemap"),
+    @SerializedName("treemap")
+    TREEMAP,
     /**
      * A word tree chart.
      *
      * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery/wordtree">Word
      *      Tree Chart</a>
      **/
-    WORDTREE("wordtree");
-
-    private final String chartType;
-
-    Type(String type) {
-      this.chartType = type;
-    }
-
-    /**
-     * Get the value of the type.
-     *
-     * @return The value of the type.
-     */
-    public String getValue() {
-      return chartType;
-    }
-
-    /**
-     * Get the type from the value.
-     *
-     * @param type The value of the type.
-     * @return The type.
-     */
-    public static Type fromValue(String type) {
-      for (Type t : Type.values()) {
-        if (t.chartType.equalsIgnoreCase(type)) {
-          return t;
-        }
-      }
-
-      return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-      return chartType;
-    }
+    @SerializedName("wordtree")
+    WORDTREE;
   }
 
   // Properties
-  private final PropertyDescriptor<String> typeProp =
-      PropertyDescriptor.property("type", Type.BAR.getValue());
-  private final PropertyDescriptor<JsonArray> dataProp = PropertyDescriptor.property("data", null);
-  private final PropertyDescriptor<JsonObject> optionProp =
-      PropertyDescriptor.property("options", null);
-  private final PropertyDescriptor<JsonArray> selectionProp =
-      PropertyDescriptor.property("selection", null);
+  private final PropertyDescriptor<Type> typeProp = PropertyDescriptor.property("type", Type.BAR);
+  private final PropertyDescriptor<List<Object>> dataProp =
+      PropertyDescriptor.property("data", new ArrayList<>());
+  private final PropertyDescriptor<Map<String, Object>> optionProp =
+      PropertyDescriptor.property("options", new HashMap<>());
+  private final PropertyDescriptor<List<Object>> selectionProp =
+      PropertyDescriptor.property("selection", new ArrayList<>());
 
-  private EventListener<GoogleChartReadyEvent> firstRenderListener;
+  private final ListenerRegistration<GoogleChartReadyEvent> firstRenderListenerRegistration;
 
   /**
    * Create a new GoogleChart.
    */
   public GoogleChart() {
     setStyle("overflow", "hidden");
-
-    this.firstRenderListener = this::handleFirstRender;
-    addReadyListener(this.firstRenderListener);
+    this.firstRenderListenerRegistration = addReadyListener(this::handleFirstRender);
   }
 
   /**
@@ -267,10 +249,11 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * @param type The type of chart to display.
    *
    * @see Type
-   * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery">oogle
+   * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery">Google
    *      Visualization API reference (Chart Gallery)</a>
    */
   public GoogleChart(Type type) {
+    this();
     setType(type);
   }
 
@@ -278,14 +261,14 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * Set the type of chart to display.
    *
    * @param type The type of chart to display.
-   * @return The chart
+   * @return the component itself
    *
    * @see Type
-   * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery">oogle
+   * @see <a href= "https://developers.google.com/chart/interactive/docs/gallery">Google
    *      Visualization API reference (Chart Gallery)</a>
    */
   public GoogleChart setType(Type type) {
-    set(typeProp, type.getValue());
+    set(typeProp, type);
     return this;
   }
 
@@ -296,7 +279,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * @see Type
    */
   public Type getType() {
-    return Type.fromValue(get(typeProp));
+    return get(typeProp);
   }
 
   /**
@@ -304,19 +287,19 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    *
    * <pre>
    * {@code
-   * JsonArray options = new JsonArray();
+   * Map<String, Object> options = new JsonArray();
    *
    * // update the title
-   * options.addProperty("title", "My Chart Title");
+   * options.put("title", "My Chart Title");
    *
    * // update the colors
-   * JsonArr colors = new JsonArray();
+   * List<String> colors = new ArrayList();
    * colors.add("#e0440e");
    * colors.add("#e6693e");
    * colors.add("#ec8f6e");
    * colors.add("#f3b49f");
    * colors.add("#f6c7b6");
-   * options.add("colors", colors);
+   * options.put("colors", colors);
    *
    * chart.setOptions(options);
    * }
@@ -329,20 +312,14 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * </p>
    *
    * <p>
-   * Note that the options are passed as a JSON array, not a JSON object. This is because the
-   * options are passed to the Google Visualization API as a JavaScript array, not a JavaScript
-   * object.
-   * </p>
-   *
-   * <p>
-   * Note that Updating the options JsonArray will not cause the chart to be redrawn. You need to
-   * call {@link #setOptions(JsonObject)} again to update the chart.
+   * <b>Note</b> that Updating the options will not cause the chart to be redrawn. You need to call
+   * {@link #setOptions(Map)} to redraw the chart.
    * </p>
    *
    * @param options The options to use when displaying the chart.
-   * @return The chart
+   * @return the component itself
    */
-  public GoogleChart setOptions(JsonObject options) {
+  public GoogleChart setOptions(Map<String, Object> options) {
     set(optionProp, options);
     return this;
   }
@@ -352,7 +329,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    *
    * @return The options to use when displaying the chart.
    */
-  public JsonObject getOptions() {
+  public Map<String, Object> getOptions() {
     return get(optionProp);
   }
 
@@ -365,10 +342,10 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    *
    * <pre>
    * {@code
-   * JsonArray data = new JsonArray();
+   * List<Object> data = new ArrayList();
    *
-   * // add the column headers
-   * JsonArray header = new JsonArray();
+   * // add the column ArrayList
+   * List<String> header = new ArrayList();
    * header.add("Year");
    * header.add("Sales");
    * header.add("Expenses");
@@ -376,7 +353,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    *
    * // add rows
    * for (int i = 0; i < 10; i++) {
-   *   JsonArray row = new JsonArray();
+   *   List<Number> row = new ArrayList();
    *   row.add(2000 + i);
    *   row.add(Math.random() * 1000);
    *   row.add(Math.random() * 400);
@@ -388,9 +365,9 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * </pre>
    *
    * @param data The data to use when displaying the chart.
-   * @return The chart
+   * @return the component itself
    */
-  public GoogleChart setData(JsonArray data) {
+  public GoogleChart setData(List<Object> data) {
     set(dataProp, data);
     return this;
   }
@@ -400,7 +377,7 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    *
    * @return The data to use when displaying the chart.
    */
-  public JsonArray getData() {
+  public List<Object> getData() {
     return get(dataProp);
   }
 
@@ -408,8 +385,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * Sets the selected datapoint(s) in the chart.
    *
    * <p>
-   * An array of objects, each with a numeric row and/or column property. `row` and `column` are the
-   * zero-based row or column number of an item in the data table to select.
+   * An array of objects, each with a numeric row and/or column property. {@code row} and
+   * {@code column} are the zero-based row or column number of an item in the data table to select.
    * </p>
    *
    * <ul>
@@ -418,15 +395,15 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * </ul>
    *
    * <p>
-   * For example, to select the first column, set `selection` to
+   * For example, to select the first column, set selection to.
    * </p>
    *
    * <pre>
    * {@code
-   * JsonArray selection = new JsonArray();
-   * JsonObject item = new JsonObject();
-   * item.addProperty("row", 1);
-   * item.addProperty("column", 1);
+   * List<Map<String, Integer>> selection = new ArrayList();
+   * Map<String, Integer> item = new HashMap();
+   * item.put("row", 1);
+   * item.put("column", 1);
    * selection.add(item);
    *
    * chart.setSelection(selection);
@@ -434,9 +411,9 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * </pre>
    *
    * @param selection The selected items in the chart.
-   * @return The chart
+   * @return the component itself
    */
-  public GoogleChart setSelection(JsonArray selection) {
+  public GoogleChart setSelection(List<Object> selection) {
     set(selectionProp, selection);
     return this;
   }
@@ -446,8 +423,8 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    *
    * @return The selected items in the chart.
    */
-  public JsonArray getSelection() {
-    return get(selectionProp, true, JsonArray.class);
+  public List<Object> getSelection() {
+    return get(selectionProp, true, List.class);
   }
 
   /**
@@ -458,10 +435,10 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * updates, page resizes, etc.
    * </p>
    *
-   * @return The chart
+   * @return the component itself
    */
   public GoogleChart redraw() {
-    callAsyncFunction("redraw");
+    whenAttached().thenAccept(gc -> getElement().callJsFunctionAsync("redraw"));
     return this;
   }
 
@@ -469,22 +446,25 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * Returns the chart serialized as an image URI.
    *
    * <p>
-   * Call this after the chart is drawn (`ready` event).
+   * Call this after the chart is drawn ({@code ready} event).
    * </p>
    *
    * @return The URI of the image of the chart.
    */
   public String getImageUri() {
-    return (String) getComponentProperty("imageURI",
-        "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==", true);
+    Optional<String> imageUri =
+        Optional.ofNullable(getElement().getProperty("imageURI", String.class));
+    return imageUri.isPresent() ? imageUri.get()
+        : "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public GoogleChart setStyle(String property, String value) {
-    setComponentStyle(property, value);
+    getElement().setStyle(property, value);
     return this;
   }
 
@@ -492,8 +472,9 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public GoogleChart removeStyle(String property) {
-    removeComponentStyle(property);
+    getElement().removeStyle(property);
     return this;
   }
 
@@ -501,80 +482,62 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getStyle(String property) {
-    return getComponentStyle(property);
+    return getElement().getStyle(property);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public String getComputedStyle(String property) {
-    return getComponentComputedStyle(property);
+    return getElement().getComputedStyle(property);
   }
 
   /**
    * Add a listener for the selected event.
    *
    * @param listener the listener
-   * @return The chart
+   * @return A registration object for removing the event listener
    */
-  public GoogleChart addSelectedListener(EventListener<GoogleChartSelectedEvent> listener) {
-    addEventListener(GoogleChartSelectedEvent.class, listener);
-    return this;
+  public ListenerRegistration<GoogleChartSelectedEvent> addSelectedListener(
+      EventListener<GoogleChartSelectedEvent> listener) {
+    return addEventListener(GoogleChartSelectedEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addSelectedListener(EventListener)}.
    *
    * @param listener the listener
-   * @return The chart
+   * @return A registration object for removing the event listener
    */
-  public GoogleChart onSelect(EventListener<GoogleChartSelectedEvent> listener) {
+  public ListenerRegistration<GoogleChartSelectedEvent> onSelect(
+      EventListener<GoogleChartSelectedEvent> listener) {
     return addSelectedListener(listener);
-  }
-
-  /**
-   * Remove a listener for the selected event.
-   *
-   * @param listener the listener
-   * @return The chart
-   */
-  public GoogleChart removeSelectedListener(EventListener<GoogleChartSelectedEvent> listener) {
-    removeEventListener(GoogleChartSelectedEvent.class, listener);
-    return this;
   }
 
   /**
    * Add a listener for the ready event.
    *
    * @param listener the listener
-   * @return The chart
+   * @return A registration object for removing the event listener
    */
-  public GoogleChart addReadyListener(EventListener<GoogleChartReadyEvent> listener) {
-    addEventListener(GoogleChartReadyEvent.class, listener);
-    return this;
+  public ListenerRegistration<GoogleChartReadyEvent> addReadyListener(
+      EventListener<GoogleChartReadyEvent> listener) {
+    return addEventListener(GoogleChartReadyEvent.class, listener);
   }
 
   /**
    * Alias for {@link #addReadyListener(EventListener)}.
    *
    * @param listener the listener
-   * @return The chart
+   * @return A registration object for removing the event listener
    */
-  public GoogleChart onReady(EventListener<GoogleChartReadyEvent> listener) {
+  public ListenerRegistration<GoogleChartReadyEvent> onReady(
+      EventListener<GoogleChartReadyEvent> listener) {
     return addReadyListener(listener);
-  }
-
-  /**
-   * Remove a listener for the ready event.
-   *
-   * @param listener the listener
-   * @return The chart
-   */
-  public GoogleChart removeReadyListener(EventListener<GoogleChartReadyEvent> listener) {
-    removeEventListener(GoogleChartReadyEvent.class, listener);
-    return this;
   }
 
   /**
@@ -582,15 +545,15 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
    */
   @Override
   protected void onDestroy() {
-    super.destroy();
+    super.onDestroy();
+
     // clean the window resize listener
     StringBuilder sb = new StringBuilder();
     sb.append("if (component && component.__dwcj_handleResize__) {");
     sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
     sb.append("}");
-    sb.append("return"); // to avoid auto wrapping
 
-    executeAsyncExpression(sb.toString());
+    getElement().executeJsAsync(sb.toString());
   }
 
   private void handleFirstRender(GoogleChartReadyEvent event) {
@@ -601,10 +564,13 @@ public final class GoogleChart extends WebComponent implements HasStyle<GoogleCh
     sb.append("}");
     sb.append("component.__dwcj_handleResize__ = () => component.redraw();");
     sb.append("window.addEventListener('resize', component.__dwcj_handleResize__);");
-    sb.append("return"); // to avoid auto wrapping
-    executeAsyncExpression(sb.toString());
+    getElement().executeJsAsync(sb.toString());
 
-    removeReadyListener(this.firstRenderListener);
-    executeAsyncExpression("requestAnimationFrame(() => component.redraw());");
+    this.firstRenderListenerRegistration.remove();
+    getElement().executeJsAsync("requestAnimationFrame(() => component.redraw());");
+  }
+
+  Element getOriginalElement() {
+    return getElement();
   }
 }

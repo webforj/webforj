@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.dwcj.component.ReflectionUtils;
+import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.dispatcher.EventListener;
 import org.dwcj.dispatcher.ListenerRegistration;
-import org.dwcj.component.list.event.ListSelectEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -392,21 +392,16 @@ class DwcListTest {
     assertThrows(DwcjRuntimeException.class, () -> component.getSelected());
   }
 
-  @Nested
-  @DisplayName("Events API")
-  class EventsApi {
+  @Test
+  @DisplayName("adding/removing supported events")
+  void addingRemovingSupportedEvents() {
+    EventListener<ListSelectEvent> selectListener = event -> {
+    };
 
-    @Test
-    @DisplayName("adding/removing supported events")
-    void addingRemovingSupportedEvents() {
-      EventListener<ListSelectEvent> selectListener = event -> {
-      };
+    ListenerRegistration<ListSelectEvent> r = component.onSelect(selectListener);
+    assertEquals(1, component.getEventListeners(ListSelectEvent.class).size());
 
-      ListenerRegistration<ListSelectEvent> r = component.onSelect(selectListener);
-      assertEquals(1, component.getEventListeners(ListSelectEvent.class).size());
-
-      r.remove();
-      assertEquals(0, component.getEventListeners(ListSelectEvent.class).size());
-    }
+    r.remove();
+    assertEquals(0, component.getEventListeners(ListSelectEvent.class).size());
   }
 }
