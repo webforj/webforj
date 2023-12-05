@@ -21,25 +21,6 @@ public abstract class App {
   private boolean isInitialized = false;
 
   /**
-   * An enum for the default application themes.
-   *
-   * @see App#setTheme(Theme)
-   */
-  public enum Theme {
-    LIGHT("light"), DARK("dark"), DARK_PURE("dark-pure"), SYSTEM("system");
-
-    private String value;
-
-    private Theme(String value) {
-      this.value = value;
-    }
-
-    public String getValue() {
-      return value;
-    }
-  }
-
-  /**
    * This is the main entry point for the application. It is called by the framework to initialize
    * and should not be called directly.
    *
@@ -92,18 +73,6 @@ public abstract class App {
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set theme.", e);
     }
-  }
-
-  /**
-   * Set the application theme.
-   *
-   * @param theme The theme to set
-   * @throws DwcjRuntimeException if failed to set the theme
-   *
-   * @see Theme
-   */
-  public static void setTheme(Theme theme) {
-    setTheme(theme.getValue());
   }
 
   /**
