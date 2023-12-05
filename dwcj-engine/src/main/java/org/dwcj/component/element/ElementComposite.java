@@ -91,7 +91,7 @@ public abstract class ElementComposite extends Composite<Element> {
    *
    * @return the element instance.
    */
-  protected final Element getElement() {
+  protected Element getElement() {
     return getBoundComponent();
   }
 
