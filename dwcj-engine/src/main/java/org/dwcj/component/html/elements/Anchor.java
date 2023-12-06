@@ -30,7 +30,7 @@ public class Anchor extends HtmlComponentContainer<Anchor> {
       PropertyDescriptor.attribute("target", "_self");
 
   /**
-   * Creates a new empty a.
+   * Creates a new empty Anchor.
    */
   public Anchor() {
     super();
@@ -177,7 +177,7 @@ public class Anchor extends HtmlComponentContainer<Anchor> {
   }
 
   /**
-   * Aliases for {@link #setHref(java.lang.String)}.
+   * Alias for {@link #setHref(java.lang.String)}.
    *
    * @param url the url
    * @return the component itself
@@ -187,7 +187,7 @@ public class Anchor extends HtmlComponentContainer<Anchor> {
   }
 
   /**
-   * Aliases for {@link #getHref()}.
+   * Alias for {@link #getHref()}.
    *
    * @return the href attribute
    * @see #setUrl(java.lang.String)

@@ -15,7 +15,7 @@ import org.dwcj.component.html.HtmlComponent;
 public class Break extends HtmlComponent<Break> {
 
   /**
-   * Creates a new hr.
+   * Creates a new Break.
    */
   public Break() {
     super();

@@ -23,14 +23,14 @@ import org.dwcj.component.html.HtmlComponentContainer;
 public class ListEntry extends HtmlComponentContainer<ListEntry> {
 
   /**
-   * Creates a new empty li.
+   * Creates a new empty ListEntry.
    */
   public ListEntry() {
     super();
   }
 
   /**
-   * Creates a new li with the given text.
+   * Creates a new ListEntry with the given text.
    *
    * @param text the text
    */
@@ -40,7 +40,7 @@ public class ListEntry extends HtmlComponentContainer<ListEntry> {
   }
 
   /**
-   * Creates a new li with the given child components.
+   * Creates a new ListEntry with the given child components.
    *
    * @param components the child components
    */

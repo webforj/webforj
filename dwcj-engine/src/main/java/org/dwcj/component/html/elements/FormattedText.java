@@ -5,7 +5,8 @@ import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.html.HtmlComponentContainer;
 
 /**
- * Component representing a {@code pre} element.
+ * Component representing a {@code pre} element. This component represents preformatted text 
+ * which will be presented exactly as written.
  *
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">HTML pre Tag</a>
  *
@@ -23,14 +24,14 @@ import org.dwcj.component.html.HtmlComponentContainer;
 public class FormattedText extends HtmlComponentContainer<FormattedText> {
 
   /**
-   * Creates a new empty pre.
+   * Creates a new empty FormattedText.
    */
   public FormattedText() {
     super();
   }
 
   /**
-   * Creates a new pre with the given text.
+   * Creates a new FormattedText with the given text.
    *
    * @param text the text
    */
@@ -40,7 +41,7 @@ public class FormattedText extends HtmlComponentContainer<FormattedText> {
   }
 
   /**
-   * Creates a new pre with the given child components.
+   * Creates a new FormattedText with the given child components.
    *
    * @param components the child components
    */

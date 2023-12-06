@@ -23,14 +23,14 @@ import org.dwcj.component.html.HtmlComponentContainer;
 public class Paragraph extends HtmlComponentContainer<Paragraph> {
 
   /**
-   * Creates a new empty footer.
+   * Creates a new empty Paragraph.
    */
   public Paragraph() {
     super();
   }
 
   /**
-   * Creates a new footer with the given text.
+   * Creates a new Paragraph with the given text.
    *
    * @param text the text
    */
@@ -40,7 +40,7 @@ public class Paragraph extends HtmlComponentContainer<Paragraph> {
   }
 
   /**
-   * Creates a new footer with the given child components.
+   * Creates a new Paragraph with the given child components.
    *
    * @param components the child components
    */

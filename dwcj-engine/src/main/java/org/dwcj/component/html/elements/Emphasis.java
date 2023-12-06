@@ -23,7 +23,7 @@ import org.dwcj.component.html.HtmlComponentContainer;
 public class Emphasis extends HtmlComponentContainer<Emphasis> {
 
   /**
-   * Creates a new empty em.
+   * Creates a new empty Emphasis.
    */
   public Emphasis() {
     super();
@@ -40,7 +40,7 @@ public class Emphasis extends HtmlComponentContainer<Emphasis> {
   }
 
   /**
-   * Creates a new em with the given child components.
+   * Creates a new Emphasis with the given child components.
    *
    * @param components the child components
    */

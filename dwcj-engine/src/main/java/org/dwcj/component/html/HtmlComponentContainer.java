@@ -15,7 +15,7 @@ public abstract class HtmlComponentContainer<T extends HtmlComponentContainer<T>
     extends HtmlComponent<T> implements HasComponents {
 
   /**
-   * Creates a new HtmlContainer with given components.
+   * Creates a new HtmlComponentContainer with given components.
    *
    * @param components the components to be added to the container
    */

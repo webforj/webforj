@@ -23,14 +23,14 @@ import org.dwcj.component.html.HtmlComponentContainer;
 public class UnorderedList extends HtmlComponentContainer<UnorderedList> {
 
   /**
-   * Creates a new empty ul.
+   * Creates a new empty UnorderedList.
    */
   public UnorderedList() {
     super();
   }
 
   /**
-   * Creates a new ul with the given text.
+   * Creates a new UnorderedList with the given text.
    *
    * @param text the text
    */
@@ -40,7 +40,7 @@ public class UnorderedList extends HtmlComponentContainer<UnorderedList> {
   }
 
   /**
-   * Creates a new ul with the given child components.
+   * Creates a new UnorderedList with the given child components.
    *
    * @param components the child components
    */

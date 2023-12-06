@@ -23,14 +23,14 @@ import org.dwcj.component.html.HtmlComponentContainer;
 public class OrderedList extends HtmlComponentContainer<OrderedList> {
 
   /**
-   * Creates a new empty ol.
+   * Creates a new empty OrderedList.
    */
   public OrderedList() {
     super();
   }
 
   /**
-   * Creates a new ol with the given text.
+   * Creates a new OrderedList with the given text.
    *
    * @param text the text
    */
@@ -40,7 +40,7 @@ public class OrderedList extends HtmlComponentContainer<OrderedList> {
   }
 
   /**
-   * Creates a new ol with the given child components.
+   * Creates a new OrderedList with the given child components.
    *
    * @param components the child components
    */

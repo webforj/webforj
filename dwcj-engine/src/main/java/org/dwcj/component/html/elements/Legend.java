@@ -23,7 +23,7 @@ public class Legend extends HtmlComponent<Legend> {
   }
 
   /**
-   * Creates a new hr with the given text.
+   * Creates a new legend with the given text.
    *
    * @param text the text
    */

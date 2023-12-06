@@ -63,7 +63,7 @@ public class Assets {
   }
 
   /**
-   * Get the content of a resource as a String.
+   * Gets the content of a resource as a String.
    *
    * @param path The path to the resource
    *

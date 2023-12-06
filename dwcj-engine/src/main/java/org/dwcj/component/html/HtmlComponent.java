@@ -210,7 +210,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
   }
 
   /**
-   * Add a click listener to this component.
+   * Adds a click listener to this component.
    *
    * @param listener the listener to add
    * @param options the options
@@ -223,7 +223,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
   }
 
   /**
-   * Add a click listener to this component.
+   * Adds a click listener to this component.
    *
    * @param listener the listener to add
    *
@@ -235,7 +235,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
   }
 
   /**
-   * Add an onClick listener to this component.
+   * Adds an onClick listener to this component.
    *
    * @param listener the listener to add
    * @param options the options
@@ -248,7 +248,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
   }
 
   /**
-   * Add an onClick listener to this component.
+   * Adds an onClick listener to this component.
    *
    * @param listener the listener to add
    *
