@@ -12,12 +12,12 @@ import org.dwcj.component.html.HtmlComponent;
  * @since 23.06
  */
 @NodeName("hr")
-public class Hr extends HtmlComponent<Hr> {
+public class Break extends HtmlComponent<Break> {
 
   /**
    * Creates a new hr.
    */
-  public Hr() {
+  public Break() {
     super();
   }
 }

@@ -20,8 +20,8 @@ class AllElementsTest {
 
     Class<?>[] elementClasses = {Anchor.class, Article.class, Aside.class, Div.class,
         Emphasis.class, Footer.class, H1.class, H2.class, H3.class, H4.class, H5.class, H6.class,
-        Header.class, Hr.class, Legend.class, Li.class, Main.class, Nav.class, Ol.class,
-        Paragraph.class, Pre.class, Section.class, Span.class, Strong.class, Ul.class};
+        Header.class, Break.class, Legend.class, ListEntry.class, Main.class, Nav.class, OrderedList.class,
+        Paragraph.class, FormattedText.class, Section.class, Span.class, Strong.class, UnorderedList.class};
 
     for (Class<?> elementClass : elementClasses) {
       // Test the default constructor

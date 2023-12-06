@@ -17,7 +17,7 @@ import org.dwcj.component.html.HtmlComponent;
  * @since 23.06
  */
 @NodeName("iframe")
-public class Iframe extends HtmlComponent<Hr> {
+public class Iframe extends HtmlComponent<Break> {
 
   // @formatter:off
   /**

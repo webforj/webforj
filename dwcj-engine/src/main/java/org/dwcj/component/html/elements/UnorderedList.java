@@ -5,9 +5,9 @@ import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.html.HtmlComponentContainer;
 
 /**
- * Component representing a {@code li} element.
+ * Component representing a {@code ul} element.
  *
- * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li">HTML li Tag</a>
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul">HTML ul Tag</a>
  *
  * @author Hyyan Abo Fakher
  * @since 23.06
@@ -19,32 +19,32 @@ import org.dwcj.component.html.HtmlComponentContainer;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-@NodeName("li")
-public class Li extends HtmlComponentContainer<Li> {
+@NodeName("ul")
+public class UnorderedList extends HtmlComponentContainer<UnorderedList> {
 
   /**
-   * Creates a new empty li.
+   * Creates a new empty ul.
    */
-  public Li() {
+  public UnorderedList() {
     super();
   }
 
   /**
-   * Creates a new li with the given text.
+   * Creates a new ul with the given text.
    *
    * @param text the text
    */
-  public Li(String text) {
+  public UnorderedList(String text) {
     super();
     setText(text);
   }
 
   /**
-   * Creates a new li with the given child components.
+   * Creates a new ul with the given child components.
    *
    * @param components the child components
    */
-  public Li(Component... components) {
+  public UnorderedList(Component... components) {
     super(components);
   }
 }

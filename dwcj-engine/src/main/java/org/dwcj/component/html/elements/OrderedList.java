@@ -5,9 +5,9 @@ import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.html.HtmlComponentContainer;
 
 /**
- * Component representing a {@code ul} element.
+ * Component representing a {@code ol} element.
  *
- * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul">HTML ul Tag</a>
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol">HTML ol Tag</a>
  *
  * @author Hyyan Abo Fakher
  * @since 23.06
@@ -19,32 +19,32 @@ import org.dwcj.component.html.HtmlComponentContainer;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-@NodeName("ul")
-public class Ul extends HtmlComponentContainer<Ul> {
+@NodeName("ol")
+public class OrderedList extends HtmlComponentContainer<OrderedList> {
 
   /**
-   * Creates a new empty ul.
+   * Creates a new empty ol.
    */
-  public Ul() {
+  public OrderedList() {
     super();
   }
 
   /**
-   * Creates a new ul with the given text.
+   * Creates a new ol with the given text.
    *
    * @param text the text
    */
-  public Ul(String text) {
+  public OrderedList(String text) {
     super();
     setText(text);
   }
 
   /**
-   * Creates a new ul with the given child components.
+   * Creates a new ol with the given child components.
    *
    * @param components the child components
    */
-  public Ul(Component... components) {
+  public OrderedList(Component... components) {
     super(components);
   }
 }

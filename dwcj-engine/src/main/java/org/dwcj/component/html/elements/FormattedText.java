@@ -5,9 +5,9 @@ import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.html.HtmlComponentContainer;
 
 /**
- * Component representing a {@code ol} element.
+ * Component representing a {@code pre} element.
  *
- * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol">HTML ol Tag</a>
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">HTML pre Tag</a>
  *
  * @author Hyyan Abo Fakher
  * @since 23.06
@@ -19,32 +19,32 @@ import org.dwcj.component.html.HtmlComponentContainer;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-@NodeName("ol")
-public class Ol extends HtmlComponentContainer<Ol> {
+@NodeName("pre")
+public class FormattedText extends HtmlComponentContainer<FormattedText> {
 
   /**
-   * Creates a new empty ol.
+   * Creates a new empty pre.
    */
-  public Ol() {
+  public FormattedText() {
     super();
   }
 
   /**
-   * Creates a new ol with the given text.
+   * Creates a new pre with the given text.
    *
    * @param text the text
    */
-  public Ol(String text) {
+  public FormattedText(String text) {
     super();
     setText(text);
   }
 
   /**
-   * Creates a new ol with the given child components.
+   * Creates a new pre with the given child components.
    *
    * @param components the child components
    */
-  public Ol(Component... components) {
+  public FormattedText(Component... components) {
     super(components);
   }
 }

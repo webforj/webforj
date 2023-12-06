@@ -5,9 +5,9 @@ import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.html.HtmlComponentContainer;
 
 /**
- * Component representing a {@code pre} element.
+ * Component representing a {@code li} element.
  *
- * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">HTML pre Tag</a>
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li">HTML li Tag</a>
  *
  * @author Hyyan Abo Fakher
  * @since 23.06
@@ -19,32 +19,32 @@ import org.dwcj.component.html.HtmlComponentContainer;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-@NodeName("pre")
-public class Pre extends HtmlComponentContainer<Pre> {
+@NodeName("li")
+public class ListEntry extends HtmlComponentContainer<ListEntry> {
 
   /**
-   * Creates a new empty pre.
+   * Creates a new empty li.
    */
-  public Pre() {
+  public ListEntry() {
     super();
   }
 
   /**
-   * Creates a new pre with the given text.
+   * Creates a new li with the given text.
    *
    * @param text the text
    */
-  public Pre(String text) {
+  public ListEntry(String text) {
     super();
     setText(text);
   }
 
   /**
-   * Creates a new pre with the given child components.
+   * Creates a new li with the given child components.
    *
    * @param components the child components
    */
-  public Pre(Component... components) {
+  public ListEntry(Component... components) {
     super(components);
   }
 }
