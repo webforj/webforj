@@ -7,7 +7,7 @@ import org.dwcj.component.element.ElementComposite;
 import org.dwcj.component.element.annotation.EventName;
 import org.dwcj.component.element.event.ElementEventOptions;
 import org.dwcj.component.event.ComponentEvent;
-import org.dwcj.component.html.event.ClickEvent;
+import org.dwcj.component.html.event.HtmlClickEvent;
 import org.dwcj.concern.HasAttribute;
 import org.dwcj.concern.HasClassName;
 import org.dwcj.concern.HasHtml;
@@ -217,9 +217,9 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *
    * @return A listener registration for removing the event listener
    */
-  public ListenerRegistration<ClickEvent> addClickListener(EventListener<ClickEvent> listener,
-      ElementEventOptions options) {
-    return addEventListener(ClickEvent.class, listener, options);
+  public ListenerRegistration<HtmlClickEvent> addClickListener(
+      EventListener<HtmlClickEvent> listener, ElementEventOptions options) {
+    return addEventListener(HtmlClickEvent.class, listener, options);
   }
 
   /**
@@ -229,8 +229,9 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *
    * @return A listener registration for removing the event listener
    */
-  public ListenerRegistration<ClickEvent> addClickListener(EventListener<ClickEvent> listener) {
-    return addEventListener(ClickEvent.class, listener);
+  public ListenerRegistration<HtmlClickEvent> addClickListener(
+      EventListener<HtmlClickEvent> listener) {
+    return addEventListener(HtmlClickEvent.class, listener);
   }
 
   /**
