@@ -34,7 +34,7 @@ class IframeTest {
 
     assertTrue(component.getSandboxValues().contains(sandbox1));
     assertTrue(component.getSandboxValues().contains(sandbox2));
-    assertEquals(component.getElement().getAttribute("sandbox"), "allow-scripts allow-forms");
+    assertEquals("allow-scripts allow-forms", component.getElement().getAttribute("sandbox"));
   }
 
   @Test
@@ -54,7 +54,7 @@ class IframeTest {
 
     assertFalse(component.getSandboxValues().contains(sandbox1));
     assertTrue(component.getSandboxValues().contains(sandbox2));
-    assertEquals(component.getElement().getAttribute("sandbox"), "allow-forms");
+    assertEquals("allow-forms", component.getElement().getAttribute("sandbox"));
   }
 
   @Test
