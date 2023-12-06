@@ -235,6 +235,30 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
   }
 
   /**
+   * Add an onClick listener to this component.
+   *
+   * @param listener the listener to add
+   * @param options the options
+   *
+   * @return A listener registration for removing the event listener
+   */
+  public ListenerRegistration<HtmlClickEvent> onClick(EventListener<HtmlClickEvent> listener,
+      ElementEventOptions options) {
+    return addClickListener(listener, options);
+  }
+
+  /**
+   * Add an onClick listener to this component.
+   *
+   * @param listener the listener to add
+   *
+   * @return A listener registration for removing the event listener
+   */
+  public ListenerRegistration<HtmlClickEvent> onClick(EventListener<HtmlClickEvent> listener) {
+    return addClickListener(listener);
+  }
+
+  /**
    * Returns an instance of the current class, casted to its generic type. This method is primarily
    * used for method chaining in subclasses of HtmlComponent.
    *
