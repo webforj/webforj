@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Base64;
 import java.util.stream.Collectors;
 import org.dwcj.App;
 import org.dwcj.Environment;
@@ -17,31 +18,62 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  */
 public class Assets {
 
+  /**
+   * Enum defining the formats for content representation.
+   */
+  public enum ContentFormat {
+    /** Indicates that the content should be returned as plain text. */
+    PLAIN_TEXT,
+
+    /** Indicates that the content should be returned as base64 encoded string. */
+    BASE64
+  }
+
   private Assets() {}
 
   /**
    * Get the content of a resource as a String.
    *
    * @param path The path to the resource
+   * @param format The format of the content
+   *
    * @return The content of the resource as a String
    *
    * @throws IllegalArgumentException if the path is null or empty
    * @throws DwcjRuntimeException if an error occurred while reading the resource
    */
-  public static String contentOf(String path) {
+  public static String contentOf(String path, ContentFormat format) {
     ClassLoader classLoader = Environment.getCurrent().getClass().getClassLoader();
     try (InputStream is = classLoader.getResourceAsStream(path)) {
       if (is == null) {
         throw new IllegalArgumentException("Resource not found: " + path);
       }
 
-      try (InputStreamReader isr = new InputStreamReader(is);
-          BufferedReader reader = new BufferedReader(isr)) {
-        return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+      if (format == ContentFormat.BASE64) {
+        return Base64.getEncoder().encodeToString(is.readAllBytes());
+      } else {
+        try (InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader reader = new BufferedReader(isr)) {
+          return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        }
       }
     } catch (IOException e) {
       throw new DwcjRuntimeException(e);
     }
+  }
+
+  /**
+   * Gets the content of a resource as a String.
+   *
+   * @param path The path to the resource
+   *
+   * @return The content of the resource as a String
+   *
+   * @throws IllegalArgumentException if the path is null or empty
+   * @throws DwcjRuntimeException if an error occurred while reading the resource
+   */
+  public static String contentOf(String path) {
+    return contentOf(path, ContentFormat.PLAIN_TEXT);
   }
 
   /**
