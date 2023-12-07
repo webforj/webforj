@@ -6,5 +6,5 @@ package org.dwcj;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public class NoneAction implements AppCloseAction {
+public final class NoneAction implements AppCloseAction {
 }
