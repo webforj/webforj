@@ -5,8 +5,8 @@ import org.dwcj.component.element.annotation.NodeName;
 import org.dwcj.component.html.HtmlComponentContainer;
 
 /**
- * Component representing a {@code pre} element. This component represents preformatted text 
- * which will be presented exactly as written.
+ * Component representing a {@code pre} element. This component represents preformatted text which
+ * will be presented exactly as written.
  *
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">HTML pre Tag</a>
  *
