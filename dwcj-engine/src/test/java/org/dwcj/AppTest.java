@@ -113,6 +113,7 @@ class AppTest {
     void shouldNotAcceptNonePreDefinedAction() {
       class MyAction implements AppCloseAction {
       }
+
       assertThrows(IllegalArgumentException.class, () -> app.setTerminateAction(new MyAction()));
       assertThrows(IllegalArgumentException.class, () -> app.setErrorAction(new MyAction()));
     }
