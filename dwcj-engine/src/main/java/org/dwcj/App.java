@@ -1,6 +1,9 @@
 package org.dwcj;
 
+import com.basis.bbj.proxies.BBjBuiCloseAction;
+import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
+import java.net.URL;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
 import org.dwcj.environment.namespace.GlobalNamespace;
@@ -18,6 +21,21 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  */
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
+  /**
+   * A default app action is to clear the browser and display a localized message of "Click to
+   * reload application", with a link to the application when the application is terminated or error
+   * is returned.
+   *
+   * @see DefaultAction
+   */
+  public static final AppCloseAction DEFAULT_ACTION = new DefaultAction();
+  /**
+   * An application action which reset the default action when terminated or error occurred.
+   *
+   * @see NoneAction
+   */
+  public static final AppCloseAction NONE_ACTION = new NoneAction();
+
   private boolean isInitialized = false;
 
   /**
@@ -214,6 +232,28 @@ public abstract class App {
   }
 
   /**
+   * Set the terminate action for the application when the application terminates normally.
+   *
+   * @param action The action to be executed on termination
+   * @return The application instance
+   */
+  public App setTerminateAction(AppCloseAction action) {
+    setAppAction(action, true);
+    return this;
+  }
+
+  /**
+   * Set the error action for the application when the application terminates with an error.
+   *
+   * @param action The action to be executed on error
+   * @return The application instance
+   */
+  public App setErrorAction(AppCloseAction action) {
+    setAppAction(action, false);
+    return this;
+  }
+
+  /**
    * Log a String to the browser console (console.out)
    *
    * @param output The message to log
@@ -338,10 +378,73 @@ public abstract class App {
   }
 
   public static Namespace getNamespace(String prefix, String name, Boolean fCreateIfMissing) {
-    if (prefix.isBlank() || name.isBlank())
+    if (prefix.isBlank() || name.isBlank()) {
       throw new IllegalArgumentException("You need a prefix and a name here");
+    }
 
     return new PrivateNamespace(prefix, name, fCreateIfMissing);
 
+  }
+
+  /**
+   * Set either the terminate or error app action.
+   *
+   * @param action The action to set
+   * @param isTerminateAction Flag to determine if it's a terminate action or error action
+   */
+  private void setAppAction(AppCloseAction action, boolean isTerminateAction) {
+    try {
+      BBjWebManager webManager = getEnvironment().getBBjAPI().getWebManager();
+
+      switch (action.getClass().getSimpleName()) {
+        case "RedirectAction":
+          URL url = ((RedirectAction) action).getUrl();
+          BBjBuiCloseAction redirectAction = webManager.urlAction(url.toString());
+          if (isTerminateAction) {
+            webManager.setEndAction(redirectAction);
+          } else {
+            webManager.setErrAction(redirectAction);
+          }
+          break;
+        case "MessageAction":
+          String message = ((MessageAction) action).getMessage();
+          BBjBuiCloseAction messageAction = webManager.msgAction(message);
+
+          if (isTerminateAction) {
+            webManager.setEndAction(messageAction);
+          } else {
+            webManager.setErrAction(messageAction);
+          }
+          break;
+        case "DefaultAction":
+          BBjBuiCloseAction defaultAction = webManager.defaultAction();
+
+          if (isTerminateAction) {
+            webManager.setEndAction(defaultAction);
+          } else {
+            webManager.setErrAction(defaultAction);
+          }
+          break;
+        case "NoneAction":
+          BBjBuiCloseAction noneAction = webManager.noneAction();
+
+          if (isTerminateAction) {
+            webManager.setEndAction(noneAction);
+          } else {
+            webManager.setErrAction(noneAction);
+          }
+          break;
+        default:
+          throw new IllegalArgumentException(
+              "Unsupported " + (isTerminateAction ? "terminate" : "error") + " action.");
+      }
+    } catch (BBjException e) {
+      throw new DwcjRuntimeException(
+          "Failed to set app " + (isTerminateAction ? "terminate" : "error") + " action.", e);
+    }
+  }
+
+  Environment getEnvironment() {
+    return Environment.getCurrent();
   }
 }
