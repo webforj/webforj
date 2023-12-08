@@ -6,5 +6,8 @@ package org.dwcj;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public interface AppCloseAction {
+public sealed
+interface AppCloseAction
+permits DefaultAction, NoneAction, MessageAction, RedirectAction
+{
 }
