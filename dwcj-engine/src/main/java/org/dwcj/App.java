@@ -35,6 +35,14 @@ public abstract class App {
    * @see NoneAction
    */
   public static final AppCloseAction NONE_ACTION = new NoneAction();
+  /**
+   * An application action which will restart the application when terminated or error occurred.
+   *
+   * @see RestartAction
+   * @see #getUrl()
+   */
+  public static final AppCloseAction RELAUNCH_ACTION = new RedirectAction(getUrl());
+
   private boolean isInitialized = false;
 
   /**
