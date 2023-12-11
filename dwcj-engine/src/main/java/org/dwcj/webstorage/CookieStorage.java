@@ -11,7 +11,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * Represents a storage mechanism for managing
  * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie">cookies</a>.
  *
- * @author Hyyan Abo Fakher
+ * @author Timon Geisbauer, Hyyan Abo Fakher
  * @since 23.06
  */
 public final class CookieStorage extends WebStorage {

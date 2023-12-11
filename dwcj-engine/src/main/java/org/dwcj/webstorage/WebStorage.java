@@ -18,7 +18,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @see LocalStorage
  * @see SessionStorage
  *
- * @author Hyyan Abo Fakher
+ * @author Timon Geisbauer, Hyyan Abo Fakher
  * @since 23.06
  */
 // @formatter:off

@@ -11,7 +11,7 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">session
  * storage</a>.
  *
- * @author Hyyan Abo Fakher
+ * @author Timon Geisbauer, Hyyan Abo Fakher
  * @since 23.06
  */
 public final class SessionStorage extends WebStorage {
