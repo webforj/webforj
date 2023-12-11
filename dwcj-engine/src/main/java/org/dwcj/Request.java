@@ -1,6 +1,7 @@
 package org.dwcj;
 
 import org.dwcj.environment.ObjectTable;
+import org.dwcj.webstorage.CookieStorage;
 
 /**
  * Represents the incoming request with the various pieces of information provided with the incoming
@@ -35,6 +36,16 @@ public final class Request {
    */
   public static String getQueryParam(String key) {
     return Environment.getCurrent().getDwcjHelper().getQueryParam(key);
+  }
+
+  /**
+   * Returns the value of the stored cookie.
+   *
+   * @param key the key of the cookie
+   * @return the value for the given key, null if key is not found
+   */
+  public static String getCookie(String key) {
+    return CookieStorage.getCurrent().get(key);
   }
 
 }

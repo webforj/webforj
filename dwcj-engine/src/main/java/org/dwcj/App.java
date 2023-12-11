@@ -13,6 +13,9 @@ import org.dwcj.environment.namespace.PrivateNamespace;
 import org.dwcj.exceptions.DwcjAppInitializeException;
 import org.dwcj.exceptions.DwcjException;
 import org.dwcj.exceptions.DwcjRuntimeException;
+import org.dwcj.webstorage.CookieStorage;
+import org.dwcj.webstorage.LocalStorage;
+import org.dwcj.webstorage.SessionStorage;
 
 /**
  * This is the central class representing an app. In order to implement an app, extend this class
@@ -355,6 +358,33 @@ public abstract class App {
    * still run
    */
   public void cleanup() {}
+
+  /**
+   * Gets the CookieStorage.
+   *
+   * @return the CookieStorage instance
+   */
+  public static CookieStorage getCookieStorage() {
+    return CookieStorage.getCurrent();
+  }
+
+  /**
+   * Gets the SessionStorage.
+   *
+   * @return the SessionStorage instance
+   */
+  public static SessionStorage getSessionStorage() {
+    return SessionStorage.getCurrent();
+  }
+
+  /**
+   * Gets the LocalStorage.
+   *
+   * @return the LocalStorage instance
+   */
+  public static LocalStorage getLocalStorage() {
+    return LocalStorage.getCurrent();
+  }
 
   /**
    * Override this method to implement your app behavior
