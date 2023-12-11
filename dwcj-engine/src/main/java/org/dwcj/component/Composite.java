@@ -24,7 +24,7 @@ import org.dwcj.component.window.Window;
  * {@link #getBoundComponent()} method. By default, {@code Composite} utilizes the generic type
  * parameter of its subclass to identify and instantiate the bound component type, provided that the
  * component class has a parameter-less constructor. Alternatively, subclasses may customize the
- * component initialization process by overriding the {@link #doInitBoundComponent()} method.
+ * component initialization process by overriding the {@link #initBoundComponent()} method.
  * </p>
  *
  * @param <T> the class type of the {@code Component} that is managed by this {@code Composite}.
@@ -52,19 +52,18 @@ public abstract class Composite<T extends Component> extends Component {
   }
 
   /**
-   * Initializes the bound {@code Component} and returns an instance of it. This method calls the
-   * {@link #doInitBoundComponent} method which can be implemented by the developer to provide the
-   * specific bound component in case the default implementation is not sufficient.
+   * Initializes the bound {@code Component} and returns an instance of it. This method can be
+   * implemented by the developer to provide the specific bound component in case the default
+   * implementation is not sufficient.
    *
    * <p>
-   * Developers should not call this method directly. Instead, they should implement the
-   * {@link #doInitBoundComponent} method to provide the specific bound component if necessary and
-   * use the {@link #getBoundComponent} method to get the bound component.
+   * Developers should not call this method directly. Instead, they should implement the method to
+   * provide the specific bound component if necessary and use the {@link #getBoundComponent} method
+   * to get the bound component.
    * </p>
    *
    * <p>
-   * This method will create the bound component only if it has not been created yet or if the
-   * component was created before but destroyed later.
+   * This method will create the bound component only if it has not been created yet.
    * </p>
    *
    * @return An instance of the bound {@code Component} associated with this {@code Composite}

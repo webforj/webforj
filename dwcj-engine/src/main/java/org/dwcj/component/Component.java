@@ -243,9 +243,9 @@ public abstract class Component {
    *
    * <p>
    * For example, if the API user sets properties or attributes of the component before adding it to
-   * a window, those changes should be recorded and replayed within the {@code catchUp} method. This
-   * ensures that the component behaves as expected with the specified properties when displayed on
-   * the window.
+   * a window, those changes should be recorded and replayed within the {@code onAttach} method.
+   * This ensures that the component behaves as expected with the specified properties when
+   * displayed on the window.
    * </p>
    */
   protected void onAttach() {}
