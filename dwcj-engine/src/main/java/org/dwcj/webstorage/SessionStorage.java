@@ -7,16 +7,31 @@ import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * Gives access to the browsers session storage and allows adding/reading/removing values from it.
+ * Represents a storage mechanism for managing
+ * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">session
+ * storage</a>.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-public class SessionStorage extends AbstractWebStorage {
+public final class SessionStorage extends WebStorage {
 
+  /**
+   * Creates a new SessionStorage instance.
+   *
+   * @throws BBjException if the instance could not be created
+   */
   private SessionStorage() throws BBjException {
-    super(Environment.getCurrent().getBBjAPI().getThinClient(), WebStorageType.SESSION);
+    super(Environment.getCurrent().getBBjAPI().getThinClient(), Type.SESSION);
   }
 
+  /**
+   * Creates a new SessionStorage instance.
+   *
+   * @param thinClient the thin client to use
+   */
   SessionStorage(BBjThinClient thinClient) {
-    super(thinClient, WebStorageType.SESSION);
+    super(thinClient, Type.SESSION);
   }
 
   /**
@@ -25,7 +40,7 @@ public class SessionStorage extends AbstractWebStorage {
    * @return the current SessionStorage instance
    */
   public static SessionStorage getCurrent() {
-    final String key = "dwcj.sessionStorage.instance";
+    final String key = "dwcj.webstorage.session.instance";
 
     if (ObjectTable.contains(key)) {
       return (SessionStorage) ObjectTable.get(key);

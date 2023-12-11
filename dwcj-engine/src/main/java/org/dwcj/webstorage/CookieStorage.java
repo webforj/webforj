@@ -5,20 +5,33 @@ import com.basis.startup.type.BBjException;
 import java.util.Map;
 import org.dwcj.Environment;
 import org.dwcj.environment.ObjectTable;
-import org.dwcj.environment.StringTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * Gives access to the browsers cookie storage and allows adding/reading/removing values from it.
+ * Represents a storage mechanism for managing
+ * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie">cookies</a>.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-public class CookieStorage extends AbstractWebStorage {
+public final class CookieStorage extends WebStorage {
 
+  /**
+   * Creates a new CookieStorage instance.
+   *
+   * @throws BBjException if the instance could not be created
+   */
   private CookieStorage() throws BBjException {
-    super(Environment.getCurrent().getBBjAPI().getThinClient(), WebStorageType.COOKIES);
+    super(Environment.getCurrent().getBBjAPI().getThinClient(), Type.COOKIES);
   }
 
+  /**
+   * Creates a new CookieStorage instance.
+   *
+   * @param thinClient the thin client to use
+   */
   CookieStorage(BBjThinClient thinClient) {
-    super(thinClient, WebStorageType.COOKIES);
+    super(thinClient, Type.COOKIES);
   }
 
   /**
@@ -27,7 +40,7 @@ public class CookieStorage extends AbstractWebStorage {
    * @return the current CookieStorage instance
    */
   public static CookieStorage getCurrent() {
-    final String key = "dwcj.cookieStorage.instance";
+    final String key = "dwcj.webstorage.cookie.instance";
 
     if (ObjectTable.contains(key)) {
       return (CookieStorage) ObjectTable.get(key);
@@ -38,26 +51,30 @@ public class CookieStorage extends AbstractWebStorage {
       ObjectTable.put(key, instance);
       return instance;
     } catch (BBjException e) {
-      throw new DwcjRuntimeException("Failed to instantiate Cookiestorage.", e);
+      throw new DwcjRuntimeException("Failed to instantiate CookieStorage.", e);
     }
   }
 
   /**
-   * Sets the cookie path, defaults to window.location.pathname.
-   *
-   * @param path the path the cookies will be stored.
+   * {@inheritDoc}
    */
-  public static void setCookiePath(String path) {
-    StringTable.put("!COOKIE_PATH", path);
+  @Override
+  public CookieStorage add(String key, String value, String attributes) {
+    return (CookieStorage) super.add(key, value, attributes);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public void add(PropertySameSite samesite, String key, String value) {
-    super.add(samesite, key, value);
+  public CookieStorage add(Map<String, String> values, String attributes) {
+    return (CookieStorage) super.add(values, attributes);
   }
 
-  @Override
-  public void add(PropertySameSite samesite, Map<String, String> values) {
-    super.add(samesite, values);
+  /**
+   * Alias for {@link #add(String, String, String)}.
+   */
+  public CookieStorage setItem(String key, String value, String attributes) {
+    return add(key, value, attributes);
   }
 }

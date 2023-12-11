@@ -7,16 +7,30 @@ import org.dwcj.environment.ObjectTable;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * Gives access to the browsers local storage and allows adding/reading/removing values from it.
+ * Represents a storage mechanism for managing
+ * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">local storage</a>.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-public class LocalStorage extends AbstractWebStorage {
+public final class LocalStorage extends WebStorage {
 
+  /**
+   * Creates a new LocalStorage instance.
+   *
+   * @throws BBjException if the instance could not be created
+   */
   private LocalStorage() throws BBjException {
-    super(Environment.getCurrent().getBBjAPI().getThinClient(), WebStorageType.STORAGE);
+    super(Environment.getCurrent().getBBjAPI().getThinClient(), Type.STORAGE);
   }
 
+  /**
+   * Creates a new LocalStorage instance.
+   *
+   * @param thinClient the thin client to use
+   */
   LocalStorage(BBjThinClient thinClient) {
-    super(thinClient, WebStorageType.STORAGE);
+    super(thinClient, Type.STORAGE);
   }
 
   /**
@@ -25,7 +39,7 @@ public class LocalStorage extends AbstractWebStorage {
    * @return the current LocalStorage instance
    */
   public static LocalStorage getCurrent() {
-    final String key = "dwcj.localStorage.instance";
+    final String key = "dwcj.webstorage.local.instance";
 
     if (ObjectTable.contains(key)) {
       return (LocalStorage) ObjectTable.get(key);
