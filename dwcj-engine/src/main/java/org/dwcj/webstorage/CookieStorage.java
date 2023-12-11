@@ -35,7 +35,7 @@ public final class CookieStorage extends WebStorage {
   }
 
   /**
-   * Get the current CookieStorage instance.
+   * Gets the current CookieStorage instance.
    *
    * @return the current CookieStorage instance
    */

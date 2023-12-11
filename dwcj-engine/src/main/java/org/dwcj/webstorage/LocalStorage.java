@@ -34,7 +34,7 @@ public final class LocalStorage extends WebStorage {
   }
 
   /**
-   * Get the current LocalStorage instance.
+   * Gets the current LocalStorage instance.
    *
    * @return the current LocalStorage instance
    */

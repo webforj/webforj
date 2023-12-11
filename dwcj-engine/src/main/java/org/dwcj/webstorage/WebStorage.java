@@ -9,9 +9,9 @@ import java.util.Optional;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * Abstract implementation for similarly named Browser API. WebStorage may be handy to save some
+ * Abstract implementation for similarly named Browser API. WebStorage may be useful to save some
  * data that you want to be stored on the client side, instead of e.g. database on the server. An
- * example could be certain an application settings that the same users might want to have set
+ * example could be certain application settings that the same users might want to have set
  * differently based on their device.
  *
  * @see CookieStorage
@@ -51,7 +51,7 @@ public abstract sealed class WebStorage permits CookieStorage, LocalStorage, Ses
     }
 
     /**
-     * Get the value of the enum.
+     * Gets the value of the enum.
      *
      * @return the value of the enum
      */

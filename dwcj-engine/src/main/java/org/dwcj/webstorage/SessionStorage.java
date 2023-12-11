@@ -35,7 +35,7 @@ public final class SessionStorage extends WebStorage {
   }
 
   /**
-   * Get the current SessionStorage instance.
+   * Gets the current SessionStorage instance.
    *
    * @return the current SessionStorage instance
    */

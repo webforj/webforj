@@ -360,7 +360,7 @@ public abstract class App {
   public void cleanup() {}
 
   /**
-   * Get the CookieStorage.
+   * Gets the CookieStorage.
    *
    * @return the CookieStorage instance
    */
@@ -369,7 +369,7 @@ public abstract class App {
   }
 
   /**
-   * Get the SessionStorage.
+   * Gets the SessionStorage.
    *
    * @return the SessionStorage instance
    */
@@ -378,7 +378,7 @@ public abstract class App {
   }
 
   /**
-   * Get the LocalStorage.
+   * Gets the LocalStorage.
    *
    * @return the LocalStorage instance
    */
