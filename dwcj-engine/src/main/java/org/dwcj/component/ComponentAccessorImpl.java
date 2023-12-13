@@ -38,7 +38,9 @@ final class ComponentAccessorImpl extends ComponentAccessor {
 
       if (component instanceof DwcComponent) {
         BBjControl control = getControl(component);
-        control.setUserData(component);
+        if (control != null) {
+          control.setUserData(component);
+        }
       }
     } catch (InvocationTargetException | NoSuchMethodException | BBjException e) {
       throw new DwcjRuntimeException(
