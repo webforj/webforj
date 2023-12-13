@@ -5,8 +5,8 @@ import org.dwcj.component.window.Window;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * Serves as a bridge for accessing BBj-specific components from the DwcJ environment. It provides
- * access to the BBjWindow object behind the DWCJ Panel instances. This class should not be used
+ * Serves as a bridge for accessing BBj-specific components from the DWCj environment. It provides
+ * access to the BBjWindow object behind the DWCj Panel instances. This class should not be used
  * directly by consumers and is intended only for internal use following the "friend" classes.
  *
  * @author Stephan Wald
