@@ -21,13 +21,13 @@ class WindowAccessorImplTest {
 
   @Test
   @DisplayName("Should get BBjWindow")
-  void shouldGetBBjWindow() throws IllegalAccessException {
+  void shouldGetBbjWindow() throws IllegalAccessException {
     Window component = spy(Window.class);
-    BBjWindow mockedBBjWindow = mock(BBjWindow.class);
-    when(component.getBBjWindow()).thenReturn(mockedBBjWindow);
+    BBjWindow mockedBbjWindow = mock(BBjWindow.class);
+    when(component.getBBjWindow()).thenReturn(mockedBbjWindow);
 
     BBjWindow underlyingWindow = windowAccessor.getBBjWindow(component);
     ((Window) verify(component)).getBBjWindow();
-    assertEquals(mockedBBjWindow, underlyingWindow);
+    assertEquals(mockedBbjWindow, underlyingWindow);
   }
 }
