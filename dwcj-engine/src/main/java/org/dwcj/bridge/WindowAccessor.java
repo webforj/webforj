@@ -1,23 +1,29 @@
 package org.dwcj.bridge;
 
-import org.dwcj.Environment;
-import org.dwcj.component.window.Window;
-
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import org.dwcj.component.window.Window;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
- * class it's not for customer use, only for use in the "friend" classes Pattern see Tulach, p.75ff
+ * Serves as a bridge for accessing BBj-specific components from the DwcJ environment. It provides
+ * access to the BBjWindow object behind the DWCJ Panel instances. This class should not be used
+ * directly by consumers and is intended only for internal use following the "friend" classes.
+ *
+ * @author Stephan Wald
  */
 public abstract class WindowAccessor {
   private static WindowAccessor accessor;
 
+  /**
+   * Constructs a WindowAccessor. Intended for internal use only.
+   */
   protected WindowAccessor() {}
 
   /**
-   * Gets the accessor instance to access the protected methods in the DWCJ Panel instances
+   * Provides access to the singleton instance of the WindowAccessor, initializing it if necessary
+   * by loading the Window class to trigger the static initializer that sets the accessor.
    *
-   * @return the accessor instance
+   * @return The singleton instance of the WindowAccessor.
    */
   public static WindowAccessor getDefault() {
     WindowAccessor a = accessor;
@@ -27,31 +33,36 @@ public abstract class WindowAccessor {
     try {
       Class.forName(Window.class.getName(), true, Window.class.getClassLoader());
     } catch (Exception e) {
-      Environment.logError(e);
+      throw new DwcjRuntimeException("Unable to load Window class.", e);
     }
+
     return accessor;
   }
 
   /**
-   * Sets the accessor instance for static access
+   * Sets the singleton instance of the WindowAccessor. This should only be called once and is
+   * protected to prevent external modification.
    *
-   * @param accessor the instance of the accessor implementation
+   * @param accessor The instance of ComponentAccessor to set.
+   * @throws IllegalStateException If an accessor has already been set.
    */
   public static void setDefault(WindowAccessor accessor) {
     if (WindowAccessor.accessor != null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("WindowAccessor already set and cannot be redefined");
     }
+
     WindowAccessor.accessor = accessor;
   }
 
-
   /**
+   * Retrieves the {@code BBjWindow} for the specified {@code Window}.
    *
-   * @param panel the panel that contains the BBj window
-   * @return the BBjWindow object behind the panel
-   * @throws IllegalAccessException
+   * @param window The {@code window} for which to get the {@code BBjWindow}.
+   * @return The associated {@code BBjWindow} instance.
+   *
+   * @throws IllegalAccessException If access to the {@code BBjWindow} is not allowed.
    */
-  public abstract BBjWindow getBBjWindow(Window panel) throws IllegalAccessException;
+  public abstract BBjWindow getBBjWindow(Window window) throws IllegalAccessException;
 
 }
 

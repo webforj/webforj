@@ -1,17 +1,35 @@
 package org.dwcj.component.window.event;
 
-import org.dwcj.component.ControlEvent;
-import org.dwcj.component.window.Panel;
+import java.util.Map;
+import org.dwcj.component.event.MouseEvent;
+import org.dwcj.component.window.Window;
 
-public final class WindowClickEvent implements ControlEvent {
-  private final Panel control;
+/**
+ * An event that is fired when the window is clicked.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.06
+ */
+public final class WindowClickEvent extends MouseEvent {
 
-  public WindowClickEvent(Panel div) {
-    this.control = div;
+  public WindowClickEvent(Window component, Map<String, Object> payload) {
+    super(component, payload);
   }
 
+  /**
+   * Returns the number of clicks associated with this event.
+   *
+   * @return The number of clicks associated with this event.
+   */
+  public int getClickCount() {
+    return (int) this.getEventMap().get("clickCount");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Panel getControl() {
-    return control;
+  public Window getComponent() {
+    return (Window) super.getComponent();
   }
 }

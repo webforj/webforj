@@ -22,7 +22,7 @@ public class DynamicMarkdown extends Panel {
   }
 
   private void redraw(String text) {
-    clear();
+    removeAll();
     ctrlList.clear();
 
     while (!text.isBlank()) {

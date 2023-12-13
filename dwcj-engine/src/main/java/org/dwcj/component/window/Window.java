@@ -1,86 +1,98 @@
 package org.dwcj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import org.dwcj.Environment;
-import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 import org.dwcj.component.Component;
-import org.dwcj.component.LegacyDwcComponent;
-
-
+import org.dwcj.component.DwcContainer;
+import org.dwcj.component.event.EventSinkListenerRegistry;
+import org.dwcj.component.window.event.WindowClickEvent;
+import org.dwcj.component.window.sink.WindowClickEventSink;
+import org.dwcj.dispatcher.EventListener;
+import org.dwcj.dispatcher.ListenerRegistration;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
- * the base class for all panel implementations.
+ * An abstract class representing a window in the application.
+ *
+ * <p>
+ * Windows can contain other UI components. This class provides a foundation for creating and
+ * managing windows.
+ * </p>
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.06
  */
-public abstract class Window extends LegacyDwcComponent {
+public abstract class Window extends DwcContainer<Window> {
 
-  protected BBjWindow wnd;
-
-  protected LinkedHashMap<String, Component> components = new LinkedHashMap<>();
-  private final HashSet<String> cssClasses = new HashSet<>();
-  private final Map<String, String> styles = new HashMap<>();
-
-  /**
-   * Used to add controls to a panel. Multiple controls can be passed to this function, and will be
-   * added in the order the arguments are passed (arg0 added first, arg1 second, etc...)
-   *
-   * @param ctrl the control(s) to be added
-   * @return the panel itself
-   */
-  public Window add(Component... ctrl) {
-    for (Component c : ctrl) {
-      // if (Boolean.FALSE.equals(c.isDestroyed())) {
-      try {
-        AnnotationProcessor processor = new AnnotationProcessor();
-        processor.processControlAnnotations(c);
-        ComponentAccessor.getDefault().create(c, this);
-        components.put(c.getComponentId(), c);
-      } catch (IllegalAccessException e) {
-        Environment.logError(e);
-      }
-      // }
-    }
-    return this;
-  }
+  private BBjWindow wnd;
+  private final EventSinkListenerRegistry<WindowClickEvent> clickEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new WindowClickEventSink(this, getEventDispatcher()),
+          WindowClickEvent.class);
 
   static {
     WindowAccessor.setDefault(new WindowAccessorImpl());
   }
 
   /**
-   * This method is only accessible through "friend" classes no customer shall ever use this
-   * directly.
+   * Adds a {@link WindowClickEvent} listener for the component.
    *
-   * @return the underlying BBjWindow
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<WindowClickEvent> addClickListener(
+      EventListener<WindowClickEvent> listener) {
+    return clickEventSinkListenerRegistry.addEventListener(listener);
+  }
+
+  /**
+   * Alias for {@link #addClickListener(EventListener)}.
+   *
+   * @param listener the event listener to be added
+   * @return The component itself
+   */
+  public ListenerRegistration<WindowClickEvent> onClick(EventListener<WindowClickEvent> listener) {
+    return addClickListener(listener);
+  }
+
+  /**
+   * This method gets the underlying original BBj window. It's package private and can only be
+   * accessed through the WindowAccessor. No API user / customer should ever work directly with BBj
+   * windows.
+   *
+   * @return the underlying BBj Window
    */
   BBjWindow getBBjWindow() {
     return wnd;
   }
 
   /**
+   * Sets the underling BBj Window.
+   *
+   * @param control the BBj Window to set.
+   */
+  protected void setBBjWindow(BBjWindow window) {
+    this.wnd = window;
+    setControl(window);
+  }
+
+  /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
   @Override
-  protected void onAttach() {
-    super.onAttach();
+  protected void onCreate(Window window) {
+    // pass
+  }
 
-    if (!this.styles.isEmpty()) {
-      for (Map.Entry<String, String> entry : this.styles.entrySet()) {
-        setStyle(entry.getKey(), entry.getValue());
-      }
-    }
-
-    if (!this.cssClasses.isEmpty()) {
-      for (String cl : this.cssClasses) {
-        addClassName(cl);
-      }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void doAdd(Component component) {
+    try {
+      ComponentAccessor.getDefault().create(component, this);
+    } catch (IllegalAccessException e) {
+      throw new DwcjRuntimeException("Failed to add component", e);
     }
   }
 }
