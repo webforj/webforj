@@ -77,7 +77,7 @@ public class Frame extends Window {
    */
   public Frame(String title) throws DwcjAppInitializeException {
     try {
-      byte[] flags = new byte[] {(byte) 0x01, (byte) 0x11, (byte) 0x10, (byte) 0x80};
+      byte[] flags = new byte[] {(byte) 0x11, (byte) 0x11, (byte) 0x10, (byte) 0x80};
       BasisNumber ctx =
           BasisNumber.createBasisNumber(Environment.getCurrent().getSysGui().getAvailableContext());
       BBjWindow wnd = Environment.getCurrent().getSysGui().addWindow(ctx, "", flags);

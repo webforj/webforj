@@ -39,7 +39,7 @@ public class Panel extends Window {
         finalFlag += (byte) 0x10;
       }
 
-      byte[] flags = new byte[] {(byte) 0x00, (byte) 0x10, (byte) 0x88, finalFlag};
+      byte[] flags = new byte[] {(byte) 0x10, (byte) 0x10, (byte) 0x88, finalFlag};
       BBjWindow wnd = topLevelWindow.addChildWindow(topLevelWindow.getAvailableControlID(), "",
           flags, Environment.getCurrent().getSysGui().getAvailableContext());
       setBbjWindow(wnd);
