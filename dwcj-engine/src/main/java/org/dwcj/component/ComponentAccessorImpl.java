@@ -1,6 +1,7 @@
 package org.dwcj.component;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.startup.type.BBjException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.dwcj.bridge.ComponentAccessor;
@@ -26,11 +27,20 @@ final class ComponentAccessorImpl extends ComponentAccessor {
   public void create(Component component, Window window) throws IllegalAccessException {
     verifyCaller();
 
+    if (component == null) {
+      throw new NullPointerException("Component cannot be null.");
+    }
+
     try {
       Method create = Component.class.getDeclaredMethod("create", Window.class);
       create.setAccessible(true); // NOSONAR
       create.invoke(component, window);
-    } catch (InvocationTargetException | NoSuchMethodException e) {
+
+      if (component instanceof DwcComponent) {
+        BBjControl control = getControl(component);
+        control.setUserData(component);
+      }
+    } catch (InvocationTargetException | NoSuchMethodException | BBjException e) {
       throw new DwcjRuntimeException(
           String.format("Failed to create component '%s'.", component.getClass().getName()), e);
     }
