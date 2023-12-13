@@ -32,6 +32,6 @@ final class WindowAccessorImpl extends WindowAccessor {
               + "to this access control policy.", caller));
     }
 
-    return window.getBBjWindow();
+    return window.getBbjWindow();
   }
 }

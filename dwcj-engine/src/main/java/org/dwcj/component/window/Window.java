@@ -62,7 +62,7 @@ public abstract class Window extends DwcContainer<Window> {
    *
    * @return the underlying BBj Window
    */
-  BBjWindow getBBjWindow() {
+  BBjWindow getBbjWindow() {
     return wnd;
   }
 
@@ -71,13 +71,22 @@ public abstract class Window extends DwcContainer<Window> {
    *
    * @param control the BBj Window to set.
    */
-  protected void setBBjWindow(BBjWindow window) {
+  protected void setBbjWindow(BBjWindow window) {
     this.wnd = window;
     setControl(window);
   }
 
   /**
    * {@inheritDoc}
+   */
+  @Override
+  protected void attachControlCallbacks() {
+    super.attachControlCallbacks();
+    clickEventSinkListenerRegistry.attach();
+  }
+
+  /**
+   * {@inheritDoc}x
    */
   @Override
   protected void onCreate(Window window) {

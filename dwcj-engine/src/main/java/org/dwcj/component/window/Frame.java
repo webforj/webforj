@@ -339,11 +339,11 @@ public class Frame extends Window {
   }
 
   private void init(BBjWindow bbjWindow) {
-    setBBjWindow(bbjWindow);
+    setBbjWindow(bbjWindow);
     create(this);
   }
 
   private BBjTopLevelWindow getBbjTopLevelWindow() {
-    return (BBjTopLevelWindow) getBBjWindow();
+    return (BBjTopLevelWindow) getBbjWindow();
   }
 }

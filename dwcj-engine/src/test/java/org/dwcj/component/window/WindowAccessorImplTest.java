@@ -24,10 +24,10 @@ class WindowAccessorImplTest {
   void shouldGetBbjWindow() throws IllegalAccessException {
     Window component = spy(Window.class);
     BBjWindow mockedBbjWindow = mock(BBjWindow.class);
-    when(component.getBBjWindow()).thenReturn(mockedBbjWindow);
+    when(component.getBbjWindow()).thenReturn(mockedBbjWindow);
 
     BBjWindow underlyingWindow = windowAccessor.getBBjWindow(component);
-    ((Window) verify(component)).getBBjWindow();
+    ((Window) verify(component)).getBbjWindow();
     assertEquals(mockedBbjWindow, underlyingWindow);
   }
 }

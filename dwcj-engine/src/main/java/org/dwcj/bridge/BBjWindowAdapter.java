@@ -1,7 +1,6 @@
 package org.dwcj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-
 import org.dwcj.component.window.Window;
 
 /**
@@ -13,6 +12,6 @@ import org.dwcj.component.window.Window;
 public class BBjWindowAdapter extends Window {
 
   public BBjWindowAdapter(BBjWindow w) {
-    setBBjWindow(w);
+    setBbjWindow(w);
   }
 }

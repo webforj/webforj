@@ -29,7 +29,9 @@ public class Panel extends Window {
    */
   @Override
   protected void onCreate(Window window) {
-    BBjWindow topLevelWindow = window.getBBjWindow();
+    super.onCreate(window);
+
+    BBjWindow topLevelWindow = window.getBbjWindow();
 
     try {
       byte finalFlag = 0x00;
@@ -40,7 +42,7 @@ public class Panel extends Window {
       byte[] flags = new byte[] {(byte) 0x00, (byte) 0x10, (byte) 0x88, finalFlag};
       BBjWindow wnd = topLevelWindow.addChildWindow(topLevelWindow.getAvailableControlID(), "",
           flags, Environment.getCurrent().getSysGui().getAvailableContext());
-      setBBjWindow(wnd);
+      setBbjWindow(wnd);
       setStyle("overflow", "unset");
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to create panel", e);
