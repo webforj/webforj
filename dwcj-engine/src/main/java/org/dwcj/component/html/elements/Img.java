@@ -14,7 +14,7 @@ import org.dwcj.utilities.Assets;
  * @since 23.06
  */
 @NodeName("img")
-public class Img extends HtmlComponent<Break> {
+public class Img extends HtmlComponent<Iframe> {
 
   private final PropertyDescriptor<String> srcProp = PropertyDescriptor.attribute("src", "");
   private final PropertyDescriptor<String> altProp = PropertyDescriptor.attribute("alt", "");
