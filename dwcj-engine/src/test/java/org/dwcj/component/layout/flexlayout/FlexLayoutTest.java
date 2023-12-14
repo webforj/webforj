@@ -2,6 +2,8 @@ package org.dwcj.component.layout.flexlayout;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,6 +22,21 @@ class FlexLayoutTest {
   @BeforeEach
   void setUp() {
     flexLayout = new FlexLayout();
+  }
+
+  @Test
+  void shouldCreateLayoutWithDirectionAndItems() {
+    Div item = new Div();
+    FlexLayout layout = new FlexLayout(FlexDirection.COLUMN, item);
+
+    assertEquals(FlexDirection.COLUMN, layout.getDirection());
+    assertTrue(layout.hasComponent(item));
+  }
+
+  @Test
+  void createShouldCreateLayoutBuilder() {
+    FlexLayoutBuilder builder = FlexLayout.create();
+    assertNotNull(builder);
   }
 
   @Nested
