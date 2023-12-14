@@ -25,4 +25,12 @@ public class ListClickEvent extends ListEvent {
   public ListClickEvent(DwcSelectDropdown<?> component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DwcSelectDropdown<?> getComponent() {
+    return (DwcSelectDropdown<?>) super.getComponent();
+  }
 }

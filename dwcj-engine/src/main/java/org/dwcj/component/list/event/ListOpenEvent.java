@@ -21,4 +21,12 @@ public class ListOpenEvent extends ListEvent {
   public ListOpenEvent(DwcSelectDropdown<?> component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DwcSelectDropdown<?> getComponent() {
+    return (DwcSelectDropdown<?>) super.getComponent();
+  }
 }

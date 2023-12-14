@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.dwcj.component.Component;
 import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.component.list.DwcList;
 import org.dwcj.component.list.ListItem;
@@ -87,5 +88,13 @@ public class ListEvent extends ComponentEvent<DwcList<?>> {
     DwcList<?> component = (DwcList<?>) getComponent();
 
     return indices.stream().map(component::getByIndex).filter(Objects::nonNull).toList();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DwcList<?> getComponent() {
+    return (DwcList<?>) super.getComponent();
   }
 }

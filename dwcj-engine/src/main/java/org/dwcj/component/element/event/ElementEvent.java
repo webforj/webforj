@@ -1,6 +1,7 @@
 package org.dwcj.component.element.event;
 
 import java.util.Map;
+import org.dwcj.component.Component;
 import org.dwcj.component.element.Element;
 import org.dwcj.component.event.ComponentEvent;
 
@@ -57,5 +58,13 @@ public final class ElementEvent extends ComponentEvent<Element> {
    */
   public ElementEventOptions getOptions() {
     return options;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Element getComponent() {
+    return (Element) super.getComponent();
   }
 }

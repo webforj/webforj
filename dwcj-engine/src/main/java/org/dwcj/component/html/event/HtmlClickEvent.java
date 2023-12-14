@@ -1,6 +1,7 @@
 package org.dwcj.component.html.event;
 
 import java.util.Map;
+import org.dwcj.component.Component;
 import org.dwcj.component.element.annotation.EventName;
 import org.dwcj.component.element.annotation.EventOptions;
 import org.dwcj.component.element.annotation.EventOptions.EventData;
@@ -126,5 +127,13 @@ public class HtmlClickEvent extends ComponentEvent<HtmlComponent<?>> {
    */
   public boolean isMetaKey() {
     return (boolean) getData().get("metaKey");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public HtmlComponent<?> getComponent() {
+    return (HtmlComponent<?>) super.getComponent();
   }
 }

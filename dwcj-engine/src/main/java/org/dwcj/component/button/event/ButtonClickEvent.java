@@ -1,6 +1,7 @@
 package org.dwcj.component.button.event;
 
 import java.util.Map;
+import org.dwcj.component.Component;
 import org.dwcj.component.button.DwcButton;
 import org.dwcj.component.event.ComponentEvent;
 
@@ -43,6 +44,14 @@ public class ButtonClickEvent extends ComponentEvent<DwcButton<?>> {
    */
   public double getY() {
     return (double) this.getEventMap().get("y");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DwcButton<?> getComponent() {
+    return (DwcButton<?>) super.getComponent();
   }
 }
 
