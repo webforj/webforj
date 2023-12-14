@@ -11,6 +11,7 @@ import org.dwcj.component.tabbedpane.event.TabSelectEvent;
 import org.dwcj.component.tabbedpane.sink.TabSelectEventSink;
 import org.dwcj.component.window.Window;
 import org.dwcj.concern.legacy.LegacyHasEnable;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.dwcj.component.window.Panel;
 import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
@@ -193,6 +194,47 @@ public final class TabbedPane extends LegacyDwcComponent implements LegacyHasEna
       }
     } else {
       this.tabs.remove(index);
+    }
+    return this;
+  }
+
+  /**
+   * Queries the enabled status of a tab - component must be added to a window before calling this
+   * method.
+   *
+   * @param index Index of the tab to be queried
+   * @return The enabled state
+   */
+  public Boolean getEnabledAt(int index) {
+    if (this.control != null) {
+      try {
+        return this.tabCtrl.isEnabledAt(index);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    } else {
+      throw new DwcjRuntimeException("Cannot get tab enabled, component not added to window");
+    }
+    return null;
+  }
+
+  /**
+   * Sets the enabled status of a tab - component must be added to a window before calling this
+   * method.
+   *
+   * @param index Index of the tab to be set
+   * @param enabled True to enable tab, false to disable
+   * @return The component itself
+   */
+  public TabbedPane setEnabledAt(int index, boolean enabled) {
+    if (this.control != null) {
+      try {
+        this.tabCtrl.setEnabledAt(index, enabled);
+      } catch (BBjException e) {
+        Environment.logError(e);
+      }
+    } else {
+      throw new DwcjRuntimeException("Cannot set tab enabled, component not added to window");
     }
     return this;
   }
