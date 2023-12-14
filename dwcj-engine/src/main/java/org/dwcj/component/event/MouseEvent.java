@@ -3,7 +3,6 @@ package org.dwcj.component.event;
 import java.util.Map;
 import org.dwcj.component.Component;
 
-
 /**
  * An event that is fired when the mouse enters or exits a component.
  */
@@ -25,7 +24,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return An int representing the mouse Button pressed.
    */
   public int getMouseButton() {
-    return (int) this.getEventMap().get("mouseButton");
+    return (int) getEventMap().get("mouseButton");
   }
 
   /**
@@ -34,7 +33,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return The x coordinate where the event happened.
    */
   public int getScreenX() {
-    return (int) this.getEventMap().get("screenX");
+    return (int) getEventMap().get("screenX");
   }
 
   /**
@@ -43,7 +42,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return The y coordinate where the event happened.
    */
   public int getScreenY() {
-    return (int) this.getEventMap().get("screenY");
+    return (int) getEventMap().get("screenY");
   }
 
   /**
@@ -52,7 +51,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return The x coordinate where the event happened.
    */
   public int getX() {
-    return (int) this.getEventMap().get("x");
+    return (int) getEventMap().get("x");
   }
 
   /**
@@ -61,7 +60,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return The y coordinate where the event happened.
    */
   public int getY() {
-    return (int) this.getEventMap().get("y");
+    return (int) getEventMap().get("y");
   }
 
   /**
@@ -70,7 +69,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return A boolean representing whether alt was pressed.
    */
   public boolean isAltDown() {
-    return (boolean) this.getEventMap().get("altDown");
+    return (boolean) getEventMap().get("altDown");
   }
 
   /**
@@ -79,7 +78,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return A boolean representing whether cmd was pressed.
    */
   public boolean isCmdDown() {
-    return (boolean) this.getEventMap().get("cmdDown");
+    return (boolean) getEventMap().get("cmdDown");
   }
 
   /**
@@ -88,7 +87,7 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return A boolean representing whether ctrl was pressed.
    */
   public boolean isControlDown() {
-    return (boolean) this.getEventMap().get("controlDown");
+    return (boolean) getEventMap().get("controlDown");
   }
 
   /**
@@ -97,6 +96,15 @@ public class MouseEvent extends ComponentEvent<Component> {
    * @return A boolean representing whether shift was pressed.
    */
   public boolean isShiftDown() {
-    return (boolean) this.getEventMap().get("shiftDown");
+    return (boolean) getEventMap().get("shiftDown");
+  }
+
+  /**
+   * Return the original component which fired the event.
+   *
+   * @return The original component which fired the event
+   */
+  public Component getOriginalComponent() {
+    return (Component) getEventMap().get("originalComponent");
   }
 }

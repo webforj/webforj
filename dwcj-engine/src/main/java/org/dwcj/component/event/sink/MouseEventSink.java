@@ -1,7 +1,10 @@
 package org.dwcj.component.event.sink;
 
 import com.basis.bbj.proxies.event.BBjMouseEvent;
+import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.startup.type.BBjException;
 import java.util.HashMap;
+import org.dwcj.component.Component;
 import org.dwcj.component.DwcComponent;
 import org.dwcj.dispatcher.EventDispatcher;
 
@@ -33,6 +36,23 @@ public abstract class MouseEventSink extends AbstractDwcEventSink {
     map.put("cmdDown", ev.isCmdDown());
     map.put("controlDown", ev.isControlDown());
     map.put("shiftDown", ev.isShiftDown());
+
+    BBjControl originalControl = ev.getOriginalControl();
+    Object userData = null;
+    Component component = null;
+
+    // Set default value
+    map.put("originalComponent", null);
+
+    try {
+      userData = originalControl.getUserData();
+      if (userData instanceof Component) {
+        component = (Component) userData;
+        map.put("originalComponent", component);
+      }
+    } catch (Exception e) {
+      // Ignore
+    }
 
     return map;
   }

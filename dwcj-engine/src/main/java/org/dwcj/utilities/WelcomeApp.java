@@ -5,7 +5,6 @@ import com.basis.startup.type.BBjException;
 import java.util.*;
 import org.dwcj.App;
 import org.dwcj.Environment;
-import org.dwcj.annotation.InlineStyleSheet;
 import org.dwcj.component.button.Button;
 import org.dwcj.component.button.event.ButtonClickEvent;
 import org.dwcj.component.text.Label;
@@ -17,11 +16,6 @@ import org.dwcj.exceptions.DwcjAppInitializeException;
 /**
  * The Welcome App is an automatically created index of App classes.
  */
-@InlineStyleSheet(/* css */"""
-    .BBjTopLevelWindow-center {
-      overflow: auto
-    }
-     """)
 public class WelcomeApp extends App {
 
   private Frame panel;
@@ -42,8 +36,7 @@ public class WelcomeApp extends App {
     panel.setStyle("padding", "20px");
     panel.setStyle("max-width", "600px");
     panel.setStyle("margin-left", "calc( max(0px , 100vw / 2 - 300px ))");
-
-
+    panel.setStyle("overflow", "auto", Frame.Area.CENTER);
 
     String url = App.getUrl();
     String name = App.getApplicationName();

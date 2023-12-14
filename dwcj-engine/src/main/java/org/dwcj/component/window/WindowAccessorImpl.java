@@ -1,26 +1,37 @@
 package org.dwcj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import org.dwcj.App;
+import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.bridge.WindowAccessor;
 
 /**
- * This class implements the accessor to BBj specifics in the AbstractPanel-derived set of panel
- * class Pattern see Tulach, p.75ff
+ * Implementation of the WindowAccessor that provides low-level access to BBj Window for DWCj
+ * Windows. This class ensures that only authorized callers from within the org.dwcj package can
+ * access the underlying BBjControl.
+ *
+ * @author Stephan Wald
+ * @author Hyyan Abo Fakher
+ *
+ * @see WindowAccessor
+ * @see ComponentAccessor
  */
 final class WindowAccessorImpl extends WindowAccessor {
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public BBjWindow getBBjWindow(Window panel) throws IllegalAccessException {
-
+  public BBjWindow getBBjWindow(Window window) throws IllegalAccessException {
     StackTraceElement[] stack = Thread.currentThread().getStackTrace();
     String caller = stack[2].getClassName();
-    if (caller.startsWith("org.dwcj.")
+    if (!caller.startsWith("org.dwcj.")) {
+      throw new IllegalAccessException(
+          String.format("The class '%s' attempted unauthorized access to BBj Window. "
+              + "Access is restricted to classes within the 'org.dwcj' package hierarchy. "
+              + "Ensure that any class interacting with BBj Window adheres "
+              + "to this access control policy.", caller));
+    }
 
-    )
-      return panel.getBBjWindow();
-    App.consoleLog(caller + ": You're not allowed to access this method!");
-    throw new IllegalAccessException(caller + ": You're not allowed to access this method!");
-
+    return window.getBbjWindow();
   }
 }

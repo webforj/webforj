@@ -3,12 +3,14 @@ package org.dwcj.component;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.startup.type.BBjException;
 import org.dwcj.bridge.ComponentAccessor;
 import org.dwcj.component.window.Window;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +33,33 @@ class ComponentAccessorImplTest {
     componentAccessor.create(component, window);
 
     verify(component).create(window);
+  }
+
+  @Test
+  void shouldTrackControls() throws IllegalAccessException, BBjException {
+    class ComponentMock extends Composite<DwcComponentMock> {
+      private DwcComponentMock el;
+
+      @Override
+      protected DwcComponentMock initBoundComponent() {
+        el = spy(new DwcComponentMock());
+        when(el.isDestroyed()).thenReturn(false);
+        BBjControl controlMock = mock(BBjControl.class);
+        try {
+          when(controlMock.getUserData()).thenReturn(el);
+        } catch (BBjException e) {
+          // pass
+        }
+        when(el.getControl()).thenReturn(controlMock);
+        return el;
+      }
+    }
+
+    Component component = new ComponentMock();
+    BBjControl control = componentAccessor.getControl(component);
+
+    assertNotNull(control);
+    assertTrue(control.getUserData() instanceof DwcComponent);
   }
 
   @Test
@@ -67,7 +96,7 @@ class ComponentAccessorImplTest {
     protected DwcComponentMock initBoundComponent() {
       el = spy(new DwcComponentMock());
       when(el.isDestroyed()).thenReturn(false);
-      when(el.getControl()).thenReturn(mock(BBjControl.class));
+      when(el.getControl()).thenReturn(spy(BBjControl.class));
       return el;
     }
   }
