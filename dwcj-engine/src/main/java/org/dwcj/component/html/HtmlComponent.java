@@ -14,6 +14,7 @@ import org.dwcj.concern.HasHtml;
 import org.dwcj.concern.HasProperty;
 import org.dwcj.concern.HasStyle;
 import org.dwcj.concern.HasText;
+import org.dwcj.concern.HasVisibility;
 import org.dwcj.dispatcher.EventListener;
 import org.dwcj.dispatcher.ListenerRegistration;
 import org.dwcj.exceptions.DwcjRuntimeException;
@@ -24,8 +25,9 @@ import org.dwcj.exceptions.DwcjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementComposite implements
-    HasStyle<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>, HasText<T>, HasHtml<T> {
+public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementComposite
+    implements HasStyle<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>, HasText<T>,
+    HasHtml<T>, HasVisibility<T> {
 
   /**
    * Alias for {@link #getBoundComponent()}.
@@ -168,6 +170,23 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
   @Override
   public String getText() {
     return getElement().getText();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setVisible(boolean visible) {
+    getElement().setVisible(visible);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean isVisible() {
+    return getElement().isVisible();
   }
 
   /**
