@@ -2,7 +2,8 @@ package org.dwcj.component.layout.flexlayout;
 
 import java.util.Optional;
 import org.dwcj.component.Component;
-import org.dwcj.component.html.elements.Div;
+import org.dwcj.component.element.annotation.NodeName;
+import org.dwcj.component.html.HtmlComponentContainer;
 import org.dwcj.concern.HasStyle;
 
 /**
@@ -19,7 +20,9 @@ import org.dwcj.concern.HasStyle;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public class FlexLayout extends Div {
+@NodeName("div")
+public class FlexLayout extends HtmlComponentContainer<FlexLayout> {
+
   /**
    * Create a new flex layout.
    */
