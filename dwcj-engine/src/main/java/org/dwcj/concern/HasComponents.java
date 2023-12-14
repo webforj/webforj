@@ -53,7 +53,7 @@ public interface HasComponents {
    * @return the component itself.
    */
   public default boolean hasComponent(Component component) {
-    return component != null;
+    return component != null && getComponents().contains(component);
   }
 
   /**
