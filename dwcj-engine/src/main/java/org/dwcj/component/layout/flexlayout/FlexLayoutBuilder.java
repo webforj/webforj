@@ -31,22 +31,22 @@ public final class FlexLayoutBuilder {
   public interface FlexAlignmentBuilder extends Builder {
 
     /**
+     * The items are stretched to fit the container.
+     *
+     * @return the builder
+     */
+    default FlexLayoutBuilder stretch() {
+      getInstance().alignment = FlexAlignment.STRETCH;
+      return getInstance();
+    }
+
+    /**
      * The items are placed at the start of the cross axis.
      *
      * @return the builder
      */
     default FlexLayoutBuilder start() {
       getInstance().alignment = FlexAlignment.START;
-      return getInstance();
-    }
-
-    /**
-     * The items are centered along the cross axis.
-     *
-     * @return the builder
-     */
-    default FlexLayoutBuilder center() {
-      getInstance().alignment = FlexAlignment.CENTER;
       return getInstance();
     }
 
@@ -61,12 +61,12 @@ public final class FlexLayoutBuilder {
     }
 
     /**
-     * The items are stretched to fit the container.
+     * The items are centered along the cross axis.
      *
      * @return the builder
      */
-    default FlexLayoutBuilder stretch() {
-      getInstance().alignment = FlexAlignment.STRETCH;
+    default FlexLayoutBuilder center() {
+      getInstance().alignment = FlexAlignment.CENTER;
       return getInstance();
     }
 
@@ -99,6 +99,15 @@ public final class FlexLayoutBuilder {
    * @author Hyyan Abo Fakher
    */
   public interface FlexContentAlignmentBuilder extends Builder {
+    /**
+     * The items are packed in their default position as if no value was set.
+     *
+     * @return the builder
+     */
+    default FlexLayoutBuilder normal() {
+      getInstance().contentAlignment = FlexContentAlignment.NORMAL;
+      return getInstance();
+    }
 
     /**
      * The items are packed toward the start line.
@@ -111,22 +120,22 @@ public final class FlexLayoutBuilder {
     }
 
     /**
-     * The items are packed toward the center of the line.
-     *
-     * @return the builder
-     */
-    default FlexLayoutBuilder center() {
-      getInstance().contentAlignment = FlexContentAlignment.CENTER;
-      return getInstance();
-    }
-
-    /**
      * The items are packed toward the end line.
      *
      * @return the builder
      */
     default FlexLayoutBuilder end() {
       getInstance().contentAlignment = FlexContentAlignment.END;
+      return getInstance();
+    }
+
+    /**
+     * The items are packed toward the center of the line.
+     *
+     * @return the builder
+     */
+    default FlexLayoutBuilder center() {
+      getInstance().contentAlignment = FlexContentAlignment.CENTER;
       return getInstance();
     }
 
@@ -156,18 +165,18 @@ public final class FlexLayoutBuilder {
      *
      * @return the builder
      */
-    default FlexLayoutBuilder stretch() {
-      getInstance().contentAlignment = FlexContentAlignment.STRETCH;
+    default FlexLayoutBuilder evenly() {
+      getInstance().contentAlignment = FlexContentAlignment.EVENLY;
       return getInstance();
     }
 
     /**
-     * The items are packed in their default position as if no value was set.
+     * The lines stretch to take up the remaining space.
      *
      * @return the builder
      */
-    default FlexLayoutBuilder normal() {
-      getInstance().contentAlignment = FlexContentAlignment.NORMAL;
+    default FlexLayoutBuilder stretch() {
+      getInstance().contentAlignment = FlexContentAlignment.STRETCH;
       return getInstance();
     }
   }
@@ -190,22 +199,22 @@ public final class FlexLayoutBuilder {
     }
 
     /**
-     * Controls are packed toward the center of the line.
-     *
-     * @return the builder
-     */
-    default FlexLayoutBuilder center() {
-      getInstance().justifyContent = FlexJustifyContent.CENTER;
-      return getInstance();
-    }
-
-    /**
      * Controls are packed toward the end line.
      *
      * @return the builder
      */
     default FlexLayoutBuilder end() {
       getInstance().justifyContent = FlexJustifyContent.END;
+      return getInstance();
+    }
+
+    /**
+     * Controls are packed toward the center of the line.
+     *
+     * @return the builder
+     */
+    default FlexLayoutBuilder center() {
+      getInstance().justifyContent = FlexJustifyContent.CENTER;
       return getInstance();
     }
 
@@ -245,10 +254,10 @@ public final class FlexLayoutBuilder {
   /**
    * Create a new FlexLayoutBuilder with the given controls.
    *
-   * @param control the controls
+   * @param components the controls
    */
-  public FlexLayoutBuilder(Component... control) {
-    children = control;
+  public FlexLayoutBuilder(Component... components) {
+    children = components;
   }
 
   /**
