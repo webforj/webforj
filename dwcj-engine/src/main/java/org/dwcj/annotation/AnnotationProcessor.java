@@ -3,6 +3,7 @@ package org.dwcj.annotation;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.dwcj.App;
+import org.dwcj.Page;
 import org.dwcj.component.Component;
 import org.dwcj.environment.ObjectTable;
 import org.dwcj.environment.StringTable;
@@ -13,7 +14,6 @@ import org.dwcj.environment.StringTable;
  * @author Hyyan Abo Fakher
  */
 public final class AnnotationProcessor {
-
   /**
    * The running phase of the application.
    */
@@ -26,6 +26,10 @@ public final class AnnotationProcessor {
      * The application is running after the run method.
      */
     POST_RUN
+  }
+
+  Page getPage() {
+    return App.getPage();
   }
 
   /**
@@ -77,7 +81,7 @@ public final class AnnotationProcessor {
   private void processAppTitle(Object clazz) {
     AppTitle appTitle = clazz.getClass().getAnnotation(AppTitle.class);
     if (appTitle != null) {
-      App.getPage().setTitle(appTitle.value());
+      getPage().setTitle(appTitle.value(), appTitle.format());
     }
   }
 
@@ -90,8 +94,7 @@ public final class AnnotationProcessor {
     AppAttribute[] appAttributes = clazz.getClass().getAnnotationsByType(AppAttribute.class);
     if (appAttributes != null) {
       for (AppAttribute appAttribute : appAttributes) {
-        App.getPage().setAttribute(appAttribute.name(), appAttribute.value(),
-            appAttribute.selector());
+        getPage().setAttribute(appAttribute.name(), appAttribute.value(), appAttribute.selector());
       }
     }
   }
@@ -146,7 +149,7 @@ public final class AnnotationProcessor {
           attributes.put(attribute.name(), attribute.value());
         }
 
-        App.getPage().setMeta(meta.name(), meta.content(), attributes);
+        getPage().setMeta(meta.name(), meta.content(), attributes);
       }
     }
   }
@@ -175,7 +178,7 @@ public final class AnnotationProcessor {
         }
 
         ObjectTable.put(key, true);
-        App.getPage().addStyleSheet(sheet.value(), sheet.top(), attributes);
+        getPage().addStyleSheet(sheet.value(), sheet.top(), attributes);
       }
     }
   }
@@ -211,7 +214,7 @@ public final class AnnotationProcessor {
           }
         }
 
-        App.getPage().addInlineStyleSheet(sheet.value(), sheet.top(), attributes);
+        getPage().addInlineStyleSheet(sheet.value(), sheet.top(), attributes);
       }
     }
   }
@@ -240,7 +243,7 @@ public final class AnnotationProcessor {
         }
 
         ObjectTable.put(key, true);
-        App.getPage().addJavaScript(script.value(), script.top(), attributes);
+        getPage().addJavaScript(script.value(), script.top(), attributes);
       }
     }
   }
@@ -273,7 +276,7 @@ public final class AnnotationProcessor {
           ObjectTable.put(key, true);
         }
 
-        App.getPage().addInlineJavaScript(script.value(), script.top(), attributes);
+        getPage().addInlineJavaScript(script.value(), script.top(), attributes);
       }
     }
   }
@@ -303,7 +306,7 @@ public final class AnnotationProcessor {
         }
 
         ObjectTable.put(key, true);
-        App.getPage().addLink(link.value(), link.top(), attributes);
+        getPage().addLink(link.value(), link.top(), attributes);
       }
     }
   }

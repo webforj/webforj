@@ -1,6 +1,8 @@
 package org.dwcj;
 
+import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
+import java.util.HashMap;
 import java.util.Map;
 import org.dwcj.concern.HasJsExecution;
 import org.dwcj.environment.ObjectTable;
@@ -47,20 +49,79 @@ public final class Page implements HasJsExecution {
   }
 
   /**
+   * Get the web manager.
+   *
+   * @return The web manager
+   * @throws BBjException if failed to get the web manager
+   */
+  BBjWebManager getWebManager() throws BBjException {
+    return getEnvironment().getBBjAPI().getWebManager();
+  }
+
+  /**
    * Set the application title.
    *
+   * <p>
+   * The title format can contain the following predefined placeholders:
+   * <ul>
+   * <li><code>{BrowserTitle}</code>: The title of the browser tab</li>
+   * <li><code>{WindowTitle}</code>: The title of current window</li>
+   * </ul>
+   *
+   * or any of the passed placeholders. The placeholders are replaced with the values of the of the
+   * passed placeholders map. For example:
+   *
+   * <pre>
+   * setTitle("My App", "{BrowserTitle} - {WindowTitle}::{company}", Map.of("company", "My
+   * Company"));
+   * </pre>
+   * </p>
+   *
    * @param title The title to set
+   * @param format The format of the title.
+   * @param placeholders The parameters to use in the format
+   *
    * @return The current page instance
    * @throws DwcjRuntimeException if failed to set the title
    */
-  public Page setTitle(String title) {
+  public Page setTitle(String title, String format, Map<String, String> placeholders)
+      throws DwcjRuntimeException {
     try {
-      getEnvironment().getBBjAPI().getWebManager().setTitle(title);
+      getWebManager().setTitle(title, format, placeholders);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set title.", e);
     }
 
     return this;
+  }
+
+  /**
+   * Set the application title.
+   *
+   * @param title The title to set
+   * @param format The format of the title
+   *
+   * @return The current page instance
+   * @throws DwcjRuntimeException if failed to set the title
+   *
+   * @see #setTitle(String, String, Map)
+   */
+  public Page setTitle(String title, String format) {
+    return setTitle(title, format, new HashMap<>());
+  }
+
+  /**
+   * Set the application title.
+   *
+   * @param title The title to set
+   *
+   * @return The current page instance
+   * @throws DwcjRuntimeException if failed to set the title
+   *
+   * @see #setTitle(String, String, Map)
+   */
+  public Page setTitle(String title) {
+    return setTitle(title, "{BrowserTitle}");
   }
 
   /**
@@ -71,7 +132,7 @@ public final class Page implements HasJsExecution {
    */
   public String getTitle() {
     try {
-      return getEnvironment().getBBjAPI().getWebManager().getTitle();
+      return getWebManager().getTitle();
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get title.", e);
     }
@@ -89,7 +150,7 @@ public final class Page implements HasJsExecution {
    */
   public Page setMeta(String name, String content, Map<String, String> attributes) {
     try {
-      getEnvironment().getBBjAPI().getWebManager().setMeta(name, content, attributes);
+      getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -109,7 +170,7 @@ public final class Page implements HasJsExecution {
    */
   public Page setMeta(String name, String content, String attributes) {
     try {
-      getEnvironment().getBBjAPI().getWebManager().setMeta(name, content, attributes);
+      getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -128,7 +189,7 @@ public final class Page implements HasJsExecution {
    */
   public Page setMeta(String name, String content) {
     try {
-      getEnvironment().getBBjAPI().getWebManager().setMeta(name, content);
+      getWebManager().setMeta(name, content);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set meta tag.", e); // NOSONAR
     }
@@ -153,7 +214,7 @@ public final class Page implements HasJsExecution {
    */
   public Page setAttribute(String name, String value, String selector) {
     try {
-      getEnvironment().getBBjAPI().getWebManager().setAttribute(name, value, selector);
+      getWebManager().setAttribute(name, value, selector);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to set attribute.", e);
     }
@@ -201,7 +262,7 @@ public final class Page implements HasJsExecution {
    */
   public String getAttribute(String name, String selector) {
     try {
-      return getEnvironment().getBBjAPI().getWebManager().getAttribute(name, selector);
+      return getWebManager().getAttribute(name, selector);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to get attribute.", e);
     }
@@ -235,7 +296,7 @@ public final class Page implements HasJsExecution {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -260,7 +321,7 @@ public final class Page implements HasJsExecution {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectStyleUrl(url, top, attributes);
+      getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
     }
@@ -313,7 +374,7 @@ public final class Page implements HasJsExecution {
         css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
+      getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -339,7 +400,7 @@ public final class Page implements HasJsExecution {
         css = Assets.contentOf(Assets.resolveContextUrl(css));
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectStyle(css, top, attributes);
+      getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
     }
@@ -394,7 +455,7 @@ public final class Page implements HasJsExecution {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
+      getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
@@ -419,7 +480,7 @@ public final class Page implements HasJsExecution {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectScriptUrl(url, top, attributes);
+      getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add script.", e); // NOSONAR
     }
@@ -473,7 +534,7 @@ public final class Page implements HasJsExecution {
         script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectScript(script, top, attributes);
+      getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
@@ -499,7 +560,7 @@ public final class Page implements HasJsExecution {
         script = Assets.contentOf(Assets.resolveContextUrl(script));
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectScript(script, top, attributes);
+      getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add inline script.", e); // NOSONAR
     }
@@ -553,7 +614,7 @@ public final class Page implements HasJsExecution {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+      getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
@@ -578,7 +639,7 @@ public final class Page implements HasJsExecution {
         url = Assets.resolveWebServerUrl(url);
       }
 
-      getEnvironment().getBBjAPI().getWebManager().injectLinkUrl(url, top, attributes);
+      getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to add link.", e); // NOSONAR
     }
@@ -619,7 +680,7 @@ public final class Page implements HasJsExecution {
   @Override
   public Object executeJs(String script) {
     try {
-      return getEnvironment().getBBjAPI().getWebManager().executeScript(script);
+      return getWebManager().executeScript(script);
     } catch (BBjException e) {
       throw new DwcjRuntimeException("Failed to execute script.", e);
     }
@@ -638,7 +699,7 @@ public final class Page implements HasJsExecution {
       }
 
       PendingResult<Object> result = new PendingResult<>();
-      int index = getEnvironment().getBBjAPI().getWebManager().executeAsyncScript(js);
+      int index = getWebManager().executeAsyncScript(js);
       executeJsAsyncHandler.getPendingResults().put(index, result);
 
       return result;

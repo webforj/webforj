@@ -3,7 +3,11 @@ package org.dwcj;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -14,9 +18,12 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.dwcj.bridge.IDwcjBBjBridge;
+import org.dwcj.exceptions.DwcjRuntimeException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class PageTest {
@@ -71,5 +78,51 @@ class PageTest {
   void testReload() throws BBjException {
     page.reload();
     verify(page, times(1)).executeJsAsync("window.location.reload();");
+  }
+
+
+  @Nested
+  class Title {
+
+    @Test
+    void shouldSetTitleWidthDefaultFormat() throws BBjException {
+      page.setTitle("title");
+      verify(webManager).setTitle(eq("title"), eq("{BrowserTitle}"), any(Map.class));
+    }
+
+    @Test
+    void shouldSetTitleWidthCustomFormat() throws BBjException {
+      String format = "{BrowserTitle} - {WindowTitle}";
+
+      page.setTitle("title", format);
+      verify(webManager).setTitle(eq("title"), eq(format), any(Map.class));
+    }
+
+    @Test
+    void shouldSetTitleWidthCustomFormatAndPlaceholders() throws BBjException {
+      String format = "{BrowserTitle} - {MyPlaceholder}";
+      Map<String, String> placeholders = Map.of("MyPlaceholder", "MyPlaceholder Value");
+
+      page.setTitle("title", format, placeholders);
+      verify(webManager).setTitle(eq("title"), eq(format), eq(placeholders));
+    }
+
+    @Test
+    void setTitleShouldThrowException() throws BBjException {
+      doThrow(BBjException.class).when(webManager).setTitle(any(), any(), any());
+      assertThrows(DwcjRuntimeException.class, () -> page.setTitle("title"));
+    }
+
+    @Test
+    void shouldGetTitle() throws BBjException {
+      when(webManager.getTitle()).thenReturn("title");
+      assertEquals("title", page.getTitle());
+    }
+
+    @Test
+    void getTitleShouldThrowException() throws BBjException {
+      doThrow(BBjException.class).when(webManager).getTitle();
+      assertThrows(DwcjRuntimeException.class, () -> page.getTitle());
+    }
   }
 }

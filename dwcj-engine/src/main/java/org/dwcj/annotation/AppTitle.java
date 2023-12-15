@@ -6,6 +6,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.dwcj.Page;
 
 /**
  * Annotates a class to set the title of the app.
@@ -36,4 +37,13 @@ public @interface AppTitle {
    * @return the title of the app
    **/
   String value();
+
+  /**
+   * The format of the title of the app.
+   *
+   * @return the format of the title of the app
+   *
+   * @see Page#setTitle(String, String, java.util.Map)
+   **/
+  String format() default "{BrowserTitle}";
 }
