@@ -24,33 +24,32 @@ import org.dwcj.concern.HasStyle;
 public class FlexLayout extends HtmlComponentContainer<FlexLayout> {
 
   /**
-   * Create a new flex layout.
-   */
-  public FlexLayout() {
-    super();
-    setInline(false);
-    setSpacing("1em");
-  }
-
-  /**
-   * Creates a new flex layout with the given components.
-   *
-   * @param component the components to add to the layout
-   */
-  public FlexLayout(Component... component) {
-    this();
-    add(component);
-  }
-
-  /**
    * Creates a new flex layout with the given components.
    *
    * @param components the components to add to the layout
    * @param direction the layout direction
    */
   public FlexLayout(FlexDirection direction, Component... components) {
-    this(components);
+    add(components);
+    setInline(false);
+    setSpacing("1em");
     setDirection(direction);
+  }
+
+  /**
+   * Creates a new flex layout with the given components.
+   *
+   * @param components the components to add to the layout
+   */
+  public FlexLayout(Component... components) {
+    this(FlexDirection.ROW, components);
+  }
+
+  /**
+   * Create a new flex layout.
+   */
+  public FlexLayout() {
+    this(FlexDirection.ROW);
   }
 
   /**
