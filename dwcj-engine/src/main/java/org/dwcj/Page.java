@@ -42,7 +42,7 @@ public final class Page implements HasJsExecution {
    *
    * @return the current environment instance
    */
-  public Environment getEnvironment() {
+  Environment getEnvironment() {
     return environment;
   }
 
