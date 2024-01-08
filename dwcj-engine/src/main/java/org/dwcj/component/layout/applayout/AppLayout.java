@@ -71,8 +71,11 @@ public class AppLayout extends ElementCompositeContainer
 
   // Slots
   private static final String HEADER_SLOT = "header";
-  private static final String DRAWER_SLOT = "drawer";
   private static final String FOOTER_SLOT = "footer";
+  private static final String DRAWER_SLOT = "drawer";
+  private static final String DRAWER_TITLE_SLOT = "drawer-title";
+  private static final String HEADER_ACTIONS_SLOT = "drawer-header-actions";
+  private static final String DRAWER_FOOTER_SLOT = "drawer-footer";
 
   // Property descriptors
   private final PropertyDescriptor<Boolean> drawerOpenProp =
@@ -81,12 +84,14 @@ public class AppLayout extends ElementCompositeContainer
       PropertyDescriptor.property("drawerPopover", false);
   private final PropertyDescriptor<Boolean> drawerOverlayProp =
       PropertyDescriptor.property("drawerOverlay", false);
-  private final PropertyDescriptor<String> drawerWidthProp =
-      PropertyDescriptor.property("drawerWidth", "16em");
   private final PropertyDescriptor<DrawerPlacement> drawerPlacementProp =
       PropertyDescriptor.property("drawerPlacement", DrawerPlacement.LEFT);
   private final PropertyDescriptor<String> drawerBreakPointProp =
       PropertyDescriptor.property("drawerBreakpoint", "(max-width: 800px)");
+  private final PropertyDescriptor<Boolean> drawerFooterVisibleProp =
+      PropertyDescriptor.property("drawerFooterVisible", false);
+  private final PropertyDescriptor<Boolean> drawerHeaderVisibleProp =
+      PropertyDescriptor.property("drawerHeaderVisible", false);
   private final PropertyDescriptor<Shadow> footerShadowProp =
       PropertyDescriptor.property("footerShadow", Shadow.HIDDEN);
   private final PropertyDescriptor<Boolean> footerFixedProp =
@@ -139,6 +144,17 @@ public class AppLayout extends ElementCompositeContainer
   }
 
   /**
+   * Add the given component to the applayout footer slot.
+   *
+   * @param component the component to add
+   * @return the component itself
+   */
+  public AppLayout addToFooter(Component... component) {
+    getElement().add(FOOTER_SLOT, component);
+    return this;
+  }
+
+  /**
    * Add the given component to the applayout drawer slot.
    *
    * @param component the component to add
@@ -150,13 +166,35 @@ public class AppLayout extends ElementCompositeContainer
   }
 
   /**
-   * Add the given component to the applayout footer slot.
+   * Add the given component to the applayout drawer title slot.
    *
    * @param component the component to add
    * @return the component itself
    */
-  public AppLayout addToFooter(Component... component) {
-    getElement().add(FOOTER_SLOT, component);
+  public AppLayout addToDrawerTitle(Component... component) {
+    getElement().add(DRAWER_TITLE_SLOT, component);
+    return this;
+  }
+
+  /**
+   * Add the given component to the applayout drawer header actions slot.
+   *
+   * @param component the component to add
+   * @return the component itself
+   */
+  public AppLayout addToDrawerHeaderActions(Component... component) {
+    getElement().add(HEADER_ACTIONS_SLOT, component);
+    return this;
+  }
+
+  /**
+   * Add the given component to the applayout drawer footer slot.
+   *
+   * @param component the component to add
+   * @return the component itself
+   */
+  public AppLayout addToDrawerFooter(Component... component) {
+    getElement().add(DRAWER_FOOTER_SLOT, component);
     return this;
   }
 
@@ -227,31 +265,6 @@ public class AppLayout extends ElementCompositeContainer
   }
 
   /**
-   * Set the drawer width.
-   *
-   * <p>
-   * If the drawer width set in CSS using the `--bbj-app-layout-drawer-width` custom property then
-   * this property will be ignored.
-   * </p>
-   *
-   * @param drawerWidth the drawer width
-   * @return the app layout
-   */
-  public AppLayout setDrawerWidth(String drawerWidth) {
-    set(drawerWidthProp, drawerWidth);
-    return this;
-  }
-
-  /**
-   * Gets the drawer width.
-   *
-   * @return the drawer width
-   */
-  public String getDrawerWidth() {
-    return get(drawerWidthProp);
-  }
-
-  /**
    * Sets the drawer placement.
    *
    * @param drawerPlacement the drawer placement
@@ -296,6 +309,46 @@ public class AppLayout extends ElementCompositeContainer
    */
   public String getDrawerBreakpoint() {
     return get(drawerBreakPointProp);
+  }
+
+  /**
+   * Sets the drawer footer visible.
+   *
+   * @param drawerFooterVisible When true, the drawer footer will be visible.
+   * @return the app layout
+   */
+  public AppLayout setDrawerFooterVisible(boolean drawerFooterVisible) {
+    set(drawerFooterVisibleProp, drawerFooterVisible);
+    return this;
+  }
+
+  /**
+   * Check if the drawer footer is visible.
+   *
+   * @return true if the drawer footer is visible, false otherwise
+   */
+  public boolean isDrawerFooterVisible() {
+    return get(drawerFooterVisibleProp);
+  }
+
+  /**
+   * Sets the drawer header visible.
+   *
+   * @param drawerHeaderVisible When true, the drawer header will be visible.
+   * @return the app layout
+   */
+  public AppLayout setDrawerHeaderVisible(boolean drawerHeaderVisible) {
+    set(drawerHeaderVisibleProp, drawerHeaderVisible);
+    return this;
+  }
+
+  /**
+   * Check if the drawer header is visible.
+   *
+   * @return true if the drawer header is visible, false otherwise
+   */
+  public boolean isDrawerHeaderVisible() {
+    return get(drawerHeaderVisibleProp);
   }
 
   /**
