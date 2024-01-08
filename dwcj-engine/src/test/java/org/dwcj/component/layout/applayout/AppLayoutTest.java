@@ -58,6 +58,13 @@ class AppLayoutTest {
     }
 
     @Test
+    void shouldAddToFooter() {
+      Component footer = mock(Component.class);
+      component.addToFooter(footer);
+      assertEquals(footer, component.getOriginalElement().getFirstComponentInSlot("footer"));
+    }
+
+    @Test
     void shouldAddToDrawer() {
       Component drawer = mock(Component.class);
       component.addToDrawer(drawer);
@@ -65,11 +72,29 @@ class AppLayoutTest {
     }
 
     @Test
-    void shouldAddToFooter() {
-      Component footer = mock(Component.class);
-      component.addToFooter(footer);
-      assertEquals(footer, component.getOriginalElement().getFirstComponentInSlot("footer"));
+    void shouldAddToDrawerTitle() {
+      Component drawerTitle = mock(Component.class);
+      component.addToDrawerTitle(drawerTitle);
+      assertEquals(drawerTitle,
+          component.getOriginalElement().getFirstComponentInSlot("drawer-title"));
     }
+
+    @Test
+    void shouldAddToHeaderActions() {
+      Component headerActions = mock(Component.class);
+      component.addToDrawerHeaderActions(headerActions);
+      assertEquals(headerActions,
+          component.getOriginalElement().getFirstComponentInSlot("drawer-header-actions"));
+    }
+
+    @Test
+    void shouldAddToDrawerFooter() {
+      Component drawerFooter = mock(Component.class);
+      component.addToDrawerFooter(drawerFooter);
+      assertEquals(drawerFooter,
+          component.getOriginalElement().getFirstComponentInSlot("drawer-footer"));
+    }
+
   }
 
   @Nested
