@@ -3,9 +3,11 @@ package org.dwcj.component.drawer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
+import org.dwcj.component.Component;
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
 import org.dwcj.component.drawer.event.DrawerOpenEvent;
 import org.dwcj.component.element.PropertyDescriptorTester;
@@ -49,6 +51,33 @@ class DrawerTest {
 
       assertEquals(false, component.isOpened());
       assertEquals(false, component.getOriginalElement().getProperty("opened"));
+    }
+  }
+
+  @Nested
+  @DisplayName("Slots API")
+  class SlotsApi {
+
+    @Test
+    void shouldAddToTitle() {
+      Component title = mock(Component.class);
+      component.addToTitle(title);
+      assertEquals(title, component.getOriginalElement().getFirstComponentInSlot("title"));
+    }
+
+    @Test
+    void shouldAddToHeaderActions() {
+      Component headerActions = mock(Component.class);
+      component.addToHeaderActions(headerActions);
+      assertEquals(headerActions,
+          component.getOriginalElement().getFirstComponentInSlot("header-actions"));
+    }
+
+    @Test
+    void shouldAddToFooter() {
+      Component footer = mock(Component.class);
+      component.addToFooter(footer);
+      assertEquals(footer, component.getOriginalElement().getFirstComponentInSlot("footer"));
     }
   }
 
