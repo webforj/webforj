@@ -2,6 +2,7 @@ package org.dwcj.component.drawer;
 
 import com.google.gson.annotations.SerializedName;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
+import org.dwcj.component.Component;
 import org.dwcj.component.drawer.Drawer;
 import org.dwcj.component.drawer.event.DrawerCloseEvent;
 import org.dwcj.component.drawer.event.DrawerOpenEvent;
@@ -54,17 +55,20 @@ public class Drawer extends ElementCompositeContainer
     RIGHT;
   }
 
+  // Slots
+  private static final String TITTLE_SLOT = "title";
+  private static final String HEADER_ACTIONS_SLOT = "header-actions";
+  private static final String FOOTER_SLOT = "footer";
+
+  // Property descriptors
   private final PropertyDescriptor<Boolean> autoFocusProp =
-      PropertyDescriptor.property("autoFocus", false);
+      PropertyDescriptor.property("autofocus", false);
   private final PropertyDescriptor<String> labelProp =
       PropertyDescriptor.property("label", "Drawer");
-  private final PropertyDescriptor<String> maxSizeProp =
-      PropertyDescriptor.property("maxSize", "100%");
   private final PropertyDescriptor<Boolean> openedProp =
       PropertyDescriptor.property("opened", false);
   private final PropertyDescriptor<Placement> placementProp =
       PropertyDescriptor.property("placement", Placement.LEFT);
-  private final PropertyDescriptor<String> sizeProp = PropertyDescriptor.property("size", "16em");
 
   /**
    * Instantiates a new drawer.
@@ -73,13 +77,51 @@ public class Drawer extends ElementCompositeContainer
     super();
   }
 
+  public Drawer(String label) {
+    this();
+    setLabel(label);
+  }
+
+  /**
+   * Add the given component to the title slot.
+   *
+   * @param component the component to add
+   * @return the component itself
+   */
+  public Drawer addToTitle(Component... component) {
+    getElement().add(TITTLE_SLOT, component);
+    return this;
+  }
+
+  /**
+   * Add the given component to the header actions slot.
+   *
+   * @param component the component to add
+   * @return the component itself
+   */
+  public Drawer addToHeaderActions(Component... component) {
+    getElement().add(HEADER_ACTIONS_SLOT, component);
+    return this;
+  }
+
+  /**
+   * Add the given component to the footer slot.
+   *
+   * @param component the component to add
+   * @return the component itself
+   */
+  public Drawer addToFooter(Component... component) {
+    getElement().add(FOOTER_SLOT, component);
+    return this;
+  }
+
   /**
    * Sets Drawer auto focus.
    *
    * @param autoFocus When true then automatically focus the first focusable element in the drawer.
    * @return the drawer
    */
-  public Drawer setAutoFocus(boolean autoFocus) {
+  public Drawer setAutofocus(boolean autoFocus) {
     set(autoFocusProp, autoFocus);
     return this;
   }
@@ -89,12 +131,12 @@ public class Drawer extends ElementCompositeContainer
    *
    * @return the drawer auto focus
    */
-  public boolean isAutoFocus() {
+  public boolean isAutofocus() {
     return get(autoFocusProp);
   }
 
   /**
-   * Sets Drawer label. (Used for accessibility)
+   * Sets Drawer label.
    *
    * @param label The drawer label.
    * @return the drawer
@@ -111,27 +153,6 @@ public class Drawer extends ElementCompositeContainer
    */
   public String getLabel() {
     return get(labelProp);
-  }
-
-  /**
-   * Sets Drawer max size.
-   *
-   * @param maxSize The Drawer max width. Max width in case placement is `left` or `right` or max
-   *        height in case placement is `top` or `bottom`.
-   * @return the drawer
-   */
-  public Drawer setMaxSize(String maxSize) {
-    set(maxSizeProp, maxSize);
-    return this;
-  }
-
-  /**
-   * Gets Drawer max size.
-   *
-   * @return the drawer max size
-   */
-  public String getMaxSize() {
-    return get(maxSizeProp);
   }
 
   /**
@@ -190,27 +211,6 @@ public class Drawer extends ElementCompositeContainer
    */
   public Placement getPlacement() {
     return get(placementProp);
-  }
-
-  /**
-   * Sets Drawer size.
-   *
-   * @param size The Drawer size. Width in case placement is `left` or `right` or height in case
-   *        placement is `top` or `bottom`.
-   * @return the drawer
-   */
-  public Drawer setSize(String size) {
-    set(sizeProp, size);
-    return this;
-  }
-
-  /**
-   * Gets Drawer size.
-   *
-   * @return the drawer size
-   */
-  public String getSize() {
-    return get(sizeProp);
   }
 
   /**
