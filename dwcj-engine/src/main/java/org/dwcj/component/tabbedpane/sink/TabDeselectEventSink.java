@@ -1,22 +1,22 @@
 package org.dwcj.component.tabbedpane.sink;
 
 import com.basis.bbj.proxies.event.BBjEvent;
-import com.basis.bbj.proxies.event.BBjTabSelectedEvent;
+import com.basis.bbj.proxies.event.BBjTabDeselectedEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import java.util.HashMap;
 import org.dwcj.component.event.sink.AbstractDwcEventSink;
 import org.dwcj.component.list.event.ListOpenEvent;
 import org.dwcj.component.tabbedpane.TabbedPane;
-import org.dwcj.component.tabbedpane.event.TabSelectEvent;
+import org.dwcj.component.tabbedpane.event.TabDeselectEvent;
 import org.dwcj.dispatcher.EventDispatcher;
 
 /**
- * This class will map the BBjTabSelectedEvent event to a {@link TabSelectEvent}.
+ * This class will map the BBjTabDeselectedEvent event to a {@link TabDeselectEvent}.
  *
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public final class TabSelectEventSink extends AbstractDwcEventSink {
+public final class TabDeselectEventSink extends AbstractDwcEventSink {
 
   /**
    * Constructs a new TabbedPaneSink.
@@ -24,8 +24,8 @@ public final class TabSelectEventSink extends AbstractDwcEventSink {
    * @param component the tabbed pane component
    * @param dispatcher the EventDispatcher
    */
-  public TabSelectEventSink(TabbedPane component, EventDispatcher dispatcher) {
-    super(component, dispatcher, SysGuiEventConstants.ON_TAB_SELECT);
+  public TabDeselectEventSink(TabbedPane component, EventDispatcher dispatcher) {
+    super(component, dispatcher, SysGuiEventConstants.ON_TAB_DESELECT);
   }
 
   /**
@@ -35,12 +35,12 @@ public final class TabSelectEventSink extends AbstractDwcEventSink {
    */
   @Override
   public void handleEvent(BBjEvent ev) {
-    BBjTabSelectedEvent event = (BBjTabSelectedEvent) ev;
+    BBjTabDeselectedEvent event = (BBjTabDeselectedEvent) ev;
     HashMap<String, Object> map = new HashMap<>();
 
     map.put("index", event.getIndex());
 
-    TabSelectEvent javaEv = new TabSelectEvent((TabbedPane) getComponent(), map);
+    TabDeselectEvent javaEv = new TabDeselectEvent((TabbedPane) getComponent(), map);
     getEventDispatcher().dispatchEvent(javaEv);
   }
 }

@@ -1,5 +1,6 @@
 package org.dwcj.component;
 
+import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,11 +10,21 @@ import org.dwcj.concern.HasHighlightOnFocus;
 import org.dwcj.concern.HasHorizontalAlignment;
 import org.dwcj.concern.HasReadOnly;
 import org.dwcj.concern.HasTheme;
+import com.basis.bbj.proxies.sysgui.BBjControl;
 
 public class DwcComponentMock extends DwcComponent<DwcComponentMock>
     implements HasExpanse<DwcComponentMock, Expanse>, HasTheme<DwcComponentMock, Theme>,
     HasReadOnly<DwcComponentMock>, HasHighlightOnFocus<DwcComponentMock>,
     HasHorizontalAlignment<DwcComponentMock> {
+
+  public DwcComponentMock() {
+    setControl(mock(BBjControl.class));
+  }
+
+  public BBjControl getControl() {
+    return super.getControl();
+  }
+
   @Override
   public DwcComponentMock setExpanse(Expanse expanse) {
     setComponentExpanse(expanse);
