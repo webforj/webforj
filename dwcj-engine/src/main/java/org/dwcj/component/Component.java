@@ -30,6 +30,7 @@ public abstract class Component {
   private final Map<Object, Object> userData = new HashMap<>();
   private final List<ComponentLifecycleObserver> lifecycleObservers = new ArrayList<>();
   private String uuid = "";
+  private String name = "";
   private boolean attached = false;
   private boolean destroyed = false;
   private Window window;
@@ -75,6 +76,35 @@ public abstract class Component {
    */
   public String getClientComponentId() {
     return null;
+  }
+
+  /**
+   * Sets the name of the component.
+   *
+   * <p>
+   * Sets the name of the component to the specified string.
+   * </p>
+   *
+   * @param name the string that is to be this component's name
+   *
+   * @return The component itself
+   */
+  public Component setName(String name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * Retrieves the name of the component.
+   *
+   * <p>
+   * Returns the name of this component. The default name is an empty string.
+   * </p>
+   *
+   * @return The name of the component
+   */
+  public String getName() {
+    return this.name;
   }
 
   /**

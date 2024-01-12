@@ -201,6 +201,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
    *
    * @return the name of the RadioButtonGroup.
    */
+  @Override
   public String getName() {
     return this.name;
   }
@@ -211,6 +212,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
    * @param name the name of the RadioButtonGroup.
    * @return the component itself.
    */
+  @Override
   public RadioButtonGroup setName(String name) {
     if (this.group != null) {
       try {
