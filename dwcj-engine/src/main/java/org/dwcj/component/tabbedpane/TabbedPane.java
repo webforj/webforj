@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.annotation.ExcludeFromJacocoGeneratedReport;
 import org.dwcj.bridge.ComponentAccessor;
@@ -188,7 +189,9 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
   private final ComponentLifecycleObserver destroyObserver =
       (Component component, LifecycleEvent event) -> {
         if (event == LifecycleEvent.DESTROY) {
-          tabComponentMapping.entrySet().removeIf(entry -> entry.getValue().equals(component));
+          tabComponentMapping.entrySet().stream().filter(entry -> entry.getValue() != null)
+              .filter(entry -> entry.getValue().equals(component))
+              .forEach(entry -> entry.setValue(null));
         }
       };
 
@@ -587,7 +590,9 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
       }
 
       if (tabComponentMapping.containsValue(current)) {
-        tabComponentMapping.entrySet().removeIf(entry -> entry.getValue().equals(current));
+        tabComponentMapping.entrySet().stream().filter(entry -> entry.getValue() != null)
+            .filter(entry -> entry.getValue().equals(current))
+            .forEach(entry -> entry.setValue(null));
         current.destroy();
       }
     }
@@ -606,7 +611,8 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
    */
   @Override
   public List<Component> getComponents() {
-    return Collections.unmodifiableList(new ArrayList<>(tabComponentMapping.values()));
+    return Collections.unmodifiableList(
+        new ArrayList<>(tabComponentMapping.values().stream().filter(Objects::nonNull).toList()));
   }
 
   /**
