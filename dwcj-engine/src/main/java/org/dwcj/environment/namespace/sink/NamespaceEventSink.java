@@ -31,7 +31,7 @@ public final class NamespaceEventSink {
 
   public NamespaceEventSink(BBjNamespace ns, String key, Boolean fChangeOnly,
       Consumer<NamespaceEvent> consumer) {
-    String nsname = "";
+    String nsname = ns.getName();
     if (ns != null) {
 
       String nskey = null;
