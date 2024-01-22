@@ -31,6 +31,7 @@ import org.dwcj.component.event.EventSinkListenerRegistry;
 import org.dwcj.component.event.ExecuteAsyncScriptEvent;
 import org.dwcj.component.event.FocusEvent;
 import org.dwcj.component.event.sink.ExecuteAsyncScriptEventSink;
+import org.dwcj.component.optioninput.RadioButtonGroup;
 import org.dwcj.component.window.Window;
 import org.dwcj.concern.HasEnablement;
 import org.dwcj.concern.HasFocus;
@@ -614,14 +615,17 @@ public final class Element extends DwcContainer<Element>
       ComponentAccessor.getDefault().create(component, getWindow());
 
       // add the component to the slot
-      String slot = findComponentSlot(component);
-      BBjControl control = ComponentAccessor.getDefault().getControl(component);
-      inferControl().setSlot(slot, control);
+      if (!(component instanceof RadioButtonGroup)) {
+        String slot = findComponentSlot(component);
+        BBjControl control = ComponentAccessor.getDefault().getControl(component);
+        inferControl().setSlot(slot, control);
+      }
     } catch (IllegalAccessException | BBjException e) {
-      throw new IllegalArgumentException("Attempted to add an incompatible component of type '"
-          + component.getClass().getName() + "'. "
-          + "Components must be a subclass of DwcComponent or extend Composite. "
-          + "Check if the component is correctly extending or implementing these " + "classes.");
+      throw new IllegalArgumentException(
+          "Attempted to add an incompatible component of type '" + component.getClass().getName()
+              + "'. " + "Components must be a subclass of DwcComponent or extend Composite. "
+              + "Check if the component is correctly extending or implementing these " + "classes.",
+          e);
     }
   }
 
