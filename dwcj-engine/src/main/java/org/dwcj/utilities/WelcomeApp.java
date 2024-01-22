@@ -1,7 +1,7 @@
 package org.dwcj.utilities;
 
 import com.basis.startup.type.BBjException;
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import org.dwcj.App;
 import org.dwcj.Environment;
@@ -11,7 +11,9 @@ import org.dwcj.component.text.Label;
 import org.dwcj.component.window.Frame;
 import org.dwcj.component.window.Panel;
 import org.dwcj.environment.ObjectTable;
+import org.dwcj.exceptions.DwcLaunchException;
 import org.dwcj.exceptions.DwcjAppInitializeException;
+import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
  * The Welcome App is an automatically created index of App classes.
@@ -190,13 +192,15 @@ public class WelcomeApp extends App {
     try {
       App app = (App) Class.forName(className).getDeclaredConstructor().newInstance();
       app.initialize();
-
-    } catch (Exception e) {
-      Environment.logError(e);
-      msgbox("cannot launch app!", 0, "Error");
+    } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException
+        | IllegalAccessException e) {
+      throw new DwcjRuntimeException("Failed to launch class: " + className, e);
+    } catch (InvocationTargetException e) {
+      throw new DwcjRuntimeException("Constructor threw an exception for class: " + className, e);
+    } catch (DwcjAppInitializeException e) {
+      throw new DwcLaunchException("Failed to launch class: " + className, e);
     } finally {
       panel.setVisible(false);
     }
   }
-
 }
