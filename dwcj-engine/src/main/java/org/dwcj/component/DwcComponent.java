@@ -397,17 +397,19 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public T addClassName(String selector) {
-    if (control != null) {
-      try {
-        control.addClass(selector);
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
+  public T addClassName(String... classNames) {
+    for (String className : classNames) {
+      if (control != null) {
+        try {
+          control.addClass(className);
+        } catch (BBjException e) {
+          throw new DwcjRuntimeException(e);
+        }
       }
-    }
 
-    this.classNames.add(selector);
-    this.removedClassNames.remove(selector);
+      this.classNames.add(className);
+      this.removedClassNames.remove(className);
+    }
 
     return getSelf();
   }
@@ -416,17 +418,19 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
-  public T removeClassName(String selector) {
-    if (control != null) {
-      try {
-        control.removeClass(selector);
-      } catch (BBjException e) {
-        throw new DwcjRuntimeException(e);
+  public T removeClassName(String... classNames) {
+    for (String className : classNames) {
+      if (control != null) {
+        try {
+          control.removeClass(className);
+        } catch (BBjException e) {
+          throw new DwcjRuntimeException(e);
+        }
       }
-    }
 
-    this.removedClassNames.add(selector);
-    this.classNames.remove(selector);
+      this.removedClassNames.add(className);
+      this.classNames.remove(className);
+    }
 
     return getSelf();
   }

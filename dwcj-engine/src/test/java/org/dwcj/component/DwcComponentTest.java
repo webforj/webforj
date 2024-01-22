@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -51,6 +52,40 @@ class DwcComponentTest {
     assertEquals("placeholder", component.getComponentPlaceholder());
 
     assertEquals("placeholder", component.getProperty("placeholder"));
+  }
+
+  @Nested
+  @DisplayName("ClassNames API")
+  class ClassNamesApi {
+
+    @Test
+    @DisplayName("Setting classes")
+    void settingClasses() throws BBjException {
+      component.addClassName("class1", "class2");
+
+      verify(control, times(1)).addClass("class1");
+      verify(control, times(1)).addClass("class2");
+    }
+
+    @Test
+    @DisplayName("Removing classes")
+    void removingClasses() throws BBjException {
+      component.addClassName("class1", "class2");
+      component.removeClassName("class1", "class2");
+
+      verify(control, times(1)).removeClass("class1");
+      verify(control, times(1)).removeClass("class2");
+    }
+
+    @Test
+    @DisplayName("Catch BBjException and throw DwcjRuntimeException")
+    void catchBbjExceptionAndThrowDwcjRuntimeException() throws BBjException {
+      doThrow(BBjException.class).when(control).addClass(anyString());
+      assertThrows(DwcjRuntimeException.class, () -> component.addClassName("class1"));
+
+      doThrow(BBjException.class).when(control).removeClass(anyString());
+      assertThrows(DwcjRuntimeException.class, () -> component.removeClassName("class1"));
+    }
   }
 
   @Nested

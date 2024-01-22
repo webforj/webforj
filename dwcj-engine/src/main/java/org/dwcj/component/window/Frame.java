@@ -261,30 +261,32 @@ public class Frame extends Window {
   /**
    * Adds a CSS class to the list of CSS classes for the component.
    *
-   * @param className the name of the CSS class to be added
    * @param area The area of the Frame to add the class to.
+   * @param classNames the name of the CSS class to be added
    *
    * @return the component itself after adding the class
    */
-  public Window addClassName(String className, Area area) {
+  public Window addClassName(Area area, String... classNames) {
     BBjTopLevelWindow topLevelWindow = getBbjTopLevelWindow();
 
-    try {
-      switch (area) {
-        case WINDOW:
-          topLevelWindow.addOuterClass(className);
-          break;
-        case CENTER:
-          topLevelWindow.addClass(className);
-          break;
-        case CONTENT:
-          topLevelWindow.addPanelClass(className);
-          break;
-        default:
-          break;
+    for (String className : classNames) {
+      try {
+        switch (area) {
+          case WINDOW:
+            topLevelWindow.addOuterClass(className);
+            break;
+          case CENTER:
+            topLevelWindow.addClass(className);
+            break;
+          case CONTENT:
+            topLevelWindow.addPanelClass(className);
+            break;
+          default:
+            break;
+        }
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
       }
-    } catch (BBjException e) {
-      throw new DwcjRuntimeException(e);
     }
 
     return this;
@@ -294,37 +296,39 @@ public class Frame extends Window {
    * {@inheritDoc}
    */
   @Override
-  public Window addClassName(String selector) {
-    return addClassName(selector, Area.CONTENT);
+  public Window addClassName(String... classNames) {
+    return addClassName(Area.CONTENT, classNames);
   }
 
   /**
    * Removes a CSS class from the list of CSS classes for the component.
    *
-   * @param className the name of the CSS class to be removed
    * @param area The area of the Frame to remove the class from.
+   * @param classNames the name of the CSS class to be removed
    *
    * @return the component itself after removing the class
    */
-  public Window removeClassName(String className, Area area) {
+  public Window removeClassName(Area area, String... classNames) {
     BBjTopLevelWindow topLevelWindow = getBbjTopLevelWindow();
 
-    try {
-      switch (area) {
-        case WINDOW:
-          topLevelWindow.removeOuterClass(className);
-          break;
-        case CENTER:
-          topLevelWindow.removeClass(className);
-          break;
-        case CONTENT:
-          topLevelWindow.removePanelClass(className);
-          break;
-        default:
-          break;
+    for (String className : classNames) {
+      try {
+        switch (area) {
+          case WINDOW:
+            topLevelWindow.removeOuterClass(className);
+            break;
+          case CENTER:
+            topLevelWindow.removeClass(className);
+            break;
+          case CONTENT:
+            topLevelWindow.removePanelClass(className);
+            break;
+          default:
+            break;
+        }
+      } catch (BBjException e) {
+        throw new DwcjRuntimeException(e);
       }
-    } catch (BBjException e) {
-      throw new DwcjRuntimeException(e);
     }
 
     return this;
@@ -334,8 +338,8 @@ public class Frame extends Window {
    * {@inheritDoc}
    */
   @Override
-  public Window removeClassName(String selector) {
-    return removeClassName(selector, Area.CONTENT);
+  public Window removeClassName(String... classNames) {
+    return removeClassName(Area.CONTENT, classNames);
   }
 
   private void init(BBjWindow bbjWindow) {

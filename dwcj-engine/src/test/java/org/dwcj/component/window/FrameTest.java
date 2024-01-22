@@ -137,7 +137,7 @@ class FrameTest {
     @ParameterizedTest
     @EnumSource(Area.class)
     void shouldSetClass(Area area) throws BBjException {
-      frame.addClassName("my-class", area);
+      frame.addClassName(area, "my-class");
 
       switch (area) {
         case WINDOW:
@@ -174,7 +174,7 @@ class FrameTest {
     @ParameterizedTest
     @EnumSource(Area.class)
     void shouldRemoveClass(Area area) throws BBjException {
-      frame.removeClassName("my-class", area);
+      frame.removeClassName(area, "my-class");
 
       switch (area) {
         case WINDOW:

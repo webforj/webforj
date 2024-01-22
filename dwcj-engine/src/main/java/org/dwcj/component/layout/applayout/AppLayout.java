@@ -520,7 +520,7 @@ public class AppLayout extends ElementCompositeContainer
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public AppLayout addClassName(String className) {
+  public AppLayout addClassName(String... className) {
     getElement().addClassName(className);
     return this;
   }
@@ -530,7 +530,7 @@ public class AppLayout extends ElementCompositeContainer
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public AppLayout removeClassName(String className) {
+  public AppLayout removeClassName(String... className) {
     getElement().removeClassName(className);
     return null;
   }

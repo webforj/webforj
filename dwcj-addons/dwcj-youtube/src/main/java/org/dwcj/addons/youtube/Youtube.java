@@ -672,7 +672,7 @@ public class Youtube extends ElementComposite
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public Youtube addClassName(String className) {
+  public Youtube addClassName(String... className) {
     getElement().addClassName(className);
     return this;
   }
@@ -682,7 +682,7 @@ public class Youtube extends ElementComposite
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public Youtube removeClassName(String className) {
+  public Youtube removeClassName(String... className) {
     getElement().removeClassName(className);
     return this;
   }

@@ -47,7 +47,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    * {@inheritDoc}
    */
   @Override
-  public T addClassName(String className) {
+  public T addClassName(String... className) {
     getElement().addClassName(className);
     return getSelf();
   }
@@ -56,7 +56,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    * {@inheritDoc}
    */
   @Override
-  public T removeClassName(String className) {
+  public T removeClassName(String... className) {
     getElement().removeClassName(className);
     return getSelf();
   }

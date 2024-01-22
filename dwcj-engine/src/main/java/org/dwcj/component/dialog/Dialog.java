@@ -560,7 +560,7 @@ public class Dialog extends ElementCompositeContainer
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public Dialog addClassName(String className) {
+  public Dialog addClassName(String... className) {
     getElement().addClassName(className);
     return this;
   }
@@ -570,7 +570,7 @@ public class Dialog extends ElementCompositeContainer
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public Dialog removeClassName(String className) {
+  public Dialog removeClassName(String... className) {
     getElement().removeClassName(className);
     return null;
   }

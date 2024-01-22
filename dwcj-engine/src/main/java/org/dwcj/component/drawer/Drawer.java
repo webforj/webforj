@@ -218,7 +218,7 @@ public class Drawer extends ElementCompositeContainer
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public Drawer addClassName(String className) {
+  public Drawer addClassName(String... className) {
     getElement().addClassName(className);
     return this;
   }
@@ -228,7 +228,7 @@ public class Drawer extends ElementCompositeContainer
    */
   @Override
   @ExcludeFromJacocoGeneratedReport
-  public Drawer removeClassName(String className) {
+  public Drawer removeClassName(String... className) {
     getElement().removeClassName(className);
     return null;
   }
