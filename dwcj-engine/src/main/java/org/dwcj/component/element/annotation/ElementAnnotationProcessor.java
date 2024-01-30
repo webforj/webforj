@@ -2,7 +2,6 @@ package org.dwcj.component.element.annotation;
 
 import org.dwcj.component.element.ElementComposite;
 import org.dwcj.component.element.event.ElementEventOptions;
-import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
