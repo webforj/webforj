@@ -44,7 +44,7 @@ public final class ElementAnnotationProcessor {
    * @throws DwcjRuntimeException if the event class is not annotated with {@link EventName} or if
    *         {@link EventName#value()} is null or empty
    */
-  public static String processEventName(Class<? extends ComponentEvent<?>> eventClass) {
+  public static String processEventName(Class<?> eventClass) {
     String eventName = null;
 
     if (eventClass.isAnnotationPresent(EventName.class)) {

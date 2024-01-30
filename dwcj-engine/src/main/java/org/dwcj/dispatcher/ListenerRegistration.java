@@ -12,11 +12,11 @@ import java.util.EventObject;
  */
 public class ListenerRegistration<T extends EventObject> {
   private final EventDispatcher dispatcher;
-  private final Class<T> eventClass;
+  private final Class<? super T> eventClass;
   private final EventListener<T> listener;
   private boolean removed = false;
 
-  protected ListenerRegistration(EventDispatcher dispatcher, Class<T> eventClass,
+  protected ListenerRegistration(EventDispatcher dispatcher, Class<? super T> eventClass,
       EventListener<T> listener) {
     this.dispatcher = dispatcher;
     this.eventClass = eventClass;
@@ -40,7 +40,7 @@ public class ListenerRegistration<T extends EventObject> {
    *
    * @return the event class
    */
-  public Class<T> getEventClass() {
+  public Class<? super T> getEventClass() {
     return eventClass;
   }
 

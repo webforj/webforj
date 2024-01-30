@@ -1,7 +1,6 @@
 package org.dwcj.component.html.event;
 
 import java.util.Map;
-import org.dwcj.component.Component;
 import org.dwcj.component.element.annotation.EventName;
 import org.dwcj.component.element.annotation.EventOptions;
 import org.dwcj.component.element.annotation.EventOptions.EventData;
@@ -10,6 +9,8 @@ import org.dwcj.component.html.HtmlComponent;
 
 /**
  * Event fired when an HtmlComponent is clicked.
+ *
+ * @param <T> the component type
  *
  * @author Hyyan Abo Fakher
  * @since 23.06
@@ -25,7 +26,7 @@ import org.dwcj.component.html.HtmlComponent;
     @EventData(key = "shiftKey", exp = "event.shiftKey"),
     @EventData(key = "altKey", exp = "event.altKey"),
     @EventData(key = "metaKey", exp = "event.metaKey")})
-public class HtmlClickEvent extends ComponentEvent<HtmlComponent<?>> {
+public class HtmlClickEvent<T extends HtmlComponent<T>> extends ComponentEvent<HtmlComponent<T>> {
 
   /**
    * Creates a new component event.
@@ -33,7 +34,7 @@ public class HtmlClickEvent extends ComponentEvent<HtmlComponent<?>> {
    * @param component the source component
    * @param eventMap the event data
    */
-  public HtmlClickEvent(HtmlComponent<?> component, Map<String, Object> eventMap) {
+  public HtmlClickEvent(HtmlComponent<T> component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
 
@@ -133,7 +134,7 @@ public class HtmlClickEvent extends ComponentEvent<HtmlComponent<?>> {
    * {@inheritDoc}
    */
   @Override
-  public HtmlComponent<?> getComponent() {
-    return (HtmlComponent<?>) super.getComponent();
+  public T getComponent() {
+    return (T) super.getComponent();
   }
 }

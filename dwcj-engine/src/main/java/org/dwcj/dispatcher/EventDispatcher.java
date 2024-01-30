@@ -17,7 +17,7 @@ import java.util.function.BiPredicate;
  */
 public class EventDispatcher {
 
-  private final ConcurrentHashMap<Class<? extends EventObject>, Queue<EventListener<?>>> listeners =
+  private final ConcurrentHashMap<Class<?>, Queue<EventListener<?>>> listeners =
       new ConcurrentHashMap<>();
 
   /**
@@ -30,7 +30,7 @@ public class EventDispatcher {
    *
    * @return a ListenerRegistration object
    */
-  public <T extends EventObject> ListenerRegistration<T> addListener(Class<T> eventClass,
+  public <T extends EventObject> ListenerRegistration<T> addListener(Class<? super T> eventClass,
       EventListener<T> listener) {
     Queue<EventListener<?>> eventListeners =
         listeners.computeIfAbsent(eventClass, k -> new ConcurrentLinkedQueue<>());
@@ -46,7 +46,7 @@ public class EventDispatcher {
    * @param eventClass the event class
    * @param listener the listener
    */
-  public <T extends EventObject> void removeListener(Class<T> eventClass,
+  public <T extends EventObject> void removeListener(Class<? super T> eventClass,
       EventListener<T> listener) {
     Queue<EventListener<?>> list =
         listeners.computeIfAbsent(eventClass, k -> new ConcurrentLinkedQueue<>());
@@ -59,7 +59,7 @@ public class EventDispatcher {
    * @param <T> the generic type
    * @param eventClass the event class for which listeners should be removed
    */
-  public <T extends EventObject> void removeAllListeners(Class<T> eventClass) {
+  public <T extends EventObject> void removeAllListeners(Class<? super T> eventClass) {
     listeners.remove(eventClass);
   }
 
@@ -78,7 +78,7 @@ public class EventDispatcher {
    * @param listener the listener
    * @return true if the listener is registered, false otherwise
    */
-  public <T extends EventObject> boolean hasListener(Class<T> eventClass,
+  public <T extends EventObject> boolean hasListener(Class<? super T> eventClass,
       EventListener<T> listener) {
     Queue<EventListener<?>> list = listeners.get(eventClass);
     return list != null && list.contains(listener);
@@ -91,8 +91,9 @@ public class EventDispatcher {
    * @param eventClass the event class
    * @return true if there are listeners registered, false otherwise
    */
-  public <T extends EventObject> boolean hasListener(Class<T> eventClass) {
-    return getCount(eventClass) > 0;
+  public <T extends EventObject> boolean hasListener(Class<? super T> eventClass) {
+    Queue<EventListener<?>> list = listeners.get(eventClass);
+    return list != null && !list.isEmpty();
   }
 
   /**
@@ -103,7 +104,7 @@ public class EventDispatcher {
    *
    * @return the listeners
    */
-  public <T extends EventObject> List<EventListener<T>> getListeners(Class<T> eventClass) {
+  public <T extends EventObject> List<EventListener<T>> getListeners(Class<? super T> eventClass) {
     Queue<EventListener<?>> list = listeners.get(eventClass);
 
     if (list == null) {
@@ -122,7 +123,7 @@ public class EventDispatcher {
    * @param eventClass the event class
    * @return the listeners count
    */
-  public int getCount(Class<? extends EventObject> eventClass) {
+  public int getCount(Class<?> eventClass) {
     Queue<EventListener<?>> list = listeners.get(eventClass);
     return (list != null) ? list.size() : 0;
   }
@@ -141,11 +142,16 @@ public class EventDispatcher {
 
     if (list != null && !list.isEmpty()) {
       for (EventListener<?> listener : list) {
-        @SuppressWarnings("unchecked")
-        EventListener<T> l = (EventListener<T>) listener;
-        // Check if the filter allows this listener to receive the event
-        if (filter.test(l, event)) {
-          l.onEvent(event);
+        try {
+          @SuppressWarnings("unchecked")
+          EventListener<T> l = (EventListener<T>) listener;
+          // Check if the filter allows this listener to receive the event
+          if (filter.test(l, event)) {
+            l.onEvent(event);
+          }
+        } catch (ClassCastException e) {
+          throw new IllegalStateException(
+              "Listener " + listener + " is not compatible with event " + event, e);
         }
       }
     }
