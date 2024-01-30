@@ -2,7 +2,6 @@ package org.dwcj.component.element.annotation;
 
 import org.dwcj.component.element.ElementComposite;
 import org.dwcj.component.element.event.ElementEventOptions;
-import org.dwcj.component.event.ComponentEvent;
 import org.dwcj.exceptions.DwcjRuntimeException;
 
 /**
@@ -44,7 +43,7 @@ public final class ElementAnnotationProcessor {
    * @throws DwcjRuntimeException if the event class is not annotated with {@link EventName} or if
    *         {@link EventName#value()} is null or empty
    */
-  public static String processEventName(Class<? extends ComponentEvent<?>> eventClass) {
+  public static String processEventName(Class<?> eventClass) {
     String eventName = null;
 
     if (eventClass.isAnnotationPresent(EventName.class)) {

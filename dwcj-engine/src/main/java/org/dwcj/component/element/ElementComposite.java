@@ -39,8 +39,7 @@ public abstract class ElementComposite extends Composite<Element> {
   private final Map<String, Object> properties = new HashMap<>();
   private final Map<String, Class<?>> propertyTypes = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private final HashMap<String, Class<? extends ComponentEvent<?>>> eventNameToClassMap =
-      new HashMap<>();
+  private final HashMap<String, Class<?>> eventNameToClassMap = new HashMap<>();
   private final Map<ListenerRegistration<ElementEvent>, EventListener<? extends ComponentEvent<?>>> listenerRegistrations =
       new HashMap<>();
 
@@ -217,7 +216,7 @@ public abstract class ElementComposite extends Composite<Element> {
    *         class
    */
   protected <E extends ComponentEvent<?>> ListenerRegistration<E> addEventListener(
-      Class<E> eventClass, EventListener<E> listener, ElementEventOptions options) {
+      Class<? super E> eventClass, EventListener<E> listener, ElementEventOptions options) {
 
     String eventName = ElementAnnotationProcessor.processEventName(eventClass);
 
@@ -275,7 +274,7 @@ public abstract class ElementComposite extends Composite<Element> {
    * @throws DwcjRuntimeException if the event class is not annotated with {@link EventName}
    */
   protected <E extends ComponentEvent<?>> ListenerRegistration<E> addEventListener(
-      Class<E> eventClass, EventListener<E> listener) {
+      Class<? super E> eventClass, EventListener<E> listener) {
     return addEventListener(eventClass, listener, null);
   }
 
@@ -312,7 +311,7 @@ public abstract class ElementComposite extends Composite<Element> {
    * @return An instance of the specified event class.
    * @throws DwcjRuntimeException if the event class cannot be instantiated or initialized properly.
    */
-  <E extends ComponentEvent<?>> E createEvent(Class<E> eventClass, Map<String, Object> data) {
+  <E extends ComponentEvent<?>> E createEvent(Class<?> eventClass, Map<String, Object> data) {
     E event = null;
 
     try {

@@ -205,8 +205,8 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *         class
    */
   @Override
-  public <E extends ComponentEvent<?>> ListenerRegistration<E> addEventListener(Class<E> eventClass,
-      EventListener<E> listener, ElementEventOptions options) {
+  public <E extends ComponentEvent<?>> ListenerRegistration<E> addEventListener(
+      Class<? super E> eventClass, EventListener<E> listener, ElementEventOptions options) {
     return super.addEventListener(eventClass, listener, options);
   }
 
@@ -223,8 +223,8 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    * @throws DwcjRuntimeException if the event class is not annotated with {@link EventName}
    */
   @Override
-  public <E extends ComponentEvent<?>> ListenerRegistration<E> addEventListener(Class<E> eventClass,
-      EventListener<E> listener) {
+  public <E extends ComponentEvent<?>> ListenerRegistration<E> addEventListener(
+      Class<? super E> eventClass, EventListener<E> listener) {
     return super.addEventListener(eventClass, listener);
   }
 
@@ -236,8 +236,8 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *
    * @return A listener registration for removing the event listener
    */
-  public ListenerRegistration<HtmlClickEvent> addClickListener(
-      EventListener<HtmlClickEvent> listener, ElementEventOptions options) {
+  public ListenerRegistration<HtmlClickEvent<T>> addClickListener(
+      EventListener<HtmlClickEvent<T>> listener, ElementEventOptions options) {
     return addEventListener(HtmlClickEvent.class, listener, options);
   }
 
@@ -248,8 +248,8 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *
    * @return A listener registration for removing the event listener
    */
-  public ListenerRegistration<HtmlClickEvent> addClickListener(
-      EventListener<HtmlClickEvent> listener) {
+  public ListenerRegistration<HtmlClickEvent<T>> addClickListener(
+      EventListener<HtmlClickEvent<T>> listener) {
     return addEventListener(HtmlClickEvent.class, listener);
   }
 
@@ -261,7 +261,7 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *
    * @return A listener registration for removing the event listener
    */
-  public ListenerRegistration<HtmlClickEvent> onClick(EventListener<HtmlClickEvent> listener,
+  public ListenerRegistration<HtmlClickEvent<T>> onClick(EventListener<HtmlClickEvent<T>> listener,
       ElementEventOptions options) {
     return addClickListener(listener, options);
   }
@@ -273,7 +273,8 @@ public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementC
    *
    * @return A listener registration for removing the event listener
    */
-  public ListenerRegistration<HtmlClickEvent> onClick(EventListener<HtmlClickEvent> listener) {
+  public ListenerRegistration<HtmlClickEvent<T>> onClick(
+      EventListener<HtmlClickEvent<T>> listener) {
     return addClickListener(listener);
   }
 

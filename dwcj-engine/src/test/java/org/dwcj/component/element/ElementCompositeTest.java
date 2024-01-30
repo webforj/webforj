@@ -219,11 +219,11 @@ class ElementCompositeTest {
 
       ListenerRegistration<ElementEvent> registration = mock(ListenerRegistration.class);
       when(registration.getListener()).thenReturn(listener);
-      when(registration.getEventClass()).thenReturn(ElementEvent.class);
+      when((Object) registration.getEventClass()).thenReturn(ElementEvent.class);
 
       ListenerRegistration<ElementEvent> elementRegistration = mock(ListenerRegistration.class);
       when(elementRegistration.getListener()).thenReturn(listener);
-      when(elementRegistration.getEventClass()).thenReturn(ElementEvent.class);
+      when((Object) elementRegistration.getEventClass()).thenReturn(ElementEvent.class);
 
       ElementComposite.ElementCompositeListenerRegistration<?> listenerRegistration =
           composite.new ElementCompositeListenerRegistration<>(registration, elementRegistration,
@@ -232,5 +232,6 @@ class ElementCompositeTest {
       listenerRegistration.remove();
       verify(elementRegistration, times(1)).remove();
     }
+
   }
 }
