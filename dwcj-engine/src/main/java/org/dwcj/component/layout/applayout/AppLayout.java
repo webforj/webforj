@@ -532,7 +532,7 @@ public class AppLayout extends ElementCompositeContainer
   @ExcludeFromJacocoGeneratedReport
   public AppLayout removeClassName(String... className) {
     getElement().removeClassName(className);
-    return null;
+    return this;
   }
 
   /**
