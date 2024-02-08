@@ -25,8 +25,8 @@ public interface MultipleSelectable<T extends Component, V> extends Selectable<V
    * Selects multiple items in the list.
    *
    * <p>
-   * <strong>Note:</strong> component implanting this method should ensure type safety for potential
-   * heap pollution via varargs parameter
+   * <strong>Note:</strong> Components implanting this method should ensure type safety for
+   * potential heap pollution via varargs parameter.
    * </p>
    *
    * @param items the items to select
@@ -54,8 +54,8 @@ public interface MultipleSelectable<T extends Component, V> extends Selectable<V
    * Deselects the given item.
    *
    * <p>
-   * <strong>Note:</strong> component implanting this method should ensure type safety for potential
-   * heap pollution via varargs parameter
+   * <strong>Note:</strong> Components implanting this method should ensure type safety for
+   * potential heap pollution via varargs parameter.
    * </p>
    *
    * @param items the items to deselect
