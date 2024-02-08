@@ -105,30 +105,42 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    * {@inheritDoc}
    */
   @Override
-  public ListBox deselect(ListItem item) {
+  public ListBox deselect(ListItem... item) {
     if (selectionMode == SelectionMode.SINGLE) {
       throw new IllegalStateException("Cannot deselect a given item in single selection mode");
     }
 
-    return doDeselect(item);
+    for (ListItem i : item) {
+      doDeselect(i);
+    }
+
+    return this;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public ListBox deselectKey(Object key) {
-    ListItem item = getByKey(key);
-    return deselect(item);
+  public ListBox deselectKey(Object... key) {
+    for (Object k : key) {
+      ListItem item = getByKey(k);
+      deselect(item);
+    }
+
+    return this;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public ListBox deselectIndex(int index) {
-    ListItem item = getByIndex(index);
-    return deselect(item);
+  public ListBox deselectIndex(int... index) {
+    for (int i : index) {
+      ListItem item = getByIndex(i);
+      deselect(item);
+    }
+
+    return this;
   }
 
   /**
@@ -190,7 +202,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    * {@inheritDoc}
    */
   @Override
-  public ListBox selectKeys(Object... keys) {
+  public ListBox selectKey(Object... keys) {
     for (Object key : keys) {
       verifyItemInList(key);
     }
@@ -203,7 +215,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    * {@inheritDoc}
    */
   @Override
-  public ListBox selectIndices(int... indices) {
+  public ListBox selectIndex(int... indices) {
     for (int index : indices) {
       verifyValidIndex(index, false);
     }
