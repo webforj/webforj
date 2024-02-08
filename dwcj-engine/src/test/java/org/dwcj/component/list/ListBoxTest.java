@@ -145,7 +145,7 @@ class ListBoxTest {
       component.add("key1", "value1");
       component.add("key2", "value2");
       component.add("key3", "value3");
-      component.selectKeys("key1", "key2", "key3");
+      component.selectKey("key1", "key2", "key3");
 
       component.deselectAll();
 
@@ -168,7 +168,7 @@ class ListBoxTest {
       component.add("key-1", "value-1");
       component.add("key-2", "value-2");
 
-      assertThrows(IllegalStateException.class, () -> component.selectKeys("key-1", "key-2"));
+      assertThrows(IllegalStateException.class, () -> component.selectKey("key-1", "key-2"));
     }
 
     @Test
@@ -179,7 +179,7 @@ class ListBoxTest {
       component.add("key-2", "value-2");
       component.add("key-3", "value-3");
 
-      component.selectKeys("key-2", "key-3");
+      component.selectKey("key-2", "key-3");
 
       verify(control, times(1)).setSelectedIndices(new BBjVector(Arrays.asList(1, 2)));
 
@@ -196,7 +196,7 @@ class ListBoxTest {
       component.add("key-2", "value-2");
       component.add("key-3", "value-3");
 
-      component.selectIndices(1, 2);
+      component.selectIndex(1, 2);
 
       verify(control, times(1)).setSelectedIndices(new BBjVector(Arrays.asList(1, 2)));
 
@@ -215,7 +215,7 @@ class ListBoxTest {
       component.add("key-2", "value-2");
       component.add("key-3", "value-3");
 
-      assertThrows(DwcjRuntimeException.class, () -> component.selectKeys("key-2", "key-3"));
+      assertThrows(DwcjRuntimeException.class, () -> component.selectKey("key-2", "key-3"));
     }
 
     @Test
@@ -245,7 +245,7 @@ class ListBoxTest {
 
       assertEquals(0, component.getSelectedIndices().size());
 
-      component.selectIndices(1, 2);
+      component.selectIndex(1, 2);
 
       assertEquals(2, component.getSelectedIndices().size());
       assertEquals(1, component.getSelectedIndices().get(0));
@@ -262,7 +262,7 @@ class ListBoxTest {
       component.add("key-2", "value-2");
       component.add("key-3", "value-3");
 
-      component.selectIndices(1, 2);
+      component.selectIndex(1, 2);
 
       assertEquals(2, component.getSelectedKeys().size());
       assertEquals("key-2", component.getSelectedKeys().get(0));
@@ -328,7 +328,7 @@ class ListBoxTest {
       component.add("key-1", "value-1");
       component.add("key-2", "value-2");
       component.add("key-3", "value-3");
-      component.selectIndices(1, 2);
+      component.selectIndex(1, 2);
 
       assertEquals(2, component.getSelectedItems().size());
       assertEquals("key-2", component.getSelectedItems().get(0).getKey());
@@ -354,5 +354,3 @@ class ListBoxTest {
     }
   }
 }
-
-
