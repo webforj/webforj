@@ -456,7 +456,7 @@ public final class Column<T, V> implements Serializable {
   }
 
   /**
-   * Figures out the client type of the column based on the given java type.
+   * Figures out the client type of the column based on the given Java type.
    *
    * @param type the new type
    * @return the column itself
