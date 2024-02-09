@@ -41,14 +41,14 @@ jobs:
 
       - name: Install Maven Dependencies
         run: >
-          mvn install:install-file "-Dfile=/opt/bbx/lib/BBjStartup.jar"
+          mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjStartup.jar"
           "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ needs.setup.outputs.version }}"
           "-Dpackaging=jar" -q && mvn install:install-file
-          "-Dfile=/opt/bbx/lib/BBj.jar" "-DgroupId=com.basis.lib"
+          "-Dfile=/opt/bbx/.lib/BBj.jar" "-DgroupId=com.basis.lib"
           "-DartifactId=BBj" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q && mvn
-          install:install-file "-Dfile=/opt/bbx/lib/BBjUtil.jar"
+          install:install-file "-Dfile=/opt/bbx/.lib/BBjUtil.jar"
           "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ needs.setup.outputs.version }}"
-          "-Dpackaging=jar" -q && mvn install:install-file "-Dfile=/opt/bbx/lib/BBjsp.jar"
+          "-Dpackaging=jar" -q && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjsp.jar"
           "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
