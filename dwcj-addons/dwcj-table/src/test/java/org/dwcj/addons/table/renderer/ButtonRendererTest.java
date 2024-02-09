@@ -6,7 +6,7 @@ import org.dwcj.component.button.ButtonTheme;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ButtonRendererTest {
+class ButtonRendererTest {
 
   ButtonRenderer<String> renderer;
 
