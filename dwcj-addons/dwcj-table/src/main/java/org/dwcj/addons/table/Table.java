@@ -40,37 +40,36 @@ import org.dwcj.dispatcher.EventListener;
 import org.dwcj.dispatcher.ListenerRegistration;
 
 /**
- * A component for the presentation of tabular information in an organized and easily understandable
- * manner, the Table component facilitates the display of data in rows and columns.
- *
- * <p>
- * While the basic functionality of the table includes presenting data as plain text, the use of
- * enhanced content through client-side rendering can significantly improve the presentation's
- * effectiveness. The Table is equipped with several features aimed at improving the visualization
- * of data:
- * </p>
+ * A component designed for the presentation of tabular information in a structured, easily
+ * understandable manner, optimized for handling large datasets with high performance. The Table
+ * component not only facilitates the display of data in rows and columns but also enriches data
+ * interaction through advanced visualization and a comprehensive suite of events for dynamic user
+ * engagement. It supports a variety of functionalities aimed at enhancing data analysis,
+ * navigation, and interaction:
  *
  * <ul>
- * <li><b>Selection:</b> Selection features are turned off by default. Nonetheless, the Table
- * supports both single and multiple selection modes. Single selection allows for the toggling of
- * selection on a row with a simple click. Meanwhile, multiple selection enables the choice of
- * several rows simultaneously through a checkbox column.</li>
+ * <li><b>Selection:</b> Out of the box, selection features are disabled, but the Table can be
+ * configured for both single and multiple selection modes, enabling users to select rows with a
+ * simple click or through a checkbox column for multiple selections.</li>
  *
- * <li><b>Columns:</b> The configuration options for columns are extensive, covering alignment, the
- * ability to lock columns in place, the inclusion of headers, control over visibility, and setting
- * a minimum width.</li>
+ * <li><b>Columns:</b> Offers extensive configuration options for columns including alignment, fixed
+ * positioning, header inclusion, visibility control, and minimum width settings.</li>
  *
- * <li><b>Sorting:</b> Columns can be made sortable, giving users the power to order data
- * alphabetically, numerically, or chronologically. Sorting aids in the analysis and navigation of
- * data. It is typically beneficial to activate sorting for columns unless the original order of
- * items is crucial, such as in prioritized lists. Sorting is primarily performed on the server,
- * though client-side sorting is also an option. When sorting is set to be done client-side, the
- * Table automatically recognizes the type of data in a column and applies the correct sorting
- * algorithm.</li>
+ * <li><b>Sorting:</b> Supports sortable columns, allowing users to order data by different criteria
+ * (alphabetical, numerical, chronological). While server-side sorting is the default for efficiency
+ * with large datasets, client-side sorting can also be enabled for immediate, in-browser data
+ * organization.</li>
  *
- * <li><b>Cell Focus:</b> Focusing on cells can be achieved by either mouse clicks or keyboard
- * navigation, enhancing interaction within the Table.</li>
+ * <li><b>Cell Focus:</b> Enhances interaction within the Table through mouse clicks or keyboard
+ * navigation to focus on specific cells.</li>
  * </ul>
+ *
+ * <p>
+ * Designed to efficiently process and visualize large volumes of data, the Table component employs
+ * virtualization techniques to maintain performance. Its event-driven architecture supports a wide
+ * array of interactions including selections, clicks, double clicks, and sorting changes, making it
+ * an ideal choice for creating responsive, data-intensive interfaces.
+ * </p>
  *
  * @param <T> the data type the table represents
  *
