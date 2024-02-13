@@ -21,10 +21,15 @@ public final class ComponentRegistry implements HasComponents {
   private final Component parent;
   private final Consumer<Component> addConsumer;
   private final boolean allowMultipleAttach;
-  private final ComponentLifecycleObserver destroyObserver =
+  private final ComponentLifecycleObserver observer =
       (Component component, LifecycleEvent event) -> {
         if (event == LifecycleEvent.DESTROY) {
           components.remove(component.getComponentId());
+        }
+
+        if (event == LifecycleEvent.CREATE) {
+          AnnotationProcessor processor = new AnnotationProcessor();
+          processor.processControlAnnotations(component);
         }
       };
 
@@ -83,13 +88,11 @@ public final class ComponentRegistry implements HasComponents {
       }
 
       // monitoring component lifecycle destruction
-      current.addLifecycleObserver(destroyObserver);
+      current.addLifecycleObserver(observer);
 
       if (!parent.isAttached()) {
         this.components.put(current.getComponentId(), current);
       } else {
-        AnnotationProcessor processor = new AnnotationProcessor();
-        processor.processControlAnnotations(current);
         addConsumer.accept(current);
       }
     }
