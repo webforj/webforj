@@ -332,7 +332,7 @@ public final class AnnotationProcessor {
         if (phase == RunningPhase.PRE_RUN && StringTable.contains(key)) {
 
           // is blacklisted ?
-          String[] blackList = new String[] {"DEBUG"};
+          String[] blackList = new String[] {"DEBUG", "PARSE_REQUEST_THEME"};
           if (Arrays.asList(blackList).contains(key)) {
             continue;
           }
