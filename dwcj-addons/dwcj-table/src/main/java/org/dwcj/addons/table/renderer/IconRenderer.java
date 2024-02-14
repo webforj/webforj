@@ -1,6 +1,8 @@
 package org.dwcj.addons.table.renderer;
 
+import org.dwcj.addons.table.event.renderer.RendererClickEvent;
 import org.dwcj.component.element.annotation.NodeName;
+import org.dwcj.dispatcher.EventListener;
 
 /**
  * Represents a renderer for an icon.
@@ -20,10 +22,35 @@ public class IconRenderer<T> extends AbstractVoidElementRenderer<T> {
    *
    * @param name the name of the icon
    * @param pool the pool of the icon
+   * @param listener A click listener for the icon
    */
-  public IconRenderer(String name, String pool) {
+  public IconRenderer(String name, String pool, EventListener<RendererClickEvent<T>> listener) {
     setName(name);
     setPool(pool);
+
+    if (listener != null) {
+      addClickListener(listener);
+    }
+  }
+
+  /**
+   * Creates a new instance of the icon renderer.
+   *
+   * @param name the name of the icon
+   * @param pool the pool of the icon
+   */
+  public IconRenderer(String name, String pool) {
+    this(name, pool, null);
+  }
+
+  /**
+   * Creates a new instance of the icon renderer.
+   *
+   * @param name the name of the icon
+   * @param listener A click listener for the icon
+   */
+  public IconRenderer(String name, EventListener<RendererClickEvent<T>> listener) {
+    this(name, "tabler", listener);
   }
 
   /**
@@ -32,7 +59,7 @@ public class IconRenderer<T> extends AbstractVoidElementRenderer<T> {
    * @param name the name of the icon
    */
   public IconRenderer(String name) {
-    setName(name);
+    this(name, "tabler", null);
   }
 
   /**
