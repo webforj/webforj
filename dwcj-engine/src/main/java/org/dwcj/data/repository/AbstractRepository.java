@@ -122,7 +122,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public AbstractRepository<T> commit() {
-    fireCommitEvent(Collections.unmodifiableList(findAll().toList()));
+    fireCommitEvent(Collections.unmodifiableList(findAll().toList()), false);
     return this;
   }
 
@@ -131,7 +131,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public AbstractRepository<T> commit(T entity) {
-    fireCommitEvent(List.of(entity));
+    fireCommitEvent(List.of(entity), true);
     return this;
   }
 
@@ -154,8 +154,11 @@ public abstract class AbstractRepository<T> implements Repository<T> {
 
   /**
    * Fires a refresh event.
+   *
+   * @param commits The list of commits.
+   * @param isSingle A flag to indicate if the event is for a single commit.
    */
-  protected void fireCommitEvent(List<T> commits) {
-    getEventDispatcher().dispatchEvent(new RepositoryCommitEvent<T>(this, commits));
+  protected void fireCommitEvent(List<T> commits, boolean isSingle) {
+    getEventDispatcher().dispatchEvent(new RepositoryCommitEvent<T>(this, commits, isSingle));
   }
 }

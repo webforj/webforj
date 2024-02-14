@@ -997,20 +997,19 @@ public final class Table<T> extends HtmlComponent<Table<T>>
     return rowJson;
   }
 
-  void handleRepositoryCommit(RepositoryCommitEvent<T> e) {
-    List<T> commits = e.getCommits();
-
-    if (commits.size() == 1) {
+  void handleRepositoryCommit(RepositoryCommitEvent<T> ev) {
+    if (ev.isSingleCommit()) {
       // update a single item
       Element el = getElement();
-      if (getElement().isDefined()) {
-        T commit = commits.get(0);
+      if (el.isDefined()) {
+        T commit = ev.getFirstCommit();
         Object key = getRepository().getKey(commit);
+        String[] keys = mapKeys(key);
 
-        el.callJsFunctionAsync("updateRow", key, buildItem(commit));
+        el.callJsFunctionAsync("updateRow", keys[0], buildItem(commit));
       }
     } else {
-      this.refersh();
+      refersh();
     }
   }
 
