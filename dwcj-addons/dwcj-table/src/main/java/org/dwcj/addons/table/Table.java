@@ -207,7 +207,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
     Column<T, V> column = new Column<>(this, id);
     column.setValueProvider(i -> null);
     column.setRenderer(renderer);
-    column.setLabel("");
+    column.setLabel(capitalizeFirstLetter(id));
     columns.add(column);
 
     return column;
@@ -222,7 +222,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
    * @return the new column
    */
   public <V> Column<T, V> addColumn(Renderer<T> renderer) {
-    return addColumn(null, renderer);
+    return addColumn("", renderer);
   }
 
   /**
