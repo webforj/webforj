@@ -12,7 +12,7 @@ import org.dwcj.component.event.ComponentEvent;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@EventName(value = "bbj-drawer-closed")
+@EventName(value = "dwc-drawer-closed")
 @EventOptions(filter = "event.target.isSameNode(component)")
 public final class DrawerCloseEvent extends ComponentEvent<Drawer> {
 

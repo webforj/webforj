@@ -12,7 +12,7 @@ import org.dwcj.component.layout.applayout.AppLayout;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@EventName(value = "bbj-drawer-closed")
+@EventName(value = "dwc-drawer-closed")
 @EventOptions(filter = "event.target.isSameNode(component)")
 public final class AppLayoutDrawerCloseEvent extends ComponentEvent<AppLayout> {
 

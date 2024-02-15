@@ -22,7 +22,7 @@ import org.dwcj.component.element.annotation.EventName;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@EventName("bbj-row-selected")
+@EventName("dwc-row-selected")
 public class TableItemSelectEvent<T> extends TableItemEvent<T> {
 
   /**

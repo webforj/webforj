@@ -11,7 +11,7 @@ import org.dwcj.component.event.ComponentEvent;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@EventName("bbj-dialog-closed")
+@EventName("dwc-dialog-closed")
 public class DialogCloseEvent extends ComponentEvent<Dialog> {
 
   /**

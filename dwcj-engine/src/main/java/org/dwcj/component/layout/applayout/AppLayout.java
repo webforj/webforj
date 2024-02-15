@@ -27,7 +27,7 @@ import org.dwcj.dispatcher.ListenerRegistration;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@NodeName("bbj-app-layout")
+@NodeName("dwc-app-layout")
 public class AppLayout extends ElementCompositeContainer
     implements HasClassName<AppLayout>, HasStyle<AppLayout>, HasVisibility<AppLayout> {
 
