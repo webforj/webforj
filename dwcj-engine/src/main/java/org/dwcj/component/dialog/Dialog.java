@@ -90,7 +90,9 @@ public class Dialog extends ElementCompositeContainer
     // This call should be made very early in the lifecycle of the component
     // before any events are added because moving the element will remove all
     // the event listeners
-    getElement().executeJsAsync("document.body.appendChild(component)");
+    getElement().whenDefined().thenAccept(c -> {
+      getElement().executeJsAsync("document.body.appendChild(component)");
+    });
   }
 
   /**
