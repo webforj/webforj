@@ -23,6 +23,7 @@ public class WelcomeApp extends App {
   private Frame panel;
   private String baseUrl = "";
   private String urlTail = "";
+  private String urlTailWithoutParam = "";
 
   /**
    * The App that is used as an index page when multiple classes extend App and none is pinned in
@@ -52,6 +53,12 @@ public class WelcomeApp extends App {
         urlTail = urlTail.substring(0, urlTail.indexOf("/"));
       }
 
+      int questionMarkPosition = urlTail.indexOf("?");
+      if (questionMarkPosition != -1) {
+        urlTailWithoutParam = urlTail.substring(0, questionMarkPosition);
+      } else {
+        urlTailWithoutParam = urlTail;
+      }
     }
 
     buildAppList();
@@ -94,10 +101,10 @@ public class WelcomeApp extends App {
       }
 
       // determine if route contains some application that can be launched
-      if (!this.urlTail.isBlank()) {
+      if (!this.urlTailWithoutParam.isBlank()) {
         for (String entry : applist) {
           try {
-            if (Class.forName(entry).getSimpleName().equals(this.urlTail)) {
+            if (Class.forName(entry).getSimpleName().equals(this.urlTailWithoutParam)) {
               // store base url in object table so that interested partied know of the automatic
               // forwarding
               ObjectTable.put("dwcj_base_url", this.baseUrl + "/" + this.urlTail);

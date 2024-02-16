@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 import java.net.URL;
 import org.dwcj.annotation.AnnotationProcessor;
 import org.dwcj.bridge.IDwcjBBjBridge;
+import org.dwcj.environment.StringTable;
 import org.dwcj.environment.namespace.GlobalNamespace;
 import org.dwcj.environment.namespace.GroupNamespace;
 import org.dwcj.environment.namespace.Namespace;
@@ -50,6 +51,14 @@ public abstract class App {
   public final void initialize() throws DwcjAppInitializeException {
     if (isInitialized) {
       throw new DwcjAppInitializeException("App is already initialized.");
+    }
+
+    String key = "PARSE_REQUEST_THEME";
+    if (StringTable.contains(key) && StringTable.get(key).equals("1")) {
+      String theme = Request.getQueryParam("__theme__");
+      if (theme != null) {
+        setTheme(theme);
+      }
     }
 
     preRun();
