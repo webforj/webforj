@@ -170,20 +170,11 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @param name the name of the button
    * @return the component itself
    */
+  @Override
   public T setName(String name) {
+    super.setName(name);
     setUnrestrictedAttribute("name", name);
     return getSelf();
-  }
-
-  /**
-   * Gets the button name.
-   *
-   * @return the name of the button
-   * @see #setName(String)
-   */
-  public String getName() {
-    String name = getAttribute("name");
-    return name == null ? "" : name;
   }
 
   /**
