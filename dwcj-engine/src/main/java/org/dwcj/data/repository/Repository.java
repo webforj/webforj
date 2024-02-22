@@ -126,7 +126,7 @@ public interface Repository<T> extends RetrievalCriteria<T> {
    * @return The count of all entities.
    */
   default int size() {
-    return size(null);
+    return (int) findAll().count();
   }
 
   /**
