@@ -12,7 +12,7 @@ import org.dwcj.component.layout.applayout.AppLayout;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@EventName(value = "bbj-drawer-opened")
+@EventName(value = "dwc-drawer-opened")
 @EventOptions(filter = "event.target.isSameNode(component)")
 public final class AppLayoutDrawerOpenEvent extends ComponentEvent<AppLayout> {
 

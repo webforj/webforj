@@ -11,7 +11,7 @@ import org.dwcj.component.event.ComponentEvent;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@EventName("bbj-dialog-opened")
+@EventName("dwc-dialog-opened")
 public class DialogOpenEvent extends ComponentEvent<Dialog> {
 
   /**

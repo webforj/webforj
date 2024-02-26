@@ -13,7 +13,7 @@ import org.dwcj.dispatcher.EventListener;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@NodeName("bbj-button")
+@NodeName("dwc-button")
 public class ButtonRenderer<T> extends NativeButtonRenderer<T> {
   private ButtonTheme theme;
 

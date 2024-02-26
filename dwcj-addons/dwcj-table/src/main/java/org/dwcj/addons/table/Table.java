@@ -76,7 +76,7 @@ import org.dwcj.dispatcher.ListenerRegistration;
  * @author Hyyan Abo Fakher
  * @since version 24.00
  */
-@NodeName("bbj-table")
+@NodeName("dwc-table")
 public final class Table<T> extends HtmlComponent<Table<T>>
     implements HasRepository<T>, MultipleSelectableRepository<Table<T>, T> {
 

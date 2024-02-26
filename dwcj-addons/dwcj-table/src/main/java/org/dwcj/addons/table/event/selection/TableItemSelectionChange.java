@@ -18,7 +18,7 @@ import org.dwcj.data.selection.event.SelectEvent;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@EventName("bbj-selection-changed")
+@EventName("dwc-selection-changed")
 @EventOptions(data = {@EventData(key = "keys", exp = "event.target.selected")})
 public class TableItemSelectionChange<T> extends TableEvent<T> implements SelectEvent<T> {
   private List<String> keys;

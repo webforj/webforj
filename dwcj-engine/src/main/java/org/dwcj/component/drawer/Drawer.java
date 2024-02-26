@@ -22,7 +22,7 @@ import org.dwcj.dispatcher.ListenerRegistration;
  *
  * @author Hyyan Abo Fakher
  */
-@NodeName("bbj-drawer")
+@NodeName("dwc-drawer")
 public class Drawer extends ElementCompositeContainer
     implements HasClassName<Drawer>, HasStyle<Drawer> {
 

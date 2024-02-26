@@ -21,7 +21,7 @@ import org.dwcj.dispatcher.ListenerRegistration;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@NodeName("bbj-dialog")
+@NodeName("dwc-dialog")
 public class Dialog extends ElementCompositeContainer
     implements HasClassName<Dialog>, HasStyle<Dialog> {
 

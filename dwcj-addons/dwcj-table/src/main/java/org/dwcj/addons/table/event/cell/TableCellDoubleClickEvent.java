@@ -12,7 +12,7 @@ import org.dwcj.component.element.annotation.EventName;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@EventName("bbj-cell-clicked")
+@EventName("dwc-cell-clicked")
 public class TableCellDoubleClickEvent<T> extends TableCellEvent<T> {
 
   /**

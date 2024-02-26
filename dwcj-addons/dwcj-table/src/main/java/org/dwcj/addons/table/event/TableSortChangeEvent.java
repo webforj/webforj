@@ -20,7 +20,7 @@ import org.dwcj.data.repository.OrderCriteriaList;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@EventName("bbj-sort-changed")
+@EventName("dwc-sort-changed")
 @EventOptions(data = {@EventData(key = "criteria", exp = "event.detail")})
 public class TableSortChangeEvent<T> extends TableEvent<T> {
   private Map<String, String> clientCriteria = new HashMap<>();

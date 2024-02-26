@@ -12,7 +12,7 @@ import org.dwcj.component.element.annotation.EventName;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@EventName("bbj-row-clicked")
+@EventName("dwc-row-clicked")
 public class TableItemClickEvent<T> extends TableItemEvent<T> {
 
   /**

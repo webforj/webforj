@@ -12,7 +12,7 @@ import org.dwcj.dispatcher.EventListener;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@NodeName("bbj-icon")
+@NodeName("dwc-icon")
 public class IconRenderer<T> extends AbstractVoidElementRenderer<T> {
   private String name;
   private String pool;
