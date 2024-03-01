@@ -32,7 +32,7 @@ public class Paginator {
   private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
   /**
-   * Constructs a Paginator instance with the specified total number of items.
+   * Constructs a Paginator instance with the specified total number of items and page size.
    *
    * @param totalItems The total number of items to be paginated.
    * @param pageSize The number of items to display on each page.
