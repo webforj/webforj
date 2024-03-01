@@ -116,7 +116,8 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   private String label = "navigation";
 
   /**
-   * Constructs a Navigator instance with the specified total number of items and page size.
+   * Constructs a Navigator instance with the specified total number of items, page size, and
+   * Layout.
    *
    * @param totalItems The total number of items to be paginated.
    * @param pageSize The number of items to display on each page.
@@ -137,7 +138,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Constructs a Navigator instance with the specified total number of items.
+   * Constructs a Navigator instance with the specified total number of items and Layout.
    *
    * @param totalItems The total number of items to be paginated.
    * @param layout The layout of the middle area of the Navigator.
@@ -156,7 +157,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Constructs a Navigator instance with the specified repository and page size.
+   * Constructs a Navigator instance with the specified repository, page size and Layout.
    *
    * @param repository The repository containing the items to be paginated.
    * @param pageSize The number of items to display on each page.
@@ -177,7 +178,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Constructs a Navigator instance with the specified repository.
+   * Constructs a Navigator instance with the specified repository and Layout.
    *
    * @param repository The repository containing the items to be paginated.
    * @param layout The layout of the middle area of the Navigator.
@@ -196,7 +197,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Constructs a Navigator instance with the given paginator.
+   * Constructs a Navigator instance with the given paginator and Layout.
    *
    * @param paginator The paginator to be used.
    * @param layout The layout of the middle area of the Navigator.
@@ -223,7 +224,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Constructs a Navigator instance.
+   * Constructs a Navigator instance with the specified text.
    *
    * @param text the text of the Navigator.
    */
@@ -240,8 +241,8 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * When true, the first , previous , next and last buttons will be auto disabled based on the
-   * total items and the current page.
+   * When true, the first, previous, next, and last buttons will be auto disabled based on the total
+   * items and the current page.
    *
    * @param autoDisable true to enable auto disable
    * @return the component itself.
@@ -253,8 +254,8 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * When true, the first , previous , next and last buttons will be auto disabled based on the
-   * total items and the current page.
+   * Gets whether or not the first, previous, next, and last buttons will be auto disabled based on
+   * the total items and the current page.
    *
    * @return true if auto disable is enabled
    */
@@ -263,7 +264,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Set the layout of the middle area of the Navigator.
+   * Sets the layout of the middle area of the Navigator.
    *
    * @param layout the layout of the middle area of the Navigator.
    * @return the component itself.
@@ -275,7 +276,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Get the layout of the middle area of the Navigator.
+   * Gets the layout of the middle area of the Navigator.
    *
    * @return the layout of the middle area of the Navigator.
    */
@@ -284,7 +285,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Set the paginator of the Navigator.
+   * Sets the paginator of the Navigator.
    *
    * @param paginator the paginator of the Navigator.
    * @return the component itself.
@@ -309,7 +310,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Set the text of the Navigator component.
+   * Sets the text of the Navigator component.
    *
    * <p>
    * Text expressions are evaluated as JavaScript expressions. The text expression is evaluated with
@@ -397,7 +398,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Set the visibility of the Navigator part.
+   * Sets the visibility of the Navigator part.
    *
    * @param visible true to make the part visible
    * @param part the part of the Navigator.
@@ -436,7 +437,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Get the visibility of the Navigator part.
+   * Gets the visibility of the Navigator part.
    *
    * @param part the part of the Navigator.
    *
@@ -475,8 +476,8 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * The method will hide all main buttons, that include first, last , next and previous buttons and
-   * keep the middle area as it is.
+   * The method will hide all main buttons, which include first, last, next, and previous buttons,
+   * keeping the middle area as it is.
    *
    * @param hideMainButtons true to hide the main buttons
    * @return the component itself.
@@ -501,7 +502,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Set label of the Navigator.
+   * Sets label of the Navigator.
    *
    * <p>
    * The label is not rendered in the client side. It is used for accessibility purposes.
@@ -517,7 +518,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Get the label of the Navigator.
+   * Gets the label of the Navigator.
    *
    * @return the label of the Navigator.
    */
@@ -526,7 +527,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * Get the paginator of the Navigator.
+   * Gets the paginator of the Navigator.
    *
    * @return the paginator of the Navigator.
    */
@@ -691,7 +692,7 @@ public class Navigator extends DwcFocusableComponent<Navigator>
   }
 
   /**
-   * handles navigation change events.
+   * Handles navigation change events.
    *
    * @param event the navigation event
    */
