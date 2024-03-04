@@ -3,20 +3,20 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.dwcj</groupId>
-  <artifactId>dwcj-project</artifactId>
+  <groupId>com.webforj</groupId>
+  <artifactId>webforj-project</artifactId>
   <version>24.00-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
-  <name>dwcj</name>
+  <name>webforj</name>
   <description>Program that allows implementation of an API layer
         enabling the developer to build application software for the BBj
         ecosystem by using Java or other JVM languages like Kotlin instead
         of the BBj Business Basic syntax built into the BBj product.
     </description>
 
-  <url>https://dwcj.org</url>
+  <url>https://webforj.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,8 +57,8 @@
   </distributionManagement>
 
   <modules>
-    <module>dwcj-engine</module>
-    <module>dwcj-addons</module>
+    <module>webforj-engine</module>
+    <module>webforj-addons</module>
   </modules>
 
 

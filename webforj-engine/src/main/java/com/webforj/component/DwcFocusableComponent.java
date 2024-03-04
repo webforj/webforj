@@ -1,0 +1,114 @@
+package com.webforj.component;
+
+import com.webforj.component.event.BlurEvent;
+import com.webforj.component.event.FocusEvent;
+import com.webforj.concern.HasEnablement;
+import com.webforj.concern.HasFocus;
+import com.webforj.concern.HasFocusStatus;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
+
+/**
+ * An abstract class for typed DWC components that can receive focus and trigger focus-related
+ * events.
+ *
+ * <p>
+ * <strong>Important:</strong> Same inheritance rules of {@link DwcComponent} apply to this class.
+ * </p>
+ *
+ * @param <T> The type of the component itself, allowing for fluent method chaining.
+ *
+ * @see DwcComponent
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.05
+ */
+public abstract class DwcFocusableComponent<T extends DwcFocusableComponent<T>>
+    extends DwcComponent<T> implements HasFocus<T>, HasEnablement<T> {
+  private final DwcFocusableMixin<T> focusMixin = new DwcFocusableMixin<>(this);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setEnabled(boolean enabled) {
+    return focusMixin.setEnabled(enabled);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean isEnabled() {
+    return focusMixin.isEnabled();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setFocusable(boolean focusable) {
+    return focusMixin.setFocusable(focusable);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean isFocusable() {
+    return focusMixin.isFocusable();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T focus() {
+    return focusMixin.focus();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<FocusEvent> addFocusListener(EventListener<FocusEvent> listener) {
+    return focusMixin.addFocusListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<BlurEvent> addBlurListener(EventListener<BlurEvent> listener) {
+    return focusMixin.addBlurListener(listener);
+  }
+
+  /**
+   * Checks if the component has focus.
+   *
+   * @see HasFocusStatus
+   *
+   * @return true if the component has focus, false if not.
+   */
+  protected boolean componentHasFocus() {
+    return focusMixin.hasFocus();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void attachControlCallbacks() {
+    super.attachControlCallbacks();
+    focusMixin.attachControlCallbacks();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    focusMixin.onAttach();
+  }
+}

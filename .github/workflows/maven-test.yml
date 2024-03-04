@@ -25,7 +25,7 @@ jobs:
         run: |
           version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
             -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
-            dwcj-engine/pom.xml)
+            webforj-engine/pom.xml)
           version_without_suffix="${version%-SNAPSHOT}"
           echo "::set-output name=version::$version"
           echo "::set-output name=version-without-suffix::$version_without_suffix"
@@ -61,7 +61,7 @@ jobs:
         uses: cicirello/jacoco-badge-generator@v2
         with:
           badges-directory: badges
-          jacoco-csv-file: ./dwcj-engine/target/site/jacoco/jacoco.csv
+          jacoco-csv-file: ./webforj-engine/target/site/jacoco/jacoco.csv
           generate-branches-badge: true
           generate-summary: true
 
@@ -74,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: jacoco-report
-          path: ./dwcj-engine/target/site/jacoco/
+          path: ./webforj-engine/target/site/jacoco/

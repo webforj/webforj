@@ -1,0 +1,62 @@
+package com.webforj.data.selection;
+
+import com.webforj.component.Component;
+import com.webforj.component.window.Window;
+import com.webforj.data.repository.CollectionRepository;
+import com.webforj.data.repository.HasRepository;
+import com.webforj.data.repository.Repository;
+import com.webforj.data.selection.repository.SingleSelectableRepository;
+import java.util.ArrayList;
+import java.util.List;
+
+class SelectableComponentMock extends Component
+    implements HasRepository<String>, SingleSelectableRepository<SelectableComponentMock, String> {
+
+  private List<String> items = new ArrayList<>(List.of("item1", "item2", "item3"));
+  private List<Integer> selectedIndices = new ArrayList<>();
+  private Repository<String> repository = new CollectionRepository<>(items);
+
+  @Override
+  public SelectableComponentMock deselect() {
+    selectedIndices.clear();
+    return this;
+  }
+
+  @Override
+  public SelectableComponentMock selectIndex(int index) {
+    if (index >= 0 && index < items.size()) {
+      selectedIndices.add(index);
+    }
+
+    return this;
+  }
+
+  @Override
+  public int getSelectedIndex() {
+    return selectedIndices.isEmpty() ? -1 : selectedIndices.get(0);
+  }
+
+  @Override
+  public Repository<String> getRepository() {
+    return repository;
+  }
+
+  @Override
+  public SelectableComponentMock setRepository(Repository<String> repository) {
+    this.repository = repository;
+    items.clear();
+    repository.findAll().forEach(items::add);
+
+    return this;
+  }
+
+  @Override
+  protected void onCreate(Window window) {
+    // pass
+  }
+
+  @Override
+  protected void onDestroy() {
+    // pass
+  }
+}

@@ -24,7 +24,7 @@ jobs:
         run: |
           version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
             -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
-            dwcj-engine/pom.xml)
+            webforj-engine/pom.xml)
           version_without_suffix="${version%-SNAPSHOT}"
           echo "::set-output name=version::$version"
           echo "::set-output name=version-without-suffix::$version_without_suffix"

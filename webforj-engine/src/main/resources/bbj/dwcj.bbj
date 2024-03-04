@@ -1,0 +1,132 @@
+use com.webforj.Environment
+
+use ::admin.bbj::Admin
+use ::admin.bbj::UserCredentials
+use java.io.StringWriter
+use java.io.PrintWriter
+
+SETESC EscTrap
+SETERR dwcj_error
+
+BBJAPI().getConfig().releaseOnLostConnection(0)
+
+DEBUG = 0
+dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
+
+class$=""
+DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
+
+for i=1 to 10
+    tmp$=argv(i,err=*break)
+    if cvs(tmp$,4)="DEBUG" then
+        DEBUG=1
+        continue
+    fi
+    if len(tmp$)>6 and tmp$(1,6)="class=" then
+        class$=tmp$(7)
+        continue
+    fi
+next
+
+if class$="" then
+    class$=STBL("DWCJCLASSNAME",err=*next)
+fi
+
+if class$="" then
+    class$=clientenv("class",err=*next)
+fi
+
+if class$="" then
+    class$="com.webforj.utilities.WelcomeApp"
+    gosub determineClasspathEntries
+fi
+
+h! = new ::DwcjHelper.bbj::DwcjHelper()
+Environment.init(BBjAPI(), h!)
+
+Class.forName(class$,err=class_not_found)
+app! = eval("new "+class$+"()",err=dwcj_error)
+app!.initialize()
+
+REM app! =  Class.forName(class$).getDeclaredConstructor().newInstance()
+
+process_events,err=dwcj_error
+
+terminate:
+    release
+
+determineClasspathEntries:
+        pw$="admin123"
+        Api! = BBjAdminFactory.getBBjAdmin("admin","admin123",err=*next)
+        while Api! = null()
+            pw$=PROMPT("Enter the password for admin to discover Apps:","","Admin Access",mode="input-type=password")
+            if pw$="" then release
+            Api! = BBjAdminFactory.getBBjAdmin("admin",pw$,err=*next)
+        wend
+        cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
+        cp! = Api!.getClasspath(cp$)
+
+        al! = new java.util.ArrayList()
+        it!=cp!.iterator()
+        while it!.hasNext()
+            c$ = it!.next()
+            if c$(1,1)="(" or pos("lib/webforj-" =c$)>0 then
+                continue
+            fi
+            al!.add(c$)
+        wend
+
+        BBjAPI().getObjectTable().put("dwcjcp",al!)
+return
+
+EscTrap:
+    IF AND(CHR(TCB(19)),$08$)=$08$ THEN
+        System.out.println("Client Died")
+    ELSE
+        System.out.println("ESCAPE")
+    FI
+    if app! <> null() then
+        app!.cleanup()
+    fi
+RELEASE
+
+ErrTrap:
+    System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
+    if app! <> null() then
+        app!.cleanup()
+    fi
+RELEASE
+
+class_not_found:
+    if DEBUG=0 then
+        a=msgbox("Class not found!",64,"Error")
+    else
+        a=msgbox("Class "+class$+" not found!",64,"Error")
+    fi
+release
+
+dwcj_error:
+
+    if DEBUG=0 then
+        a=msgbox("An error has occured!",48,"Error")
+    else
+        error$ = ""
+        e! = bbjapi().getLastJavaException()
+        sg! = BBjAPI().openSysGui("X0")
+        if e! <> null() then
+            error$ = str(e!.getMessage()) + "\n"
+            st! = e!.getStackTrace()
+            sw! = new StringWriter()
+            pw! = new PrintWriter(sw!)
+            e!.printStackTrace(pw!)
+            sg!.executeScript("console.error(`" + sw!.toString() + "`);")
+        else
+            error$=errmes(-1)
+            sg!.executeScript("console.error(`" + error$ + "`);")
+        fi
+        rem sg!.executeScript("console.log('Error Details:');")
+        rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
+
+        rem a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
+    fi
+release

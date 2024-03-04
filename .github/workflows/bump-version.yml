@@ -40,7 +40,7 @@ jobs:
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }} -q
 
       - name: Bump BBj Version dependencies
-        run: xmlstarlet ed --inplace -N pom="http://maven.apache.org/POM/4.0.0" -u "//pom:dependency[pom:groupId='com.basis.lib']/pom:version" -v "${{ github.event.inputs.version }}" ./dwcj-engine/pom.xml
+        run: xmlstarlet ed --inplace -N pom="http://maven.apache.org/POM/4.0.0" -u "//pom:dependency[pom:groupId='com.basis.lib']/pom:version" -v "${{ github.event.inputs.version }}" ./webforj-engine/pom.xml
 
       - name: Commit & Push changes
         run: |
