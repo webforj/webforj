@@ -20,12 +20,12 @@ jobs:
       - name: Install xmlstarlet
         run: sudo apt update && sudo apt install -y xmlstarlet
 
-      - name: Extract BBj Version
+      - name: Extract Project Version
         id: extract-version
         run: |
           version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
-            -t -v "string(//pom:dependency[pom:artifactId='BBj']/pom:version)" \
-            webforj-engine/pom.xml)
+            -t -v "/pom:project/pom:version" \
+            pom.xml)
           version_without_suffix="${version%-SNAPSHOT}"
           echo "::set-output name=version::$version"
           echo "::set-output name=version-without-suffix::$version_without_suffix"
@@ -52,26 +52,25 @@ jobs:
           "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
-
       - name: Build with Maven
         run: mvn -B package -Pcoverage -q
 
-      - name: Generate JaCoCo badge
-        id: jacoco
-        uses: cicirello/jacoco-badge-generator@v2
-        with:
-          badges-directory: badges
-          jacoco-csv-file: ./webforj-engine/target/site/jacoco/jacoco.csv
-          generate-branches-badge: true
-          generate-summary: true
+      # - name: Generate JaCoCo badge
+      #   id: jacoco
+      #   uses: cicirello/jacoco-badge-generator@v2
+      #   with:
+      #     badges-directory: badges
+      #     jacoco-csv-file: ./webforj-core/target/site/jacoco/jacoco.csv
+      #     generate-branches-badge: true
+      #     generate-summary: true
 
-      - name: Log coverage percentages to workflow output
-        run: |
-          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
-          echo "branches = ${{ steps.jacoco.outputs.branches }}"
+      # - name: Log coverage percentages to workflow output
+      #   run: |
+      #     echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+      #     echo "branches = ${{ steps.jacoco.outputs.branches }}"
 
-      - name: Upload JaCoCo coverage report as a workflow artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: jacoco-report
-          path: ./webforj-engine/target/site/jacoco/
+      # - name: Upload JaCoCo coverage report as a workflow artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: jacoco-report
+      #     path: ./webforj-core/target/site/jacoco/

@@ -162,7 +162,7 @@ classpaths already configured in the Enterprise Manager. Select
 Select the same green "**+**" button on the right side of the acreen again.
 This time select "**Jar File(s)**". Navigate to the location you cloned the
 DWCJ code into. The folder will be called "**engine**". From there, select
-the "**target**" folder. Inside this folder, you should see the "**webforj-engine-XX.XX.jar**" file, with the X's replaced by numeric values. The path may look similar to "**C:\engine\target\webforj-engine-XX.XX.jar**". Select the .jar file and then click the "**Open**"
+the "**target**" folder. Inside this folder, you should see the "**webforj-core-XX.XX.jar**" file, with the X's replaced by numeric values. The path may look similar to "**C:\engine\target\webforj-core-XX.XX.jar**". Select the .jar file and then click the "**Open**"
 button.
 
 ![Opening the DWCJ .jar file](https://dwcj.org/assets/images/image22-0f18a08865f7f5db648e9897473ddd3e.jpg)

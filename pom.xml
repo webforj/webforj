@@ -4,18 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.webforj</groupId>
-  <artifactId>webforj-project</artifactId>
+  <artifactId>webforj-parent</artifactId>
   <version>24.00-SNAPSHOT</version>
-
   <packaging>pom</packaging>
-
   <name>webforj</name>
-  <description>Program that allows implementation of an API layer
-        enabling the developer to build application software for the BBj
-        ecosystem by using Java or other JVM languages like Kotlin instead
-        of the BBj Business Basic syntax built into the BBj product.
-    </description>
-
+  <organization>
+    <name>BASIS International Ltd</name>
+    <url>https://basis.cloud</url>
+  </organization>
   <url>https://webforj.com</url>
 
   <properties>
@@ -23,19 +19,10 @@
     <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
-  <developers>
-    <developer>
-      <name>Stephan Wald</name>
-      <email>swald@basis.cloud</email>
-      <organization>BASIS Europe Distribution GmbH</organization>
-      <organizationUrl>https://www.basis-europe.eu/en/</organizationUrl>
-    </developer>
-  </developers>
-
   <scm>
-    <connection>scm:git:git://github.com/DwcJava/engine.git</connection>
-    <developerConnection>scm:git:ssh://github.com:DwcJava/engine.git</developerConnection>
-    <url>https://github.com/DwcJava/engine/tree/main</url>
+    <connection>scm:git:git://github.com/webforj/webforj.git</connection>
+    <developerConnection>scm:git:ssh://github.com:webforj/webforj.git</developerConnection>
+    <url>https://github.com/webforj/webforj/tree/main</url>
   </scm>
 
   <licenses>
@@ -44,6 +31,13 @@
       <url>https://www.opensource.org/licenses/mit-license.php</url>
     </license>
   </licenses>
+
+  <modules>
+    <module>webforj</module>
+    <module>webforj-components</module>
+    <module>webforj-core</module>
+    <module>webforj-dispatcher</module>
+  </modules>
 
   <distributionManagement>
     <repository>
@@ -56,14 +50,40 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <modules>
-    <module>webforj-engine</module>
-    <module>webforj-addons</module>
-  </modules>
-
-
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.basis.lib</groupId>
+        <artifactId>BBj</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.basis.lib</groupId>
+        <artifactId>BBjStartup</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.basis.lib</groupId>
+        <artifactId>BBjUtil</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.basis.lib</groupId>
+        <artifactId>BBjsp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.14.0</version>
+      </dependency>
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
@@ -81,16 +101,6 @@
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>5.11.0</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.14.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -252,7 +262,7 @@
             <id>report</id>
             <phase>test</phase>
             <goals>
-              <goal>report</goal>
+              <goal>report-aggregate</goal>
             </goals>
           </execution>
         </executions>
@@ -301,6 +311,5 @@
         </plugins>
       </build>
     </profile>
-
   </profiles>
 </project>
