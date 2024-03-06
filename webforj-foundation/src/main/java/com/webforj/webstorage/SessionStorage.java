@@ -40,7 +40,7 @@ public final class SessionStorage extends WebStorage {
    * @return the current SessionStorage instance
    */
   public static SessionStorage getCurrent() {
-    final String key = "dwcj.webstorage.session.instance";
+    final String key = ".webstorage.session.instance";
 
     if (ObjectTable.contains(key)) {
       return (SessionStorage) ObjectTable.get(key);

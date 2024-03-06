@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.bridge.IDwcjBBjBridge;
+import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.Component;
 import com.webforj.component.event.sink.DwcEventSink;
 import com.webforj.component.optioninput.RadioButtonGroup;
@@ -28,7 +28,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
   private EventDispatcher dispatcher;
   private final int eventType;
   private BBjRadioGroup control = null;
-  private IDwcjBBjBridge dwcjHelper;
+  private WebforjBBjBridge webforjHelper;
 
   /**
    * Constructor for the sink class.
@@ -44,7 +44,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
     this.eventType = eventType;
 
     if (Environment.getCurrent() != null) {
-      setDwcjHelper(Environment.getCurrent().getDwcjHelper());
+      setWebforjHelper(Environment.getCurrent().getWeforjHelper());
     }
   }
 
@@ -56,7 +56,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
     if (isConnected()) {
       try {
         getBBjRadioGroup().setCallback(eventType,
-            getDwcjHelper().getEventProxy(this, "handleEvent"), "onEvent");
+            getWebforjHelper().getEventProxy(this, "handleEvent"), "onEvent");
       } catch (BBjException e) {
         throw new WebforjRuntimeException("Failed to set BBjRadioGroup callback.", e);
       }
@@ -84,7 +84,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
    */
   @Override
   public final boolean isConnected() {
-    return getBBjRadioGroup() != null && getDwcjHelper() != null;
+    return getBBjRadioGroup() != null && getWebforjHelper() != null;
   }
 
   /**
@@ -120,21 +120,21 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
   }
 
   /**
-   * Set the instance of the DwcjHelper.
+   * Set the instance of the WebforjHelper.
    *
-   * @param dwcjHelper The DwcjHelper instance.
+   * @param helper The WebforjHelper instance.
    */
-  void setDwcjHelper(IDwcjBBjBridge dwcjHelper) {
-    this.dwcjHelper = dwcjHelper;
+  void setWebforjHelper(WebforjBBjBridge helper) {
+    this.webforjHelper = helper;
   }
 
   /**
-   * Get the instance of the DwcjHelper.
+   * Get the instance of the WebforjHelper.
    *
-   * @return The DwcjHelper instance.
+   * @return The WebforjHelper instance.
    */
-  IDwcjBBjBridge getDwcjHelper() {
-    return this.dwcjHelper;
+  WebforjBBjBridge getWebforjHelper() {
+    return this.webforjHelper;
   }
 
   /**

@@ -17,7 +17,7 @@ public final class Request {
    * @return the current request instance
    */
   public static Request getCurrent() {
-    String key = "dwcj.request.instance";
+    String key = ".request.instance";
     if (ObjectTable.contains(key)) {
       return (Request) ObjectTable.get(key);
     }
@@ -35,7 +35,7 @@ public final class Request {
    * @return The value of the query parameter with the provided key, null if not present.
    */
   public static String getQueryParam(String key) {
-    return Environment.getCurrent().getDwcjHelper().getQueryParam(key);
+    return Environment.getCurrent().getWeforjHelper().getQueryParam(key);
   }
 
   /**

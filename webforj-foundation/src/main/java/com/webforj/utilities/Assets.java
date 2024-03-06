@@ -2,7 +2,7 @@ package com.webforj.utilities;
 
 import com.webforj.App;
 import com.webforj.Environment;
-import com.webforj.bridge.IDwcjBBjBridge;
+import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class Assets {
    * @return The URL of the Jetty Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
-    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerFilesURL", null);

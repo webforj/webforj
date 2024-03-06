@@ -6,7 +6,7 @@ use java.io.StringWriter
 use java.io.PrintWriter
 
 SETESC EscTrap
-SETERR dwcj_error
+SETERR _error
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
 
@@ -41,16 +41,16 @@ if class$="" then
     gosub determineClasspathEntries
 fi
 
-h! = new ::DwcjHelper.bbj::DwcjHelper()
+h! = new ::WebforjHelper.bbj::WebforjHelper()
 Environment.init(BBjAPI(), h!)
 
 Class.forName(class$,err=class_not_found)
-app! = eval("new "+class$+"()",err=dwcj_error)
+app! = eval("new "+class$+"()",err=_error)
 app!.initialize()
 
 REM app! =  Class.forName(class$).getDeclaredConstructor().newInstance()
 
-process_events,err=dwcj_error
+process_events,err=_error
 
 terminate:
     release
@@ -105,7 +105,7 @@ class_not_found:
     fi
 release
 
-dwcj_error:
+_error:
 
     if DEBUG=0 then
         a=msgbox("An error has occured!",48,"Error")

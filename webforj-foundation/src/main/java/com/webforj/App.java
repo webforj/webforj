@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.BBjBuiCloseAction;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.AnnotationProcessor;
-import com.webforj.bridge.IDwcjBBjBridge;
+import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.StringTable;
 import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.environment.namespace.GroupNamespace;
@@ -199,7 +199,7 @@ public abstract class App {
    * @return The application protocol
    */
   public static String getProtocol() {
-    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
@@ -211,7 +211,7 @@ public abstract class App {
    * @return The application host
    */
   public static String getHost() {
-    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerHost", null);
@@ -223,7 +223,7 @@ public abstract class App {
    * @return The application port
    */
   public static String getPort() {
-    IDwcjBBjBridge helper = Environment.getCurrent().getDwcjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerPort", null);
@@ -295,7 +295,7 @@ public abstract class App {
    * @return
    */
   public static int msgbox(String alert) {
-    return Environment.getCurrent().getDwcjHelper().msgbox(alert, 0, "");
+    return Environment.getCurrent().getWeforjHelper().msgbox(alert, 0, "");
   }
 
   /**
@@ -305,7 +305,7 @@ public abstract class App {
    * @return
    */
   public static int msgbox(String alert, int options) {
-    return Environment.getCurrent().getDwcjHelper().msgbox(alert, options, "");
+    return Environment.getCurrent().getWeforjHelper().msgbox(alert, options, "");
   }
 
   /**
@@ -316,7 +316,7 @@ public abstract class App {
    * @return
    */
   public static int msgbox(String alert, int options, String title) {
-    return Environment.getCurrent().getDwcjHelper().msgbox(alert, options, title);
+    return Environment.getCurrent().getWeforjHelper().msgbox(alert, options, title);
   }
 
   /**

@@ -9,7 +9,7 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
-import com.webforj.bridge.IDwcjBBjBridge;
+import com.webforj.bridge.WebforjBBjBridge;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +23,7 @@ class AppTest {
   BBjAPI api;
   BBjWebManager webManager;
   BBjSysGui sysGui;
-  IDwcjBBjBridge bridge;
+  WebforjBBjBridge bridge;
   App app;
 
   @BeforeEach
@@ -32,11 +32,11 @@ class AppTest {
     api = mock(BBjAPI.class);
     webManager = mock(BBjWebManager.class);
     sysGui = mock(BBjSysGui.class);
-    bridge = mock(IDwcjBBjBridge.class);
+    bridge = mock(WebforjBBjBridge.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getDwcjHelper()).thenReturn(bridge);
+    when(environment.getWeforjHelper()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
 
     app = spy(App.class);

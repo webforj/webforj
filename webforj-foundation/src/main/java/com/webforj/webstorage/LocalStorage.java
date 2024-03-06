@@ -39,7 +39,7 @@ public final class LocalStorage extends WebStorage {
    * @return the current LocalStorage instance
    */
   public static LocalStorage getCurrent() {
-    final String key = "dwcj.webstorage.local.instance";
+    final String key = ".webstorage.local.instance";
 
     if (ObjectTable.contains(key)) {
       return (LocalStorage) ObjectTable.get(key);

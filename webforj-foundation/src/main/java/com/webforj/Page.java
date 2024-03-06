@@ -28,7 +28,7 @@ public final class Page implements HasJsExecution {
    * @return the current page instance
    */
   public static Page getCurrent() {
-    String key = "dwcj.page.instance";
+    String key = ".page.instance";
     if (ObjectTable.contains(key)) {
       return (Page) ObjectTable.get(key);
     }
@@ -711,7 +711,7 @@ public final class Page implements HasJsExecution {
   /**
    * Reload the page in the browser.
    *
-   * @throws WebforjRuntimeException If dwcj fails to execute the script to reload the page
+   * @throws WebforjRuntimeException If fails to execute the script to reload the page
    */
   public void reload() {
     executeJsAsync("window.location.reload();");

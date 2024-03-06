@@ -7,7 +7,7 @@ import com.webforj.bbj.BBjVar;
 
 import java.util.ArrayList;
 
-public interface IDwcjBBjBridge {
+public interface WebforjBBjBridge {
 
   /**
    * create and register an event proxy that defers BBj-side callback invocations to the Java DWCJ

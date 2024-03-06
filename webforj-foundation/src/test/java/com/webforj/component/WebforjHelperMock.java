@@ -4,11 +4,11 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
-import com.webforj.bridge.IDwcjBBjBridge;
+import com.webforj.bridge.WebforjBBjBridge;
 import java.util.ArrayList;
 
-/** Mock for the IDwcjBBjBridge. */
-public class DwcHelperMock implements IDwcjBBjBridge {
+/** Mock for the WebforjBBjBridge. */
+public class WebforjHelperMock implements WebforjBBjBridge {
 
   @Override
   public CustomObject getEventProxy(Object obj, String method) {

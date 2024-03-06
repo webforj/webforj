@@ -18,7 +18,7 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
-import com.webforj.bridge.IDwcjBBjBridge;
+import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,7 +32,7 @@ class PageTest {
   BBjAPI api;
   BBjWebManager webManager;
   BBjSysGui sysGui;
-  IDwcjBBjBridge bridge;
+  WebforjBBjBridge bridge;
 
   @BeforeEach
   void setUp() throws BBjException {
@@ -40,11 +40,11 @@ class PageTest {
     api = mock(BBjAPI.class);
     webManager = mock(BBjWebManager.class);
     sysGui = mock(BBjSysGui.class);
-    bridge = mock(IDwcjBBjBridge.class);
+    bridge = mock(WebforjBBjBridge.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getDwcjHelper()).thenReturn(bridge);
+    when(environment.getWeforjHelper()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
 
     page = spy(Page.class);

@@ -549,8 +549,8 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
 
     // clean the window resize listener
     StringBuilder sb = new StringBuilder();
-    sb.append("if (component && component.__dwcj_handleResize__) {");
-    sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
+    sb.append("if (component && component.___handleResize__) {");
+    sb.append("  window.removeEventListener('resize', component.___handleResize__);");
     sb.append("}");
 
     getElement().executeJsAsync(sb.toString());
@@ -559,11 +559,11 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
   private void handleFirstRender(GoogleChartReadyEvent event) {
     // add a window resize listener
     StringBuilder sb = new StringBuilder();
-    sb.append("if (component && component.__dwcj_handleResize__) {");
-    sb.append("  window.removeEventListener('resize', component.__dwcj_handleResize__);");
+    sb.append("if (component && component.___handleResize__) {");
+    sb.append("  window.removeEventListener('resize', component.___handleResize__);");
     sb.append("}");
-    sb.append("component.__dwcj_handleResize__ = () => component.redraw();");
-    sb.append("window.addEventListener('resize', component.__dwcj_handleResize__);");
+    sb.append("component.___handleResize__ = () => component.redraw();");
+    sb.append("window.addEventListener('resize', component.___handleResize__);");
     getElement().executeJsAsync(sb.toString());
 
     this.firstRenderListenerRegistration.remove();

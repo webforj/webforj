@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
-import com.webforj.component.DwcHelperMock;
+import com.webforj.component.WebforjHelperMock;
 import com.webforj.component.optioninput.RadioButtonGroup;
 import com.webforj.component.optioninput.mocks.RadioButtonEventSinkMock;
 import com.webforj.dispatcher.EventDispatcher;
@@ -37,7 +37,7 @@ class AbstractRadioButtonEventSinkTest {
   BBjRadioGroup control;
 
   @Mock
-  DwcHelperMock dwcjHelper;
+  WebforjHelperMock webforjHelper;
 
   @InjectMocks
   RadioButtonEventSinkMock sink;

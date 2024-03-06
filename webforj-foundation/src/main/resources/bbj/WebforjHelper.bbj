@@ -1,5 +1,5 @@
 use com.webforj.component.EventProxy
-use com.webforj.bridge.IDwcjBBjBridge
+use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
 
 class public BBjEventProxy implements EventProxy
@@ -46,7 +46,7 @@ class public BBjEventProxy implements EventProxy
 classend
 
 
-class public DwcjHelper implements IDwcjBBjBridge
+class public WebforjHelper implements WebforjBBjBridge
 
     method public CustomObject getEventProxy(Object obj!, String method!)
         methodret new BBjEventProxy(obj!, method!)

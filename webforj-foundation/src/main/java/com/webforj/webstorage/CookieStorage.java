@@ -40,7 +40,7 @@ public final class CookieStorage extends WebStorage {
    * @return the current CookieStorage instance
    */
   public static CookieStorage getCurrent() {
-    final String key = "dwcj.webstorage.cookie.instance";
+    final String key = ".webstorage.cookie.instance";
 
     if (ObjectTable.contains(key)) {
       return (CookieStorage) ObjectTable.get(key);
