@@ -37,6 +37,7 @@
     <module>webforj-components</module>
     <module>webforj-core</module>
     <module>webforj-dispatcher</module>
+    <module>webforj-plugins</module>
   </modules>
 
   <distributionManagement>
