@@ -60,7 +60,7 @@ jobs:
       #   uses: cicirello/jacoco-badge-generator@v2
       #   with:
       #     badges-directory: badges
-      #     jacoco-csv-file: ./webforj-core/target/site/jacoco/jacoco.csv
+      #     jacoco-csv-file: ./webforj-foundation/target/site/jacoco/jacoco.csv
       #     generate-branches-badge: true
       #     generate-summary: true
 
@@ -73,4 +73,4 @@ jobs:
       #   uses: actions/upload-artifact@v2
       #   with:
       #     name: jacoco-report
-      #     path: ./webforj-core/target/site/jacoco/
+      #     path: ./webforj-foundation/target/site/jacoco/

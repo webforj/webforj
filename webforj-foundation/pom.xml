@@ -10,10 +10,11 @@
     <version>24.00-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-core</artifactId>
+  <artifactId>webforj-foundation</artifactId>
   <name>${project.artifactId}</name>
   <description>
-    The Webforj core module. It manages communication with BBj and provides core components.
+    The Webforj foudation is the lowest-level moulde used by all the other layers of the Webforj framework.
+    It manages communication with BBj and provides core components.
   </description>
 
   <dependencies>

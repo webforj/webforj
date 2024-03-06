@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-core</artifactId>
+      <artifactId>webforj-foundation</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
