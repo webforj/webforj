@@ -53,25 +53,15 @@ jobs:
           servers: >
             [
               {
-                "id": "ossrh",
-                "username": "${{secrets.OSSRH_USERNAME}}",
-                "password": "${{secrets.OSSRH_TOKEN}}"
-              },
-              {
-                "id": "sonatype-nexus-snapshots",
-                "username": "${{secrets.OSSRH_USERNAME}}",
-                "password": "${{secrets.OSSRH_TOKEN}}"
-              },
-              {
-                "id": "sonatype-nexus-staging",
-                "username": "${{secrets.OSSRH_USERNAME}}",
-                "password": "${{secrets.OSSRH_TOKEN}}"
+                "id": "central",
+                "username": "${{secrets.CENTRAL_USERNAME}}",
+                "password": "${{secrets.CENTRAL_TOKEN}}"
               }
             ]
           profiles: >
             [
               {
-                "id": "ossrh",
+                "id": "central",
                 "activation": {
                   "activeByDefault": true
                 }
@@ -91,5 +81,5 @@ jobs:
           "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
-      - name: Publish to Apache Maven
+      - name: Publish to Central
         run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q
