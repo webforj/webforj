@@ -32,7 +32,7 @@ jobs:
   test:
     needs: setup
     runs-on: ubuntu-latest
-    container: "dwcjava/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
+    container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
       - uses: actions/checkout@v3
 

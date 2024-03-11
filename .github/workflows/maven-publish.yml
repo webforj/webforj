@@ -31,7 +31,7 @@ jobs:
   publish:
     needs: setup
     runs-on: ubuntu-latest
-    container: "dwcjava/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
+    container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
       - uses: actions/checkout@v3
 
@@ -53,15 +53,25 @@ jobs:
           servers: >
             [
               {
-                "id": "central",
-                "username": "${{secrets.CENTRAL_USERNAME}}",
-                "password": "${{secrets.CENTRAL_TOKEN}}"
+                "id": "ossrh",
+                "username": "${{secrets.OSSRH_USERNAME}}",
+                "password": "${{secrets.OSSRH_TOKEN}}"
+              },
+              {
+                "id": "sonatype-nexus-snapshots",
+                "username": "${{secrets.OSSRH_USERNAME}}",
+                "password": "${{secrets.OSSRH_TOKEN}}"
+              },
+              {
+                "id": "sonatype-nexus-staging",
+                "username": "${{secrets.OSSRH_USERNAME}}",
+                "password": "${{secrets.OSSRH_TOKEN}}"
               }
             ]
           profiles: >
             [
               {
-                "id": "central",
+                "id": "ossrh",
                 "activation": {
                   "activeByDefault": true
                 }
@@ -81,5 +91,5 @@ jobs:
           "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version }}"
           "-Dpackaging=jar" -q && mvn install -q -DskipTests
 
-      - name: Publish to Central
+      - name: Publish to Nexus
         run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q
