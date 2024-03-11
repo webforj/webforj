@@ -15,5 +15,6 @@
   <name>${project.artifactId}</name>
 
   <modules>
+    <module>webforj-install-maven-plugin</module>
   </modules>
 </project>
