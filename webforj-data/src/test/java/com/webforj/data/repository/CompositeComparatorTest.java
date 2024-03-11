@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.exceptions.WebforjRuntimeException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -113,7 +112,7 @@ class CompositeComparatorTest {
     NonComparableClass obj1 = new NonComparableClass("abc");
     NonComparableClass obj2 = new NonComparableClass("abcd");
 
-    assertThrows(WebforjRuntimeException.class, () -> comparator.compare(obj1, obj2));
+    assertThrows(IllegalArgumentException.class, () -> comparator.compare(obj1, obj2));
   }
 
   @Test

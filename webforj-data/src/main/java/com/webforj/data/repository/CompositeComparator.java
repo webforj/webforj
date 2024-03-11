@@ -1,6 +1,5 @@
 package com.webforj.data.repository;
 
-import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.Comparator;
 
 /**
@@ -88,7 +87,7 @@ public class CompositeComparator<T> implements Comparator<T> {
 
           return compareWithDirection(value1Str, value2Str, criterion.getDirection());
         } else {
-          throw new WebforjRuntimeException("Values are not comparable", e);
+          throw new IllegalArgumentException("Values are not comparable", e);
         }
       }
     };

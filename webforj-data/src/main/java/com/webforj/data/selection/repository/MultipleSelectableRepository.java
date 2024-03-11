@@ -1,6 +1,5 @@
 package com.webforj.data.selection.repository;
 
-import com.webforj.component.Component;
 import com.webforj.data.repository.HasRepository;
 import com.webforj.data.selection.MultipleSelectable;
 import com.webforj.data.selection.SingleSelectable;
@@ -24,7 +23,7 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public interface MultipleSelectableRepository<T extends Component & HasRepository<V>, V>
+public interface MultipleSelectableRepository<T extends HasRepository<V>, V>
     extends SelectableRepository<T, V>, MultipleSelectable<T, V> {
 
   /**

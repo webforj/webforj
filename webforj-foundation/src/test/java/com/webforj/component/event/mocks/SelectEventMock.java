@@ -1,26 +1,16 @@
-package com.webforj.data.selection.event;
+package com.webforj.component.event.mocks;
 
 import com.webforj.component.Component;
+import com.webforj.component.event.AbstractSelectEvent;
 import com.webforj.data.repository.HasRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A select event that emitted when an item inside a repository is selected.
- *
- * @param <T> the type of the component
- * @param <V> the type of the selected item
- *
- * @see AbstractSelectEvent
- *
- * @author Hyyan Abo Fakher
- * @since 24.00
- */
-public class RepositorySelectEvent<T extends Component & HasRepository<V>, V>
+public class SelectEventMock<T extends Component & HasRepository<V>, V>
     extends AbstractSelectEvent<T, V> {
 
-  protected RepositorySelectEvent(T component, Map<String, Object> eventMap) {
+  public SelectEventMock(T component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
 

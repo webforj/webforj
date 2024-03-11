@@ -1,8 +1,8 @@
 package com.webforj.component.list.event;
 
+import com.webforj.component.event.AbstractSelectEvent;
 import com.webforj.component.list.DwcList;
 import com.webforj.component.list.ListItem;
-import com.webforj.data.selection.event.AbstractSelectEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

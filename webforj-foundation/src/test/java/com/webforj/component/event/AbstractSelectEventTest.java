@@ -1,16 +1,17 @@
-package com.webforj.data.selection.event;
+package com.webforj.component.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.basis.startup.type.BBjVector;
-import com.webforj.data.selection.MultipleSelectableComponentMock;
+import com.webforj.component.event.mocks.MultipleSelectableComponentMock;
+import com.webforj.component.event.mocks.SelectEventMock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 
-class RepositorySelectEventTest {
+class AbstractSelectEventTest {
 
   @Test
   void shouldGetSelectedIndex() {
@@ -18,8 +19,8 @@ class RepositorySelectEventTest {
     component.selectIndex(1);
     Map<String, Object> eventMap = new HashMap<>();
     eventMap.put("index", 1);
-    RepositorySelectEvent<MultipleSelectableComponentMock, String> event =
-        new RepositorySelectEvent<>(component, eventMap);
+    SelectEventMock<MultipleSelectableComponentMock, String> event =
+        new SelectEventMock<>(component, eventMap);
 
     assertEquals(1, event.getSelectedIndex());
   }
@@ -30,8 +31,8 @@ class RepositorySelectEventTest {
     component.selectIndex(1);
     Map<String, Object> eventMap = new HashMap<>();
     eventMap.put("index", 1);
-    RepositorySelectEvent<MultipleSelectableComponentMock, String> event =
-        new RepositorySelectEvent<>(component, eventMap);
+    SelectEventMock<MultipleSelectableComponentMock, String> event =
+        new SelectEventMock<>(component, eventMap);
 
     assertEquals("item2", event.getSelectedItem());
   }
@@ -42,8 +43,8 @@ class RepositorySelectEventTest {
     component.selectIndex(1, 2);
     Map<String, Object> eventMap = new HashMap<>();
     eventMap.put("indices", new BBjVector(List.of(1, 2)));
-    RepositorySelectEvent<MultipleSelectableComponentMock, String> event =
-        new RepositorySelectEvent<>(component, eventMap);
+    SelectEventMock<MultipleSelectableComponentMock, String> event =
+        new SelectEventMock<>(component, eventMap);
 
     assertEquals(List.of(1, 2), event.getSelectedIndices());
   }
@@ -54,8 +55,8 @@ class RepositorySelectEventTest {
     component.selectIndex(1, 2);
     Map<String, Object> eventMap = new HashMap<>();
     eventMap.put("indices", new BBjVector(List.of(1, 2)));
-    RepositorySelectEvent<MultipleSelectableComponentMock, String> event =
-        new RepositorySelectEvent<>(component, eventMap);
+    SelectEventMock<MultipleSelectableComponentMock, String> event =
+        new SelectEventMock<>(component, eventMap);
 
     assertEquals(List.of("item2", "item3"), event.getSelectedItems());
   }

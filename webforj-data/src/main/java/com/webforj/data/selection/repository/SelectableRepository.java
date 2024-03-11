@@ -1,6 +1,5 @@
 package com.webforj.data.selection.repository;
 
-import com.webforj.component.Component;
 import com.webforj.data.repository.HasRepository;
 import com.webforj.data.selection.Selectable;
 
@@ -16,8 +15,7 @@ import com.webforj.data.selection.Selectable;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public interface SelectableRepository<T extends Component & HasRepository<V>, V>
-    extends Selectable<V> {
+public interface SelectableRepository<T extends HasRepository<V>, V> extends Selectable<V> {
 
   /**
    * {@inheritDoc}

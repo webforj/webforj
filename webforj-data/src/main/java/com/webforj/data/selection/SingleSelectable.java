@@ -1,7 +1,5 @@
 package com.webforj.data.selection;
 
-import com.webforj.component.Component;
-
 /**
  * An interface for components that support single item selection.
  *
@@ -18,7 +16,7 @@ import com.webforj.component.Component;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public interface SingleSelectable<T extends Component, V> extends Selectable<V> {
+public interface SingleSelectable<T, V> extends Selectable<V> {
 
   /**
    * Selects the given item.

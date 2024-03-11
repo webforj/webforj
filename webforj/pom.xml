@@ -9,6 +9,7 @@
     <artifactId>webforj-parent</artifactId>
     <version>24.00-SNAPSHOT</version>
   </parent>
+  <packaging>pom</packaging>
 
   <artifactId>webforj</artifactId>
   <name>${project.artifactId}</name>

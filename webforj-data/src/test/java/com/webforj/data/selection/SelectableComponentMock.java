@@ -1,7 +1,5 @@
 package com.webforj.data.selection;
 
-import com.webforj.component.Component;
-import com.webforj.component.window.Window;
 import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.HasRepository;
 import com.webforj.data.repository.Repository;
@@ -9,7 +7,7 @@ import com.webforj.data.selection.repository.SingleSelectableRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-class SelectableComponentMock extends Component
+class SelectableComponentMock
     implements HasRepository<String>, SingleSelectableRepository<SelectableComponentMock, String> {
 
   private List<String> items = new ArrayList<>(List.of("item1", "item2", "item3"));
@@ -48,15 +46,5 @@ class SelectableComponentMock extends Component
     repository.findAll().forEach(items::add);
 
     return this;
-  }
-
-  @Override
-  protected void onCreate(Window window) {
-    // pass
-  }
-
-  @Override
-  protected void onDestroy() {
-    // pass
   }
 }

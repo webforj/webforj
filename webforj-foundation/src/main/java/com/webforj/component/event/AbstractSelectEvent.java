@@ -1,8 +1,8 @@
-package com.webforj.data.selection.event;
+package com.webforj.component.event;
 
 import com.basis.startup.type.BBjVector;
 import com.webforj.component.Component;
-import com.webforj.component.event.ComponentEvent;
+import com.webforj.data.selection.event.SelectEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

@@ -35,6 +35,7 @@
   <modules>
     <module>webforj</module>
     <module>webforj-components</module>
+    <module>webforj-data</module>
     <module>webforj-dispatcher</module>
     <module>webforj-foundation</module>
     <module>webforj-plugins</module>
@@ -197,17 +198,6 @@
             <serverId>ossrh</serverId>
             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
             <autoReleaseAfterClose>false</autoReleaseAfterClose>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.sonatype.central</groupId>
-          <artifactId>central-publishing-maven-plugin</artifactId>
-          <version>0.4.0</version>
-          <extensions>true</extensions>
-          <configuration>
-            <publishingServerId>central</publishingServerId>
-            <tokenAuth>true</tokenAuth>
           </configuration>
         </plugin>
       </plugins>

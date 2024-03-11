@@ -1,6 +1,5 @@
 package com.webforj.data.selection;
 
-import com.webforj.component.Component;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public interface MultipleSelectable<T extends Component, V> extends Selectable<V> {
+public interface MultipleSelectable<T, V> extends Selectable<V> {
 
   /**
    * Selects multiple items in the list.
