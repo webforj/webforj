@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration strict="true"
+               status="DEBUG"
+               xmlns="http://logging.apache.org/log4j/2.0/config"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://logging.apache.org/log4j/2.0/config
+           https://raw.githubusercontent.com/apache/logging-log4j2/master/log4j-core/src/main/resources/Log4j-config.xsd">
+
+  <Properties>
+    <Property name="LOG_PATTERN">%d{yyyy/MM/dd HH:mm:ss,SSS} %r [%-6p] [%t] %c{1.}.%M(%F:%L) - %m%n
+    </Property>
+    <Property name="APP_LOG_ROOT">${sys:basis.BBjHome:-${sys:user.home:-/var}}</Property>
+  </Properties>
+
+  <Appenders>
+    <RollingFile name="file"
+                 fileName="${APP_LOG_ROOT}/log/webforj-install-bbj-lib.log"
+                 filePattern="${APP_LOG_ROOT}/log/webforj-install-bbj-lib--%d{yyyy-MM-dd}-%i.log"
+                 createOnDemand="true"
+    >
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="500KB"/>
+      </Policies>
+
+      <DefaultRolloverStrategy max="5"/>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="DEBUG" additivity="false">
+      <AppenderRef ref="file" level="DEBUG"/>
+    </Root>
+    <Logger name="com.webforj" level="debug" additivity="false">
+      <AppenderRef ref="file"/>
+    </Logger>
+    <Logger name="org.apache" level="debug" additivity="false">
+      <AppenderRef ref="file"/>
+    </Logger>
+  </Loggers>
+</Configuration>
