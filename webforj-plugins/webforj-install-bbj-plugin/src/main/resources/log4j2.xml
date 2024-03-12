@@ -14,8 +14,8 @@
 
   <Appenders>
     <RollingFile name="file"
-                 fileName="${APP_LOG_ROOT}/log/webforj-install-bbj-lib.log"
-                 filePattern="${APP_LOG_ROOT}/log/webforj-install-bbj-lib--%d{yyyy-MM-dd}-%i.log"
+                 fileName="${APP_LOG_ROOT}/log/webforj-install-bbj-plugin.log"
+                 filePattern="${APP_LOG_ROOT}/log/webforj-install-bbj-plugin--%d{yyyy-MM-dd}-%i.log"
                  createOnDemand="true"
     >
       <PatternLayout pattern="${LOG_PATTERN}"/>

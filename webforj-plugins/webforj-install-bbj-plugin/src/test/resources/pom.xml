@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.webforj</groupId>
-    <artifactId>webforj-install-bbj-lib</artifactId>
+    <artifactId>webforj-install-bbj-plugin</artifactId>
     <version></version>
 
     <properties>
