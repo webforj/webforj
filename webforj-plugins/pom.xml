@@ -16,5 +16,6 @@
 
   <modules>
     <module>webforj-install-maven-plugin</module>
+    <module>webforj-install-bbj-plugin</module>
   </modules>
 </project>
