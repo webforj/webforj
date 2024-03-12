@@ -1,4 +1,4 @@
-# The Dynamic Web Client for Java
+# Webforj
 <p>
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DwcJava_engine&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DwcJava_engine)
@@ -10,7 +10,7 @@
 
 A robust and flexible framework that can help you deliver a modern and engaging web user interface with ease. In Java.
 
-- **Event Handling**: Handle user interactions and events with ease using the DWCJ's event system. Respond to user actions and update the UI accordingly.
+- **Event Handling**: Handle user interactions and events with ease using the webforj's event system. Respond to user actions and update the UI accordingly.
 
 - **Component-Based**: Create reusable and composable components to build complex UIs. Components encapsulate their own state and logic, providing a modular and maintainable structure for your application.
 
@@ -18,56 +18,56 @@ A robust and flexible framework that can help you deliver a modern and engaging 
 
 ## Documentation
 
-The DWCJ's documentation site can be found [at this link](https://dwcj.org/) which contains guides, API references, and examples to help you get started with the DWCJ Engine.
+The webforj's documentation site can be found [at this link](https://documentation.webforj.com/) which contains guides, API references, and examples to help you get started with the webforj.
 
 The following documentation sections may be useful for those beginning their usage of the DWCJ:
 
-- [DWCJ Installation](https://dwcj.org/docs/installation/local_install)
-- [Configuring your application](https://dwcj.org/docs/getting_started/configuration)
-- [Creating an application](https://dwcj.org/docs/getting_started/creating_an_application)
-- [Component Overviews](https://dwcj.org/docs/components/home)
+- [Webforj Installation](https://documentation.webforj.com/docs/installation/local_install)
+- [Configuring your application](https://documentation.webforj.com/docs/getting_started/configuration)
+- [Creating an application](https://documentation.webforj.com/docs/getting_started/creating_an_application)
+- [Component Overviews](https://documentation.webforj.com/docs/components/home)
 
 ## Examples
 
-The DWCJ's [HelloWorld repository](https://github.com/DwcJava/HelloWorldJava) contains a sample program which can be run in GitHub codespaces, Docker, or locally and demonstrates the basics for creating your first DWCJ program. Here is the class created in the sample:
+The Webforj's [HelloWorld repository](https://github.com/webforj/webforj-hello-world) contains a sample program which can be run in GitHub codespaces, Docker, or locally and demonstrates the basics for creating your first DWCJ program. Here is the class created in the sample:
 
 ```java
 @InlineStyleSheet(/* css */"""
-    .frame {
-      display: inline-grid;
-      gap: 20px;
-      margin: 20px;
-      padding: 20px;
-      border: 1px dotted;
-    }
-      """)
-@AppTitle("DWCJ Hello World")
-public class HelloWorldJava extends App {
+  .mainFrame {
+    display: inline-grid;
+    gap: 20px;
+    margin: 20px;
+    padding: 20px;
+    border: 1px dotted;
+  }
+""")
+@AppTitle("Webforj Hello World")
+public class HelloWorldApp extends App {
+  
+  Paragraph hello = new Paragraph("Hello World!");
+  Button btn = new Button("Say Hello");
 
   @Override
-  public void run() throws DwcjException {
+  public void run() throws WebforjException {
 
-    Frame frame = new Frame();
-    frame.addClassName("frame");
+    Frame mainFrame = new Frame();
+    mainFrame.addClassName("mainFrame");
 
-    Label label = new Label("Hello World!");
-
-    Button btn = new Button("Say Hello");
     btn.setTheme(ButtonTheme.SUCCESS)
         .setExpanse(Expanse.XLARGE)
-        .onClick(e -> msgbox("Hello World!"));
+        .addClickListener(e -> msgbox("Hello World!"));
 
-    frame.add(label, btn);
+    mainFrame.add(hello, btn);
   }
 }
 ```
 
-The above program creates some static text and a button which displays a popup when pushed. 
+The above program creates some static text and a button which displays a message box when pushed. 
 
 ## Contributing
 
-Contributions to the DWCJ Engine project are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/DwcJava/engine/blob/main/CONTRIBUTING.md) file.
+Contributions to the Webforj project are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/webforj/webforj/blob/main/CONTRIBUTING.md) file.
 
 ## License
 
-The DWCJ Engine is licensed under the [MIT License](https://github.com/DwcJava/engine/blob/main/LICENSE).
+The Webforj Engine is licensed under the [MIT License](https://github.com/webforj/webforj/blob/main/LICENSE).
