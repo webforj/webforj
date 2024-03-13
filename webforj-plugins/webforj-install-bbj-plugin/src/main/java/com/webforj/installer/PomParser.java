@@ -71,9 +71,9 @@ public class PomParser {
       docBuilder.setErrorHandler(null);
       Document doc = docBuilder.parse(pomFile);
       doc.getDocumentElement().normalize();
-      XPath xPath = XPathFactory.newInstance().newXPath();
+      XPath xpath = XPathFactory.newInstance().newXPath();
       NodeList nodeList =
-          (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
+          (NodeList) xpath.compile(expression).evaluate(doc, XPathConstants.NODESET);
       return IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item)
           .map(Element.class::cast)
           .collect(Collectors.toMap(Element::getNodeName, Element::getTextContent));
