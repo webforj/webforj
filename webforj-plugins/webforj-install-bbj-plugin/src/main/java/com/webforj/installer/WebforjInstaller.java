@@ -6,11 +6,9 @@ import com.basis.api.admin.BBjAdminAppDeploymentApplication;
 import com.basis.api.admin.BBjAdminAppDeploymentConfiguration;
 import com.basis.api.admin.BBjAdminBase;
 import com.basis.api.admin.BBjAdminFactory;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigInteger;
@@ -18,11 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -40,7 +36,8 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.xml.sax.SAXException;
+import org.apache.maven.shared.utils.StringUtils;
+
 
 /**
  * perform the installation of a Webforj app based on its JAR.
@@ -49,7 +46,6 @@ public final class WebforjInstaller {
 
   Logger log = LogManager.getLogger(WebforjInstaller.class);
   // buffer size
-  public static final int BUFFER = 2048;
   public static final String APP_HANDLE_PREFIX = "webforj_";
 
   public static final String POM_XML = "pom.xml";
@@ -90,12 +86,8 @@ public final class WebforjInstaller {
 
       // write the current file to disk
       log.info("Writing entry to disk...");
-
-      zipBufferedInputStream(zip, entry, destFile);
-
-
+      copyZipEntryToFile(zip, entry, destFile);
     }
-
     zip.close();
 
     try {
@@ -104,7 +96,7 @@ public final class WebforjInstaller {
       checksum = new BigInteger(1, hash).toString(16);
     } catch (Exception e) {
       log.error("Exception handling unzip pom", e);
-      throw new RuntimeException(e);
+      throw new IOException(e);
     }
     return checksum;
   }
@@ -119,59 +111,68 @@ public final class WebforjInstaller {
   private void unzipBbjProgs(String zipFile, String directory) throws IOException {
     log.info("uzipBbjProgs: zipFile = {}, directory = {}", zipFile, directory);
     File file = new File(zipFile);
+    // Ensure valid path ends with system separator character for zip slip issues.
+    String targetDirectory = StringUtils.endsWithIgnoreCase(directory, File.separator) ? directory
+        : directory.concat(File.separator);
+    log.info("directory = {}, targetDirectory = {}", directory, targetDirectory);
+
     try (ZipFile zip = new ZipFile(file)) {
-
       Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
-
-      log.info("processing entries");
+      log.info("processing zip entries ...");
       // Process each entry
       while (zipFileEntries.hasMoreElements()) {
         // grab a zip file entry
         ZipEntry entry = zipFileEntries.nextElement();
 
-        String currentEntry = entry.getName();
-        if (!currentEntry.endsWith(".bbj")) {
+        String currentEntry = FilenameUtils.normalize(entry.getName());
+        if (!"bbj".equalsIgnoreCase(FilenameUtils.getExtension(currentEntry))) {
           continue;
         }
 
-        File destFile = new File(directory, entry.getName());
-        log.info("extracting {}", destFile.getAbsoluteFile());
-        out.append("webforj-installer: extracting ").append(destFile.getAbsolutePath())
-            .append("\n");
-        Files.deleteIfExists(destFile.toPath());
-        Paths.get(destFile.getPath()).getParent().toFile().mkdirs();
+        File destFile = new File(targetDirectory + currentEntry);
+        String canonicalDestinationPath = destFile.getCanonicalPath();
+        if (canonicalDestinationPath.startsWith(targetDirectory)) {
+          log.info("extracting {}", canonicalDestinationPath);
+          out.append("webforj-installer: extracting %s%n".formatted(canonicalDestinationPath));
+          Files.deleteIfExists(destFile.toPath());
+          File parent = destFile.getParentFile();
+          log.info("testing parent directory {}, attempting to create if not exists", parent);
+          if (!parent.exists() && !parent.mkdirs()) {
+            throw new IOException("Could not create parent directories " + parent);
+          }
 
-        log.info("writing current file {} to disk", destFile);
-        zipBufferedInputStream(zip, entry, destFile);
+          log.info("writing current file {} to disk", destFile);
+          copyZipEntryToFile(zip, entry, destFile);
+        }
 
       }
     }
   }
 
-  private void zipBufferedInputStream(ZipFile zip, ZipEntry entry, File destFile)
-      throws IOException {
-    try (BufferedInputStream bis = new BufferedInputStream(zip.getInputStream(entry));
-        FileOutputStream fos = new FileOutputStream(destFile);
-        BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
-      int currentByte;
-      // establish buffer for writing file
-      byte[] data = new byte[BUFFER];
-      // read and write until last byte is encountered
-      while ((currentByte = bis.read(data, 0, BUFFER)) != -1) {
-        dest.write(data, 0, currentByte);
-      }
-      dest.flush();
+  /**
+   * Copy the zip entry from the zip file to the destFile location.
+   *
+   * @param zip the zip file.
+   * @param entry the zip entry.
+   * @param destFile the destination of the zip entry.
+   * @throws IOException input stream or zip errors.
+   */
+  private void copyZipEntryToFile(ZipFile zip, ZipEntry entry, File destFile) throws IOException {
+    log.info("copying entry = {} destFile = {}}", entry, destFile);
+    try (InputStream is = zip.getInputStream(entry)) {
+      Files.copy(is, destFile.toPath(), REPLACE_EXISTING);
     }
+
   }
 
   private Set<String> getWebforjDeps(String dir) {
     log.info("getWebforjDeps: dir = {}", dir);
     Pattern pattern = Pattern.compile("webforj-*");
-    out.append("webforj-installer: Scanning Dependencies in " + dir + "!\n");
+    out.append("webforj-installer: Scanning Dependencies in %s!%n".formatted(dir));
     final File[] filesList = new File(dir).listFiles();
     if (filesList == null || filesList.length == 0) {
       log.warn("No dependencies found in dir {}!  Check write permissions", dir);
-      out.append("ERROR: No Dependencies found in " + dir + "!\n");
+      out.append("ERROR: No Dependencies found in dir %s!%n".formatted(dir));
       out.append("ERROR: Check write permissions? \n");
       return new HashSet<>();
     }
@@ -180,14 +181,14 @@ public final class WebforjInstaller {
   }
 
 
-  boolean deleteDirectory(File directoryToBeDeleted) {
+  void deleteDirectory(File directoryToBeDeleted) throws IOException {
     File[] allContents = directoryToBeDeleted.listFiles();
     if (allContents != null) {
       for (File file : allContents) {
         deleteDirectory(file);
       }
     }
-    return directoryToBeDeleted.delete();
+    Files.delete(directoryToBeDeleted.toPath());
   }
 
   /**
@@ -201,13 +202,9 @@ public final class WebforjInstaller {
    * @return The log of the activities.
    * @throws MavenInvocationException if there is a problem.
    * @throws IOException if there is a problem.
-   * @throws ParserConfigurationException if there is a problem.
-   * @throws SAXException if there is a problem.
-   * @throws NoSuchAlgorithmException if there is a problem.
    */
   public String install(String sourceFilePath, String jarFileName, String bbxdir, String deployroot)
-      throws MavenInvocationException, IOException, ParserConfigurationException, SAXException,
-      NoSuchAlgorithmException {
+      throws MavenInvocationException, IOException {
     return install(sourceFilePath, jarFileName, bbxdir, deployroot, "");
   }
 
@@ -241,23 +238,26 @@ public final class WebforjInstaller {
 
     log.info("attempting to create directories for basedir {}", basedir);
 
-    new File(basedir).mkdirs();
+    File basdirFile = new File(basedir);
+    if (!basdirFile.exists() && (!basdirFile.mkdirs())) {
+      throw new IOException("Unable to create basedir " + basdirFile);
+    }
 
     String zipFilePath = basedir + jarFileName;
-    log.info("attempting to copy {} to {} with REPLACE_EXISTING", Path.of(sourceFilePath),
-        Path.of(zipFilePath));
+    Path p0 = Path.of(sourceFilePath);
+    log.info("attempting to copy {} to {} with REPLACE_EXISTING", p0, Path.of(zipFilePath));
 
     try {
-      Files.copy(Path.of(sourceFilePath), Path.of(zipFilePath), REPLACE_EXISTING);
+      Files.copy(p0, Path.of(zipFilePath), REPLACE_EXISTING);
     } catch (IOException e) {
       log.warn("Failed to copy source file to zip file, reason {}", e.getMessage());
       String tmp = zipFilePath;
-      zipFilePath = basedir + String.valueOf(System.currentTimeMillis()) + "_" + jarFileName;
-      out.append("WARNING: " + tmp + " was locked!\n");
-      log.info("Trying Again! attempting to copy {} to {} with REPLACE_EXISTING",
-          Path.of(sourceFilePath), Path.of(zipFilePath));
-      Files.copy(Path.of(sourceFilePath), Path.of(zipFilePath), REPLACE_EXISTING);
-      out.append("WARNING: Using " + zipFilePath + " instead.\n");
+      zipFilePath = basedir + System.currentTimeMillis() + "_" + jarFileName;
+      out.append("WARNING: %s was locked!%n".formatted(tmp));
+      log.info("Trying Again! attempting to copy {} to {} with REPLACE_EXISTING", p0,
+          Path.of(zipFilePath));
+      Files.copy(p0, Path.of(zipFilePath), REPLACE_EXISTING);
+      out.append("WARNING: Using %s instead %n".formatted(zipFilePath));
       new File(tmp).deleteOnExit();
     }
 
@@ -267,33 +267,26 @@ public final class WebforjInstaller {
 
     String targetDependency = "target/dependency/";
     File depdir = new File("%s%s/%s".formatted(basedir, checksum, targetDependency));
-    if (depdir.exists()) {
-      log.info("pom.xml not changed. No need to run Maven but running anyway.");
-      out.append(
-          "webforj-installer: pom.xml not changed. No need to run Maven but running anyway.\n");
-    }
     InvocationRequest request = new DefaultInvocationRequest();
     request.setPomFile(new File(pomFile));
     request.setOutputHandler(new MavenOutputHandler(out))
         .setErrorHandler(new MavenOutputHandler(out))
         .setGoals(List.of("dependency:copy-dependencies")).addArg("-U")
         .addArg("-DincludeScope=compile").addArg("-DoutputDirectory=" + depdir);
-    Invoker invoker = new DefaultInvoker();
     log.info("Created request: args = {}", request.getArgs());
-    out.append("request " + request.getArgs() + "\n");
+    out.append("request ").append(request.getArgs()).append("\n");
     String mvn = MavenBinaryInstaller.getMavenBinary(deployroot);
-    out.append("INFO: Using Maven in location " + mvn + "\n");
+    out.append("INFO: Using Maven in location ").append(mvn).append("\n");
+    Invoker invoker = new DefaultInvoker();
     invoker.setMavenHome(new File(mvn));
 
-    out.append("INFO: " + request + "\n");
+    out.append("INFO: %s%n".formatted(request));
     log.info("invoking request {}", request);
     invoker.execute(request);
 
     try {
       Set<String> deps = getWebforjDeps(depdir.getAbsolutePath());
-      Iterator<String> it = deps.iterator();
-      while (it.hasNext()) {
-        String nextFile = it.next();
+      for (String nextFile : deps) {
         if (nextFile.toLowerCase().endsWith(".jar")) {
           log.info("processing dependency {}", nextFile);
           unzipBbjProgs(depdir.getAbsolutePath() + "/" + nextFile, basedir);
@@ -331,7 +324,7 @@ public final class WebforjInstaller {
       api.setClasspath(apphandle, cpEntries);
       api.commit();
       out.append(
-          "INFO: Written Classpath " + apphandle + " with " + cpEntries.size() + " entries\n");
+          "INFO: Written Classpath %s with %d entries".formatted(apphandle, cpEntries.size()));
 
       // create DWC app entry
       BBjAdminAppDeploymentConfiguration config = api.getRemoteConfiguration();
@@ -367,13 +360,13 @@ public final class WebforjInstaller {
       if (!requestUrl.isEmpty()) {
         deployUrl = requestUrl + "/webapp/" + appname;
       }
-      out.append("INFO: Created App Deployment for  " + deployUrl + "\n");
+      out.append("INFO: Created App Deployment for %s%n ".formatted(deployUrl));
     } catch (Exception e) {
       log.error("Error during processing!", e);
-      out.append("ERROR : " + e.toString());
+      out.append("ERROR : %s%n".formatted(e.toString()));
       StringWriter sw = new StringWriter();
       e.printStackTrace(new PrintWriter(sw));
-      out.append(sw.toString());
+      out.append(sw);
       return out.toString();
     }
 
