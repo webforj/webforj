@@ -42,6 +42,7 @@ import org.apache.maven.shared.utils.StringUtils;
 /**
  * perform the installation of a Webforj app based on its JAR.
  */
+@SuppressWarnings({"unused"})
 public final class WebforjInstaller {
 
   Logger log = LogManager.getLogger(WebforjInstaller.class);
