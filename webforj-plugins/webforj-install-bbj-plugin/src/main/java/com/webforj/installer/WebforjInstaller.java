@@ -241,8 +241,8 @@ public final class WebforjInstaller {
 
     File basdirFile = new File(basedir);
     if (!basdirFile.exists() && (!basdirFile.mkdirs())) {
-        throw new IOException("Unable to create basedir " + basdirFile);
-      }
+      throw new IOException("Unable to create basedir " + basdirFile);
+    }
 
     String zipFilePath = basedir + jarFileName;
     Path p0 = Path.of(sourceFilePath);
@@ -287,11 +287,12 @@ public final class WebforjInstaller {
 
     try {
       Set<String> deps = getWebforjDeps(depdir.getAbsolutePath());
-      for (String nextFile : deps)
-          if (nextFile.toLowerCase().endsWith(".jar")) {
-              log.info("processing dependency {}", nextFile);
-              unzipBbjProgs(depdir.getAbsolutePath() + "/" + nextFile, basedir);
-          }
+      for (String nextFile : deps) {
+        if (nextFile.toLowerCase().endsWith(".jar")) {
+          log.info("processing dependency {}", nextFile);
+          unzipBbjProgs(depdir.getAbsolutePath() + "/" + nextFile, basedir);
+        }
+      }
 
       PomParser pomParser = new PomParser(pomFile);
       Map<String, String> configuration = pomParser.parse();
