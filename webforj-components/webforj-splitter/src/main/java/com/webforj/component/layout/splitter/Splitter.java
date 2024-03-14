@@ -13,7 +13,6 @@ import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasVisibility;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
-import java.util.UUID;
 
 /**
  * Splitter is a component that encapsulates two resizable components separated by a divider that
