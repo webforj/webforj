@@ -1,0 +1,35 @@
+"moulde: components":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-components/**'
+
+"module: data":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-data/**'
+
+"module: dispatcher":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-dispatcher/**'
+
+"module: foundation":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-foundation/**'
+
+"module: plugins":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-plugins/**'
+
+"module: aggregator":
+- changed-files:
+  - any-glob-to-any-file: 'webforj/**'
+
+documentation:
+- changed-files:
+  - any-glob-to-any-file: '**/*.md'
+
+POM:
+- changed-files:
+  - any-glob-to-any-file: '**/pom.xml'
+
+BBj:
+- changed-files:
+  - any-glob-to-any-file: '**/*.bbj'
