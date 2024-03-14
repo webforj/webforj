@@ -101,11 +101,7 @@ public class MavenBinaryInstaller {
       perms.remove(PosixFilePermission.OTHERS_WRITE); // Compliant
       perms.add(PosixFilePermission.OTHERS_EXECUTE); // Compliant
 
-      Path binDirectory = Path.of(directory, BINDIR, "bin");
-
-      Files.setPosixFilePermissions(binDirectory.resolve("mvn.cmd"), perms);
-      Files.setPosixFilePermissions(binDirectory.resolve("mvn"), perms);
-
+      Files.setPosixFilePermissions(Path.of(directory, BINDIR, "bin", "mvn"), perms);
     }
 
 
