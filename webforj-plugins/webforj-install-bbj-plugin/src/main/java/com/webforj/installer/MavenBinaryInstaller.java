@@ -4,14 +4,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,19 +40,21 @@ public class MavenBinaryInstaller {
    * @param directory where to install maven binaries.
    * @throws IOException in case of a problem.
    */
-  static void installMaven(String directory) throws IOException {
+  static void installMaven(String directory) throws IOException, URISyntaxException {
     log.info("receiving directory {}", directory);
-    String fileZip = directory + "/mvn.zip";
+    String fileZip = FilenameUtils.normalize(directory + "/mvn.zip");
 
 
-    if (Files.exists(Path.of(fileZip))) {
-      Files.delete(Path.of(fileZip));
+    Path fileZipPath = Path.of(fileZip);
+    if (Files.exists(fileZipPath)) {
+      Files.delete(fileZipPath);
     }
-    log.info("copying {} to {}", new URL(MVN_URL), Paths.get(fileZip));
-    Files.copy(new URL(MVN_URL).openStream(), Paths.get(fileZip));
+    URL mavenUrl = new URI(MVN_URL).toURL();
+
+    log.info("copying {} to {}", mavenUrl, fileZipPath);
+    Files.copy(mavenUrl.openStream(), fileZipPath);
 
     File destDir = new File(directory);
-    byte[] buffer = new byte[1024];
     log.info("attempting to open zip input stream in {}", fileZip);
     try (ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip))) {
       ZipEntry zipEntry = zis.getNextEntry();
@@ -70,10 +77,6 @@ public class MavenBinaryInstaller {
           // write file content
           try (FileOutputStream fos = new FileOutputStream(newFile)) {
             IOUtils.copy(zis, fos);
-            // int len;
-            // while ((len = zis.read(buffer)) > 0) {
-            // fos.write(buffer, 0, len);
-            // }
           }
         }
         zipEntry = zis.getNextEntry();
@@ -82,14 +85,31 @@ public class MavenBinaryInstaller {
     }
 
     // fix the execution flags for Mac and Linux
-    log.info("Fixing execution flags for Mac and linux");
-    Files.setPosixFilePermissions(Path.of(directory + "/" + BINDIR + "/bin/mvn.cmd"),
-        PosixFilePermissions.fromString("rwxrwxr-x"));
+    if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
+      log.info("Fixing execution flags for Mac and linux");
 
-    Files.setPosixFilePermissions(Path.of(directory + "/" + BINDIR + "/bin/mvn"),
-        PosixFilePermissions.fromString("rwxrwxr-x"));
+      Set<PosixFilePermission> perms = new HashSet<>();
+      // user permission
+      perms.add(PosixFilePermission.OWNER_READ);
+      perms.add(PosixFilePermission.OWNER_WRITE);
+      perms.add(PosixFilePermission.OWNER_EXECUTE);
+      // group permissions
+      perms.add(PosixFilePermission.GROUP_READ);
+      perms.add(PosixFilePermission.GROUP_EXECUTE);
+      // others permissions removed
+      perms.add(PosixFilePermission.OTHERS_READ); // Non-Compliant
+      perms.remove(PosixFilePermission.OTHERS_WRITE); // Compliant
+      perms.add(PosixFilePermission.OTHERS_EXECUTE); // Compliant
 
-    Files.delete(Path.of(fileZip));
+      Path binDirectory = Path.of(directory, BINDIR, "bin");
+
+      Files.setPosixFilePermissions(binDirectory.resolve("mvn.cmd"), perms);
+      Files.setPosixFilePermissions(binDirectory.resolve("mvn"), perms);
+
+    }
+
+
+    Files.delete(fileZipPath);
   }
 
   /**
@@ -103,7 +123,11 @@ public class MavenBinaryInstaller {
   static String getMavenBinary(String directory) throws IOException {
     String d = directory + "/" + BINDIR + "/bin/mvn";
     if (!Files.exists(Path.of(d))) {
-      installMaven(directory);
+      try {
+        installMaven(directory);
+      } catch (URISyntaxException e) {
+        throw new IOException(e);
+      }
     }
     return d;
   }
