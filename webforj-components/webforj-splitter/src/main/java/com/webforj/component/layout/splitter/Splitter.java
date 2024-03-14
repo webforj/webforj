@@ -54,7 +54,7 @@ public class Splitter extends ElementCompositeContainer
       PropertyDescriptor.property("positionRelative", 50d);
 
   /**
-   * Creates a new Splitter with the given id.
+   * Creates a new Splitter with the given id, master component and detail component.
    *
    * @param id the id of the splitter
    * @param master the master component
@@ -77,7 +77,10 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Creates a new Splitter.
+   * Creates a new Splitter with the given master and detail component.
+   *
+   * @param master the master component
+   * @param detail the detail component
    */
   public Splitter(Component master, Component detail) {
     this(null, master, detail);
@@ -100,7 +103,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Add the given component to the Splitter detail slot.
+   * Adds the given component to the Splitter detail slot.
    *
    * @param component the component to add
    * @return the component itself
@@ -111,7 +114,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Add the given component to the Splitter master slot.
+   * Adds the given component to the Splitter master slot.
    *
    * @param component the component to add
    * @return the component itself
@@ -122,7 +125,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Activate/Deactivate state autosave.
+   * Activates/Deactivates state autosave.
    *
    * <p>
    * When true, the size of the panels will be saved in local storage and restored on reload.
@@ -137,7 +140,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Check if the drawer is popover.
+   * Checks if the Splitter has autosave enabled.
    *
    * @return true if the drawer is popover, false otherwise
    */
@@ -146,8 +149,8 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * The maximum width of the master panel when orientation is horizontal and the maximum height
-   * when vertical.
+   * Sets the maximum width of the master panel when orientation is horizontal and the maximum
+   * height when vertical.
    *
    * @param masterMaxSize the maximum size of the master panel
    * @return the component itself
@@ -158,7 +161,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Get the maximum size of the master panel.
+   * Gets the maximum size of the master panel.
    *
    * @return the maximum size of the master panel
    */
@@ -167,8 +170,8 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * The minimum width of the master panel when orientation is horizontal and the minimum height
-   * when vertical.
+   * Sets the minimum width of the master panel when orientation is horizontal and the minimum
+   * height when vertical.
    *
    * @param masterMinSize the minimum size of the master panel
    * @return the component itself
@@ -179,7 +182,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Get the minimum size of the master panel.
+   * Gets the minimum size of the master panel.
    *
    * @return the minimum size of the master panel
    */
@@ -188,7 +191,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Set the orientation of the splitter.
+   * Sets the orientation of the splitter.
    *
    * @param orientation the orientation of the splitter
    * @return the component itself
@@ -199,7 +202,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Get the orientation of the splitter.
+   * Gets the orientation of the splitter.
    *
    * @return the orientation of the splitter
    */
@@ -208,7 +211,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Set the relative position of the splitter.
+   * Sets the relative position of the splitter.
    *
    * @param positionRelative the relative position of the splitter
    * @return the component itself
@@ -225,7 +228,7 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Get the relative position of the splitter.
+   * Gets the relative position of the splitter.
    *
    * @return the relative position of the splitter
    */
