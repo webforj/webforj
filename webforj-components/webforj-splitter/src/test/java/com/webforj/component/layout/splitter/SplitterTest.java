@@ -63,7 +63,8 @@ class SplitterTest {
       component.setMaster(anotherMaster);
 
       assertFalse(component.getOriginalElement().hasComponent(master));
-      assertTrue(component.getOriginalElement().getComponentsInSlot("master").contains(anotherMaster));
+      assertTrue(
+          component.getOriginalElement().getComponentsInSlot("master").contains(anotherMaster));
       assertFalse(component.getOriginalElement().getComponentsInSlot("master").contains(master));
     }
 
@@ -77,7 +78,8 @@ class SplitterTest {
       component.setDetail(anotherDetail);
 
       assertFalse(component.getOriginalElement().hasComponent(detail));
-      assertTrue(component.getOriginalElement().getComponentsInSlot("detail").contains(anotherDetail));
+      assertTrue(
+          component.getOriginalElement().getComponentsInSlot("detail").contains(anotherDetail));
       assertFalse(component.getOriginalElement().getComponentsInSlot("detail").contains(detail));
     }
   }

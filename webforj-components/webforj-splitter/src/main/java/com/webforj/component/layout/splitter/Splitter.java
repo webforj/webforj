@@ -13,6 +13,7 @@ import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasVisibility;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.webstorage.LocalStorage;
 
 /**
  * Splitter is a component that encapsulates two resizable components separated by a divider that
@@ -264,6 +265,20 @@ public class Splitter extends ElementComposite
    */
   public double getPositionRelative() {
     return get(positionRelativeProp, true, Boolean.class);
+  }
+
+  /**
+   * If autosave is enabled, the state of the splitter will be cleaned from the local storage.
+   *
+   * @return the component itself
+   */
+  public Splitter cleanState() {
+    String id = getElement().getAttribute("id");
+    if (id != null) {
+      LocalStorage.getCurrent().remove("dwc-splitter-" + id);
+    }
+
+    return this;
   }
 
   /**
