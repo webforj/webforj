@@ -20,7 +20,7 @@
     >
       <PatternLayout pattern="${LOG_PATTERN}"/>
       <Policies>
-        <SizeBasedTriggeringPolicy size="1024KB"/>
+        <SizeBasedTriggeringPolicy size="500KB"/>
       </Policies>
 
       <DefaultRolloverStrategy max="5"/>
