@@ -43,13 +43,6 @@ public interface Repository<T> extends RetrievalCriteria<T> {
   int getIndex(T entity);
 
   /**
-   * Clears the repository of all entities.
-   *
-   * @return The repository instance.
-   */
-  Repository<T> clear();
-
-  /**
    * Retrieves a stream of all entities.
    *
    * @return A stream of all entities.

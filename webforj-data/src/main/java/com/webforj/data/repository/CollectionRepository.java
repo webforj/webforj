@@ -40,15 +40,6 @@ public class CollectionRepository<T> extends AbstractRepository<T> {
    * {@inheritDoc}
    */
   @Override
-  public CollectionRepository<T> clear() {
-    items.clear();
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public Optional<T> find(Object id) {
     return items.stream().filter(item -> getKey(item).equals(id)).findFirst();
   }

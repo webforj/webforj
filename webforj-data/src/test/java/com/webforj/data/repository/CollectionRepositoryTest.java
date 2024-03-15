@@ -37,13 +37,6 @@ class CollectionRepositoryTest {
   }
 
   @Test
-  void shouldClearRepository() {
-    repository.clear();
-    int count = repository.size();
-    assertEquals(0, count);
-  }
-
-  @Test
   void shouldFindByIndex() {
     Optional<String> result = repository.findByIndex(1);
     assertTrue(result.isPresent());
