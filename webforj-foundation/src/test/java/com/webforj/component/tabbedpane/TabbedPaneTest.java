@@ -555,7 +555,7 @@ class TabbedPaneTest {
   @Test
   void shouldSetNobody() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
-    component.hideBody(true);
+    component.setBodyHidden(true);
     assertTrue(component.isBodyHidden());
     assertEquals(true, component.getProperty("nobody"));
   }

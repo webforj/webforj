@@ -887,8 +887,27 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
    * @param nobody {@code true} to hide the body.
    *
    * @return The component itself.
+   *
+   * @deprecated Use {@link #setBodyHidden(boolean)} instead.
    */
+  @Deprecated(since = "24.00", forRemoval = true)
   public TabbedPane hideBody(boolean nobody) {
+    return setBodyHidden(nobody);
+  }
+
+  /**
+   * Sets whether the body should be hidden.
+   *
+   * <p>
+   * Useful when the tabbed pane is being used as a menu and tabs are not associated with any
+   * component.
+   * </p>
+   *
+   * @param nobody {@code true} to hide the body.
+   *
+   * @return The component itself.
+   */
+  public TabbedPane setBodyHidden(boolean nobody) {
     this.nobody = nobody;
     setUnrestrictedProperty("nobody", this.nobody);
     return this;
