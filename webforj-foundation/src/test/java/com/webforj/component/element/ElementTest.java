@@ -104,6 +104,33 @@ class ElementTest {
         component.onAttach();
       });
     }
+
+    @Test
+    void shouldRemoveComponentFromSlot() throws BBjException {
+      DwcComponentMock child1 = new DwcComponentMock() {
+        {
+          setControl(control);
+        }
+      };
+
+      DwcComponentMock child2 = new DwcComponentMock() {
+        {
+          setControl(control);
+        }
+      };
+
+      component.add("first", child1);
+      component.add("first", child2);
+
+      component.onAttach();
+      assertEquals(2, component.getComponentCount());
+
+      component.remove(child1);
+      assertEquals(1, component.getComponentCount());
+      assertFalse(component.hasComponent(child1));
+      assertTrue(component.findComponentSlot(child1).isEmpty());
+      assertEquals(child2, component.getFirstComponentInSlot("first"));
+    }
   }
 
   @Nested

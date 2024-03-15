@@ -395,6 +395,22 @@ public final class Element extends DwcContainer<Element>
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void remove(Component... components) {
+    super.remove(components);
+
+    // remove the components from the slots
+    for (Component component : components) {
+      String slot = findComponentSlot(component);
+      if (!slot.isEmpty()) {
+        slots.get(slot).remove(component);
+      }
+    }
+  }
+
+  /**
    * Searches for the given component across all slots and returns the name of the slot where this
    * component is located. If the component is not found in any slot, an empty {@code String} is
    * returned.
