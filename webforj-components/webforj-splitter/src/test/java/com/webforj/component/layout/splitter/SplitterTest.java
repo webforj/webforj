@@ -1,6 +1,7 @@
 package com.webforj.component.layout.splitter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -55,15 +56,29 @@ class SplitterTest {
     @Test
     void shouldAddToMaster() {
       Component master = mock(Component.class);
-      component.addToMaster(master);
-      assertEquals(master, component.getOriginalElement().getFirstComponentInSlot("master"));
+      component.setMaster(master);
+      assertTrue(component.getOriginalElement().getComponentsInSlot("master").contains(master));
+
+      Component anotherMaster = mock(Component.class);
+      component.setMaster(anotherMaster);
+
+      assertFalse(component.getOriginalElement().hasComponent(master));
+      assertTrue(component.getOriginalElement().getComponentsInSlot("master").contains(anotherMaster));
+      assertFalse(component.getOriginalElement().getComponentsInSlot("master").contains(master));
     }
 
     @Test
     void shouldAddToDetail() {
       Component detail = mock(Component.class);
-      component.addToDetail(detail);
-      assertEquals(detail, component.getOriginalElement().getFirstComponentInSlot("detail"));
+      component.setDetail(detail);
+      assertTrue(component.getOriginalElement().getComponentsInSlot("detail").contains(detail));
+
+      Component anotherDetail = mock(Component.class);
+      component.setDetail(anotherDetail);
+
+      assertFalse(component.getOriginalElement().hasComponent(detail));
+      assertTrue(component.getOriginalElement().getComponentsInSlot("detail").contains(anotherDetail));
+      assertFalse(component.getOriginalElement().getComponentsInSlot("detail").contains(detail));
     }
   }
 

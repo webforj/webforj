@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.element.Element;
-import com.webforj.component.element.ElementCompositeContainer;
+import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.layout.splitter.event.SplitterResizeEvent;
@@ -22,7 +22,7 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @since 24.00
  */
 @NodeName("dwc-splitter")
-public class Splitter extends ElementCompositeContainer
+public class Splitter extends ElementComposite
     implements HasClassName<Splitter>, HasStyle<Splitter>, HasVisibility<Splitter> {
 
   /**
@@ -35,6 +35,9 @@ public class Splitter extends ElementCompositeContainer
     @SerializedName("vertical")
     VERTICAL
   }
+
+  private Component master;
+  private Component detail;
 
   // Slots
   private static final String DETAIL_SLOT = "detail";
@@ -67,11 +70,11 @@ public class Splitter extends ElementCompositeContainer
     }
 
     if (master != null) {
-      addToMaster(master);
+      setMaster(master);
     }
 
     if (detail != null) {
-      addToDetail(detail);
+      setDetail(detail);
     }
   }
 
@@ -102,25 +105,53 @@ public class Splitter extends ElementCompositeContainer
   }
 
   /**
-   * Adds the given component to the Splitter detail slot.
+   * Sets the Splitter master component.
    *
-   * @param component the component to add
+   * @param component the component to set
    * @return the component itself
    */
-  public Splitter addToDetail(Component... component) {
+  public Splitter setMaster(Component component) {
+    if (master != null) {
+      getElement().remove(master);
+    }
+
+    master = component;
+    getElement().add(MASTER_SLOT, component);
+    return this;
+  }
+
+  /**
+   * Gets the Splitter master component.
+   *
+   * @return the master component
+   */
+  public Component getMaster() {
+    return master;
+  }
+
+  /**
+   * Sets the Splitter detail component.
+   *
+   * @param component the component to set
+   * @return the component itself
+   */
+  public Splitter setDetail(Component component) {
+    if (detail != null) {
+      getElement().remove(detail);
+    }
+
+    detail = component;
     getElement().add(DETAIL_SLOT, component);
     return this;
   }
 
   /**
-   * Adds the given component to the Splitter master slot.
+   * Gets the Splitter detail component.
    *
-   * @param component the component to add
-   * @return the component itself
+   * @return the detail component
    */
-  public Splitter addToMaster(Component... component) {
-    getElement().add(MASTER_SLOT, component);
-    return this;
+  public Component getDetail() {
+    return detail;
   }
 
   /**
