@@ -36,7 +36,6 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.apache.maven.shared.utils.StringUtils;
 
 
 /**
@@ -109,12 +108,12 @@ public final class WebforjInstaller {
    * @throws IOException an exception with IO.
    */
   private void unzipBbjProgs(String zipFile, String directory) throws IOException {
-    log.info("uzipBbjProgs: zipFile = {}, directory = {}", zipFile, directory);
+    log.info("unzipBbjProgs: zipFile = {}, directory = {}", zipFile, directory);
     File file = new File(zipFile);
     // Ensure valid path ends with system separator character for zip slip issues.
-    String targetDirectory = StringUtils.endsWithIgnoreCase(directory, File.separator) ? directory
-        : directory.concat(File.separator);
-    log.info("directory = {}, targetDirectory = {}", directory, targetDirectory);
+    // Normalize to deal with windows nonsense.
+    String targetDirectory = FilenameUtils.normalize(directory + File.separator);
+    log.info("targetDirectory = {}", targetDirectory);
 
     try (ZipFile zip = new ZipFile(file)) {
       Enumeration<? extends ZipEntry> zipFileEntries = zip.entries();
@@ -123,15 +122,18 @@ public final class WebforjInstaller {
       while (zipFileEntries.hasMoreElements()) {
         // grab a zip file entry
         ZipEntry entry = zipFileEntries.nextElement();
-
         String currentEntry = FilenameUtils.normalize(entry.getName());
         if (!"bbj".equalsIgnoreCase(FilenameUtils.getExtension(currentEntry))) {
           continue;
         }
+        log.info("processing a bbj file {}, proceeding", currentEntry);
 
         File destFile = new File(targetDirectory + currentEntry);
-        String canonicalDestinationPath = destFile.getCanonicalPath();
-        if (canonicalDestinationPath.startsWith(targetDirectory)) {
+        String canonicalDestinationPath = FilenameUtils.normalize(destFile.getCanonicalPath());
+        log.info("canonicalDestinationPath = {}, targetDirectory = {}", canonicalDestinationPath,
+            targetDirectory);
+        // Let FileameUtils deal with OS problems, case sensitivity issues.
+        if (FilenameUtils.directoryContains(targetDirectory, canonicalDestinationPath)) {
           log.info("extracting {}", canonicalDestinationPath);
           out.append("webforj-installer: extracting %s%n".formatted(canonicalDestinationPath));
           Files.deleteIfExists(destFile.toPath());
@@ -143,6 +145,9 @@ public final class WebforjInstaller {
 
           log.info("writing current file {} to disk", destFile);
           copyZipEntryToFile(zip, entry, destFile);
+        } else {
+          log.info("failed test startsWithText: canonicalDestinationPath={}, targetDirectory={}",
+              canonicalDestinationPath, targetDirectory);
         }
 
       }
@@ -233,8 +238,9 @@ public final class WebforjInstaller {
         """, sourceFilePath, jarFileName, bbxdir, deployroot, requestUrl);
 
 
-    String basedir =
-        deployroot + jarFileName.substring(0, jarFileName.toLowerCase().indexOf(".jar")) + "/";
+    String normalizedJarFileName = FilenameUtils.getBaseName(FilenameUtils.normalize(jarFileName));
+
+    String basedir = FilenameUtils.normalize(deployroot + normalizedJarFileName + File.separator);
 
     log.info("attempting to create directories for basedir {}", basedir);
 
@@ -243,27 +249,29 @@ public final class WebforjInstaller {
       throw new IOException("Unable to create basedir " + basdirFile);
     }
 
-    String zipFilePath = basedir + jarFileName;
+    String zipFilePathName = basedir + jarFileName;
     Path p0 = Path.of(sourceFilePath);
-    log.info("attempting to copy {} to {} with REPLACE_EXISTING", p0, Path.of(zipFilePath));
+    Path zipFilePath = Path.of(zipFilePathName);
+    log.info("attempting to copy {} to {} with REPLACE_EXISTING", p0, zipFilePath);
 
     try {
-      Files.copy(p0, Path.of(zipFilePath), REPLACE_EXISTING);
+      Files.copy(p0, zipFilePath, REPLACE_EXISTING);
     } catch (IOException e) {
       log.warn("Failed to copy source file to zip file, reason {}", e.getMessage());
-      String tmp = zipFilePath;
-      zipFilePath = basedir + System.currentTimeMillis() + "_" + jarFileName;
-      out.append("WARNING: %s was locked!%n".formatted(tmp));
+      String timestampedZipFilePathName = basedir + System.currentTimeMillis() + "_" + jarFileName;
+      Path timestampedZipFilePath = Path.of(timestampedZipFilePathName);
+      out.append("WARNING: %s was locked!%n".formatted(zipFilePath));
       log.info("Trying Again! attempting to copy {} to {} with REPLACE_EXISTING", p0,
-          Path.of(zipFilePath));
-      Files.copy(p0, Path.of(zipFilePath), REPLACE_EXISTING);
-      out.append("WARNING: Using %s instead %n".formatted(zipFilePath));
-      new File(tmp).deleteOnExit();
+          timestampedZipFilePath);
+      Files.copy(p0, timestampedZipFilePath, REPLACE_EXISTING);
+      out.append("WARNING: Using %s instead %n".formatted(timestampedZipFilePath));
+      zipFilePath.toFile().deleteOnExit();
+      zipFilePathName = timestampedZipFilePathName;
     }
 
 
     String pomFile = basedir + POM_XML;
-    String checksum = unzipPom(zipFilePath);
+    String checksum = unzipPom(zipFilePathName);
 
     String targetDependency = "target/dependency/";
     File depdir = new File("%s%s/%s".formatted(basedir, checksum, targetDependency));
@@ -273,10 +281,10 @@ public final class WebforjInstaller {
         .setErrorHandler(new MavenOutputHandler(out))
         .setGoals(List.of("dependency:copy-dependencies")).addArg("-U")
         .addArg("-DincludeScope=compile").addArg("-DoutputDirectory=" + depdir);
-    log.info("Created request: args = {}", request.getArgs());
+    log.info("Created invocation request: args = {}", request.getArgs());
     out.append("request ").append(request.getArgs()).append("\n");
     String mvn = MavenBinaryInstaller.getMavenBinary(deployroot);
-    out.append("INFO: Using Maven in location ").append(mvn).append("\n");
+    out.append("INFO: Using Maven %s in location %s%n".formatted(mvn, deployroot));
     Invoker invoker = new DefaultInvoker();
     invoker.setMavenHome(new File(mvn));
 
@@ -289,7 +297,8 @@ public final class WebforjInstaller {
       for (String nextFile : deps) {
         if (nextFile.toLowerCase().endsWith(".jar")) {
           log.info("processing dependency {}", nextFile);
-          unzipBbjProgs(depdir.getAbsolutePath() + "/" + nextFile, basedir);
+          log.info("calling unzipBBjProgs ...");
+          unzipBbjProgs(depdir.getAbsolutePath() + File.separator + nextFile, basedir);
         }
       }
 
@@ -298,7 +307,9 @@ public final class WebforjInstaller {
       String appname = configuration.get("publishname");
 
       if (appname == null) {
-        appname = jarFileName.substring(0, jarFileName.toLowerCase().indexOf(".jar"));
+        log.info("appname is null, setting appname to normalizedJarFileName {}",
+            normalizedJarFileName);
+        appname = normalizedJarFileName;
       }
       String user = Optional.ofNullable(configuration.get("username")).orElse("admin");
       String password = Optional.ofNullable(configuration.get("password")).orElse("admin123");
@@ -316,8 +327,8 @@ public final class WebforjInstaller {
       log.info("Creating BBj classpath");
       ArrayList<String> cpEntries = new ArrayList<>();
       cpEntries.add("(bbj_default)");
-      cpEntries.add(depdir.getAbsolutePath() + "/*");
-      cpEntries.add(zipFilePath);
+      cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true) + "*");
+      cpEntries.add(FilenameUtils.normalize(zipFilePathName, true));
 
       String apphandle = APP_HANDLE_PREFIX + appname.toLowerCase();
       log.info("set entries {}", cpEntries);
