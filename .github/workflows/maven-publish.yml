@@ -1,7 +1,7 @@
 name: Maven Publish
 on:
   workflow_run:
-    workflows: ["Maven Test", "Bump Version"]
+    workflows: ["SonarCloud", "Bump Version"]
     types: [completed]
     branches: [main]
 

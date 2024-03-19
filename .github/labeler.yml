@@ -18,9 +18,13 @@
 - changed-files:
   - any-glob-to-any-file: 'webforj-plugins/**'
 
-"module: aggregator":
+"module: framework":
 - changed-files:
   - any-glob-to-any-file: 'webforj/**'
+
+"module: report-aggregate":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-report-aggregate/**'
 
 documentation:
 - changed-files:
