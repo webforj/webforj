@@ -1,0 +1,68 @@
+name: SonarCloud
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
+      version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install xmlstarlet
+        run: sudo apt update && sudo apt install -y xmlstarlet
+
+      - name: Extract Project Version
+        id: extract-version
+        run: |
+          version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
+            -t -v "/pom:project/pom:version" \
+            pom.xml)
+          version_without_suffix="${version%-SNAPSHOT}"
+          echo "::set-output name=version::$version"
+          echo "::set-output name=version-without-suffix::$version_without_suffix"
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Maven
+        run: apk add maven
+
+      - name: Install Maven Dependencies
+        run: >
+          mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjStartup.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
+          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBj.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBj" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
+          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjUtil.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
+          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjsp.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
+          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjAdminAPI.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjAdminAPI" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
+          && mvn install -q -DskipTests
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=webforj
