@@ -33,7 +33,13 @@ jobs:
     runs-on: ubuntu-latest
     container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
+      - name: Install Git
+        run: |
+          apk update
+          apk add git
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install Maven
         run: apk add maven
@@ -66,3 +72,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=webforj
+
+
