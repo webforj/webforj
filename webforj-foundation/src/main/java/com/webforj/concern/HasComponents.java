@@ -35,8 +35,8 @@ public interface HasComponents {
   public default void add(Component... components) {
     Component component = ComponentUtil.getBoundComponent(this);
 
-    if (component instanceof HasComponents) {
-      ((HasComponents) component).add(components);
+    if (component instanceof HasComponents hc) {
+      hc.add(components);
       return;
     }
 
@@ -53,8 +53,8 @@ public interface HasComponents {
   public default void remove(Component... components) {
     Component component = ComponentUtil.getBoundComponent(this);
 
-    if (component instanceof HasComponents) {
-      ((HasComponents) component).remove(components);
+    if (component instanceof HasComponents hc) {
+      hc.remove(components);
       return;
     }
 
@@ -67,8 +67,8 @@ public interface HasComponents {
   public default void removeAll() {
     Component component = ComponentUtil.getBoundComponent(this);
 
-    if (component instanceof HasComponents) {
-      ((HasComponents) component).removeAll();
+    if (component instanceof HasComponents hc) {
+      hc.removeAll();
       return;
     }
 
@@ -92,8 +92,8 @@ public interface HasComponents {
   public default List<Component> getComponents() {
     Component component = ComponentUtil.getBoundComponent(this);
 
-    if (component instanceof HasComponents) {
-      return ((HasComponents) component).getComponents();
+    if (component instanceof HasComponents hc) {
+      return hc.getComponents();
     }
 
     throw new UnsupportedOperationException("The component does not support nested components");
@@ -117,8 +117,8 @@ public interface HasComponents {
   public default Component getComponent(String id) {
     Component component = ComponentUtil.getBoundComponent(this);
 
-    if (component instanceof HasComponents) {
-      return ((HasComponents) component).getComponent(id);
+    if (component instanceof HasComponents hc) {
+      return hc.getComponent(id);
     }
 
     throw new UnsupportedOperationException("The component does not support nested components");
