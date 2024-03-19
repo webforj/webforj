@@ -9,7 +9,7 @@
   ],
   "java.checkstyle.version": "10.12.0",
   "sonarlint.connectedMode.project": {
-    "connectionId": "Vscode",
-    "projectKey": "DwcJava_engine"
+    "connectionId": "vscode",
+    "projectKey": "webforj"
   },
 }
