@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for modifying a component's placeholder text.
@@ -22,12 +23,31 @@ public interface HasPlaceholder<T extends Component> {
    * @param placeholder the placeholder text to set
    * @return the component itself after setting the placeholder text.
    */
-  T setPlaceholder(String placeholder);
+  public default T setPlaceholder(String placeholder) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasPlaceholder) {
+      ((HasPlaceholder<?>) component).setPlaceholder(placeholder);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException(
+        "The component does not support the placeholder attribute");
+  }
 
   /**
    * Retrieves the placeholder text for the component.
    *
    * @return the placeholder text for the component.
    */
-  String getPlaceholder();
+  public default String getPlaceholder() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasPlaceholder) {
+      return ((HasPlaceholder<?>) component).getPlaceholder();
+    }
+
+    throw new UnsupportedOperationException(
+        "The component does not support the placeholder attribute");
+  }
 }

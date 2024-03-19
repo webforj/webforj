@@ -60,6 +60,7 @@ public final class ComponentRegistry implements HasComponents {
   /**
    * {@inheritDoc}
    */
+  @Override
   public void add(Component... components) {
     if (components == null) {
       throw new NullPointerException("Cannot add a null component");
@@ -125,6 +126,7 @@ public final class ComponentRegistry implements HasComponents {
   @Override
   public void removeAll() {
     getComponents().forEach(Component::destroy);
+    components.clear();
   }
 
   /**

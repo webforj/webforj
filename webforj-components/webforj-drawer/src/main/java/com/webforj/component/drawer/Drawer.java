@@ -1,7 +1,6 @@
 package com.webforj.component.drawer;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.drawer.Drawer;
 import com.webforj.component.drawer.event.DrawerCloseEvent;
@@ -211,64 +210,6 @@ public class Drawer extends ElementCompositeContainer
    */
   public Placement getPlacement() {
     return get(placementProp);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer addClassName(String... className) {
-    getElement().addClassName(className);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer removeClassName(String... className) {
-    getElement().removeClassName(className);
-    return null;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer setStyle(String property, String value) {
-    getElement().setStyle(property, value);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer removeStyle(String property) {
-    getElement().removeStyle(property);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getStyle(String property) {
-    return getElement().getStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getComputedStyle(String property) {
-    return getElement().getComputedStyle(property);
   }
 
   /**

@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for implementing methods to control a component's visibility on a page.
@@ -17,7 +18,15 @@ public interface HasVisibility<T extends Component> {
    *
    * @return true if the component is visible, false if it's invisible.
    */
-  public boolean isVisible();
+  public default boolean isVisible() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasVisibility) {
+      return ((HasVisibility<?>) component).isVisible();
+    }
+
+    throw new UnsupportedOperationException("The component does not support visibility");
+  }
 
   /**
    * Sets whether the component is visible or invisible.
@@ -25,5 +34,14 @@ public interface HasVisibility<T extends Component> {
    * @param visible true to make the component visible, false to make it invisible.
    * @return the component itself.
    */
-  public T setVisible(boolean visible);
+  public default T setVisible(boolean visible) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasVisibility) {
+      ((HasVisibility<?>) component).setVisible(visible);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support visibility");
+  }
 }

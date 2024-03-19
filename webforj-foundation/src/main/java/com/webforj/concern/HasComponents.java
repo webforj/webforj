@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 import java.util.List;
 
 /**
@@ -31,7 +32,16 @@ public interface HasComponents {
    *         component.
    * @throws IllegalStateException if any of the given components is destroyed.
    */
-  public void add(Component... components);
+  public default void add(Component... components) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasComponents hc) {
+      hc.add(components);
+      return;
+    }
+
+    throw new UnsupportedOperationException("The component does not support nested components");
+  }
 
   /**
    * Removes the given components as children of this component.
@@ -40,12 +50,30 @@ public interface HasComponents {
    *
    * @throws NullPointerException if the given components is null.
    */
-  public void remove(Component... components);
+  public default void remove(Component... components) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasComponents hc) {
+      hc.remove(components);
+      return;
+    }
+
+    throw new UnsupportedOperationException("The component does not support nested components");
+  }
 
   /**
    * Removes all the children of this component.
    */
-  public void removeAll();
+  public default void removeAll() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasComponents hc) {
+      hc.removeAll();
+      return;
+    }
+
+    throw new UnsupportedOperationException("The component does not support nested components");
+  }
 
   /**
    * Checks whether the given component is a child of this component.
@@ -61,7 +89,15 @@ public interface HasComponents {
    *
    * @return the children of this component.
    */
-  public List<Component> getComponents();
+  public default List<Component> getComponents() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasComponents hc) {
+      return hc.getComponents();
+    }
+
+    throw new UnsupportedOperationException("The component does not support nested components");
+  }
 
   /**
    * Returns the number of children of this component.
@@ -78,6 +114,14 @@ public interface HasComponents {
    * @param id the id of the child component to return.
    * @return the child component with the given id.
    */
-  public Component getComponent(String id);
+  public default Component getComponent(String id) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasComponents hc) {
+      return hc.getComponent(id);
+    }
+
+    throw new UnsupportedOperationException("The component does not support nested components");
+  }
 }
 

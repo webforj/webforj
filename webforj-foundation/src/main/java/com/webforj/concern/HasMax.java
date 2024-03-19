@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface that enables modification of a component's maximum value.
@@ -24,12 +25,29 @@ public interface HasMax<T extends Component, V> {
    *
    * @return the component itself
    */
-  public T setMax(V max);
+  public default T setMax(V max) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasMax) {
+      ((HasMax<?, V>) component).setMax(max);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support max");
+  }
 
   /**
    * Retrieves the maximum possible value for the component.
    *
    * @return the maximum value of the component.
    */
-  public V getMax();
+  public default V getMax() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasMax) {
+      return ((HasMax<?, V>) component).getMax();
+    }
+
+    throw new UnsupportedOperationException("The component does not support max");
+  }
 }

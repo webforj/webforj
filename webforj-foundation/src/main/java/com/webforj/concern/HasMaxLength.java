@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for modifying the maximum length of a component's value.
@@ -22,7 +23,15 @@ public interface HasMaxLength<T extends Component> {
    *
    * @return the maximum length
    */
-  public int getMaxLength();
+  public default int getMaxLength() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasMaxLength) {
+      return ((HasMaxLength<?>) component).getMaxLength();
+    }
+
+    throw new UnsupportedOperationException("The component does not support max length");
+  }
 
   /**
    * Sets the maximum length of the component's value.
@@ -30,5 +39,14 @@ public interface HasMaxLength<T extends Component> {
    * @param maxLength the maximum length to set for the component's value.
    * @return the component itself
    */
-  public T setMaxLength(int maxLength);
+  public default T setMaxLength(int maxLength) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasMaxLength) {
+      ((HasMaxLength<?>) component).setMaxLength(maxLength);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support max length");
+  }
 }

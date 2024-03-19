@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for handling CSS styles on a component.
@@ -24,7 +25,15 @@ public interface HasStyle<T extends Component> {
    * @param property The CSS property to be retrieved
    * @return String containing the value of the CSS property
    */
-  public String getStyle(String property);
+  public default String getStyle(String property) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasStyle) {
+      return ((HasStyle<?>) component).getStyle(property);
+    }
+
+    throw new UnsupportedOperationException("The component does not support styles");
+  }
 
   /**
    * Gets the computed value of a CSS property.
@@ -40,7 +49,15 @@ public interface HasStyle<T extends Component> {
    * @param property The CSS property to be retrieved
    * @return String containing all computed styles
    */
-  public String getComputedStyle(String property);
+  public default String getComputedStyle(String property) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasStyle) {
+      return ((HasStyle<?>) component).getComputedStyle(property);
+    }
+
+    throw new UnsupportedOperationException("The component does not support styles");
+  }
 
   /**
    * Sets a CSS property to a specific value.
@@ -54,7 +71,16 @@ public interface HasStyle<T extends Component> {
    *
    * @return @return The component itself.
    */
-  public T setStyle(String property, String value);
+  public default T setStyle(String property, String value) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasStyle) {
+      ((HasStyle<?>) component).setStyle(property, value);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support styles");
+  }
 
   /**
    * Removes a CSS property to a specific value.
@@ -63,5 +89,14 @@ public interface HasStyle<T extends Component> {
    *
    * @return @return The component itself.
    */
-  public T removeStyle(String property);
+  public default T removeStyle(String property) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasStyle) {
+      ((HasStyle<?>) component).removeStyle(property);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support styles");
+  }
 }

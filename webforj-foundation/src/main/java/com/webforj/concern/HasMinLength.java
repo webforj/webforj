@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for modifying the minimum length of a component's value.
@@ -22,7 +23,15 @@ public interface HasMinLength<T extends Component> {
    *
    * @return the minimum length required for the component's value.
    */
-  public int getMinLength();
+  public default int getMinLength() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasMinLength) {
+      return ((HasMinLength<?>) component).getMinLength();
+    }
+
+    throw new UnsupportedOperationException("The component does not support the min length");
+  }
 
   /**
    * Sets the minimum length required for the component's value.
@@ -30,5 +39,14 @@ public interface HasMinLength<T extends Component> {
    * @param minLength the minimum length to set for the component's value
    * @return the component itself.
    */
-  public T setMinLength(int minLength);
+  public default T setMinLength(int minLength) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasMinLength) {
+      ((HasMinLength<?>) component).setMinLength(minLength);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support the min length");
+  }
 }
