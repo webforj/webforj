@@ -1,8 +1,6 @@
 package com.webforj.component.element;
 
-import com.webforj.component.Component;
 import com.webforj.concern.HasComponents;
-import java.util.List;
 
 /**
  * Represents an abstract base class for Element container components. This class extends
