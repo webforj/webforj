@@ -1,7 +1,6 @@
 package com.webforj.component.layout.splitter;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementComposite;
@@ -278,81 +277,6 @@ public class Splitter extends ElementComposite
       LocalStorage.getCurrent().remove("dwc-splitter-" + id);
     }
 
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Splitter addClassName(String... className) {
-    getElement().addClassName(className);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Splitter removeClassName(String... className) {
-    getElement().removeClassName(className);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Splitter setStyle(String property, String value) {
-    getElement().setStyle(property, value);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Splitter removeStyle(String property) {
-    getElement().removeStyle(property);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getStyle(String property) {
-    return getElement().getStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getComputedStyle(String property) {
-    return getElement().getComputedStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isVisible() {
-    return getElement().isVisible();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Splitter setVisible(boolean visible) {
-    getElement().setVisible(visible);
     return this;
   }
 

@@ -2,7 +2,6 @@ package com.webforj.component.googlecharts;
 
 import com.google.gson.annotations.SerializedName;
 import com.webforj.annotation.Attribute;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.annotation.JavaScript;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementComposite;
@@ -456,44 +455,6 @@ public final class GoogleChart extends ElementComposite implements HasStyle<Goog
         Optional.ofNullable(getElement().getProperty("imageURI", String.class));
     return imageUri.isPresent() ? imageUri.get()
         : "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public GoogleChart setStyle(String property, String value) {
-    getElement().setStyle(property, value);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public GoogleChart removeStyle(String property) {
-    getElement().removeStyle(property);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getStyle(String property) {
-    return getElement().getStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getComputedStyle(String property) {
-    return getElement().getComputedStyle(property);
   }
 
   /**

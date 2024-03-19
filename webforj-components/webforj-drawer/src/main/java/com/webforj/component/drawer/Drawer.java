@@ -214,64 +214,6 @@ public class Drawer extends ElementCompositeContainer
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer addClassName(String... className) {
-    getElement().addClassName(className);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer removeClassName(String... className) {
-    getElement().removeClassName(className);
-    return null;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer setStyle(String property, String value) {
-    getElement().setStyle(property, value);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Drawer removeStyle(String property) {
-    getElement().removeStyle(property);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getStyle(String property) {
-    return getElement().getStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getComputedStyle(String property) {
-    return getElement().getComputedStyle(property);
-  }
-
-  /**
    * Adds a listener for the opened event.
    *
    * @param listener the listener

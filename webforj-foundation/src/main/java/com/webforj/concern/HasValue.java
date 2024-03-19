@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for modifying a component's value.
@@ -22,7 +23,15 @@ public interface HasValue<T extends Component, V> {
    *
    * @return the value of the component.
    */
-  public V getValue();
+  public default V getValue() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasTooltip) {
+      return ((HasValue<?, V>) component).getValue();
+    }
+
+    throw new UnsupportedOperationException("The component does not support the value property");
+  }
 
   /**
    * Sets the value of the component.
@@ -30,5 +39,14 @@ public interface HasValue<T extends Component, V> {
    * @param value the value to set.
    * @return the component itself.
    */
-  public T setValue(V value);
+  public default T setValue(V value) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasValue) {
+      ((HasValue<?, V>) component).setValue(value);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support the value property");
+  }
 }

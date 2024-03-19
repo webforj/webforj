@@ -125,6 +125,7 @@ public final class ComponentRegistry implements HasComponents {
   @Override
   public void removeAll() {
     getComponents().forEach(Component::destroy);
+    components.clear();
   }
 
   /**

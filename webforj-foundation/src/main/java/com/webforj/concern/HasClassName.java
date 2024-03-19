@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface that enables adding or removing CSS classes to a component.
@@ -23,7 +24,16 @@ public interface HasClassName<T extends Component> {
    * @param classNames the name of the CSS class to be added
    * @return the component itself after adding the class
    */
-  public T addClassName(String... classNames);
+  public default T addClassName(String... classNames) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasClassName) {
+      ((HasClassName<?>) component).addClassName(classNames);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support CSS classes");
+  }
 
   /**
    * Removes a CSS class from the list of CSS classes for the component.
@@ -31,5 +41,14 @@ public interface HasClassName<T extends Component> {
    * @param classNames the name of the CSS class to be removed
    * @return the component itself after removing the class
    */
-  public T removeClassName(String... classNames);
+  public default T removeClassName(String... classNames) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasClassName) {
+      ((HasClassName<?>) component).removeClassName(classNames);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support CSS classes");
+  }
 }

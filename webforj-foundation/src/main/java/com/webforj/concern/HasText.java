@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface that allows components to set and retrieve text in a way that makes sense for the
@@ -18,7 +19,15 @@ public interface HasText<T extends Component> {
    *
    * @return the text of the component.
    */
-  public String getText();
+  public default String getText() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasText) {
+      return ((HasText<?>) component).getText();
+    }
+
+    throw new UnsupportedOperationException("The component does not support text");
+  }
 
   /**
    * Sets the text of the component. Each component implementing this interface has a text property,
@@ -28,5 +37,14 @@ public interface HasText<T extends Component> {
    * @param text the text to set for the component.
    * @return the component itself after configuring the text.
    */
-  public T setText(String text);
+  public default T setText(String text) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasText) {
+      ((HasText<?>) component).setText(text);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support text");
+  }
 }

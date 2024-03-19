@@ -2,6 +2,7 @@ package com.webforj.concern;
 
 import com.google.gson.reflect.TypeToken;
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 import java.lang.reflect.Type;
 
 /**
@@ -27,7 +28,16 @@ public interface HasProperty<T extends Component> {
    *
    * @return the component itself.
    */
-  public T setProperty(String property, Object value);
+  public default T setProperty(String property, Object value) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasProperty) {
+      ((HasProperty<?>) component).setProperty(property, value);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support properties");
+  }
 
   /**
    * Retrieves the value of the given property.
@@ -43,7 +53,15 @@ public interface HasProperty<T extends Component> {
    * @return the retrieved value.
    * @since 23.06
    */
-  public <V> V getProperty(String property, Type typeOfV);
+  public default <V> V getProperty(String property, Type typeOfV) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasProperty) {
+      return (V) ((HasProperty<?>) component).getProperty(property, typeOfV);
+    }
+
+    throw new UnsupportedOperationException("The component does not support properties");
+  }
 
   /**
    * Retrieves the value of the given property.

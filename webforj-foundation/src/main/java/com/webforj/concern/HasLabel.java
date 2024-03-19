@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * This interface defines a contract for components that have a label.
@@ -17,7 +18,15 @@ public interface HasLabel<T extends Component> {
    *
    * @return A string representing the label of the component.
    */
-  public String getLabel();
+  public default String getLabel() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasLabel) {
+      return ((HasLabel<?>) component).getLabel();
+    }
+
+    throw new UnsupportedOperationException("The component does not support labels");
+  }
 
   /**
    * Sets the component's label.
@@ -33,5 +42,14 @@ public interface HasLabel<T extends Component> {
    * @param label The label to set for the component.
    * @return The component itself.
    */
-  public T setLabel(String label);
+  public default T setLabel(String label) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasLabel) {
+      ((HasLabel<?>) component).setLabel(label);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support labels");
+  }
 }

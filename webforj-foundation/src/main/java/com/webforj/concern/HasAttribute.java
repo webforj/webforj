@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface that enables components to access and modify HTML DOM attributes.
@@ -23,7 +24,15 @@ public interface HasAttribute<T extends Component> {
    * @param attribute the name of the attribute to retrieve
    * @return the value of the attribute
    */
-  public String getAttribute(String attribute);
+  public default String getAttribute(String attribute) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasAttribute) {
+      return ((HasAttribute<?>) component).getAttribute(attribute);
+    }
+
+    throw new UnsupportedOperationException("The component does not support attributes");
+  }
 
   /**
    * Sets the value of an attribute.
@@ -33,7 +42,16 @@ public interface HasAttribute<T extends Component> {
    *
    * @return the component itself
    */
-  public T setAttribute(String attribute, String value);
+  public default T setAttribute(String attribute, String value) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasAttribute) {
+      ((HasAttribute<?>) component).setAttribute(attribute, value);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support attributes");
+  }
 
   /**
    * Removes an attribute from the component.
@@ -41,5 +59,14 @@ public interface HasAttribute<T extends Component> {
    * @param attribute the name of the attribute to remove
    * @return the component itself
    */
-  public T removeAttribute(String attribute);
+  public default T removeAttribute(String attribute) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasAttribute) {
+      ((HasAttribute<?>) component).removeAttribute(attribute);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support attributes");
+  }
 }

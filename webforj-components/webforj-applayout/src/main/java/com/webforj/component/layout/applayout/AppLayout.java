@@ -1,7 +1,6 @@
 package com.webforj.component.layout.applayout;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementCompositeContainer;
@@ -513,81 +512,6 @@ public class AppLayout extends ElementCompositeContainer
    */
   public boolean isHeaderReveal() {
     return get(headerRevealProp);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public AppLayout addClassName(String... className) {
-    getElement().addClassName(className);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public AppLayout removeClassName(String... className) {
-    getElement().removeClassName(className);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public AppLayout setStyle(String property, String value) {
-    getElement().setStyle(property, value);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public AppLayout removeStyle(String property) {
-    getElement().removeStyle(property);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getStyle(String property) {
-    return getElement().getStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getComputedStyle(String property) {
-    return getElement().getComputedStyle(property);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isVisible() {
-    return getElement().isVisible();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public AppLayout setVisible(boolean visible) {
-    getElement().setVisible(visible);
-    return this;
   }
 
   /**

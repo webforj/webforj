@@ -14,43 +14,5 @@ import java.util.List;
  * @since 23.06
  */
 public abstract class ElementCompositeContainer extends ElementComposite implements HasComponents {
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void add(Component... components) {
-    getElement().add(components);
-  }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void remove(Component... components) {
-    getElement().remove(components);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void removeAll() {
-    getElement().removeAll();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<Component> getComponents() {
-    return getElement().getComponents();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Component getComponent(String id) {
-    return getElement().getComponent(id);
-  }
 }

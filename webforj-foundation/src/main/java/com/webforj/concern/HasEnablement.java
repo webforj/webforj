@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for controlling the enabled state of a component after it has been rendered on the
@@ -23,7 +24,15 @@ public interface HasEnablement<T extends Component> {
    *
    * @return true if the component is enabled, false if it is disabled
    */
-  public boolean isEnabled();
+  public default boolean isEnabled() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasEnablement) {
+      return ((HasEnablement<?>) component).isEnabled();
+    }
+
+    throw new UnsupportedOperationException("The component does not support enablement");
+  }
 
   /**
    * Sets the enablement state of the component.
@@ -31,5 +40,14 @@ public interface HasEnablement<T extends Component> {
    * @param enabled true to enable the component, false to disable it
    * @return the component itself.
    */
-  public T setEnabled(boolean enabled);
+  public default T setEnabled(boolean enabled) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasEnablement) {
+      ((HasEnablement<?>) component).setEnabled(enabled);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support enablement");
+  }
 }

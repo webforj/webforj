@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface that allows components to set and retrieve HTML content in a way that makes sense
@@ -18,7 +19,15 @@ public interface HasHtml<T extends Component> {
    *
    * @return the HTML content of the component.
    */
-  public String getHtml();
+  public default String getHtml() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasHtml) {
+      return ((HasHtml<?>) component).getHtml();
+    }
+
+    throw new UnsupportedOperationException("The component does not support HTML content");
+  }
 
   /**
    * Sets the HTML content of the component. Each component implementing this interface has an HTML
@@ -27,5 +36,14 @@ public interface HasHtml<T extends Component> {
    * @param html the HTML content to set for the component.
    * @return the component itself.
    */
-  public T setHtml(String html);
+  public default T setHtml(String html) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasHtml) {
+      ((HasHtml<?>) component).setHtml(html);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException("The component does not support HTML content");
+  }
 }

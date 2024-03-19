@@ -1,6 +1,7 @@
 package com.webforj.concern;
 
 import com.webforj.component.Component;
+import com.webforj.component.ComponentUtil;
 
 /**
  * An interface for implementing methods to set and retrieve tooltip text on a component.
@@ -17,7 +18,16 @@ public interface HasTooltip<T extends Component> {
    *
    * @return the tooltip text of the component.
    */
-  public String getTooltipText();
+  public default String getTooltipText() {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasTooltip) {
+      return ((HasTooltip<?>) component).getTooltipText();
+    }
+
+    throw new UnsupportedOperationException(
+        "The component does not support the tooltip text property");
+  }
 
   /**
    * Sets the tooltip text of the component.
@@ -25,5 +35,15 @@ public interface HasTooltip<T extends Component> {
    * @param tooltipText the tooltip text to set.
    * @return the component itself.
    */
-  public T setTooltipText(String tooltipText);
+  public default T setTooltipText(String tooltipText) {
+    Component component = ComponentUtil.getBoundComponent(this);
+
+    if (component instanceof HasTooltip) {
+      ((HasTooltip<?>) component).setTooltipText(tooltipText);
+      return (T) this;
+    }
+
+    throw new UnsupportedOperationException(
+        "The component does not support the tooltip text property");
+  }
 }
