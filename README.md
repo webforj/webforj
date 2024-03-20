@@ -2,8 +2,8 @@
 <p>
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=webforj&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=webforj)
-[![Publish Snapshot](https://github.com/DwcJava/engine/actions/workflows/maven-publish.yml/badge.svg?branch=main)](https://github.com/DwcJava/engine/actions/workflows/maven-snapshot.yml)
-[![reviewdog](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml)
+[![Maven Publish Status](https://github.com/webforj/webforj/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/maven-publish.yml)
+[![ReviewDog Status](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml)
 
 </p>
 
