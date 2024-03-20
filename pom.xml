@@ -152,6 +152,7 @@
           <version>3.0.1</version>
           <configuration>
             <releaseProfiles>perform-release</releaseProfiles>
+            <!--suppress UnresolvedMavenProperty -->
             <arguments>${arguments}</arguments>
             <goals>deploy</goals>
             <autoVersionSubmodules>true</autoVersionSubmodules>
