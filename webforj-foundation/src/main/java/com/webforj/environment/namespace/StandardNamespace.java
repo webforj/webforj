@@ -22,11 +22,11 @@ public abstract class StandardNamespace implements Namespace, CanLock {
   protected BBjNamespace ns;
 
   @Override
-  public void put(String key, Object value) throws NamespaceVarableLockedException {
+  public void put(String key, Object value) throws NamespaceVariableLockedException {
     try {
       ns.setValue(key, value);
     } catch (BBjException e) {
-      throw new NamespaceVarableLockedException();
+      throw new NamespaceVariableLockedException();
     }
 
   }
@@ -41,11 +41,11 @@ public abstract class StandardNamespace implements Namespace, CanLock {
   }
 
   @Override
-  public void remove(String key) throws NamespaceVarableLockedException {
+  public void remove(String key) throws NamespaceVariableLockedException {
     try {
       ns.removeValue(key);
     } catch (BBjException e) {
-      throw new NamespaceVarableLockedException();
+      throw new NamespaceVariableLockedException();
     }
   }
 
@@ -80,11 +80,11 @@ public abstract class StandardNamespace implements Namespace, CanLock {
   }
 
   @Override
-  public void setLock(String key, long timeout) throws NamespaceVarableLockedException {
+  public void setLock(String key, long timeout) throws NamespaceVariableLockedException {
     try {
       ns.setLock(key, timeout);
     } catch (BBjException e) {
-      throw new NamespaceVarableLockedException();
+      throw new NamespaceVariableLockedException();
     }
   }
 

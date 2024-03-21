@@ -14,9 +14,9 @@ public interface Namespace {
    *
    * @param key the variable name
    * @param value the variable contents
-   * @throws NamespaceVarableLockedException
+   * @throws NamespaceVariableLockedException
    */
-  public void put(String key, Object value) throws NamespaceVarableLockedException;
+  public void put(String key, Object value) throws NamespaceVariableLockedException;
 
   /**
    * retrieve a variable from the namespace
@@ -31,9 +31,9 @@ public interface Namespace {
    * remove a variable from the namespace
    *
    * @param key the variable name
-   * @throws NamespaceVarableLockedException
+   * @throws NamespaceVariableLockedException
    */
-  public void remove(String key) throws NamespaceVarableLockedException;
+  public void remove(String key) throws NamespaceVariableLockedException;
 
   /**
    * list all variables in this namespace
