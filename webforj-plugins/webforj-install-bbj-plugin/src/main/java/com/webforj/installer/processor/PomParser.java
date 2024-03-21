@@ -1,4 +1,4 @@
-package com.webforj.installer;
+package com.webforj.installer.processor;
 
 import java.io.File;
 import java.io.IOException;
