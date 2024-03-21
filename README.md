@@ -1,15 +1,16 @@
-# Webforj
+# webforJ
 <p>
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=webforj&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=webforj)
-[![Maven Publish Status](https://github.com/webforj/webforj/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/maven-publish.yml)
-[![ReviewDog Status](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/DwcJava/engine/actions/workflows/reviewdog.yml)
+[![Tests](https://github.com/webforj/webforj/actions/workflows/tests.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/tests.yml)
+[![Checkstyle](https://github.com/webforj/webforj/actions/workflows/checkstyle.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/checkstyle.yml)
+[![Publish](https://github.com/webforj/webforj/actions/workflows/publish.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/publish.yml)
 
 </p>
 
 A robust and flexible framework that can help you deliver a modern and engaging web user interface with ease. In Java.
 
-- **Event Handling**: Handle user interactions and events with ease using the webforj's event system. Respond to user actions and update the UI accordingly.
+- **Event Handling**: Handle user interactions and events with ease using the webforJ's event system. Respond to user actions and update the UI accordingly.
 
 - **Component-Based**: Create reusable and composable components to build complex UIs. Components encapsulate their own state and logic, providing a modular and maintainable structure for your application.
 
@@ -17,18 +18,18 @@ A robust and flexible framework that can help you deliver a modern and engaging 
 
 ## Documentation
 
-The webforj's documentation site can be found [at this link](https://documentation.webforj.com/) which contains guides, API references, and examples to help you get started with the webforj.
+The webforJ's documentation site can be found [at this link](https://documentation.webforj.com/) which contains guides, API references, and examples to help you get started with the webforJ.
 
 The following documentation sections may be useful for those beginning their usage of the DWCJ:
 
-- [Webforj Installation](https://documentation.webforj.com/docs/installation/local_install)
+- [webforJ Installation](https://documentation.webforj.com/docs/installation/local_install)
 - [Configuring your application](https://documentation.webforj.com/docs/getting_started/configuration)
 - [Creating an application](https://documentation.webforj.com/docs/getting_started/creating_an_application)
 - [Component Overviews](https://documentation.webforj.com/docs/components/home)
 
 ## Examples
 
-The Webforj's [HelloWorld repository](https://github.com/webforj/webforj-hello-world) contains a sample program which can be run in GitHub codespaces, Docker, or locally and demonstrates the basics for creating your first DWCJ program. Here is the class created in the sample:
+The webforJ's [HelloWorld repository](https://github.com/webforj/webforj-hello-world) contains a sample program which can be run in GitHub codespaces, Docker, or locally and demonstrates the basics for creating your first DWCJ program. Here is the class created in the sample:
 
 ```java
 @InlineStyleSheet(/* css */"""
@@ -40,7 +41,7 @@ The Webforj's [HelloWorld repository](https://github.com/webforj/webforj-hello-w
     border: 1px dotted;
   }
 """)
-@AppTitle("Webforj Hello World")
+@AppTitle("webforJ Hello World")
 public class HelloWorldApp extends App {
   
   Paragraph hello = new Paragraph("Hello World!");
@@ -65,8 +66,8 @@ The above program creates some static text and a button which displays a message
 
 ## Contributing
 
-Contributions to the Webforj project are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/webforj/webforj/blob/main/CONTRIBUTING.md) file.
+Contributions to the webforJ project are welcome! If you would like to contribute, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/webforj/webforj/blob/main/CONTRIBUTING.md) file.
 
 ## License
 
-The Webforj Engine is licensed under the [MIT License](https://github.com/webforj/webforj/blob/main/LICENSE).
+webforJ is licensed under the [MIT License](https://github.com/webforj/webforj/blob/main/LICENSE).
