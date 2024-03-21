@@ -1,10 +1,11 @@
-name: SonarCloud
+name: Tests
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
 
 jobs:
   setup:
@@ -14,7 +15,7 @@ jobs:
       version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install xmlstarlet
         run: sudo apt update && sudo apt install -y xmlstarlet
@@ -28,18 +29,14 @@ jobs:
           version_without_suffix="${version%-SNAPSHOT}"
           echo "::set-output name=version::$version"
           echo "::set-output name=version-without-suffix::$version_without_suffix"
-  test:
+  tests:
     needs: setup
     runs-on: ubuntu-latest
     container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
+    permissions:
+      pull-requests: write
     steps:
-      - name: Install Git
-        run: |
-          apk update
-          apk add git
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
       - name: Install Maven
         run: apk add maven
@@ -53,24 +50,23 @@ jobs:
           && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjAdminAPI.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjAdminAPI" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
           && mvn install -q -DskipTests
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
+      - name: Build with Maven
+        run: mvn -B verify
+
+      - name: Jacoco Report
+        # if: github.event_name == 'pull_request'
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          paths: |
+            ${{ github.workspace }}/webforj-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage
+          update-comment: true
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=webforj
-
-
+      - name: Get the Coverage info
+        run: |
+          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"

@@ -1,7 +1,7 @@
-name: Maven Publish
+name: Publish
 on:
   workflow_run:
-    workflows: ["SonarCloud", "Bump Version"]
+    workflows: ["Tests", "Bump Version"]
     types: [completed]
     branches: [main]
 
@@ -14,7 +14,7 @@ jobs:
       version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install xmlstarlet
         run: sudo apt update && sudo apt install -y xmlstarlet
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install gpg
         run: apk add gnupg
