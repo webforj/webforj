@@ -38,7 +38,7 @@ class WebforjInstallTest {
   }
 
   @AfterEach
-  public void tearDown()  {}
+  public void tearDown() {}
 
   @Test
   void test_null_deployurl_throws_IllegalArgumentException() {
@@ -48,8 +48,7 @@ class WebforjInstallTest {
   }
 
   @Test
-  void test_null_project_throws_IllegalArgumentException()
-      throws Exception {
+  void test_null_project_throws_IllegalArgumentException() throws Exception {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     IllegalArgumentException exception =
         assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
@@ -57,8 +56,7 @@ class WebforjInstallTest {
   }
 
   @Test
-  void test_null_application_throws_IllegalArgumentException()
-      throws Exception {
+  void test_null_application_throws_IllegalArgumentException() throws Exception {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(null);
@@ -68,8 +66,7 @@ class WebforjInstallTest {
   }
 
   @Test
-  void test_null_file_throws_IllegalArgumentException()
-      throws Exception {
+  void test_null_file_throws_IllegalArgumentException() throws Exception {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);

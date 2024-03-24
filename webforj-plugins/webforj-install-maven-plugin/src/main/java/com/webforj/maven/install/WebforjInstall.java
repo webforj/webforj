@@ -89,12 +89,6 @@ public class WebforjInstall extends AbstractMojo {
   @Parameter(property = "debug")
   private String debug;
 
-  /**
-   * Constructor. set the log for plugin.
-   */
-  public WebforjInstall() {
-    setLog(new MojoLog4jLogger());
-  }
 
   /**
    * The execute method called by maven.
