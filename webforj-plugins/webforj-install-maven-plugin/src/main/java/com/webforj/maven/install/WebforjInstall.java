@@ -54,18 +54,62 @@ public class WebforjInstall extends AbstractMojo {
   private String deployurl;
 
   /**
+   * Optional username property for deployment.
+   */
+  @Parameter(property = "username")
+  private String username;
+
+  /**
+   * Optional password property for the deployment.
+   */
+  @Parameter(property = "password")
+  private String password;
+
+  /**
+   * Optional token property.
+   */
+  @Parameter(property = "token")
+  private String token;
+
+  /**
+   * Inject the optional classname from the configuration.
+   */
+  @Parameter(property = "classname")
+  private String classname;
+
+  /**
+   * Optional publishname property from the configuration.
+   */
+  @Parameter(property = "publishname")
+  private String publishname;
+
+  /**
+   * Optional debug property from the configuration.
+   */
+  @Parameter(property = "debug")
+  private String debug;
+
+  /**
+   * Constructor. set the log for plugin.
+   */
+  public WebforjInstall() {
+    setLog(new MojoLog4jLogger());
+  }
+
+  /**
    * The execute method called by maven.
    *
    * @throws MojoExecutionException when something fails.
    */
   public void execute() throws MojoExecutionException {
-    getLog().info("-------DWCJ Deploy to Server:-------------");
-    getLog().info("Installing DWCJ App using URL: " + deployurl);
-
+    getLog().info("Validating Mojo configuration ...");
+    Args.check(deployurl != null, "deployurl is null!");
     Args.check(project != null, "project is null!");
     Args.check(project.getArtifact() != null, "project artifact is null!");
-    final File file = Args.notNull(project.getArtifact().getFile(), "artifact file is null!");
+    final File file = Args.notEmpty(project.getArtifact().getFile(), "artifact file is null!");
 
+    getLog().info("-------DWCJ Deploy to Server:-------------");
+    getLog().info("Installing DWCJ App using URL: " + deployurl);
 
     Try.withResources(HttpClients::createDefault, () -> createMultipartEntity(file))
         .of((httpClient, reqEntity) -> {
@@ -79,7 +123,7 @@ public class WebforjInstall extends AbstractMojo {
           // resource deallocation internally.
           httpClient.execute(httpPost, response -> {
             getLog().info("----------------------------------------");
-            getLog().info(httpPost + "response status -> " + new StatusLine(response));
+            getLog().info(httpPost + " response status -> " + new StatusLine(response));
             HttpEntity responseEntity = response.getEntity();
             String result = EntityUtils.toString(responseEntity);
             getLog().info(result);
@@ -92,7 +136,6 @@ public class WebforjInstall extends AbstractMojo {
         .onFailure(throwable -> getLog()
             .error("Error attempting deployment: " + throwable.getMessage(), throwable))
         .getOrElseThrow(MojoExecutionException::new);
-
   }
 
   /**
@@ -118,6 +161,5 @@ public class WebforjInstall extends AbstractMojo {
         .setCharset(StandardCharsets.UTF_8) //
         .setContentType(ContentType.MULTIPART_FORM_DATA).build();
   }
-
 
 }
