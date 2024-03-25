@@ -53,7 +53,7 @@ class WebforjInstallTest {
   @Test
   void test_null_deployurl_throws_IllegalArgumentException() {
     IllegalArgumentException exception =
-      assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
+        assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
     assertEquals("deployurl is null!", exception.getMessage());
   }
 
@@ -61,7 +61,7 @@ class WebforjInstallTest {
   void test_null_project_throws_IllegalArgumentException() throws IllegalAccessException {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     IllegalArgumentException exception =
-      assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
+        assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
     assertEquals("project is null!", exception.getMessage());
   }
 
@@ -71,7 +71,7 @@ class WebforjInstallTest {
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(null);
     IllegalArgumentException exception =
-      assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
+        assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
     assertEquals("project artifact is null!", exception.getMessage());
   }
 
@@ -82,7 +82,7 @@ class WebforjInstallTest {
     when(mavenProject.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(null);
     NullPointerException exception =
-      assertThrows(NullPointerException.class, () -> webforjInstall.execute());
+        assertThrows(NullPointerException.class, () -> webforjInstall.execute());
     assertEquals("artifact file is null!", exception.getMessage());
   }
 
@@ -91,9 +91,9 @@ class WebforjInstallTest {
     File testFile = getResourceFile();
     assertTrue(testFile.exists());
     stubFor(post(urlEqualTo("/webforj-install"))
-      .withHeader("Content-Type", containing("multipart/form-data")) //
-      .withRequestBody(containing("jar")) //
-      .willReturn(aResponse().withStatus(200)));
+        .withHeader("Content-Type", containing("multipart/form-data")) //
+        .withRequestBody(containing("jar")) //
+        .willReturn(aResponse().withStatus(200)));
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
@@ -106,9 +106,9 @@ class WebforjInstallTest {
     File testFile = getResourceFile();
     assertTrue(testFile.exists());
     stubFor(post(urlEqualTo("/webforj-install"))
-      .withHeader("Content-Type", containing("multipart/form-data")) //
-      .withRequestBody(containing("jar")) //
-      .willReturn(notFound()));
+        .withHeader("Content-Type", containing("multipart/form-data")) //
+        .withRequestBody(containing("jar")) //
+        .willReturn(notFound()));
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
@@ -121,15 +121,15 @@ class WebforjInstallTest {
     File testFile = getResourceFile();
     assertTrue(testFile.exists());
     stubFor(post(urlEqualTo("/webforj-install"))
-      .withHeader("Content-Type", containing("multipart/form-data")) //
-      .withRequestBody(containing("jar")) //
-      .willReturn(aResponse().withStatus(200)));
+        .withHeader("Content-Type", containing("multipart/form-data")) //
+        .withRequestBody(containing("jar")) //
+        .willReturn(aResponse().withStatus(200)));
     setField(webforjInstall, "deployurl", "http://doesnotexit");
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(testFile);
     MojoExecutionException mojoException =
-      assertThrows(MojoExecutionException.class, () -> webforjInstall.execute());
+        assertThrows(MojoExecutionException.class, () -> webforjInstall.execute());
     assertTrue(mojoException.getMessage().contains(
       "java.net.UnknownHostException: doesnotexit: nodename nor servname provided, or not known"));
   }
