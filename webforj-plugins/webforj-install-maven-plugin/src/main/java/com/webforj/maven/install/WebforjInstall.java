@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.FileBody;
 import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
@@ -23,6 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypes;
 
 
 /**
@@ -91,6 +93,11 @@ public class WebforjInstall extends AbstractMojo {
 
 
   /**
+   * A private Tika instance.
+   */
+  private final Tika tika = new Tika();
+
+  /**
    * The execute method called by maven.
    *
    * @throws MojoExecutionException when something fails.
@@ -141,9 +148,7 @@ public class WebforjInstall extends AbstractMojo {
    */
   public HttpEntity createMultipartEntity(File file) throws IOException {
     getLog().info("creating multipart entity for file %s".formatted(file));
-    String contentType = Try.of(() -> Files.probeContentType(file.toPath()))
-        .onFailure(throwable -> Try.of(() -> new Tika().detect(file)))
-        .getOrElseThrow(t -> new IOException("Failure finding mime type for file " + file, t));
+    String contentType = getContentType(file);
     getLog().info("discovered content type = %s".formatted(contentType));
     ContentType mimetype = ContentType.create(contentType);
     getLog().info("Installing file " + file + ", mimetype = " + mimetype);
@@ -154,6 +159,19 @@ public class WebforjInstall extends AbstractMojo {
         .addPart("jar", fileBody) //
         .setCharset(StandardCharsets.UTF_8) //
         .setContentType(ContentType.MULTIPART_FORM_DATA).build();
+  }
+
+  /**
+   * Obtain the content type, if possible, returning a default OCTET_STREAM if unable to detect it.
+   *
+   * @param file the file to test the content type.
+   * @return the content type in a string, MimeTypes.OCTET_STREAM if unable to find it.
+   */
+  public String getContentType(File file)  {
+    return Try.of(() -> Files.probeContentType(file.toPath())) //
+        .onFailure(throwable -> Try.of(() -> tika.detect(file))) //
+        .map(s -> StringUtils.isNotBlank(s) ? s : MimeTypes.OCTET_STREAM)
+        .getOrElse(MimeTypes.OCTET_STREAM); //
   }
 
 }
