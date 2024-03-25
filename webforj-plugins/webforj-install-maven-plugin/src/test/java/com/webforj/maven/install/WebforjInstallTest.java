@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import io.vavr.control.Try;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -48,41 +47,42 @@ class WebforjInstallTest {
   }
 
   @AfterEach
-  public void tearDown() {}
+  public void tearDown() {
+  }
 
   @Test
   void test_null_deployurl_throws_IllegalArgumentException() {
     IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
+      assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
     assertEquals("deployurl is null!", exception.getMessage());
   }
 
   @Test
-  void test_null_project_throws_IllegalArgumentException()  {
+  void test_null_project_throws_IllegalArgumentException() throws IllegalAccessException {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
+      assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
     assertEquals("project is null!", exception.getMessage());
   }
 
   @Test
-  void test_null_application_throws_IllegalArgumentException()  {
+  void test_null_application_throws_IllegalArgumentException() throws IllegalAccessException {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(null);
     IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
+      assertThrows(IllegalArgumentException.class, () -> webforjInstall.execute());
     assertEquals("project artifact is null!", exception.getMessage());
   }
 
   @Test
-  void test_null_file_throws_IllegalArgumentException()  {
+  void test_null_file_throws_IllegalArgumentException() throws IllegalAccessException {
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(null);
     NullPointerException exception =
-        assertThrows(NullPointerException.class, () -> webforjInstall.execute());
+      assertThrows(NullPointerException.class, () -> webforjInstall.execute());
     assertEquals("artifact file is null!", exception.getMessage());
   }
 
@@ -91,9 +91,9 @@ class WebforjInstallTest {
     File testFile = getResourceFile();
     assertTrue(testFile.exists());
     stubFor(post(urlEqualTo("/webforj-install"))
-        .withHeader("Content-Type", containing("multipart/form-data")) //
-        .withRequestBody(containing("jar")) //
-        .willReturn(aResponse().withStatus(200)));
+      .withHeader("Content-Type", containing("multipart/form-data")) //
+      .withRequestBody(containing("jar")) //
+      .willReturn(aResponse().withStatus(200)));
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
@@ -106,9 +106,9 @@ class WebforjInstallTest {
     File testFile = getResourceFile();
     assertTrue(testFile.exists());
     stubFor(post(urlEqualTo("/webforj-install"))
-        .withHeader("Content-Type", containing("multipart/form-data")) //
-        .withRequestBody(containing("jar")) //
-        .willReturn(notFound()));
+      .withHeader("Content-Type", containing("multipart/form-data")) //
+      .withRequestBody(containing("jar")) //
+      .willReturn(notFound()));
     setField(webforjInstall, "deployurl", defaultDeployurl);
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
@@ -117,21 +117,21 @@ class WebforjInstallTest {
   }
 
   @Test
-  void test_post_invalid_url()  {
+  void test_post_invalid_url() throws IllegalAccessException {
     File testFile = getResourceFile();
     assertTrue(testFile.exists());
     stubFor(post(urlEqualTo("/webforj-install"))
-        .withHeader("Content-Type", containing("multipart/form-data")) //
-        .withRequestBody(containing("jar")) //
-        .willReturn(aResponse().withStatus(200)));
+      .withHeader("Content-Type", containing("multipart/form-data")) //
+      .withRequestBody(containing("jar")) //
+      .willReturn(aResponse().withStatus(200)));
     setField(webforjInstall, "deployurl", "http://doesnotexit");
     setField(webforjInstall, "project", mavenProject);
     when(mavenProject.getArtifact()).thenReturn(artifact);
     when(artifact.getFile()).thenReturn(testFile);
     MojoExecutionException mojoException =
-        assertThrows(MojoExecutionException.class, () -> webforjInstall.execute());
+      assertThrows(MojoExecutionException.class, () -> webforjInstall.execute());
     assertTrue(mojoException.getMessage().contains(
-        "java.net.UnknownHostException: doesnotexit: nodename nor servname provided, or not known"));
+      "java.net.UnknownHostException: doesnotexit: nodename nor servname provided, or not known"));
   }
 
   /**
@@ -141,25 +141,23 @@ class WebforjInstallTest {
    */
   File getResourceFile() {
     return new File(
-        Objects.requireNonNull(getClass().getClassLoader().getResource("test.jar")).getFile());
+      Objects.requireNonNull(getClass().getClassLoader().getResource("test.jar")).getFile());
   }
 
   /**
-   * Set a field value
+   * Set a field value.
    *
    * @param webforjInstall the instance of the class being tested.
    * @param fieldName the name of the field to set.
    * @param fieldValue the value of the field to set.
+   * @throws IllegalAccessException setting field.
    */
   void setField(WebforjInstall webforjInstall, String fieldName, Object fieldValue)
-       {
-    Try.of(() -> {
+    throws IllegalAccessException {
       Field field =
-          ReflectionUtils.streamFields(WebforjInstall.class, f -> fieldName.equals(f.getName()),
-              ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).toList().get(0);
+        ReflectionUtils.streamFields(WebforjInstall.class, f -> fieldName.equals(f.getName()),
+          ReflectionUtils.HierarchyTraversalMode.TOP_DOWN).toList().get(0);
       field.setAccessible(true);
       field.set(webforjInstall, fieldValue);
-      return field;
-    });
   }
 }
