@@ -315,7 +315,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
   public Table<T> setItems(Collection<T> rows) {
     this.setRepository(new CollectionRepository<>(rows));
     if (getElement().isDefined()) {
-      refershItems();
+      refreshItems();
     }
 
     return this;
@@ -353,7 +353,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
    *
    * @return the component itself
    */
-  public Table<T> refershColumns() {
+  public Table<T> refreshColumns() {
     if (getElement().isDefined()) {
       set(columnDefinitionsProp, columns);
     }
@@ -366,7 +366,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
    *
    * @return the component itself
    */
-  public Table<T> refershItems() {
+  public Table<T> refreshItems() {
     if (getElement().isDefined()) {
       set(dataProp, buildData());
     }
@@ -379,9 +379,9 @@ public final class Table<T> extends HtmlComponent<Table<T>>
    *
    * @return the table
    */
-  public Table<T> refersh() {
-    this.refershItems();
-    this.refershColumns();
+  public Table<T> refresh() {
+    this.refreshItems();
+    this.refreshColumns();
 
     return this;
   }
@@ -949,7 +949,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
   }
 
   void onInit(Element el) {
-    this.refersh();
+    this.refresh();
     set(selectedProp, selectedKeys);
 
     if (!isClientSorting()) {
@@ -1009,7 +1009,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
         el.callJsFunctionAsync("updateRow", keys[0], buildItem(commit));
       }
     } else {
-      refersh();
+      refresh();
     }
   }
 

@@ -492,7 +492,7 @@ public final class Column<T, V> implements Serializable {
 
   private void updateClientCellRenderer() {
     this.cellRenderer = renderer.build();
-    table.refershColumns();
+    table.refreshColumns();
   }
 
   private EventListener<RendererChangeEvent> handleRendererChange(Renderer<T> renderer) {
