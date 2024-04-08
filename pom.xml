@@ -37,6 +37,19 @@
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <id>webforJ</id>
+      <organization>webforJ</organization>
+      <organizationUrl>https://www.webforJ.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/webforj/webforj/issues</url>
+  </issueManagement>
+
   <modules>
     <module>webforj</module>
     <module>webforj-components</module>
