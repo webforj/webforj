@@ -8,6 +8,9 @@
   <version>24.00</version>
   <packaging>pom</packaging>
   <name>webforj</name>
+  <description>
+    webforJ is a robust and flexible web framework that allows you to easily create a modern and engaging user interface using Java.
+  </description>
   <organization>
     <name>BASIS International Ltd</name>
     <url>https://basis.cloud</url>
@@ -165,7 +168,8 @@
           <version>3.0.1</version>
           <configuration>
             <releaseProfiles>perform-release</releaseProfiles>
-            <!--suppress UnresolvedMavenProperty -->
+            <!--suppress
+            UnresolvedMavenProperty -->
             <arguments>${arguments}</arguments>
             <goals>deploy</goals>
             <autoVersionSubmodules>true</autoVersionSubmodules>
