@@ -151,7 +151,7 @@ class DwcComponentTest {
       component.setReadOnly(true);
       assertTrue(component.isReadOnly());
 
-      verify(control, times(0)).setEditable(true);
+      verify(control, times(0)).setEditable(false);
       verify(control, times(0)).isEditable();
     }
 
@@ -163,7 +163,7 @@ class DwcComponentTest {
 
       assertTrue(component.isReadOnly());
 
-      verify(control, times(1)).setEditable(true);
+      verify(control, times(1)).setEditable(false);
       verify(control, times(1)).isEditable();
     }
 
@@ -184,7 +184,7 @@ class DwcComponentTest {
       component.setReadOnly(true);
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
-      verify(control, times(2)).setEditable(true);
+      verify(control, times(2)).setEditable(false);
     }
   }
 

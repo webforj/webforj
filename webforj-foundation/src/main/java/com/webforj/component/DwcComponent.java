@@ -643,7 +643,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   protected T setComponentReadOnly(boolean readOnly) {
     if (control instanceof Editable) {
       try {
-        ((Editable) control).setEditable(readOnly);
+        ((Editable) control).setEditable(!readOnly);
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
