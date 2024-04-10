@@ -6,6 +6,6 @@
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="debug"/>
+    <Root level="warn"/>
   </Loggers>
 </Configuration>

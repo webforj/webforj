@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.FileBody;
 import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
@@ -14,6 +15,7 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.core5.util.Args;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -21,6 +23,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypes;
 
 
 /**
@@ -87,16 +91,27 @@ public class WebforjInstall extends AbstractMojo {
   @Parameter(property = "debug")
   private String debug;
 
+
+  /**
+   * A private Tika instance.
+   */
+  private final Tika tika = new Tika();
+
   /**
    * The execute method called by maven.
    *
    * @throws MojoExecutionException when something fails.
    */
   public void execute() throws MojoExecutionException {
+    getLog().info("Validating Mojo configuration ...");
+    Args.check(deployurl != null, "deployurl is null!");
+    Args.check(project != null, "project is null!");
+    Args.check(project.getArtifact() != null, "project artifact is null!");
+    final File file = Args.notEmpty(project.getArtifact().getFile(), "artifact file is null!");
+
     getLog().info("-------DWCJ Deploy to Server:-------------");
     getLog().info("Installing DWCJ App using URL: " + deployurl);
 
-    final File file = project.getArtifact().getFile();
     Try.withResources(HttpClients::createDefault, () -> createMultipartEntity(file))
         .of((httpClient, reqEntity) -> {
           final HttpPost httpPost = new HttpPost(deployurl);
@@ -109,7 +124,7 @@ public class WebforjInstall extends AbstractMojo {
           // resource deallocation internally.
           httpClient.execute(httpPost, response -> {
             getLog().info("----------------------------------------");
-            getLog().info(httpPost + "response status -> " + new StatusLine(response));
+            getLog().info(httpPost + " response status -> " + new StatusLine(response));
             HttpEntity responseEntity = response.getEntity();
             String result = EntityUtils.toString(responseEntity);
             getLog().info(result);
@@ -122,7 +137,6 @@ public class WebforjInstall extends AbstractMojo {
         .onFailure(throwable -> getLog()
             .error("Error attempting deployment: " + throwable.getMessage(), throwable))
         .getOrElseThrow(MojoExecutionException::new);
-
   }
 
   /**
@@ -132,14 +146,32 @@ public class WebforjInstall extends AbstractMojo {
    * @return an HttpEntity created by using the builder
    * @throws IOException if we can't probe the content type of the file.
    */
-  protected HttpEntity createMultipartEntity(File file) throws IOException {
-    ContentType mimetype = ContentType.create(Files.probeContentType(file.toPath()));
+  public HttpEntity createMultipartEntity(File file) throws IOException {
+    getLog().info("creating multipart entity for file %s".formatted(file));
+    String contentType = getContentType(file);
+    getLog().info("discovered content type = %s".formatted(contentType));
+    ContentType mimetype = ContentType.create(contentType);
     getLog().info("Installing file " + file + ", mimetype = " + mimetype);
     FileBody fileBody = new FileBody(file, mimetype);
 
-    return MultipartEntityBuilder.create().setMode(HttpMultipartMode.EXTENDED)
-        .addPart("jar", fileBody).setCharset(StandardCharsets.UTF_8)
+    return MultipartEntityBuilder.create() //
+        .setMode(HttpMultipartMode.EXTENDED) //
+        .addPart("jar", fileBody) //
+        .setCharset(StandardCharsets.UTF_8) //
         .setContentType(ContentType.MULTIPART_FORM_DATA).build();
+  }
+
+  /**
+   * Obtain the content type, if possible, returning a default OCTET_STREAM if unable to detect it.
+   *
+   * @param file the file to test the content type.
+   * @return the content type in a string, MimeTypes.OCTET_STREAM if unable to find it.
+   */
+  public String getContentType(File file) {
+    return Try.of(() -> Files.probeContentType(file.toPath())) //
+        .onFailure(throwable -> Try.of(() -> tika.detect(file))) //
+        .map(s -> StringUtils.isNotBlank(s) ? s : MimeTypes.OCTET_STREAM)
+        .getOrElse(MimeTypes.OCTET_STREAM); //
   }
 
 }
