@@ -167,7 +167,7 @@ public class WebforjInstall extends AbstractMojo {
    * @param file the file to test the content type.
    * @return the content type in a string, MimeTypes.OCTET_STREAM if unable to find it.
    */
-  public String getContentType(File file)  {
+  public String getContentType(File file) {
     return Try.of(() -> Files.probeContentType(file.toPath())) //
         .onFailure(throwable -> Try.of(() -> tika.detect(file))) //
         .map(s -> StringUtils.isNotBlank(s) ? s : MimeTypes.OCTET_STREAM)

@@ -147,7 +147,7 @@ class WebforjInstallTest {
   }
 
   @Test
-  void test_get_content_type_unknown_type()  {
+  void test_get_content_type_unknown_type() {
     File file = getResourceFile("test.xxx");
     assertTrue(file.exists());
     String contentType = webforjInstall.getContentType(file);
