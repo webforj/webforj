@@ -6,6 +6,7 @@
 [![Tests](https://github.com/webforj/webforj/actions/workflows/tests.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/tests.yml)
 [![Checkstyle](https://github.com/webforj/webforj/actions/workflows/checkstyle.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/checkstyle.yml)
 [![Publish](https://github.com/webforj/webforj/actions/workflows/publish.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/publish.yml)
+![Maven Central](https://img.shields.io/maven-central/v/com.webforj/webforj-parent.svg)
 
 </p>
 
