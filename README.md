@@ -2,6 +2,7 @@
 <p>
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=webforj&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=webforj)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8775/badge)](https://www.bestpractices.dev/projects/8775)
 [![Tests](https://github.com/webforj/webforj/actions/workflows/tests.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/tests.yml)
 [![Checkstyle](https://github.com/webforj/webforj/actions/workflows/checkstyle.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/checkstyle.yml)
 [![Publish](https://github.com/webforj/webforj/actions/workflows/publish.yml/badge.svg)](https://github.com/webforj/webforj/actions/workflows/publish.yml)
