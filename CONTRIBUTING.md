@@ -70,28 +70,28 @@ for future use.
 Now the code from GitHub must be compiled and packaged. To start this process,
 navigate to the "**engine**" folder that was just cloned from GitHub.
 
-![Opening a folder](https://dwcj.org/assets/images/image9-371df24785c37671d1755ecfb1b03380.jpg)
+![Opening a folder](https://documentation.webforj.com/img/contributors/image9.jpg)
 <br/>
 
-![Selecting a folder](https://dwcj.org/assets/images/image10-c7dbae9acf70c8cb581c580106d9866d.jpg)
+![Selecting a folder](https://documentation.webforj.com/img/contributors/image10.jpg)
 <br/>
 
 Once the folder has been opened, you should see the various files and folders 
 open in the panel on the left of your screen. First, navigate to the pom.xml
 file and open this in your editor. 
 
-![pom.xml window](https://dwcj.org/assets/images/image30-1d4ca783d910ab827b5351057f1d0dc8.jpg)
+![pom.xml window](https://documentation.webforj.com/img/contributors/image30.jpg)
 <br/>
 
 Now Maven will be used to package the engine and create a .jar file. Begin the process 
 by running `mvn clean` in the engine directory.
 
-![Maven clean command](https://dwcj.org/assets/images/image32-5b0ec6a173f51c72e562cd148f77b9c1.jpg)
+![Maven clean command](https://documentation.webforj.com/img/contributors/image32.jpg)
 <br/>
 
 If this runs properly, you should see **BUILD SUCCESS**:
 
-![Maven clean output](https://dwcj.org/assets/images/image33-dc4f275ef3dd920fc9f776d03b6009af.jpg)
+![Maven clean output](https://documentation.webforj.com/img/contributors/image33.jpg)
 <br/>
 
 Finally, we’ll package the code into a .jar file we can use. We’ll do this by running 
@@ -99,14 +99,14 @@ Finally, we’ll package the code into a .jar file we can use. We’ll do this b
 a final **BUILD SUCCESS** message should display:
 
 
-![Maven compile command and output](https://dwcj.org/assets/images/image34-934b8bc1b084dfdf8598848287e68fed.jpg)
+![Maven compile command and output](https://documentation.webforj.com/img/contributors/image34.jpg)
 <br/>
 
 After completing these steps, you should have a .jar file that you can use in the BASIS 
 enterprise manager. The version of the .jar file will differ as releases are pushed to 
 Github. This file should be found in “engine>target>lib”, as shown below:
 
-![Final packaged JAR](https://dwcj.org/assets/images/image35-54cfc9be083aca7a668e9d479b6bcbe4.jpg)
+![Final packaged JAR](https://documentation.webforj.com/img/contributors/image35.jpg)
 
 <a name='packageSection'></a>
 
@@ -121,7 +121,7 @@ Open the Enterprise Manager by navigating to
 in a browser window. This will take you to a login screen, where the
 username is ***admin*** and the password is ***admin123***.
 
-![Restarting Barista from the Windows start menu](https://dwcj.org/assets/images/image17-58ff98b94a69ff9b6855a85ca6f758ab.jpg)
+![Logging into the EM](https://documentation.webforj.com/img/contributors/image17.jpg)
 <br/>
 
 <a name='classpathSection'></a>
@@ -132,13 +132,13 @@ After opening the Enterprise Manager, navigate to the Java Settings tab.
 To do so, double click on **BBjServices** on the lefthand toolbar, and
 then double click **Java Settings**.
 
-![Java settings sidebar option](https://dwcj.org/assets/images/image18-6aca0e2f3305f3ea3a5cf23695f7b1fd.jpg)
+![Java settings sidebar option](https://documentation.webforj.com/img/contributors/image18.jpg)
 <br/>
 
 On reaching the Java Settings tab, add a new custom classpath. This can
 be done by using the **Classpath** tab at the botton of the screen.
 
-![Classpath tab option](https://dwcj.org/assets/images/image19-b5f16f7767b13e9e1e27ed811256428a.jpg)
+![Classpath tab option](https://documentation.webforj.com/img/contributors/image19.jpg)
 <br/>
 
 To add a new custom classpath, use the green "**+**" button near the
@@ -148,7 +148,7 @@ middle of your Enterprise Manger window. Name your classpath something like
 Note that two classpaths need to be added: BBj's default classpath as well
 as the .jar file that was packaged in **[this step](#packageSection)**.
 
-![Adding a new classpath](https://dwcj.org/assets/images/image20-9449b3944891399173f46d3b49047893.jpg)
+![Adding a new classpath](https://documentation.webforj.com/img/contributors/image20.jpg)
 <br/>
 
 The first classpath to add is BBj's default classpath. This can be done by
@@ -156,7 +156,7 @@ selecting **Existing Classpath**, which will populate a list of the various
 classpaths already configured in the Enterprise Manager. Select
 **bbj_default** and press **Add**.
 
-![Selecting bbj_default](https://dwcj.org/assets/images/image21-11df18432c1b447702da6049fb2fae20.jpg)
+![Selecting bbj_default](https://documentation.webforj.com/img/contributors/image21.jpg)
 <br/>
 
 Select the same green "**+**" button on the right side of the acreen again.
@@ -165,24 +165,24 @@ DWCJ code into. The folder will be called "**engine**". From there, select
 the "**target**" folder. Inside this folder, you should see the "**webforj-foundation-XX.XX.jar**" file, with the X's replaced by numeric values. The path may look similar to "**C:\engine\target\webforj-foundation-XX.XX.jar**". Select the .jar file and then click the "**Open**"
 button.
 
-![Opening the DWCJ .jar file](https://dwcj.org/assets/images/image22-0f18a08865f7f5db648e9897473ddd3e.jpg)
+![Opening the DWCJ .jar file](https://documentation.webforj.com/img/contributors/image22.jpg)
 <br/>
 
 Once this is done, save your work by clikcing the save button near the top left of the Enterprise Manager window.
 
-![Saving new custom classpath](https://dwcj.org/assets/images/image23-9af5f6a4129e69b992900c68ab792fca.jpg)
+![Saving new custom classpath](https://documentation.webforj.com/img/contributors/image23.jpg)
 <br/>
 
 ### Create our DWCJ Application
 
 The DWCJ application needs to be added into the Enterprise Manager. To do this, start by navigating to the Applications option on the left sidebar. Do this by double clicking the "**Web**" option, then double click "**App Deployment**", and finally "**Applications**". 
 
-![Selecting the Application option](https://dwcj.org/assets/images/image24-a3737a6e12446bb6a0df3ad7934294c4.jpg)
+![Selecting the Application option](https://documentation.webforj.com/img/contributors/image24.jpg)
 <br/>
 
 This should display a list of applications. Create a new application using the "**+**" button in the panel.
 
-![Adding a new application](https://dwcj.org/assets/images/image25-bd31f09f451643884b336b180b829054.jpg)
+![Adding a new application](https://documentation.webforj.com/img/contributors/image25.jpg)
 <br/>
 
 Give your application a name - "**dwcj**" will be used for this example. The
@@ -193,19 +193,19 @@ something like "**C:\engine\bbj\\**". Select the dwcj classpath that was
 created in the **[classpath section](#classpathSection)** in the Classpath
 field. Finally, check the "**DWC Web App Enabled**" box. 
 
-![Application configuration options](https://dwcj.org/assets/images/image26-5bc2d80c51f44dd3e05e73a244febf30.jpg)
+![Application configuration options](https://documentation.webforj.com/img/contributors/image26.jpg)
 <br/>
 
 To complete the configuration needed in the Enterprise Manager, save your 
 application using the save button towards the top left of your window. 
 
-![Save your work in the application screen](https://dwcj.org/assets/images/image27-7793f221886d5980a35a73e7da730bf7.jpg)
+![Save your work in the application screen](https://documentation.webforj.com/img/contributors/image27.jpg)
 <br/>
 
 After saving, click on the "**Launch in Browser**" button at the top right
 of the Enterprise Manager window. 
 
-![Launch your application button](https://dwcj.org/assets/images/image28-c3383a42f0c3c9ad90873f382ecd83d2.jpg)
+![Launch your application button](https://documentation.webforj.com/img/contributors/image28.jpg)
 <br/>
 
 This will launch your application in a new, discrete browser window. You
@@ -214,7 +214,7 @@ If you've successfully followed this guide, you should see the following
 welcome screen, unless additional configuration steps have been taken 
 in the DWCJ code.
 
-![Launch your application button](https://dwcj.org/assets/images/image29-491b1295a4af5ecd6773c1c412526a93.jpg)
+![Launch your application button](https://documentation.webforj.com/img/contributors/image29.jpg)
 <br/>
 
 ## Start Contributing
