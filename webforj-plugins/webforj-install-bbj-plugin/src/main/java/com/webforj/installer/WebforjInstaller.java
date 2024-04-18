@@ -326,7 +326,7 @@ public final class WebforjInstaller {
       // create BBj classpath
       log.info("Creating BBj classpath");
       ArrayList<String> cpEntries = new ArrayList<>();
-      cpEntries.add("(bbj_default)");
+      cpEntries.add("(_webforj_default)");
       cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true) + "*");
       cpEntries.add(FilenameUtils.normalize(zipFilePathName, true));
 
