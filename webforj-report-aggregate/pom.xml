@@ -23,12 +23,24 @@
       <version>${project.version}</version>
     </dependency>
 
-   <!-- webforj-plugins -->
-   <dependency>
-    <groupId>com.webforj</groupId>
-    <artifactId>webforj-install-bbj-plugin</artifactId>
-    <version>${project.version}</version>
-  </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-data</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-dispatcher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- webforj-plugins -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-install-bbj-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-install-maven-plugin</artifactId>
