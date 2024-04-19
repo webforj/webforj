@@ -369,6 +369,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
         result = validator.validate(transformedValue);
         if (!result.isValid()) {
           messages.addAll(result.getMessages());
+          break;
         }
       }
 
