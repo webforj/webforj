@@ -61,8 +61,7 @@ public class JakartaValidator<B, V> implements Validator<V>, BeanAware<B>, Prope
     if (violations.isEmpty()) {
       return ValidationResult.valid();
     } else {
-      return ValidationResult.invalid(
-          violations.stream().map(v -> getMessage(v, locale)).toList());
+      return ValidationResult.invalid(violations.stream().map(v -> getMessage(v, locale)).toList());
     }
   }
 
