@@ -10,6 +10,7 @@ import com.webforj.data.binding.annotation.UseProperty;
 import com.webforj.data.binding.annotation.UseTransformer;
 import com.webforj.data.binding.annotation.UseValidator;
 import com.webforj.data.validation.server.ValidationResult;
+import com.webforj.data.validation.server.validator.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -340,6 +341,44 @@ class BindingContextTest {
 
       assertFalse(result.isValid());
       assertTrue(result.getMessages().contains("Check the Age is > 18"));
+    }
+  }
+
+  @Nested
+  class DifferentTypeBinding {
+    @Test
+    void shouldBindDifferentType() {
+      // @formatter:off
+      NameComponentMock ageComponent = new NameComponentMock("30");
+      BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+      context.bind(ageComponent, "age", Integer.class)
+          .useTransformer(new StringIntegerTransformer())
+          .useValidator(Validator.of(new AgeValidator(), "Check the Age is > 18"))
+          .add();
+      // @formatter:on
+
+      PersonBean bean = new PersonBean();
+      assertTrue(context.write(bean).isValid());
+
+      assertEquals(30, bean.getAge());
+    }
+
+    @Test
+    void shouldBindDifferentTypeWithAnnotation() {
+      class Container {
+        @UseProperty("age")
+        @UseTransformer(StringIntegerTransformer.class)
+        @UseValidator(value = AgeValidator.class, message = "Check the Age is > 18")
+        NameComponentMock ageComponent = new NameComponentMock("30");
+      }
+
+      Container container = new Container();
+      BindingContext<PersonBean> context = BindingContext.from(container, PersonBean.class);
+
+      PersonBean bean = new PersonBean();
+      assertTrue(context.write(bean).isValid());
+
+      assertEquals(30, bean.getAge());
     }
   }
 }

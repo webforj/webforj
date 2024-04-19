@@ -192,6 +192,24 @@ public class BindingContext<B> {
    *
    * @param <C> The type of the UI component
    * @param <V> The type of the value
+   * @param <BV> The type of the bean value
+   *
+   * @param component The UI component to bind
+   * @param property The bean property to bind
+   * @param beanValueClass The class of the bean value
+   *
+   * @return The binding context.
+   */
+  public <C extends ValueAware<C, V>, V, BV> BindingBuilder<C, V, B, BV> bind(C component,
+      String property, Class<BV> beanValueClass) {
+    return new FieldBindingBuilderImpl<>(component, property);
+  }
+
+  /**
+   * Adds a binding to the context.
+   *
+   * @param <C> The type of the UI component
+   * @param <V> The type of the value
    * @param component The UI component to bind
    * @param property The bean property to bind
    *
@@ -199,7 +217,7 @@ public class BindingContext<B> {
    */
   public <C extends ValueAware<C, V>, V> BindingBuilder<C, V, B, V> bind(C component,
       String property) {
-    return new FieldBindingBuilderImpl<>(component, property);
+    return bind(component, property, null);
   }
 
   /**
@@ -546,10 +564,10 @@ public class BindingContext<B> {
     return results;
   }
 
-  private final class FieldBindingBuilderImpl<C extends ValueAware<C, V>, V>
-      implements BindingBuilder<C, V, B, V> {
+  private final class FieldBindingBuilderImpl<C extends ValueAware<C, CV>, CV, BV>
+      implements BindingBuilder<C, CV, B, BV> {
 
-    private Binding<C, V, B, V> fieldBinding;
+    private Binding<C, CV, B, BV> fieldBinding;
     private String property;
     private C component;
     private boolean isUsingJakartaValidator = false;
@@ -595,54 +613,54 @@ public class BindingContext<B> {
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useGetter(Function<B, V> getter) {
+    public BindingBuilder<C, CV, B, BV> useGetter(Function<B, BV> getter) {
       fieldBinding.setGetter(getter);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useSetter(BiConsumer<B, V> setter) {
+    public BindingBuilder<C, CV, B, BV> useSetter(BiConsumer<B, BV> setter) {
       fieldBinding.setSetter(setter);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useTransformer(Transformer<V, V> transformer,
+    public BindingBuilder<C, CV, B, BV> useTransformer(Transformer<CV, BV> transformer,
         String message) {
       fieldBinding.setTransformer(transformer, message);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> readOnly(boolean readOnly) {
+    public BindingBuilder<C, CV, B, BV> readOnly(boolean readOnly) {
       fieldBinding.setReadOnly(readOnly);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> required(boolean required) {
+    public BindingBuilder<C, CV, B, BV> required(boolean required) {
       fieldBinding.setRequired(required);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useValidator(Validator<V> validator) {
+    public BindingBuilder<C, CV, B, BV> useValidator(Validator<BV> validator) {
       fieldBinding.addValidator(validator);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useValidator(Predicate<V> validator, String message) {
+    public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator, String message) {
       fieldBinding.addValidator(Validator.of(validator, message));
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useValidatorsList(List<Validator<V>> validators,
+    public BindingBuilder<C, CV, B, BV> useValidatorsList(List<Validator<BV>> validators,
         List<String> messages) {
       List<String> messagesCopy = new ArrayList<>(messages);
 
-      for (Validator<V> validator : validators) {
+      for (Validator<BV> validator : validators) {
         if (messagesCopy.isEmpty()) {
           fieldBinding.addValidator(validator);
         } else {
@@ -655,7 +673,7 @@ public class BindingContext<B> {
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useJakartaValidator(Locale locale) {
+    public BindingBuilder<C, CV, B, BV> useJakartaValidator(Locale locale) {
       if (!(property != null && !property.isEmpty())) {
         return this;
       }
@@ -671,18 +689,19 @@ public class BindingContext<B> {
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useReporter(BindingReporter<C, V, B, V> reporter) {
+    public BindingBuilder<C, CV, B, BV> useReporter(BindingReporter<C, CV, B, BV> reporter) {
       fieldBinding.setReporter(reporter);
       return this;
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> useDefaultReporter(Function<List<String>, String> formatter) {
+    public BindingBuilder<C, CV, B, BV> useDefaultReporter(
+        Function<List<String>, String> formatter) {
       return useReporter(new DefaultBindingReporter<>(formatter));
     }
 
     @Override
-    public BindingBuilder<C, V, B, V> autoValidate(boolean autoValidationOnChange) {
+    public BindingBuilder<C, CV, B, BV> autoValidate(boolean autoValidationOnChange) {
       fieldBinding.setAutoValidate(autoValidationOnChange);
       return this;
     }
