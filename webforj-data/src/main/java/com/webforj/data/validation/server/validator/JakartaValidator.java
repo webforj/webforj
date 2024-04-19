@@ -10,7 +10,6 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.metadata.ConstraintDescriptor;
 import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Adapter for Jakarta Validation API.
