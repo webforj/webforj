@@ -28,6 +28,13 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
 public final class RadioButton extends DwcOptionInput<RadioButton> {
 
   /**

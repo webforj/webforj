@@ -136,9 +136,7 @@ public class BindingContext<B> {
       }
 
       // check if the field value is a ValueAware component
-      if (fieldValue instanceof ValueAware) {
-        ValueAware valueAware = (ValueAware) fieldValue;
-
+      if (fieldValue instanceof ValueAware valueAware) {
         // build the transformer config
         SimpleImmutableEntry<Transformer<?, ?>, String> transformerConfig =
             processUseTransformerAnnotation(field);
@@ -161,8 +159,8 @@ public class BindingContext<B> {
         context.bind(valueAware, name).useTransformer(transformer, transformerMessage)
             .useValidatorsList(validators, messages).add();
 
-        if (valueAware instanceof AutomaticBindAware) {
-          ((AutomaticBindAware) valueAware).onAutomaticBind(context, beanClass, name, field);
+        if (valueAware instanceof AutomaticBindAware automaticBindAware) {
+          automaticBindAware.onAutomaticBind(context, beanClass, name, field);
         }
       }
     }
@@ -214,8 +212,8 @@ public class BindingContext<B> {
     ValueAware<?, ?> component = bindings.get(property).getComponent();
     bindings.remove(property);
 
-    if (component instanceof UnbindAware) {
-      ((UnbindAware) component).onUnbind(this, beanClass, property);
+    if (component instanceof UnbindAware unbindAware) {
+      unbindAware.onUnbind(this, beanClass, property);
     }
 
     return this;
@@ -311,8 +309,8 @@ public class BindingContext<B> {
     }
 
     if (!isValid && isAutoFocusFirstViolation() && firstInvalidComponent != null
-        && firstInvalidComponent instanceof FocusAcceptorAware) {
-      ((FocusAcceptorAware) firstInvalidComponent).focus();
+        && firstInvalidComponent instanceof FocusAcceptorAware focusAcceptorAware) {
+      focusAcceptorAware.focus();
     }
 
     return isValid ? ValidationResult.valid() : ValidationResult.invalid(messages);
@@ -694,8 +692,8 @@ public class BindingContext<B> {
     public BindingContext<B> add() {
       bindings.put(property, fieldBinding);
 
-      if (component instanceof BindAware) {
-        ((BindAware) component).onBind(BindingContext.this, beanClass, property);
+      if (component instanceof BindAware bindAware) {
+        bindAware.onBind(BindingContext.this, beanClass, property);
       }
 
       return BindingContext.this;

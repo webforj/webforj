@@ -241,8 +241,8 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    */
   public Binding<C, CV, B, BV> setReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
-    if (component instanceof ReadOnlyAware) {
-      ((ReadOnlyAware) component).setReadOnly(readOnly);
+    if (component instanceof ReadOnlyAware readonlyAware) {
+      readonlyAware.setReadOnly(readOnly);
     }
 
     return this;
@@ -274,8 +274,8 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     this.required = required;
     updateClientAutoValidation(!required);
 
-    if (component instanceof RequiredAware) {
-      ((RequiredAware) component).setRequired(required);
+    if (component instanceof RequiredAware requiredAware) {
+      requiredAware.setRequired(required);
     }
 
     return this;
