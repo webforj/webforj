@@ -7,7 +7,6 @@ class AgeValidator implements Validator<Integer> {
 
   @Override
   public ValidationResult validate(Integer value) {
-    // Example validation
     return value > 18 ? ValidationResult.valid() : ValidationResult.invalid("Age must be over 18");
   }
 }
