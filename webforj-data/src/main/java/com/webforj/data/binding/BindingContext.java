@@ -106,7 +106,7 @@ public class BindingContext<B> {
    *
    * @return a new {@code BindingContext} instance
    */
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings({"unchecked"})
   public static <B> BindingContext<B> from(Object object, Class<B> beanClass,
       boolean useJakartaValidator) {
     BindingContext<B> context = new BindingContext<>(beanClass, useJakartaValidator);
