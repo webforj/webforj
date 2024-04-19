@@ -36,12 +36,15 @@ public interface Transformer<CV, MV> {
   /**
    * Returns a transformer that uses the given functions to transform the values.
    *
+   * @param <CV> The type of the view value.
+   * @param <MV> The type of the model value.
+   *
    * @param toModel The function to use to transform the view value to the model value.
    * @param toView The function to use to transform the model value to the view value.
    *
    * @return The transformer.
    */
-  public default Transformer<CV, MV> of(Function<CV, MV> toModel, Function<MV, CV> toView) {
+  public static <CV, MV> Transformer<CV, MV> of(Function<CV, MV> toModel, Function<MV, CV> toView) {
     return new Transformer<CV, MV>() {
       @Override
       public MV transformToModel(CV viewValue) {

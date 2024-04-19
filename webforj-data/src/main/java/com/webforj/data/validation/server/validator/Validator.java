@@ -25,7 +25,9 @@ public interface Validator<V> {
   /**
    * Creates a validator from a predicate.
    *
+   * @param <V> the type of the value that is being validated.
    * @param predicate the predicate to use for validation.
+   *
    * @return a validator that uses the predicate to validate the value.
    */
   public static <V> Validator<V> of(Predicate<V> predicate, String message) {
@@ -36,7 +38,9 @@ public interface Validator<V> {
   /**
    * Creates a validator that uses another validator to validate the value.
    *
+   * @param <V> the type of the value that is being validated.
    * @param validator the validator to use.
+   *
    * @return a validator that uses the given validator to validate the value.
    */
   public static <V> Validator<V> of(Validator<V> validator, String message) {
