@@ -290,7 +290,6 @@ public class BindingContext<B> {
    * @param report whether to report the validation result using the {@link BindingReporter}
    * @return the validation result.
    */
-  @SuppressWarnings("rawtypes")
   public ValidationResult validate(boolean report) {
     List<String> messages = new ArrayList<>();
     boolean isValid = true;
