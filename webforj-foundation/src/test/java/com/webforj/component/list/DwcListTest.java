@@ -395,10 +395,10 @@ class DwcListTest {
   @Test
   @DisplayName("adding/removing supported events")
   void addingRemovingSupportedEvents() {
-    EventListener<ListSelectEvent> selectListener = event -> {
+    EventListener<ListSelectEvent<ListItem>> selectListener = event -> {
     };
 
-    ListenerRegistration<ListSelectEvent> r = component.onSelect(selectListener);
+    ListenerRegistration<ListSelectEvent<ListItem>> r = component.onSelect(selectListener);
     assertEquals(1, component.getEventListeners(ListSelectEvent.class).size());
 
     r.remove();

@@ -1,20 +1,25 @@
 package com.webforj.component.optioninput;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import java.util.List;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasClientValidationStyle.ValidationStyle;
 import com.webforj.exceptions.WebforjRuntimeException;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -219,6 +224,63 @@ class RadioButtonGroupTest {
         throws BBjException, IllegalAccessException {
       doThrow(BBjException.class).when(group).setName(any());
       assertThrows(WebforjRuntimeException.class, () -> component.setName("name"));
+    }
+  }
+
+  @Nested
+  class ValueApi {
+
+    @Test
+    void shouldCheckByValue() {
+      RadioButton[] buttons =
+          {new RadioButton("Option 1", true), new RadioButton("Option 2", false)};
+      component.add(buttons);
+
+      component.setValue("Option 2");
+      assertTrue(buttons[1].isChecked());
+    }
+  }
+
+  @Nested
+  class ValidationApi {
+    RadioButton[] buttons = {mock(RadioButton.class), mock(RadioButton.class)};
+
+    @BeforeEach
+    void setup() throws IllegalAccessException {
+      nullifyGroup();
+      component.add(buttons);
+    }
+
+    @Test
+    void shouldConfigureInvalid() {
+      when(buttons[0].isInvalid()).thenReturn(true);
+
+      component.setInvalid(true);
+      verify(buttons[0], times(1)).setInvalid(true);
+      verify(buttons[1], times(0)).setInvalid(true);
+    }
+
+    @Test
+    void shouldConfigureInvalidWithMessage() {
+      String message = "Invalid message";
+      when(buttons[0].getInvalidMessage()).thenReturn(message);
+      component.setInvalidMessage(message);
+
+      verify(buttons[0], times(1)).setInvalidMessage(message);
+      assertEquals(message, component.getInvalidMessage());
+    }
+
+    @Test
+    void shouldConfigureValidationStyle() {
+      List.of(buttons)
+          .forEach(button -> when(button.getValidationStyle()).thenReturn(ValidationStyle.INLINE));
+
+      component.setValidationStyle(ValidationStyle.INLINE);
+
+      verify(buttons[0], times(1)).setValidationStyle(ValidationStyle.INLINE);
+      verify(buttons[1], times(1)).setValidationStyle(ValidationStyle.INLINE);
+
+      assertEquals(ValidationStyle.INLINE, component.getValidationStyle());
     }
   }
 }

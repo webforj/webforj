@@ -11,6 +11,11 @@ import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.component.list.sink.ListClickEventSink;
 import com.webforj.component.list.sink.ListCloseEventSink;
 import com.webforj.component.list.sink.ListOpenEventSink;
+import com.webforj.component.list.transformer.ObjectStringTransformer;
+import com.webforj.data.binding.Binding;
+import com.webforj.data.binding.BindingContext;
+import com.webforj.data.binding.concern.BindAware;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -27,7 +32,15 @@ import com.webforj.exceptions.WebforjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T> {
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends DwcList<T, Object>
+    implements BindAware {
   private final EventSinkListenerRegistry<ListOpenEvent> openEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
           ListOpenEvent.class);
@@ -66,7 +79,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  protected DwcSelectDropdown(String label, EventListener<ListSelectEvent> selectListener) {
+  protected DwcSelectDropdown(String label, EventListener<ListSelectEvent<Object>> selectListener) {
     super(label, selectListener);
   }
 
@@ -267,6 +280,34 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
   }
 
   /**
+   * Alias for {@link #selectKey(Object)}.
+   *
+   * @param key the key of the item to be selected.
+   *
+   * @return the component itself.
+   */
+  @Override
+  public T setValue(Object key) {
+    try {
+      return selectKey(key);
+    } catch (IllegalArgumentException e) {
+      // pass
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * Alias for {@link #getSelected()}.
+   *
+   * @return the selected key.
+   */
+  @Override
+  public Object getValue() {
+    return getSelectedKey();
+  }
+
+  /**
    * Adds a {@link ListOpenEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -327,6 +368,36 @@ public abstract class DwcSelectDropdown<T extends DwcList<T>> extends DwcList<T>
    */
   public ListenerRegistration<ListClickEvent> onClick(EventListener<ListClickEvent> listener) {
     return addClickListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<Object>> addValueChangeListener(
+      EventListener<ValueChangeEvent<Object>> listener) {
+    ListenerRegistration<ValueChangeEvent<Object>> registration =
+        getEventDispatcher().addListener(ValueChangeEvent.class, listener);
+
+    addSelectListener(ev -> {
+      Object item = ev.getSelectedItem().getKey();
+      ValueChangeEvent<Object> valueChangeEvent = new ValueChangeEvent<>(this, item);
+      getEventDispatcher().dispatchEvent(valueChangeEvent);
+    });
+
+    return registration;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public <B> void onBind(BindingContext<B> context, Class<B> beanClass, String propertyName) {
+    if (!context.getBinding(propertyName).getTransformer().isPresent()) {
+      Binding<T, Object, B, String> binding =
+          (Binding<T, Object, B, String>) context.getBinding(getSelf());
+      binding.setTransformer(new ObjectStringTransformer());
+    }
   }
 
   /**

@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
   private final DwcEventSink sink;
-  private final Class<T> event;
+  private final Class<? super T> event;
   private final List<DwcListenerRegistration> registrations = new ArrayList<>();
   private String singleCallbackId = "";
   private final Map<EventListener<T>, String> callbackIds = new HashMap<>();
@@ -32,7 +32,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    * @param sink The corresponding sink to the event
    * @param event The corresponding event to the sink
    */
-  public EventSinkListenerRegistry(DwcEventSink sink, Class<T> event) {
+  public EventSinkListenerRegistry(DwcEventSink sink, Class<? super T> event) {
     this.sink = sink;
     this.event = event;
   }

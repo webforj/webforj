@@ -5,6 +5,7 @@ import com.basis.startup.type.BBjException;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.DwcFocusableComponent;
+import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.event.CheckEvent;
 import com.webforj.component.event.EventSinkListenerRegistry;
@@ -16,12 +17,13 @@ import com.webforj.component.event.sink.UncheckEventSink;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasTextPosition;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
- * The Base class for all DWC (DWCJ Web Components) option input components.
+ * The Base class for all DWC option input components.
  *
  * <p>
  * This abstract class serves as the foundation for all option input components within the
@@ -38,8 +40,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTextPosition<T>>
-    extends DwcFocusableComponent<T>
+public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolean> & HasTextPosition<T>>
+    extends DwcValidatableComponent<T, Boolean>
     implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus {
 
   private final EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
@@ -108,6 +110,26 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
     }
 
     return this.checked;
+  }
+
+  /**
+   * Alias for {@link #setChecked(boolean) setChecked}.
+   *
+   * @param value true if checked, false if unchecked.
+   */
+  @Override
+  public T setValue(Boolean value) {
+    return setChecked(value);
+  }
+
+  /**
+   * Alias for {@link #isChecked() isChecked}.
+   *
+   * @return false if not checked, true if checked.
+   */
+  @Override
+  public Boolean getValue() {
+    return isChecked();
   }
 
   /**
@@ -230,6 +252,23 @@ public abstract class DwcOptionInput<T extends DwcFocusableComponent<T> & HasTex
    */
   public ListenerRegistration<ToggleEvent> onToggle(EventListener<ToggleEvent> listener) {
     return addToggleListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<Boolean>> addValueChangeListener(
+      EventListener<ValueChangeEvent<Boolean>> listener) {
+    ListenerRegistration<ValueChangeEvent<Boolean>> registration =
+        getEventDispatcher().addListener(ValueChangeEvent.class, listener);
+
+    addToggleListener(ev -> {
+      ValueChangeEvent<Boolean> valueChangeEvent = new ValueChangeEvent<>(this, ev.isToggled());
+      getEventDispatcher().dispatchEvent(valueChangeEvent, (l, e) -> l.equals(listener));
+    });
+
+    return registration;
   }
 
   /**

@@ -80,7 +80,7 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
   public Double getValue() {
     String value = getText();
 
-    if (value == null || value.isEmpty()) {
+    if (value == null || value.isEmpty() || "null".equals(value)) {
       return null;
     }
 
@@ -207,5 +207,17 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
   @ExcludeFromJacocoGeneratedReport
   public Alignment getHorizontalAlignment() {
     return getComponentHorizontalAlignment();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Double convertValue(String value) {
+    try {
+      return Double.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 }

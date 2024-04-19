@@ -6,7 +6,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
-import com.webforj.component.DwcFocusableComponent;
+import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.list.event.ListSelectEvent;
@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
 /**
  * An abstract class representing a list of items, where each item is associated with a key and a
@@ -35,6 +35,7 @@ import java.util.UUID;
  * class is used as a foundation for creating various list components.
  *
  * @param <T> The type of the implementing component.
+ * @param <V> The type of the value associated with the list.
  *
  * @see ListItem
  * @see ListBox
@@ -44,9 +45,9 @@ import java.util.UUID;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
-    implements Iterable<ListItem>, HasLabel<T>, HasExpanse<T, Expanse>, HasHorizontalAlignment<T>,
-    SelectableList<T> {
+public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
+    extends DwcValidatableComponent<T, V> implements Iterable<ListItem>, HasLabel<T>,
+    HasExpanse<T, Expanse>, HasHorizontalAlignment<T>, SelectableList<T> {
   private static final String DUPLICATION_ITEM_MESSAGE = "Item is already in the list";
   private static final String ITEM_MISSING_MESSAGE = "Item is not in the list";
   private static final String INVALID_INDEX_MESSAGE = "Invalid item index '%d'";
@@ -55,8 +56,8 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
   private final LinkedHashMap<Object, ListItem> items = new LinkedHashMap<>();
   private final List<ListItem> selectedItems = new ArrayList<>();
 
-  private final EventSinkListenerRegistry<ListSelectEvent> selectEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ListSelectEventSink(this, getEventDispatcher()),
+  private final EventSinkListenerRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new ListSelectEventSink<V>(this, getEventDispatcher()),
           ListSelectEvent.class);
 
   private String label = "";
@@ -82,7 +83,7 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  protected DwcList(String label, EventListener<ListSelectEvent> selectListener) {
+  protected DwcList(String label, EventListener<ListSelectEvent<V>> selectListener) {
     this(label);
     addSelectListener(selectListener);
   }
@@ -271,8 +272,7 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    *         in the list.
    */
   public T insert(int index, String... items) {
-    return insert(index,
-        Arrays.stream(items).map(item -> new ListItem(UUID.randomUUID(), item)).toList());
+    return insert(index, Arrays.stream(items).map(item -> new ListItem(item)).toList());
   }
 
   /**
@@ -447,6 +447,16 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
   }
 
   /**
+   * Finds the item with the specified text.
+   *
+   * @param text The text of the item to find.
+   * @return The item, or null if the text is not found.
+   */
+  public Optional<ListItem> find(String text) {
+    return items.values().stream().filter(item -> item.getText().equals(text)).findFirst();
+  }
+
+  /**
    * Returns the total count of items in the list.
    *
    * @return The number of items in the list.
@@ -469,20 +479,21 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    */
   @Override
   public T select(ListItem item) {
-    verifyItemInList(item);
+    if (item != null) {
+      verifyItemInList(item);
+      getInternalSelectedList().clear();
+      getInternalSelectedList().add(item);
 
-    getInternalSelectedList().clear();
-    getInternalSelectedList().add(item);
+      ListBehavior list = inferList();
 
-    ListBehavior list = inferList();
+      if (list != null) {
+        try {
+          int index = indexOf(item.getKey());
+          list.selectIndex(index);
 
-    if (list != null) {
-      try {
-        int index = indexOf(item.getKey());
-        list.selectIndex(index);
-
-      } catch (BBjException e) {
-        throw new WebforjRuntimeException(e);
+        } catch (BBjException e) {
+          throw new WebforjRuntimeException(e);
+        }
       }
     }
 
@@ -622,8 +633,8 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ListSelectEvent> addSelectListener(
-      EventListener<ListSelectEvent> listener) {
+  public ListenerRegistration<ListSelectEvent<V>> addSelectListener(
+      EventListener<ListSelectEvent<V>> listener) {
     return selectEventSinkListenerRegistry.addEventListener(listener);
   }
 
@@ -633,7 +644,8 @@ public abstract class DwcList<T extends DwcFocusableComponent<T>> extends DwcFoc
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<ListSelectEvent> onSelect(EventListener<ListSelectEvent> listener) {
+  public ListenerRegistration<ListSelectEvent<V>> onSelect(
+      EventListener<ListSelectEvent<V>> listener) {
     return addSelectListener(listener);
   }
 

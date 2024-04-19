@@ -70,7 +70,7 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  public ChoiceBox(String label, EventListener<ListSelectEvent> selectListener) {
+  public ChoiceBox(String label, EventListener<ListSelectEvent<Object>> selectListener) {
     super(label, selectListener);
     configureLisType();
   }

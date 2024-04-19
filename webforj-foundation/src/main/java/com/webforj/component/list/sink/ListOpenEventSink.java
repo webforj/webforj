@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjListOpenEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.event.sink.AbstractDwcEventSink;
+import com.webforj.component.list.DwcList;
 import com.webforj.component.list.DwcSelectDropdown;
 import com.webforj.component.list.event.ListOpenEvent;
 import com.webforj.dispatcher.EventDispatcher;

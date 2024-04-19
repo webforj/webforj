@@ -12,6 +12,11 @@ import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.optioninput.event.RadioButtonGroupChangeEvent;
 import com.webforj.component.optioninput.sink.RadioButtonGroupChangeSink;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasClientValidationStyle;
+import com.webforj.data.concern.FocusAcceptorAware;
+import com.webforj.data.concern.ValueAware;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.data.validation.InvalidAware;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -56,7 +61,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public final class RadioButtonGroup extends Component implements Iterable<RadioButton> {
+public final class RadioButtonGroup extends Component implements Iterable<RadioButton>,
+    InvalidAware<RadioButtonGroup>, ValueAware<RadioButtonGroup, String>,
+    HasClientValidationStyle<RadioButtonGroup>, FocusAcceptorAware<RadioButtonGroup> {
   private final List<RadioButton> buttons = new CopyOnWriteArrayList<>();
   private BBjRadioGroup group;
   private Window window;
@@ -182,6 +189,10 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
       // corresponding RadioButton.
       try {
         BBjControl currentChecked = group.getSelected();
+        if (currentChecked == null) {
+          return null;
+        }
+
         for (RadioButton button : buttons) {
           BBjControl buttonControl = ComponentAccessor.getDefault().getControl(button);
           if (buttonControl != null && (buttonControl.getID() == currentChecked.getID())) {
@@ -246,6 +257,128 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   }
 
   /**
+   * Sets the value of the RadioButtonGroup.
+   *
+   * <p>
+   * The method will check the radio button with the given name and uncheck the rest of the radio
+   * buttons.
+   * </p>
+   *
+   * @param name the name of the RadioButton to set as checked.
+   * @return the component itself.
+   */
+  @Override
+  public RadioButtonGroup setValue(String name) {
+    buttons.stream().filter(x -> x.getName().equals(name)).findFirst()
+        .ifPresent(x -> x.setChecked(true));
+
+    return this;
+  }
+
+  /**
+   * Gets the value of the RadioButtonGroup.
+   *
+   * <p>
+   * The value of the RadioButtonGroup is the name of the checked RadioButton.
+   * </p>
+   *
+   * @return the value of the RadioButtonGroup.
+   */
+  @Override
+  public String getValue() {
+    return Optional.ofNullable(getChecked()).map(RadioButton::getName).orElse(null);
+  }
+
+  /**
+   * Sets the invalid state of the RadioButtonGroup.
+   *
+   * <p>
+   * If the RadioButtonGroup is invalid, then the invalid state is set to true for the first
+   * RadioButton in the group if none is checked or the checked RadioButton otherwise.
+   * </p>
+   *
+   * @param invalid true if the RadioButtonGroup is invalid, false otherwise.
+   * @return the component itself.
+   */
+  @Override
+  public RadioButtonGroup setInvalid(boolean invalid) {
+    getCheckedOrFirst().ifPresent(x -> x.setInvalid(invalid));
+    return this;
+  }
+
+  /**
+   * Checks if the RadioButtonGroup is invalid.
+   *
+   * <p>
+   * The RadioButtonGroup is invalid if one of the RadioButtons is invalid.
+   * </p>
+   *
+   * @return true if the RadioButtonGroup is invalid, false otherwise.
+   */
+  @Override
+  public boolean isInvalid() {
+    return getCheckedOrFirst().map(RadioButton::isInvalid).orElse(false);
+  }
+
+  /**
+   * Sets the invalid message of the RadioButtonGroup.
+   *
+   * <p>
+   * If the RadioButtonGroup is invalid, then the invalid message is set for the first RadioButton
+   * in the group.
+   * </p>
+   *
+   * @param message the invalid message of the RadioButtonGroup.
+   * @return the component itself.
+   */
+  @Override
+  public RadioButtonGroup setInvalidMessage(String message) {
+    getCheckedOrFirst().ifPresent(x -> x.setInvalidMessage(message));
+    return this;
+  }
+
+  /**
+   * Gets the invalid message of the RadioButtonGroup.
+   *
+   * <p>
+   * The invalid message of the RadioButtonGroup is the invalid message of the first RadioButton in
+   * the group.
+   * </p>
+   *
+   * @return the invalid message of the RadioButtonGroup.
+   */
+  @Override
+  public String getInvalidMessage() {
+    return getCheckedOrFirst().map(RadioButton::getInvalidMessage).orElse(null);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public RadioButtonGroup setValidationStyle(ValidationStyle validationStyle) {
+    getRadioButtons().forEach(x -> x.setValidationStyle(validationStyle));
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ValidationStyle getValidationStyle() {
+    return getFirstRadioButton().map(RadioButton::getValidationStyle).orElse(null);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public RadioButtonGroup focus() {
+    getCheckedOrFirst().ifPresent(RadioButton::focus);
+    return this;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -273,6 +406,26 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   public ListenerRegistration<RadioButtonGroupChangeEvent> onChange(
       EventListener<RadioButtonGroupChangeEvent> listener) {
     return addChangeListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<String>> addValueChangeListener(
+      EventListener<ValueChangeEvent<String>> listener) {
+
+    ListenerRegistration<ValueChangeEvent<String>> registration =
+        dispatcher.addListener(ValueChangeEvent.class, listener);
+
+    addChangeListener(ev -> {
+      RadioButtonGroup source = (RadioButtonGroup) ev.getSource();
+      ValueChangeEvent<String> valueChangeEvent =
+          new ValueChangeEvent<>(source, ev.getChecked().getName());
+      dispatcher.dispatchEvent(valueChangeEvent);
+    });
+
+    return registration;
   }
 
   /**
@@ -308,5 +461,13 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   protected void onDestroy() {
     // BBjRadioGroup has no destroy method.
     // TODO : Ask Jim about whether this method should be implemented or not.
+  }
+
+  private Optional<RadioButton> getCheckedOrFirst() {
+    return Optional.ofNullable(getChecked()).or(this::getFirstRadioButton);
+  }
+
+  private Optional<RadioButton> getFirstRadioButton() {
+    return buttons.stream().findFirst();
   }
 }

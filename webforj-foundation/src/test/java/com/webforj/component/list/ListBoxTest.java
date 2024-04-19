@@ -103,15 +103,6 @@ class ListBoxTest {
     }
 
     @Test
-    @DisplayName("should throw IllegalStateException when selection mode is single and deselect with no params")
-    void shouldThrowIllegalStateExceptionWhenSelectionModeIsSingleAndDeselectWithNoParams() {
-      component.setSelectionMode(SelectionMode.SINGLE);
-      component.add("key", "value");
-
-      assertThrows(IllegalStateException.class, () -> component.deselectIndex(0));
-    }
-
-    @Test
     @DisplayName("should throw IllegalArgumentException when item not found during deselect")
     void shouldThrowIllegalArgumentExceptionWhenItemNotFoundDuringDeselect() {
       component.setSelectionMode(SelectionMode.MULTIPLE);
@@ -159,16 +150,6 @@ class ListBoxTest {
       doThrow(BBjException.class).when(control).deselectAll();
 
       assertThrows(WebforjRuntimeException.class, () -> component.deselectAll());
-    }
-
-    @Test
-    @DisplayName("should throw IllegalStateException when selection mode is single and selectAll is called")
-    void shouldThrowIllegalStateExceptionWhenSelectionModeIsSingleAndSelectAllIsCalled() {
-      component.setSelectionMode(SelectionMode.SINGLE);
-      component.add("key-1", "value-1");
-      component.add("key-2", "value-2");
-
-      assertThrows(IllegalStateException.class, () -> component.selectKey("key-1", "key-2"));
     }
 
     @Test
@@ -301,24 +282,6 @@ class ListBoxTest {
     }
 
     @Test
-    @DisplayName("should re-apply selection changes when selection mode is single")
-    void shouldReApplySelectionChangesWhenSelectionModeIsSingle()
-        throws BBjException, IllegalAccessException {
-      ReflectionUtils.nullifyControl(component);
-
-      component.add("key-1", "value-1");
-      component.add("key-2", "value-2");
-      component.selectIndex(1);
-
-      assertEquals(component.getByIndex(1), component.getSelected());
-
-      ReflectionUtils.unNullifyControl(component, control);
-      component.onAttach();
-
-      verify(control, times(1)).selectIndex(1);
-    }
-
-    @Test
     @DisplayName("should re-apply selection changes when selection mode is multiple")
     void shouldReApplySelectionChangesWhenSelectionModeIsMultiple()
         throws BBjException, IllegalAccessException {
@@ -338,6 +301,24 @@ class ListBoxTest {
       component.onAttach();
 
       verify(control, times(1)).setSelectedIndices(new BBjVector(Arrays.asList(1, 2)));
+    }
+
+    @Test
+    @DisplayName("should re-apply selection changes when selection mode is single")
+    void shouldReApplySelectionChangesWhenSelectionModeIsSingle()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.selectIndex(1);
+
+      assertEquals(component.getByIndex(1), component.getSelected());
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setSelectedIndices(new BBjVector(Arrays.asList(1)));
     }
 
     @Test

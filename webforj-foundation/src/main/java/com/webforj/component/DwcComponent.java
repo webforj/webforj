@@ -6,6 +6,7 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
+import com.webforj.App;
 import com.webforj.component.event.ComponentEvent;
 import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.event.MouseEnterEvent;

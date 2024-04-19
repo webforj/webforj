@@ -269,4 +269,12 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
     LocalDateTime truncatedDateTime2 = dateTime2.truncatedTo(ChronoUnit.SECONDS);
     return truncatedDateTime1.compareTo(truncatedDateTime2);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected LocalDateTime convertValue(String value) {
+    return DateTimeField.fromDateTime(value);
+  }
 }

@@ -7,8 +7,14 @@ import com.basis.startup.type.BBjVector;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.list.event.ListSelectEvent;
+import com.webforj.component.list.transformer.ListObjectStringTransformer;
 import com.webforj.component.window.Window;
+import com.webforj.data.binding.Binding;
+import com.webforj.data.binding.BindingContext;
+import com.webforj.data.binding.concern.BindAware;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.Arrays;
@@ -30,7 +36,15 @@ import java.util.stream.Collectors;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public final class ListBox extends DwcList<ListBox> implements MultipleSelectableList<ListBox> {
+// We're purposefully ignoring the deep inheritance warning here because we've designed our class
+// hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
+// our framework's specific goals and emphasizes the need for caution when considering any changes.
+//
+// Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
+// framework's needs. The current structure is essential for meeting those needs.
+@SuppressWarnings("squid:S110")
+public final class ListBox extends DwcList<ListBox, List<Object>>
+    implements MultipleSelectableList<ListBox>, BindAware {
 
   private SelectionMode selectionMode = SelectionMode.SINGLE;
 
@@ -56,7 +70,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  public ListBox(String label, EventListener<ListSelectEvent> selectListener) {
+  public ListBox(String label, EventListener<ListSelectEvent<List<Object>>> selectListener) {
     super(label, selectListener);
   }
 
@@ -106,10 +120,6 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    */
   @Override
   public ListBox deselect(ListItem... item) {
-    if (selectionMode == SelectionMode.SINGLE) {
-      throw new IllegalStateException("Cannot deselect a given item in single selection mode");
-    }
-
     for (ListItem i : item) {
       doDeselect(i);
     }
@@ -168,10 +178,6 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
    */
   @Override
   public ListBox select(ListItem... items) {
-    if (selectionMode == SelectionMode.SINGLE && size() > 1) {
-      throw new IllegalStateException("Cannot select more than one item in single selection mode");
-    }
-
     for (ListItem item : items) {
       verifyItemInList(item);
     }
@@ -279,6 +285,63 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
   }
 
   /**
+   * Alias for {@link #setItems(ListItem...)}.
+   *
+   * @param value the items to set
+   * @return the component itself
+   */
+  @Override
+  public ListBox setValue(List<Object> value) {
+    try {
+      return selectKey(value.toArray());
+    } catch (IllegalArgumentException e) {
+      // pass
+    }
+
+    return this;
+  }
+
+  /**
+   * Alias for {@link #getSelectedItems()}.
+   *
+   * @return the selected items
+   */
+  @Override
+  public List<Object> getValue() {
+    return getSelectedKeys();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<List<Object>>> addValueChangeListener(
+      EventListener<ValueChangeEvent<List<Object>>> listener) {
+    ListenerRegistration<ValueChangeEvent<List<Object>>> registration =
+        getEventDispatcher().addListener(ValueChangeEvent.class, listener);
+
+    addSelectListener(ev -> {
+      List<Object> keys = ev.getSelectedItems().stream().map(ListItem::getKey).toList();
+      ValueChangeEvent<List<Object>> valueChangeEvent = new ValueChangeEvent<>(this, keys);
+      getEventDispatcher().dispatchEvent(valueChangeEvent);
+    });
+
+    return registration;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public <B> void onBind(BindingContext<B> context, Class<B> beanClass, String propertyName) {
+    if (!context.getBinding(propertyName).getTransformer().isPresent()) {
+      Binding<ListBox, List<Object>, B, List<String>> binding =
+          (Binding<ListBox, List<Object>, B, List<String>>) context.getBinding(this);
+      binding.setTransformer(new ListObjectStringTransformer());
+    }
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -307,11 +370,7 @@ public final class ListBox extends DwcList<ListBox> implements MultipleSelectabl
     }
 
     if (!getInternalSelectedList().isEmpty()) {
-      if (getSelectionMode() == SelectionMode.SINGLE) {
-        catchupSingleSelection();
-      } else {
-        select(getInternalSelectedList().toArray(new ListItem[0]));
-      }
+      select(getInternalSelectedList().toArray(new ListItem[0]));
     }
   }
 

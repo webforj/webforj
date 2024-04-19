@@ -2,7 +2,6 @@ package com.webforj.component.list;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.UUID;
 
 /**
  * Represents a list item, which consists of a key and text. List items are used in list components
@@ -44,7 +43,7 @@ public final class ListItem {
    * @param text the text
    */
   public ListItem(String text) {
-    this(UUID.randomUUID(), text);
+    this(text, text);
   }
 
   /**

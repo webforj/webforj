@@ -3,6 +3,7 @@ package com.webforj.concern;
 import com.webforj.component.Component;
 import com.webforj.component.event.BlurEvent;
 import com.webforj.component.event.FocusEvent;
+import com.webforj.data.concern.FocusAcceptorAware;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 
@@ -14,14 +15,7 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public interface HasFocus<T extends Component> {
-
-  /**
-   * Gives focus to the component when it is added to a window.
-   *
-   * @return The component itself.
-   */
-  public T focus();
+public interface HasFocus<T extends Component> extends FocusAcceptorAware<T> {
 
   /**
    * Checks whether the user can focus to the component using the tab key.

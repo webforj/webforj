@@ -7,8 +7,10 @@ import static org.mockito.Mockito.verify;
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.component.event.BlurEvent;
 import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
+import com.webforj.data.concern.ValueChangeModeAware.ValueChangeMode;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import org.junit.jupiter.api.DisplayName;
@@ -90,6 +92,20 @@ class DwcFieldTest {
       r2.remove();
       assertEquals(0, component.getEventListeners(ModifyEvent.class).size());
       assertEquals(0, component.getEventListeners(KeypressEvent.class).size());
+    }
+
+    @Test
+    void shouldConfigureValueChangeEvent() {
+      component.onValueChange(e -> {
+      });
+      assertEquals(1, component.getEventListeners(ModifyEvent.class).size());
+      assertEquals(0, component.getEventListeners(BlurEvent.class).size());
+
+      component.setValueChangeMode(ValueChangeMode.ON_BLUR);
+      component.onValueChange(e -> {
+      });
+      assertEquals(1, component.getEventListeners(ModifyEvent.class).size());
+      assertEquals(1, component.getEventListeners(BlurEvent.class).size());
     }
   }
 }

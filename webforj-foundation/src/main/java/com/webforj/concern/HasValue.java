@@ -2,6 +2,7 @@ package com.webforj.concern;
 
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
+import com.webforj.data.concern.ValueAware;
 
 /**
  * An interface for modifying a component's value.
@@ -16,13 +17,14 @@ import com.webforj.component.ComponentUtil;
  * @author Hyyan Abo Fakher
  * @since 23.02
  */
-public interface HasValue<T extends Component, V> {
+public interface HasValue<T extends Component, V> extends ValueAware<T, V> {
 
   /**
    * Retrieves the value of the component.
    *
    * @return the value of the component.
    */
+  @Override
   public default V getValue() {
     Component component = ComponentUtil.getBoundComponent(this);
 
@@ -39,6 +41,7 @@ public interface HasValue<T extends Component, V> {
    * @param value the value to set.
    * @return the component itself.
    */
+  @Override
   public default T setValue(V value) {
     Component component = ComponentUtil.getBoundComponent(this);
 

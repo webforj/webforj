@@ -2,6 +2,7 @@ package com.webforj.concern;
 
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
+import com.webforj.data.concern.ReadOnlyAware;
 
 /**
  * An interface for implementing methods that allow toggling the read-only status on a component.
@@ -11,14 +12,12 @@ import com.webforj.component.ComponentUtil;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public interface HasReadOnly<T extends Component> {
+public interface HasReadOnly<T extends Component> extends ReadOnlyAware<T> {
 
   /**
-   * Sets whether a user can edit the component.
-   *
-   * @param readOnly true to disable editing, false to enable editing.
-   * @return the component itself after configuring the read-only status.
+   * {@inheritDoc}
    */
+  @Override
   public default T setReadOnly(boolean readOnly) {
     Component component = ComponentUtil.getBoundComponent(this);
 
@@ -32,10 +31,9 @@ public interface HasReadOnly<T extends Component> {
   }
 
   /**
-   * Checks whether the component is set to read-only.
-   *
-   * @return true if the user cannot edit the component, false if editing is allowed.
+   * {@inheritDoc}
    */
+  @Override
   public default boolean isReadOnly() {
     Component component = ComponentUtil.getBoundComponent(this);
 

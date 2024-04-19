@@ -243,4 +243,12 @@ public final class DateField extends DwcFieldInitializer<DateField, LocalDate> i
       return false;
     }
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected LocalDate convertValue(String value) {
+    return DateField.fromDate(value);
+  }
 }

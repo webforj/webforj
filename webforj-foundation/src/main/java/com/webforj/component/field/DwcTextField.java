@@ -230,4 +230,12 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
       setSelectionRange(this.range);
     }
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String convertValue(String value) {
+    return value;
+  }
 }

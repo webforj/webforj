@@ -88,7 +88,7 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
    * @param label the label of the component
    * @param selectListener the listener to be called when the user selects an item
    */
-  public ComboBox(String label, EventListener<ListSelectEvent> selectListener) {
+  public ComboBox(String label, EventListener<ListSelectEvent<Object>> selectListener) {
     super(label, selectListener);
     configureLisType();
   }
