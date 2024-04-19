@@ -339,14 +339,15 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * Validates the value of of the component.
    *
    * @param report Whether to report the validation result using the validation reporter.
+   * @param value The value to validate.
+   *
    * @return the validation result.
    */
-  public ValidationResult validate(boolean report) {
+  public ValidationResult validate(CV value, boolean report) {
     if (isReadOnly()) {
       return ValidationResult.valid();
     }
 
-    CV value = component.getValue();
     cachedValue = value;
     isValueCached = true;
     ValidationResult result;
@@ -394,6 +395,26 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
   }
 
   /**
+   * Validates the value of of the component.
+   *
+   * @param report Whether to report the validation result using the validation reporter.
+   *
+   * @return the validation result.
+   */
+  public ValidationResult validate(boolean report) {
+    return validate(component.getValue(), report);
+  }
+
+  /**
+   * Validates the value of of the component.
+   *
+   * @return the validation result.
+   */
+  public ValidationResult validate() {
+    return validate(true);
+  }
+
+  /**
    * Adds a {@link BindingValidateEvent} listener.
    *
    * @param listener the event listener to be added
@@ -437,7 +458,9 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     }
 
     if (autoValidate) {
-      autoValidateListenerRegistration = component.addValueChangeListener(event -> validate(true));
+      autoValidateListenerRegistration = component.addValueChangeListener(event -> {
+        validate(event.getValue(), true);
+      });
     }
 
     return this;
