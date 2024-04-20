@@ -147,6 +147,16 @@ public interface BindingBuilder<C extends ValueAware<C, CV>, CV, B, BV> {
   public BindingBuilder<C, CV, B, BV> useValidator(Validator<BV> validator);
 
   /**
+   * Adds a validator to the binding.
+   *
+   * @param validator the validator.
+   * @param message the message to be used in case of validation failure.
+   *
+   * @return this binding builder.
+   */
+  public BindingBuilder<C, CV, B, BV> useValidator(Validator<BV> validator, String message);
+
+  /**
    * Adds a simple boolean validator with a corresponding message.
    *
    * @param validator A function that takes a value of type V and returns a Boolean indicating
