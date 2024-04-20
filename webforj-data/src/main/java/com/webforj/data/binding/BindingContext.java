@@ -650,12 +650,6 @@ public class BindingContext<B> {
     }
 
     @Override
-    public BindingBuilder<C, CV, B, BV> useValidator(Validator<BV> validator, String message) {
-      fieldBinding.addValidator(Validator.of(validator, message));
-      return this;
-    }
-
-    @Override
     public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator, String message) {
       fieldBinding.addValidator(Validator.of(validator, message));
       return this;
