@@ -48,12 +48,20 @@ public interface Transformer<CV, MV> {
     return new Transformer<CV, MV>() {
       @Override
       public MV transformToModel(CV viewValue) {
-        return toModel.apply(viewValue);
+        try {
+          return toModel.apply(viewValue);
+        } catch (Exception e) {
+          throw new TransformationException("Error transforming component value to model value", e);
+        }
       }
 
       @Override
       public CV transformToComponent(MV modelValue) {
-        return toView.apply(modelValue);
+        try {
+          return toView.apply(modelValue);
+        } catch (Exception e) {
+          throw new TransformationException("Error transforming model value to component value", e);
+        }
       }
     };
   }
