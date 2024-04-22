@@ -541,6 +541,7 @@ public class BindingContext<B> {
    * Gets the debounce delay for the {@link BindingContextStatusEvent} event.
    *
    * @return the debounce delay in milliseconds.
+   * @see #setStatusEventDebounceDelay(long)
    */
   public long getStatusEventDebounceDelay() {
     return statusEventDebounceDelay;
