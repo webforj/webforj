@@ -294,7 +294,7 @@ class BindingContextTest {
       }
 
       ComponentContainer container = new ComponentContainer();
-      BindingContext<PersonBean> context = BindingContext.from(container, PersonBean.class);
+      BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
 
       assertTrue(context.isBound(container.name));
       assertFalse(context.isBound(container.lastName));
@@ -315,7 +315,7 @@ class BindingContextTest {
       }
 
       Container container = new Container();
-      BindingContext<PersonBean> context = BindingContext.from(container, PersonBean.class);
+      BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
 
       PersonBean bean = new PersonBean();
       context.write(bean);
@@ -332,7 +332,7 @@ class BindingContextTest {
       }
 
       Container container = new Container();
-      BindingContext<PersonBean> context = BindingContext.from(container, PersonBean.class);
+      BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
 
       container.ageComponent.setValue(10);
 
@@ -373,7 +373,7 @@ class BindingContextTest {
       }
 
       Container container = new Container();
-      BindingContext<PersonBean> context = BindingContext.from(container, PersonBean.class);
+      BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
 
       PersonBean bean = new PersonBean();
       assertTrue(context.write(bean).isValid());

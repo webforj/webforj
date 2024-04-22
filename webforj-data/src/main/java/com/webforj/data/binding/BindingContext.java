@@ -108,7 +108,7 @@ public class BindingContext<B> {
    * @return a new {@code BindingContext} instance
    */
   @SuppressWarnings({"unchecked"})
-  public static <B> BindingContext<B> from(Object object, Class<B> beanClass,
+  public static <B> BindingContext<B> of(Object object, Class<B> beanClass,
       boolean useJakartaValidator) {
     BindingContext<B> context = new BindingContext<>(beanClass, useJakartaValidator);
 
@@ -184,8 +184,8 @@ public class BindingContext<B> {
    *
    * @return a new {@code BindingContext} instance
    */
-  public static <B> BindingContext<B> from(Object object, Class<B> beanClass) {
-    return from(object, beanClass, false);
+  public static <B> BindingContext<B> of(Object object, Class<B> beanClass) {
+    return of(object, beanClass, false);
   }
 
   /**
