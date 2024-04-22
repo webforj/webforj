@@ -7,8 +7,7 @@ import com.webforj.data.binding.annotation.UseValidator;
 import com.webforj.data.binding.concern.AutomaticBindAware;
 import com.webforj.data.binding.concern.BindAware;
 import com.webforj.data.binding.concern.UnbindAware;
-import com.webforj.data.binding.event.BindingContextStateEvent;
-import com.webforj.data.binding.event.BindingValidateEvent;
+import com.webforj.data.binding.event.BindingContextStatusEvent;
 import com.webforj.data.concern.FocusAcceptorAware;
 import com.webforj.data.concern.ValueAware;
 import com.webforj.data.transformation.transformer.Transformer;
@@ -423,25 +422,25 @@ public class BindingContext<B> {
   }
 
   /**
-   * Adds a {@link BindingValidateEvent} listener.
+   * Adds a {@link BindingContextStatusEvent} listener.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingContextStateEvent<B>> addStateChangeListener(
-      EventListener<BindingContextStateEvent<B>> listener) {
-    return dispatcher.addListener(BindingContextStateEvent.class, listener);
+  public ListenerRegistration<BindingContextStatusEvent<B>> addStatusChangeListener(
+      EventListener<BindingContextStatusEvent<B>> listener) {
+    return dispatcher.addListener(BindingContextStatusEvent.class, listener);
   }
 
   /**
-   * Alias for {@link #addStateChangeListener(EventListener)}.
+   * Alias for {@link #addStatusChangeListener(EventListener)}.
    *
    * @param listener the event listener to be added
    * @return @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingContextStateEvent<B>> onStateChange(
-      EventListener<BindingContextStateEvent<B>> listener) {
-    return addStateChangeListener(listener);
+  public ListenerRegistration<BindingContextStatusEvent<B>> onStatusChange(
+      EventListener<BindingContextStatusEvent<B>> listener) {
+    return addStatusChangeListener(listener);
   }
 
   /**
@@ -608,7 +607,7 @@ public class BindingContext<B> {
             : ValidationResult.invalid(validationResults.values().stream()
                 .flatMap(vr -> vr.getMessages().stream()).toList());
 
-        dispatcher.dispatchEvent(new BindingContextStateEvent<>(BindingContext.this, result));
+        dispatcher.dispatchEvent(new BindingContextStatusEvent<>(BindingContext.this, result));
       });
     }
 

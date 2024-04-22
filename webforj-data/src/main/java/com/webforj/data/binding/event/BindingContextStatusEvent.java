@@ -12,7 +12,7 @@ import java.util.EventObject;
  * @author Hyyan Abo Fakher
  * @since 24.01
  */
-public class BindingContextStateEvent<B> extends EventObject {
+public class BindingContextStatusEvent<B> extends EventObject {
   private final transient BindingContext<B> context;
   private final transient ValidationResult validationResult;
 
@@ -22,7 +22,7 @@ public class BindingContextStateEvent<B> extends EventObject {
    * @param source The binding context.
    * @param validationResult The validation result.
    */
-  public BindingContextStateEvent(BindingContext<B> source, ValidationResult validationResult) {
+  public BindingContextStatusEvent(BindingContext<B> source, ValidationResult validationResult) {
     super(source);
     this.context = source;
     this.validationResult = validationResult;
