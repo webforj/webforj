@@ -131,7 +131,7 @@ public abstract class Component {
    * @param key Key of the data
    * @return Desired piece of user data
    */
-  public Object getUserData(String key) {
+  public Object getUserData(Object key) {
     return this.userData.get(key);
   }
 
