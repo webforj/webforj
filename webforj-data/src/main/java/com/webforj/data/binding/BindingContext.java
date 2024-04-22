@@ -64,8 +64,6 @@ public class BindingContext<B> {
   private boolean globalUseJakartaValidator = false;
   private boolean globalAutoValidate = true;
   private boolean autoFocusFirstViolation = true;
-  private long lastExecutionTime = 0;
-  private long statusEventDebounceDelay = 1000;
 
   /**
    * Creates a new instance of {@code BindingContext}.
@@ -518,35 +516,6 @@ public class BindingContext<B> {
     return globalAutoValidate;
   }
 
-  /**
-   * Configures the debounce delay for the {@link BindingContextStatusEvent} event.
-   *
-   * <p>
-   * The debounce delay is the time in milliseconds to wait before dispatching
-   * {@link BindingContextStatusEvent} event. The {@link BindingContextStatusEvent} aggregates the
-   * validation results of all the bindings in the context. This delay is useful when the value of a
-   * component changes frequently, and you want to avoid dispatching the event multiple times. By
-   * default, the debounce delay is set to 1000 milliseconds (1 second).
-   * </p>
-   *
-   * @param debounceDelay the debounce delay in milliseconds
-   * @return the binding context.
-   */
-  public BindingContext<B> setStatusEventDebounceDelay(long debounceDelay) {
-    this.statusEventDebounceDelay = debounceDelay;
-    return this;
-  }
-
-  /**
-   * Gets the debounce delay for the {@link BindingContextStatusEvent} event.
-   *
-   * @return the debounce delay in milliseconds.
-   * @see #setStatusEventDebounceDelay(long)
-   */
-  public long getStatusEventDebounceDelay() {
-    return statusEventDebounceDelay;
-  }
-
   private static SimpleImmutableEntry<Transformer<?, ?>, String> processUseTransformerAnnotation(
       Field field) {
     if (field.isAnnotationPresent(UseTransformer.class)) {
@@ -632,18 +601,13 @@ public class BindingContext<B> {
       fieldBinding.onValidation(event -> {
         validationResults.put(fieldBinding, event.getValidationResult());
 
-        long currentTime = System.currentTimeMillis();
-        if (statusEventDebounceDelay <= 0
-            || currentTime - lastExecutionTime > statusEventDebounceDelay) {
-          lastExecutionTime = currentTime;
-          boolean isContextValid =
-              validationResults.values().stream().allMatch(ValidationResult::isValid);
-          ValidationResult result = isContextValid ? ValidationResult.valid()
-              : ValidationResult.invalid(validationResults.values().stream()
-                  .flatMap(vr -> vr.getMessages().stream()).toList());
+        boolean isContextValid =
+            validationResults.values().stream().allMatch(ValidationResult::isValid);
+        ValidationResult result = isContextValid ? ValidationResult.valid()
+            : ValidationResult.invalid(validationResults.values().stream()
+                .flatMap(vr -> vr.getMessages().stream()).toList());
 
-          dispatcher.dispatchEvent(new BindingContextStatusEvent<>(BindingContext.this, result));
-        }
+        dispatcher.dispatchEvent(new BindingContextStatusEvent<>(BindingContext.this, result));
       });
     }
 

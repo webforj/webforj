@@ -167,7 +167,6 @@ class BindingContextTest {
       nameComponent = new NameComponentMock();
       ageComponent = new AgeComponentMock();
       context = new BindingContext<>(PersonBean.class);
-      context.setStatusEventDebounceDelay(0);
     }
 
     @Test
