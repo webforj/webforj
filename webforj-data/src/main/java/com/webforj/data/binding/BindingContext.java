@@ -311,6 +311,7 @@ public class BindingContext<B> {
    * @return the validation result.
    */
   public ValidationResult validate(boolean report) {
+    temporaryDisableStatusEvent = true;
     List<String> messages = new ArrayList<>();
     boolean isValid = true;
 
@@ -331,6 +332,8 @@ public class BindingContext<B> {
         && firstInvalidComponent instanceof FocusAcceptorAware focusAcceptorAware) {
       focusAcceptorAware.focus();
     }
+
+    temporaryDisableStatusEvent = false;
 
     return isValid ? ValidationResult.valid() : ValidationResult.invalid(messages);
   }
