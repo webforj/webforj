@@ -67,6 +67,7 @@ public class BindingContext<B> {
   private boolean temporaryDisableStatusEvent = false;
   private B observedBean;
   private ListenerRegistration<BindingContextStatusEvent<B>> observedBeanListener;
+  private Locale locale = Locale.getDefault();
 
   /**
    * Creates a new instance of {@code BindingContext}.
@@ -580,6 +581,26 @@ public class BindingContext<B> {
     return globalAutoValidate;
   }
 
+  /**
+   * Configures the Locale to be used by the context.
+   *
+   * @param locale the locale to use
+   * @return the binding context.
+   */
+  public BindingContext<B> setLocale(Locale locale) {
+    this.locale = locale;
+    return this;
+  }
+
+  /**
+   * Gets the Locale used by the context.
+   *
+   * @return the locale used by the context.
+   */
+  public Locale getLocale() {
+    return locale;
+  }
+
   private static SimpleImmutableEntry<Transformer<?, ?>, String> processUseTransformerAnnotation(
       Field field) {
     if (field.isAnnotationPresent(UseTransformer.class)) {
@@ -659,7 +680,7 @@ public class BindingContext<B> {
       }
 
       if (globalUseJakartaValidator) {
-        useJakartaValidator();
+        useJakartaValidator(getLocale());
       }
 
       fieldBinding.onValidation(event -> {
