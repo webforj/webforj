@@ -17,7 +17,7 @@ public class BindingContextStatusEvent<B> extends EventObject {
   private final transient ValidationResult validationResult;
 
   /**
-   * Creates a new instance of {@code BindingContextStateEvent}.
+   * Creates a new instance of {@code BindingContextStatusEvent}.
    *
    * @param source The binding context.
    * @param validationResult The validation result.
