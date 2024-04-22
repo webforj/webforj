@@ -252,7 +252,7 @@ class BindingContextTest {
           .useValidator(value -> value > 0, "Age is required")
           .add();
       context.read(bean);
-      context.onStateChange(event -> {
+      context.onStatusChange(event -> {
         assertEquals(context, event.getSource());
         result[0] = event.getValidationResult();
       });
