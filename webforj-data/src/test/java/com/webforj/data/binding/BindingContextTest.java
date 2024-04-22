@@ -28,7 +28,6 @@ class BindingContextTest {
   void shouldReadFromBean() {
     NameComponentMock nameComponent = new NameComponentMock();
     AgeComponentMock ageComponent = new AgeComponentMock();
-
     BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
 
     // @formatter:off
@@ -168,6 +167,7 @@ class BindingContextTest {
       nameComponent = new NameComponentMock();
       ageComponent = new AgeComponentMock();
       context = new BindingContext<>(PersonBean.class);
+      context.setStatusEventDebounceDelay(0);
     }
 
     @Test
