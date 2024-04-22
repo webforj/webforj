@@ -2,6 +2,7 @@ package com.webforj.data.binding;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.data.PersonBean;
@@ -275,6 +276,28 @@ class BindingContextTest {
       ageComponent.setValue(25);
       context.validate();
       assertTrue(result[0].isValid());
+    }
+
+    @Test
+    void shouldWriteValidated() {
+      // @formatter:off
+      context.bind(nameComponent, "name")
+          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> value.length() < 10, "Name is too long")
+          .add();
+      context.bind(ageComponent, "age")
+          .useValidator(value -> value > 0, "Age is required")
+          .useValidator(value -> value < 100, "Age is too high")
+          .add();
+      // @formatter:on
+
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue(500);
+
+      context.writeValidated(bean);
+
+      assertEquals("Jane Doe", bean.getName());
+      assertNotEquals(500, bean.getAge());
     }
   }
 

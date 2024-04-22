@@ -542,33 +542,19 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
       final List<CV> value = new ArrayList<>();
       value.add(cachedValue);
 
-      try {
-        // if no value is cached, then we need to validate the component's value
-        if (!isValueCached) {
-          if (!skipValidation) {
-            result[0] = validate(true);
-            value.set(0, cachedValue);
-            if (result[0].isValid()) {
-              BV transformedCachedValue =
-                  getTransformer().map(t -> t.transformToModel(value.get(0)))
-                      .orElseGet(() -> tryCastingToBeanValue(value.get(0)));
-              s.accept(bean, transformedCachedValue);
-            }
-          } else {
-            // if validation is skipped, we can directly update the bean with the component's
-            // value
-            value.set(0, component.getValue());
-            BV transformedValue = getTransformer().map(t -> t.transformToModel(value.get(0)))
-                .orElseGet(() -> tryCastingToBeanValue(value.get(0)));
-            s.accept(bean, transformedValue);
-          }
-        } else {
-          BV transformedCachedValue = getTransformer().map(t -> t.transformToModel(value.get(0)))
-              .orElseGet(() -> tryCastingToBeanValue(value.get(0)));
-          s.accept(bean, transformedCachedValue);
-        }
+      if (!isValueCached) {
+        cachedValue = component.getValue();
+        value.set(0, cachedValue);
+      }
 
-        isValueCached = false;
+      try {
+        result[0] = validate(cachedValue, true);
+        if (result[0].isValid()) {
+          BV transformedValue = getTransformer().map(t -> t.transformToModel(value.get(0)))
+              .orElseGet(() -> tryCastingToBeanValue(value.get(0)));
+          s.accept(bean, transformedValue);
+          isValueCached = false;
+        }
       } catch (TransformationException e) {
         result[0] = ValidationResult
             .invalid(transformerMessage == null || transformerMessage.isEmpty() ? e.getMessage()

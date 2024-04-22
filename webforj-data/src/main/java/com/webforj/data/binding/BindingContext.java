@@ -64,6 +64,7 @@ public class BindingContext<B> {
   private boolean globalUseJakartaValidator = false;
   private boolean globalAutoValidate = true;
   private boolean autoFocusFirstViolation = true;
+  private boolean temporaryDisableStatusEvent = false;
 
   /**
    * Creates a new instance of {@code BindingContext}.
@@ -461,12 +462,28 @@ public class BindingContext<B> {
    * @return the validation result.
    */
   public ValidationResult write(B bean) {
+    this.temporaryDisableStatusEvent = true;
     ValidationResult result = validate();
     if (result.isValid()) {
       bindings.values().forEach(binding -> binding.write(bean, true));
     }
+    this.temporaryDisableStatusEvent = false;
 
     return result;
+  }
+
+  /**
+   * Updates the bean properties with the values obtained from the bound components that passes the
+   * validation.
+   *
+   * @param bean The bean to sync to
+   * @return the validation result.
+   */
+  public BindingContext<B> writeValidated(B bean) {
+    this.temporaryDisableStatusEvent = true;
+    bindings.values().forEach(binding -> binding.write(bean, false));
+    this.temporaryDisableStatusEvent = false;
+    return this;
   }
 
   /**
@@ -607,7 +624,9 @@ public class BindingContext<B> {
             : ValidationResult.invalid(validationResults.values().stream()
                 .flatMap(vr -> vr.getMessages().stream()).toList());
 
-        dispatcher.dispatchEvent(new BindingContextStatusEvent<>(BindingContext.this, result));
+        if (!temporaryDisableStatusEvent) {
+          dispatcher.dispatchEvent(new BindingContextStatusEvent<>(BindingContext.this, result));
+        }
       });
     }
 
