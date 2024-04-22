@@ -294,7 +294,7 @@ class BindingContextTest {
       nameComponent.setValue("Jane Doe");
       ageComponent.setValue(500);
 
-      context.writeValidated(bean);
+      context.writeValidBindings(bean);
 
       assertEquals("Jane Doe", bean.getName());
       assertNotEquals(500, bean.getAge());

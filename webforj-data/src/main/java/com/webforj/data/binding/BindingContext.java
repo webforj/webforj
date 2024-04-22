@@ -479,7 +479,7 @@ public class BindingContext<B> {
    * @param bean The bean to sync to
    * @return the validation result.
    */
-  public BindingContext<B> writeValidated(B bean) {
+  public BindingContext<B> writeValidBindings(B bean) {
     this.temporaryDisableStatusEvent = true;
     bindings.values().forEach(binding -> binding.write(bean, false));
     this.temporaryDisableStatusEvent = false;
