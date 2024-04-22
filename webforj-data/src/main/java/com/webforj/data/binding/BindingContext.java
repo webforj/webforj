@@ -65,6 +65,8 @@ public class BindingContext<B> {
   private boolean globalAutoValidate = true;
   private boolean autoFocusFirstViolation = true;
   private boolean temporaryDisableStatusEvent = false;
+  private B observedBean;
+  private ListenerRegistration<BindingContextStatusEvent<B>> observedBeanListener;
 
   /**
    * Creates a new instance of {@code BindingContext}.
@@ -483,6 +485,48 @@ public class BindingContext<B> {
     this.temporaryDisableStatusEvent = true;
     bindings.values().forEach(binding -> binding.write(bean, false));
     this.temporaryDisableStatusEvent = false;
+    return this;
+  }
+
+  /**
+   * Initializes UI components with values from the specified bean and sets up observation of UI
+   * changes to update the bean conditionally.
+   *
+   * <p>
+   * This method initially populates the UI components with the current values from the specified
+   * bean to ensure the UI is synchronized with the bean's initial state. Following this initial
+   * synchronization, the binding context will observe changes to the UI components and update the
+   * bean with new valid values. This allows for real-time updating of the bean based on user
+   * interactions with the UI.
+   * </p>
+   *
+   * <p>
+   * The bean properties are read once when this method is invoked to initialize the UI components.
+   * Subsequently, any changes to the UI components that pass validation will automatically trigger
+   * updates to the bean. This setup is ideal for forms.
+   * </p>
+   *
+   * @param bean The bean instance whose properties are used to initialize UI components and
+   *        subsequently observed for updates based on UI changes.
+   * @return the binding context.
+   */
+  public BindingContext<B> autoUpdate(B bean) {
+    Objects.requireNonNull(bean, "Bean cannot be null");
+
+    if (!isAutoValidate()) {
+      throw new IllegalStateException("Cannot observe the bean without enabling auto-validation.");
+    }
+
+    observedBean = bean;
+    if (observedBeanListener != null) {
+      observedBeanListener.remove();
+    }
+
+    read(observedBean);
+    observedBeanListener = addStatusChangeListener(event -> {
+      writeValidBindings(observedBean);
+    });
+
     return this;
   }
 

@@ -299,6 +299,32 @@ class BindingContextTest {
       assertEquals("Jane Doe", bean.getName());
       assertNotEquals(500, bean.getAge());
     }
+
+    @Test
+    void shouldAutoUpdateTheBean() {
+      // @formatter:off
+      context.bind(nameComponent, "name")
+          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> value.length() < 10, "Name is too long")
+          .add();
+      context.bind(ageComponent, "age")
+          .useValidator(value -> value > 0, "Age is required")
+          .useValidator(value -> value < 100, "Age is too high")
+          .add();
+      // @formatter:on
+
+      context.autoUpdate(bean);
+
+      assertEquals(bean.getName(), nameComponent.getValue());
+      assertEquals(bean.getAge(), ageComponent.getValue());
+
+
+      nameComponent.setValue("Jane Doe");
+      ageComponent.setValue(500);
+
+      assertEquals("Jane Doe", bean.getName());
+      assertNotEquals(500, bean.getAge());
+    }
   }
 
   @Nested
