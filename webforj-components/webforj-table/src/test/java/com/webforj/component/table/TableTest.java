@@ -9,9 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.spy;
+
 import com.webforj.component.element.PropertyDescriptorTester;
-import com.webforj.component.table.Column;
-import com.webforj.component.table.Table;
 import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.component.table.event.cell.TableCellClickEvent;
 import com.webforj.component.table.event.cell.TableCellDoubleClickEvent;
@@ -226,6 +225,31 @@ class TableTest {
       assertFalse(table.isSelected(person1));
       assertFalse(table.isSelected(person2));
     }
+
+    @Test
+    void shouldSetValue() {
+      Table<Person> table = spy(new Table<>());
+      Person person1 = new Person("John");
+      Person person2 = new Person("Jane");
+
+      table.setItems(Arrays.asList(person1, person2));
+      table.setValue(List.of(person1));
+
+      assertTrue(table.isSelected(person1));
+      assertFalse(table.isSelected(person2));
+    }
+
+    @Test
+    void shouldGetValue() {
+      Table<Person> table = new Table<>();
+      Person person1 = new Person("Fuck");
+      Person person2 = new Person("Jane");
+
+      table.setItems(Arrays.asList(person1, person2));
+      table.setValue(List.of(person1));
+
+      assertIterableEquals(new HashSet<>(Arrays.asList(person1)), table.getValue());
+    }
   }
 
   @Nested
@@ -324,6 +348,18 @@ class TableTest {
     @Test
     void shouldAddSelectionChangeListener() {
       table.onItemSelectionChange(event -> {
+      });
+
+      List<EventListener<TableItemSelectionChange>> listeners =
+          table.getEventListeners(TableItemSelectionChange.class);
+
+      assertEquals(1, listeners.size());
+      assertTrue(listeners.get(0) instanceof EventListener<TableItemSelectionChange>);
+    }
+
+    @Test
+    void shouldAddValueChangeListener() {
+      table.onValueChange(event -> {
       });
 
       List<EventListener<TableItemSelectionChange>> listeners =
