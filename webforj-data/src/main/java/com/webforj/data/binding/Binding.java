@@ -68,9 +68,11 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
   private final List<Validator<BV>> validators = new ArrayList<>();
   private BindingReporter<C, CV, B, BV> validateReporter;
   private boolean autoValidate = false;
-  private ListenerRegistration<ValueChangeEvent<CV>> autoValidateListenerRegistration;
+  private ListenerRegistration<ValueChangeEvent<CV>> valueChangeListener;
   private boolean readOnly = false;
   private boolean required = false;
+  private boolean autoWrite = false;
+  private B autoWriteBean = null;
   private CV cachedValue;
   private boolean isValueCached = false;
   private Class<?> lastBeanClassForGetter;
@@ -388,7 +390,6 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
 
     if (validateReporter != null && report) {
       validateReporter.report(result, this);
-      dispatcher.dispatchEvent(new BindingValidateEvent<>(this, result, value));
     }
 
     return result;
@@ -450,18 +451,12 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return this binding builder.
    */
   public Binding<C, CV, B, BV> setAutoValidate(boolean autoValidate) {
+    if (valueChangeListener == null) {
+      valueChangeListener = component.addValueChangeListener(this::handleValueChange);
+    }
+
     this.autoValidate = autoValidate;
     updateClientAutoValidation(!autoValidate);
-
-    if (autoValidateListenerRegistration != null) {
-      autoValidateListenerRegistration.remove();
-    }
-
-    if (autoValidate) {
-      autoValidateListenerRegistration = component.addValueChangeListener(event -> {
-        validate(event.getValue(), true);
-      });
-    }
 
     return this;
   }
@@ -473,6 +468,37 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    */
   public boolean isAutoValidate() {
     return autoValidate;
+  }
+
+  /**
+   * Sets the auto-write state of the binding.
+   *
+   * <p>
+   * When the binding is set to auto-write, the value of the component will be written to the bean
+   * automatically on each change when it is valid. This is useful when the component is used to
+   * display the value and should be updated in the bean immediately.
+   * </p>
+   *
+   * @param bean The bean instance to write to.
+   * @return this binding itself.
+   */
+  public Binding<C, CV, B, BV> setAutoWrite(B bean) {
+    if (valueChangeListener == null) {
+      valueChangeListener = component.addValueChangeListener(this::handleValueChange);
+    }
+
+    this.autoWrite = true;
+    this.autoWriteBean = bean;
+    return this;
+  }
+
+  /**
+   * Checks if the binding is set to auto-write.
+   *
+   * @return true if the binding is set to auto-write, false otherwise.
+   */
+  public boolean isAutoWrite() {
+    return autoWrite;
   }
 
   /**
@@ -539,28 +565,24 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
 
     final ValidationResult[] result = {ValidationResult.valid()};
     doGetSetter(bean).ifPresent(s -> {
-      final List<CV> value = new ArrayList<>();
-      value.add(cachedValue);
-
       if (!isValueCached) {
         cachedValue = component.getValue();
-        value.set(0, cachedValue);
       }
 
       try {
         result[0] = validate(cachedValue, true);
         if (result[0].isValid()) {
-          BV transformedValue = getTransformer().map(t -> t.transformToModel(value.get(0)))
-              .orElseGet(() -> tryCastingToBeanValue(value.get(0)));
+          BV transformedValue = getTransformer().map(t -> t.transformToModel(cachedValue))
+              .orElseGet(() -> tryCastingToBeanValue(cachedValue));
           s.accept(bean, transformedValue);
-          isValueCached = false;
         }
       } catch (TransformationException e) {
         result[0] = ValidationResult
             .invalid(transformerMessage == null || transformerMessage.isEmpty() ? e.getMessage()
                 : transformerMessage);
-        dispatcher.dispatchEvent(new BindingValidateEvent<>(this, result[0], value.get(0)));
       }
+
+      isValueCached = false;
     });
 
     return result[0];
@@ -578,6 +600,25 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    */
   public ValidationResult write(B bean) {
     return write(bean, false);
+  }
+
+  void handleValueChange(ValueChangeEvent<CV> event) {
+    boolean shouldAutoValidate = isAutoValidate();
+    boolean shouldAutoWrite = isAutoWrite();
+    ValidationResult result = null;
+    CV value = event.getValue();
+
+    if (shouldAutoValidate || shouldAutoWrite) {
+      result = validate(value, shouldAutoValidate);
+    }
+
+    if (shouldAutoWrite) {
+      write(autoWriteBean, true);
+    }
+
+    if (result != null) {
+      dispatcher.dispatchEvent(new BindingValidateEvent<>(this, result, value));
+    }
   }
 
   private Optional<Function<B, BV>> doGetGetter(B bean) {

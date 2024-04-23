@@ -254,7 +254,7 @@ class BindingContextTest {
           .useValidator(value -> value > 0, "Age is required")
           .add();
       context.read(bean);
-      context.onStatusChange(event -> {
+      context.onValidate(event -> {
         assertEquals(context, event.getSource());
         result[0] = event.getValidationResult();
       });
@@ -315,7 +315,7 @@ class BindingContextTest {
           .add();
       // @formatter:on
 
-      context.autoUpdate(bean);
+      context.observe(bean);
 
       assertEquals(bean.getName(), nameComponent.getValue());
       assertEquals(bean.getAge(), ageComponent.getValue());
@@ -421,7 +421,7 @@ class BindingContextTest {
       BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
       context.bind(ageComponent, "age", Integer.class)
           .useTransformer(new StringIntegerTransformer())
-          .useValidator(Validator.of(new AgeValidator(), "Check the Age is > 18"))
+          .useValidator(Validator.from(new AgeValidator(), "Check the Age is > 18"))
           .add();
       // @formatter:on
 

@@ -14,6 +14,7 @@ import com.webforj.data.PersonBean;
 import com.webforj.data.transformation.TransformationException;
 import com.webforj.data.transformation.transformer.Transformer;
 import com.webforj.data.validation.server.ValidationResult;
+import com.webforj.data.validation.server.validator.Validator;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
@@ -270,6 +271,54 @@ class BindingTest {
       public String transformToComponent(String modelValue) {
         throw new TransformationException("Transformation failed");
       }
+    }
+  }
+
+  @Nested
+  class AutoValidateAutoWriteApi {
+    final String NAME_SHORT = "Name is too short";
+
+    @BeforeEach
+    void setup() {
+      fieldBinding.setReporter(new DefaultBindingReporter<>());
+      fieldBinding.setAutoValidate(true);;
+      fieldBinding.addValidator(Validator.of(value -> value.length() > 5, NAME_SHORT));
+    }
+
+    @Test
+    void shouldAutoValidate() {
+      fieldBinding.addValidationListener(event -> {
+        assertEquals(NAME_SHORT, event.getValidationResult().getMessages().get(0));
+      });
+
+      mockComponent.setValue("Foo");
+      assertTrue(mockComponent.isInvalid());
+    }
+
+    @Test
+    void shouldAutoWrite() {
+      PersonBean bean = new PersonBean();
+      fieldBinding.setAutoWrite(bean);
+
+      mockComponent.setValue("Foo bar");
+      assertEquals("Foo bar", bean.getName());
+
+      mockComponent.setValue("Foo");
+      assertEquals("Foo bar", bean.getName());
+    }
+
+    @Test
+    void shouldAlwaysValidateWhenAutoWrite() {
+      fieldBinding.setAutoValidate(false);
+
+      PersonBean bean = new PersonBean();
+      fieldBinding.setAutoWrite(bean);
+
+      mockComponent.setValue("Foo bar");
+      assertEquals("Foo bar", bean.getName());
+
+      mockComponent.setValue("Foo");
+      assertEquals("Foo bar", bean.getName());
     }
   }
 }

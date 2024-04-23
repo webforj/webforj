@@ -9,7 +9,7 @@ import com.webforj.data.binding.annotation.UseValidator;
 import com.webforj.data.binding.concern.AutomaticBindAware;
 import com.webforj.data.binding.concern.BindAware;
 import com.webforj.data.binding.concern.UnbindAware;
-import com.webforj.data.binding.event.BindingContextStatusEvent;
+import com.webforj.data.binding.event.BindingContextValidateEvent;
 import com.webforj.data.concern.FocusAcceptorAware;
 import com.webforj.data.concern.ValueAware;
 import com.webforj.data.transformation.transformer.Transformer;
@@ -66,10 +66,8 @@ public class BindingContext<B> {
   private boolean globalUseJakartaValidator = false;
   private boolean globalAutoValidate = true;
   private boolean autoFocusFirstViolation = true;
-  private boolean temporaryDisableStatusEvent = false;
-  private B observedBean;
-  private ListenerRegistration<BindingContextStatusEvent<B>> observedBeanListener;
   private Locale locale = Locale.getDefault();
+  private B observedBean = null;
 
   /**
    * Creates a new instance of {@code BindingContext}.
@@ -322,7 +320,6 @@ public class BindingContext<B> {
    * @return the validation result.
    */
   public ValidationResult validate(boolean report) {
-    temporaryDisableStatusEvent = true;
     List<String> messages = new ArrayList<>();
     boolean isValid = true;
 
@@ -343,8 +340,6 @@ public class BindingContext<B> {
         && firstInvalidComponent instanceof FocusAcceptorAware focusAcceptorAware) {
       focusAcceptorAware.focus();
     }
-
-    temporaryDisableStatusEvent = false;
 
     return isValid ? ValidationResult.valid() : ValidationResult.invalid(messages);
   }
@@ -439,25 +434,25 @@ public class BindingContext<B> {
   }
 
   /**
-   * Adds a {@link BindingContextStatusEvent} listener.
+   * Adds a {@link BindingContextValidateEvent} listener.
    *
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingContextStatusEvent<B>> addStatusChangeListener(
-      EventListener<BindingContextStatusEvent<B>> listener) {
-    return dispatcher.addListener(BindingContextStatusEvent.class, listener);
+  public ListenerRegistration<BindingContextValidateEvent<B>> addValidateListener(
+      EventListener<BindingContextValidateEvent<B>> listener) {
+    return dispatcher.addListener(BindingContextValidateEvent.class, listener);
   }
 
   /**
-   * Alias for {@link #addStatusChangeListener(EventListener)}.
+   * Alias for {@link #addValidateListener(EventListener)}.
    *
    * @param listener the event listener to be added
    * @return @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingContextStatusEvent<B>> onStatusChange(
-      EventListener<BindingContextStatusEvent<B>> listener) {
-    return addStatusChangeListener(listener);
+  public ListenerRegistration<BindingContextValidateEvent<B>> onValidate(
+      EventListener<BindingContextValidateEvent<B>> listener) {
+    return addValidateListener(listener);
   }
 
   /**
@@ -478,12 +473,10 @@ public class BindingContext<B> {
    * @return the validation result.
    */
   public ValidationResult write(B bean) {
-    this.temporaryDisableStatusEvent = true;
     ValidationResult result = validate();
     if (result.isValid()) {
       bindings.values().forEach(binding -> binding.write(bean, true));
     }
-    this.temporaryDisableStatusEvent = false;
 
     return result;
   }
@@ -496,9 +489,7 @@ public class BindingContext<B> {
    * @return the validation result.
    */
   public BindingContext<B> writeValidBindings(B bean) {
-    this.temporaryDisableStatusEvent = true;
     bindings.values().forEach(binding -> binding.write(bean, false));
-    this.temporaryDisableStatusEvent = false;
     return this;
   }
 
@@ -524,22 +515,10 @@ public class BindingContext<B> {
    *        subsequently observed for updates based on UI changes.
    * @return the binding context.
    */
-  public BindingContext<B> autoUpdate(B bean) {
-    Objects.requireNonNull(bean, "Bean cannot be null");
-
-    if (!isAutoValidate()) {
-      throw new IllegalStateException("Cannot observe the bean without enabling auto-validation.");
-    }
-
+  public BindingContext<B> observe(B bean) {
     observedBean = bean;
-    if (observedBeanListener != null) {
-      observedBeanListener.remove();
-    }
-
-    read(observedBean);
-    observedBeanListener = addStatusChangeListener(event -> {
-      writeValidBindings(observedBean);
-    });
+    read(bean);
+    bindings.values().forEach(binding -> binding.setAutoWrite(bean));
 
     return this;
   }
@@ -693,6 +672,10 @@ public class BindingContext<B> {
         useJakartaValidator(getLocale());
       }
 
+      if (observedBean != null) {
+        fieldBinding.setAutoWrite(observedBean);
+      }
+
       fieldBinding.onValidation(event -> {
         validationResults.put(fieldBinding, event.getValidationResult());
 
@@ -702,9 +685,7 @@ public class BindingContext<B> {
             : ValidationResult.invalid(validationResults.values().stream()
                 .flatMap(vr -> vr.getMessages().stream()).toList());
 
-        if (!temporaryDisableStatusEvent) {
-          dispatcher.dispatchEvent(new BindingContextStatusEvent<>(BindingContext.this, result));
-        }
+        dispatcher.dispatchEvent(new BindingContextValidateEvent<>(BindingContext.this, result));
       });
     }
 
@@ -761,7 +742,7 @@ public class BindingContext<B> {
           fieldBinding.addValidator(validator);
         } else {
           String message = !messagesCopy.isEmpty() ? messagesCopy.remove(0) : "";
-          fieldBinding.addValidator(Validator.of(validator, message));
+          fieldBinding.addValidator(Validator.from(validator, message));
         }
       }
 

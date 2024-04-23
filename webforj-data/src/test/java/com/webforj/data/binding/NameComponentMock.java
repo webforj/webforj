@@ -21,6 +21,8 @@ class NameComponentMock
   private boolean autoClientValidateOnLoad = true;
   private boolean readOnly = false;
   private boolean required = false;
+  private boolean invalid = false;
+  private String invalidMessage = "";
 
   public NameComponentMock(String value) {
     setValue(value);
@@ -50,22 +52,24 @@ class NameComponentMock
 
   @Override
   public NameComponentMock setInvalid(boolean invalid) {
+    this.invalid = invalid;
     return this;
   }
 
   @Override
   public boolean isInvalid() {
-    return false;
+    return invalid;
   }
 
   @Override
   public NameComponentMock setInvalidMessage(String message) {
+    this.invalidMessage = message;
     return this;
   }
 
   @Override
   public String getInvalidMessage() {
-    return "";
+    return invalidMessage;
   }
 
   @Override

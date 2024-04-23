@@ -43,7 +43,7 @@ public interface Validator<V> {
    *
    * @return a validator that uses the given validator to validate the value.
    */
-  public static <V> Validator<V> of(Validator<V> validator, String message) {
+  public static <V> Validator<V> from(Validator<V> validator, String message) {
     return value -> {
       ValidationResult result = validator.validate(value);
       if (result.isValid()) {
