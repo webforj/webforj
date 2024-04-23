@@ -41,10 +41,11 @@ Once BBj has been installed, it is also necessary to install the needed dependen
 running the following commands:
 
 ```bash
-mvn install:install-file "-Dfile=BBjStartup.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=23.06-SNAPSHOT" "-Dpackaging=jar"
-mvn install:install-file "-Dfile=BBj.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBj" "-Dversion=23.06-SNAPSHOT" "-Dpackaging=jar"
-mvn install:install-file "-Dfile=BBjUtil.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=23.06-SNAPSHOT" "-Dpackaging=jar"
-mvn install:install-file "-Dfile=BBjsp.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=23.06-SNAPSHOT" "-Dpackaging=jar"
+mvn install:install-file "-Dfile=BBjStartup.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=24.00" "-Dpackaging=jar"
+mvn install:install-file "-Dfile=BBj.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBj" "-Dversion=24.00" "-Dpackaging=jar"
+mvn install:install-file "-Dfile=BBjUtil.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=24.00" "-Dpackaging=jar"
+mvn install:install-file "-Dfile=BBjsp.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=24.00" "-Dpackaging=jar"
+mvn install:install-file "-Dfile=BBjAdminAPI.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjAdminAPI" "-Dversion=24.00" "-Dpackaging=jar"
 ```
 
 <a name='section3'></a>
