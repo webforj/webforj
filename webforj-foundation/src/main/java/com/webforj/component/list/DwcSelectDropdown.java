@@ -56,6 +56,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   private boolean opened = false;
   private int maxRowCount = 0;
   private String dropdownType = "";
+  private boolean registeredSelectValueChangeListener = false;
 
   /**
    * Constructs a new DwcSelectDropdown.
@@ -379,11 +380,15 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
     ListenerRegistration<ValueChangeEvent<Object>> registration =
         getEventDispatcher().addListener(ValueChangeEvent.class, listener);
 
-    addSelectListener(ev -> {
-      Object item = ev.getSelectedItem().getKey();
-      ValueChangeEvent<Object> valueChangeEvent = new ValueChangeEvent<>(this, item);
-      getEventDispatcher().dispatchEvent(valueChangeEvent);
-    });
+    if (!registeredSelectValueChangeListener) {
+      addSelectListener(ev -> {
+        Object item = ev.getSelectedItem().getKey();
+        ValueChangeEvent<Object> valueChangeEvent = new ValueChangeEvent<>(this, item);
+        getEventDispatcher().dispatchEvent(valueChangeEvent);
+      });
+
+      registeredSelectValueChangeListener = true;
+    }
 
     return registration;
   }

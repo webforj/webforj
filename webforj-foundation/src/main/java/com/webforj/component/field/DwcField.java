@@ -58,6 +58,8 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   private boolean required = false;
   private boolean spellcheck = false;
   private ValueChangeMode valueChangeMode = ValueChangeModeAware.ValueChangeMode.ON_MODIFY;
+  private boolean registeredValueChangeModifiedListener = false;
+  private boolean registeredValueChangeBlurListener = false;
 
   /**
    * Constructs a new field with a default medium expanse.
@@ -273,10 +275,18 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
     ValueChangeMode mode = getValueChangeMode();
     switch (mode) {
       case ON_MODIFY:
-        addModifyListener(ev -> fireValueChangeEvent(ev.getText()));
+        if (!this.registeredValueChangeModifiedListener) {
+          addModifyListener(ev -> fireValueChangeEvent(ev.getText()));
+          this.registeredValueChangeModifiedListener = true;
+        }
+
         break;
       case ON_BLUR:
-        addBlurListener(ev -> fireValueChangeEvent(ev.getText()));
+        if (!this.registeredValueChangeBlurListener) {
+          addBlurListener(ev -> fireValueChangeEvent(ev.getText()));
+          this.registeredValueChangeBlurListener = true;
+        }
+
         break;
       default:
         break;

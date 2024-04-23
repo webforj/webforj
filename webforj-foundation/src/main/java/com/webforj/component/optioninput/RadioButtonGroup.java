@@ -68,6 +68,7 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   private BBjRadioGroup group;
   private Window window;
   private String name;
+  private boolean registeredChangeValueChangeListener = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();
   private EventSinkListenerRegistry<RadioButtonGroupChangeEvent> changedEventSinkListenerRegistry =
@@ -418,12 +419,16 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
     ListenerRegistration<ValueChangeEvent<String>> registration =
         dispatcher.addListener(ValueChangeEvent.class, listener);
 
-    addChangeListener(ev -> {
-      RadioButtonGroup source = (RadioButtonGroup) ev.getSource();
-      ValueChangeEvent<String> valueChangeEvent =
-          new ValueChangeEvent<>(source, ev.getChecked().getName());
-      dispatcher.dispatchEvent(valueChangeEvent);
-    });
+    if (!registeredChangeValueChangeListener) {
+      addChangeListener(ev -> {
+        RadioButtonGroup source = (RadioButtonGroup) ev.getSource();
+        ValueChangeEvent<String> valueChangeEvent =
+            new ValueChangeEvent<>(source, ev.getChecked().getName());
+        dispatcher.dispatchEvent(valueChangeEvent);
+      });
+
+      registeredChangeValueChangeListener = true;
+    }
 
     return registration;
   }

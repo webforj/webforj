@@ -47,6 +47,7 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
     implements MultipleSelectableList<ListBox>, BindAware {
 
   private SelectionMode selectionMode = SelectionMode.SINGLE;
+  private boolean registeredSelectValueChangeListener = false;
 
   /**
    * Constructs a new ListBox.
@@ -320,11 +321,15 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
     ListenerRegistration<ValueChangeEvent<List<Object>>> registration =
         getEventDispatcher().addListener(ValueChangeEvent.class, listener);
 
-    addSelectListener(ev -> {
-      List<Object> keys = ev.getSelectedItems().stream().map(ListItem::getKey).toList();
-      ValueChangeEvent<List<Object>> valueChangeEvent = new ValueChangeEvent<>(this, keys);
-      getEventDispatcher().dispatchEvent(valueChangeEvent);
-    });
+    if (!registeredSelectValueChangeListener) {
+      addSelectListener(ev -> {
+        List<Object> keys = ev.getSelectedItems().stream().map(ListItem::getKey).toList();
+        ValueChangeEvent<List<Object>> valueChangeEvent = new ValueChangeEvent<>(this, keys);
+        getEventDispatcher().dispatchEvent(valueChangeEvent);
+      });
+
+      registeredSelectValueChangeListener = true;
+    }
 
     return registration;
   }

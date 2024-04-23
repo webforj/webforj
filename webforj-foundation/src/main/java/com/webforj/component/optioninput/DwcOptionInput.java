@@ -56,6 +56,7 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
 
   private HasTextPosition.Position textPosition = HasTextPosition.Position.RIGHT;
   private boolean checked = false;
+  private boolean registeredToggleValueChangeListener = false;
 
   /**
    * Creates a new AbstractOptionInput component.
@@ -263,10 +264,14 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
     ListenerRegistration<ValueChangeEvent<Boolean>> registration =
         getEventDispatcher().addListener(ValueChangeEvent.class, listener);
 
-    addToggleListener(ev -> {
-      ValueChangeEvent<Boolean> valueChangeEvent = new ValueChangeEvent<>(this, ev.isToggled());
-      getEventDispatcher().dispatchEvent(valueChangeEvent, (l, e) -> l.equals(listener));
-    });
+    if (!registeredToggleValueChangeListener) {
+      addToggleListener(ev -> {
+        ValueChangeEvent<Boolean> valueChangeEvent = new ValueChangeEvent<>(this, ev.isToggled());
+        getEventDispatcher().dispatchEvent(valueChangeEvent, (l, e) -> l.equals(listener));
+      });
+
+      registeredToggleValueChangeListener = true;
+    }
 
     return registration;
   }
