@@ -7,7 +7,6 @@ import com.basis.startup.type.BBjVector;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.list.event.ListSelectEvent;
-import com.webforj.component.list.transformer.ListObjectStringTransformer;
 import com.webforj.component.window.Window;
 import com.webforj.data.binding.Binding;
 import com.webforj.data.binding.BindingContext;
@@ -342,7 +341,7 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
     if (!context.getBinding(propertyName).getTransformer().isPresent()) {
       Binding<ListBox, List<Object>, B, List<String>> binding =
           (Binding<ListBox, List<Object>, B, List<String>>) context.getBinding(this);
-      binding.setTransformer(new ListObjectStringTransformer());
+      binding.setTransformer(new TypeTransformer<>());
     }
   }
 

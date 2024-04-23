@@ -11,7 +11,6 @@ import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.component.list.sink.ListClickEventSink;
 import com.webforj.component.list.sink.ListCloseEventSink;
 import com.webforj.component.list.sink.ListOpenEventSink;
-import com.webforj.component.list.transformer.ObjectStringTransformer;
 import com.webforj.data.binding.Binding;
 import com.webforj.data.binding.BindingContext;
 import com.webforj.data.binding.concern.BindAware;
@@ -399,9 +398,10 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   @Override
   public <B> void onBind(BindingContext<B> context, Class<B> beanClass, String propertyName) {
     if (!context.getBinding(propertyName).getTransformer().isPresent()) {
+      @SuppressWarnings("unchecked")
       Binding<T, Object, B, String> binding =
           (Binding<T, Object, B, String>) context.getBinding(getSelf());
-      binding.setTransformer(new ObjectStringTransformer());
+      binding.setTransformer(new TypeTransformer<>());
     }
   }
 
