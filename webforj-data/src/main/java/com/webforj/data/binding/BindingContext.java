@@ -1,6 +1,8 @@
 package com.webforj.data.binding;
 
 import com.webforj.data.binding.annotation.BindingExclude;
+import com.webforj.data.binding.annotation.BindingReadOnly;
+import com.webforj.data.binding.annotation.BindingRequired;
 import com.webforj.data.binding.annotation.UseProperty;
 import com.webforj.data.binding.annotation.UseTransformer;
 import com.webforj.data.binding.annotation.UseValidator;
@@ -161,6 +163,14 @@ public class BindingContext<B> {
         // establish the binding
         context.bind(valueAware, name).useTransformer(transformer, transformerMessage)
             .useValidatorsList(validators, messages).add();
+
+        if (field.isAnnotationPresent(BindingReadOnly.class)) {
+          context.getBinding(name).setReadOnly(true);
+        }
+
+        if (field.isAnnotationPresent(BindingRequired.class)) {
+          context.getBinding(name).setRequired(true);
+        }
 
         if (valueAware instanceof AutomaticBindAware automaticBindAware) {
           automaticBindAware.onAutomaticBind(context, beanClass, name, field);

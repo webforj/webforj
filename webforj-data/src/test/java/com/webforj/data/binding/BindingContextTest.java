@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.data.PersonBean;
 import com.webforj.data.binding.annotation.BindingExclude;
+import com.webforj.data.binding.annotation.BindingReadOnly;
+import com.webforj.data.binding.annotation.BindingRequired;
 import com.webforj.data.binding.annotation.UseProperty;
 import com.webforj.data.binding.annotation.UseTransformer;
 import com.webforj.data.binding.annotation.UseValidator;
@@ -389,6 +391,24 @@ class BindingContextTest {
 
       assertFalse(result.isValid());
       assertTrue(result.getMessages().contains("Check the Age is > 18"));
+    }
+
+    @Test
+    void shouldAutomaticallyAddReadOnlyAndRequired() {
+      class Container {
+        @BindingReadOnly
+        @BindingRequired
+        NameComponentMock name = new NameComponentMock("John");
+      }
+
+      Container container = new Container();
+      BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
+
+      assertTrue(container.name.isReadOnly());
+      assertTrue(context.getBinding("name").isReadOnly());
+
+      assertTrue(container.name.isRequired());
+      assertTrue(context.getBinding("name").isRequired());
     }
   }
 

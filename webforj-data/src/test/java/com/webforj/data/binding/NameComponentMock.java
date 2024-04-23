@@ -1,5 +1,7 @@
 package com.webforj.data.binding;
 
+import com.webforj.data.concern.ReadOnlyAware;
+import com.webforj.data.concern.RequiredAware;
 import com.webforj.data.concern.ValueAware;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.validation.InvalidAware;
@@ -11,11 +13,14 @@ import com.webforj.dispatcher.ListenerRegistration;
 
 class NameComponentMock
     implements ValueAware<NameComponentMock, String>, AutoClientValidation<NameComponentMock>,
-    InvalidAware<NameComponentMock>, AutoClientValidationOnLoad<NameComponentMock> {
+    InvalidAware<NameComponentMock>, AutoClientValidationOnLoad<NameComponentMock>,
+    ReadOnlyAware<NameComponentMock>, RequiredAware<NameComponentMock> {
   private EventDispatcher dispatcher = new EventDispatcher();
   private String value = "";
   private boolean autoClientValidate = true;
   private boolean autoClientValidateOnLoad = true;
+  private boolean readOnly = false;
+  private boolean required = false;
 
   public NameComponentMock(String value) {
     setValue(value);
@@ -83,5 +88,27 @@ class NameComponentMock
   @Override
   public boolean isAutoClientValidateOnLoad() {
     return autoClientValidateOnLoad;
+  }
+
+  @Override
+  public NameComponentMock setReadOnly(boolean readOnly) {
+    this.readOnly = readOnly;
+    return this;
+  }
+
+  @Override
+  public boolean isReadOnly() {
+    return readOnly;
+  }
+
+  @Override
+  public NameComponentMock setRequired(boolean required) {
+    this.required = required;
+    return this;
+  }
+
+  @Override
+  public boolean isRequired() {
+    return required;
   }
 }
