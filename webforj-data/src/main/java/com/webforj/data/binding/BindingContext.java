@@ -676,7 +676,7 @@ public class BindingContext<B> {
         fieldBinding.setAutoWrite(observedBean);
       }
 
-      fieldBinding.onValidation(event -> {
+      fieldBinding.onValidate(event -> {
         validationResults.put(fieldBinding, event.getValidationResult());
 
         boolean isContextValid =

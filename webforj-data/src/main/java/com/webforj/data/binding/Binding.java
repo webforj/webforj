@@ -421,20 +421,20 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param listener the event listener to be added
    * @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingValidateEvent<C, CV, B, BV>> addValidationListener(
+  public ListenerRegistration<BindingValidateEvent<C, CV, B, BV>> addValidateListener(
       EventListener<BindingValidateEvent<C, CV, B, BV>> listener) {
     return dispatcher.addListener(BindingValidateEvent.class, listener);
   }
 
   /**
-   * Alias for {@link #addValidationListener(EventListener)}.
+   * Alias for {@link #addValidateListener(EventListener)}.
    *
    * @param listener the event listener to be added
    * @return @return A registration object for removing the event listener
    */
-  public ListenerRegistration<BindingValidateEvent<C, CV, B, BV>> onValidation(
+  public ListenerRegistration<BindingValidateEvent<C, CV, B, BV>> onValidate(
       EventListener<BindingValidateEvent<C, CV, B, BV>> listener) {
-    return addValidationListener(listener);
+    return addValidateListener(listener);
   }
 
   /**

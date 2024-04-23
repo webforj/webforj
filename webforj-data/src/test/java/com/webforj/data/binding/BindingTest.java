@@ -202,7 +202,7 @@ class BindingTest {
 
     @Test
     void shouldDispatchValidateEvent() {
-      fieldBinding.onValidation(event -> {
+      fieldBinding.onValidate(event -> {
         assertEquals(fieldBinding, event.getBinding());
         assertEquals("Foo", event.getValue());
         assertEquals("Name is too short", event.getValidationResult().getMessages().get(0));
@@ -245,7 +245,7 @@ class BindingTest {
     @Test
     void shouldDispatchValidationEventWhenTransformationFails() {
       fieldBinding.setTransformer(new FailTransformer());
-      fieldBinding.onValidation(event -> {
+      fieldBinding.onValidate(event -> {
         assertEquals(fieldBinding, event.getBinding());
         assertEquals("Foo", event.getValue());
         assertEquals("Transformation failed", event.getValidationResult().getMessages().get(0));
@@ -287,7 +287,7 @@ class BindingTest {
 
     @Test
     void shouldAutoValidate() {
-      fieldBinding.addValidationListener(event -> {
+      fieldBinding.addValidateListener(event -> {
         assertEquals(NAME_SHORT, event.getValidationResult().getMessages().get(0));
       });
 
