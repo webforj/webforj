@@ -227,6 +227,14 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime> i
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected LocalTime convertValue(String value) {
+    return TimeField.fromTime(value);
+  }
+
   private int compareTime(LocalTime time1, LocalTime time2) {
     int hourComparison = Integer.compare(time1.getHour(), time2.getHour());
     if (hourComparison != 0) {

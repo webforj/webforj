@@ -2,6 +2,7 @@ package com.webforj.component.field;
 
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.DwcFocusableComponent;
+import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.event.KeypressEvent;
@@ -12,7 +13,10 @@ import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasReadOnly;
+import com.webforj.concern.HasRequired;
 import com.webforj.concern.HasValue;
+import com.webforj.data.concern.ValueChangeModeAware;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.Arrays;
@@ -38,9 +42,9 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<T>, V>
-    extends DwcFocusableComponent<T>
-    implements HasLabel<T>, HasValue<T, V>, HasReadOnly<T>, HasExpanse<T, Expanse>, HasFocusStatus {
+public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
+    extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
+    HasExpanse<T, Expanse>, HasFocusStatus, ValueChangeModeAware<T> {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -53,6 +57,9 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
   private String label = "";
   private boolean required = false;
   private boolean spellcheck = false;
+  private ValueChangeMode valueChangeMode = ValueChangeModeAware.ValueChangeMode.ON_MODIFY;
+  private boolean registeredValueChangeModifiedListener = false;
+  private boolean registeredValueChangeBlurListener = false;
 
   /**
    * Constructs a new field with a default medium expanse.
@@ -92,6 +99,7 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
    * @param required true if the field is required, false otherwise
    * @return the component itself
    */
+  @Override
   public T setRequired(boolean required) {
     this.required = required;
     setUnrestrictedProperty("required", this.required);
@@ -104,6 +112,7 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
    *
    * @return true if the field is required, false otherwise
    */
+  @Override
   public boolean isRequired() {
     return this.required;
   }
@@ -203,6 +212,23 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
    * {@inheritDoc}
    */
   @Override
+  public T setValueChangeMode(ValueChangeMode valueChangeMode) {
+    this.valueChangeMode = valueChangeMode;
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ValueChangeMode getValueChangeMode() {
+    return this.valueChangeMode;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public List<String> getRestrictedProperties() {
     List<String> properties = super.getRestrictedProperties();
     properties.addAll(Arrays.asList("accept", "autoValidate", "autoValidateOnLoad",
@@ -238,6 +264,38 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<V>> addValueChangeListener(
+      EventListener<ValueChangeEvent<V>> listener) {
+    ListenerRegistration<ValueChangeEvent<V>> registration =
+        getEventDispatcher().addListener(ValueChangeEvent.class, listener);
+
+    ValueChangeMode mode = getValueChangeMode();
+    switch (mode) {
+      case ON_MODIFY:
+        if (!this.registeredValueChangeModifiedListener) {
+          addModifyListener(ev -> fireValueChangeEvent(ev.getText()));
+          this.registeredValueChangeModifiedListener = true;
+        }
+
+        break;
+      case ON_BLUR:
+        if (!this.registeredValueChangeBlurListener) {
+          addBlurListener(ev -> fireValueChangeEvent(ev.getText()));
+          this.registeredValueChangeBlurListener = true;
+        }
+
+        break;
+      default:
+        break;
+    }
+
+    return registration;
+  }
+
+  /**
    * Adds a {@link KeypressEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -266,5 +324,25 @@ public abstract class DwcField<T extends DwcFocusableComponent<T> & HasReadOnly<
     super.attachControlCallbacks();
     this.modifyEventSinkListenerRegistry.attach();
     this.keypressEventSinkListenerRegistry.attach();
+  }
+
+  /**
+   * Converts the value from a string to the appropriate type.
+   *
+   * @param value the value to be converted
+   * @return the converted value
+   */
+  protected abstract V convertValue(String value);
+
+  private void fireValueChangeEvent(String text) {
+    V value = null;
+    try {
+      value = convertValue(text);
+    } catch (Exception e) {
+      // ignore
+    }
+
+    ValueChangeEvent<V> valueChangeEvent = new ValueChangeEvent<>(this, value);
+    getEventDispatcher().dispatchEvent(valueChangeEvent);
   }
 }

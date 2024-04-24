@@ -19,6 +19,7 @@ import com.webforj.component.event.CheckEvent;
 import com.webforj.component.event.ToggleEvent;
 import com.webforj.component.event.UncheckEvent;
 import com.webforj.concern.HasTextPosition.Position;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -70,8 +71,8 @@ class DwcOptionInputTest {
     void whenControlIsDefined() throws BBjException {
       doReturn(true).when(control).isSelected();
 
-      component.setChecked(true);
-      assertTrue(component.isChecked());
+      component.setValue(true);
+      assertTrue(component.getValue());
 
       verify(control, times(1)).setSelected(true);
       verify(control, times(1)).isSelected();
@@ -81,8 +82,8 @@ class DwcOptionInputTest {
     @DisplayName("When Control is null")
     void whenControlIsNull() throws BBjException, IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
-      component.setChecked(true);
-      assertTrue(component.isChecked());
+      component.setValue(true);
+      assertTrue(component.getValue());
 
       verify(control, times(0)).setSelected(true);
       verify(control, times(0)).isSelected();
@@ -185,6 +186,13 @@ class DwcOptionInputTest {
       assertEquals(0, component.getEventListeners(CheckEvent.class).size());
       assertEquals(0, component.getEventListeners(UncheckEvent.class).size());
       assertEquals(0, component.getEventListeners(ToggleEvent.class).size());
+    }
+
+    @Test
+    void shouldConfigureValueChangeEvent() {
+      ListenerRegistration<ValueChangeEvent<Boolean>> r1 = component.onValueChange(e -> {
+      });
+      assertEquals(1, component.getEventListeners(ToggleEvent.class).size());
     }
   }
 }

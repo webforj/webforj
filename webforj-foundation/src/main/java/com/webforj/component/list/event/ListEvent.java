@@ -10,12 +10,14 @@ import java.util.Objects;
 /**
  * The base class for all list events.
  *
+ * @param <V> the type of the list items
+ *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public class ListEvent extends AbstractSelectEvent<DwcList<?>, ListItem> {
+public class ListEvent<V> extends AbstractSelectEvent<DwcList<?, V>, ListItem> {
 
-  protected ListEvent(DwcList<?> component, Map<String, Object> eventMap) {
+  protected ListEvent(DwcList<?, V> component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
 
@@ -30,7 +32,7 @@ public class ListEvent extends AbstractSelectEvent<DwcList<?>, ListItem> {
       return null;
     }
 
-    DwcList<?> component = (DwcList<?>) getComponent();
+    DwcList<?, V> component = (DwcList<?, V>) getComponent();
     return component.getByIndex(index);
   }
 
@@ -46,16 +48,8 @@ public class ListEvent extends AbstractSelectEvent<DwcList<?>, ListItem> {
    */
   public List<ListItem> getSelectedItems() {
     List<Integer> indices = getSelectedIndices();
-    DwcList<?> component = (DwcList<?>) getComponent();
+    DwcList<?, V> component = (DwcList<?, V>) getComponent();
 
     return indices.stream().map(component::getByIndex).filter(Objects::nonNull).toList();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public DwcList<?> getComponent() {
-    return (DwcList<?>) super.getComponent();
   }
 }

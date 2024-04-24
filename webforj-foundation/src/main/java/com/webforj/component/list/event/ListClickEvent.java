@@ -1,5 +1,6 @@
 package com.webforj.component.list.event;
 
+import com.webforj.component.list.DwcList;
 import com.webforj.component.list.DwcSelectDropdown;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public class ListClickEvent extends ListEvent {
+public class ListClickEvent extends ListEvent<Object> {
 
   /**
    * Creates a new event.
@@ -22,7 +23,7 @@ public class ListClickEvent extends ListEvent {
    * @param component the component
    * @param eventMap the event map
    */
-  public ListClickEvent(DwcSelectDropdown<?> component, Map<String, Object> eventMap) {
+  public ListClickEvent(DwcList<?, Object> component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
 

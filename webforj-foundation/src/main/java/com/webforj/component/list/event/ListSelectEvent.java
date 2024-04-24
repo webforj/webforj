@@ -10,10 +10,12 @@ import java.util.Map;
  * This event can be fired when an item is clicked on, or navigated to via keyboard interactions.
  * </p>
  *
+ * @param <V> the type of the list items
+ *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public class ListSelectEvent extends ListEvent {
+public class ListSelectEvent<V> extends ListEvent<V> {
 
   /**
    * Creates a new event.
@@ -21,7 +23,15 @@ public class ListSelectEvent extends ListEvent {
    * @param component the component
    * @param eventMap the event map
    */
-  public ListSelectEvent(DwcList<?> component, Map<String, Object> eventMap) {
+  public ListSelectEvent(DwcList<?, V> component, Map<String, Object> eventMap) {
     super(component, eventMap);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DwcList<?, V> getComponent() {
+    return (DwcList<?, V>) super.getComponent();
   }
 }

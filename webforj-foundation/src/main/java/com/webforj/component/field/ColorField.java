@@ -134,4 +134,12 @@ public final class ColorField extends DwcFieldInitializer<ColorField, Color> {
     String hexColorPattern = "^#[0-9A-Fa-f]{6}$";
     return hex.matches(hexColorPattern);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Color convertValue(String value) {
+    return ColorField.fromHex(value);
+  }
 }

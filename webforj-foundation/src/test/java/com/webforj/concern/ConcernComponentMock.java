@@ -2,8 +2,11 @@ package com.webforj.concern;
 
 import com.webforj.component.Component;
 import com.webforj.component.ComponentRegistry;
-import com.webforj.component.ComponentUtil;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.data.validation.client.ClientValidator;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +20,9 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasMaxLength<ConcernComponentMock>, HasMin<ConcernComponentMock, Double>,
     HasMinLength<ConcernComponentMock>, HasPlaceholder<ConcernComponentMock>,
     HasReadOnly<ConcernComponentMock>, HasTooltip<ConcernComponentMock>,
-    HasValue<ConcernComponentMock, Double> {
+    HasValue<ConcernComponentMock, Double>, HasClientValidation<ConcernComponentMock>,
+    HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
+    HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -38,6 +43,13 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private Double value;
   private ComponentRegistry registry = new ComponentRegistry(this, e -> {
   });
+  private boolean isInvalid = false;
+  private String invalidMessage;
+  private ClientValidator clientValidator;
+  private ValidationStyle validationStyle = ValidationStyle.POPOVER;
+  private boolean autoValidate = true;
+  private boolean autoValidateOnLoad = false;
+  private boolean required = false;
 
   @Override
   public String getAttribute(String attribute) {
@@ -282,6 +294,83 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   }
 
   @Override
+  public ConcernComponentMock setInvalid(boolean invalid) {
+    this.isInvalid = invalid;
+    return this;
+  }
+
+  @Override
+  public boolean isInvalid() {
+    return this.isInvalid;
+  }
+
+  @Override
+  public ConcernComponentMock setInvalidMessage(String message) {
+    this.invalidMessage = message;
+    return this;
+  }
+
+  @Override
+  public String getInvalidMessage() {
+    return this.invalidMessage;
+  }
+
+  @Override
+  public ConcernComponentMock setClientValidator(ClientValidator clientValidator) {
+    this.clientValidator = clientValidator;
+    return this;
+  }
+
+  @Override
+  public ClientValidator getClientValidator() {
+    return this.clientValidator;
+  }
+
+  @Override
+  public ValidationStyle getValidationStyle() {
+    return validationStyle;
+  }
+
+  @Override
+  public ConcernComponentMock setValidationStyle(ValidationStyle validationStyle) {
+    this.validationStyle = validationStyle;
+    return this;
+  }
+
+  @Override
+  public ConcernComponentMock setAutoClientValidate(boolean autoValidate) {
+    this.autoValidate = autoValidate;
+    return this;
+  }
+
+  @Override
+  public boolean isAutoClientValidate() {
+    return this.autoValidate;
+  }
+
+  @Override
+  public ConcernComponentMock setAutoClientValidateOnLoad(boolean autoValidateOnLoad) {
+    this.autoValidateOnLoad = autoValidateOnLoad;
+    return this;
+  }
+
+  @Override
+  public boolean isAutoClientValidateOnLoad() {
+    return this.autoValidateOnLoad;
+  }
+
+  @Override
+  public ConcernComponentMock setRequired(boolean required) {
+    this.required = required;
+    return this;
+  }
+
+  @Override
+  public boolean isRequired() {
+    return this.required;
+  }
+
+  @Override
   protected void onCreate(Window window) {
     // pass
   }
@@ -289,5 +378,11 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   protected void onDestroy() {
     // pass
+  }
+
+  @Override
+  public ListenerRegistration<ValueChangeEvent<Double>> addValueChangeListener(
+      EventListener<ValueChangeEvent<Double>> listener) {
+    throw new UnsupportedOperationException("Unimplemented method 'addValueChangeListener'");
   }
 }

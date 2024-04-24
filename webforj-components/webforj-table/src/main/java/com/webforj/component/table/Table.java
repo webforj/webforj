@@ -18,6 +18,8 @@ import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.EntityKeysRegistry;
+import com.webforj.data.concern.ValueAware;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.HasRepository;
 import com.webforj.data.repository.OrderCriteriaList;
@@ -77,8 +79,8 @@ import java.util.stream.Stream;
  * @since version 24.00
  */
 @NodeName("dwc-table")
-public final class Table<T> extends HtmlComponent<Table<T>>
-    implements HasRepository<T>, MultipleSelectableRepository<Table<T>, T> {
+public final class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T>,
+    MultipleSelectableRepository<Table<T>, T>, ValueAware<Table<T>, List<T>> {
 
   /**
    * The selection mode for the table.
@@ -112,6 +114,7 @@ public final class Table<T> extends HtmlComponent<Table<T>>
       this::handleSortChanged;
   private ListenerRegistration<TableSortChangeEvent<T>> handleSortChangedListenerRegistration =
       null;
+  private boolean registeredValueChangeListener = false;
 
   // Internal properties
   private final PropertyDescriptor<List<Column<T, ?>>> columnDefinitionsProp =
@@ -529,6 +532,24 @@ public final class Table<T> extends HtmlComponent<Table<T>>
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<T> getValue() {
+    return getSelectedItems();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Table<T> setValue(List<T> value) {
+    int[] indices = value.stream().mapToInt(item -> getRepository().getIndex(item)).toArray();
+    selectIndex(indices);
+    return this;
+  }
+
+  /**
    * Set the table's header height in pixels.
    *
    * @return the component itself
@@ -924,6 +945,28 @@ public final class Table<T> extends HtmlComponent<Table<T>>
   public ListenerRegistration<TableItemSelectionChange<T>> onItemSelectionChange(
       EventListener<TableItemSelectionChange<T>> listener) {
     return addItemSelectionChangeListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<List<T>>> addValueChangeListener(
+      EventListener<ValueChangeEvent<List<T>>> listener) {
+    ListenerRegistration<ValueChangeEvent<List<T>>> registration =
+        getEventDispatcher().addListener(ValueChangeEvent.class, listener);
+
+    if (!registeredValueChangeListener) {
+      addItemSelectionChangeListener(ev -> {
+        List<T> value = ev.getSelectedItems();
+        ValueChangeEvent<List<T>> event = new ValueChangeEvent<>(this, value);
+        getEventDispatcher().dispatchEvent(event);
+      });
+
+      registeredValueChangeListener = true;
+    }
+
+    return registration;
   }
 
   /**

@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.webforj.component.Composite;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,5 +28,11 @@ class HasValueTest {
 
   class CompositeMock extends Composite<ConcernComponentMock>
       implements HasValue<CompositeMock, Double> {
+
+    @Override
+    public ListenerRegistration<ValueChangeEvent<Double>> addValueChangeListener(
+        EventListener<ValueChangeEvent<Double>> listener) {
+      throw new UnsupportedOperationException("Unimplemented method 'addValueChangeListener'");
+    }
   }
 }

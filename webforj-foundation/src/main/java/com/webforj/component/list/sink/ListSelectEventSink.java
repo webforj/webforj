@@ -17,7 +17,7 @@ import java.util.HashMap;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public final class ListSelectEventSink extends AbstractDwcEventSink {
+public final class ListSelectEventSink<V> extends AbstractDwcEventSink {
 
   /**
    * Constructs a new ListSelectEventSink with the given component and dispatcher.
@@ -25,7 +25,7 @@ public final class ListSelectEventSink extends AbstractDwcEventSink {
    * @param component the DwcList component
    * @param dispatcher the EventDispatcher
    */
-  public ListSelectEventSink(DwcList<?> component, EventDispatcher dispatcher) {
+  public ListSelectEventSink(DwcList<?, V> component, EventDispatcher dispatcher) {
     super(component, dispatcher,
         component instanceof DwcSelectDropdown ? SysGuiEventConstants.ON_LIST_SELECT
             // Scrolling through a BBjListBox with the arrow keys (and related keys like Page Up,
@@ -61,7 +61,7 @@ public final class ListSelectEventSink extends AbstractDwcEventSink {
     map.put("index", event.getSelectedIndex());
     map.put("indices", event.getSelectedIndices());
 
-    ListSelectEvent javaEv = new ListSelectEvent((DwcList<?>) getComponent(), map);
+    ListSelectEvent<V> javaEv = new ListSelectEvent<>((DwcList<?, V>) getComponent(), map);
     getEventDispatcher().dispatchEvent(javaEv);
   }
 
@@ -77,7 +77,7 @@ public final class ListSelectEventSink extends AbstractDwcEventSink {
     map.put("index", event.getSelectedIndex());
     map.put("indices", event.getSelectedIndices());
 
-    ListSelectEvent javaEv = new ListSelectEvent((DwcSelectDropdown<?>) getComponent(), map);
+    ListSelectEvent<V> javaEv = new ListSelectEvent<>((DwcList<?, V>) getComponent(), map);
     getEventDispatcher().dispatchEvent(javaEv);
   }
 }

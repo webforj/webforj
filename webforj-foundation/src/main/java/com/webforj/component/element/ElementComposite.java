@@ -53,7 +53,7 @@ public abstract class ElementComposite extends Composite<Element> {
    */
   public final <E extends ComponentEvent<?>> List<EventListener<E>> getEventListeners(
       Class<E> eventClass) {
-    return dispatcher.getListeners(eventClass);
+    return getEventDispatcher().getListeners(eventClass);
   }
 
   /**
@@ -201,6 +201,15 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
+   * Gets the event dispatcher.
+   *
+   * @return the event dispatcher
+   */
+  protected EventDispatcher getEventDispatcher() {
+    return dispatcher;
+  }
+
+  /**
    * Adds a listener for the given event type.
    *
    * @param <E> The event type
@@ -256,9 +265,9 @@ public abstract class ElementComposite extends Composite<Element> {
 
     // We need to wrap the listener registration so that we can remove the listener from the
     // element and the dispatcher.
-    ListenerRegistration<E> registration = dispatcher.addListener(eventClass, listener);
+    ListenerRegistration<E> registration = getEventDispatcher().addListener(eventClass, listener);
     return new ElementCompositeListenerRegistration<>(registration, elementRegistration,
-        dispatcher);
+        getEventDispatcher());
   }
 
   /**
@@ -296,7 +305,7 @@ public abstract class ElementComposite extends Composite<Element> {
           listenerRegistrations.get(originalRegistration);
 
       if (event != null && listener != null) {
-        dispatcher.dispatchEvent(event, (l, e) -> l == listener);
+        getEventDispatcher().dispatchEvent(event, (l, e) -> l == listener);
       }
     }
   }

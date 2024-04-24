@@ -18,4 +18,9 @@ public class DwcFieldMock extends DwcFieldInitializer<DwcFieldMock, String> {
     setText(value);
     return this;
   }
+
+  @Override
+  protected String convertValue(String value) {
+    return value;
+  }
 }
