@@ -1,7 +1,7 @@
 package com.webforj.component.login;
 
 /**
- * The login dialog translation object.
+ * The login dialog error translation object.
  *
  * @author Hyyan Abo Fakher
  * @since 24.01
