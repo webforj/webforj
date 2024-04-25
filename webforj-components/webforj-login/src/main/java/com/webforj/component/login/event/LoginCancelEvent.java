@@ -11,11 +11,11 @@ import java.util.Map;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-@EventName("dwc-cancel-submit")
+@EventName("dwc-login-cancel")
 public class LoginCancelEvent extends ComponentEvent<Login> {
 
   /**
-   * Creates an submit event.
+   * Creates an cancel event.
    *
    * @param login the login component
    * @param eventMap the event map

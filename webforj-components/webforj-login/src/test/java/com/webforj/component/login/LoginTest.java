@@ -154,6 +154,7 @@ class LoginTest {
       Map<String, Object> eventMap = new HashMap<>();
       eventMap.put("username", "testuser");
       eventMap.put("password", "testpass");
+      eventMap.put("rememberme", false);
 
       LoginSubmitEvent mockEvent = new LoginSubmitEvent(component, eventMap);
       AtomicReference<String> capturedUsername = new AtomicReference<>();
@@ -168,6 +169,7 @@ class LoginTest {
 
       assertEquals("testuser", capturedUsername.get());
       assertEquals("testpass", capturedPassword.get());
+      assertEquals(false, mockEvent.getRememberMe());
     }
 
     @Test

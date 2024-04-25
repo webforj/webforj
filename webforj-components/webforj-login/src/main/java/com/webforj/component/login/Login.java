@@ -68,6 +68,7 @@ public class Login extends ElementCompositeContainer
       PropertyDescriptor.property("disabled", false);
   private final PropertyDescriptor<Boolean> emptyPassword =
       PropertyDescriptor.property("emptyPassword", false);
+  private final PropertyDescriptor<Boolean> error = PropertyDescriptor.property("error", false);
   private final PropertyDescriptor<LoginI18n> i18n =
       PropertyDescriptor.property("i18n", new LoginI18n());
   private final PropertyDescriptor<String> maxWidth =
@@ -222,14 +223,17 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Sets the auto signin property.
+   * Enables or disables auto signin.
    *
    * <p>
    * When true, the dialog will automatically sign in the user if the user has previously signed in
-   * and the user agent can provide credentials without user mediation.
+   * and the user agent can provide credentials without user mediation. This feature requires
+   * <a href=
+   * "https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential">PasswordCredential</a>
+   * support.
    * </p>
    *
-   * @param autoSignin the auto signin property
+   * @param autoSignin true to enable auto signin, false otherwise
    * @return the component itself
    */
   public Login setAutoSignin(boolean autoSignin) {
@@ -238,9 +242,9 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Checks whether the auto signin property is set.
+   * Checks whether the auto signin is enabled.
    *
-   * @return true if the auto signin property is set, false otherwise
+   * @return true if auto signin is enabled, false otherwise
    */
   public boolean isAutoSignin() {
     return get(autoSignin);
@@ -264,13 +268,9 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Sets the empty password property.
+   * Enables or disables the empty password acceptance.
    *
-   * <p>
-   * When true, the password field will be empty.
-   * </p>
-   *
-   * @param emptyPassword the empty password property
+   * @param emptyPassword true to enable empty password acceptance, false otherwise to disable it
    * @return the component itself
    */
   public Login setEmptyPassword(boolean emptyPassword) {
@@ -279,22 +279,42 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Checks whether the empty password property is set.
+   * Checks whether empty password is accepted.
    *
-   * @return true if the empty password property is set, false otherwise
+   * @return true if empty password is accepted, false otherwise
    */
   public boolean isEmptyPassword() {
     return get(emptyPassword);
   }
 
   /**
-   * Sets the i18n property.
+   * Shows the login error message.
    *
    * <p>
-   * The i18n property.
+   * When true, the dialog will show the error message.
    * </p>
    *
-   * @param i18n the i18n property
+   * @param error true to show the error message, false otherwise
+   * @return the component itself
+   */
+  public Login setError(boolean error) {
+    set(this.error, error);
+    return this;
+  }
+
+  /**
+   * Checks whether the error section is shown.
+   *
+   * @return true if the error property is set, false otherwise
+   */
+  public boolean isError() {
+    return get(error);
+  }
+
+  /**
+   * Sets the i18n object.
+   *
+   * @param i18n the i18n object
    * @return the component itself
    */
   public Login setI18n(LoginI18n i18n) {
@@ -303,22 +323,18 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Gets the i18n property.
+   * Gets the used i18n object.
    *
-   * @return the i18n property
+   * @return the i18n object
    */
   public LoginI18n getI18n() {
     return get(i18n);
   }
 
   /**
-   * Sets the max width property.
+   * Sets the dialog max width.
    *
-   * <p>
-   * The maximum width of the dialog.
-   * </p>
-   *
-   * @param maxWidth the max width property
+   * @param maxWidth the max width for the dialog
    * @return the component itself
    */
   public Login setMaxWidth(String maxWidth) {
@@ -327,7 +343,7 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Gets the max width property.
+   * Gets the dialog max width.
    *
    * @return the max width property
    */
@@ -336,13 +352,9 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Sets the max height property.
+   * Sets the dialog max height.
    *
-   * <p>
-   * The maximum height of the dialog.
-   * </p>
-   *
-   * @param maxHeight the max height property
+   * @param maxHeight the max height for the dialog
    * @return the component itself
    */
   public Login setMaxHeight(String maxHeight) {
@@ -351,9 +363,9 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Gets the max height property.
+   * Gets the dialog max height.
    *
-   * @return the max height property
+   * @return the max height for the dialog
    */
   public String getMaxHeight() {
     return get(maxHeight);
@@ -380,7 +392,7 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Checks whether the opened property is set.
+   * Checks whether the dialog is opened.
    *
    * @return true if the opened property is set, false otherwise
    */
@@ -389,10 +401,15 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Sets the default password property.
+   * Sets the default password.
    *
    * <p>
    * The password of the user to be used as a default value.
+   * </p>
+   *
+   * <p>
+   * <b>Note:</b> If you set this property, the password will be visible in DOM. Make sure to
+   * destroy the component after login to avoid security issues.
    * </p>
    *
    * @param password the password property
@@ -403,21 +420,23 @@ public class Login extends ElementCompositeContainer
     return this;
   }
 
-
   /**
-   * Gets the password property.
+   * Gets the default password.
    *
-   * @return the password property
+   * @return the default password
+   * @see #setPassword(String)
    */
   public String getPassword() {
     return get(password);
   }
 
   /**
-   * Sets the password mediation property.
+   * Sets the password mediation type.
    *
    * <p>
-   * The password mediation property.
+   * This feature requires <a href=
+   * "https://developer.mozilla.org/en-US/docs/Web/API/PasswordCredential">PasswordCredential</a>
+   * support.
    * </p>
    *
    * @param passwordMediation the password mediation property
@@ -429,22 +448,24 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Gets the password mediation property.
+   * Gets the password mediation type.
    *
-   * @return the password mediation property
+   * @return the password mediation type
+   * @see #setPasswordMediation(PasswordMediation)
    */
   public PasswordMediation getPasswordMediation() {
     return get(passwordMediation);
   }
 
   /**
-   * Sets the rememberme property.
+   * Check or uncheck the rememberme checkbox.
    *
    * <p>
-   * When true, the dialog will remember the user's credentials.
+   * When true, the component will save the username in the browser's local storage. and will be
+   * used as a default value for the next login.
    * </p>
    *
-   * @param rememberme the rememberme property
+   * @param rememberme true to check the rememberme checkbox, false to uncheck it
    * @return the component itself
    */
   public Login setRememberme(boolean rememberme) {
@@ -453,22 +474,18 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Checks whether the rememberme property is set.
+   * Checks whether the rememberme checkbox is checked.
    *
-   * @return true if the rememberme property is set, false otherwise
+   * @return true if the rememberme checkbox is checked, false otherwise
    */
   public boolean isRememberme() {
     return get(rememberme);
   }
 
   /**
-   * Sets the default username property.
+   * Sets the default username.
    *
-   * <p>
-   * The username of the user to be used as a default value.
-   * </p>
-   *
-   * @param username the username property
+   * @param username the default username
    * @return the component itself
    */
   public Login setUsername(String username) {
@@ -477,9 +494,9 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Gets the username property.
+   * Gets the default username.
    *
-   * @return the username property
+   * @return the default username
    */
   public String getUsername() {
     return get(username);

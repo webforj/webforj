@@ -15,7 +15,8 @@ import java.util.Map;
  */
 @EventName("dwc-login-submit")
 @EventOptions(data = {@EventData(key = "username", exp = "event.detail.username"),
-    @EventData(key = "password", exp = "event.detail.password")})
+    @EventData(key = "password", exp = "event.detail.password"),
+    @EventData(key = "rememberme", exp = "event.detail.rememberme")})
 public class LoginSubmitEvent extends ComponentEvent<Login> {
 
   /**
@@ -44,5 +45,14 @@ public class LoginSubmitEvent extends ComponentEvent<Login> {
    */
   public String getPassword() {
     return (String) getData().get("password");
+  }
+
+  /**
+   * Gets the remember me submitted.
+   *
+   * @return the remember me
+   */
+  public boolean getRememberMe() {
+    return (boolean) getData().get("rememberme");
   }
 }

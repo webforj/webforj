@@ -21,9 +21,10 @@ public final class LoginI18n {
   private String submit = "Sign in";
   @SerializedName("cancelButton")
   private String cancel = "";
+  private LoginErrorI18n error = new LoginErrorI18n();
 
   /**
-   * Get the dialog title.
+   * Gets the dialog title.
    *
    * @return the dialog title
    */
@@ -32,7 +33,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Set the dialog title.
+   * Sets the dialog title.
    *
    * @param title the dialog title
    */
@@ -41,7 +42,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Get the username prompt.
+   * Gets the username prompt.
    *
    * @return the username prompt
    */
@@ -50,7 +51,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Set the username prompt.
+   * Sets the username prompt.
    *
    * @param usernamePrompt the username prompt
    */
@@ -59,7 +60,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Get the password prompt.
+   * Gets the password prompt.
    *
    * @return the password prompt
    */
@@ -68,7 +69,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Set the password prompt.
+   * Sets the password prompt.
    *
    * @param passwordPrompt the password prompt
    */
@@ -77,7 +78,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Get the remember me text.
+   * Gets the remember me text.
    *
    * @return the remember me text
    */
@@ -86,7 +87,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Set the remember me text.
+   * Sets the remember me text.
    *
    * @param rememberMe the remember me text
    */
@@ -95,7 +96,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Get the login button text.
+   * Gets the login button text.
    *
    * @return the login button text
    */
@@ -104,7 +105,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Set the login button text.
+   * Sets the login button text.
    *
    * @param loginButton the login button text
    */
@@ -113,7 +114,7 @@ public final class LoginI18n {
   }
 
   /**
-   * Get the cancel button text.
+   * Gets the cancel button text.
    *
    * @return the cancel button text
    */
@@ -122,11 +123,20 @@ public final class LoginI18n {
   }
 
   /**
-   * Set the cancel button text.
+   * Sets the cancel button text.
    *
    * @param cancelButton the cancel button text
    */
   public void setCancel(String cancelButton) {
     this.cancel = cancelButton;
+  }
+
+  /**
+   * Gets the error I18n object.
+   *
+   * @return the error I18n object
+   */
+  public LoginErrorI18n getError() {
+    return error;
   }
 }
