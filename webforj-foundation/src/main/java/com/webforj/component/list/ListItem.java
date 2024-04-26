@@ -88,4 +88,12 @@ public final class ListItem {
     this.changeSupport.addPropertyChangeListener(listener);
     return this;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return getText();
+  }
 }
