@@ -8,6 +8,7 @@ import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMaxLength;
 import com.webforj.concern.HasMinLength;
+import com.webforj.concern.HasPattern;
 import com.webforj.data.selection.SelectionRange;
 import com.webforj.exceptions.WebforjRuntimeException;
 
@@ -40,11 +41,13 @@ import com.webforj.exceptions.WebforjRuntimeException;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializer<T, String>
-    implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T> {
+    implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T>,
+    HasPattern<T> {
 
   private int minLength = 0;
   private int maxLength = 524288;
   private SelectionRange range = null;
+  private String pattern = null;
 
   protected DwcTextField() {
     super();
@@ -102,6 +105,24 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
   @Override
   public int getMinLength() {
     return minLength;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setPattern(String pattern) {
+    this.pattern = pattern;
+    setUnrestrictedProperty("pattern", pattern);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getPattern() {
+    return pattern;
   }
 
   /**

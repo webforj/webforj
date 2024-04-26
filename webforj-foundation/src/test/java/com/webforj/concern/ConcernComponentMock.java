@@ -22,7 +22,8 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasReadOnly<ConcernComponentMock>, HasTooltip<ConcernComponentMock>,
     HasValue<ConcernComponentMock, Double>, HasClientValidation<ConcernComponentMock>,
     HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
-    HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock> {
+    HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock>,
+    HasPattern<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -50,6 +51,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private boolean autoValidate = true;
   private boolean autoValidateOnLoad = false;
   private boolean required = false;
+  private String pattern = null;
 
   @Override
   public String getAttribute(String attribute) {
@@ -368,6 +370,17 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public boolean isRequired() {
     return this.required;
+  }
+
+  @Override
+  public ConcernComponentMock setPattern(String pattern) {
+    this.pattern = pattern;
+    return this;
+  }
+
+  @Override
+  public String getPattern() {
+    return this.pattern;
   }
 
   @Override
