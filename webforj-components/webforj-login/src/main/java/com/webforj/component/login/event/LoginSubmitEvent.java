@@ -52,7 +52,7 @@ public class LoginSubmitEvent extends ComponentEvent<Login> {
    *
    * @return the remember me
    */
-  public boolean getRememberMe() {
+  public boolean isRememberMe() {
     return (boolean) getData().get("rememberme");
   }
 }

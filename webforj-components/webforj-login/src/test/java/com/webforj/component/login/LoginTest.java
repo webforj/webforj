@@ -169,7 +169,7 @@ class LoginTest {
 
       assertEquals("testuser", capturedUsername.get());
       assertEquals("testpass", capturedPassword.get());
-      assertEquals(false, mockEvent.getRememberMe());
+      assertEquals(false, mockEvent.isRememberMe());
     }
 
     @Test
