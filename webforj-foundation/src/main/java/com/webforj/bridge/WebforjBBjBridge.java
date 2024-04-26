@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
-
+import com.webforj.optiondialog.MessageDialog;
 import java.util.ArrayList;
 
 public interface WebforjBBjBridge {
@@ -53,6 +53,14 @@ public interface WebforjBBjBridge {
    * @return
    */
   int msgbox(String msg, int options, String title);
+
+  /**
+   * invoke the BBj-side MSGBOX function with the given MessageBoxDialog config.
+   *
+   * @param config the MessageBoxDialog config
+   * @return the result of the MSGBOX function
+   */
+  int msgbox(MessageDialog config);
 
   /**
    * invoke a method of a BBj-side object instance, mostly custom objects

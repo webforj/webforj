@@ -1,6 +1,7 @@
 use com.webforj.component.EventProxy
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
+use com.webforj.optiondialog.MessageDialog
 
 class public BBjEventProxy implements EventProxy
 
@@ -59,6 +60,104 @@ class public WebforjHelper implements WebforjBBjBridge
 
     method public int msgbox(String msg!, int options!, String title!)
         methodret msgbox(msg!,options!,title!)
+    methodend
+
+    method public int msgbox(MessageDialog options!)
+      REM MSGBOX(str1{,expr{,str2{,button1{,button2{,button3}}}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
+      Title$ = options!.getTitle()
+      Message$ = String.valueOf(options!.getMessage())
+
+      expr = 0, custom = 0
+
+      rem message type
+      switch options!.getMessageType().getValue()
+        case 0; break
+        case 1; expr=1; break
+        case 2; expr=2; break
+        case 3; expr=3; break
+        case 4; expr=4; break
+        case 5; expr=5; break
+        case 7; expr=7,custom=1; break
+        case default; escape
+      swend
+
+      rem icon type
+      switch options!.getIconType().getValue()
+        case 0; break
+        case 16; expr=expr+16; break
+        case 32; expr=expr+32; break
+        case 48; expr=expr+48; break
+        case 64; expr=expr+64; break
+        case default; escape
+      swend
+
+      rem default selected button
+      switch options!.getDefaultButton().getValue()
+        case 0; break
+        case 256; expr=expr+256; break
+        case 512; expr=expr+512; break
+        case default; escape
+      swend
+
+      rem disable HTML
+      if options!.isRawText() then expr=expr+32768
+
+      rem mode
+      mode$ = options!.getAttributesAsString()
+      alignment$ = options!.getAlignment().name().toLowerCase()
+      blurred$ = String.valueOf(options!.isBlurred())
+      breakpoint$ = options!.getBreakpoint()
+      fullscreen$ = String.valueOf(options!.isFullscreen())
+      height$ = options!.getMaxHeight()
+      width$ = options!.getMaxWidth()
+      moveable$ = String.valueOf(options!.isMoveable())
+      posx$ = options!.getHorizontalPosition()
+      posy$ = options!.getVerticalPosition()
+      snapThreshold$ = str(options!.getSnapThreshold())
+      snapToEdge$ = String.valueOf(options!.isSnapToEdge())
+
+      modeList! = new java.util.ArrayList()
+      if mode$ <> "" then modeList!.add(mode$)
+      if alignment$ <> "" then modeList!.add("alignment="+alignment$)
+      if blurred$ <> "" and blurred$ <> "false" then modeList!.add("blurred="+blurred$)
+      if breakpoint$ <> "" then modeList!.add("breakpoint="+breakpoint$)
+      if fullscreen$ <> "" and fullscreen$ <> "false" then modeList!.add("fullscreen="+fullscreen$)
+      if width$ <> "" then modeList!.add("max-width="+width$)
+      if height$ <> "" then modeList!.add("max-height="+height$)
+      if moveable$ <> "" and moveable$ <> "false" then modeList!.add("moveable="+moveable$)
+      if posx$ <> "" then modeList!.add("posx="+posx$)
+      if posy$ <> "" then modeList!.add("posy="+posy$)
+      if snapThreshold$ <> "" then modeList!.add("snap-threshold="+snapThreshold$)
+      if snapToEdge$ <> "" and snapToEdge$ <> "false"  then modeList!.add("snap-to-edge="+snapToEdge$)
+
+      mode$ = String.join(",", modeList!)
+
+      rem timeout
+      timeout = options!.getTimeout()
+
+      result = 0
+      if custom then
+        Button1$= options!.getFirstButtonText()
+        Button2$= options!.getSecondButtonText()
+        Button3$= options!.getThirdButtonText()
+        if Button3$ <> "" then
+          result = msgbox(Message$,expr,Title$,Button1$,Button2$,Button3$,tim=timeout,mode=mode$)
+        else
+          if Button2$ <> "" then
+              result = msgbox(Message$,expr,Title$,Button1$,Button2$,tim=timeout,mode=mode$)
+          else
+              if Button1$ <> "" then
+                result = msgbox(Message$,expr,Title$,Button1$,tim=timeout,mode=mode$)
+              else
+                result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$)
+              endif
+          endif
+        endif
+      else
+        result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$)
+      endif
+
+      methodret result
     methodend
 
     method public BBjControl createWidget(String class!, BBjWindow w!)

@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.optiondialog.MessageDialog;
 import java.util.ArrayList;
 
 /** Mock for the WebforjBBjBridge. */
@@ -53,6 +54,11 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   @Override
   public String getQueryParam(String key) {
     return "";
+  }
+
+  @Override
+  public int msgbox(MessageDialog config) {
+    return 0;
   }
 
 }
