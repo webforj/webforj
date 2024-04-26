@@ -46,6 +46,7 @@ class SplitterTest {
     void shouldValidatePositionRelative() {
       assertThrows(IllegalArgumentException.class, () -> component.setPositionRelative(150));
       assertThrows(IllegalArgumentException.class, () -> component.setPositionRelative(-50));
+      assertThrows(IllegalArgumentException.class, () -> component.setPositionRelative(Double.NaN));
     }
   }
 

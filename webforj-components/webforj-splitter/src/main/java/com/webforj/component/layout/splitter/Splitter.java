@@ -249,8 +249,8 @@ public class Splitter extends ElementComposite
    * @throws IllegalArgumentException if the position is not between 0 and 100
    */
   public Splitter setPositionRelative(double positionRelative) {
-    if (positionRelative < 0 || positionRelative > 100) {
-      throw new IllegalArgumentException("The position must be between 0 and 100");
+    if (Double.isNaN(positionRelative) || positionRelative < 0 || positionRelative > 100) {
+      throw new IllegalArgumentException("The position must be a number between 0 and 100");
     }
 
     set(positionRelativeProp, positionRelative);
