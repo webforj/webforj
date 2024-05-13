@@ -530,6 +530,19 @@ public final class ConfirmDialog extends OptionDialogBase<ConfirmDialog> {
    */
   public Result show() {
     int result = Environment.getCurrent().getWeforjHelper().msgbox(this);
+    return mapResult(result);
+  }
+
+  /**
+   * Alias to {@link #show()}.
+   *
+   * @return the result of the message dialog
+   */
+  public Result open() {
+    return show();
+  }
+
+  Result mapResult(int result) {
     Result endResult = Result.UNKNOWN;
 
     Result[] values = Result.values();
@@ -559,14 +572,5 @@ public final class ConfirmDialog extends OptionDialogBase<ConfirmDialog> {
     }
 
     return endResult;
-  }
-
-  /**
-   * Alias to {@link #show()}.
-   *
-   * @return the result of the message dialog
-   */
-  public Result open() {
-    return show();
   }
 }

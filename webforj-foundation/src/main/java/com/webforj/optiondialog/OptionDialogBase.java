@@ -151,8 +151,7 @@ abstract class OptionDialogBase<T> {
    * @return the message box
    */
   public T setHorizontalPosition(int x) {
-    this.horizontalPosition = x + "px";
-    return getSelf();
+    return setHorizontalPosition(x + "px");
   }
 
   /**
@@ -182,8 +181,7 @@ abstract class OptionDialogBase<T> {
    * @return the message box
    */
   public T setVerticalPosition(int y) {
-    this.verticalPosition = y + "px";
-    return getSelf();
+    return setVerticalPosition(y + "px");
   }
 
   /**
@@ -263,8 +261,7 @@ abstract class OptionDialogBase<T> {
    * @return the message box
    */
   public T setMaxWidth(int width) {
-    this.maxWidth = width + "px";
-    return getSelf();
+    return setMaxWidth(width + "px");
   }
 
   /**
@@ -294,8 +291,7 @@ abstract class OptionDialogBase<T> {
    * @return the message box
    */
   public T setMaxHeight(int height) {
-    this.maxHeight = height + "px";
-    return getSelf();
+    return setMaxHeight(height + "px");
   }
 
   /**

@@ -19,7 +19,7 @@ class OptionDialogBaseTest {
   }
 
   @Test
-  void shouldSetAndGetAlignmentCorrectly() {
+  void shouldSetAndGetAlignment() {
     dialog.setAlignment(Alignment.BOTTOM);
     assertEquals(Alignment.BOTTOM, dialog.getAlignment());
   }
@@ -49,31 +49,38 @@ class OptionDialogBaseTest {
   }
 
   @Test
-  void shouldSetAndGetHorizontalPositionCorrectly() {
+  void shouldSetAndGetHorizontalPosition() {
     dialog.setHorizontalPosition(200);
     assertEquals("200px", dialog.getHorizontalPosition());
   }
 
   @Test
-  void shouldSetAndGetVerticalPositionCorrectly() {
+  void shouldSetAndGetVerticalPosition() {
     dialog.setVerticalPosition(300);
     assertEquals("300px", dialog.getVerticalPosition());
   }
 
   @Test
-  void shouldSetAndGetMaxWidthCorrectly() {
+  void shouldSetBothPositions() {
+    dialog.setPosition(400, 500);
+    assertEquals("400px", dialog.getHorizontalPosition());
+    assertEquals("500px", dialog.getVerticalPosition());
+  }
+
+  @Test
+  void shouldSetAndGetMaxWidth() {
     dialog.setMaxWidth(400);
     assertEquals("400px", dialog.getMaxWidth());
   }
 
   @Test
-  void shouldSetAndGetMaxHeightCorrectly() {
+  void shouldSetAndGetMaxHeight() {
     dialog.setMaxHeight(600);
     assertEquals("600px", dialog.getMaxHeight());
   }
 
   @Test
-  void shouldSetAndGetSnapThresholdCorrectly() {
+  void shouldSetAndGetSnapThreshold() {
     dialog.setSnapThreshold(10);
     assertEquals(10, dialog.getSnapThreshold());
   }
@@ -85,17 +92,25 @@ class OptionDialogBaseTest {
   }
 
   @Test
-  void shouldSetAndGetThemeCorrectly() {
+  void shouldSetAndGetTheme() {
     dialog.setTheme(Theme.PRIMARY);
     assertEquals(Theme.PRIMARY, dialog.getTheme());
   }
 
   @Test
-  void shouldAddAndRemoveAttributesCorrectly() {
+  void shouldAddAndRemoveAttributes() {
     dialog.setAttribute("key1", "value1");
     assertTrue(dialog.getAttributes().containsKey("key1"));
 
     dialog.removeAttribute("key1");
     assertFalse(dialog.getAttributes().containsKey("key1"));
+  }
+
+  @Test
+  void shouldGetAttributesAsString() {
+    dialog.setAttribute("key1", "value1");
+    dialog.setAttribute("key2", "value2");
+
+    assertEquals("key1=value1,key2=value2", dialog.getAttributesAsString());
   }
 }
