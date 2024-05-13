@@ -21,8 +21,7 @@ public final class OptionDialog {
    */
   public static ConfirmDialog.Result showConfirmDialog(Object message, Object title,
       ConfirmDialog.OptionType optionType, ConfirmDialog.MessageType messageType) {
-    ConfirmDialog dialog = new ConfirmDialog(message, title, optionType, messageType);
-    return dialog.show();
+    return new ConfirmDialog(message, title, optionType, messageType).show();
   }
 
   /**
@@ -36,7 +35,7 @@ public final class OptionDialog {
    */
   public static ConfirmDialog.Result showConfirmDialog(Object message, Object title,
       ConfirmDialog.OptionType optionType) {
-    return showConfirmDialog(message, title, optionType, ConfirmDialog.MessageType.PLAIN);
+    return new ConfirmDialog(message, title, optionType).show();
   }
 
   /**
@@ -48,8 +47,7 @@ public final class OptionDialog {
    * @return The result of the dialog.
    */
   public static ConfirmDialog.Result showConfirmDialog(Object message, Object title) {
-    return showConfirmDialog(message, title, ConfirmDialog.OptionType.OK,
-        ConfirmDialog.MessageType.PLAIN);
+    return new ConfirmDialog(message, title).show();
   }
 
   /**
@@ -60,7 +58,6 @@ public final class OptionDialog {
    * @return The result of the dialog.
    */
   public static ConfirmDialog.Result showConfirmDialog(Object message) {
-    return showConfirmDialog(ConfirmDialog.DEFAULT_TITLE, message, ConfirmDialog.OptionType.OK,
-        ConfirmDialog.MessageType.PLAIN);
+    return new ConfirmDialog(message).show();
   }
 }

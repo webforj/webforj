@@ -530,15 +530,35 @@ public final class ConfirmDialog extends OptionDialogBase<ConfirmDialog> {
    */
   public Result show() {
     int result = Environment.getCurrent().getWeforjHelper().msgbox(this);
+    Result endResult = Result.UNKNOWN;
 
     Result[] values = Result.values();
     for (Result r : values) {
       if (r.getValue() == result) {
-        return r;
+        endResult = r;
+        break;
       }
     }
 
-    return Result.UNKNOWN;
+    if (getOptionType().equals(OptionType.CUSTOM)) {
+      switch (endResult) {
+        case OK:
+          endResult = Result.FIRST_CUSTOM_BUTTON;
+          break;
+        case CANCEL:
+          endResult = Result.SECOND_CUSTOM_BUTTON;
+          break;
+
+        case ABORT:
+          endResult = Result.THIRD_CUSTOM_BUTTON;
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    return endResult;
   }
 
   /**

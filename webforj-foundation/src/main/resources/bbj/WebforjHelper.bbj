@@ -1,7 +1,7 @@
 use com.webforj.component.EventProxy
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
-use com.webforj.optiondialog.MessageDialog
+use com.webforj.optiondialog.ConfirmDialog
 
 class public BBjEventProxy implements EventProxy
 
@@ -62,7 +62,7 @@ class public WebforjHelper implements WebforjBBjBridge
         methodret msgbox(msg!,options!,title!)
     methodend
 
-    method public int msgbox(MessageDialog options!)
+    method public int msgbox(ConfirmDialog options!)
       REM MSGBOX(str1{,expr{,str2{,button1{,button2{,button3}}}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
       Title$ = options!.getTitle()
       Message$ = String.valueOf(options!.getMessage())
