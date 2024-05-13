@@ -1,7 +1,7 @@
 package com.webforj.optiondialog;
 
 /**
- * A utility class for creating and showing MessageBoxDialogs.
+ * A utility class for creating and showing ConfirmDialogs.
  */
 public final class OptionDialog {
 
@@ -10,118 +10,57 @@ public final class OptionDialog {
   }
 
   /**
-   * Create a new MessageBoxDialog with the specified title, message, and type.
+   * Shows a new ConfirmDialog with the specified title, message, and types.
    *
+   * @param message The message to display in the dialog.
    * @param title The title of the dialog.
-   * @param message The message to display in the dialog.
-   * @param type The type of button to display in the dialog.
-   * @param iconType The type of icon to display in the dialog.
+   * @param optionType The type of buttons to display in the dialog.
+   * @param messageType The type of dialog style.
    *
-   * @return A new MessageBoxDialog.
+   * @return The result of the dialog.
    */
-  public static MessageDialog createMessageDialog(Object title, Object message,
-      MessageDialog.MessageType type, MessageDialog.IconType iconType) {
-    MessageDialog dialog = new MessageDialog();
-    dialog.setTitle(title);
-    dialog.setMessage(message);
-    dialog.setMessageType(type);
-    dialog.setIconType(iconType);
-
-    return dialog;
+  public static ConfirmDialog.Result showConfirmDialog(Object message, Object title,
+      ConfirmDialog.OptionType optionType, ConfirmDialog.MessageType messageType) {
+    ConfirmDialog dialog = new ConfirmDialog(message, title, optionType, messageType);
+    return dialog.show();
   }
 
   /**
-   * Create a new MessageBoxDialog with the specified title, message, and type.
+   * Shows a new ConfirmDialog with the specified title, message, and type.
    *
+   * @param message The message to display in the dialog.
    * @param title The title of the dialog.
-   * @param message The message to display in the dialog.
-   * @param type The type of button to display in the dialog.
+   * @param optionType The type of buttons to display in the dialog.
    *
-   * @return A new MessageBoxDialog.
+   * @return The result of the dialog.
    */
-  public static MessageDialog createMessageDialog(Object title, Object message,
-      MessageDialog.MessageType type) {
-    return createMessageDialog(title, message, type, MessageDialog.IconType.NONE);
+  public static ConfirmDialog.Result showConfirmDialog(Object message, Object title,
+      ConfirmDialog.OptionType optionType) {
+    return showConfirmDialog(message, title, optionType, ConfirmDialog.MessageType.PLAIN);
   }
 
   /**
-   * Create a new MessageBoxDialog with the specified title, message, and type.
+   * Shows a new ConfirmDialog with the specified title, message, and type.
    *
+   * @param message The message to display in the dialog.
    * @param title The title of the dialog.
-   * @param message The message to display in the dialog.
    *
-   * @return A new MessageBoxDialog.
+   * @return The result of the dialog.
    */
-  public static MessageDialog createMessageDialog(Object title, Object message) {
-    return createMessageDialog(title, message, MessageDialog.MessageType.OK,
-        MessageDialog.IconType.NONE);
+  public static ConfirmDialog.Result showConfirmDialog(Object message, Object title) {
+    return showConfirmDialog(message, title, ConfirmDialog.OptionType.OK,
+        ConfirmDialog.MessageType.PLAIN);
   }
 
   /**
-   * Create a new MessageBoxDialog with the specified title, message, and type.
+   * Shows a new ConfirmDialog with the specified title, message, and type.
    *
    * @param message The message to display in the dialog.
    *
-   * @return A new MessageBoxDialog.
+   * @return The result of the dialog.
    */
-  public static MessageDialog createMessageDialog(Object message) {
-    return createMessageDialog("MessageDialog", message, MessageDialog.MessageType.OK,
-        MessageDialog.IconType.NONE);
-  }
-
-  /**
-   * Shows a new MessageBoxDialog with the specified title, message, and type.
-   *
-   * @param title The title of the dialog.
-   * @param message The message to display in the dialog.
-   * @param type The type of button to display in the dialog.
-   * @param iconType The type of icon to display in the dialog.
-   *
-   * @return A new MessageBoxDialog.
-   */
-  public static MessageDialog showMessageDialog(Object title, Object message,
-      MessageDialog.MessageType type, MessageDialog.IconType iconType) {
-    MessageDialog dialog = createMessageDialog(title, message, type, iconType);
-    dialog.show();
-    return dialog;
-  }
-
-  /**
-   * Shows a new MessageBoxDialog with the specified title, message, and type.
-   *
-   * @param title The title of the dialog.
-   * @param message The message to display in the dialog.
-   * @param type The type of button to display in the dialog.
-   *
-   * @return A new MessageBoxDialog.
-   */
-  public static MessageDialog showMessageDialog(Object title, Object message,
-      MessageDialog.MessageType type) {
-    return showMessageDialog(title, message, type, MessageDialog.IconType.NONE);
-  }
-
-  /**
-   * Shows a new MessageBoxDialog with the specified title, message, and type.
-   *
-   * @param title The title of the dialog.
-   * @param message The message to display in the dialog.
-   *
-   * @return A new MessageBoxDialog.
-   */
-  public static MessageDialog showMessageDialog(Object title, Object message) {
-    return showMessageDialog(title, message, MessageDialog.MessageType.OK,
-        MessageDialog.IconType.NONE);
-  }
-
-  /**
-   * Shows a new MessageBoxDialog with the specified title, message, and type.
-   *
-   * @param message The message to display in the dialog.
-   *
-   * @return A new MessageBoxDialog.
-   */
-  public static MessageDialog showMessageDialog(Object message) {
-    return showMessageDialog("MessageDialog", message, MessageDialog.MessageType.OK,
-        MessageDialog.IconType.NONE);
+  public static ConfirmDialog.Result showConfirmDialog(Object message) {
+    return showConfirmDialog(ConfirmDialog.DEFAULT_TITLE, message, ConfirmDialog.OptionType.OK,
+        ConfirmDialog.MessageType.PLAIN);
   }
 }

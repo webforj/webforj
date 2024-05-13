@@ -70,7 +70,7 @@ class public WebforjHelper implements WebforjBBjBridge
       expr = 0, custom = 0
 
       rem message type
-      switch options!.getMessageType().getValue()
+      switch options!.getOptionType().getValue()
         case 0; break
         case 1; expr=1; break
         case 2; expr=2; break
@@ -82,7 +82,7 @@ class public WebforjHelper implements WebforjBBjBridge
       swend
 
       rem icon type
-      switch options!.getIconType().getValue()
+      switch options!.getMessageType().getValue()
         case 0; break
         case 16; expr=expr+16; break
         case 32; expr=expr+32; break
