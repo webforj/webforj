@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.optiondialog.ConfirmDialog.DefaultButton;
-import com.webforj.optiondialog.ConfirmDialog.MessageType;
+import com.webforj.component.button.ButtonTheme;
+import com.webforj.optiondialog.ConfirmDialog.Button;
 import com.webforj.optiondialog.ConfirmDialog.OptionType;
+import com.webforj.optiondialog.DwcMsgBox.MessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,12 +26,12 @@ class ConfirmDialogTest {
     @Test
     void shouldCreateMessageDialogWithAllParameters() {
       ConfirmDialog dialog =
-          new ConfirmDialog("Message", "Title", OptionType.YES_NO, MessageType.INFORMATION);
+          new ConfirmDialog("Message", "Title", OptionType.YES_NO, MessageType.INFO);
       assertNotNull(dialog);
       assertEquals("Title", dialog.getTitle());
       assertEquals("Message", dialog.getMessage());
       assertEquals(OptionType.YES_NO, dialog.getOptionType());
-      assertEquals(MessageType.INFORMATION, dialog.getMessageType());
+      assertEquals(MessageType.INFO, dialog.getMessageType());
     }
 
     @Test
@@ -87,8 +88,8 @@ class ConfirmDialogTest {
 
   @Test
   void shouldSetAndGetDefaultButton() {
-    dialog.setDefaultButton(DefaultButton.SECOND);
-    assertEquals(DefaultButton.SECOND, dialog.getDefaultButton());
+    dialog.setDefaultButton(Button.SECOND);
+    assertEquals(Button.SECOND, dialog.getDefaultButton());
   }
 
   @Test
@@ -98,21 +99,22 @@ class ConfirmDialogTest {
   }
 
   @Test
-  void shouldSetAndGetFirstButtonText() {
-    dialog.setButtonText("First");
-    assertEquals("First", dialog.getFirstButtonText());
-  }
-
-  @Test
-  void shouldSetAndGetSecondButtonText() {
-    dialog.setButtonText("First", "Second");
-    assertEquals("Second", dialog.getSecondButtonText());
-  }
-
-  @Test
-  void shouldSetAndGetThirdButtonText() {
+  void shouldSetAndGetButtonsTexts() {
     dialog.setButtonText("First", "Second", "Third");
+    assertEquals("First", dialog.getFirstButtonText());
+    assertEquals("Second", dialog.getSecondButtonText());
     assertEquals("Third", dialog.getThirdButtonText());
+  }
+
+  @Test
+  void shouldSetAndGetButtonThemes() {
+    dialog.setButtonTheme(Button.FIRST, ButtonTheme.DANGER);
+    dialog.setButtonTheme(Button.SECOND, ButtonTheme.SUCCESS);
+    dialog.setButtonTheme(Button.THIRD, ButtonTheme.WARNING);
+
+    assertEquals("\"danger\"", dialog.getAttributes().get("button-0-theme"));
+    assertEquals("\"success\"", dialog.getAttributes().get("button-1-theme"));
+    assertEquals("\"warning\"", dialog.getAttributes().get("button-2-theme"));
   }
 
   @Test

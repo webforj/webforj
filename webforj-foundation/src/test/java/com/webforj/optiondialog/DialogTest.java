@@ -5,17 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.component.Theme;
-import com.webforj.optiondialog.OptionDialogBase.Alignment;
+import com.webforj.optiondialog.Dialog.Alignment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class OptionDialogBaseTest {
+class DialogTest {
 
-  private OptionDialogBaseMock dialog;
+  private DialogMock dialog;
 
   @BeforeEach
   void setUp() {
-    dialog = new OptionDialogBaseMock();
+    dialog = new DialogMock();
   }
 
   @Test

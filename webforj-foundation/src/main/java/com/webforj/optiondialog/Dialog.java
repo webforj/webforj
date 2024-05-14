@@ -7,11 +7,14 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 /**
- * The base class for option dialogs.
+ * The base class for blocking dialogs.
  *
- * @param <T> the type of the option dialog
+ * @param <T> the type of the dialog
+ *
+ * @author Hyyan Abo Fakher
+ * @since 24.02
  */
-abstract class OptionDialogBase<T> {
+abstract class Dialog<T> {
   /**
    * The dialog alignments.
    */
@@ -45,6 +48,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setAlignment(Alignment alignment) {
     this.alignment = alignment;
+    toggleAttribute("alignment", alignment.toString().toLowerCase(), alignment != null);
     return getSelf();
   }
 
@@ -64,6 +68,8 @@ abstract class OptionDialogBase<T> {
    */
   public T setBlurred(boolean blurred) {
     this.blurred = blurred;
+    toggleAttribute("blurred", "", blurred);
+
     return getSelf();
   }
 
@@ -83,6 +89,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setBreakpoint(String breakpoint) {
     this.breakpoint = breakpoint == null ? "" : breakpoint;
+    toggleAttribute("breakpoint", breakpoint, breakpoint != null);
     return getSelf();
   }
 
@@ -102,6 +109,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setFullscreen(boolean fullscreen) {
     this.fullscreen = fullscreen;
+    toggleAttribute("fullscreen", "", fullscreen);
     return getSelf();
   }
 
@@ -121,6 +129,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setMoveable(boolean moveable) {
     this.moveable = moveable;
+    toggleAttribute("moveable", "", moveable);
     return getSelf();
   }
 
@@ -141,6 +150,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setHorizontalPosition(String x) {
     this.horizontalPosition = x == null ? "" : x;
+    toggleAttribute("posx", x, x != null && !x.isEmpty());
     return getSelf();
   }
 
@@ -171,6 +181,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setVerticalPosition(String y) {
     this.verticalPosition = y == null ? "" : y;
+    toggleAttribute("posy", y, y != null && !y.isEmpty());
     return getSelf();
   }
 
@@ -251,6 +262,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setMaxWidth(String width) {
     this.maxWidth = width;
+    toggleAttribute("max-width", width, width != null && !width.isEmpty());
     return getSelf();
   }
 
@@ -281,6 +293,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setMaxHeight(String height) {
     this.maxHeight = height;
+    toggleAttribute("max-height", height, height != null && !height.isEmpty());
     return getSelf();
   }
 
@@ -310,11 +323,8 @@ abstract class OptionDialogBase<T> {
    * @return the message box
    */
   public T setSnapThreshold(int snapThreshold) {
-    if (snapThreshold < 0) {
-      throw new IllegalArgumentException("The snap threshold must be greater than or equal to 0.");
-    }
-
     this.snapThreshold = snapThreshold;
+    toggleAttribute("snap-threshold", snapThreshold + "px", snapThreshold > 0);
     return getSelf();
   }
 
@@ -335,6 +345,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setSnapToEdge(boolean snapToEdge) {
     this.snapToEdge = snapToEdge;
+    toggleAttribute("snap-to-edge", "", snapToEdge);
     return getSelf();
   }
 
@@ -355,6 +366,7 @@ abstract class OptionDialogBase<T> {
    */
   public T setTheme(Theme theme) {
     this.theme = theme;
+    toggleAttribute("theme", theme.toString().toLowerCase(), theme != null);
     return getSelf();
   }
 
@@ -387,6 +399,17 @@ abstract class OptionDialogBase<T> {
    */
   public T removeAttribute(String name) {
     attributes.remove(name);
+    return getSelf();
+  }
+
+  /**
+   * Sets the attributes of the message box.
+   *
+   * @return the attributes of the message box
+   */
+  public T setAttributes(Map<String, String> attributes) {
+    this.attributes.clear();
+    this.attributes.putAll(attributes);
     return getSelf();
   }
 
@@ -426,5 +449,13 @@ abstract class OptionDialogBase<T> {
     T self = (T) this;
 
     return self;
+  }
+
+  void toggleAttribute(String name, String value, boolean condition) {
+    if (condition) {
+      setAttribute(name, value);
+    } else {
+      removeAttribute(name);
+    }
   }
 }

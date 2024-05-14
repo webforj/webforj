@@ -104,42 +104,15 @@ class public WebforjHelper implements WebforjBBjBridge
 
       rem mode
       mode$ = options!.getAttributesAsString()
-      alignment$ = options!.getAlignment().name().toLowerCase()
-      blurred$ = String.valueOf(options!.isBlurred())
-      breakpoint$ = options!.getBreakpoint()
-      fullscreen$ = String.valueOf(options!.isFullscreen())
-      height$ = options!.getMaxHeight()
-      width$ = options!.getMaxWidth()
-      moveable$ = String.valueOf(options!.isMoveable())
-      posx$ = options!.getHorizontalPosition()
-      posy$ = options!.getVerticalPosition()
-      snapThreshold$ = str(options!.getSnapThreshold())
-      snapToEdge$ = String.valueOf(options!.isSnapToEdge())
-
-      modeList! = new java.util.ArrayList()
-      if mode$ <> "" then modeList!.add(mode$)
-      if alignment$ <> "" then modeList!.add("alignment="+alignment$)
-      if blurred$ <> "" and blurred$ <> "false" then modeList!.add("blurred="+blurred$)
-      if breakpoint$ <> "" then modeList!.add("breakpoint="+breakpoint$)
-      if fullscreen$ <> "" and fullscreen$ <> "false" then modeList!.add("fullscreen="+fullscreen$)
-      if width$ <> "" then modeList!.add("max-width="+width$)
-      if height$ <> "" then modeList!.add("max-height="+height$)
-      if moveable$ <> "" and moveable$ <> "false" then modeList!.add("moveable="+moveable$)
-      if posx$ <> "" then modeList!.add("posx="+posx$)
-      if posy$ <> "" then modeList!.add("posy="+posy$)
-      if snapThreshold$ <> "" then modeList!.add("snap-threshold="+snapThreshold$)
-      if snapToEdge$ <> "" and snapToEdge$ <> "false"  then modeList!.add("snap-to-edge="+snapToEdge$)
-
-      mode$ = String.join(",", modeList!)
 
       rem timeout
       timeout = options!.getTimeout()
 
       result = 0
       if custom then
-        Button1$= options!.getFirstButtonText()
-        Button2$= options!.getSecondButtonText()
-        Button3$= options!.getThirdButtonText()
+        Button1$= String.valueOf(options!.getFirstButtonText())
+        Button2$= String.valueOf(options!.getSecondButtonText())
+        Button3$= String.valueOf(options!.getThirdButtonText())
         if Button3$ <> "" then
           result = msgbox(Message$,expr,Title$,Button1$,Button2$,Button3$,tim=timeout,mode=mode$)
         else
