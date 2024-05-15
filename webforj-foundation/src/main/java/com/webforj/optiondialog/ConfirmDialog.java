@@ -178,9 +178,9 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
 
   private OptionType optionType = OptionType.OK;
   private Button defaultButton = Button.FIRST;
-  private Object firstButtonText = "";
-  private Object secondButtonText = "";
-  private Object thirdButtonText = "";
+  private String firstButtonText = "";
+  private String secondButtonText = "";
+  private String thirdButtonText = "";
 
   /**
    * Creates a new instance of the confirm dialog.
@@ -239,7 +239,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the option type of the confirm dialog.
    *
    * @param type the option type to set.
-   * @return the message dialog
+   * @return the dialog instance
    */
   public ConfirmDialog setOptionType(OptionType type) {
     this.optionType = type;
@@ -259,7 +259,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the default button in the confirm dialog.
    *
    * @param defaultButton the defaultButton to set
-   * @return the message dialog
+   * @return the dialog instance
    */
   public ConfirmDialog setDefaultButton(Button defaultButton) {
     this.defaultButton = defaultButton;
@@ -279,9 +279,9 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the text of the first button.
    *
    * @param firstButtonText the text of the first button
-   * @return the message dialog
+   * @return the dialog instance
    */
-  public ConfirmDialog setFirstButtonText(Object firstButtonText) {
+  public ConfirmDialog setFirstButtonText(String firstButtonText) {
     this.firstButtonText = firstButtonText == null ? "" : firstButtonText;
     return this;
   }
@@ -291,7 +291,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    *
    * @return the text of the first button
    */
-  public Object getFirstButtonText() {
+  public String getFirstButtonText() {
     return firstButtonText;
   }
 
@@ -299,9 +299,9 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the text of the second button.
    *
    * @param secondButtonText the text of the second button
-   * @return the message dialog
+   * @return the dialog instance
    */
-  public ConfirmDialog setSecondButtonText(Object secondButtonText) {
+  public ConfirmDialog setSecondButtonText(String secondButtonText) {
     this.secondButtonText = secondButtonText == null ? "" : secondButtonText;
     return this;
   }
@@ -311,7 +311,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    *
    * @return the text of the second button
    */
-  public Object getSecondButtonText() {
+  public String getSecondButtonText() {
     return secondButtonText;
   }
 
@@ -319,9 +319,9 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the text of the third button.
    *
    * @param thirdButtonText the text of the third button
-   * @return the message dialog
+   * @return the dialog instance
    */
-  public ConfirmDialog setThirdButtonText(Object thirdButtonText) {
+  public ConfirmDialog setThirdButtonText(String thirdButtonText) {
     this.thirdButtonText = thirdButtonText == null ? "" : thirdButtonText;
     return this;
   }
@@ -331,50 +331,32 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    *
    * @return the text of the third button
    */
-  public Object getThirdButtonText() {
+  public String getThirdButtonText() {
     return thirdButtonText;
   }
 
   /**
-   * Sets buttons texts.
+   * Sets the text of a button.
    *
-   * @param firstButtonText the text of the first button
-   * @param secondButtonText the text of the second button
-   * @param thirdButtonText the text of the third button
+   * @param button the button
+   * @param text the text of the button
    *
-   * @return the message dialog
+   * @return the dialog instance
    */
-  public ConfirmDialog setButtonText(String firstButtonText, String secondButtonText,
-      String thirdButtonText) {
-    setFirstButtonText(firstButtonText);
-    setSecondButtonText(secondButtonText);
-    setThirdButtonText(thirdButtonText);
-    return this;
-  }
-
-  /**
-   * Sets buttons texts.
-   *
-   * @param firstButtonText the text of the first button
-   * @param secondButtonText the text of the second button
-   *
-   * @return the message dialog
-   */
-  public ConfirmDialog setButtonText(String firstButtonText, String secondButtonText) {
-    setFirstButtonText(firstButtonText);
-    setSecondButtonText(secondButtonText);
-    return this;
-  }
-
-  /**
-   * Sets buttons texts.
-   *
-   * @param firstButtonText the text of the first button
-   *
-   * @return the message dialog
-   */
-  public ConfirmDialog setButtonText(String firstButtonText) {
-    setFirstButtonText(firstButtonText);
+  public ConfirmDialog setButtonText(Button button, String text) {
+    switch (button) {
+      case FIRST:
+        setFirstButtonText(text);
+        break;
+      case SECOND:
+        setSecondButtonText(text);
+        break;
+      case THIRD:
+        setThirdButtonText(text);
+        break;
+      default:
+        break;
+    }
     return this;
   }
 
@@ -382,7 +364,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the theme of the first button.
    *
    * @param theme the theme of the first button
-   * @return the message dialog
+   * @return the dialog instance
    */
   public ConfirmDialog setFirstButtonTheme(ButtonTheme theme) {
     setAttribute("button-0-theme", new Gson().toJson(theme));
@@ -393,7 +375,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the theme of the second button.
    *
    * @param theme the theme of the second button
-   * @return the message dialog
+   * @return the dialog instance
    */
   public ConfirmDialog setSecondButtonTheme(ButtonTheme theme) {
     setAttribute("button-1-theme", new Gson().toJson(theme));
@@ -404,7 +386,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * Sets the theme of the third button.
    *
    * @param theme the theme of the third button
-   * @return the message dialog
+   * @return the dialog instance
    */
   public ConfirmDialog setThirdButtonTheme(ButtonTheme theme) {
     setAttribute("button-2-theme", new Gson().toJson(theme));
@@ -412,11 +394,12 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
   }
 
   /**
-   * Sets the theme of the button.
+   * Sets the theme of a button.
    *
    * @param button the button
    * @param theme the theme of the button
-   * @return the message dialog
+   *
+   * @return the dialog instance
    */
   public ConfirmDialog setButtonTheme(Button button, ButtonTheme theme) {
     switch (button) {
@@ -438,7 +421,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
   /**
    * Shows the confirm dialog.
    *
-   * @return the result of the message dialog
+   * @return the result of the confirm dialog
    */
   public Result show() {
     int result = Environment.getCurrent().getWeforjHelper().msgbox(this);
@@ -448,7 +431,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
   /**
    * Alias to {@link #show()}.
    *
-   * @return the result of the message dialog
+   * @return the result of the confirm dialog
    */
   public Result open() {
     return show();

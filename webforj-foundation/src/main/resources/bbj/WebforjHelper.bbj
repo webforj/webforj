@@ -2,6 +2,7 @@ use com.webforj.component.EventProxy
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
 use com.webforj.optiondialog.ConfirmDialog
+use com.webforj.optiondialog.InputDialog
 
 class public BBjEventProxy implements EventProxy
 
@@ -64,7 +65,7 @@ class public WebforjHelper implements WebforjBBjBridge
 
     method public int msgbox(ConfirmDialog options!)
       REM MSGBOX(str1{,expr{,str2{,button1{,button2{,button3}}}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
-      Title$ = options!.getTitle()
+      Title$ = String.valueOf(options!.getTitle())
       Message$ = String.valueOf(options!.getMessage())
 
       expr = 0, custom = 0
@@ -131,6 +132,34 @@ class public WebforjHelper implements WebforjBBjBridge
       endif
 
       methodret result
+    methodend
+
+    method public String prompt(InputDialog options!)
+      REM PROMPT(message{,default{,title{,expr}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
+      Message$ = String.valueOf(options!.getMessage())
+      Default$ = String.valueOf(options!.getDefaultValue())
+      Title$ = String.valueOf(options!.getTitle())
+
+      expr = 0
+
+      rem icon type
+      switch options!.getMessageType().getValue()
+        case 0; break
+        case 16; expr=expr+16; break
+        case 32; expr=expr+32; break
+        case 48; expr=expr+48; break
+        case 64; expr=expr+64; break
+        case default; escape
+      swend
+
+      rem mode
+      mode$ = options!.getAttributesAsString()
+
+      rem timeout
+      timeout = options!.getTimeout()
+
+      result! = prompt(Message$,Default$,Title$,expr,tim=timeout,mode=mode$)
+      methodret result!
     methodend
 
     method public BBjControl createWidget(String class!, BBjWindow w!)

@@ -116,7 +116,7 @@ public final class MessageDialog extends DwcMsgBox<MessageDialog> {
    * Sets the text of the OK button.
    *
    * @param text the text of the OK button
-   * @return the dialog
+   * @return the dialog instance
    */
   public MessageDialog setButtonText(String text) {
     this.buttonText = text;
@@ -136,7 +136,7 @@ public final class MessageDialog extends DwcMsgBox<MessageDialog> {
    * Sets the theme of the OK button.
    *
    * @param theme the theme of the OK button
-   * @return the dialog
+   * @return the dialog instance
    */
   public MessageDialog setButtonTheme(ButtonTheme theme) {
     this.buttonTheme = theme;
@@ -171,52 +171,5 @@ public final class MessageDialog extends DwcMsgBox<MessageDialog> {
    */
   public void open() {
     show();
-  }
-
-  static ButtonTheme detectButtonThemeFromDialogTheme(Theme theme) {
-    ButtonTheme buttonTheme = ButtonTheme.DEFAULT;
-    switch (theme) {
-      case DANGER:
-        buttonTheme = ButtonTheme.DANGER;
-        break;
-      case INFO:
-        buttonTheme = ButtonTheme.INFO;
-        break;
-      case PRIMARY:
-        buttonTheme = ButtonTheme.PRIMARY;
-        break;
-      case SUCCESS:
-        buttonTheme = ButtonTheme.SUCCESS;
-        break;
-      case WARNING:
-        buttonTheme = ButtonTheme.WARNING;
-        break;
-      case GRAY:
-        buttonTheme = ButtonTheme.GRAY;
-        break;
-      default:
-    }
-    return buttonTheme;
-  }
-
-  static Theme detectDialogThemeFromMessageType(MessageType messageType) {
-    Theme theme = Theme.DEFAULT;
-    switch (messageType) {
-      case ERROR:
-        theme = Theme.DANGER;
-        break;
-      case INFO:
-        theme = Theme.INFO;
-        break;
-      case WARNING:
-        theme = Theme.WARNING;
-        break;
-      case QUESTION:
-        theme = Theme.PRIMARY;
-        break;
-      default:
-    }
-
-    return theme;
   }
 }

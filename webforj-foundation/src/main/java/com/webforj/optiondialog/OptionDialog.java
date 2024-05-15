@@ -1,7 +1,8 @@
 package com.webforj.optiondialog;
 
 import com.webforj.component.Theme;
-import com.webforj.optiondialog.DwcMsgBox.MessageType;
+import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
+import com.webforj.optiondialog.InputDialog.InputType;
 
 /**
  * A utility class for creating and showing dialogs.
@@ -26,7 +27,7 @@ public final class OptionDialog {
    * @return The result of the dialog.
    */
   public static ConfirmDialog.Result showConfirmDialog(Object message, String title,
-      ConfirmDialog.OptionType optionType, DwcMsgBox.MessageType messageType) {
+      ConfirmDialog.OptionType optionType, DwcPromptMsgBox.MessageType messageType) {
     return new ConfirmDialog(message, title, optionType, messageType).show();
   }
 
@@ -77,7 +78,7 @@ public final class OptionDialog {
    * @param theme The theme of the dialog.
    */
   public static void showMessageDialog(Object message, String title, String buttonText,
-      DwcMsgBox.MessageType messageType, Theme theme) {
+      DwcPromptMsgBox.MessageType messageType, Theme theme) {
     new MessageDialog(message, title, buttonText, messageType, theme).show();
   }
 
@@ -89,8 +90,8 @@ public final class OptionDialog {
    * @param messageType The type of dialog style.
    * @param theme The theme of the dialog.
    */
-  public static void showMessageDialog(Object message, String title, MessageType messageType,
-      Theme theme) {
+  public static void showMessageDialog(Object message, String title,
+      DwcPromptMsgBox.MessageType messageType, Theme theme) {
     new MessageDialog(message, title, messageType, theme).show();
   }
 
@@ -103,7 +104,7 @@ public final class OptionDialog {
    * @param messageType The type of dialog style.
    */
   public static void showMessageDialog(Object message, String title, String buttonText,
-      MessageType messageType) {
+      DwcPromptMsgBox.MessageType messageType) {
     new MessageDialog(message, title, buttonText, messageType).show();
   }
 
@@ -125,7 +126,8 @@ public final class OptionDialog {
    * @param title The title of the dialog.
    * @param messageType The type of dialog style.
    */
-  public static void showMessageDialog(Object message, String title, MessageType messageType) {
+  public static void showMessageDialog(Object message, String title,
+      DwcPromptMsgBox.MessageType messageType) {
     new MessageDialog(message, title, messageType).show();
   }
 
@@ -146,5 +148,144 @@ public final class OptionDialog {
    */
   public static void showMessageDialog(Object message) {
     new MessageDialog(message).show();
+  }
+
+
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param defaultValue the default value of the input field
+   * @param messageType The type of dialog style.
+   * @param inputType the type of input field
+   */
+  public static String showInputDialog(String message, String title, String defaultValue,
+      MessageType messageType, InputType inputType) {
+    return new InputDialog(message, title, defaultValue, messageType, inputType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param defaultValue the default value of the input field
+   * @param messageType The type of dialog style.
+   */
+  public static String showInputDialog(Object message, String title, String defaultValue,
+      MessageType messageType) {
+    return new InputDialog(message, title, defaultValue, messageType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param defaultValue the default value of the input field
+   * @param inputType the type of input field
+   */
+  public static String showInputDialog(Object message, String title, String defaultValue,
+      InputType inputType) {
+    return new InputDialog(message, title, defaultValue, inputType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param messageType The type of dialog style.
+   * @param inputType the type of input field
+   */
+  public static String showInputDialog(Object message, String title, MessageType messageType,
+      InputType inputType) {
+    return new InputDialog(message, title, messageType, inputType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param messageType The type of dialog style.
+   */
+  public static String showInputDialog(Object message, String title, MessageType messageType) {
+    return new InputDialog(message, title, messageType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param inputType the type of input field
+   */
+  public static String showInputDialog(Object message, String title, InputType inputType) {
+    return new InputDialog(message, title, inputType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param messageType The type of dialog style.
+   * @param inputType the type of input field
+   */
+  public static String showInputDialog(Object message, MessageType messageType,
+      InputType inputType) {
+    return new InputDialog(message, messageType, inputType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param messageType The type of dialog style.
+   */
+  public static String showInputDialog(Object message, MessageType messageType) {
+    return new InputDialog(message, messageType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param inputType the type of input field
+   */
+  public static String showInputDialog(Object message, InputType inputType) {
+    return new InputDialog(message, inputType).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   * @param defaultValue the default value of the input field
+   */
+  public static String showInputDialog(Object message, String title, String defaultValue) {
+    return new InputDialog(message, title, defaultValue).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   * @param title the title of the dialog
+   */
+  public static String showInputDialog(Object message, String title) {
+    return new InputDialog(message, title).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   *
+   * @param message the message to display in the dialog
+   */
+  public static String showInputDialog(Object message) {
+    return new InputDialog(message).show();
   }
 }

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.webforj.component.button.ButtonTheme;
 import com.webforj.optiondialog.ConfirmDialog.Button;
 import com.webforj.optiondialog.ConfirmDialog.OptionType;
-import com.webforj.optiondialog.DwcMsgBox.MessageType;
+import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -100,7 +100,10 @@ class ConfirmDialogTest {
 
   @Test
   void shouldSetAndGetButtonsTexts() {
-    dialog.setButtonText("First", "Second", "Third");
+    dialog.setButtonText(Button.FIRST, "First");
+    dialog.setButtonText(Button.SECOND, "Second");
+    dialog.setButtonText(Button.THIRD, "Third");
+
     assertEquals("First", dialog.getFirstButtonText());
     assertEquals("Second", dialog.getSecondButtonText());
     assertEquals("Third", dialog.getThirdButtonText());
@@ -115,12 +118,6 @@ class ConfirmDialogTest {
     assertEquals("\"danger\"", dialog.getAttributes().get("button-0-theme"));
     assertEquals("\"success\"", dialog.getAttributes().get("button-1-theme"));
     assertEquals("\"warning\"", dialog.getAttributes().get("button-2-theme"));
-  }
-
-  @Test
-  void shouldSetAndGetButtonTimeout() {
-    dialog.setTimeout(300);
-    assertEquals(300, dialog.getTimeout());
   }
 
   @Test

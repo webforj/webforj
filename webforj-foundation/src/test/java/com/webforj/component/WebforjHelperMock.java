@@ -6,6 +6,7 @@ import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.optiondialog.ConfirmDialog;
+import com.webforj.optiondialog.InputDialog;
 import java.util.ArrayList;
 
 /** Mock for the WebforjBBjBridge. */
@@ -61,4 +62,8 @@ public class WebforjHelperMock implements WebforjBBjBridge {
     return 0;
   }
 
+  @Override
+  public String prompt(InputDialog options) {
+    return "";
+  }
 }

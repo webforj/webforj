@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.webforj.component.Theme;
 import com.webforj.component.button.ButtonTheme;
-import com.webforj.optiondialog.DwcMsgBox.MessageType;
+import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
