@@ -10,100 +10,100 @@ import org.junit.jupiter.api.Test;
 
 class DialogTest {
 
-  private DialogMock dialog;
+  private DialogMock component;
 
   @BeforeEach
   void setUp() {
-    dialog = new DialogMock();
+    component = new DialogMock();
   }
 
   @Test
   void shouldSetAndGetAlignment() {
-    dialog.setAlignment(Alignment.BOTTOM);
-    assertEquals(Alignment.BOTTOM, dialog.getAlignment());
+    component.setAlignment(Alignment.BOTTOM);
+    assertEquals(Alignment.BOTTOM, component.getAlignment());
   }
 
   @Test
   void shouldToggleBlurredState() {
-    dialog.setBlurred(true);
-    assertTrue(dialog.isBlurred());
+    component.setBlurred(true);
+    assertTrue(component.isBlurred());
   }
 
   @Test
   void shouldHandleNullBreakpointGracefully() {
-    dialog.setBreakpoint(null);
-    assertEquals("", dialog.getBreakpoint());
+    component.setBreakpoint(null);
+    assertEquals("", component.getBreakpoint());
   }
 
   @Test
   void shouldToggleFullscreenState() {
-    dialog.setFullscreen(true);
-    assertTrue(dialog.isFullscreen());
+    component.setFullscreen(true);
+    assertTrue(component.isFullscreen());
   }
 
   @Test
   void shouldToggleMoveableState() {
-    dialog.setMoveable(false);
-    assertFalse(dialog.isMoveable());
+    component.setMoveable(false);
+    assertFalse(component.isMoveable());
   }
 
   @Test
   void shouldSetAndGetHorizontalPosition() {
-    dialog.setHorizontalPosition(200);
-    assertEquals("200px", dialog.getHorizontalPosition());
+    component.setHorizontalPosition(200);
+    assertEquals("200px", component.getHorizontalPosition());
   }
 
   @Test
   void shouldSetAndGetVerticalPosition() {
-    dialog.setVerticalPosition(300);
-    assertEquals("300px", dialog.getVerticalPosition());
+    component.setVerticalPosition(300);
+    assertEquals("300px", component.getVerticalPosition());
   }
 
   @Test
   void shouldSetBothPositions() {
-    dialog.setPosition(400, 500);
-    assertEquals("400px", dialog.getHorizontalPosition());
-    assertEquals("500px", dialog.getVerticalPosition());
+    component.setPosition(400, 500);
+    assertEquals("400px", component.getHorizontalPosition());
+    assertEquals("500px", component.getVerticalPosition());
   }
 
   @Test
   void shouldSetAndGetMaxWidth() {
-    dialog.setMaxWidth(400);
-    assertEquals("400px", dialog.getMaxWidth());
+    component.setMaxWidth(400);
+    assertEquals("400px", component.getMaxWidth());
   }
 
   @Test
   void shouldSetAndGetMaxHeight() {
-    dialog.setMaxHeight(600);
-    assertEquals("600px", dialog.getMaxHeight());
+    component.setMaxHeight(600);
+    assertEquals("600px", component.getMaxHeight());
   }
 
   @Test
   void shouldSetAndGetSnapThreshold() {
-    dialog.setSnapThreshold(10);
-    assertEquals(10, dialog.getSnapThreshold());
+    component.setSnapThreshold(10);
+    assertEquals(10, component.getSnapThreshold());
   }
 
   @Test
   void shouldToggleSnapToEdgeState() {
-    dialog.setSnapToEdge(false);
-    assertFalse(dialog.isSnapToEdge());
+    component.setSnapToEdge(false);
+    assertFalse(component.isSnapToEdge());
   }
 
   @Test
   void shouldAddAndRemoveAttributes() {
-    dialog.setAttribute("key1", "value1");
-    assertTrue(dialog.getAttributes().containsKey("key1"));
+    component.setAttribute("key1", "value1");
+    assertTrue(component.getAttributes().containsKey("key1"));
 
-    dialog.removeAttribute("key1");
-    assertFalse(dialog.getAttributes().containsKey("key1"));
+    component.removeAttribute("key1");
+    assertFalse(component.getAttributes().containsKey("key1"));
   }
 
   @Test
   void shouldGetAttributesAsString() {
-    dialog.setAttribute("key1", "value1");
-    dialog.setAttribute("key2", "value2");
+    component.setAttribute("key1", "value1");
+    component.setAttribute("key2", "value2");
 
-    assertEquals("key1=value1,key2=value2", dialog.getAttributesAsString());
+    assertEquals("key1=value1,key2=value2", component.getAttributesAsString());
   }
 }

@@ -15,11 +15,11 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 class InputDialogTest {
 
-  private InputDialog dialog;
+  private InputDialog component;
 
   @BeforeEach
   void setUp() {
-    dialog = new InputDialog();
+    component = new InputDialog();
   }
 
   @Nested
@@ -195,19 +195,19 @@ class InputDialogTest {
 
   @Test
   void shouldSetAndGetButtonsTexts() {
-    dialog.setButtonText(Button.FIRST, "First");
-    dialog.setButtonText(Button.SECOND, "Second");
+    component.setButtonText(Button.FIRST, "First");
+    component.setButtonText(Button.SECOND, "Second");
 
-    assertEquals("First", dialog.getFirstButtonText());
-    assertEquals("Second", dialog.getSecondButtonText());
+    assertEquals("First", component.getFirstButtonText());
+    assertEquals("Second", component.getSecondButtonText());
   }
 
   @Test
   void shouldSetAndGetButtonThemes() {
-    dialog.setButtonTheme(Button.FIRST, ButtonTheme.DANGER);
-    dialog.setButtonTheme(Button.SECOND, ButtonTheme.SUCCESS);
+    component.setButtonTheme(Button.FIRST, ButtonTheme.DANGER);
+    component.setButtonTheme(Button.SECOND, ButtonTheme.SUCCESS);
 
-    assertEquals("\"danger\"", dialog.getAttributes().get("button-0-theme"));
-    assertEquals("\"success\"", dialog.getAttributes().get("button-1-theme"));
+    assertEquals("\"danger\"", component.getAttributes().get("button-0-theme"));
+    assertEquals("\"success\"", component.getAttributes().get("button-1-theme"));
   }
 }

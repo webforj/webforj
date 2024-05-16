@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 
 class FileUploadDialogTest {
 
-  FileUploadDialog dialog;
+  FileUploadDialog component;
   FileChooserFilter mockFilter1;
   FileChooserFilter mockFilter2;
 
   @BeforeEach
   void setUp() {
-    dialog = new FileUploadDialog();
+    component = new FileUploadDialog();
     mockFilter1 = new FileChooserFilter("Text Files (*.txt)", "*.txt");
     mockFilter2 = new FileChooserFilter("Java Files (*.java)", "*.java");
   }
@@ -29,73 +29,73 @@ class FileUploadDialogTest {
 
     @Test
     void shouldConstructWithAllParameters() {
-      dialog = new FileUploadDialog("Title", Arrays.asList(mockFilter1, mockFilter2),
+      component = new FileUploadDialog("Title", Arrays.asList(mockFilter1, mockFilter2),
           mockFilter1.getDescription());
 
-      assertEquals("Title", dialog.getTitle());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
-      assertEquals(mockFilter1, dialog.getActiveFilter());
+      assertEquals("Title", component.getTitle());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
+      assertEquals(mockFilter1, component.getActiveFilter());
     }
 
     @Test
     void shouldConstructWithTitleAndFilers() {
-      dialog = new FileUploadDialog("Title", Arrays.asList(mockFilter1, mockFilter2));
+      component = new FileUploadDialog("Title", Arrays.asList(mockFilter1, mockFilter2));
 
-      assertEquals("Title", dialog.getTitle());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
-      assertNull(dialog.getActiveFilter());
+      assertEquals("Title", component.getTitle());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
+      assertNull(component.getActiveFilter());
     }
 
     @Test
     void shouldConstructWithTitle() {
-      dialog = new FileUploadDialog("Title");
+      component = new FileUploadDialog("Title");
 
-      assertEquals("Title", dialog.getTitle());
-      assertTrue(dialog.getFilters().isEmpty());
-      assertNull(dialog.getActiveFilter());
+      assertEquals("Title", component.getTitle());
+      assertTrue(component.getFilters().isEmpty());
+      assertNull(component.getActiveFilter());
     }
   }
 
   @Test
   void shouldSetAndGetDrop() {
-    dialog.setDrop(true);
-    assertTrue(dialog.isDrop());
-    assertTrue(dialog.getAttributes().containsKey("drop"));
-    assertEquals("true", dialog.getAttributes().get("drop"));
+    component.setDrop(true);
+    assertTrue(component.isDrop());
+    assertTrue(component.getAttributes().containsKey("drop"));
+    assertEquals("true", component.getAttributes().get("drop"));
 
-    dialog.setDrop(false);
-    assertFalse(dialog.isDrop());
-    assertEquals("false", dialog.getAttributes().get("drop"));
+    component.setDrop(false);
+    assertFalse(component.isDrop());
+    assertEquals("false", component.getAttributes().get("drop"));
   }
 
   @Test
   void shouldSetGetFiltersVisible() {
-    dialog.setFiltersVisible(true);
-    assertTrue(dialog.isFiltersVisible());
-    assertEquals("true", dialog.getAttributes().get("filters-visible"));
+    component.setFiltersVisible(true);
+    assertTrue(component.isFiltersVisible());
+    assertEquals("true", component.getAttributes().get("filters-visible"));
 
-    dialog.setFiltersVisible(false);
-    assertFalse(dialog.isFiltersVisible());
-    assertEquals("false", dialog.getAttributes().get("filters-visible"));
+    component.setFiltersVisible(false);
+    assertFalse(component.isFiltersVisible());
+    assertEquals("false", component.getAttributes().get("filters-visible"));
   }
 
   @Test
   void shouldSetGetMultiFilterSelection() {
-    dialog.setMultiFilterSelection(true);
-    assertTrue(dialog.isMultiFilterSelection());
-    assertTrue(dialog.getAttributes().containsKey("multi-filter-selection"));
+    component.setMultiFilterSelection(true);
+    assertTrue(component.isMultiFilterSelection());
+    assertTrue(component.getAttributes().containsKey("multi-filter-selection"));
 
-    dialog.setMultiFilterSelection(false);
-    assertFalse(dialog.isMultiFilterSelection());
-    assertEquals("false", dialog.getAttributes().get("multi-filter-selection"));
+    component.setMultiFilterSelection(false);
+    assertFalse(component.isMultiFilterSelection());
+    assertEquals("false", component.getAttributes().get("multi-filter-selection"));
   }
 
   @Test
   void shouldSetGetMaxFileSize() {
-    dialog.setMaxFileSize(100);
-    assertEquals(100, dialog.getMaxFileSize());
+    component.setMaxFileSize(100);
+    assertEquals(100, component.getMaxFileSize());
 
-    assertTrue(dialog.getAttributes().containsKey("max-size"));
-    assertEquals("100", dialog.getAttributes().get("max-size"));
+    assertTrue(component.getAttributes().containsKey("max-size"));
+    assertEquals("100", component.getAttributes().get("max-size"));
   }
 }

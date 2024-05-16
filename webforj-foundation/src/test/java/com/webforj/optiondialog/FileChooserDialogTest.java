@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class FileChooserDialogTest {
 
-  FileChooserDialog dialog;
+  FileChooserDialog component;
   FileChooserFilter mockFilter1;
   FileChooserFilter mockFilter2;
 
@@ -28,148 +28,148 @@ class FileChooserDialogTest {
 
     @Test
     void shouldConstructWithAllParameters() {
-      dialog = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2),
+      component = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2),
           "ActiveFilter", true, FileChooserDialog.SelectionMode.FILES_AND_DIRECTORIES);
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
-      assertEquals(true, dialog.isRestricted());
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
+      assertEquals(true, component.isRestricted());
       assertEquals(FileChooserDialog.SelectionMode.FILES_AND_DIRECTORIES,
-          dialog.getSelectionMode());
+          component.getSelectionMode());
     }
 
     @Test
     void shouldConstructWithTitleInitialPathAndFilters() {
-      dialog = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2));
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
+      component = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2));
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
     }
 
     @Test
     void shouldConstructWithTitleInitialPathAndSelectionMode() {
-      dialog = new FileChooserDialog("Title", "/path", FileChooserDialog.SelectionMode.DIRECTORIES);
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, dialog.getSelectionMode());
+      component = new FileChooserDialog("Title", "/path", FileChooserDialog.SelectionMode.DIRECTORIES);
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, component.getSelectionMode());
     }
 
     @Test
     void shouldConstructWithTitleInitialPathFiltersAndActiveFilter() {
-      dialog = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2),
+      component = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2),
           "ActiveFilter");
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
     }
 
     @Test
     void shouldConstructWithTitleInitialPathFiltersAndRestricted() {
-      dialog =
+      component =
           new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2), true);
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
-      assertTrue(dialog.isRestricted());
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
+      assertTrue(component.isRestricted());
     }
 
     @Test
     void shouldConstructWithTitleInitialPathAndRestricted() {
-      dialog = new FileChooserDialog("Title", "/path", true);
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertTrue(dialog.isRestricted());
+      component = new FileChooserDialog("Title", "/path", true);
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertTrue(component.isRestricted());
     }
 
     @Test
     void shouldConstructWithTitleInitialPathFiltersRestrictedAndSelectionMode() {
-      dialog = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2),
+      component = new FileChooserDialog("Title", "/path", Arrays.asList(mockFilter1, mockFilter2),
           true, FileChooserDialog.SelectionMode.DIRECTORIES);
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
-      assertEquals(Arrays.asList(mockFilter1, mockFilter2), dialog.getFilters());
-      assertTrue(dialog.isRestricted());
-      assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, dialog.getSelectionMode());
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
+      assertEquals(Arrays.asList(mockFilter1, mockFilter2), component.getFilters());
+      assertTrue(component.isRestricted());
+      assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, component.getSelectionMode());
     }
 
     @Test
     void shouldConstructWithTitleAndInitialPath() {
-      dialog = new FileChooserDialog("Title", "/path");
-      assertEquals("Title", dialog.getTitle());
-      assertEquals("/path", dialog.getInitialPath());
+      component = new FileChooserDialog("Title", "/path");
+      assertEquals("Title", component.getTitle());
+      assertEquals("/path", component.getInitialPath());
     }
 
     @Test
     void shouldConstructWithTitleOnly() {
-      dialog = new FileChooserDialog("Title");
-      assertEquals("Title", dialog.getTitle());
+      component = new FileChooserDialog("Title");
+      assertEquals("Title", component.getTitle());
     }
 
     @Test
     void shouldConstructWithDefaultTitle() {
-      dialog = new FileChooserDialog();
-      assertEquals(FileChooserDialog.DEFAULT_TITLE, dialog.getTitle());
+      component = new FileChooserDialog();
+      assertEquals(FileChooserDialog.DEFAULT_TITLE, component.getTitle());
     }
   }
 
   @Test
   void shouldSetAndGetId() {
-    dialog = new FileChooserDialog();
-    dialog.setId("id");
-    assertEquals("id", dialog.getId());
+    component = new FileChooserDialog();
+    component.setId("id");
+    assertEquals("id", component.getId());
 
-    assertEquals("id", dialog.getAttributes().get("dwc-fs-server-id"));
+    assertEquals("id", component.getAttributes().get("dwc-fs-server-id"));
   }
 
   @Test
   void shouldSetAndGetInitialPath() {
-    dialog = new FileChooserDialog();
-    dialog.setInitialPath("/newpath");
-    assertEquals("/newpath", dialog.getInitialPath());
+    component = new FileChooserDialog();
+    component.setInitialPath("/newpath");
+    assertEquals("/newpath", component.getInitialPath());
   }
 
   @Test
   void shouldSetAndGetRestricted() {
-    dialog = new FileChooserDialog();
-    dialog.setRestricted(true);
-    assertTrue(dialog.isRestricted());
+    component = new FileChooserDialog();
+    component.setRestricted(true);
+    assertTrue(component.isRestricted());
   }
 
   @Test
   void shouldSetAndGetSelectionMode() {
-    dialog = new FileChooserDialog();
-    dialog.setSelectionMode(FileChooserDialog.SelectionMode.DIRECTORIES);
-    assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, dialog.getSelectionMode());
+    component = new FileChooserDialog();
+    component.setSelectionMode(FileChooserDialog.SelectionMode.DIRECTORIES);
+    assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, component.getSelectionMode());
   }
 
   @Test
   void shouldSetAndGetCustomFilters() {
-    dialog = new FileChooserDialog();
-    dialog.setCustomFilters(true);
-    assertTrue(dialog.isCustomFilters());
+    component = new FileChooserDialog();
+    component.setCustomFilters(true);
+    assertTrue(component.isCustomFilters());
 
-    assertEquals("true", dialog.getAttributes().get("custom-filters"));
+    assertEquals("true", component.getAttributes().get("custom-filters"));
   }
 
   @Test
   void shouldSetAndGetCacheCustomFilters() {
-    dialog = new FileChooserDialog();
-    dialog.setCacheCustomFilters(true);
-    assertTrue(dialog.isCacheCustomFilters());
+    component = new FileChooserDialog();
+    component.setCacheCustomFilters(true);
+    assertTrue(component.isCacheCustomFilters());
 
-    assertEquals("true", dialog.getAttributes().get("cache-custom-filters"));
+    assertEquals("true", component.getAttributes().get("cache-custom-filters"));
   }
 
   @Test
   void shouldSetAndGetGridView() {
-    dialog = new FileChooserDialog();
+    component = new FileChooserDialog();
 
-    dialog.setGridView(true);
-    assertTrue(dialog.isGridView());
-    assertEquals("grid", dialog.getAttributes().get("view"));
+    component.setGridView(true);
+    assertTrue(component.isGridView());
+    assertEquals("grid", component.getAttributes().get("view"));
 
-    dialog.setGridView(false);
-    assertFalse(dialog.isGridView());
-    assertEquals("detail", dialog.getAttributes().get("view"));
+    component.setGridView(false);
+    assertFalse(component.isGridView());
+    assertEquals("detail", component.getAttributes().get("view"));
   }
 }

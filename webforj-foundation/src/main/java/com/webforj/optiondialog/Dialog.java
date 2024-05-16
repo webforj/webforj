@@ -1,6 +1,5 @@
 package com.webforj.optiondialog;
 
-import com.webforj.component.Theme;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
 
 class ConfirmDialogTest {
 
-  private ConfirmDialog dialog;
+  private ConfirmDialog component;
 
   @BeforeEach
   void setUp() {
-    dialog = new ConfirmDialog();
+    component = new ConfirmDialog();
   }
 
   @Nested
@@ -64,76 +64,76 @@ class ConfirmDialogTest {
 
   @Test
   void shouldSetAndGetTitle() {
-    dialog.setTitle("Test Title");
-    assertEquals("Test Title", dialog.getTitle());
+    component.setTitle("Test Title");
+    assertEquals("Test Title", component.getTitle());
   }
 
   @Test
   void shouldSetAndGetMessage() {
-    dialog.setMessage("Test Message");
-    assertEquals("Test Message", dialog.getMessage());
+    component.setMessage("Test Message");
+    assertEquals("Test Message", component.getMessage());
   }
 
   @Test
   void shouldSetAndGetOptionTypeOfMessage() {
-    dialog.setOptionType(OptionType.OK_CANCEL);
-    assertEquals(OptionType.OK_CANCEL, dialog.getOptionType());
+    component.setOptionType(OptionType.OK_CANCEL);
+    assertEquals(OptionType.OK_CANCEL, component.getOptionType());
   }
 
   @Test
   void shouldSetAndGetMessageType() {
-    dialog.setMessageType(MessageType.QUESTION);
-    assertEquals(MessageType.QUESTION, dialog.getMessageType());
+    component.setMessageType(MessageType.QUESTION);
+    assertEquals(MessageType.QUESTION, component.getMessageType());
   }
 
   @Test
   void shouldSetAndGetDefaultButton() {
-    dialog.setDefaultButton(Button.SECOND);
-    assertEquals(Button.SECOND, dialog.getDefaultButton());
+    component.setDefaultButton(Button.SECOND);
+    assertEquals(Button.SECOND, component.getDefaultButton());
   }
 
   @Test
   void shouldEnableAndCheckRawText() {
-    dialog.setRawText(true);
-    assertTrue(dialog.isRawText());
+    component.setRawText(true);
+    assertTrue(component.isRawText());
   }
 
   @Test
   void shouldSetAndGetButtonsTexts() {
-    dialog.setButtonText(Button.FIRST, "First");
-    dialog.setButtonText(Button.SECOND, "Second");
-    dialog.setButtonText(Button.THIRD, "Third");
+    component.setButtonText(Button.FIRST, "First");
+    component.setButtonText(Button.SECOND, "Second");
+    component.setButtonText(Button.THIRD, "Third");
 
-    assertEquals("First", dialog.getFirstButtonText());
-    assertEquals("Second", dialog.getSecondButtonText());
-    assertEquals("Third", dialog.getThirdButtonText());
+    assertEquals("First", component.getFirstButtonText());
+    assertEquals("Second", component.getSecondButtonText());
+    assertEquals("Third", component.getThirdButtonText());
   }
 
   @Test
   void shouldSetAndGetButtonThemes() {
-    dialog.setButtonTheme(Button.FIRST, ButtonTheme.DANGER);
-    dialog.setButtonTheme(Button.SECOND, ButtonTheme.SUCCESS);
-    dialog.setButtonTheme(Button.THIRD, ButtonTheme.WARNING);
+    component.setButtonTheme(Button.FIRST, ButtonTheme.DANGER);
+    component.setButtonTheme(Button.SECOND, ButtonTheme.SUCCESS);
+    component.setButtonTheme(Button.THIRD, ButtonTheme.WARNING);
 
-    assertEquals("\"danger\"", dialog.getAttributes().get("button-0-theme"));
-    assertEquals("\"success\"", dialog.getAttributes().get("button-1-theme"));
-    assertEquals("\"warning\"", dialog.getAttributes().get("button-2-theme"));
+    assertEquals("\"danger\"", component.getAttributes().get("button-0-theme"));
+    assertEquals("\"success\"", component.getAttributes().get("button-1-theme"));
+    assertEquals("\"warning\"", component.getAttributes().get("button-2-theme"));
   }
 
   @Test
   void shouldMapResult() {
-    assertEquals(ConfirmDialog.Result.OK, dialog.mapResult(1));
-    assertEquals(ConfirmDialog.Result.CANCEL, dialog.mapResult(2));
-    assertEquals(ConfirmDialog.Result.ABORT, dialog.mapResult(3));
-    assertEquals(ConfirmDialog.Result.RETRY, dialog.mapResult(4));
-    assertEquals(ConfirmDialog.Result.IGNORE, dialog.mapResult(5));
-    assertEquals(ConfirmDialog.Result.YES, dialog.mapResult(6));
-    assertEquals(ConfirmDialog.Result.NO, dialog.mapResult(7));
-    assertEquals(ConfirmDialog.Result.TIMEOUT, dialog.mapResult(-1));
+    assertEquals(ConfirmDialog.Result.OK, component.mapResult(1));
+    assertEquals(ConfirmDialog.Result.CANCEL, component.mapResult(2));
+    assertEquals(ConfirmDialog.Result.ABORT, component.mapResult(3));
+    assertEquals(ConfirmDialog.Result.RETRY, component.mapResult(4));
+    assertEquals(ConfirmDialog.Result.IGNORE, component.mapResult(5));
+    assertEquals(ConfirmDialog.Result.YES, component.mapResult(6));
+    assertEquals(ConfirmDialog.Result.NO, component.mapResult(7));
+    assertEquals(ConfirmDialog.Result.TIMEOUT, component.mapResult(-1));
 
-    dialog.setOptionType(OptionType.CUSTOM);
-    assertEquals(ConfirmDialog.Result.FIRST_CUSTOM_BUTTON, dialog.mapResult(1));
-    assertEquals(ConfirmDialog.Result.SECOND_CUSTOM_BUTTON, dialog.mapResult(2));
-    assertEquals(ConfirmDialog.Result.THIRD_CUSTOM_BUTTON, dialog.mapResult(3));
+    component.setOptionType(OptionType.CUSTOM);
+    assertEquals(ConfirmDialog.Result.FIRST_CUSTOM_BUTTON, component.mapResult(1));
+    assertEquals(ConfirmDialog.Result.SECOND_CUSTOM_BUTTON, component.mapResult(2));
+    assertEquals(ConfirmDialog.Result.THIRD_CUSTOM_BUTTON, component.mapResult(3));
   }
 }

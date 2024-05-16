@@ -10,29 +10,29 @@ import org.junit.jupiter.api.Test;
 
 class DwcPromptMsgBoxTest {
 
-  private DwcPromptMsgBox<?> dialog;
+  private DwcPromptMsgBox<?> component;
 
   @BeforeEach
   void setUp() {
-    dialog = new DwcPromptMsgBox<>();
+    component = new DwcPromptMsgBox<>();
   }
 
   @Test
   void shouldSetAndGetTitle() {
-    dialog.setTitle("Test Title");
-    assertEquals("Test Title", dialog.getTitle());
+    component.setTitle("Test Title");
+    assertEquals("Test Title", component.getTitle());
   }
 
   @Test
   void shouldSetAndGetMessage() {
-    dialog.setMessage("Test Message");
-    assertEquals("Test Message", dialog.getMessage());
+    component.setMessage("Test Message");
+    assertEquals("Test Message", component.getMessage());
   }
 
   @Test
   void shouldSetAndGetMessageType() {
-    dialog.setMessageType(MessageType.QUESTION);
-    assertEquals(MessageType.QUESTION, dialog.getMessageType());
+    component.setMessageType(MessageType.QUESTION);
+    assertEquals(MessageType.QUESTION, component.getMessageType());
   }
 
   @Test
