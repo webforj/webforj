@@ -14,7 +14,7 @@ import java.util.StringJoiner;
  * @author Hyyan Abo Fakher
  * @since 24.02
  */
-abstract class Dialog<T> {
+class Dialog<T> {
   /**
    * The dialog alignments.
    */
@@ -40,7 +40,6 @@ abstract class Dialog<T> {
   private String verticalPosition = "";
   private int snapThreshold = 0;
   private boolean snapToEdge = true;
-  private Theme theme = Theme.DEFAULT;
   private Map<String, String> attributes = new HashMap<>();
 
   /**
@@ -356,27 +355,6 @@ abstract class Dialog<T> {
    */
   public boolean isSnapToEdge() {
     return snapToEdge;
-  }
-
-  /**
-   * Sets the theme of the message box.
-   *
-   * @param theme the theme of the message box
-   * @return the message box
-   */
-  public T setTheme(Theme theme) {
-    this.theme = theme;
-    toggleAttribute("theme", theme.toString().toLowerCase(), theme != null);
-    return getSelf();
-  }
-
-  /**
-   * Gets the theme of the message box.
-   *
-   * @return the theme of the message box
-   */
-  public Theme getTheme() {
-    return theme;
   }
 
   /**

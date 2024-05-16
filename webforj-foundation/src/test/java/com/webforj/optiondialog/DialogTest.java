@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.component.Theme;
 import com.webforj.optiondialog.Dialog.Alignment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,12 +88,6 @@ class DialogTest {
   void shouldToggleSnapToEdgeState() {
     dialog.setSnapToEdge(false);
     assertFalse(dialog.isSnapToEdge());
-  }
-
-  @Test
-  void shouldSetAndGetTheme() {
-    dialog.setTheme(Theme.PRIMARY);
-    assertEquals(Theme.PRIMARY, dialog.getTheme());
   }
 
   @Test

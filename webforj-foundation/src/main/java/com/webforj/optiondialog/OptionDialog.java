@@ -1,8 +1,10 @@
 package com.webforj.optiondialog;
 
+import com.webforj.UploadedFile;
 import com.webforj.component.Theme;
 import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
 import com.webforj.optiondialog.InputDialog.InputType;
+import java.util.List;
 
 /**
  * A utility class for creating and showing dialogs.
@@ -150,8 +152,6 @@ public final class OptionDialog {
     new MessageDialog(message).show();
   }
 
-
-
   /**
    * Shows a new instance of the input dialog.
    *
@@ -287,5 +287,170 @@ public final class OptionDialog {
    */
   public static String showInputDialog(Object message) {
     return new InputDialog(message).show();
+  }
+
+  /**
+   * Shows a new instance of the input dialog.
+   */
+  public static String showInputDialog() {
+    return new InputDialog().show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param filters the filters of the file chooser dialog
+   * @param activeFilter the active filter of the file chooser dialog
+   * @param restricted whether the file chooser dialog is restricted to the current directory
+   * @param selectionMode the selection mode of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, String activeFilter, boolean restricted,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileChooserDialog(title, initialPath, filters, activeFilter, restricted,
+        selectionMode).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title, initialPath, and filters.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param filters the filters of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters) {
+    return new FileChooserDialog(title, initialPath, filters).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title, initialPath, and selectionMode.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param selectionMode the selection mode of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title, String initialPath,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileChooserDialog(title, initialPath, selectionMode).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title, initialPath, filters, and
+   * activeFilter.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param filters the filters of the file chooser dialog
+   * @param activeFilter the active filter of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, String activeFilter) {
+    return new FileChooserDialog(title, initialPath, filters, activeFilter).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title, initialPath, filters, and
+   * restricted.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param filters the filters of the file chooser dialog
+   * @param restricted whether the file chooser dialog is restricted to the current directory
+   */
+  public static String showFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, boolean restricted) {
+    return new FileChooserDialog(title, initialPath, filters, restricted).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title, initialPath, and restricted.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param restricted whether the file chooser dialog is restricted to the current directory
+   */
+  public static String showFileChooserDialog(String title, String initialPath, boolean restricted) {
+    return new FileChooserDialog(title, initialPath, restricted).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title, initialPath, filters, restricted,
+   * and selectionMode.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   * @param filters the filters of the file chooser dialog
+   * @param restricted whether the file chooser dialog is restricted to the current directory
+   * @param selectionMode the selection mode of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, boolean restricted,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileChooserDialog(title, initialPath, filters, restricted, selectionMode).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title and initialPath.
+   *
+   * @param title the title of the file chooser dialog
+   * @param initialPath the initial path of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title, String initialPath) {
+    return new FileChooserDialog(title, initialPath).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with title only.
+   *
+   * @param title the title of the file chooser dialog
+   */
+  public static String showFileChooserDialog(String title) {
+    return new FileChooserDialog(title).show();
+  }
+
+  /**
+   * Shows a new instance of the file chooser dialog with default title.
+   */
+  public static String showFileChooserDialog() {
+    return new FileChooserDialog().show();
+  }
+
+  /**
+   * Shows a new file upload dialog.
+   *
+   * @param title the dialog title
+   */
+  public static UploadedFile showFileUploadDialog(String title, List<FileChooserFilter> filters,
+      String activeFilter) {
+    return new FileUploadDialog(title, filters, activeFilter).show();
+  }
+
+  /**
+   * Shows a new file upload dialog.
+   *
+   * @param title the dialog title
+   * @param filters the filters
+   */
+  public static UploadedFile showFileUploadDialog(String title, List<FileChooserFilter> filters) {
+    return new FileUploadDialog(title, filters).show();
+  }
+
+  /**
+   * Shows a new file upload dialog.
+   *
+   * @param title the dialog title
+   */
+  public static UploadedFile showFileUploadDialog(String title) {
+    return new FileUploadDialog(title).show();
+  }
+
+  /**
+   * Shows a new file upload dialog.
+   */
+  public static UploadedFile showFileUploadDialog() {
+    return new FileUploadDialog().show();
   }
 }

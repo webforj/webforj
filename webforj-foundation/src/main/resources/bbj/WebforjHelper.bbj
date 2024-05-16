@@ -3,6 +3,8 @@ use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
 use com.webforj.optiondialog.ConfirmDialog
 use com.webforj.optiondialog.InputDialog
+use com.webforj.optiondialog.FileChooserDialog
+use com.webforj.optiondialog.FileUploadDialog
 
 class public BBjEventProxy implements EventProxy
 
@@ -159,6 +161,51 @@ class public WebforjHelper implements WebforjBBjBridge
       timeout = options!.getTimeout()
 
       result! = prompt(Message$,Default$,Title$,expr,tim=timeout,mode=mode$)
+      methodret result!
+    methodend
+
+    method public String fileChooser(FileChooserDialog options!)
+      REM FILEOPEN(prompt,path,name,ext[,filters[,mode[,MODE="CLIENT,EXISTS=option,RESOLVE=option,STYLE=name"]])
+
+      prompt! = String.valueOf(options!.getTitle())
+      path! = String.valueOf(options!.getInitialPath())
+
+      filterList! = options!.getFilters()
+      it! = filterList!.iterator()
+      filter$ = ""
+      while it!.hasNext()
+        entry! = it!.next()
+        filter$ = filter$ + String.valueOf(entry!.getDescription()) + $0a$ + String.valueOf(entry!.getPattern()) + $0a$
+      wend
+
+      selectionMode! = options!.getSelectionMode().getValue()
+      mode$ = ""
+      if(options!.isRestricted()) then
+        mode$ = "RESTRICTED,"
+      fi
+      mode$ = mode$ + options!.getAttributesAsString()
+
+      result! = fileopen(prompt!,path!,"","",filter$,selectionMode!,mode=mode$)
+      methodret result!
+    methodend
+
+    method public String fileUpload(FileUploadDialog options!)
+      REM FILEOPEN(prompt,path,name,ext[,filters[,mode[,MODE="CLIENT,EXISTS=option,RESOLVE=option,STYLE=name"]])
+
+      prompt! = String.valueOf(options!.getTitle())
+
+      filterList! = options!.getFilters()
+      it! = filterList!.iterator()
+      filter$ = ""
+      while it!.hasNext()
+        entry! = it!.next()
+        filter$ = filter$ + String.valueOf(entry!.getDescription()) + $0a$ + String.valueOf(entry!.getPattern()) + $0a$
+      wend
+
+      mode$ = "CLIENT,"
+      mode$ = mode$ + options!.getAttributesAsString()
+
+      result! = fileopen(prompt!,"","","",filter$,mode=mode$)
       methodret result!
     methodend
 

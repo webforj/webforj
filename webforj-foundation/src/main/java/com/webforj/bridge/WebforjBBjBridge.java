@@ -5,6 +5,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.optiondialog.ConfirmDialog;
+import com.webforj.optiondialog.FileChooserDialog;
+import com.webforj.optiondialog.FileUploadDialog;
 import com.webforj.optiondialog.InputDialog;
 import java.util.ArrayList;
 
@@ -56,7 +58,7 @@ public interface WebforjBBjBridge {
   int msgbox(String msg, int options, String title);
 
   /**
-   * invoke the BBj-side MSGBOX function with the given config.
+   * invoke the BBj-side MSGBOX function with the given options.
    *
    * @param options the config
    * @return the result of the MSGBOX function
@@ -64,12 +66,28 @@ public interface WebforjBBjBridge {
   int msgbox(ConfirmDialog options);
 
   /**
-   * invoke the BBj-side PROMPT function with the given config.
+   * invoke the BBj-side PROMPT function with the given options.
    *
    * @param options the options
    * @return the result of the PROMPT function
    */
   String prompt(InputDialog options);
+
+  /**
+   * invoke the BBj-side FILEOPEN(server) function with the given options.
+   *
+   * @param options the options
+   * @return the result of the FILEOPEN function
+   */
+  String fileChooser(FileChooserDialog options);
+
+  /**
+   * invoke the BBj-side FILEOPEN(client) function with the given options.
+   *
+   * @param options the options
+   * @return the result of the FILEOPEN function
+   */
+  String fileUpload(FileUploadDialog options);
 
   /**
    * invoke a method of a BBj-side object instance, mostly custom objects.

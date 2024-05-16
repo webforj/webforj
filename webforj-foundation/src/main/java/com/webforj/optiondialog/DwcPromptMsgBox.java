@@ -12,7 +12,7 @@ import com.webforj.component.button.ButtonTheme;
  * @author Hyyan Abo Fakher
  * @since 24.02
  */
-class DwcPromptMsgBox<T extends Dialog<T>> extends Dialog<T> {
+class DwcPromptMsgBox<T extends ThemedDialog<T>> extends ThemedDialog<T> {
 
   /**
    * Defines the style of the dialog message.

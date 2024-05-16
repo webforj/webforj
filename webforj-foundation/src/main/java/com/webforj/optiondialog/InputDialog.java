@@ -432,7 +432,7 @@ public final class InputDialog extends DwcPromptMsgBox<InputDialog> {
   /**
    * Shows the input dialog.
    *
-   * @return the result of the message dialog
+   * @return the result of the input dialog
    */
   public String show() {
     String result = Environment.getCurrent().getWeforjHelper().prompt(this);
