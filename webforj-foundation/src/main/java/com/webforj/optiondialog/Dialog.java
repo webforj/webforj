@@ -129,7 +129,7 @@ abstract class Dialog<T> {
    */
   public T setMoveable(boolean moveable) {
     this.moveable = moveable;
-    toggleAttribute("moveable", "", moveable);
+    setAttribute("moveable", String.valueOf(moveable));
     return getSelf();
   }
 
@@ -345,7 +345,7 @@ abstract class Dialog<T> {
    */
   public T setSnapToEdge(boolean snapToEdge) {
     this.snapToEdge = snapToEdge;
-    toggleAttribute("snap-to-edge", "", snapToEdge);
+    setAttribute("snap-to-edge", String.valueOf(snapToEdge));
     return getSelf();
   }
 
