@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public interface WebforjBBjBridge {
 
   /**
-   * create and register an event proxy that defers BBj-side callback invocations to the Java DWCJ
+   * create and register an event proxy that defers B
+   * Bj-side callback invocations to the Java DWCJ
    * side.
    *
    * @param obj - the webforj-side object instance to receive the event
@@ -54,7 +55,10 @@ public interface WebforjBBjBridge {
    * @param options the options, see BBj MSGBOX docs
    * @param title the title
    * @return the result of the MSGBOX function result
+   *
+   * @deprecated since 24.02, for removal in 25.00
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   int msgbox(String msg, int options, String title);
 
   /**
