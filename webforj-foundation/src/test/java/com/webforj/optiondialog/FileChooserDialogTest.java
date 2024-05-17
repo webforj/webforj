@@ -48,7 +48,8 @@ class FileChooserDialogTest {
 
     @Test
     void shouldConstructWithTitleInitialPathAndSelectionMode() {
-      component = new FileChooserDialog("Title", "/path", FileChooserDialog.SelectionMode.DIRECTORIES);
+      component =
+          new FileChooserDialog("Title", "/path", FileChooserDialog.SelectionMode.DIRECTORIES);
       assertEquals("Title", component.getTitle());
       assertEquals("/path", component.getInitialPath());
       assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, component.getSelectionMode());

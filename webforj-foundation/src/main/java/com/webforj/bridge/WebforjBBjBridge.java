@@ -13,8 +13,7 @@ import java.util.ArrayList;
 public interface WebforjBBjBridge {
 
   /**
-   * create and register an event proxy that defers B
-   * Bj-side callback invocations to the Java DWCJ
+   * create and register an event proxy that defers B Bj-side callback invocations to the Java DWCJ
    * side.
    *
    * @param obj - the webforj-side object instance to receive the event
