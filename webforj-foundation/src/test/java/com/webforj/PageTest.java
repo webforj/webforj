@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -15,11 +16,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
+import com.basis.bbj.proxies.BBjClientFile;
+import com.basis.bbj.proxies.BBjClientFileSystem;
 import com.basis.bbj.proxies.BBjSysGui;
+import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +39,9 @@ class PageTest {
   BBjWebManager webManager;
   BBjSysGui sysGui;
   WebforjBBjBridge bridge;
+  BBjThinClient thinClient;
+  BBjClientFileSystem clientFileSystem;
+  BBjClientFile clientFile;
 
   @BeforeEach
   void setUp() throws BBjException {
@@ -41,11 +50,17 @@ class PageTest {
     webManager = mock(BBjWebManager.class);
     sysGui = mock(BBjSysGui.class);
     bridge = mock(WebforjBBjBridge.class);
+    thinClient = mock(BBjThinClient.class);
+    clientFileSystem = mock(BBjClientFileSystem.class);
+    clientFile = mock(BBjClientFile.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
     when(environment.getWeforjHelper()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
+    when(api.getThinClient()).thenReturn(thinClient);
+    when(thinClient.getClientFileSystem()).thenReturn(clientFileSystem);
+    when(clientFileSystem.getClientFile(anyString())).thenReturn(clientFile);
 
     page = spy(Page.class);
     when(page.getEnvironment()).thenReturn(environment);
@@ -123,6 +138,66 @@ class PageTest {
     void getTitleShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(webManager).getTitle();
       assertThrows(WebforjRuntimeException.class, () -> page.getTitle());
+    }
+  }
+
+  @Nested
+  class FileDownload {
+
+    @Test
+    void shouldDownloadInputStream() throws BBjException {
+      InputStream inputStream = mock(InputStream.class);
+      page.download(inputStream, "file.txt");
+
+      verify(clientFile).copyToClient(anyString());
+    }
+
+    @Test
+    void downloadInputStreamShouldThrowException() throws BBjException {
+      InputStream inputStream = mock(InputStream.class);
+      doThrow(BBjException.class).when(clientFile).copyToClient(anyString());
+      assertThrows(WebforjRuntimeException.class, () -> page.download(inputStream, "file.txt"));
+    }
+
+    @Test
+    void shouldDownloadBytesArray() throws BBjException {
+      byte[] bytes = new byte[0];
+      page.download(bytes, "file.txt");
+
+      verify(clientFile).copyToClient(anyString());
+    }
+
+    @Test
+    void downloadBytesArrayShouldThrowException() throws BBjException {
+      byte[] bytes = new byte[0];
+      doThrow(BBjException.class).when(clientFile).copyToClient(anyString());
+      assertThrows(WebforjRuntimeException.class, () -> page.download(bytes, "file.txt"));
+    }
+
+    @Test
+    void shouldDownloadFile() throws BBjException {
+      File file = mock(File.class);
+      when(file.getAbsolutePath()).thenReturn("path/file.txt");
+      when(file.getName()).thenReturn("file.txt");
+      page.download(file);
+
+      verify(clientFile).copyToClient("path/file.txt");
+    }
+
+    @Test
+    void downloadFileShouldThrowException() throws BBjException {
+      File file = mock(File.class);
+      when(file.getAbsolutePath()).thenReturn("path/file.txt");
+      when(file.getName()).thenReturn("file.txt");
+      doThrow(BBjException.class).when(clientFile).copyToClient(anyString());
+
+      assertThrows(WebforjRuntimeException.class, () -> page.download(file));
+    }
+
+    @Test
+    void shouldDownloadFileWithAbsolutePath() throws BBjException {
+      page.download("/path/file.txt", "file.txt");
+      verify(clientFile).copyToClient("/path/file.txt");
     }
   }
 }
