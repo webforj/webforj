@@ -16,6 +16,7 @@ import com.basis.startup.type.BBjException;
 import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class UploadedFileTest {
@@ -63,35 +64,60 @@ class UploadedFileTest {
     assertEquals("", new UploadedFile("/path/dir.test/makefile").getClientExtension());
   }
 
-  @Test
-  void shouldMoveFile() throws IOException {
-    UploadedFile uploadedFile = spy(new UploadedFile(FILE_NAME));
-    when(uploadedFile.getEnvironment()).thenReturn(environment);
+  @Nested
+  class MovingFile {
+    UploadedFile uploadedFile;
 
-    File result = uploadedFile.move();
-    assertNotNull(result);
-    assertEquals(SERVER_FILE, result.getPath());
+    @BeforeEach
+    void setUp() {
+      uploadedFile = spy(new UploadedFile(FILE_NAME));
+      when(uploadedFile.getEnvironment()).thenReturn(environment);
+      when(uploadedFile.exists()).thenReturn(true);
+    }
+
+    @Test
+    void shouldMoveFile() throws IOException {
+      File result = uploadedFile.move();
+      assertNotNull(result);
+      assertEquals(SERVER_FILE, result.getPath());
+    }
+
+    @Test
+    void shouldMoveFileWithNewName() throws IOException {
+      File result = uploadedFile.move("newfile.txt");
+      assertNotNull(result);
+      assertEquals(SERVER_FILE, result.getPath());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFailedToMoveFile() throws BBjException {
+      when(clientFile.copyFromClient(anyString())).thenThrow(BBjException.class);
+
+      assertThrows(IOException.class, () -> {
+        uploadedFile.move();
+      });
+    }
   }
 
   @Test
-  void shouldMoveFileWithNewName() throws IOException {
+  void shouldDeleteFile() throws BBjException {
     UploadedFile uploadedFile = spy(new UploadedFile(FILE_NAME));
     when(uploadedFile.getEnvironment()).thenReturn(environment);
 
-    File result = uploadedFile.move("newfile.txt");
-    assertNotNull(result);
-    assertEquals(SERVER_FILE, result.getPath());
+    when(clientFile.delete()).thenReturn(true);
+
+    boolean result = uploadedFile.delete();
+    assertEquals(true, result);
   }
 
   @Test
-  void shouldThrowExceptionWhenFailedToMoveFile() throws BBjException {
+  void shouldCheckIfFileExists() throws BBjException {
     UploadedFile uploadedFile = spy(new UploadedFile(FILE_NAME));
     when(uploadedFile.getEnvironment()).thenReturn(environment);
 
-    when(clientFile.copyFromClient(anyString())).thenThrow(BBjException.class);
+    when(clientFile.exists()).thenReturn(true);
 
-    assertThrows(IOException.class, () -> {
-      uploadedFile.move();
-    });
+    boolean result = uploadedFile.exists();
+    assertEquals(true, result);
   }
 }

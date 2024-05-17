@@ -111,6 +111,45 @@ public final class UploadedFile {
   }
 
   /**
+   * Gets the uploaded file size in bytes.
+   *
+   * @return the file size in bytes
+   */
+  public long size() {
+    try {
+      return getClientFile().size();
+    } catch (BBjException e) {
+      throw new IllegalStateException("Failed to get the file size", e);
+    }
+  }
+
+  /**
+   * Deletes the file from the cache.
+   *
+   * @return {@code true} if the file was successfully deleted; {@code false} otherwise
+   */
+  public boolean delete() {
+    try {
+      return getClientFile().delete();
+    } catch (BBjException e) {
+      return false;
+    }
+  }
+
+  /**
+   * Checks whether the file exists in the cache.
+   *
+   * @return {@code true} if the file exists; {@code false} otherwise
+   */
+  public boolean exists() {
+    try {
+      return getClientFile().exists();
+    } catch (BBjException e) {
+      return false;
+    }
+  }
+
+  /**
    * Moves the file cache to a new location with the given new name.
    *
    * <p>
@@ -129,12 +168,12 @@ public final class UploadedFile {
       throw new IllegalArgumentException("The new file name must not be blank");
     }
 
-    try {
-      BBjThinClient tc = getEnvironment().getBBjAPI().getThinClient();
-      BBjClientFileSystem fs = tc.getClientFileSystem();
+    if (!exists()) {
+      throw new IOException("The file does not exist");
+    }
 
-      BBjClientFile clientFile = fs.getClientFile(getClientName());
-      String serverPath = clientFile.copyFromClient(name);
+    try {
+      String serverPath = getClientFile().copyFromClient(name);
       return new File(serverPath);
 
     } catch (BBjException e) {
@@ -157,5 +196,15 @@ public final class UploadedFile {
 
   Environment getEnvironment() {
     return Environment.getCurrent();
+  }
+
+  BBjClientFile getClientFile() {
+    try {
+      BBjThinClient tc = getEnvironment().getBBjAPI().getThinClient();
+      BBjClientFileSystem fs = tc.getClientFileSystem();
+      return fs.getClientFile(getClientName());
+    } catch (BBjException e) {
+      throw new IllegalStateException("Failed to get the client file", e);
+    }
   }
 }
