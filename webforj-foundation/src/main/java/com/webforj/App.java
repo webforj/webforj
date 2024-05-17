@@ -55,7 +55,7 @@ public abstract class App {
 
     String key = "PARSE_REQUEST_THEME";
     if (StringTable.contains(key) && StringTable.get(key).equals("1")) {
-      String theme = Request.getQueryParam("__theme__");
+      String theme = Request.getCurrent().getQueryParameter("__theme__");
       if (theme != null) {
         setTheme(theme);
       }
@@ -197,7 +197,9 @@ public abstract class App {
    * Get the application protocol.
    *
    * @return The application protocol
+   * @deprecated Use {@link Request#getProtocol()} instead
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static String getProtocol() {
     WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
@@ -209,7 +211,9 @@ public abstract class App {
    * Get the application host.
    *
    * @return The application host
+   * @deprecated Use {@link Request#getHost()} instead
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static String getHost() {
     WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
@@ -221,7 +225,9 @@ public abstract class App {
    * Get the application port.
    *
    * @return The application port
+   * @deprecated Use {@link Request#getPort()} instead
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static String getPort() {
     WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
@@ -234,7 +240,9 @@ public abstract class App {
    *
    * @return The application URL
    * @throws WebforjRuntimeException if failed to get the application URL
+   * @deprecated Use {@link Request#getUrl()} instead
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static String getUrl() {
     try {
       return Environment.getCurrent().getBBjAPI().getWebManager().getUrl();

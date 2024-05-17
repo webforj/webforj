@@ -1,18 +1,29 @@
 package com.webforj;
 
+import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjVector;
+import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.ObjectTable;
+import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.webstorage.CookieStorage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Represents the incoming request with the various pieces of information provided with the incoming
  * request.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 23.01
  */
 public final class Request {
 
   private Request() {}
 
   /**
-   * Get the current request instance.
+   * Gets the current request instance.
    *
    * @return the current request instance
    */
@@ -33,7 +44,9 @@ public final class Request {
    *
    * @param key Key of the desired query parameter from the incoming request.
    * @return The value of the query parameter with the provided key, null if not present.
+   * @deprecated Use {@link #getQueryParameter(String)} instead.
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static String getQueryParam(String key) {
     return Environment.getCurrent().getWeforjHelper().getQueryParam(key);
   }
@@ -43,9 +56,183 @@ public final class Request {
    *
    * @param key the key of the cookie
    * @return the value for the given key, null if key is not found
+   * @deprecated Use {@link CookieStorage} instead.
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static String getCookie(String key) {
     return CookieStorage.getCurrent().get(key);
   }
 
+  /**
+   * Gets the request protocol.
+   *
+   * @return The request protocol
+   */
+  public String getProtocol() {
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+
+    return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
+  }
+
+  /**
+   * Gets the request host.
+   *
+   * @return The request host
+   * @since 24.02
+   */
+  public String getHost() {
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+
+    return (String) helper.invokeMethod(instance, "getWebServerHost", null);
+  }
+
+  /**
+   * Gets the request port.
+   *
+   * @return The request port
+   * @since 24.02
+   */
+  public String getPort() {
+    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+
+    return (String) helper.invokeMethod(instance, "getWebServerPort", null);
+  }
+
+  /**
+   * Gets the request URL.
+   *
+   * @return The request URL
+   * @since 24.02
+   */
+  public String getUrl() {
+    try {
+      return Environment.getCurrent().getBBjAPI().getWebManager().getUrl();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get the URL.", e);
+    }
+  }
+
+  /**
+   * Returns the value of the provided query parameter if present.
+   *
+   * @param key Key of the desired query parameter from the incoming request.
+   * @return The value of the query parameter with the provided key, null if not present.
+   * @since 24.02
+   */
+  public String getQueryParameter(String key) {
+    return getEnvironment().getWeforjHelper().getQueryParam(key);
+  }
+
+  /**
+   * Returns the IP address of the client that sent the request.
+   *
+   * @return the IP address of the client that sent the request
+   * @since 24.02
+   */
+  public String getIPAddress() {
+    try {
+      return getEnvironment().getBBjAPI().getThinClient().getClientIPAddress();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client IP address", e);
+    }
+  }
+
+  /**
+   * Returns the public IP address of the client that sent the request.
+   *
+   * @return the public IP address of the client that sent the request
+   * @since 24.02
+   */
+  public String getPublicIPAddress() {
+    try {
+      return getEnvironment().getBBjAPI().getThinClient().getPublicIPAddress();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client public IP address", e);
+    }
+  }
+
+  /**
+   * Returns the locale of the client that sent the request.
+   *
+   * @return the locale of the client that sent the request
+   * @since 24.02
+   */
+  public Locale getLocale() {
+    try {
+      String jsLocale = getEnvironment().getBBjAPI().getThinClient().getClientLocale();
+      return Locale.forLanguageTag(jsLocale);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client locale", e);
+    }
+  }
+
+  /**
+   * Returns the preferred locales of the client that sent the request.
+   *
+   * @return the preferred locales of the client that sent the request
+   * @since 24.02
+   */
+  public List<Locale> getPreferredLocales() {
+    try {
+      BBjVector locales = getEnvironment().getBBjAPI().getThinClient().getClientLocales();
+      List<Locale> preferredLocales = new ArrayList<>();
+      for (int i = 0; i < locales.size(); i++) {
+        String jsLocale = locales.get(i).toString();
+        preferredLocales.add(Locale.forLanguageTag(jsLocale));
+      }
+
+      return preferredLocales;
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client preferred locales", e);
+    }
+  }
+
+  /**
+   * Returns the time zone of the client that sent the request.
+   *
+   * @return the time zone of the client that sent the request
+   * @since 24.02
+   */
+  public TimeZone getTimeZone() {
+    try {
+      return getEnvironment().getBBjAPI().getThinClient().getClientTimeZone();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client time zone", e);
+    }
+  }
+
+  /**
+   * Returns the operating system name from the client's machine.
+   *
+   * @return the operating system name from the client's machine
+   * @since 24.02
+   */
+  public String getSystemName() {
+    try {
+      return getEnvironment().getBBjAPI().getThinClient().getClientOSName();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client system name", e);
+    }
+  }
+
+  /**
+   * Returns the operating system version from the client's machine.
+   *
+   * @return the operating system version from the client's machine
+   * @since 24.02
+   */
+  public String getSystemVersion() {
+    try {
+      return getEnvironment().getBBjAPI().getThinClient().getClientOSVersion();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get client system version", e);
+    }
+  }
+
+  Environment getEnvironment() {
+    return Environment.getCurrent();
+  }
 }
