@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import com.basis.bbj.proxies.SysGuiProxyConstants;
 import com.webforj.component.Theme;

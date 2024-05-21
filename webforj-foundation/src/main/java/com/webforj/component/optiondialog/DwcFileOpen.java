@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import java.util.ArrayList;
 import java.util.List;

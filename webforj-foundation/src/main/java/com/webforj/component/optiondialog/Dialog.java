@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import java.util.Collections;
 import java.util.HashMap;

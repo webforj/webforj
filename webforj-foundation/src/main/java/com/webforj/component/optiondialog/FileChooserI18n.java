@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import com.google.gson.annotations.SerializedName;
 

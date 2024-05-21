@@ -1,10 +1,10 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.optiondialog.Dialog.Alignment;
+import com.webforj.component.optiondialog.Dialog.Alignment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

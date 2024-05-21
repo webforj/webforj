@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 /**
  * Represents a file filter for use in file choosers or file uploads. It holds a description and a

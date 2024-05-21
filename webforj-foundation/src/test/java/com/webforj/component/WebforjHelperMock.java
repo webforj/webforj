@@ -5,10 +5,10 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
-import com.webforj.optiondialog.ConfirmDialog;
-import com.webforj.optiondialog.FileChooserDialog;
-import com.webforj.optiondialog.FileUploadDialog;
-import com.webforj.optiondialog.InputDialog;
+import com.webforj.component.optiondialog.ConfirmDialog;
+import com.webforj.component.optiondialog.FileChooserDialog;
+import com.webforj.component.optiondialog.FileUploadDialog;
+import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
 
 /** Mock for the WebforjBBjBridge. */

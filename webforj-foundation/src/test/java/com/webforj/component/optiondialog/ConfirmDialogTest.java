@@ -1,13 +1,13 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.component.button.ButtonTheme;
-import com.webforj.optiondialog.ConfirmDialog.Button;
-import com.webforj.optiondialog.ConfirmDialog.OptionType;
-import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
+import com.webforj.component.optiondialog.ConfirmDialog.Button;
+import com.webforj.component.optiondialog.ConfirmDialog.OptionType;
+import com.webforj.component.optiondialog.DwcPromptMsgBox.MessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

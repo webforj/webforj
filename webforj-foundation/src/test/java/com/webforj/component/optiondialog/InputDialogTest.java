@@ -1,12 +1,12 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.webforj.component.Theme;
 import com.webforj.component.button.ButtonTheme;
-import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
-import com.webforj.optiondialog.InputDialog.Button;
-import com.webforj.optiondialog.InputDialog.InputType;
+import com.webforj.component.optiondialog.DwcPromptMsgBox.MessageType;
+import com.webforj.component.optiondialog.InputDialog.Button;
+import com.webforj.component.optiondialog.InputDialog.InputType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

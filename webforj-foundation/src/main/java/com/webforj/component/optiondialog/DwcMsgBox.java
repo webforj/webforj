@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 /**
  * The base class for DWC {@code msgbox} dialog.

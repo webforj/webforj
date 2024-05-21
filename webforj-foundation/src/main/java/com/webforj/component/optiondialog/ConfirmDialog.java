@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import com.basis.bbj.proxies.SysGuiProxyConstants;
 import com.google.gson.Gson;
@@ -78,15 +78,15 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    */
   public enum Button {
     /**
-     * The first button is the default button.
+     * The first button.
      */
     FIRST(SysGuiProxyConstants.MSGBOX_DEFAULT_FIRST),
     /**
-     * The second button is the default button.
+     * The second button.
      */
     SECOND(SysGuiProxyConstants.MSGBOX_DEFAULT_SECOND),
     /**
-     * The third button is the default button.
+     * The third button.
      */
     THIRD(SysGuiProxyConstants.MSGBOX_DEFAULT_THIRD);
 

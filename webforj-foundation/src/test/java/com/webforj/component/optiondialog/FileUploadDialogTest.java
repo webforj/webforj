@@ -1,4 +1,4 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

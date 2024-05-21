@@ -1,9 +1,9 @@
-package com.webforj.optiondialog;
+package com.webforj.component.optiondialog;
 
 import com.webforj.UploadedFile;
 import com.webforj.component.Theme;
-import com.webforj.optiondialog.DwcPromptMsgBox.MessageType;
-import com.webforj.optiondialog.InputDialog.InputType;
+import com.webforj.component.optiondialog.DwcPromptMsgBox.MessageType;
+import com.webforj.component.optiondialog.InputDialog.InputType;
 import java.util.List;
 
 /**

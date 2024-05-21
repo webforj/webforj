@@ -1,10 +1,10 @@
 use com.webforj.component.EventProxy
+use com.webforj.component.optiondialog.ConfirmDialog
+use com.webforj.component.optiondialog.InputDialog
+use com.webforj.component.optiondialog.FileChooserDialog
+use com.webforj.component.optiondialog.FileUploadDialog
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
-use com.webforj.optiondialog.ConfirmDialog
-use com.webforj.optiondialog.InputDialog
-use com.webforj.optiondialog.FileChooserDialog
-use com.webforj.optiondialog.FileUploadDialog
 
 class public BBjEventProxy implements EventProxy
 
