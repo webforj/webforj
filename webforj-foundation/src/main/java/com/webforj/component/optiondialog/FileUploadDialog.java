@@ -25,6 +25,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
   private boolean multiFilterSelection = false;
   private Number maxFileSize = null;
   private FileUploadI18n i18n = new FileUploadI18n();
+  private boolean fileSystemAccess = true;
 
   /**
    * Creates a new file upload dialog.
@@ -172,6 +173,28 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    */
   public FileUploadI18n getI18n() {
     return i18n;
+  }
+
+  /**
+   * When true, the component will try first to use File System Access API when available. If the
+   * browser does not support the File System Access API, the component will fallback to its generic
+   * implementation which will work for all supported browsers.
+   *
+   * @param fileSystemAccess {@code true} to enable file system access, {@code false} to disable it
+   */
+  public FileUploadDialog setFileSystemAccess(boolean fileSystemAccess) {
+    this.fileSystemAccess = fileSystemAccess;
+    setAttribute("fs", String.valueOf(fileSystemAccess));
+    return this;
+  }
+
+  /**
+   * Checks if the file system access is enabled.
+   *
+   * @return {@code true} if the file system access is enabled, {@code false} otherwise
+   */
+  public boolean isFileSystemAccess() {
+    return fileSystemAccess;
   }
 
   /**
