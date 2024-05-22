@@ -301,7 +301,10 @@ public abstract class App {
    *
    * @param alert The message to show
    * @return
+   *
+   * @deprecated since 24.02, for removal in 25.00
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert) {
     return Environment.getCurrent().getWeforjHelper().msgbox(alert, 0, "");
   }
@@ -311,7 +314,10 @@ public abstract class App {
    * @param alert The message to show
    * @param options
    * @return
+   *
+   * @deprecated since 24.02, for removal in 25.00
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options) {
     return Environment.getCurrent().getWeforjHelper().msgbox(alert, options, "");
   }
@@ -322,7 +328,10 @@ public abstract class App {
    * @param options
    * @param title
    * @return
+   *
+   * @deprecated since 24.02, for removal in 25.00
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options, String title) {
     return Environment.getCurrent().getWeforjHelper().msgbox(alert, options, title);
   }

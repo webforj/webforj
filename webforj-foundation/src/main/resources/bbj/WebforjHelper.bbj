@@ -1,4 +1,8 @@
 use com.webforj.component.EventProxy
+use com.webforj.component.optiondialog.ConfirmDialog
+use com.webforj.component.optiondialog.InputDialog
+use com.webforj.component.optiondialog.FileChooserDialog
+use com.webforj.component.optiondialog.FileUploadDialog
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
 
@@ -59,6 +63,150 @@ class public WebforjHelper implements WebforjBBjBridge
 
     method public int msgbox(String msg!, int options!, String title!)
         methodret msgbox(msg!,options!,title!)
+    methodend
+
+    method public int msgbox(ConfirmDialog options!)
+      REM MSGBOX(str1{,expr{,str2{,button1{,button2{,button3}}}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
+      Title$ = String.valueOf(options!.getTitle())
+      Message$ = String.valueOf(options!.getMessage())
+
+      expr = 0, custom = 0
+
+      rem message type
+      switch options!.getOptionType().getValue()
+        case 0; break
+        case 1; expr=1; break
+        case 2; expr=2; break
+        case 3; expr=3; break
+        case 4; expr=4; break
+        case 5; expr=5; break
+        case 7; expr=7,custom=1; break
+        case default; escape
+      swend
+
+      rem icon type
+      switch options!.getMessageType().getValue()
+        case 0; break
+        case 16; expr=expr+16; break
+        case 32; expr=expr+32; break
+        case 48; expr=expr+48; break
+        case 64; expr=expr+64; break
+        case default; escape
+      swend
+
+      rem default selected button
+      switch options!.getDefaultButton().getValue()
+        case 0; break
+        case 256; expr=expr+256; break
+        case 512; expr=expr+512; break
+        case default; escape
+      swend
+
+      rem disable HTML
+      if options!.isRawText() then expr=expr+32768
+
+      rem mode
+      mode$ = options!.getAttributesAsString()
+
+      rem timeout
+      timeout = options!.getTimeout()
+
+      result = 0
+      if custom then
+        Button1$= String.valueOf(options!.getFirstButtonText())
+        Button2$= String.valueOf(options!.getSecondButtonText())
+        Button3$= String.valueOf(options!.getThirdButtonText())
+        if Button3$ <> "" then
+          result = msgbox(Message$,expr,Title$,Button1$,Button2$,Button3$,tim=timeout,mode=mode$)
+        else
+          if Button2$ <> "" then
+              result = msgbox(Message$,expr,Title$,Button1$,Button2$,tim=timeout,mode=mode$)
+          else
+              if Button1$ <> "" then
+                result = msgbox(Message$,expr,Title$,Button1$,tim=timeout,mode=mode$)
+              else
+                result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$)
+              endif
+          endif
+        endif
+      else
+        result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$)
+      endif
+
+      methodret result
+    methodend
+
+    method public String prompt(InputDialog options!)
+      REM PROMPT(message{,default{,title{,expr}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
+      Message$ = String.valueOf(options!.getMessage())
+      Default$ = String.valueOf(options!.getDefaultValue())
+      Title$ = String.valueOf(options!.getTitle())
+
+      expr = 0
+
+      rem icon type
+      switch options!.getMessageType().getValue()
+        case 0; break
+        case 16; expr=expr+16; break
+        case 32; expr=expr+32; break
+        case 48; expr=expr+48; break
+        case 64; expr=expr+64; break
+        case default; escape
+      swend
+
+      rem mode
+      mode$ = options!.getAttributesAsString()
+
+      rem timeout
+      timeout = options!.getTimeout()
+
+      result! = prompt(Message$,Default$,Title$,expr,tim=timeout,mode=mode$)
+      methodret result!
+    methodend
+
+    method public String fileChooser(FileChooserDialog options!)
+      REM FILEOPEN(prompt,path,name,ext[,filters[,mode[,MODE="CLIENT,EXISTS=option,RESOLVE=option,STYLE=name"]])
+
+      prompt! = String.valueOf(options!.getTitle())
+      path! = String.valueOf(options!.getInitialPath())
+
+      filterList! = options!.getFilters()
+      it! = filterList!.iterator()
+      filter$ = ""
+      while it!.hasNext()
+        entry! = it!.next()
+        filter$ = filter$ + String.valueOf(entry!.getDescription()) + $0a$ + String.valueOf(entry!.getPattern()) + $0a$
+      wend
+
+      selectionMode! = options!.getSelectionMode().getValue()
+      mode$ = ""
+      if(options!.isRestricted()) then
+        mode$ = "RESTRICTED,"
+      fi
+      mode$ = mode$ + options!.getAttributesAsString()
+
+      result! = fileopen(prompt!,path!,"","",filter$,selectionMode!,mode=mode$)
+      methodret result!
+    methodend
+
+    method public String fileUpload(FileUploadDialog options!)
+      REM FILEOPEN(prompt,path,name,ext[,filters[,mode[,MODE="CLIENT,EXISTS=option,RESOLVE=option,STYLE=name"]])
+
+      prompt! = String.valueOf(options!.getTitle())
+
+      filterList! = options!.getFilters()
+      it! = filterList!.iterator()
+      filter$ = ""
+      while it!.hasNext()
+        entry! = it!.next()
+        filter$ = filter$ + String.valueOf(entry!.getDescription()) + $0a$ + String.valueOf(entry!.getPattern()) + $0a$
+      wend
+
+      mode$ = "CLIENT,"
+      mode$ = mode$ + options!.getAttributesAsString()
+
+      result! = fileopen(prompt!,"","","",filter$,mode=mode$)
+      methodret result!
     methodend
 
     method public BBjControl createWidget(String class!, BBjWindow w!)

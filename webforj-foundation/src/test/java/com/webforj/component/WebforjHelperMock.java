@@ -5,6 +5,10 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.component.optiondialog.ConfirmDialog;
+import com.webforj.component.optiondialog.FileChooserDialog;
+import com.webforj.component.optiondialog.FileUploadDialog;
+import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
 
 /** Mock for the WebforjBBjBridge. */
@@ -55,4 +59,23 @@ public class WebforjHelperMock implements WebforjBBjBridge {
     return "";
   }
 
+  @Override
+  public int msgbox(ConfirmDialog config) {
+    return 0;
+  }
+
+  @Override
+  public String prompt(InputDialog options) {
+    return "";
+  }
+
+  @Override
+  public String fileChooser(FileChooserDialog options) {
+    return "";
+  }
+
+  @Override
+  public String fileUpload(FileUploadDialog options) {
+    return "";
+  }
 }

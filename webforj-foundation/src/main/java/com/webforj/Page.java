@@ -1,11 +1,21 @@
 package com.webforj;
 
+import com.basis.bbj.proxies.BBjClientFile;
+import com.basis.bbj.proxies.BBjClientFileSystem;
+import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.webforj.concern.HasJsExecution;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.Assets;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +26,7 @@ import java.util.Map;
  * @author Hyyan Abo Fakher
  */
 public final class Page implements HasJsExecution {
-
+  private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
 
@@ -715,5 +725,105 @@ public final class Page implements HasJsExecution {
    */
   public void reload() {
     executeJsAsync("window.location.reload();");
+  }
+
+  /**
+   * Sends the given InputStream to the client for download.
+   *
+   * @param inputStream The InputStream representing the file content
+   * @param fileName The name of the file to download
+   */
+  public void download(InputStream inputStream, String fileName) {
+    Path tempFilePath = null;
+    try {
+      tempFilePath = Files.createTempFile(null, null);
+      Files.copy(inputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+      performDownload(tempFilePath.toString(), fileName);
+    } catch (IOException | BBjException e) {
+      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+    } finally {
+      deleteTempFile(tempFilePath);
+    }
+  }
+
+  /**
+   * Sends the given byte array to the client for download.
+   *
+   * @param content The byte array representing the file content
+   * @param fileName The name of the file to download
+   */
+  public void download(byte[] content, String fileName) {
+    Path tempFilePath = null;
+    try {
+      tempFilePath = Files.createTempFile(null, null);
+      Files.write(tempFilePath, content, StandardOpenOption.WRITE);
+      performDownload(tempFilePath.toString(), fileName);
+    } catch (IOException | BBjException e) {
+      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+    } finally {
+      deleteTempFile(tempFilePath);
+    }
+  }
+
+  /**
+   * Sends the given file to the client for download.
+   *
+   * @param file The file to download
+   * @param fileName The name of the file to download
+   */
+  public void download(File file, String fileName) {
+    try {
+      performDownload(file.getAbsolutePath(), fileName);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+    }
+  }
+
+  /**
+   * Sends the given file to the client for download.
+   *
+   * @param file The file to download
+   */
+  public void download(File file) {
+    download(file, file.getName());
+  }
+
+  /**
+   * Sends the given resource to the client for download.
+   *
+   * @param path The full path to a physical file or a context url. If a url is provided and starts
+   *        with <code>context://</code> then the url will be resolved as a context url which points
+   *        to the root of the resources folder of your application
+   * @param fileName The name of the file to download
+   */
+  public void download(String path, String fileName) {
+    try {
+      if (Assets.isContextUrl(path)) {
+        ClassLoader classLoader = Environment.getCurrent().getClass().getClassLoader();
+        InputStream is = classLoader.getResourceAsStream(Assets.resolveContextUrl(path));
+        download(is, fileName);
+      } else {
+        performDownload(path, fileName);
+      }
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+    }
+  }
+
+  private void performDownload(String sourceFilePath, String fileName) throws BBjException {
+    BBjThinClient thinClient = getEnvironment().getBBjAPI().getThinClient();
+    BBjClientFileSystem clientFileSystem = thinClient.getClientFileSystem();
+    BBjClientFile clientFile = clientFileSystem.getClientFile(fileName);
+    clientFile.copyToClient(sourceFilePath);
+  }
+
+  private void deleteTempFile(Path tempFilePath) {
+    if (tempFilePath != null) {
+      try {
+        Files.delete(tempFilePath);
+      } catch (IOException e) {
+        Environment.logError("Failed to delete temp file: " + tempFilePath, e);
+      }
+    }
   }
 }

@@ -4,14 +4,17 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
-
+import com.webforj.component.optiondialog.ConfirmDialog;
+import com.webforj.component.optiondialog.FileChooserDialog;
+import com.webforj.component.optiondialog.FileUploadDialog;
+import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
 
 public interface WebforjBBjBridge {
 
   /**
-   * create and register an event proxy that defers BBj-side callback invocations to the Java DWCJ
-   * side
+   * create and register an event proxy that defers B Bj-side callback invocations to the Java DWCJ
+   * side.
    *
    * @param obj - the webforj-side object instance to receive the event
    * @param method - the method name to receive the callback
@@ -22,7 +25,7 @@ public interface WebforjBBjBridge {
 
   /**
    * create and register an event proxy that defers BBj-side callback invocations to the Java DWCJ
-   * side
+   * side.
    *
    * @param obj - the webforj-side object instance to receive the event
    * @param method - the method name to receive the callback
@@ -36,7 +39,7 @@ public interface WebforjBBjBridge {
   /**
    * delegates the creation of a widget, mostly BBj Plug-Ins written as a BBj Custom Class extending
    * BBjWidget The BBj side uses the constructor that takes a single BBjChildWindow to instantiate
-   * the widget
+   * the widget.
    *
    * @param classname The classname in the style ::filename.bbj::classname
    * @param wnd Handle to the window where the widget needs to be created
@@ -45,31 +48,65 @@ public interface WebforjBBjBridge {
   BBjControl createWidget(String classname, BBjWindow wnd);
 
   /**
-   * invoke the BBj-side MSGBOX function
+   * invoke the BBj-side MSGBOX function.
    *
    * @param msg the Message
    * @param options the options, see BBj MSGBOX docs
    * @param title the title
-   * @return
+   * @return the result of the MSGBOX function result
+   *
+   * @deprecated since 24.02, for removal in 25.00
    */
+  @Deprecated(since = "24.02", forRemoval = true)
   int msgbox(String msg, int options, String title);
 
   /**
-   * invoke a method of a BBj-side object instance, mostly custom objects
+   * invoke the BBj-side MSGBOX function with the given options.
+   *
+   * @param options the config
+   * @return the result of the MSGBOX function
+   */
+  int msgbox(ConfirmDialog options);
+
+  /**
+   * invoke the BBj-side PROMPT function with the given options.
+   *
+   * @param options the options
+   * @return the result of the PROMPT function
+   */
+  String prompt(InputDialog options);
+
+  /**
+   * invoke the BBj-side FILEOPEN(server) function with the given options.
+   *
+   * @param options the options
+   * @return the result of the FILEOPEN function
+   */
+  String fileChooser(FileChooserDialog options);
+
+  /**
+   * invoke the BBj-side FILEOPEN(client) function with the given options.
+   *
+   * @param options the options
+   * @return the result of the FILEOPEN function
+   */
+  String fileUpload(FileUploadDialog options);
+
+  /**
+   * invoke a method of a BBj-side object instance, mostly custom objects.
    *
    * @param object the object instance
    * @param method the method name
    * @param args the arguments as a List
-   * @return
+   * @return the result of the method invocation
    */
   @SuppressWarnings("java:S3740") // allow raw types
   Object invokeMethod(Object object, String method, java.util.ArrayList args);
 
   /**
-   * create an instance of a BBj-side object instance, mostly custom objects
+   * create an instance of a BBj-side object instance, mostly custom objects.
    *
    * @param classname the method name
-   * @param args the arguments to the constructor as a List
    * @return the object instance
    */
   Object createInstance(String classname);
