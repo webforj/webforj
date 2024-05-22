@@ -288,6 +288,7 @@ public final class InputDialog extends DwcPromptMsgBox<InputDialog> {
    */
   public InputDialog setType(InputType type) {
     this.inputType = type;
+    setAttribute("input-type", type.getValue());
     return this;
   }
 
