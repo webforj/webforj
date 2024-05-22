@@ -1,5 +1,9 @@
 package com.webforj.component.html.elements;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.html.HtmlComponent;
@@ -60,12 +64,25 @@ public class Img extends HtmlComponent<Iframe> {
   public Img setSrc(String src) {
     String url = src.trim();
 
-    // TODO: this should be test with integration tests.
     if (Assets.isWebServerUrl(src)) {
       url = Assets.resolveWebServerUrl(src);
     } else if (Assets.isContextUrl(src)) {
-      String content = Assets.contentOf(Assets.resolveContextUrl(src), Assets.ContentFormat.BASE64);
-      url = "data:text/html;base64," + content;
+      String resolvedUrl = Assets.resolveContextUrl(src);
+      String content = Assets.contentOf(resolvedUrl, Assets.ContentFormat.BASE64);
+
+      // Determine the MIME type dynamically
+      String mimeType;
+      try {
+        Path path = Paths.get(resolvedUrl);
+        mimeType = Files.probeContentType(path);
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+          throw new IllegalArgumentException("The provided file is not a valid image type.");
+        }
+      } catch (IOException e) {
+        throw new IllegalArgumentException("Failed to determine the MIME type of the file.", e);
+      }
+
+      url = "data:" + mimeType + ";base64," + content;
     }
 
     set(srcProp, url);
