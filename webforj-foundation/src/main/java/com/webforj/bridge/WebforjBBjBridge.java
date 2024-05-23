@@ -93,6 +93,13 @@ public interface WebforjBBjBridge {
   String fileUpload(FileUploadDialog options);
 
   /**
+   * invoke the BBj-side WAIT function.
+   *
+   * @param seconds the number of seconds to wait
+   */
+  void sleep(int seconds);
+
+  /**
    * invoke a method of a BBj-side object instance, mostly custom objects.
    *
    * @param object the object instance

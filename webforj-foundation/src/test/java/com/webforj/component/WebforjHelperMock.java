@@ -78,4 +78,9 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   public String fileUpload(FileUploadDialog options) {
     return "";
   }
+
+  @Override
+  public void sleep(int seconds) {
+
+  }
 }

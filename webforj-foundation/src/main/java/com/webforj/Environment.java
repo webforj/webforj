@@ -33,6 +33,21 @@ public final class Environment {
     return Environment.instanceMap.get(Thread.currentThread().getName());
   }
 
+  /**
+   * Suspends execution of the current task.
+   *
+   * <p>
+   * wait may not be precisely accurate because it can be altered by other factors that govern timed
+   * pauses in a system. wait statements are not affected by processor speed.
+   * </p>
+   *
+   * @param seconds Number of seconds to suspend the current task. It must be in the range of 0 to
+   *        255. (Some systems may allow waits longer than 255 seconds.)
+   */
+  public void sleep(int seconds) {
+    getWeforjHelper().sleep(seconds);
+  }
+
   public BBjAPI getBBjAPI() {
     return this.api;
   }
