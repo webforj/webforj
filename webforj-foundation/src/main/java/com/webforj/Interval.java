@@ -33,7 +33,7 @@ public final class Interval {
   private boolean running = false;
 
   /**
-   * Create a new instance of the interval.
+   * Creates a new instance of the interval.
    *
    * @param delay Specifies the timeout value in seconds. Fractional seconds are allowed to
    *        millisecond resolution, but a very small timeout value will cause a flood of events
@@ -82,7 +82,7 @@ public final class Interval {
   }
 
   /**
-   * Start the interval.
+   * Starts the interval.
    *
    * <p>
    * If the interval is already running, this method will do nothing.
@@ -106,7 +106,7 @@ public final class Interval {
   }
 
   /**
-   * Stop the interval.
+   * Stops the interval.
    *
    * <p>
    * If the interval is not running, this method will do nothing.
@@ -127,7 +127,7 @@ public final class Interval {
   }
 
   /**
-   * Restart the interval.
+   * Restarts the interval.
    */
   public void restart() {
     stop();
@@ -135,7 +135,7 @@ public final class Interval {
   }
 
   /**
-   * Check if the interval is running.
+   * Checks if the interval is running.
    *
    * @return true if the interval is running, false otherwise
    */
@@ -190,7 +190,7 @@ public final class Interval {
   public class ElapsedEvent extends EventObject {
 
     /**
-     * Create a new instance of the event.
+     * Creates a new instance of the event.
      *
      * @param source the source of the event
      */
@@ -199,7 +199,7 @@ public final class Interval {
     }
 
     /**
-     * Get the interval that triggered the event.
+     * Gets the interval that triggered the event.
      *
      * @return the interval instance
      */
