@@ -82,7 +82,7 @@ public class Assets {
    * @return The URL of the Jetty Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerFilesURL", null);

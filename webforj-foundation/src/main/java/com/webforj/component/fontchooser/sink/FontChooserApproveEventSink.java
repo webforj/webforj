@@ -26,7 +26,7 @@ public final class FontChooserApproveEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(fc);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_FILECHOOSER_APPROVE,
-          Environment.getCurrent().getWeforjHelper().getEventProxy(this, "changeEvent"), "onEvent");
+          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "changeEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

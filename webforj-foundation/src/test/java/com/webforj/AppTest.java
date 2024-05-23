@@ -36,7 +36,7 @@ class AppTest {
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getWeforjHelper()).thenReturn(bridge);
+    when(environment.getWebforjHelper()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
 
     app = spy(App.class);

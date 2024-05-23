@@ -26,7 +26,7 @@ public class MaskedTextFieldModifyEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(stringBox);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_EDIT_MODIFY,
-          Environment.getCurrent().getWeforjHelper().getEventProxy(this, "editModifyEvent"),
+          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "editModifyEvent"),
           "onEvent");
 
     } catch (Exception e) {

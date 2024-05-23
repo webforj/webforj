@@ -369,7 +369,7 @@ public final class FileChooserDialog extends DwcFileOpen<FileChooserDialog> {
    * @return the result of the FileChooser dialog
    */
   public String show() {
-    String result = Environment.getCurrent().getWeforjHelper().fileChooser(this);
+    String result = Environment.getCurrent().getWebforjHelper().fileChooser(this);
     if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
       return null;
     }

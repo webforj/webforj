@@ -35,7 +35,7 @@ class RequestTest {
     when(environment.getBBjAPI()).thenReturn(api);
     when(api.getThinClient()).thenReturn(thinClient);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getWeforjHelper()).thenReturn(bridge);
+    when(environment.getWebforjHelper()).thenReturn(bridge);
 
     request = spy(Request.class);
     when(request.getEnvironment()).thenReturn(environment);

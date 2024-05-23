@@ -424,7 +424,7 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * @return the result of the confirm dialog
    */
   public Result show() {
-    int result = Environment.getCurrent().getWeforjHelper().msgbox(this);
+    int result = Environment.getCurrent().getWebforjHelper().msgbox(this);
     return mapResult(result);
   }
 

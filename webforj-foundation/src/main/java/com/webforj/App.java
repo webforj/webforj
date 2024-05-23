@@ -201,7 +201,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getProtocol() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
@@ -215,7 +215,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getHost() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerHost", null);
@@ -229,7 +229,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getPort() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerPort", null);
@@ -306,7 +306,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert) {
-    return Environment.getCurrent().getWeforjHelper().msgbox(alert, 0, "");
+    return Environment.getCurrent().getWebforjHelper().msgbox(alert, 0, "");
   }
 
   /**
@@ -319,7 +319,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options) {
-    return Environment.getCurrent().getWeforjHelper().msgbox(alert, options, "");
+    return Environment.getCurrent().getWebforjHelper().msgbox(alert, options, "");
   }
 
   /**
@@ -333,7 +333,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options, String title) {
-    return Environment.getCurrent().getWeforjHelper().msgbox(alert, options, title);
+    return Environment.getCurrent().getWebforjHelper().msgbox(alert, options, title);
   }
 
   /**

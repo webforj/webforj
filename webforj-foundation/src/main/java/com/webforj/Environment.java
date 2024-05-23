@@ -45,7 +45,7 @@ public final class Environment {
    *        255. (Some systems may allow waits longer than 255 seconds.)
    */
   public void sleep(int seconds) {
-    getWeforjHelper().sleep(seconds);
+    getWebforjHelper().sleep(seconds);
   }
 
   public BBjAPI getBBjAPI() {
@@ -56,7 +56,7 @@ public final class Environment {
     return this.sysgui;
   }
 
-  public WebforjBBjBridge getWeforjHelper() {
+  public WebforjBBjBridge getWebforjHelper() {
     return helper;
   }
 

@@ -29,7 +29,7 @@ public class SliderScrollEventSink {
     try {
       bbjControl = ComponentAccessor.getDefault().getBBjControl(slide);
       bbjControl.setCallback(Environment.getCurrent().getBBjAPI().ON_CONTROL_SCROLL,
-          Environment.getCurrent().getWeforjHelper().getEventProxy(this, "onScrollEvent"),
+          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "onScrollEvent"),
           "onEvent");
 
     } catch (Exception e) {

@@ -56,7 +56,7 @@ class PageTest {
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getWeforjHelper()).thenReturn(bridge);
+    when(environment.getWebforjHelper()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
     when(api.getThinClient()).thenReturn(thinClient);
     when(thinClient.getClientFileSystem()).thenReturn(clientFileSystem);

@@ -44,7 +44,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
     this.eventType = eventType;
 
     if (Environment.getCurrent() != null) {
-      setWebforjHelper(Environment.getCurrent().getWeforjHelper());
+      setWebforjHelper(Environment.getCurrent().getWebforjHelper());
     }
   }
 

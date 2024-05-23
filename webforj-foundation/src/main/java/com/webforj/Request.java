@@ -48,7 +48,7 @@ public final class Request {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getQueryParam(String key) {
-    return Environment.getCurrent().getWeforjHelper().getQueryParam(key);
+    return Environment.getCurrent().getWebforjHelper().getQueryParam(key);
   }
 
   /**
@@ -69,7 +69,7 @@ public final class Request {
    * @return The request protocol
    */
   public String getProtocol() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
@@ -82,7 +82,7 @@ public final class Request {
    * @since 24.02
    */
   public String getHost() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerHost", null);
@@ -95,7 +95,7 @@ public final class Request {
    * @since 24.02
    */
   public String getPort() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWeforjHelper();
+    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
     Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
 
     return (String) helper.invokeMethod(instance, "getWebServerPort", null);
@@ -123,7 +123,7 @@ public final class Request {
    * @since 24.02
    */
   public String getQueryParameter(String key) {
-    return getEnvironment().getWeforjHelper().getQueryParam(key);
+    return getEnvironment().getWebforjHelper().getQueryParam(key);
   }
 
   /**

@@ -26,7 +26,7 @@ public final class HtmlContainerPageLoadEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(htmlv);
       bbjctrl.setCallback(SysGuiEventConstants.ON_PAGE_LOADED,
-          Environment.getCurrent().getWeforjHelper().getEventProxy(this, "onEvent"), "onEvent");
+          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "onEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }
