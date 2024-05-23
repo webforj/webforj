@@ -25,7 +25,8 @@ public final class TreeSelectEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_SELECT,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "selectEvent"), "onEvent");
+          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "selectEvent"),
+          "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

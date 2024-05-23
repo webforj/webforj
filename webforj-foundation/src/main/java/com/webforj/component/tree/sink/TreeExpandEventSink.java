@@ -25,7 +25,8 @@ public class TreeExpandEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_EXPAND,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "expandEvent"), "onEvent");
+          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "expandEvent"),
+          "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }
