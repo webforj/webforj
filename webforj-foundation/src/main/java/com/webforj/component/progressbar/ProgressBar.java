@@ -17,6 +17,8 @@ import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -416,6 +418,19 @@ public final class ProgressBar extends DwcComponent<ProgressBar>
   @ExcludeFromJacocoGeneratedReport
   public Theme getTheme() {
     return super.<Theme>getComponentTheme();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("animated", "disabled", "indeterminate", "max", "min",
+        "orientation", "striped", "text", "text-visible", "theme", "value"));
+
+    return properties;
   }
 
   @Override
