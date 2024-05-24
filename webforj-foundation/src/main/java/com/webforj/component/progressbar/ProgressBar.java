@@ -157,7 +157,7 @@ public final class ProgressBar extends DwcComponent<ProgressBar>
   /**
    * Constructs a progress bar with the default text.
    *
-   * @param value The value of the progress bar.
+   * @param text The text of the progress bar.
    */
   public ProgressBar(String text) {
     this(0);
