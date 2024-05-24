@@ -112,6 +112,29 @@ class ProgressBarTest {
       assertEquals(max, component.getMax());
       assertEquals(orientation, component.getOrientation());
     }
+
+    @Test
+    void shouldInitializeWithValueAndTextConstructor() {
+      int value = 50;
+      String text = "Progress";
+      component = new ProgressBar(value, text);
+      assertEquals(value, component.getValue());
+      assertEquals(0, component.getMin());
+      assertEquals(100, component.getMax());
+      assertEquals(ProgressBar.Orientation.HORIZONTAL, component.getOrientation());
+      assertEquals(text, component.getText());
+    }
+
+    @Test
+    void shouldInitializeWithTextConstructor() {
+      String text = "Progress";
+      component = new ProgressBar(text);
+      assertEquals(0, component.getValue());
+      assertEquals(0, component.getMin());
+      assertEquals(100, component.getMax());
+      assertEquals(ProgressBar.Orientation.HORIZONTAL, component.getOrientation());
+      assertEquals(text, component.getText());
+    }
   }
 
   @Nested
