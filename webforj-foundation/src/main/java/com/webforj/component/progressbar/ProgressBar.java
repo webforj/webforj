@@ -167,6 +167,8 @@ public final class ProgressBar extends DwcComponent<ProgressBar>
       }
     }
 
+    getEventDispatcher().dispatchEvent(new ValueChangeEvent<>(this, value));
+
     return this;
   }
 
@@ -181,8 +183,7 @@ public final class ProgressBar extends DwcComponent<ProgressBar>
   @Override
   public ListenerRegistration<ValueChangeEvent<Integer>> addValueChangeListener(
       EventListener<ValueChangeEvent<Integer>> listener) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'addValueChangeListener'");
+    return getEventDispatcher().addListener(ValueChangeEvent.class, listener);
   }
 
   /**
