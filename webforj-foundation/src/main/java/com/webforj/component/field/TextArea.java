@@ -7,12 +7,12 @@ import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
-import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasMaxLength;
 import com.webforj.concern.HasMinLength;
 import com.webforj.concern.HasTypingMode;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.selection.SelectionRange;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -67,22 +67,22 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
   /**
    * Creates a new textarea component instance.
    *
-   * @param label - Specifies the label of the component.
-   * @param value - Specifies the initial value of the component.
-   * @param rows - Specifies the number of visible text lines for the component.
-   * @param columns - Specifies the visible width of the component, in average character widths.
-   * @param modifyListener - Specifies the listener to be notified when the component's value is
+   * @param label Specifies the label of the component.
+   * @param value Specifies the initial value of the component.
+   * @param rows Specifies the number of visible text lines for the component.
+   * @param columns Specifies the visible width of the component, in average character widths.
+   * @param valueChangeListener a listener to be notified when the component's value is changed.
    */
   public TextArea(String label, String value, int rows, int columns,
-      EventListener<ModifyEvent> modifyListener) {
+      EventListener<ValueChangeEvent<String>> valueChangeListener) {
     super();
     setLabel(label);
     setValue(value);
     setRows(rows);
     setColumns(columns);
 
-    if (modifyListener != null) {
-      addModifyListener(modifyListener);
+    if (valueChangeListener != null) {
+      addValueChangeListener(valueChangeListener);
     }
 
     setVerticalScroll(true);
@@ -94,10 +94,11 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
    *
    * @param label - Specifies the label of the component.
    * @param value - Specifies the initial value of the component.
-   * @param modifyListener - Specifies the listener to be notified when the component's value is
+   * @param valueChangeListener a listener to be notified when the component's value is changed.
    */
-  public TextArea(String label, String value, EventListener<ModifyEvent> modifyListener) {
-    this(label, value, 2, 20, modifyListener);
+  public TextArea(String label, String value,
+      EventListener<ValueChangeEvent<String>> valueChangeListener) {
+    this(label, value, 2, 20, valueChangeListener);
   }
 
   /**

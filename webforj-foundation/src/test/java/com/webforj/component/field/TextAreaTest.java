@@ -14,8 +14,8 @@ import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.component.ReflectionUtils;
-import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.field.TextArea.WrapStyle;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.selection.SelectionRange;
 import com.webforj.dispatcher.EventListener;
 import java.util.ArrayList;
@@ -41,7 +41,8 @@ class TextAreaTest {
 
     @Test
     void shouldCreateWithAllParameters() {
-      EventListener<ModifyEvent> listener = e -> System.out.println("Action performed");
+      EventListener<ValueChangeEvent<String>> listener =
+          e -> System.out.println("Action performed");
       TextArea textArea = new TextArea("Label", "Value", 5, 25, listener);
 
       assertEquals("Label", textArea.getLabel());
@@ -49,17 +50,18 @@ class TextAreaTest {
       assertEquals(5, textArea.getRows());
       assertEquals(25, textArea.getColumns());
 
-      assertTrue(textArea.getEventListeners(ModifyEvent.class).contains(listener));
+      assertTrue(textArea.getEventListeners(ValueChangeEvent.class).contains(listener));
     }
 
     @Test
     void shouldCreateWithLabelValueAndListener() {
-      EventListener<ModifyEvent> listener = e -> System.out.println("Action performed");
+      EventListener<ValueChangeEvent<String>> listener =
+          e -> System.out.println("Action performed");
       TextArea textArea = new TextArea("Label", "Value", listener);
 
       assertEquals("Label", textArea.getLabel());
       assertEquals("Value", textArea.getValue());
-      assertTrue(textArea.getEventListeners(ModifyEvent.class).contains(listener));
+      assertTrue(textArea.getEventListeners(ValueChangeEvent.class).contains(listener));
     }
 
     @Test

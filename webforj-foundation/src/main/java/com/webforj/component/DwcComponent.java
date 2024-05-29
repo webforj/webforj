@@ -33,6 +33,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -575,7 +576,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    *
    * @return the listeners
    */
-  public final <E extends ComponentEvent<?>> List<EventListener<E>> getEventListeners(
+  public final <E extends EventObject> List<EventListener<E>> getEventListeners(
       Class<E> eventClass) {
     return dispatcher.getListeners(eventClass);
   }
