@@ -14,7 +14,7 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.field.TextArea.WrapStyle;
-import com.webforj.concern.HasTypingMode;
+import com.webforj.data.selection.SelectionRange;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -393,6 +393,55 @@ class TextAreaTest {
       component.onAttach();
 
       verify(control).setOvertypeMode(true);
+    }
+  }
+
+  @Nested
+  class SelectionApi {
+
+    @Test
+    void shouldGetSelectedRangeWhenControlIsNotNull() throws BBjException {
+      SelectionRange range = new SelectionRange(1, 0, 2, 0);
+      when(control.getSelection()).thenReturn(new BBjVector(List.of(range.getStartParagraph(),
+          range.getStartOffset(), range.getEndParagraph(), range.getEndOffset())));
+
+      component.setSelectionRange(range);
+      assertEquals(range, component.getSelectionRange());
+
+      verify(control).highlight(range.getStartParagraph(), range.getStartOffset(),
+          range.getEndParagraph(), range.getEndOffset());
+    }
+
+    @Test
+    void shouldGetSelectedRangeWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      SelectionRange range = new SelectionRange(1, 0, 2, 0);
+      component.setSelectionRange(range);
+      assertEquals(range, component.getSelectionRange());
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control).highlight(range.getStartParagraph(), range.getStartOffset(),
+          range.getEndParagraph(), range.getEndOffset());
+    }
+  }
+
+  @Nested
+  class ColApi {
+    @Test
+    void shouldSetMinLength() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setColumns(50);
+
+      assertEquals(50, component.getColumns());
+      assertEquals(50, component.getProperty("cols", Integer.class));
+    }
+
+    @Test
+    void shouldNotSetMinLengthWhenValueIsNegative() {
+      assertThrows(IllegalArgumentException.class, () -> component.setColumns(-5));
     }
   }
 }

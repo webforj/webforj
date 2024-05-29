@@ -3,10 +3,14 @@ package com.webforj.component.field;
 import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjVector;
+import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasTypingMode;
+import com.webforj.data.selection.SelectionRange;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
@@ -14,6 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * A text area component that allows the user to enter multiple lines of text.
+ *
  * @author Hyyan Abo Fakher
  * @since 24.10
  */
@@ -24,7 +30,8 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextArea extends DwcField<TextArea, String> implements HasTypingMode<TextArea> {
+public final class TextArea extends DwcField<TextArea, String>
+    implements HasTypingMode<TextArea>, HasHighlightOnFocus<TextArea> {
   private List<String> paragraphs = new ArrayList<>();
   private int rows = 2;
   private int columns = 20;
@@ -37,6 +44,7 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
   private boolean verticalScroll = false;
   private WrapStyle wrapStyle = WrapStyle.WORD_BOUNDARIES;
   private TypingMode typingMode = TypingMode.INSERT;
+  private SelectionRange range = null;
 
   /**
    * Describes the style of wrapping used if the TextArea is wrapping lines.
@@ -547,6 +555,84 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
   }
 
   /**
+   * Selects a range of text in the TextArea.
+   *
+   * @param range the range to select.
+   * @return the component itself.
+   */
+  public TextArea setSelectionRange(SelectionRange range) {
+    BBjCEdit field = inferField();
+
+    if (field != null) {
+      try {
+        field.highlight(range.getStartParagraph(), range.getStartOffset(), range.getEndParagraph(),
+            range.getEndOffset());
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    this.range = range;
+    return this;
+  }
+
+  /**
+   * Selects a range of text in the TextArea given a starting and ending position.
+   *
+   * @param start the start of the selection range.
+   * @param end the end of the selection range.
+   *
+   * @return the component itself.
+   */
+  public TextArea setSelectionRange(int start, int end) {
+    return setSelectionRange(new SelectionRange(start, end));
+  }
+
+  /**
+   * Gets the selection range.
+   *
+   * @return the selection range.
+   */
+  public SelectionRange getSelectionRange() {
+    BBjCEdit field = inferField();
+
+    if (field != null) {
+      try {
+        BBjVector selection = field.getSelection();
+        return new SelectionRange((int) selection.get(0), (int) selection.get(1),
+            (int) selection.get(2), (int) selection.get(3));
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    if (this.range == null) {
+      return new SelectionRange(0, 0);
+    }
+
+    return this.range;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Behavior getHighlightOnFocus() {
+    return getComponentHighlightOnFocus();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public TextArea setHighlightOnFocus(Behavior highlight) {
+    setComponentHighlightOnFocus(highlight);
+    return getSelf();
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -598,6 +684,10 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
 
     if (typingMode != TypingMode.INSERT) {
       setTypingMode(typingMode);
+    }
+
+    if (this.range != null) {
+      setSelectionRange(this.range);
     }
   }
 
