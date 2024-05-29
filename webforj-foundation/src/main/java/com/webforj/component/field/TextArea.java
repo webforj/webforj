@@ -7,10 +7,14 @@ import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
+import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasHighlightOnFocus;
+import com.webforj.concern.HasMaxLength;
+import com.webforj.concern.HasMinLength;
 import com.webforj.concern.HasTypingMode;
 import com.webforj.data.selection.SelectionRange;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
@@ -30,8 +34,8 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextArea extends DwcField<TextArea, String>
-    implements HasTypingMode<TextArea>, HasHighlightOnFocus<TextArea> {
+public final class TextArea extends DwcField<TextArea, String> implements HasTypingMode<TextArea>,
+    HasMinLength<TextArea>, HasMaxLength<TextArea>, HasHighlightOnFocus<TextArea> {
   private List<String> paragraphs = new ArrayList<>();
   private int rows = 2;
   private int columns = 20;
@@ -61,12 +65,82 @@ public final class TextArea extends DwcField<TextArea, String>
   }
 
   /**
+   * Creates a new textarea component instance.
+   *
+   * @param label - Specifies the label of the component.
+   * @param value - Specifies the initial value of the component.
+   * @param rows - Specifies the number of visible text lines for the component.
+   * @param columns - Specifies the visible width of the component, in average character widths.
+   * @param modifyListener - Specifies the listener to be notified when the component's value is
+   */
+  public TextArea(String label, String value, int rows, int columns,
+      EventListener<ModifyEvent> modifyListener) {
+    super();
+    setLabel(label);
+    setValue(value);
+    setRows(rows);
+    setColumns(columns);
+
+    if (modifyListener != null) {
+      addModifyListener(modifyListener);
+    }
+
+    setVerticalScroll(true);
+    setLineWrap(true);
+  }
+
+  /**
+   * Creates a new textarea component instance.
+   *
+   * @param label - Specifies the label of the component.
+   * @param value - Specifies the initial value of the component.
+   * @param modifyListener - Specifies the listener to be notified when the component's value is
+   */
+  public TextArea(String label, String value, EventListener<ModifyEvent> modifyListener) {
+    this(label, value, 2, 20, modifyListener);
+  }
+
+  /**
+   * Creates a new textarea component instance.
+   *
+   * @param label - Specifies the label of the component.
+   * @param value - Specifies the initial value of the component.
+   */
+  public TextArea(String label, String value) {
+    this(label, value, null);
+  }
+
+  /**
+   * Creates a new textarea component instance.
+   *
+   * @param label - Specifies the label of the component.
+   */
+  public TextArea(String label) {
+    this(label, "");
+  }
+
+  /**
    * Creates a new instance of the text area component.
    */
   public TextArea() {
-    super();
-    setVerticalScroll(true);
-    setLineWrap(true);
+    this("");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public TextArea setValue(String value) {
+    setText(value);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getValue() {
+    return getText();
   }
 
   /**
@@ -296,6 +370,7 @@ public final class TextArea extends DwcField<TextArea, String>
    * @param maxLength - Specifies the maximum length of the text.
    * @return the component itself.
    */
+  @Override
   public TextArea setMaxLength(int maxLength) {
     if (maxLength < 0) {
       throw new IllegalArgumentException("Max length must be greater than or equal to 0");
@@ -320,6 +395,7 @@ public final class TextArea extends DwcField<TextArea, String>
    *
    * @return the maximum length of the text.
    */
+  @Override
   public int getMaxLength() {
     return maxLength;
   }
@@ -330,6 +406,7 @@ public final class TextArea extends DwcField<TextArea, String>
    * @param minLength - Specifies the minimum length of the text.
    * @return the component itself.
    */
+  @Override
   public TextArea setMinLength(int minLength) {
     if (minLength < 0) {
       throw new IllegalArgumentException("Min length must be greater than or equal to 0");
@@ -346,6 +423,7 @@ public final class TextArea extends DwcField<TextArea, String>
    *
    * @return the minimum length of the text.
    */
+  @Override
   public int getMinLength() {
     return minLength;
   }

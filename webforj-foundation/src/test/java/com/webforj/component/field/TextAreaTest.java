@@ -2,6 +2,7 @@ package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -13,8 +14,10 @@ import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.field.TextArea.WrapStyle;
 import com.webforj.data.selection.SelectionRange;
+import com.webforj.dispatcher.EventListener;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +35,56 @@ class TextAreaTest {
 
   @InjectMocks
   TextArea component = new TextArea();
+
+  @Nested
+  class Constructors {
+
+    @Test
+    void shouldCreateWithAllParameters() {
+      EventListener<ModifyEvent> listener = e -> System.out.println("Action performed");
+      TextArea textArea = new TextArea("Label", "Value", 5, 25, listener);
+
+      assertEquals("Label", textArea.getLabel());
+      assertEquals("Value", textArea.getValue());
+      assertEquals(5, textArea.getRows());
+      assertEquals(25, textArea.getColumns());
+
+      assertTrue(textArea.getEventListeners(ModifyEvent.class).contains(listener));
+    }
+
+    @Test
+    void shouldCreateWithLabelValueAndListener() {
+      EventListener<ModifyEvent> listener = e -> System.out.println("Action performed");
+      TextArea textArea = new TextArea("Label", "Value", listener);
+
+      assertEquals("Label", textArea.getLabel());
+      assertEquals("Value", textArea.getValue());
+      assertTrue(textArea.getEventListeners(ModifyEvent.class).contains(listener));
+    }
+
+    @Test
+    void shouldCreateWithLabelAndValue() {
+      TextArea textArea = new TextArea("Label", "Value");
+
+      assertEquals("Label", textArea.getLabel());
+      assertEquals("Value", textArea.getValue());
+    }
+
+    @Test
+    void shouldCreateWithLabel() {
+      TextArea textArea = new TextArea("Label");
+
+      assertEquals("Label", textArea.getLabel());
+    }
+
+    @Test
+    void shouldCreateWithNoParameters() {
+      TextArea textArea = new TextArea();
+
+      assertEquals("", textArea.getLabel());
+      assertEquals("", textArea.getValue());
+    }
+  }
 
   @Nested
   class ParagraphsApi {
