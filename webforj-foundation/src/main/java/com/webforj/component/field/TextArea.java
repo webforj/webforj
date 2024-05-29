@@ -6,6 +6,7 @@ import com.basis.startup.type.BBjException;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasTypingMode;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 
 /**
  * @author Hyyan Abo Fakher
- * @since 24.03
+ * @since 24.10
  */
 // We're purposefully ignoring the deep inheritance warning here because we've designed our class
 // hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
@@ -23,7 +24,7 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextArea extends DwcField<TextArea, String> {
+public final class TextArea extends DwcField<TextArea, String> implements HasTypingMode<TextArea> {
   private List<String> paragraphs = new ArrayList<>();
   private int rows = 2;
   private int columns = 20;
@@ -34,22 +35,21 @@ public final class TextArea extends DwcField<TextArea, String> {
   private boolean lineWrap = false;
   private boolean horizontalScroll = false;
   private boolean verticalScroll = false;
+  private WrapStyle wrapStyle = WrapStyle.WORD_BOUNDARIES;
+  private TypingMode typingMode = TypingMode.INSERT;
 
   /**
-   * The wrap style of the text area.
+   * Describes the style of wrapping used if the TextArea is wrapping lines.
    */
   public enum WrapStyle {
-
     /**
-     * Ensures that all line breaks in the value consist of a CR+LF pair, but does not insert any
-     * additional line breaks.
+     * Wrap at character boundaries.
      */
-    SOFT,
+    CHARACTER_BOUNDARIES,
     /**
-     * Automatically inserts line breaks (CR+LF) so that each line has no more than the width of the
-     * component;the number of columns must also be specified for this to take effect.
+     * Wrap at word boundaries.
      */
-    HARD
+    WORD_BOUNDARIES
   }
 
   /**
@@ -471,6 +471,63 @@ public final class TextArea extends DwcField<TextArea, String> {
   }
 
   /**
+   * Sets the style of wrapping used if the text area is wrapping lines.
+   *
+   * @param wrapStyle - Specifies the style of wrapping.
+   * @return the component itself.
+   */
+  public TextArea setWrapStyle(WrapStyle wrapStyle) {
+    this.wrapStyle = wrapStyle;
+    BBjCEdit field = inferField();
+
+    if (field != null) {
+      try {
+        field.setWrapStyleWord(wrapStyle == WrapStyle.WORD_BOUNDARIES);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets the style of wrapping used if the text area is wrapping lines.
+   *
+   * @return the style of wrapping.
+   */
+  public WrapStyle getWrapStyle() {
+    return wrapStyle;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public TextArea setTypingMode(TypingMode typingMode) {
+    this.typingMode = typingMode;
+    BBjCEdit field = inferField();
+
+    if (field != null) {
+      try {
+        field.setOvertypeMode(typingMode == TypingMode.OVERWRITE);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public TypingMode getTypingMode() {
+    return typingMode;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -514,6 +571,14 @@ public final class TextArea extends DwcField<TextArea, String> {
 
     if (Boolean.TRUE.equals(verticalScroll)) {
       setVerticalScroll(verticalScroll);
+    }
+
+    if (wrapStyle != WrapStyle.WORD_BOUNDARIES) {
+      setWrapStyle(wrapStyle);
+    }
+
+    if (typingMode != TypingMode.INSERT) {
+      setTypingMode(typingMode);
     }
   }
 

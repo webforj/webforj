@@ -23,7 +23,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasValue<ConcernComponentMock, Double>, HasClientValidation<ConcernComponentMock>,
     HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
     HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock>,
-    HasPattern<ConcernComponentMock>, HasHelperText<ConcernComponentMock> {
+    HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>, HasHelperText<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -52,6 +52,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private boolean autoValidateOnLoad = false;
   private boolean required = false;
   private String pattern = null;
+  private TypingMode typingMode = TypingMode.INSERT;
   private String helperText;
 
   @Override
@@ -371,6 +372,17 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public boolean isRequired() {
     return this.required;
+  }
+
+  @Override
+  public TypingMode getTypingMode() {
+    return this.typingMode;
+  }
+
+  @Override
+  public ConcernComponentMock setTypingMode(TypingMode typingMode) {
+    this.typingMode = typingMode;
+    return this;
   }
 
   @Override

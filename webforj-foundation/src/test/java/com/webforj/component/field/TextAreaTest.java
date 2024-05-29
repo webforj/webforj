@@ -2,7 +2,6 @@ package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -14,6 +13,8 @@ import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.component.field.TextArea.WrapStyle;
+import com.webforj.concern.HasTypingMode;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -339,6 +340,59 @@ class TextAreaTest {
       component.onAttach();
 
       verify(control).setVerticalScrollable(true);
+    }
+  }
+
+  @Nested
+  class WrapStyleApi {
+
+    @Test
+    void shouldSetWrapStyleWhenControlIsNotNull() throws BBjException {
+      component.setWrapStyle(WrapStyle.CHARACTER_BOUNDARIES);
+      assertEquals(WrapStyle.CHARACTER_BOUNDARIES, component.getWrapStyle());
+
+      verify(control).setWrapStyleWord(false);
+    }
+
+    @Test
+    void shouldSetWrapStyleWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setWrapStyle(WrapStyle.CHARACTER_BOUNDARIES);
+      assertEquals(WrapStyle.CHARACTER_BOUNDARIES, component.getWrapStyle());
+
+      verify(control, times(0)).setWrapStyleWord(false);
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control).setWrapStyleWord(false);
+    }
+  }
+
+  @Nested
+  class TypingModeApi {
+
+    @Test
+    void shouldSetTypingModeWhenControlIsNotNull() throws BBjException {
+      component.setTypingMode(TextArea.TypingMode.OVERWRITE);
+      assertEquals(TextArea.TypingMode.OVERWRITE, component.getTypingMode());
+      verify(control).setOvertypeMode(true);
+    }
+
+    @Test
+    void shouldSetTypingModeWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setTypingMode(TextArea.TypingMode.OVERWRITE);
+      assertEquals(TextArea.TypingMode.OVERWRITE, component.getTypingMode());
+
+      verify(control, times(0)).setOvertypeMode(true);
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control).setOvertypeMode(true);
     }
   }
 }
