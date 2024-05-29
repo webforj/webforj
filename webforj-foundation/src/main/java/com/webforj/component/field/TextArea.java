@@ -163,14 +163,33 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
     return this;
   }
 
+
   /**
-   * Appends text to the end of the component's text.
+   * Removes the paragraph at the specified index.
    *
-   * @param text - Specifies the text to be appended.
+   * @param index - Specifies the paragraph number with 0 identifying the first paragraph.
    * @return the component itself.
    */
-  public TextArea appendToParagraph(String text) {
-    return appendToParagraph(-1, text);
+  public TextArea removeParagraph(int index) {
+    if (index < 0) {
+      throw new IllegalArgumentException("Index must be greater than or equal to 0");
+    }
+
+    BBjCEdit field = inferField();
+
+    if (field != null) {
+      try {
+        field.removeParagraph(index);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    } else {
+      if (index < paragraphs.size()) {
+        paragraphs.remove(index);
+      }
+    }
+
+    return this;
   }
 
   /**

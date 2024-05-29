@@ -1,8 +1,5 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasPlaceholder;
-
 /**
  * The PasswordField provides a way for the user to securely enter a password.
  *
@@ -22,8 +19,7 @@ import com.webforj.concern.HasPlaceholder;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class PasswordField extends DwcTextField<PasswordField>
-    implements HasPlaceholder<PasswordField> {
+public final class PasswordField extends DwcTextField<PasswordField> {
 
   private boolean passwordReveal = true;
 
@@ -76,24 +72,6 @@ public final class PasswordField extends DwcTextField<PasswordField>
    */
   public boolean isPasswordReveal() {
     return passwordReveal;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public PasswordField setPlaceholder(String placeholder) {
-    return super.setComponentPlaceholder(placeholder);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getPlaceholder() {
-    return super.getComponentPlaceholder();
   }
 }
 

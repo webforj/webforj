@@ -5,7 +5,6 @@ import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
-import com.webforj.concern.HasPlaceholder;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -26,8 +25,8 @@ import com.webforj.concern.HasPlaceholder;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class NumberField extends DwcFieldInitializer<NumberField, Double> implements
-    HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
+public final class NumberField extends DwcFieldInitializer<NumberField, Double>
+    implements HasMin<NumberField, Double>, HasMax<NumberField, Double>,
     HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
 
   private Double min = null;
@@ -146,29 +145,6 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    */
   public Double getStep() {
     return step;
-  }
-
-  /**
-   * Set the placeholder of field.
-   *
-   * @param placeholder the placeholder of field
-   * @return the field type
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public NumberField setPlaceholder(String placeholder) {
-    return setComponentPlaceholder(placeholder);
-  }
-
-  /**
-   * Get the placeholder of field.
-   *
-   * @return the placeholder of field
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getPlaceholder() {
-    return getComponentPlaceholder();
   }
 
   /**

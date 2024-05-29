@@ -1,8 +1,5 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasPlaceholder;
-
 /**
  * The TextField provides a user interface component to create a basic single-line text fields.
  *
@@ -22,7 +19,7 @@ import com.webforj.concern.HasPlaceholder;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextField extends DwcTextField<TextField> implements HasPlaceholder<TextField> {
+public final class TextField extends DwcTextField<TextField> {
 
   /**
    * Describes the type of the input field.
@@ -151,23 +148,5 @@ public final class TextField extends DwcTextField<TextField> implements HasPlace
    */
   public Type getType() {
     return type;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public TextField setPlaceholder(String placeholder) {
-    return super.setComponentPlaceholder(placeholder);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getPlaceholder() {
-    return super.getComponentPlaceholder();
   }
 }

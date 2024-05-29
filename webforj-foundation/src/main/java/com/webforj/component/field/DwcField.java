@@ -12,6 +12,7 @@ import com.webforj.component.event.sink.ModifyEventSink;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasLabel;
+import com.webforj.concern.HasPlaceholder;
 import com.webforj.concern.HasReadOnly;
 import com.webforj.concern.HasRequired;
 import com.webforj.concern.HasValue;
@@ -44,7 +45,7 @@ import java.util.List;
  */
 public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
     extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
-    HasExpanse<T, Expanse>, HasFocusStatus, ValueChangeModeAware<T> {
+    HasExpanse<T, Expanse>, HasFocusStatus, HasPlaceholder<T>, ValueChangeModeAware<T> {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -206,6 +207,30 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   @Override
   public boolean isReadOnly() {
     return super.isComponentReadOnly();
+  }
+
+  /**
+   * Set the placeholder of field.
+   *
+   * @param placeholder the placeholder of field
+   * @return the field type
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public T setPlaceholder(String placeholder) {
+    setComponentPlaceholder(placeholder);
+    return getSelf();
+  }
+
+  /**
+   * Get the placeholder of field.
+   *
+   * @return the placeholder of field
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public String getPlaceholder() {
+    return getComponentPlaceholder();
   }
 
   /**
