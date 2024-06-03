@@ -1,7 +1,6 @@
 package com.webforj.component.field;
 
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
@@ -25,9 +24,8 @@ import com.webforj.concern.HasMin;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class NumberField extends DwcFieldInitializer<NumberField, Double>
-    implements HasMin<NumberField, Double>, HasMax<NumberField, Double>,
-    HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
+public final class NumberField extends DwcFieldInitializer<NumberField, Double> implements
+    HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasHorizontalAlignment<NumberField> {
 
   private Double min = null;
   private Double max = null;
@@ -145,25 +143,6 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
    */
   public Double getStep() {
     return step;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public NumberField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
   }
 
   /**

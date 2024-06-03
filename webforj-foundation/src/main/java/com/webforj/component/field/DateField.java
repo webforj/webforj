@@ -1,7 +1,5 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
 import java.time.LocalDate;
@@ -26,8 +24,8 @@ import java.time.LocalDate;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class DateField extends DwcFieldInitializer<DateField, LocalDate> implements
-    HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate>, HasHighlightOnFocus<DateField> {
+public final class DateField extends DwcFieldInitializer<DateField, LocalDate>
+    implements HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate> {
 
   private LocalDate min = null;
   private LocalDate max = null;
@@ -187,25 +185,6 @@ public final class DateField extends DwcFieldInitializer<DateField, LocalDate> i
   public LocalDate getValue() {
     String text = getText();
     return text == null || text.isEmpty() ? null : DateField.fromDate(text);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public DateField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**

@@ -11,12 +11,15 @@ import com.webforj.component.event.sink.KeypressEventSink;
 import com.webforj.component.event.sink.ModifyEventSink;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
+import com.webforj.concern.HasHighlightOnFocus;
+import com.webforj.concern.HasHighlightOnFocus.Behavior;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasPlaceholder;
 import com.webforj.concern.HasReadOnly;
 import com.webforj.concern.HasRequired;
 import com.webforj.concern.HasValue;
 import com.webforj.data.concern.ValueChangeModeAware;
+import com.webforj.data.concern.ValueChangeModeAware.ValueChangeMode;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -44,8 +47,9 @@ import java.util.List;
  * @since 23.05
  */
 public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
-    extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
-    HasExpanse<T, Expanse>, HasFocusStatus, HasPlaceholder<T>, ValueChangeModeAware<T> {
+    extends DwcValidatableComponent<T, V>
+    implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>, HasExpanse<T, Expanse>, HasFocusStatus,
+    HasHighlightOnFocus<T>, HasPlaceholder<T>, ValueChangeModeAware<T> {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -231,6 +235,25 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   @ExcludeFromJacocoGeneratedReport
   public String getPlaceholder() {
     return getComponentPlaceholder();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public Behavior getHighlightOnFocus() {
+    return getComponentHighlightOnFocus();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ExcludeFromJacocoGeneratedReport
+  public T setHighlightOnFocus(Behavior highlight) {
+    setComponentHighlightOnFocus(highlight);
+    return getSelf();
   }
 
   /**

@@ -1,7 +1,5 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
 import java.time.LocalDateTime;
@@ -39,8 +37,7 @@ import java.time.temporal.ChronoUnit;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public final class DateTimeField extends DwcFieldInitializer<DateTimeField, LocalDateTime>
-    implements HasMin<DateTimeField, LocalDateTime>, HasMax<DateTimeField, LocalDateTime>,
-    HasHighlightOnFocus<DateTimeField> {
+    implements HasMin<DateTimeField, LocalDateTime>, HasMax<DateTimeField, LocalDateTime> {
 
   private LocalDateTime min = null;
   private LocalDateTime max = null;
@@ -208,25 +205,6 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
     String text = getText();
     return text == null || text.isEmpty() ? null
         : LocalDateTime.parse(text).truncatedTo(ChronoUnit.SECONDS);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public DateTimeField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**

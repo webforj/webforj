@@ -35,7 +35,7 @@ import java.util.List;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public final class TextArea extends DwcField<TextArea, String> implements HasTypingMode<TextArea>,
-    HasMinLength<TextArea>, HasMaxLength<TextArea>, HasHighlightOnFocus<TextArea> {
+    HasMinLength<TextArea>, HasMaxLength<TextArea>{
   private List<String> paragraphs = new ArrayList<>();
   private int rows = 2;
   private int columns = 20;
@@ -690,25 +690,6 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
     }
 
     return this.range;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public TextArea setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**

@@ -41,8 +41,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializer<T, String>
-    implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T>,
-    HasPattern<T> {
+    implements HasMinLength<T>, HasMaxLength<T>, HasHorizontalAlignment<T>, HasPattern<T> {
 
   private int minLength = 0;
   private int maxLength = 524288;
@@ -200,25 +199,6 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
     }
 
     return "";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public T setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**
