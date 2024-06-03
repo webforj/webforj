@@ -108,7 +108,7 @@ public abstract class DwcValidatableComponent<T extends DwcFocusableComponent<T>
    */
   @Override
   public boolean isInvalid() {
-    return getProperty(invalidMessage, Boolean.class);
+    return getProperty("invalid", Boolean.class);
   }
 
   /**
