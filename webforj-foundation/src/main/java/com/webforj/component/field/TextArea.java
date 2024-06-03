@@ -18,6 +18,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -690,6 +691,21 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
     }
 
     return this.range;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "autocomplete", "autocorrect", "autofocus", "cols", "disabled", "expanse", "hasFocus",
+        "highlightBehaviors", "insertMode", "invalid", "invalidMessage", "label", "maxLineCount",
+        "maxLineLength", "maxlength", "minlength", "name", "placeholder", "readonly", "required",
+        "rows", "spellcheck", "tabTraversable", "valid"));
+
+    return properties;
   }
 
   /**
