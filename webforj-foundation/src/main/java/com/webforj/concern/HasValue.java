@@ -28,7 +28,7 @@ public interface HasValue<T extends Component, V> extends ValueAware<T, V> {
   public default V getValue() {
     Component component = ComponentUtil.getBoundComponent(this);
 
-    if (component instanceof HasTooltip) {
+    if (component instanceof HasValue) {
       return ((HasValue<?, V>) component).getValue();
     }
 
