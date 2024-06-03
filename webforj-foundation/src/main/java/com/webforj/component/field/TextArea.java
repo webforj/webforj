@@ -33,8 +33,8 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextArea extends DwcField<TextArea, String> implements HasTypingMode<TextArea>,
-    HasMinLength<TextArea>, HasMaxLength<TextArea>{
+public final class TextArea extends DwcField<TextArea, String>
+    implements HasTypingMode<TextArea>, HasMinLength<TextArea>, HasMaxLength<TextArea> {
   private List<String> paragraphs = new ArrayList<>();
   private int rows = 2;
   private int columns = 20;
