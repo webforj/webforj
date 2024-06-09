@@ -30,22 +30,20 @@ public class Terminal extends Panel {
     add(hv);
 
 
-    String script = "function send(event){var custom=new CustomEvent("
+    String script = "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
+      + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
+      + "else { callback (); }}";
+    script += "function send(event){var custom=new CustomEvent("
         + "'custom_event',{bubbles:true,cancelable:true});" + "custom.key=event.key;"
         + "window.basisDispatchCustomEvent(event.target,custom);}";
     hv.injectScript(script, true);
 
-    script = "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
-        + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
-        + "else { callback (); }}";
-    hv.injectScript(script);
-
     script = "var link =  $doc.createElement('script');"
         + "link.setAttribute('type','text/javascript');"
-        + "link.setAttribute('src','https://cdn.jsdelivr.net/npm/xterm@4.13.0/lib/xterm.js');"
+        + "link.setAttribute('src','https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js');"
         + "document.head.appendChild(link);" + "var link2 =  $doc.createElement('link');"
         + "link2.setAttribute('rel','stylesheet');"
-        + "link2.setAttribute('href','https://cdn.jsdelivr.net/npm/xterm@4.13.0/css/xterm.css');"
+        + "link2.setAttribute('href','https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css');"
         + "document.head.appendChild(link2);";
     hv.executeScript(script);
 
