@@ -49,7 +49,7 @@ public class Terminal extends Panel {
 
     script = "whenTerminalLoaded(function() {window.term = new window.Terminal();"
         + "window.term.open(document.getElementById('" + uuid + "'));"
-        + "window.term.write('\\x1B[1;3;31mDWCJ\\x1B[0m Terminal');" + "window.term.focus();"
+        + "window.term.focus();"
         + "window.term.onKey(" + "function ({key, domEvent}) " + "{" + "send(domEvent);" + "})})";
     hv.executeScript(script);
 
