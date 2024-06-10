@@ -23,7 +23,8 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasValue<ConcernComponentMock, Double>, HasClientValidation<ConcernComponentMock>,
     HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
     HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock>,
-    HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>, HasHelperText<ConcernComponentMock> {
+    HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>, HasHelperText<ConcernComponentMock>,
+    HasMask<ConcernComponentMock>, HasRestoreValue<ConcernComponentMock, Double>{
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -42,6 +43,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private boolean readOnly;
   private String tooltip;
   private Double value;
+  private Double restoreValue;
   private ComponentRegistry registry = new ComponentRegistry(this, e -> {
   });
   private boolean isInvalid = false;
@@ -52,6 +54,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private boolean autoValidateOnLoad = false;
   private boolean required = false;
   private String pattern = null;
+  private String mask = null;
   private TypingMode typingMode = TypingMode.INSERT;
   private String helperText;
 
@@ -395,6 +398,35 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   public String getPattern() {
     return this.pattern;
   }
+
+  @Override
+  public ConcernComponentMock setMask(String mask) {
+    this.mask = mask;
+    return this;
+  }
+
+  @Override
+  public String getMask() {
+    return this.mask;
+  }
+
+  @Override
+  public ConcernComponentMock setRestoreValue(Double value) {
+    this.restoreValue = value;
+    return this;
+  }
+
+  @Override
+  public Double getRestoreValue() {
+    return this.restoreValue;
+  }
+
+  @Override
+  public ConcernComponentMock restoreValue() {
+    this.value = this.restoreValue;
+    return this;
+  }
+
 
   @Override
   public ConcernComponentMock setHelperText(String helperText) {

@@ -82,7 +82,8 @@ public abstract class Component {
    * Sets the name of the component.
    *
    * <p>
-   * Sets the name of the component to the specified string.
+   * Sets the name of the component to the specified string. The component may use this name to
+   * for accessibility purposes.
    * </p>
    *
    * @param name the string that is to be this component's name
