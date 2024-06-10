@@ -3,7 +3,6 @@ package com.webforj.component.field;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
-import com.webforj.component.Component;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasPattern;
 import com.webforj.exceptions.WebforjRuntimeException;
