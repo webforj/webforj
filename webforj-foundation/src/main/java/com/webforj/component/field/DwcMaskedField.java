@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjInput;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
+import com.webforj.component.Component;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMask;
 import com.webforj.concern.HasReadOnly;
@@ -37,6 +38,16 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
   private TypingMode typingMode = TypingMode.OVERWRITE;
   private SelectionRange range = null;
   private V restoreValue = null;
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Component setName(String name) {
+    super.setName(name);
+    setUnrestrictedProperty("name", name);
+    return getSelf();
+  }
 
   /**
    * {@inheritDoc}

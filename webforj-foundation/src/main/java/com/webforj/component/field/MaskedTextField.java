@@ -1,6 +1,5 @@
 package com.webforj.component.field;
 
-import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
@@ -86,16 +85,6 @@ public final class MaskedTextField extends DwcMaskedField<MaskedTextField, Strin
   public MaskedTextField() {
     super();
     setMask(DEFAULT_MASK);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Component setName(String name) {
-    super.setName(name);
-    setUnrestrictedProperty("name", name);
-    return getSelf();
   }
 
   /**
