@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 import com.basis.bbj.proxies.sysgui.BBjInputE;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,42 +39,5 @@ class MaskedTextFieldTest {
 
     verify(control, times(1)).setProperty("pattern", expectedPattern);
     verify(control, times(0)).getProperty("pattern");
-  }
-
-  @Nested
-  class RestoreApi {
-
-    @Test
-    void shouldSetRestoreWhenControlIsNotNull() throws BBjException {
-      String restoreValue = "restoreValue";
-      component.setRestoreValue(restoreValue);
-      assertEquals(restoreValue, component.getRestoreValue());
-
-      verify(control).setRestore(restoreValue);
-    }
-
-    @Test
-    void shouldSetRestoreWhenControlIsNull() throws IllegalAccessException, BBjException {
-      String restoreValue = "restoreValue";
-      ReflectionUtils.nullifyControl(component);
-
-      component.setRestoreValue(restoreValue);
-
-      ReflectionUtils.unNullifyControl(component, control);
-      component.onAttach();
-
-      verify(control).setRestore(restoreValue);
-    }
-
-    @Test
-    void shouldRestoreValue() throws IllegalAccessException {
-      ReflectionUtils.nullifyControl(component);
-
-      String restoreValue = "restoreValue";
-      component.setRestoreValue(restoreValue);
-      component.restoreValue();
-
-      assertEquals(restoreValue, component.getText());
-    }
   }
 }

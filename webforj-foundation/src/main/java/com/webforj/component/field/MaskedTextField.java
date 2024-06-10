@@ -7,7 +7,6 @@ import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.Component;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasPattern;
-import com.webforj.concern.HasRestoreValue;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 
@@ -72,7 +71,7 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public final class MaskedTextField extends DwcMaskedField<MaskedTextField, String>
-    implements HasPattern<MaskedTextField>, HasRestoreValue<MaskedTextField, String> {
+    implements HasPattern<MaskedTextField> {
   static final String DEFAULT_MASK =
       "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
           + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
@@ -80,7 +79,6 @@ public final class MaskedTextField extends DwcMaskedField<MaskedTextField, Strin
           + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
   private String pattern = null;
-  private String restoreValue = "";
 
   /**
    * Constructs a new masked text field.
@@ -139,41 +137,6 @@ public final class MaskedTextField extends DwcMaskedField<MaskedTextField, Strin
    * {@inheritDoc}
    */
   @Override
-  public MaskedTextField setRestoreValue(String value) {
-    BBjInputE field = inferTextField();
-
-    if (field != null) {
-      try {
-        field.setRestore(value);
-      } catch (BBjException e) {
-        throw new WebforjRuntimeException(e);
-      }
-    }
-
-    this.restoreValue = value;
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getRestoreValue() {
-    return restoreValue;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public MaskedTextField restoreValue() {
-    return setValue(restoreValue);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   protected void onCreate(Window window) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
@@ -188,28 +151,7 @@ public final class MaskedTextField extends DwcMaskedField<MaskedTextField, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void onAttach() {
-    super.onAttach();
-
-    if (restoreValue != null && !restoreValue.isEmpty()) {
-      setRestoreValue(this.restoreValue);
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   protected String convertValue(String value) {
     return value;
-  }
-
-  /**
-   * Gets the instance of the underlying BBjInputE control.
-   *
-   * @return the instance of the control
-   */
-  protected BBjInputE inferTextField() {
-    return (BBjInputE) inferField();
   }
 }

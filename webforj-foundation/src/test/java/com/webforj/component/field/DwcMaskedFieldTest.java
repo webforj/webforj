@@ -4,10 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.util.List;
+
 import com.basis.bbj.proxies.sysgui.BBjInput;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.BBjVector;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.data.selection.SelectionRange;
 import org.junit.jupiter.api.Nested;
@@ -18,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class DwcMaskedFieldTest {
+class DwcMaskedFieldTest {
 
   @Mock
   BBjInput control;
@@ -144,6 +143,32 @@ public class DwcMaskedFieldTest {
       component.setSelectionRange(range);
 
       assertEquals("12", component.getSelectedText());
+    }
+  }
+
+  @Nested
+  class RestoreApi {
+
+    @Test
+    void shouldSetRestoreWhenControlIsNotNull() throws BBjException {
+      String restoreValue = "restoreValue";
+      component.setRestoreValue(restoreValue);
+      assertEquals(restoreValue, component.getRestoreValue());
+
+      verify(control).setRestore(restoreValue);
+    }
+
+    @Test
+    void shouldSetRestoreWhenControlIsNull() throws IllegalAccessException, BBjException {
+      String restoreValue = "restoreValue";
+      ReflectionUtils.nullifyControl(component);
+
+      component.setRestoreValue(restoreValue);
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control).setRestore(restoreValue);
     }
   }
 }

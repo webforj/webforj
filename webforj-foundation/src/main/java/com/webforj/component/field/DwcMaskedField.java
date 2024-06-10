@@ -7,6 +7,7 @@ import com.webforj.bridge.ComponentAccessor;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMask;
 import com.webforj.concern.HasReadOnly;
+import com.webforj.concern.HasRestoreValue;
 import com.webforj.concern.HasTypingMode;
 import com.webforj.data.selection.SelectionRange;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -29,11 +30,104 @@ import java.util.Objects;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, V>
-    extends DwcField<T, V> implements HasMask<T>, HasTypingMode<T>, HasHorizontalAlignment<T> {
+    extends DwcField<T, V>
+    implements HasMask<T>, HasTypingMode<T>, HasHorizontalAlignment<T>, HasRestoreValue<T, V> {
   private String mask = "";
   private int caretPosition = 0;
   private TypingMode typingMode = TypingMode.OVERWRITE;
   private SelectionRange range = null;
+  private V restoreValue = null;
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setMask(String mask) {
+    Objects.requireNonNull(mask, "The mask cannot be null");
+
+    this.mask = mask;
+    BBjInput field = inferField();
+
+    if (field != null) {
+      try {
+        field.setMask(mask);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMask() {
+    return this.mask;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setRestoreValue(V value) {
+    BBjInput field = inferField();
+
+    if (field != null) {
+      try {
+        field.setRestore(String.valueOf(value));
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    this.restoreValue = value;
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public V getRestoreValue() {
+    return restoreValue;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T restoreValue() {
+    return setValue(restoreValue);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setTypingMode(TypingMode typingMode) {
+    this.typingMode = typingMode;
+    BBjInput field = inferField();
+
+    if (field != null) {
+      try {
+        field.setInsertMode(typingMode == TypingMode.OVERWRITE);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public TypingMode getTypingMode() {
+    return typingMode;
+  }
 
   /**
    * Sets the caret position for the field.
@@ -73,54 +167,6 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
     }
 
     return this.caretPosition;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public T setMask(String mask) {
-    Objects.requireNonNull(mask, "The mask cannot be null");
-
-    this.mask = mask;
-    BBjInput field = inferField();
-
-    if (field != null) {
-      try {
-        field.setMask(mask);
-      } catch (BBjException e) {
-        throw new WebforjRuntimeException(e);
-      }
-    }
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public T setTypingMode(TypingMode typingMode) {
-    this.typingMode = typingMode;
-    BBjInput field = inferField();
-
-    if (field != null) {
-      try {
-        field.setInsertMode(typingMode == TypingMode.OVERWRITE);
-      } catch (BBjException e) {
-        throw new WebforjRuntimeException(e);
-      }
-    }
-
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public TypingMode getTypingMode() {
-    return typingMode;
   }
 
   /**
@@ -209,14 +255,6 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
    * {@inheritDoc}
    */
   @Override
-  public String getMask() {
-    return this.mask;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   protected void onAttach() {
     super.onAttach();
     setMask(this.mask);
@@ -231,6 +269,10 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
 
     if (this.range != null) {
       setSelectionRange(this.range);
+    }
+
+    if (restoreValue != null) {
+      setRestoreValue(restoreValue);
     }
   }
 
