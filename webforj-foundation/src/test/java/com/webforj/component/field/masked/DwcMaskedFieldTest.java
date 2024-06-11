@@ -1,4 +1,4 @@
-package com.webforj.component.field;
+package com.webforj.component.field.masked;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.sysgui.BBjInput;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.concern.HasTypingMode.TypingMode;
 import com.webforj.data.selection.SelectionRange;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -83,8 +84,8 @@ class DwcMaskedFieldTest {
 
     @Test
     void shouldSetTypingModeWhenControlIsNotNull() throws BBjException {
-      component.setTypingMode(TextArea.TypingMode.INSERT);
-      assertEquals(TextArea.TypingMode.INSERT, component.getTypingMode());
+      component.setTypingMode(TypingMode.INSERT);
+      assertEquals(TypingMode.INSERT, component.getTypingMode());
       verify(control).setInsertMode(false);
     }
 
@@ -92,8 +93,8 @@ class DwcMaskedFieldTest {
     void shouldSetTypingModeWhenControlIsNull() throws IllegalAccessException, BBjException {
       ReflectionUtils.nullifyControl(component);
 
-      component.setTypingMode(TextArea.TypingMode.INSERT);
-      assertEquals(TextArea.TypingMode.INSERT, component.getTypingMode());
+      component.setTypingMode(TypingMode.INSERT);
+      assertEquals(TypingMode.INSERT, component.getTypingMode());
 
       verify(control, times(0)).setInsertMode(false);
 

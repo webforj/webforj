@@ -1,4 +1,4 @@
-package com.webforj.component.field;
+package com.webforj.component.field.masked;
 
 import com.webforj.component.window.Window;
 

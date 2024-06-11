@@ -1,10 +1,11 @@
-package com.webforj.component.field;
+package com.webforj.component.field.masked;
 
 import com.basis.bbj.proxies.sysgui.BBjInput;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.Component;
+import com.webforj.component.field.DwcField;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMask;
 import com.webforj.concern.HasReadOnly;

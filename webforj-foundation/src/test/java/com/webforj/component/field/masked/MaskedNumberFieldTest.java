@@ -1,4 +1,4 @@
-package com.webforj.component.field;
+package com.webforj.component.field.masked;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

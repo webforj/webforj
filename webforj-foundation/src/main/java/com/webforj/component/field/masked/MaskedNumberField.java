@@ -1,4 +1,4 @@
-package com.webforj.component.field;
+package com.webforj.component.field.masked;
 
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
