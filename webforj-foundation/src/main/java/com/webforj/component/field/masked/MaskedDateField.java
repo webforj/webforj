@@ -18,6 +18,63 @@ import java.util.Locale;
 /**
  * Represents a masked number field.
  *
+ * <p>
+ * webforJ recognizes several format indicators that all begin with a "%", followed by a letter
+ * indicating which component of the date to insert:
+ * </p>
+ *
+ * <table border="1">
+ * <caption>Format Indicators</caption>
+ * <tr>
+ * <th>Format</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>%Y</td>
+ * <td>Year</td>
+ * </tr>
+ * <tr>
+ * <td>%M</td>
+ * <td>Month</td>
+ * </tr>
+ * <tr>
+ * <td>%D</td>
+ * <td>Day</td>
+ * </tr>
+ * </table>
+ *
+ * <p>
+ * An optional modifier can follow format indicators to describe more specific information:
+ * </p>
+ *
+ * <table border="1">
+ * <caption>Modifiers</caption>
+ * <tr>
+ * <th>Modifier</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>z</td>
+ * <td>Zero-fill</td>
+ * </tr>
+ * <tr>
+ * <td>s</td>
+ * <td>Short text</td>
+ * </tr>
+ * <tr>
+ * <td>l</td>
+ * <td>Long text</td>
+ * </tr>
+ * <tr>
+ * <td>p</td>
+ * <td>Packed number</td>
+ * </tr>
+ * <tr>
+ * <td>d</td>
+ * <td>Decimal (default format)</td>
+ * </tr>
+ * </table>
+ *
  * @author Hyyan Abo Fakher
  * @since 24.10
  */
