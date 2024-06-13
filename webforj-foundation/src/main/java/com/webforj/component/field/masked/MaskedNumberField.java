@@ -3,10 +3,14 @@ package com.webforj.component.field.masked;
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import com.webforj.App;
+import com.webforj.MaskDecorator;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  * Represents a masked number field.
@@ -115,15 +119,30 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> {
+  static final String DEFAULT_MASK = "-########";
   private String groupCharacter = null;
   private String decimalCharacter = null;
   private boolean negateable = true;
 
   /**
+   * Constructs a new masked number field.
+   */
+  public MaskedNumberField() {
+    super();
+    setMask(DEFAULT_MASK);
+
+    // Set the group and decimal characters to the default values
+    Locale locale = App.getLocale();
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
+    setGroupCharacter(String.valueOf(symbols.getGroupingSeparator()));
+    setDecimalCharacter(String.valueOf(symbols.getDecimalSeparator()));
+  }
+
+  /**
    * Sets the group character.
    *
    * <p>
-   * By default, the group character is browser language dependent. For example, in English, the
+   * By default, the group character is application language dependent. For example, in English, the
    * group character is a comma (,) in German, it is a period (.) in English. This option allows you
    * to override the default group character and set it to a custom character.
    * </p>
@@ -162,9 +181,9 @@ public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> 
    * Sets the decimal character.
    *
    * <p>
-   * By default, the decimal character is browser language dependent. For example, in English, the
-   * decimal character is a period (.) in German, it is a comma (,) in English. This option allows
-   * you to override the default decimal character and set it to a custom character.
+   * By default, the decimal character is application language dependent. For example, in English,
+   * the decimal character is a period (.) in German, it is a comma (,) in English. This option
+   * allows you to override the default decimal character and set it to a custom character.
    * </p>
    *
    * @param decimalCharacter the decimal character
@@ -247,6 +266,14 @@ public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> 
   @Override
   public Float getValue() {
     return convertValue(getText());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMaskedValue() {
+    return MaskDecorator.forNumber(getValue(), getMask());
   }
 
   /**

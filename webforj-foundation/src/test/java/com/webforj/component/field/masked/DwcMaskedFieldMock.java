@@ -13,4 +13,9 @@ public class DwcMaskedFieldMock extends DwcMaskedField<DwcMaskedFieldMock, Strin
   protected void onCreate(Window window) {
     throw new UnsupportedOperationException("Unimplemented method 'onCreate'");
   }
+
+  @Override
+  public String getMaskedValue() {
+    return null;
+  }
 }

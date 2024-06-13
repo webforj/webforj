@@ -2,6 +2,7 @@ package com.webforj.component.field.masked;
 
 import com.basis.bbj.proxies.sysgui.BBjInput;
 import com.basis.startup.type.BBjException;
+import com.webforj.Environment;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.Component;
@@ -264,6 +265,18 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
   }
 
   /**
+   * Returns the masked value of the field as a string.
+   *
+   * <p>
+   * The masked value is the value of the field after applying the mask. If the masking is not
+   * applicable then {@code null} is returned.
+   * </p>
+   *
+   * @return the masked value or {@code null} if the mask is not applicable
+   */
+  public abstract String getMaskedValue();
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -299,5 +312,9 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  Environment getEnvironment() {
+    return Environment.getCurrent();
   }
 }

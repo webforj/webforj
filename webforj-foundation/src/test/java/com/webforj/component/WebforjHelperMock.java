@@ -10,6 +10,7 @@ import com.webforj.component.optiondialog.FileChooserDialog;
 import com.webforj.component.optiondialog.FileUploadDialog;
 import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /** Mock for the WebforjBBjBridge. */
 public class WebforjHelperMock implements WebforjBBjBridge {
@@ -82,5 +83,30 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   @Override
   public void sleep(int seconds) {
 
+  }
+
+  @Override
+  public String maskString(String value, String mask) {
+    throw new UnsupportedOperationException("Unimplemented method 'maskString'");
+  }
+
+  @Override
+  public String maskNumber(float value, String mask) {
+    throw new UnsupportedOperationException("Unimplemented method 'maskNumber'");
+  }
+
+  @Override
+  public Double parseTime(String time, String mask, Locale locale) {
+    throw new UnsupportedOperationException("Unimplemented method 'parseTime'");
+  }
+
+  @Override
+  public String maskDateTime(int julian, Double time, String mask) {
+    throw new UnsupportedOperationException("Unimplemented method 'maskDateTime'");
+  }
+
+  @Override
+  public Integer parseDate(String date, String mask, Locale locale) {
+    throw new UnsupportedOperationException("Unimplemented method 'parseDate'");
   }
 }

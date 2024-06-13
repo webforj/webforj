@@ -2,6 +2,7 @@ package com.webforj.component.field.masked;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import com.webforj.MaskDecorator;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasPattern;
@@ -101,6 +102,19 @@ public final class MaskedTextField extends DwcMaskedField<MaskedTextField, Strin
   @Override
   public String getValue() {
     return getText();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMaskedValue() {
+    String value = getValue();
+    if (value == null) {
+      return "";
+    }
+
+    return MaskDecorator.forString(value, getMask());
   }
 
   /**
