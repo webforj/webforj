@@ -13,7 +13,7 @@ import com.webforj.data.selection.SelectionRange;
 import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
- * The Base class for all DWC text fields components.
+ * The Base class for all DWC none masked text fields components.
  *
  * <p>
  * This abstract class serves as the foundation for all text field components within the framework.

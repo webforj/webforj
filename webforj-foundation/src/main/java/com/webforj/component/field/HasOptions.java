@@ -3,7 +3,7 @@ package com.webforj.component.field;
 import java.util.List;
 
 /**
- * Represents a dwc field with a list spinner.
+ * Represents a DWC field with a list spinner.
  *
  * @author Hyyan Abo Fakher
  * @since 24.10
@@ -24,7 +24,6 @@ interface HasOptions<T> {
    * @return The list of options.
    */
   public List<String> getOptions();
-
 
   /**
    * Sets the index of the selected item in the spinner.

@@ -18,9 +18,9 @@ import java.util.Locale;
  * Represents a masked number field.
  *
  * <p>
- * The masked number field is a text field that allows the user to enter numbers in a specific
- * format. The format is defined by a mask which is a string that contains the characters that the
- * user can enter.
+ * The masked number field is a text field that allows the user to enter numbers and formats the
+ * number in a human-readable way when the user leaves the field by creating a string representing
+ * the number. The resulting string is always the same size as the mask.
  * </p>
  *
  * <p>

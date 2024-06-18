@@ -53,11 +53,15 @@ import com.webforj.utilities.BBjFunctionalityHelper;
  * <td>Any digit or alphabetic character. Converts lower-case alphabetic characters to upper
  * case.</td>
  * </tr>
- * <tr>
- * <td>Any other character</td>
- * <td>Represents itself.</td>
- * </tr>
  * </table>
+ *
+ * <p>
+ * Any other character in the mask represents itself. If a character type mismatch occurs, such as
+ * trying to place a "W" into a mask position designated for a digit, the input is ignored. If the
+ * source string is too short, spaces are used to pad the remainder of the mask. If the source
+ * string is too long, it is truncated.
+ * </p>
+ *
  *
  * @author Hyyan Abo Fakher
  * @since 24.10

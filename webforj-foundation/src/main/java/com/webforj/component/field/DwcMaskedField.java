@@ -16,7 +16,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.Objects;
 
 /**
- * Represents a masked field.
+ * The base class for all masked fields.
  *
  * @param <T> The type of the component.
  * @param <V> The type of value associated with the field.

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a mixin for a dwc field with a list spinner.
+ * Represents a mixin for a DWC field with a list spinner.
  *
  * @author Hyyan Abo Fakher
  * @since 24.10

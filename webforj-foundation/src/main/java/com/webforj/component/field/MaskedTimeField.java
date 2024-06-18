@@ -18,6 +18,13 @@ import java.time.LocalTime;
  * Represents a masked time field.
  *
  * <p>
+ * The masked time field is a text field that allows the user to enter times as numbers and
+ * automatically formats them according to a mask when the user leaves the field. The mask is a
+ * string that contains the characters that define the format of the time and the field will
+ * interpret times based on the mask. The resulting a human-readable string representing the time.
+ * </p>
+ *
+ * <p>
  * webforJ recognizes several format indicators that all begin with a "%", followed by a letter
  * indicating which component of the time to insert:
  * </p>

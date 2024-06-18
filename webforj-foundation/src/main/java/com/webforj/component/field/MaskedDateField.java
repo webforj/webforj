@@ -17,6 +17,22 @@ import java.time.LocalDate;
  * Represents a masked date field.
  *
  * <p>
+ * The masked date field is a text field that allows the user to enter dates as numbers and
+ * automatically formats them according to a mask when the user leaves the field. The mask is a
+ * string that contains the characters that define the format of the date and the field will
+ * interpret dates based on the mask. The resulting a human-readable string representing the date.
+ * </p>
+ *
+ * <p>
+ * There are three basic date formats in use around the world, based on the order of the Month, Day,
+ * and Year. Within these basic formats, there are local differences in the preferred separator,
+ * (usually "-", "/" or "."), whether years are shown as four digits or two digits, and whether
+ * 1-digit month and day numbers are padded to two digits with a leading "0"). In Europe, most
+ * countries use day/month/year format. The United States uses month/day/year. China, Japan, and
+ * Korea use year/month/day (the ISO standard, normally formatted as YYYY-MM-DD).
+ * </p>
+ *
+ * <p>
  * webforJ recognizes several format indicators that all begin with a "%", followed by a letter
  * indicating which component of the date to insert:
  * </p>
@@ -71,6 +87,189 @@ import java.time.LocalDate;
  * <td>d</td>
  * <td>Decimal (default format)</td>
  * </tr>
+ * </table>
+ *
+ * <h3>Date Parser</h3>
+ *
+ * <p>
+ * The date parser interprets date strings based on the date mask. For example, if the date mask is
+ * %Mz/%Dz/%Yz (US format, the BBj default setting), the date is parsed with the understanding that
+ * it is in month/day/year order. Dates are accepted in all reasonable numeric formats, with or
+ * without delimiters. For example, assuming that today is September 15, 2012, this is how various
+ * inputs would be interpreted:
+ * </p>
+ *
+ * <table>
+ * <tbody>
+ * <tr>
+ * <td>
+ * <p>
+ * Entry
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * YMD (ISO)
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * MDY (US)
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * DMY (EU)
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 1
+ * </p>
+ * </td>
+ * <td colspan="3">
+ * <p>
+ * A single digit is always interpreted as a day number within the current month, so this would be
+ * September 1, 2012.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 12
+ * </p>
+ * </td>
+ * <td colspan="3">
+ * <p>
+ * Two digits are always interpreted as a day number within the current month, so this would be
+ * September 12, 2012.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 112
+ * </p>
+ * </td>
+ * <td colspan="2">
+ * <p>
+ * Three digits are interpreted as a 1-digit month number followed by a 2-digit day number, so this
+ * would be January 12, 2012.
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Three digits are interpreted as a 1-digit day number followed by a two-digit month number, so
+ * this would be 1 December 2012.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 1004
+ * </p>
+ * </td>
+ * <td colspan="2">
+ * <p>
+ * Four digits are interpreted as MMDD, so this would be October 4, 2012.
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Four digits are interpreted as DDMM, so this would be 10 April 2012.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 020304
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Six digits are interpreted as YYMMDD, so this would be March 4, 2002.
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Six digits are interpreted as MMDDYY, so this would be February 3, 2004.
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Six digits are interpreted as DDMMYY, so this would be 2 March 2004.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 8 digits
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Eight digits are interpreted as YYYYMMDD. For example, 20040612 is June 12, 2004.
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Eight digits are interpreted as MMDDYYYY. For example, 06122004 is June 12, 2004.
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Eight digits are interpreted as DDMMYYYY. For example, 06122004 is 6 December 2004.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 12/6
+ * </p>
+ * </td>
+ * <td colspan="2">
+ * <p>
+ * Two numbers separated by any valid delimiter is interpreted as MM/DD, so this would be December
+ * 6, 2012. (Note: All characters except for letters and digits are considered valid delimiters.)
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * Two numbers separated by any delimiter is interpreted as DD/MM, so this would be 12 June 2012.
+ * </p>
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>
+ * <p>
+ * 3/4/5
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * April 5, 2012
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * March 4, 2005
+ * </p>
+ * </td>
+ * <td>
+ * <p>
+ * 3 April 2005
+ * </p>
+ * </td>
+ * </tr>
+ * </tbody>
  * </table>
  *
  * @author Hyyan Abo Fakher
@@ -218,7 +417,7 @@ public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateFie
   }
 
   /**
-   * Gets the date picker.
+   * Gets the date picker associated with this field.
    *
    * @return the date picker.
    */
@@ -271,7 +470,7 @@ public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateFie
   }
 
   /**
-   * Represents the date picker.
+   * Represents the MaskedDateField date picker.
    *
    * <p>
    * The date picker is a calendar that allows the user to select a date.
