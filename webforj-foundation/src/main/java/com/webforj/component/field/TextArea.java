@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A text area component that allows the user to enter multiple lines of text.
+ * Represents a text area component that allows the user to enter multiple lines of text.
  *
  * @author Hyyan Abo Fakher
  * @since 24.10
