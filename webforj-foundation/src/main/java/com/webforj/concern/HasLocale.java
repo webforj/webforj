@@ -1,8 +1,8 @@
 package com.webforj.concern;
 
-import java.util.Locale;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
+import java.util.Locale;
 
 /**
  * This interface defines a contract for components that support locale.
