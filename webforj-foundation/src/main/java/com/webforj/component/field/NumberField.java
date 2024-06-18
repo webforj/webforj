@@ -4,6 +4,7 @@ import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.concern.HasStep;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -24,8 +25,9 @@ import com.webforj.concern.HasMin;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class NumberField extends DwcFieldInitializer<NumberField, Double> implements
-    HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasHorizontalAlignment<NumberField> {
+public final class NumberField extends DwcFieldInitializer<NumberField, Double>
+    implements HasMin<NumberField, Double>, HasMax<NumberField, Double>,
+    HasStep<NumberField, Double>, HasHorizontalAlignment<NumberField> {
 
   private Double min = null;
   private Double max = null;
@@ -129,6 +131,7 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    * @param step the step value for the granularity. If null, then no rules are forced.
    * @return the component
    */
+  @Override
   public NumberField setStep(Double step) {
     this.step = step;
     setUnrestrictedProperty("step", step == null ? "any" : step);
@@ -141,6 +144,7 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    *
    * @return the step value for the granularity
    */
+  @Override
   public Double getStep() {
     return step;
   }

@@ -10,6 +10,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 class ConcernComponentMock extends Component implements HasAttribute<ConcernComponentMock>,
@@ -24,7 +25,8 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
     HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock>,
     HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>, HasHelperText<ConcernComponentMock>,
-    HasMask<ConcernComponentMock>, HasRestoreValue<ConcernComponentMock, Double>{
+    HasMask<ConcernComponentMock>, HasRestoreValue<ConcernComponentMock, Double>,
+    HasLocale<ConcernComponentMock>, HasStep<ConcernComponentMock, Double> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -39,6 +41,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private int maxLength;
   private Double min;
   private int minLength;
+  private Double step;
   private String placeholder;
   private boolean readOnly;
   private String tooltip;
@@ -56,6 +59,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private String pattern = null;
   private String mask = null;
   private TypingMode typingMode = TypingMode.INSERT;
+  private Locale locale;
   private String helperText;
 
   @Override
@@ -424,6 +428,28 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public ConcernComponentMock restoreValue() {
     this.value = this.restoreValue;
+    return this;
+  }
+
+  @Override
+  public ConcernComponentMock setLocale(Locale locale) {
+    this.locale = locale;
+    return this;
+  }
+
+  @Override
+  public Locale getLocale() {
+    return this.locale;
+  }
+
+  @Override
+  public Double getStep() {
+    return this.step;
+  }
+
+  @Override
+  public ConcernComponentMock setStep(Double step) {
+    this.step = step;
     return this;
   }
 

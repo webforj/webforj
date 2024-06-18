@@ -1,4 +1,4 @@
-package com.webforj.component.field.masked;
+package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -32,16 +32,6 @@ class MaskedDateFieldTest {
 
   @InjectMocks
   MaskedDateField component;
-
-  @Test
-  void shouldSetGetPattern() throws BBjException {
-    String expectedPattern = "[0-9]{3}";
-    component.setPattern(expectedPattern);
-    assertEquals(expectedPattern, component.getPattern());
-
-    verify(control, times(1)).setProperty("pattern", expectedPattern);
-    verify(control, times(0)).getProperty("pattern");
-  }
 
   @Nested
   class TextApi {
@@ -189,32 +179,59 @@ class MaskedDateFieldTest {
   }
 
   @Nested
-  class CalendarApi {
+  class MaxMinApi {
+
+    @Test
+    void shouldSetGetMaxValue() throws BBjException {
+      LocalDate expectedMax = LocalDate.of(2020, 10, 1);
+      component.setMax(expectedMax);
+      assertEquals(expectedMax, component.getMax());
+
+      int julian = new JulianLocaleDateTransformer().transformToComponent(expectedMax);
+      verify(control, times(1)).setProperty("max", julian);
+      verify(control, times(0)).getProperty("max");
+    }
+
+
+    @Test
+    void shouldSetGetMinValue() throws BBjException {
+      LocalDate expectedMin = LocalDate.of(2020, 10, 1);
+      component.setMin(expectedMin);
+      assertEquals(expectedMin, component.getMin());
+
+      int julian = new JulianLocaleDateTransformer().transformToComponent(expectedMin);
+      verify(control, times(1)).setProperty("min", julian);
+      verify(control, times(0)).getProperty("min");
+    }
+  }
+
+  @Nested
+  class PickerApi {
 
     @Test
     void shouldSetGetVisibleCalendarIcon() throws BBjException {
       boolean expectedVisibleCalendarIcon = true;
-      component.setVisibleCalendarIcon(expectedVisibleCalendarIcon);
-      assertEquals(expectedVisibleCalendarIcon, component.isVisibleCalendarIcon());
+      component.getPicker().setIconVisible(expectedVisibleCalendarIcon);
+      assertEquals(expectedVisibleCalendarIcon, component.getPicker().isIconVisible());
 
       verify(control, times(1)).setProperty("visibleCalendarIcon", expectedVisibleCalendarIcon);
       verify(control, times(0)).getProperty("visibleCalendarIcon");
     }
 
     @Test
-    void shouldSetGetToggleCalendarOnEnter() throws BBjException {
-      boolean expectedToggleCalendarOnEnter = true;
-      component.setToggleCalendarOnEnter(expectedToggleCalendarOnEnter);
-      assertEquals(expectedToggleCalendarOnEnter, component.isToggleCalendarOnEnter());
+    void shouldSetGetAutoOpen() throws BBjException {
+      boolean expectedAutoOpen = true;
+      component.getPicker().setAutoOpen(expectedAutoOpen);
+      assertEquals(expectedAutoOpen, component.getPicker().isAutoOpen());
 
-      verify(control, times(1)).setProperty("toggleCalendarOnEnter", expectedToggleCalendarOnEnter);
-      verify(control, times(0)).getProperty("toggleCalendarOnEnter");
+      verify(control, times(1)).setProperty("calendarAutoOpen", expectedAutoOpen);
+      verify(control, times(0)).getProperty("calendarAutoOpen");
     }
 
     @Test
     void shouldQueueOpenCalendarWhenControlIsNull() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
-      component.openCalendar();
+      component.getPicker().show();
 
       verify(control, times(0)).calendar();
 
@@ -227,7 +244,7 @@ class MaskedDateFieldTest {
     @Test
     void shouldShowCalendarWeeksWhenControlIsNotNull() throws BBjException {
       boolean expectedShowCalendarWeeks = true;
-      component.setShowCalendarWeeks(expectedShowCalendarWeeks);
+      component.getPicker().setShowWeeks(expectedShowCalendarWeeks);
 
       verify(control, times(1)).setShowWeeks(expectedShowCalendarWeeks);
     }
@@ -235,9 +252,9 @@ class MaskedDateFieldTest {
     @Test
     void shouldShowCalendarWeeksWhenControlIsNull() throws IllegalAccessException, BBjException {
       ReflectionUtils.nullifyControl(component);
-      component.setShowCalendarWeeks(true);
+      component.getPicker().setShowWeeks(true);
 
-      assertEquals(true, component.isShowCalendarWeeks());
+      assertEquals(true, component.getPicker().isShowWeeks());
 
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();

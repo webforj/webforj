@@ -1,7 +1,7 @@
-package com.webforj.component.field.masked;
+package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjInputN;
@@ -76,15 +76,6 @@ class MaskedNumberFieldTest {
 
       verify(control).setDotCharacter(decimalCharacter);
     }
-
-    @Test
-    void shouldNotAllowHavingSameGroupAndDecimalCharacter() {
-      component.setGroupCharacter(",");
-      component.setDecimalCharacter(",");
-      assertEquals(",", component.getGroupCharacter());
-
-      assertThrows(IllegalArgumentException.class, () -> component.setDecimalCharacter(","));
-    }
   }
 
   @Nested
@@ -107,6 +98,30 @@ class MaskedNumberFieldTest {
       component.onAttach();
 
       verify(control).setNegateable(false);
+    }
+  }
+
+  @Nested
+  class MaxMinApi {
+
+    @Test
+    void shouldSetGetMaxValue() throws BBjException {
+      Float expectedMax = 23.5f;
+      component.setMax(expectedMax);
+      assertEquals(expectedMax, component.getMax());
+
+      verify(control, times(1)).setProperty("max", expectedMax);
+      verify(control, times(0)).getProperty("max");
+    }
+
+    @Test
+    void shouldSetGetMinValue() throws BBjException {
+      Float expectedMin = 23.5f;
+      component.setMin(expectedMin);
+      assertEquals(expectedMin, component.getMin());
+
+      verify(control, times(1)).setProperty("min", expectedMin);
+      verify(control, times(0)).getProperty("min");
     }
   }
 }

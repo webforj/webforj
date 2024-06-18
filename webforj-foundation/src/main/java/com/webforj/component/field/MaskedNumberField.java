@@ -1,4 +1,4 @@
-package com.webforj.component.field.masked;
+package com.webforj.component.field;
 
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
@@ -7,6 +7,8 @@ import com.webforj.App;
 import com.webforj.MaskDecorator;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasMax;
+import com.webforj.concern.HasMin;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.text.DecimalFormatSymbols;
@@ -118,11 +120,15 @@ import java.util.Locale;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> {
+public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float>
+    implements HasMin<MaskedNumberField, Float>, HasMax<MaskedNumberField, Float>
+    permits MaskedNumberFieldSpinner {
   static final String DEFAULT_MASK = "-########";
   private String groupCharacter = null;
   private String decimalCharacter = null;
   private boolean negateable = true;
+  private Float min = null;
+  private Float max = null;
 
   /**
    * Constructs a new masked number field.
@@ -151,8 +157,6 @@ public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> 
    * @return the component itself
    */
   public MaskedNumberField setGroupCharacter(String groupCharacter) {
-    verifySeparatorsDifferent();
-
     this.groupCharacter = groupCharacter;
 
     BBjInputN field = inferNumberField();
@@ -190,8 +194,6 @@ public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> 
    * @return the component itself
    */
   public MaskedNumberField setDecimalCharacter(String decimalCharacter) {
-    verifySeparatorsDifferent();
-
     this.decimalCharacter = decimalCharacter;
 
     BBjInputN field = inferNumberField();
@@ -280,6 +282,42 @@ public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> 
    * {@inheritDoc}
    */
   @Override
+  public MaskedNumberField setMin(Float min) {
+    this.min = min;
+    setUnrestrictedProperty("min", min);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Float getMin() {
+    return min;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public MaskedNumberField setMax(Float max) {
+    this.max = max;
+    setUnrestrictedProperty("max", max);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Float getMax() {
+    return max;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected void onCreate(Window window) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
@@ -324,12 +362,5 @@ public class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float> 
 
   private BBjInputN inferNumberField() {
     return (BBjInputN) inferField();
-  }
-
-  private void verifySeparatorsDifferent() {
-    if (groupCharacter != null && decimalCharacter != null
-        && groupCharacter.equals(decimalCharacter)) {
-      throw new IllegalArgumentException("Group character and decimal character must be different");
-    }
   }
 }

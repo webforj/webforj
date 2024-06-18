@@ -1,4 +1,4 @@
-package com.webforj.component.field.masked;
+package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;

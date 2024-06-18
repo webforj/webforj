@@ -1,4 +1,4 @@
-package com.webforj.component.field.masked;
+package com.webforj.component.field;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -69,8 +69,8 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class MaskedTextField extends DwcMaskedField<MaskedTextField, String>
-    implements HasPattern<MaskedTextField> {
+public sealed class MaskedTextField extends DwcMaskedField<MaskedTextField, String>
+    implements HasPattern<MaskedTextField> permits MaskedTextFieldSpinner {
   static final String DEFAULT_MASK =
       "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
           + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"

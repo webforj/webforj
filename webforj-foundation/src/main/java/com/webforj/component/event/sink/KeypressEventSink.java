@@ -5,7 +5,7 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.DwcComponent;
 import com.webforj.component.event.KeypressEvent;
-import com.webforj.component.field.masked.DwcMaskedField;
+import com.webforj.component.field.DwcMaskedField;
 import com.webforj.dispatcher.EventDispatcher;
 import java.util.HashMap;
 
