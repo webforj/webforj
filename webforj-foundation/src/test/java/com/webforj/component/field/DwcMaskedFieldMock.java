@@ -2,7 +2,7 @@ package com.webforj.component.field;
 
 import com.webforj.component.window.Window;
 
-public class DwcMaskedFieldMock extends DwcMaskedField<DwcMaskedFieldMock, String> {
+class DwcMaskedFieldMock extends DwcMaskedField<DwcMaskedFieldMock, String> {
 
   @Override
   protected String convertValue(String value) {
