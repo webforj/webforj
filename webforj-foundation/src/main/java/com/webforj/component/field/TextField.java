@@ -22,7 +22,7 @@ import com.webforj.dispatcher.EventListener;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextField extends DwcTextField<TextField> {
+public sealed class TextField extends DwcTextField<TextField> permits TextFieldSpinner {
 
   /**
    * Describes the type of the input field.
