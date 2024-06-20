@@ -1,7 +1,5 @@
 package com.webforj.component.field;
 
-import java.util.Arrays;
-import java.util.List;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.MaskDecorator;
@@ -12,6 +10,8 @@ import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a masked text field.
