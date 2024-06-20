@@ -14,6 +14,8 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -385,6 +387,23 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
   @Override
   public Double getMax() {
     return max;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "autofocus", "comma", "disabled", "dot", "expanse", "forceTrailingZeros", "hasFocus",
+        "highlightBehaviors", "insertMode", "invalid", "invalidMessage", "label", "mask",
+        "maskRounding", "maskedValue", "max", "min", "name", "negateable", "placeholder",
+        "readonly", "required", "restoreValue", "showSpinners", "spinnable", "tabTraversable",
+        "valid", "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator", "value"));
+
+    return properties;
   }
 
   /**

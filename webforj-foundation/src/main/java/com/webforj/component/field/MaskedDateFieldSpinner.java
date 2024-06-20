@@ -10,6 +10,8 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a masked date field with an associated spinner.
@@ -193,6 +195,17 @@ public final class MaskedDateFieldSpinner extends MaskedDateField
    */
   public SpinField getSpinField() {
     return spinField;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("field"));
+
+    return properties;
   }
 
   /**

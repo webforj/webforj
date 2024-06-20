@@ -15,6 +15,8 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 /**
@@ -504,6 +506,25 @@ public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateFie
   @Override
   protected LocalDate convertValue(String value) {
     return MaskDecorator.parseDate(value, getMask(), getLocale());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "autocomplete", "autocorrect", "autofocus", "calendarAutoOpen", "calendarIconVisible",
+        "calendarPosition", "customValue", "disabled", "expanse", "hasFocus", "highlightBehaviors",
+        "insertMode", "invalid", "invalidMessage", "julianValue", "label", "locale", "mask", "max",
+        "maxlength", "min", "name", "pattern", "placeholder", "readonly", "required",
+        "restoreValue", "showSpinners", "showWeeks", "spellcheck", "spinnable", "tabTraversable",
+        "toggleCalendarOnEnter", "valid", "validationIcon", "validationPopoverDistance",
+        "validationPopoverPlacement", "validationPopoverSkidding", "validationStyle", "validator",
+        "value", "visibleCalendarIcon"));
+
+    return properties;
   }
 
   @Override

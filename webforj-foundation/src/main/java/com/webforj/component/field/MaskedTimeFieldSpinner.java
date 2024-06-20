@@ -10,6 +10,8 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a masked time field with an associated spinner.
@@ -199,6 +201,17 @@ public final class MaskedTimeFieldSpinner extends MaskedTimeField
    */
   public SpinField getSpinField() {
     return spinField;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("amount", "field"));
+
+    return properties;
   }
 
   /**

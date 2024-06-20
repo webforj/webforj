@@ -8,6 +8,7 @@ import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -166,6 +167,17 @@ public final class MaskedTextFieldSpinner extends MaskedTextField
   public MaskedTextFieldSpinner spinDown() {
     spinnableMixin.spinDown();
     return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("list", "listIndex", "wrap"));
+
+    return properties;
   }
 
   /**

@@ -15,6 +15,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a masked time field.
@@ -322,6 +324,25 @@ public sealed class MaskedTimeField extends DwcDateTimeMaskedField<MaskedTimeFie
   @Override
   protected LocalTime convertValue(String value) {
     return MaskDecorator.parseTime(value, getMask(), getLocale());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "autofocus", "customValue", "disabled", "expanse", "hasFocus", "highlightBehaviors",
+        "insertMode", "invalid", "invalidMessage", "label", "locale", "mask", "max", "min", "name",
+        "pattern", "pickerAutoOpen", "pickerDistance", "pickerIconVisible", "pickerMaxRowCount",
+        "pickerOpenHeight", "pickerOpenWidth", "pickerPlacement", "pickerSkidding", "pickerType",
+        "placeholder", "rawValue", "readonly", "required", "restoreValue", "showSpinners",
+        "spinnable", "step", "tabTraversable", "valid", "validationIcon",
+        "validationPopoverDistance", "validationPopoverPlacement", "validationPopoverSkidding",
+        "validationStyle", "validator", "value"));
+
+    return properties;
   }
 
   @Override

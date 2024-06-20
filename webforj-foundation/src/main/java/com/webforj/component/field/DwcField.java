@@ -352,24 +352,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<String> getRestrictedProperties() {
-    List<String> properties = super.getRestrictedProperties();
-    properties.addAll(Arrays.asList("accept", "autoValidate", "autoValidateOnLoad",
-        "autoWasValidated", "autocomplete", "autocorrect", "autofocus", "disabled", "expanse",
-        "hasFocus", "highlightBehaviors", "invalid", "invalidMessage", "label", "max", "maxlength",
-        "min", "minlength", "multiple", "name", "passwordReveal", "pattern", "placeholder",
-        "readonly", "required", "showSpinners", "size", "spellcheck", "spinnable", "step",
-        "tabTraversable", "type", "valid", "validationIcon", "validationPopoverDistance",
-        "validationPopoverPlacement", "validationPopoverSkidding", "validationStyle", "validator",
-        "value"));
-
-    return properties;
-  }
-
-  /**
    * Adds a {@link ModifyEvent} listener for the component.
    *
    * @param listener the event listener to be added

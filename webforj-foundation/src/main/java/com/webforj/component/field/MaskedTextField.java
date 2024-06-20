@@ -1,5 +1,7 @@
 package com.webforj.component.field;
 
+import java.util.Arrays;
+import java.util.List;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.MaskDecorator;
@@ -210,6 +212,23 @@ public sealed class MaskedTextField extends DwcMaskedField<MaskedTextField, Stri
   @Override
   public String getPattern() {
     return pattern;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
+        "autocomplete", "autocorrect", "autofocus", "disabled", "expanse", "hasFocus",
+        "highlightBehaviors", "insertMode", "invalid", "invalidMessage", "label", "mask",
+        "maskedValue", "name", "padCharacter", "placeholder", "readonly", "required",
+        "restoreValue", "showSpinners", "spellcheck", "spinnable", "tabTraversable", "valid",
+        "validationIcon", "validationPopoverDistance", "validationPopoverPlacement",
+        "validationPopoverSkidding", "validationStyle", "validator", "value"));
+
+    return properties;
   }
 
   /**
