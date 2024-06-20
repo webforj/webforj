@@ -4,6 +4,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.List;
@@ -25,13 +27,74 @@ import java.util.List;
 @SuppressWarnings("squid:S110")
 public final class MaskedTextFieldSpinner extends MaskedTextField
     implements HasOptions<MaskedTextFieldSpinner>, Spinnable<MaskedTextFieldSpinner> {
-  private final HasOptionsMixin hasOptionsMixin;
-  private final SpinnableMixin spinnableMixin;
+  private HasOptionsMixin hasOptionsMixin;
+  private SpinnableMixin spinnableMixin;
 
-  MaskedTextFieldSpinner(HasOptionsMixin hasOptionsMixin, SpinnableMixin spinnableMixin) {
-    super();
-    this.hasOptionsMixin = hasOptionsMixin;
-    this.spinnableMixin = spinnableMixin;
+  /**
+   * Constructs a new masked text field spinner with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedTextFieldSpinner(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field spinner with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedTextFieldSpinner(String label, String value,
+      EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field spinner with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedTextFieldSpinner(String label, String value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field spinner with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedTextFieldSpinner(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field spinner with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedTextFieldSpinner(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field spinner with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedTextFieldSpinner(String label) {
+    super(label);
+    postInit();
   }
 
   /**
@@ -39,6 +102,16 @@ public final class MaskedTextFieldSpinner extends MaskedTextField
    */
   public MaskedTextFieldSpinner() {
     super();
+    postInit();
+  }
+
+  MaskedTextFieldSpinner(HasOptionsMixin hasOptionsMixin, SpinnableMixin spinnableMixin) {
+    super();
+    this.hasOptionsMixin = hasOptionsMixin;
+    this.spinnableMixin = spinnableMixin;
+  }
+
+  private void postInit() { // NOSONAR
     this.hasOptionsMixin = new HasOptionsMixin(this);
     this.spinnableMixin = new SpinnableMixin(this);
   }

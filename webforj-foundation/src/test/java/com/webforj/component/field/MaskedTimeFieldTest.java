@@ -13,8 +13,11 @@ import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import com.webforj.Environment;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.transformation.transformer.HoursLocalTimeTransformer;
+import com.webforj.dispatcher.EventListener;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Locale;
@@ -32,7 +35,73 @@ class MaskedTimeFieldTest {
   BBjInputT control;
 
   @InjectMocks
-  MaskedTimeField component;
+  MaskedTimeField component = new MaskedTimeField();
+
+  @Nested
+  class Constructors {
+    @Test
+    void shouldCreateFieldWithLabelValueAndPlaceholder() {
+      LocalTime value = LocalTime.of(12, 30);
+      component = new MaskedTimeField("label", value, "placeholder");
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals("placeholder", component.getPlaceholder());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      LocalTime value = LocalTime.of(12, 30);
+      EventListener<ValueChangeEvent<LocalTime>> listener = event -> {
+      };
+      component = new MaskedTimeField("label", value, listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      LocalTime value = LocalTime.of(12, 30);
+      component = new MaskedTimeField("label", value);
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<LocalTime>> listener = event -> {
+      };
+      component = new MaskedTimeField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<LocalTime>> listener = event -> {
+      };
+      component = new MaskedTimeField(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new MaskedTimeField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new MaskedTimeField();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Nested
   class TextApi {

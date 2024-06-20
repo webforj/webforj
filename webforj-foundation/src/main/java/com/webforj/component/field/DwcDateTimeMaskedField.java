@@ -4,6 +4,8 @@ import com.webforj.concern.HasLocale;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
 import com.webforj.concern.HasPattern;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.util.Locale;
 
 /**
@@ -27,6 +29,73 @@ abstract class DwcDateTimeMaskedField<T extends DwcMaskedField<T, V>, V> extends
   private Locale locale;
   private String pattern;
   private boolean allowCustomValue = true;
+
+  /**
+   * Constructs a new masked field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  DwcDateTimeMaskedField(String label, V value, String placeholder) {
+    super(label, value, placeholder);
+  }
+
+  /**
+   * Constructs a new masked field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  DwcDateTimeMaskedField(String label, V value, EventListener<ValueChangeEvent<V>> listener) {
+    super(label, value, listener);
+  }
+
+  /**
+   * Constructs a new masked field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  DwcDateTimeMaskedField(String label, V value) {
+    super(label, value);
+  }
+
+  /**
+   * Constructs a new masked field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  DwcDateTimeMaskedField(String label, EventListener<ValueChangeEvent<V>> listener) {
+    super(label, listener);
+  }
+
+  /**
+   * Constructs a new masked field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  DwcDateTimeMaskedField(EventListener<ValueChangeEvent<V>> listener) {
+    super(listener);
+  }
+
+  /**
+   * Constructs a new masked field with a label.
+   *
+   * @param label the label of the field
+   */
+  DwcDateTimeMaskedField(String label) {
+    super(label);
+  }
+
+  /**
+   * Constructs a new masked field.
+   */
+  DwcDateTimeMaskedField() {
+    super();
+  }
 
   /**
    * {@inheritDoc}

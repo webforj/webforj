@@ -5,9 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +26,71 @@ class DateTimeFieldTest {
 
   @InjectMocks
   DateTimeField component = new DateTimeField();
+
+  @Nested
+  class Constructors {
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      EventListener<ValueChangeEvent<LocalDateTime>> listener = event -> {
+      };
+      LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, 10, 0);
+      component = new DateTimeField("label", dateTime, listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(dateTime, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<LocalDateTime>> listener = event -> {
+      };
+      component = new DateTimeField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<LocalDateTime>> listener = event -> {
+      };
+      component = new DateTimeField(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new DateTimeField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithValue() {
+      LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, 10, 0);
+      component = new DateTimeField(dateTime);
+      assertEquals(dateTime, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, 10, 0);
+      component = new DateTimeField("label", dateTime);
+      assertEquals("label", component.getLabel());
+      assertEquals(dateTime, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new DateTimeField();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Test
   @DisplayName("setText through IllegalArgumentException if text is not a valid date and time")

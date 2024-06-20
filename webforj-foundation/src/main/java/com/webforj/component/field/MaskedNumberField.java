@@ -9,6 +9,8 @@ import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.text.DecimalFormatSymbols;
@@ -131,10 +133,81 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
   private Float max = null;
 
   /**
-   * Constructs a new masked number field.
+   * Constructs a new masked field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedNumberField(String label, Float value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedNumberField(String label, Float value,
+      EventListener<ValueChangeEvent<Float>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedNumberField(String label, Float value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedNumberField(String label, EventListener<ValueChangeEvent<Float>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedNumberField(EventListener<ValueChangeEvent<Float>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedNumberField(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field.
    */
   public MaskedNumberField() {
     super();
+    postInit();
+  }
+
+  private void postInit() {
     setMask(DEFAULT_MASK);
 
     // Set the group and decimal characters to the default values

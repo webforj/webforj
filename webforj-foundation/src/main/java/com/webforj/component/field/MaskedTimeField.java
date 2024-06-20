@@ -8,7 +8,9 @@ import com.webforj.App;
 import com.webforj.MaskDecorator;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.transformation.transformer.HoursLocalTimeTransformer;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.Duration;
@@ -114,11 +116,81 @@ public sealed class MaskedTimeField extends DwcDateTimeMaskedField<MaskedTimeFie
   private final TimePicker picker = new TimePicker();
 
   /**
-   * Constructs a new masked date field.
+   * Constructs a new masked field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedTimeField(String label, LocalTime value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedTimeField(String label, LocalTime value,
+      EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedTimeField(String label, LocalTime value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedTimeField(String label, EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedTimeField(EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedTimeField(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field.
    */
   public MaskedTimeField() {
     super();
+    postInit();
+  }
 
+  private void postInit() {
     setMask(DEFAULT_MASK);
     setLocale(App.getLocale());
     setTypingMode(TypingMode.INSERT);

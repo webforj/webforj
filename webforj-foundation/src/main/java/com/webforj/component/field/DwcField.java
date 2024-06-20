@@ -16,30 +16,25 @@ import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasPlaceholder;
 import com.webforj.concern.HasReadOnly;
 import com.webforj.concern.HasRequired;
-import com.webforj.concern.HasValue;
 import com.webforj.data.concern.ValueChangeModeAware;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  * The base class for all field components.
  *
  * <p>
  * This abstract class serves as the foundation for all field components within the framework. It
- * extends the {@link DwcFocusableComponent} class and implements several interfaces for handling
+ * extends the {@link DwcValidatableComponent} class and implements several interfaces for handling
  * field-specific properties and behaviors.
  * </p>
  *
  * @param <T> The type of the component.
  * @param <V> The type of value associated with the field.
- *
- * @see DwcFocusableComponent
- * @see FieldComponent
- * @see HasValue
- * @see HasExpanse
  *
  * @author Hyyan Abo Fakher
  * @since 23.05
@@ -65,9 +60,96 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   private boolean registeredValueChangeBlurListener = false;
 
   /**
-   * Constructs a new field with a default medium expanse.
+   * Constructs a new field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
    */
-  protected DwcField() {
+  DwcField(String label, V value, String placeholder) {
+    setLabel(label);
+    setValue(value);
+    setPlaceholder(placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  DwcField(String label, V value, EventListener<ValueChangeEvent<V>> listener) {
+    setLabel(label);
+    setValue(value);
+    if (listener != null) {
+      addValueChangeListener(listener);
+    }
+
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  DwcField(String label, V value) {
+    setLabel(label);
+    setValue(value);
+
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  DwcField(String label, EventListener<ValueChangeEvent<V>> listener) {
+    setLabel(label);
+    if (listener != null) {
+      addValueChangeListener(listener);
+    }
+
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  DwcField(EventListener<ValueChangeEvent<V>> listener) {
+    if (listener != null) {
+      addValueChangeListener(listener);
+    }
+
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label.
+   *
+   * @param label the label of the field
+   */
+  DwcField(String label) {
+    setLabel(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field.
+   */
+  DwcField() {
+    super();
+    postInit();
+  }
+
+  private void postInit() {
     setExpanse(Expanse.MEDIUM);
   }
 

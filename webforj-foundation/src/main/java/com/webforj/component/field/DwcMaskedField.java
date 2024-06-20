@@ -11,7 +11,9 @@ import com.webforj.concern.HasMask;
 import com.webforj.concern.HasReadOnly;
 import com.webforj.concern.HasRestoreValue;
 import com.webforj.concern.HasTypingMode;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.selection.SelectionRange;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.Objects;
 
@@ -39,6 +41,73 @@ public abstract class DwcMaskedField<T extends DwcField<T, V> & HasReadOnly<T>, 
   private TypingMode typingMode = TypingMode.OVERWRITE;
   private SelectionRange range = null;
   private V restoreValue = null;
+
+  /**
+   * Constructs a new masked field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  DwcMaskedField(String label, V value, String placeholder) {
+    super(label, value, placeholder);
+  }
+
+  /**
+   * Constructs a new masked field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  DwcMaskedField(String label, V value, EventListener<ValueChangeEvent<V>> listener) {
+    super(label, value, listener);
+  }
+
+  /**
+   * Constructs a new masked field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  DwcMaskedField(String label, V value) {
+    super(label, value);
+  }
+
+  /**
+   * Constructs a new masked field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  DwcMaskedField(String label, EventListener<ValueChangeEvent<V>> listener) {
+    super(label, listener);
+  }
+
+  /**
+   * Constructs a new masked field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  DwcMaskedField(EventListener<ValueChangeEvent<V>> listener) {
+    super(listener);
+  }
+
+  /**
+   * Constructs a new masked field with a label.
+   *
+   * @param label the label of the field
+   */
+  DwcMaskedField(String label) {
+    super(label);
+  }
+
+  /**
+   * Constructs a new masked field.
+   */
+  DwcMaskedField() {
+    super();
+  }
 
   /**
    * {@inheritDoc}

@@ -5,6 +5,8 @@ import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasStep;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.Objects;
@@ -26,19 +28,85 @@ import java.util.Objects;
 @SuppressWarnings("squid:S110")
 public final class MaskedNumberFieldSpinner extends MaskedNumberField
     implements HasStep<MaskedNumberFieldSpinner, Float>, Spinnable<MaskedNumberFieldSpinner> {
-  private final SpinnableMixin spinnableMixin;
+  private SpinnableMixin spinnableMixin;
   private Float step = null;
 
-  MaskedNumberFieldSpinner(SpinnableMixin spinnableMixin) {
-    super();
-    this.spinnableMixin = spinnableMixin;
+  /**
+   * Constructs a new masked number field spinner with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedNumberFieldSpinner(String label, Float value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
   }
 
   /**
-   * Constructs a new masked number field spinner.
+   * Constructs a new masked number field spinner with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedNumberFieldSpinner(String label, Float value,
+      EventListener<ValueChangeEvent<Float>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked number field spinner with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedNumberFieldSpinner(String label, Float value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked number field spinner with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedNumberFieldSpinner(String label, EventListener<ValueChangeEvent<Float>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked number field spinner with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedNumberFieldSpinner(EventListener<ValueChangeEvent<Float>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked number field spinner with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedNumberFieldSpinner(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked number field.
    */
   public MaskedNumberFieldSpinner() {
     super();
+    postInit();
+  }
+
+  private void postInit() { // NOSONAR
     this.spinnableMixin = new SpinnableMixin(this);
   }
 

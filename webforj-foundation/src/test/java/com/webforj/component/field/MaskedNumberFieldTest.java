@@ -6,7 +6,10 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjInputN;
 import com.basis.startup.type.BBjException;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +23,73 @@ class MaskedNumberFieldTest {
   BBjInputN control;
 
   @InjectMocks
-  MaskedNumberField component;
+  MaskedNumberField component = new MaskedNumberField();
+
+  @Nested
+  class Constructors {
+    @Test
+    void shouldCreateFieldWithLabelValueAndPlaceholder() {
+      Float value = 23.5f;
+      component = new MaskedNumberField("label", value, "placeholder");
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals("placeholder", component.getPlaceholder());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      Float value = 23.5f;
+      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      };
+      component = new MaskedNumberField("label", value, listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      Float value = 23.5f;
+      component = new MaskedNumberField("label", value);
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      };
+      component = new MaskedNumberField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      };
+      component = new MaskedNumberField(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new MaskedNumberField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new MaskedNumberField();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Test
   void shouldSetGetValue() throws IllegalAccessException {

@@ -1,5 +1,6 @@
 package com.webforj.component.field;
 
+import com.basis.bbj.comm.i;
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -8,10 +9,13 @@ import com.webforj.App;
 import com.webforj.MaskDecorator;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.transformation.transformer.JulianLocaleDateTransformer;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.LocalDate;
+import javax.swing.JOptionPane;
 
 /**
  * Represents a masked date field.
@@ -296,11 +300,80 @@ public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateFie
   private final DatePicker picker = new DatePicker();
 
   /**
-   * Constructs a new masked date field.
+   * Constructs a new masked field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedDateField(String label, LocalDate value, String placeholder) {
+    super(label, value, placeholder);
+  }
+
+  /**
+   * Constructs a new masked field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedDateField(String label, LocalDate value,
+      EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedDateField(String label, LocalDate value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedDateField(String label, EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedDateField(EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedDateField(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field.
    */
   public MaskedDateField() {
     super();
+    postInit();
+  }
 
+  private void postInit() {
     setMask(DEFAULT_MASK);
     setLocale(App.getLocale());
   }

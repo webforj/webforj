@@ -13,8 +13,11 @@ import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
 import com.webforj.Environment;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.transformation.transformer.JulianLocaleDateTransformer;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalDate;
 import java.util.Locale;
 import org.junit.jupiter.api.Nested;
@@ -31,7 +34,73 @@ class MaskedDateFieldTest {
   BBjInputD control;
 
   @InjectMocks
-  MaskedDateField component;
+  MaskedDateField component = new MaskedDateField("label");
+
+  @Nested
+  class Constructors {
+    @Test
+    void shouldCreateFieldWithLabelValueAndPlaceholder() {
+      LocalDate value = LocalDate.of(2020, 10, 1);
+      component = new MaskedDateField("label", value, "placeholder");
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals("placeholder", component.getPlaceholder());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      LocalDate value = LocalDate.of(2020, 10, 1);
+      EventListener<ValueChangeEvent<LocalDate>> listener = event -> {
+      };
+      component = new MaskedDateField("label", value, listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      LocalDate value = LocalDate.of(2020, 10, 1);
+      component = new MaskedDateField("label", value);
+      assertEquals("label", component.getLabel());
+      assertEquals(value, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<LocalDate>> listener = event -> {
+      };
+      component = new MaskedDateField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<LocalDate>> listener = event -> {
+      };
+      component = new MaskedDateField(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new MaskedDateField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new MaskedDateField();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Nested
   class TextApi {

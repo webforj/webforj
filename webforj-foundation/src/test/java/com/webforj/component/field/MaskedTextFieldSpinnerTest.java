@@ -23,7 +23,7 @@ class MaskedTextFieldSpinnerTest {
   SpinnableMixin mockSpinnableMixin;
 
   @InjectMocks
-  MaskedTextFieldSpinner component;
+  MaskedTextFieldSpinner component = new MaskedTextFieldSpinner();
 
   @BeforeEach
   void setUp() {

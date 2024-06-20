@@ -9,7 +9,9 @@ import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMaxLength;
 import com.webforj.concern.HasMinLength;
 import com.webforj.concern.HasPattern;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.selection.SelectionRange;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
@@ -48,8 +50,81 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
   private SelectionRange range = null;
   private String pattern = null;
 
-  protected DwcTextField() {
+  /**
+   * Constructs a new field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  DwcTextField(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  DwcTextField(String label, String value, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  DwcTextField(String label, String value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  DwcTextField(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  DwcTextField(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label.
+   *
+   * @param label the label of the field
+   */
+  DwcTextField(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field.
+   */
+  DwcTextField() {
     super();
+    postInit();
+  }
+
+  private void postInit() {
     setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 

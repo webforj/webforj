@@ -2,6 +2,8 @@ package com.webforj.component.field;
 
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalDate;
 
 /**
@@ -31,42 +33,81 @@ public final class DateField extends DwcFieldInitializer<DateField, LocalDate>
   private LocalDate max = null;
 
   /**
-   * Construct a new DateField with the given label and value.
+   * Constructs a new date field with a label, value, and a value change listener.
    *
-   * @param label the label for the field
-   * @param date the initial value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
    */
-  public DateField(String label, LocalDate date) {
-    super();
-
-    setUnrestrictedProperty("type", "date");
-    setLabel(label);
-    setValue(date);
+  public DateField(String label, LocalDate value,
+      EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, value, listener);
+    postInit();
   }
 
   /**
-   * Construct a new DateField with the given label.
+   * Constructs a new date field with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public DateField(String label, EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new date field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public DateField(EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new date field with a label.
+   *
+   * @param label the label of the field
    */
   public DateField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
-   * Construct a new DateField with the given value.
+   * Construct a new date field with the given value.
    *
-   * @param date the initial value for the field
+   * @param value the value for the field
    */
-  public DateField(LocalDate date) {
-    this("", date);
+  public DateField(LocalDate value) {
+    super();
+    setValue(value);
+    postInit();
   }
 
   /**
-   * Construct a new DateField.
+   * Construct a new date field with the given label and value.
+   *
+   * @param label the label for the field
+   * @param value the value for the field
+   */
+  public DateField(String label, LocalDate value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new date field.
    */
   public DateField() {
-    this("", null);
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setUnrestrictedProperty("type", "date");
   }
 
   /**

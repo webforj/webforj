@@ -1,10 +1,13 @@
 package com.webforj.component.field;
 
+import java.time.LocalTime;
 import com.basis.bbj.proxies.sysgui.BBjInputTSpinner;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 
@@ -25,7 +28,7 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 @SuppressWarnings("squid:S110")
 public final class MaskedTimeFieldSpinner extends MaskedTimeField
     implements Spinnable<MaskedTimeFieldSpinner> {
-  private final SpinnableMixin spinnableMixin;
+  private SpinnableMixin spinnableMixin;
   private SpinField spinField = SpinField.HOUR;
 
   /**
@@ -66,9 +69,71 @@ public final class MaskedTimeFieldSpinner extends MaskedTimeField
     }
   }
 
-  MaskedTimeFieldSpinner(SpinnableMixin spinnableMixin) {
-    super();
-    this.spinnableMixin = spinnableMixin;
+  /**
+   * Constructs a new masked time field spinner with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedTimeFieldSpinner(String label, LocalTime value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked time field spinner with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedTimeFieldSpinner(String label, LocalTime value,
+      EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked time field spinner with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedTimeFieldSpinner(String label, LocalTime value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked time field spinner with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedTimeFieldSpinner(String label, EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked time field spinner with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedTimeFieldSpinner(EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked time field spinner with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedTimeFieldSpinner(String label) {
+    super(label);
+    postInit();
   }
 
   /**
@@ -76,6 +141,10 @@ public final class MaskedTimeFieldSpinner extends MaskedTimeField
    */
   public MaskedTimeFieldSpinner() {
     super();
+    postInit();
+  }
+
+  private void postInit() { // NOSONAR
     this.spinnableMixin = new SpinnableMixin(this);
   }
 

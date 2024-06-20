@@ -5,9 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.awt.Color;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +26,71 @@ class ColorFieldTest {
 
   @InjectMocks
   ColorField component = new ColorField();
+
+  @Nested
+  class Constructors {
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      EventListener<ValueChangeEvent<Color>> listener = event -> {
+      };
+      component = new ColorField("label", Color.BLACK, listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Color.BLACK, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<Color>> listener = event -> {
+      };
+      component = new ColorField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Color.BLACK, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<Color>> listener = event -> {
+      };
+
+      component = new ColorField(listener);
+      assertEquals(Color.BLACK, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new ColorField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Color.BLACK, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithValue() {
+      component = new ColorField(Color.BLACK);
+      assertEquals(Color.BLACK, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      component = new ColorField("label", Color.BLACK);
+      assertEquals("label", component.getLabel());
+      assertEquals(Color.BLACK, component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Test
   @DisplayName("setText through IllegalArgumentException if text is not valid hex color")

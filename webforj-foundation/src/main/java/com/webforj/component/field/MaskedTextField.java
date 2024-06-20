@@ -6,6 +6,8 @@ import com.webforj.MaskDecorator;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasPattern;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 
@@ -84,10 +86,81 @@ public sealed class MaskedTextField extends DwcMaskedField<MaskedTextField, Stri
   private String pattern = null;
 
   /**
+   * Constructs a new masked text field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedTextField(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedTextField(String label, String value,
+      EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedTextField(String label, String value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedTextField(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedTextField(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked text field with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedTextField(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
    * Constructs a new masked text field.
    */
   public MaskedTextField() {
     super();
+    postInit();
+  }
+
+  private void postInit() {
     setMask(DEFAULT_MASK);
   }
 

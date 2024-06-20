@@ -35,9 +35,12 @@ import java.util.List;
 @SuppressWarnings("squid:S110")
 public final class TextArea extends DwcField<TextArea, String>
     implements HasTypingMode<TextArea>, HasMinLength<TextArea>, HasMaxLength<TextArea> {
+  static final int DEFAULT_ROWS = 2;
+  static final int DEFAULT_COLUMNS = 20;
+
   private List<String> paragraphs = new ArrayList<>();
-  private int rows = 2;
-  private int columns = 20;
+  private int rows = 0;
+  private int columns = 0;
   private int lineCountLimit = Integer.MAX_VALUE;
   private int paragraphLengthLimit = Integer.MAX_VALUE;
   private int maxLength = Integer.MAX_VALUE;
@@ -64,66 +67,82 @@ public final class TextArea extends DwcField<TextArea, String>
   }
 
   /**
-   * Creates a new textarea component instance.
+   * Constructs a new TextArea with a label, value, and placeholder.
    *
-   * @param label Specifies the label of the component.
-   * @param value Specifies the initial value of the component.
-   * @param rows Specifies the number of visible text lines for the component.
-   * @param columns Specifies the visible width of the component, in average character widths.
-   * @param valueChangeListener a listener to be notified when the component's value is changed.
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
    */
-  public TextArea(String label, String value, int rows, int columns,
-      EventListener<ValueChangeEvent<String>> valueChangeListener) {
-    super();
-    setLabel(label);
-    setValue(value);
-    setRows(rows);
-    setColumns(columns);
-
-    if (valueChangeListener != null) {
-      addValueChangeListener(valueChangeListener);
-    }
-
-    setVerticalScroll(true);
-    setLineWrap(true);
+  public TextArea(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
   }
 
   /**
-   * Creates a new textarea component instance.
+   * Constructs a new TextArea with a label, value, and a value change listener.
    *
-   * @param label - Specifies the label of the component.
-   * @param value - Specifies the initial value of the component.
-   * @param valueChangeListener a listener to be notified when the component's value is changed.
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
    */
-  public TextArea(String label, String value,
-      EventListener<ValueChangeEvent<String>> valueChangeListener) {
-    this(label, value, 2, 20, valueChangeListener);
+  public TextArea(String label, String value, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+    postInit();
   }
 
   /**
-   * Creates a new textarea component instance.
+   * Constructs a new TextArea with a label and value.
    *
-   * @param label - Specifies the label of the component.
-   * @param value - Specifies the initial value of the component.
+   * @param label the label of the field
+   * @param value the value of the field
    */
   public TextArea(String label, String value) {
-    this(label, value, null);
+    super(label, value);
+    postInit();
   }
 
   /**
-   * Creates a new textarea component instance.
+   * Constructs a new TextArea with a label and a value change listener.
    *
-   * @param label - Specifies the label of the component.
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public TextArea(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new TextArea with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public TextArea(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new TextArea with a label.
+   *
+   * @param label the label of the field
    */
   public TextArea(String label) {
-    this(label, "");
+    super(label);
+    postInit();
   }
 
   /**
-   * Creates a new instance of the text area component.
+   * Constructs a new TextArea.
    */
   public TextArea() {
-    this("");
+    super();
+    postInit();
+  }
+
+  private void postInit() { // NOSONAR
+    setVerticalScroll(true);
+    setLineWrap(true);
   }
 
   /**

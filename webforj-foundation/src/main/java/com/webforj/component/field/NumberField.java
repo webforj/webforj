@@ -5,6 +5,8 @@ import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
 import com.webforj.concern.HasStep;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -34,34 +36,82 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
   private Double step = null;
 
   /**
-   * Construct a new text field with the given label and value.
+   * Constructs a new NumberField with a label, value, and placeholder.
    *
-   * @param label the label for the field
-   * @param value the value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public NumberField(String label, Double value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new NumberField with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public NumberField(String label, Double value, EventListener<ValueChangeEvent<Double>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new PasswordField with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
    */
   public NumberField(String label, Double value) {
-    super();
-
-    setComponentHorizontalAlignment(Alignment.RIGHT);
-    setUnrestrictedProperty("type", "number");
-    setLabel(label);
-    setValue(value);
+    super(label, value);
+    postInit();
   }
 
   /**
-   * Construct a new number field with the given label.
+   * Constructs a new NumberField with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public NumberField(String label, EventListener<ValueChangeEvent<Double>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new NumberField with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public NumberField(EventListener<ValueChangeEvent<Double>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new NumberField with a label.
+   *
+   * @param label the label of the field
    */
   public NumberField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
-   * Construct a new number field.
+   * Constructs a new NumberField.
    */
   public NumberField() {
-    this("");
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setComponentHorizontalAlignment(Alignment.RIGHT);
+    setUnrestrictedProperty("type", "number");
   }
 
   /**

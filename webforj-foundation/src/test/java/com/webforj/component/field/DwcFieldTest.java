@@ -6,11 +6,13 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.event.BlurEvent;
 import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
 import com.webforj.data.concern.ValueChangeModeAware.ValueChangeMode;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import org.junit.jupiter.api.DisplayName;
@@ -28,11 +30,75 @@ class DwcFieldTest {
   BBjEditBox control;
 
   @InjectMocks
-  DwcFieldMock component;
+  DwcFieldMock component = new DwcFieldMock();
+
+  @Nested
+  class Constructs {
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndPlaceholder() {
+      component = new DwcFieldMock("label", "value", "placeholder");
+      assertEquals("label", component.getLabel());
+      assertEquals("value", component.getValue());
+      assertEquals("placeholder", component.getPlaceholder());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+      };
+      component = new DwcFieldMock("label", "value", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals("value", component.getValue());
+      assertEquals("", component.getPlaceholder());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      component = new DwcFieldMock("label", "value");
+      assertEquals("label", component.getLabel());
+      assertEquals("value", component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+      };
+      component = new DwcFieldMock("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+      };
+      component = new DwcFieldMock(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new DwcFieldMock("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Test
   @DisplayName("Label")
-  void label() throws BBjException, IllegalAccessException {
+  void label() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
     component.setLabel("label");
     assertEquals("label", component.getLabel());

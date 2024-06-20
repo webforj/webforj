@@ -2,7 +2,6 @@ package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -13,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.sysgui.BBjCEdit;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.field.TextArea.WrapStyle;
 import com.webforj.data.event.ValueChangeEvent;
@@ -38,53 +38,64 @@ class TextAreaTest {
 
   @Nested
   class Constructors {
-
     @Test
-    void shouldCreateWithAllParameters() {
-      EventListener<ValueChangeEvent<String>> listener =
-          e -> System.out.println("Action performed");
-      TextArea textArea = new TextArea("Label", "Value", 5, 25, listener);
-
-      assertEquals("Label", textArea.getLabel());
-      assertEquals("Value", textArea.getValue());
-      assertEquals(5, textArea.getRows());
-      assertEquals(25, textArea.getColumns());
-
-      assertTrue(textArea.getEventListeners(ValueChangeEvent.class).contains(listener));
+    void shouldCreateFieldWithLabelValueAndPlaceholder() {
+      component = new TextArea("label", "value", "placeholder");
+      assertEquals("label", component.getLabel());
+      assertEquals("value", component.getValue());
+      assertEquals("placeholder", component.getPlaceholder());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
     }
 
     @Test
-    void shouldCreateWithLabelValueAndListener() {
-      EventListener<ValueChangeEvent<String>> listener =
-          e -> System.out.println("Action performed");
-      TextArea textArea = new TextArea("Label", "Value", listener);
-
-      assertEquals("Label", textArea.getLabel());
-      assertEquals("Value", textArea.getValue());
-      assertTrue(textArea.getEventListeners(ValueChangeEvent.class).contains(listener));
+    void shouldCreateFieldWithLabelValueAndListener() {
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+      };
+      component = new TextArea("label", "value", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals("value", component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
     }
 
     @Test
-    void shouldCreateWithLabelAndValue() {
-      TextArea textArea = new TextArea("Label", "Value");
-
-      assertEquals("Label", textArea.getLabel());
-      assertEquals("Value", textArea.getValue());
+    void shouldCreateFieldWithLabelAndValue() {
+      component = new TextArea("label", "value");
+      assertEquals("label", component.getLabel());
+      assertEquals("value", component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
     }
 
     @Test
-    void shouldCreateWithLabel() {
-      TextArea textArea = new TextArea("Label");
-
-      assertEquals("Label", textArea.getLabel());
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+      };
+      component = new TextArea("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
     }
 
     @Test
-    void shouldCreateWithNoParameters() {
-      TextArea textArea = new TextArea();
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+      };
+      component = new TextArea(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
 
-      assertEquals("", textArea.getLabel());
-      assertEquals("", textArea.getValue());
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new TextArea("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new TextArea();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
     }
   }
 

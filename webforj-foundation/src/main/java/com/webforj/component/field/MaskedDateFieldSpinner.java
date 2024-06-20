@@ -5,8 +5,11 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.time.LocalDate;
 
 /**
  * Represents a masked date field with an associated spinner.
@@ -25,7 +28,7 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 @SuppressWarnings("squid:S110")
 public final class MaskedDateFieldSpinner extends MaskedDateField
     implements Spinnable<MaskedDateFieldSpinner> {
-  private final SpinnableMixin spinnableMixin;
+  private SpinnableMixin spinnableMixin;
   private SpinField spinField = SpinField.DAY;
 
   /**
@@ -65,16 +68,82 @@ public final class MaskedDateFieldSpinner extends MaskedDateField
     }
   }
 
-  MaskedDateFieldSpinner(SpinnableMixin spinnableMixin) {
-    super();
-    this.spinnableMixin = spinnableMixin;
+  /**
+   * Constructs a new masked field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public MaskedDateFieldSpinner(String label, LocalDate value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
   }
 
   /**
-   * Constructs a new masked date field spinner.
+   * Constructs a new masked field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public MaskedDateFieldSpinner(String label, LocalDate value,
+      EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public MaskedDateFieldSpinner(String label, LocalDate value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public MaskedDateFieldSpinner(String label, EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public MaskedDateFieldSpinner(EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field with a label.
+   *
+   * @param label the label of the field
+   */
+  public MaskedDateFieldSpinner(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new masked field.
    */
   public MaskedDateFieldSpinner() {
     super();
+    postInit();
+  }
+
+  private void postInit() { // NOSONAR
     this.spinnableMixin = new SpinnableMixin(this);
   }
 
