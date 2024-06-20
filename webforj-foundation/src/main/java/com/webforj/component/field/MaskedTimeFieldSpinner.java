@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.concern.HasStep;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -29,9 +30,10 @@ import java.util.List;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public final class MaskedTimeFieldSpinner extends MaskedTimeField
-    implements Spinnable<MaskedTimeFieldSpinner> {
+    implements Spinnable<MaskedTimeFieldSpinner>, HasStep<MaskedTimeFieldSpinner, Double> {
   private SpinnableMixin spinnableMixin;
   private SpinField spinField = SpinField.HOUR;
+  private Double step = 1d;
 
   /**
    * Defines the fields that can be spun.
@@ -201,6 +203,25 @@ public final class MaskedTimeFieldSpinner extends MaskedTimeField
    */
   public SpinField getSpinField() {
     return spinField;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public MaskedTimeFieldSpinner setStep(Double step) {
+    this.step = step;
+
+    setUnrestrictedProperty("amount", step);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Double getStep() {
+    return step;
   }
 
   /**

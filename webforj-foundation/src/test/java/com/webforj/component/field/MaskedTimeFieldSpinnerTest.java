@@ -106,6 +106,13 @@ class MaskedTimeFieldSpinnerTest {
     verify(spinnableMixin).spinDown();
   }
 
+  @Test
+  void shouldSetGetStepValue() {
+    Double step = 2.5d;
+    component.setStep(step);
+    assertEquals(step, component.getStep());
+  }
+
   @Nested
   class SpinnerFieldApi {
 
