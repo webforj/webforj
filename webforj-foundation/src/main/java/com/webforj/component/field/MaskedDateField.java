@@ -1,6 +1,5 @@
 package com.webforj.component.field;
 
-import com.basis.bbj.comm.i;
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -17,7 +16,6 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  * Represents a masked date field.
