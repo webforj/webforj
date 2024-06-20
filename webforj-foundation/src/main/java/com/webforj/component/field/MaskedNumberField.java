@@ -101,10 +101,10 @@ import java.util.Locale;
  * </table>
  *
  * <p>
- * Some of the above characters may possibly float within the mask. These are "-", "+", "$", and
+ * Some of the above characters may possibly Double within the mask. These are "-", "+", "$", and
  * "(". If any of these characters is present in the mask, the first one encountered will be moved
  * to the last position where a "#" or "," was replaced by the fill character. If no such position
- * exists, the float character is left where it is.
+ * exists, the Double character is left where it is.
  * </p>
  *
  * <p>
@@ -122,15 +122,15 @@ import java.util.Locale;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Float>
-    implements HasMin<MaskedNumberField, Float>, HasMax<MaskedNumberField, Float>
+public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Double>
+    implements HasMin<MaskedNumberField, Double>, HasMax<MaskedNumberField, Double>
     permits MaskedNumberFieldSpinner {
   static final String DEFAULT_MASK = "-########";
   private String groupCharacter = null;
   private String decimalCharacter = null;
   private boolean negateable = true;
-  private Float min = null;
-  private Float max = null;
+  private Double min = null;
+  private Double max = null;
 
   /**
    * Constructs a new masked field with a label, value, and placeholder.
@@ -139,7 +139,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * @param value the value of the field
    * @param placeholder the placeholder of the field
    */
-  public MaskedNumberField(String label, Float value, String placeholder) {
+  public MaskedNumberField(String label, Double value, String placeholder) {
     super(label, value, placeholder);
     postInit();
   }
@@ -151,8 +151,8 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * @param value the value of the field
    * @param listener the value change listener
    */
-  public MaskedNumberField(String label, Float value,
-      EventListener<ValueChangeEvent<Float>> listener) {
+  public MaskedNumberField(String label, Double value,
+      EventListener<ValueChangeEvent<Double>> listener) {
     super(label, value, listener);
     postInit();
   }
@@ -163,7 +163,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * @param label the label of the field
    * @param value the value of the field
    */
-  public MaskedNumberField(String label, Float value) {
+  public MaskedNumberField(String label, Double value) {
     super(label, value);
     postInit();
   }
@@ -174,7 +174,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * @param label the label of the field
    * @param listener the value change listener
    */
-  public MaskedNumberField(String label, EventListener<ValueChangeEvent<Float>> listener) {
+  public MaskedNumberField(String label, EventListener<ValueChangeEvent<Double>> listener) {
     super(label, listener);
     postInit();
   }
@@ -184,7 +184,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    *
    * @param listener the value change listener
    */
-  public MaskedNumberField(EventListener<ValueChangeEvent<Float>> listener) {
+  public MaskedNumberField(EventListener<ValueChangeEvent<Double>> listener) {
     super(listener);
     postInit();
   }
@@ -330,7 +330,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  public MaskedNumberField setValue(Float value) {
+  public MaskedNumberField setValue(Double value) {
     setText(String.valueOf(value));
     return this;
   }
@@ -339,7 +339,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  public Float getValue() {
+  public Double getValue() {
     return convertValue(getText());
   }
 
@@ -355,7 +355,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  public MaskedNumberField setMin(Float min) {
+  public MaskedNumberField setMin(Double min) {
     this.min = min;
     setUnrestrictedProperty("min", min);
     return this;
@@ -365,7 +365,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  public Float getMin() {
+  public Double getMin() {
     return min;
   }
 
@@ -373,7 +373,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  public MaskedNumberField setMax(Float max) {
+  public MaskedNumberField setMax(Double max) {
     this.max = max;
     setUnrestrictedProperty("max", max);
     return this;
@@ -383,7 +383,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  public Float getMax() {
+  public Double getMax() {
     return max;
   }
 
@@ -425,9 +425,9 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
    * {@inheritDoc}
    */
   @Override
-  protected Float convertValue(String value) {
+  protected Double convertValue(String value) {
     try {
-      return Float.valueOf(value);
+      return Double.valueOf(value);
     } catch (NumberFormatException e) {
       return null;
     }

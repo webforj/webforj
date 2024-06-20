@@ -91,7 +91,7 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   }
 
   @Override
-  public String maskNumber(float value, String mask) {
+  public String maskNumber(double value, String mask) {
     throw new UnsupportedOperationException("Unimplemented method 'maskNumber'");
   }
 

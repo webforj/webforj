@@ -27,9 +27,9 @@ import java.util.Objects;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public final class MaskedNumberFieldSpinner extends MaskedNumberField
-    implements HasStep<MaskedNumberFieldSpinner, Float>, Spinnable<MaskedNumberFieldSpinner> {
+    implements HasStep<MaskedNumberFieldSpinner, Double>, Spinnable<MaskedNumberFieldSpinner> {
   private SpinnableMixin spinnableMixin;
-  private Float step = null;
+  private Double step = null;
 
   /**
    * Constructs a new masked number field spinner with a label, value, and placeholder.
@@ -38,7 +38,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    * @param value the value of the field
    * @param placeholder the placeholder of the field
    */
-  public MaskedNumberFieldSpinner(String label, Float value, String placeholder) {
+  public MaskedNumberFieldSpinner(String label, Double value, String placeholder) {
     super(label, value, placeholder);
     postInit();
   }
@@ -50,8 +50,8 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    * @param value the value of the field
    * @param listener the value change listener
    */
-  public MaskedNumberFieldSpinner(String label, Float value,
-      EventListener<ValueChangeEvent<Float>> listener) {
+  public MaskedNumberFieldSpinner(String label, Double value,
+      EventListener<ValueChangeEvent<Double>> listener) {
     super(label, value, listener);
     postInit();
   }
@@ -62,7 +62,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    * @param label the label of the field
    * @param value the value of the field
    */
-  public MaskedNumberFieldSpinner(String label, Float value) {
+  public MaskedNumberFieldSpinner(String label, Double value) {
     super(label, value);
     postInit();
   }
@@ -73,7 +73,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    * @param label the label of the field
    * @param listener the value change listener
    */
-  public MaskedNumberFieldSpinner(String label, EventListener<ValueChangeEvent<Float>> listener) {
+  public MaskedNumberFieldSpinner(String label, EventListener<ValueChangeEvent<Double>> listener) {
     super(label, listener);
     postInit();
   }
@@ -83,7 +83,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    *
    * @param listener the value change listener
    */
-  public MaskedNumberFieldSpinner(EventListener<ValueChangeEvent<Float>> listener) {
+  public MaskedNumberFieldSpinner(EventListener<ValueChangeEvent<Double>> listener) {
     super(listener);
     postInit();
   }
@@ -114,7 +114,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    * {@inheritDoc}
    */
   @Override
-  public MaskedNumberFieldSpinner setStep(Float step) {
+  public MaskedNumberFieldSpinner setStep(Double step) {
     Objects.requireNonNull(step, "Step cannot be null");
     this.step = step;
     setUnrestrictedProperty("step", step);
@@ -126,7 +126,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
    * {@inheritDoc}
    */
   @Override
-  public Float getStep() {
+  public Double getStep() {
     return step;
   }
 

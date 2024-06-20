@@ -29,7 +29,7 @@ class MaskedNumberFieldTest {
   class Constructors {
     @Test
     void shouldCreateFieldWithLabelValueAndPlaceholder() {
-      Float value = 23.5f;
+      Double value = 23.5d;
       component = new MaskedNumberField("label", value, "placeholder");
       assertEquals("label", component.getLabel());
       assertEquals(value, component.getValue());
@@ -39,8 +39,8 @@ class MaskedNumberFieldTest {
 
     @Test
     void shouldCreateFieldWithLabelValueAndListener() {
-      Float value = 23.5f;
-      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      Double value = 23.5d;
+      EventListener<ValueChangeEvent<Double>> listener = event -> {
       };
       component = new MaskedNumberField("label", value, listener);
       assertEquals("label", component.getLabel());
@@ -51,7 +51,7 @@ class MaskedNumberFieldTest {
 
     @Test
     void shouldCreateFieldWithLabelAndValue() {
-      Float value = 23.5f;
+      Double value = 23.5d;
       component = new MaskedNumberField("label", value);
       assertEquals("label", component.getLabel());
       assertEquals(value, component.getValue());
@@ -60,7 +60,7 @@ class MaskedNumberFieldTest {
 
     @Test
     void shouldCreateFieldWithLabelAndListener() {
-      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      EventListener<ValueChangeEvent<Double>> listener = event -> {
       };
       component = new MaskedNumberField("label", listener);
       assertEquals("label", component.getLabel());
@@ -70,7 +70,7 @@ class MaskedNumberFieldTest {
 
     @Test
     void shouldCreateFieldWithListener() {
-      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      EventListener<ValueChangeEvent<Double>> listener = event -> {
       };
       component = new MaskedNumberField(listener);
       assertEquals(Expanse.MEDIUM, component.getExpanse());
@@ -94,7 +94,7 @@ class MaskedNumberFieldTest {
   @Test
   void shouldSetGetValue() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
-    component.setValue(23.5f);
+    component.setValue(23.5d);
     assertEquals(23.5f, component.getValue());
     assertEquals("23.5", component.getText());
   }
@@ -175,7 +175,7 @@ class MaskedNumberFieldTest {
 
     @Test
     void shouldSetGetMaxValue() throws BBjException {
-      Float expectedMax = 23.5f;
+      Double expectedMax = 23.5d;
       component.setMax(expectedMax);
       assertEquals(expectedMax, component.getMax());
 
@@ -185,7 +185,7 @@ class MaskedNumberFieldTest {
 
     @Test
     void shouldSetGetMinValue() throws BBjException {
-      Float expectedMin = 23.5f;
+      Double expectedMin = 23.5d;
       component.setMin(expectedMin);
       assertEquals(expectedMin, component.getMin());
 

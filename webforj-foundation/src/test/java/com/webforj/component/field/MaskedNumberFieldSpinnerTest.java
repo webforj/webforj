@@ -29,7 +29,7 @@ class MaskedNumberFieldSpinnerTest {
   class Constructors {
     @Test
     void shouldCreateFieldWithLabelValueAndPlaceholder() {
-      Float value = 23.5f;
+      Double value = 23.5d;
       component = new MaskedNumberFieldSpinner("label", value, "placeholder");
       assertEquals("label", component.getLabel());
       assertEquals(value, component.getValue());
@@ -39,8 +39,8 @@ class MaskedNumberFieldSpinnerTest {
 
     @Test
     void shouldCreateFieldWithLabelValueAndListener() {
-      Float value = 23.5f;
-      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      Double value = 23.5d;
+      EventListener<ValueChangeEvent<Double>> listener = event -> {
       };
       component = new MaskedNumberFieldSpinner("label", value, listener);
       assertEquals("label", component.getLabel());
@@ -51,7 +51,7 @@ class MaskedNumberFieldSpinnerTest {
 
     @Test
     void shouldCreateFieldWithLabelAndValue() {
-      Float value = 23.5f;
+      Double value = 23.5d;
       component = new MaskedNumberFieldSpinner("label", value);
       assertEquals("label", component.getLabel());
       assertEquals(value, component.getValue());
@@ -60,7 +60,7 @@ class MaskedNumberFieldSpinnerTest {
 
     @Test
     void shouldCreateFieldWithLabelAndListener() {
-      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      EventListener<ValueChangeEvent<Double>> listener = event -> {
       };
       component = new MaskedNumberFieldSpinner("label", listener);
       assertEquals("label", component.getLabel());
@@ -70,7 +70,7 @@ class MaskedNumberFieldSpinnerTest {
 
     @Test
     void shouldCreateFieldWithListener() {
-      EventListener<ValueChangeEvent<Float>> listener = event -> {
+      EventListener<ValueChangeEvent<Double>> listener = event -> {
       };
       component = new MaskedNumberFieldSpinner(listener);
       assertEquals(Expanse.MEDIUM, component.getExpanse());
@@ -105,7 +105,7 @@ class MaskedNumberFieldSpinnerTest {
 
   @Test
   void shouldSetGetStepValue() {
-    Float step = 23.5f;
+    Double step = 23.5d;
     component.setStep(step);
     assertEquals(step, component.getStep());
   }

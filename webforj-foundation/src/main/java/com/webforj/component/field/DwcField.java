@@ -1,7 +1,6 @@
 package com.webforj.component.field;
 
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.event.EventSinkListenerRegistry;
@@ -22,7 +21,6 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.Arrays;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  * The base class for all field components.

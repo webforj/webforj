@@ -221,7 +221,7 @@ class public WebforjHelper implements WebforjBBjBridge
       methodret null()
     methodend
 
-    method public String maskNumber(float input!, String mask!)
+    method public String maskNumber(double input!, String mask!)
       methodret STR(input!, mask!, err=failed_number_mask)
 
       failed_number_mask:

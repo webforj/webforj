@@ -125,7 +125,7 @@ public interface WebforjBBjBridge {
    * @return tha input argument applied to the specified mask
    * @since 24.10
    */
-  String maskNumber(float input, String mask);
+  String maskNumber(double input, String mask);
 
   /**
    * Mask the given date and time using the BBj date and time mask rules.

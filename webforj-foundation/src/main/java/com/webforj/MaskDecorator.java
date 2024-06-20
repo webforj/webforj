@@ -167,7 +167,7 @@ public final class MaskDecorator {
    *
    * @return the masked number
    */
-  public static String forNumber(float input, String mask) {
+  public static String forNumber(double input, String mask) {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
     Environment env = Environment.getCurrent();
