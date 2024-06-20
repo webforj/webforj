@@ -8,7 +8,7 @@ import com.webforj.dispatcher.EventListener;
  *
  * <p>
  * The TextField can be configured to hint the browser to display a particular virtual keyboard for
- * numeric, email, phone number, or URL input and apply built-in validation to reject values that do
+ * email, phone number, or URL input and apply built-in validation to reject values that do
  * not adhere to the specified type.
  * </p>
  *
