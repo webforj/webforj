@@ -1,6 +1,5 @@
 package com.webforj.component.field;
 
-import java.time.LocalTime;
 import com.basis.bbj.proxies.sysgui.BBjInputTSpinner;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -10,6 +9,7 @@ import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.time.LocalTime;
 
 /**
  * Represents a masked time field with an associated spinner.
