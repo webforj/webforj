@@ -180,7 +180,7 @@ public final class MaskedTimeFieldSpinner extends MaskedTimeField
   public MaskedTimeFieldSpinner setSpinField(SpinField spinField) {
     this.spinField = spinField;
 
-    BBjInputTSpinner field = inferDateSpinnerField();
+    BBjInputTSpinner field = inferTimeSpinnerField();
     if (field != null) {
       try {
         field.setSpinField(spinField.getValue());
@@ -227,7 +227,7 @@ public final class MaskedTimeFieldSpinner extends MaskedTimeField
     }
   }
 
-  BBjInputTSpinner inferDateSpinnerField() {
+  BBjInputTSpinner inferTimeSpinnerField() {
     return (BBjInputTSpinner) inferField();
   }
 }

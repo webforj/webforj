@@ -113,7 +113,7 @@ class MaskedTimeFieldSpinnerTest {
     void shouldSetGetSpinnerFieldWhenComponentIsAttached() throws BBjException {
       BBjInputTSpinner control = mock(BBjInputTSpinner.class);
       MaskedTimeFieldSpinner spy = spy(component);
-      when(spy.inferDateSpinnerField()).thenReturn(control);
+      when(spy.inferTimeSpinnerField()).thenReturn(control);
 
       MaskedTimeFieldSpinner.SpinField field = MaskedTimeFieldSpinner.SpinField.MINUTE;
       spy.setSpinField(field);
@@ -133,7 +133,7 @@ class MaskedTimeFieldSpinnerTest {
 
       verify(control, times(0)).setSpinField(field.getValue());
 
-      when(spy.inferDateSpinnerField()).thenReturn(control);
+      when(spy.inferTimeSpinnerField()).thenReturn(control);
       spy.onAttach();
 
       verify(control).setSpinField(field.getValue());
