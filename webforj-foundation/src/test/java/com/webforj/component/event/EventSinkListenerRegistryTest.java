@@ -45,8 +45,10 @@ class EventSinkListenerRegistryTest {
     when(sink.isConnected()).thenReturn(isConnected);
     when(sink.isMultipleCallbacks()).thenReturn(isMultipleCallbacks);
 
-    registry.addEventListener(e -> {});
-    registry.addEventListener(e -> {});
+    registry.addEventListener(e -> {
+    });
+    registry.addEventListener(e -> {
+    });
 
     int expectedVerify = !isConnected ? 0 : isMultipleCallbacks ? 2 : 1;
 
@@ -97,7 +99,7 @@ class EventSinkListenerRegistryTest {
 
   @Test
   @DisplayName("Should return different callback IDs for multiple callbacks")
-  void shouldReturnDifferentCallbackIdWhenMultipleCallbacks(){
+  void shouldReturnDifferentCallbackIdWhenMultipleCallbacks() {
     when(sink.isConnected()).thenReturn(true);
     when(sink.isMultipleCallbacks()).thenReturn(true);
 

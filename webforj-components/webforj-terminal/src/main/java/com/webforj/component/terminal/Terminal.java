@@ -30,26 +30,26 @@ public class Terminal extends Panel {
     add(hv);
 
 
-    String script = "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
-      + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
-      + "else { callback (); }}";
+    String script =
+        "function whenTerminalLoaded (callback) { if (typeof Terminal === 'undefined' ) "
+            + "{setTimeout (function () {whenTerminalLoaded (callback);}, 100);} "
+            + "else { callback (); }}";
     script += "function send(event){var custom=new CustomEvent("
         + "'custom_event',{bubbles:true,cancelable:true});" + "custom.key=event.key;"
         + "window.basisDispatchCustomEvent(event.target,custom);}";
     hv.injectScript(script, true);
 
-    script = "var link =  $doc.createElement('script');"
-        + "link.setAttribute('type','text/javascript');"
-        + "link.setAttribute('src','https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js');"
-        + "document.head.appendChild(link);" + "var link2 =  $doc.createElement('link');"
-        + "link2.setAttribute('rel','stylesheet');"
-        + "link2.setAttribute('href','https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css');"
-        + "document.head.appendChild(link2);";
+    script =
+        "var link =  $doc.createElement('script');" + "link.setAttribute('type','text/javascript');"
+            + "link.setAttribute('src','https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js');"
+            + "document.head.appendChild(link);" + "var link2 =  $doc.createElement('link');"
+            + "link2.setAttribute('rel','stylesheet');"
+            + "link2.setAttribute('href','https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css');"
+            + "document.head.appendChild(link2);";
     hv.executeScript(script);
 
     script = "whenTerminalLoaded(function() {window.term = new window.Terminal();"
-        + "window.term.open(document.getElementById('" + uuid + "'));"
-        + "window.term.focus();"
+        + "window.term.open(document.getElementById('" + uuid + "'));" + "window.term.focus();"
         + "window.term.onKey(" + "function ({key, domEvent}) " + "{" + "send(domEvent);" + "})})";
     hv.executeScript(script);
 
