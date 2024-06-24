@@ -10,6 +10,7 @@ import com.webforj.component.event.sink.KeypressEventSink;
 import com.webforj.component.event.sink.ModifyEventSink;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
+import com.webforj.concern.HasHelperText;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasPlaceholder;
@@ -38,7 +39,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
     extends DwcValidatableComponent<T, V>
     implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>, HasExpanse<T, Expanse>, HasFocusStatus,
-    HasHighlightOnFocus<T>, HasPlaceholder<T>, ValueChangeModeAware<T> {
+    HasHighlightOnFocus<T>, HasPlaceholder<T>, ValueChangeModeAware<T>, HasHelperText<T> {
 
   private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
@@ -54,6 +55,7 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   private ValueChangeMode valueChangeMode = ValueChangeModeAware.ValueChangeMode.ON_MODIFY;
   private boolean registeredValueChangeModifiedListener = false;
   private boolean registeredValueChangeBlurListener = false;
+  private String helperText = "";
 
   /**
    * Constructs a new field with a label, value, and placeholder.
@@ -347,6 +349,24 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   @Override
   public ValueChangeMode getValueChangeMode() {
     return this.valueChangeMode;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setHelperText(String helperText) {
+    this.helperText = helperText;
+    setUnrestrictedProperty("helperText", this.helperText);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getHelperText() {
+    return this.helperText;
   }
 
   /**

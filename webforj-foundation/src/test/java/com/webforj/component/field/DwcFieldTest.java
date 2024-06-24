@@ -174,4 +174,14 @@ class DwcFieldTest {
       assertEquals(1, component.getEventListeners(BlurEvent.class).size());
     }
   }
+
+  @Test
+  void shouldSetGetHelperText() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+
+    component.setHelperText("helper text");
+    assertEquals("helper text", component.getHelperText());
+
+    assertEquals("helper text", component.getProperty("helperText"));
+  }
 }
