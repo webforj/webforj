@@ -21,6 +21,7 @@ import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -403,5 +404,15 @@ class DwcListTest {
 
     r.remove();
     assertEquals(0, component.getEventListeners(ListSelectEvent.class).size());
+  }
+
+  @Test
+  void shouldSetGetHelperText() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+
+    component.setHelperText("helper text");
+    assertEquals("helper text", component.getHelperText());
+
+    assertEquals("helper text", component.getProperty("helperText"));
   }
 }

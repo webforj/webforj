@@ -16,6 +16,7 @@ import com.webforj.component.event.sink.ToggleEventSink;
 import com.webforj.component.event.sink.UncheckEventSink;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
+import com.webforj.concern.HasHelperText;
 import com.webforj.concern.HasTextPosition;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
@@ -42,7 +43,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
  */
 public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolean> & HasTextPosition<T>>
     extends DwcValidatableComponent<T, Boolean>
-    implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus {
+    implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus, HasHelperText<T> {
 
   private final EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
       new EventSinkListenerRegistry<>(new CheckEventSink(this, getEventDispatcher()),
@@ -57,6 +58,7 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
   private HasTextPosition.Position textPosition = HasTextPosition.Position.RIGHT;
   private boolean checked = false;
   private boolean registeredToggleValueChangeListener = false;
+  private String helperText = "";
 
   /**
    * Creates a new AbstractOptionInput component.
@@ -192,6 +194,24 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
   @ExcludeFromJacocoGeneratedReport
   public boolean hasFocus() {
     return componentHasFocus();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setHelperText(String helperText) {
+    this.helperText = helperText;
+    setUnrestrictedProperty("helperText", this.helperText);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getHelperText() {
+    return this.helperText;
   }
 
   /**
