@@ -24,9 +24,10 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasValue<ConcernComponentMock, Double>, HasClientValidation<ConcernComponentMock>,
     HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
     HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock>,
-    HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>, HasHelperText<ConcernComponentMock>,
-    HasMask<ConcernComponentMock>, HasRestoreValue<ConcernComponentMock, Double>,
-    HasLocale<ConcernComponentMock>, HasStep<ConcernComponentMock, Double> {
+    HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>,
+    HasHelperText<ConcernComponentMock>, HasMask<ConcernComponentMock>,
+    HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
+    HasStep<ConcernComponentMock, Double> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();

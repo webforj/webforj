@@ -97,10 +97,10 @@ import java.util.List;
  *
  * <p>
  * The date parser interprets date strings based on the date mask. For example, if the date mask is
- * %Mz/%Dz/%Yz (US format, the webforJ default setting), the date is parsed with the understanding 
- * that it is in month/day/year order. Dates are accepted in all reasonable numeric formats, with 
- * or without delimiters. For example, assuming that today is September 15, 2012, this is how 
- * various inputs would be interpreted:
+ * %Mz/%Dz/%Yz (US format, the webforJ default setting), the date is parsed with the understanding
+ * that it is in month/day/year order. Dates are accepted in all reasonable numeric formats, with or
+ * without delimiters. For example, assuming that today is September 15, 2012, this is how various
+ * inputs would be interpreted:
  * </p>
  *
  * <table>
@@ -279,6 +279,7 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 24.10
  */
+
 // We're purposefully ignoring the deep inheritance warning here because we've designed our class
 // hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
 // our framework's specific goals and emphasizes the need for caution when considering any changes.
