@@ -12,6 +12,7 @@ import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.component.list.sink.ListSelectEventSink;
 import com.webforj.concern.HasExpanse;
+import com.webforj.concern.HasHelperText;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasLabel;
 import com.webforj.dispatcher.EventListener;
@@ -47,7 +48,7 @@ import java.util.Optional;
  */
 public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
     extends DwcValidatableComponent<T, V> implements Iterable<ListItem>, HasLabel<T>,
-    HasExpanse<T, Expanse>, HasHorizontalAlignment<T>, SelectableList<T> {
+    HasExpanse<T, Expanse>, HasHorizontalAlignment<T>, SelectableList<T>, HasHelperText<T> {
   private static final String DUPLICATION_ITEM_MESSAGE = "Item is already in the list";
   private static final String ITEM_MISSING_MESSAGE = "Item is not in the list";
   private static final String INVALID_INDEX_MESSAGE = "Invalid item index '%d'";
@@ -61,6 +62,7 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
           ListSelectEvent.class);
 
   private String label = "";
+  private String helperText = "";
 
   protected DwcList() {
     super();
@@ -625,6 +627,24 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   @ExcludeFromJacocoGeneratedReport
   public Alignment getHorizontalAlignment() {
     return getComponentHorizontalAlignment();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setHelperText(String helperText) {
+    this.helperText = helperText;
+    setUnrestrictedProperty("helperText", this.helperText);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getHelperText() {
+    return this.helperText;
   }
 
   /**

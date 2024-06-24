@@ -43,26 +43,6 @@ class DwcOptionInputTest {
   @InjectMocks
   DwcOptionInputMock component;
 
-  @Test
-  @DisplayName("adding supported events")
-  void addingSupportedEvents() {
-    EventListener<CheckEvent> checkListener = event -> {
-    };
-    EventListener<UncheckEvent> uncheckListener = event -> {
-    };
-    EventListener<ToggleEvent> toggleListener = event -> {
-    };
-
-    component.onCheck(checkListener);
-    component.onUncheck(uncheckListener);
-    component.onToggle(toggleListener);
-
-
-    assertEquals(1, component.getEventListeners(CheckEvent.class).size());
-    assertEquals(1, component.getEventListeners(UncheckEvent.class).size());
-    assertEquals(1, component.getEventListeners(ToggleEvent.class).size());
-  }
-
   @Nested
   @DisplayName("Checked API")
   class CheckedApi {
@@ -194,5 +174,15 @@ class DwcOptionInputTest {
       });
       assertEquals(1, component.getEventListeners(ToggleEvent.class).size());
     }
+  }
+
+  @Test
+  void shouldSetGetHelperText() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+
+    component.setHelperText("helper text");
+    assertEquals("helper text", component.getHelperText());
+
+    assertEquals("helper text", component.getProperty("helperText"));
   }
 }
