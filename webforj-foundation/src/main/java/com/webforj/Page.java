@@ -733,7 +733,7 @@ public final class Page implements HasJsExecution {
    * @param inputStream The InputStream representing the file content
    * @param fileName The name of the file to download
    */
-  public void download(InputStream inputStream, String fileName) {
+  public Page download(InputStream inputStream, String fileName) {
     Path tempFilePath = null;
     try {
       tempFilePath = Files.createTempFile(null, null);
@@ -744,6 +744,8 @@ public final class Page implements HasJsExecution {
     } finally {
       deleteTempFile(tempFilePath);
     }
+
+    return this;
   }
 
   /**
@@ -752,7 +754,7 @@ public final class Page implements HasJsExecution {
    * @param content The byte array representing the file content
    * @param fileName The name of the file to download
    */
-  public void download(byte[] content, String fileName) {
+  public Page download(byte[] content, String fileName) {
     Path tempFilePath = null;
     try {
       tempFilePath = Files.createTempFile(null, null);
@@ -763,6 +765,8 @@ public final class Page implements HasJsExecution {
     } finally {
       deleteTempFile(tempFilePath);
     }
+
+    return this;
   }
 
   /**
@@ -771,12 +775,14 @@ public final class Page implements HasJsExecution {
    * @param file The file to download
    * @param fileName The name of the file to download
    */
-  public void download(File file, String fileName) {
+  public Page download(File file, String fileName) {
     try {
       performDownload(file.getAbsolutePath(), fileName);
     } catch (BBjException e) {
       throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
     }
+
+    return this;
   }
 
   /**
@@ -784,8 +790,8 @@ public final class Page implements HasJsExecution {
    *
    * @param file The file to download
    */
-  public void download(File file) {
-    download(file, file.getName());
+  public Page download(File file) {
+    return download(file, file.getName());
   }
 
   /**
@@ -796,7 +802,7 @@ public final class Page implements HasJsExecution {
    *        to the root of the resources folder of your application
    * @param fileName The name of the file to download
    */
-  public void download(String path, String fileName) {
+  public Page download(String path, String fileName) {
     try {
       if (Assets.isContextUrl(path)) {
         ClassLoader classLoader = Environment.getCurrent().getClass().getClassLoader();
@@ -808,6 +814,8 @@ public final class Page implements HasJsExecution {
     } catch (BBjException e) {
       throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
     }
+
+    return this;
   }
 
   private void performDownload(String sourceFilePath, String fileName) throws BBjException {
