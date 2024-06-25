@@ -9,6 +9,7 @@ import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasMaxLength;
 import com.webforj.concern.HasMinLength;
+import com.webforj.concern.HasPredictedText;
 import com.webforj.concern.HasTypingMode;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.selection.SelectionRange;
@@ -33,8 +34,8 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextArea extends DwcField<TextArea, String>
-    implements HasTypingMode<TextArea>, HasMinLength<TextArea>, HasMaxLength<TextArea> {
+public final class TextArea extends DwcField<TextArea, String> implements HasTypingMode<TextArea>,
+    HasMinLength<TextArea>, HasMaxLength<TextArea>, HasPredictedText<TextArea> {
   static final int DEFAULT_ROWS = 2;
   static final int DEFAULT_COLUMNS = 20;
 
@@ -51,6 +52,7 @@ public final class TextArea extends DwcField<TextArea, String>
   private WrapStyle wrapStyle = WrapStyle.WORD_BOUNDARIES;
   private TypingMode typingMode = TypingMode.INSERT;
   private SelectionRange range = null;
+  private String predictedText = "";
 
   /**
    * Describes the style of wrapping used if the TextArea is wrapping lines.
@@ -708,6 +710,32 @@ public final class TextArea extends DwcField<TextArea, String>
     }
 
     return this.range;
+  }
+
+  /**
+   * Sets the predicted text of the component.
+   *
+   * <p>
+   * This property can be used by developers to implement text prediction logic and it appears when
+   * the user is typing as a suggestion. The actual logic for generating and updating the predicted
+   * value should be implemented by the developer. When the user presses the tab key, or the
+   * ArrowRight key, the predicted value will be set to the textarea.
+   * </p>
+   */
+  @Override
+  public TextArea setPredictedText(String predictedText) {
+    this.predictedText = predictedText;
+
+    setUnrestrictedProperty("predictedValue", predictedText);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getPredictedText() {
+    return predictedText;
   }
 
   /**

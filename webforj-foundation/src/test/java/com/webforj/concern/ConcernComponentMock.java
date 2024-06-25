@@ -27,7 +27,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>,
     HasHelperText<ConcernComponentMock>, HasMask<ConcernComponentMock>,
     HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
-    HasStep<ConcernComponentMock, Double> {
+    HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -62,6 +62,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private TypingMode typingMode = TypingMode.INSERT;
   private Locale locale;
   private String helperText;
+  private String predictedText;
 
   @Override
   public String getAttribute(String attribute) {
@@ -464,6 +465,17 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public String getHelperText() {
     return this.helperText;
+  }
+
+  @Override
+  public ConcernComponentMock setPredictedText(String predictedText) {
+    this.predictedText = predictedText;
+    return this;
+  }
+
+  @Override
+  public String getPredictedText() {
+    return this.predictedText;
   }
 
   @Override

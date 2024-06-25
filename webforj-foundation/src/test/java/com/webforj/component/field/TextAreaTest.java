@@ -510,4 +510,14 @@ class TextAreaTest {
       assertThrows(IllegalArgumentException.class, () -> component.setColumns(-5));
     }
   }
+
+  @Test
+  void shouldSetGetPredictedText() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+
+    component.setPredictedText("predicted text");
+    assertEquals("predicted text", component.getPredictedText());
+
+    assertEquals("predicted text", component.getProperty("predictedValue"));
+  }
 }
