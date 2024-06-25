@@ -779,7 +779,7 @@ public final class Element extends DwcContainer<Element>
     sb.append("}");
 
     // Deserialize arguments on the client side and call the function
-    sb.append("const rawArgs = JSON.parse('").append(jsonArgs).append("');");
+    sb.append("const rawArgs = JSON.parse(`").append(jsonArgs).append("`);");
 
     // Resolve the special arguments
     sb.append("const args = rawArgs.map(arg => {");
