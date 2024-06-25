@@ -200,4 +200,26 @@ class PageTest {
       verify(clientFile).copyToClient("/path/file.txt");
     }
   }
+
+  @Nested
+  class OpenUrl {
+
+    @Test
+    void shouldOpenUrlWithNameAndFeatures() throws BBjException {
+      page.open("http://example.com", "name", "features");
+      verify(thinClient).browse("http://example.com", "name", "features");
+    }
+
+    @Test
+    void shouldOpenUrlWithName() throws BBjException {
+      page.open("http://example.com", "name");
+      verify(thinClient).browse("http://example.com", "name", "");
+    }
+
+    @Test
+    void shouldOpenUrl() throws BBjException {
+      page.open("http://example.com");
+      verify(thinClient).browse("http://example.com", "_blank", "");
+    }
+  }
 }

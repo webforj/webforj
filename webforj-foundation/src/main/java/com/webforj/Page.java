@@ -818,6 +818,60 @@ public final class Page implements HasJsExecution {
     return this;
   }
 
+  /**
+   * Opens the given URL in a window with the given name.
+   *
+   * @param url The URL to open
+   * @param windowName specifies a window name The special target keywords, _self, _blank (default),
+   *        _parent, _top, and _unfencedTop can also be used. For more information, see
+   *        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open#target"> Window
+   *        name</a>.
+   * @param features A string containing a comma-separated list of window features in the form
+   *        name=value — or for boolean features, just name. These features include options such as
+   *        the window's default size and position, whether or not to open a minimal popup window,
+   *        and so forth. For more information, see
+   *        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open#windowfeatures">
+   *        Window features</a>.
+   * @return The current page instance
+   */
+  public Page open(String url, String windowName, String features) {
+    String theWindowName = windowName == null || windowName.isEmpty() ? "_blank" : windowName;
+    String theFeatures = features == null ? "" : features;
+
+    try {
+      BBjThinClient thinClient = getEnvironment().getBBjAPI().getThinClient();
+      thinClient.browse(url, theWindowName, theFeatures);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to open url.", e);
+    }
+
+    return this;
+  }
+
+  /**
+   * Opens the given URL in a window with the given name.
+   *
+   * @param url The URL to open
+   * @param windowName specifies a window name The special target keywords, _self, _blank (default),
+   *        _parent, _top, and _unfencedTop can also be used. For more information, see
+   *        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open#target"> Window
+   *        name</a>.
+   * @return The current page instance
+   */
+  public Page open(String url, String windowName) {
+    return open(url, windowName, "");
+  }
+
+  /**
+   * Opens the given URL in a window with the given name.
+   *
+   * @param url The URL to open
+   * @return The current page instance
+   */
+  public Page open(String url) {
+    return open(url, null, "");
+  }
+
   private void performDownload(String sourceFilePath, String fileName) throws BBjException {
     BBjThinClient thinClient = getEnvironment().getBBjAPI().getThinClient();
     BBjClientFileSystem clientFileSystem = thinClient.getClientFileSystem();
