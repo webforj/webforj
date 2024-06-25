@@ -2,12 +2,17 @@ package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +27,67 @@ class TimeFieldTest {
 
   @InjectMocks
   TimeField component = new TimeField();
+
+  @Nested
+  class Constructors {
+
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      EventListener<ValueChangeEvent<LocalTime>> listener = event -> {
+      };
+      component = new TimeField("label", LocalTime.now(), listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<LocalTime>> listener = event -> {
+      };
+      component = new TimeField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<LocalTime>> listener = event -> {
+      };
+      component = new TimeField(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new TimeField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithValue() {
+      component = new TimeField(LocalTime.now());
+      assertNotNull(component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      component = new TimeField("label", LocalTime.now());
+      assertEquals("label", component.getLabel());
+      assertNotNull(component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new TimeField();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+  }
 
   @Test
   @DisplayName("setText throws IllegalArgumentException if text is not a valid time")

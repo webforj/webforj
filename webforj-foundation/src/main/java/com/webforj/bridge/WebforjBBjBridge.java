@@ -9,6 +9,7 @@ import com.webforj.component.optiondialog.FileChooserDialog;
 import com.webforj.component.optiondialog.FileUploadDialog;
 import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public interface WebforjBBjBridge {
 
@@ -65,6 +66,7 @@ public interface WebforjBBjBridge {
    *
    * @param options the config
    * @return the result of the MSGBOX function
+   * @since 24.02
    */
   int msgbox(ConfirmDialog options);
 
@@ -73,6 +75,7 @@ public interface WebforjBBjBridge {
    *
    * @param options the options
    * @return the result of the PROMPT function
+   * @since 24.02
    */
   String prompt(InputDialog options);
 
@@ -81,6 +84,7 @@ public interface WebforjBBjBridge {
    *
    * @param options the options
    * @return the result of the FILEOPEN function
+   * @since 24.02
    */
   String fileChooser(FileChooserDialog options);
 
@@ -89,6 +93,7 @@ public interface WebforjBBjBridge {
    *
    * @param options the options
    * @return the result of the FILEOPEN function
+   * @since 24.02
    */
   String fileUpload(FileUploadDialog options);
 
@@ -96,8 +101,71 @@ public interface WebforjBBjBridge {
    * invoke the BBj-side WAIT function.
    *
    * @param seconds the number of seconds to wait
+   * @since 24.02
    */
   void sleep(int seconds);
+
+  /**
+   * Mask the given string using the BBj string mask rules.
+   *
+   * @param input the input to format
+   * @param mask the mask to use
+   *
+   * @return tha input argument applied to the specified mask
+   * @since 24.10
+   */
+  String maskString(String input, String mask);
+
+  /**
+   * Mask the given number using the BBj number mask rules.
+   *
+   * @param input the input to format
+   * @param mask the mask to use
+   *
+   * @return tha input argument applied to the specified mask
+   * @since 24.10
+   */
+  String maskNumber(double input, String mask);
+
+  /**
+   * Mask the given date and time using the BBj date and time mask rules.
+   *
+   * @param julian the julian date
+   * @param time a number greater than or equal to zero and less than 24 and indicates hours and
+   *        fractions of hours. For example, 10.5 means 10:30 a.m.
+   * @param mask the mask to use
+   *
+   * @return tha input arguments applied to the specified mask
+   * @since 24.10
+   */
+  String maskDateTime(int julian, Double time, String mask);
+
+  /**
+   * Returns the Julian day number for a given date string.
+   *
+   * @param date the date string formatted according to the BBj date masks.
+   * @param mask the date mask which was used to format the date string
+   * @param locale the locale to use for parsing the date. The locale is only relevant when passing
+   *        a date string containing a week number reference
+   *
+   * @return the Julian day number
+   * @since 24.10
+   */
+  Integer parseDate(String date, String mask, Locale locale);
+
+  /**
+   * Returns the time value for a given time string.
+   *
+   * @param time the time string formatted according to the BBj time masks.
+   * @param mask the date mask which was used to format the time string
+   * @param locale the locale to use for parsing the time. The locale is only relevant when parsing
+   *        a time string containing a localized am/pm value
+   *
+   * @return a number greater than or equal to zero and less than 24 and indicates hours and
+   *         fractions of hours.
+   * @since 24.10
+   */
+  Double parseTime(String time, String mask, Locale locale);
 
   /**
    * invoke a method of a BBj-side object instance, mostly custom objects.

@@ -1,9 +1,9 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
@@ -28,48 +28,89 @@ import java.time.temporal.ChronoUnit;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime> implements
-    HasMin<TimeField, LocalTime>, HasMax<TimeField, LocalTime>, HasHighlightOnFocus<TimeField> {
+public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
+    implements HasMin<TimeField, LocalTime>, HasMax<TimeField, LocalTime> {
 
   private LocalTime min = null;
   private LocalTime max = null;
 
   /**
-   * Constructs a new TimeField with the given label, initial value, and option to accept seconds.
+   * Constructs a new time field with a label, value, and a value change listener.
    *
-   * @param label the label for the field
-   * @param time the initial value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
    */
-  public TimeField(String label, LocalTime time) {
-    super();
-    setUnrestrictedProperty("type", "time");
-    setLabel(label);
-    setValue(time);
+  public TimeField(String label, LocalTime value,
+      EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(label, value, listener);
+    postInit();
   }
 
   /**
-   * Constructs a new TimeField with the given label.
+   * Constructs a new time field with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public TimeField(String label, EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new time field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public TimeField(EventListener<ValueChangeEvent<LocalTime>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new time field with a label.
+   *
+   * @param label the label of the field
    */
   public TimeField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
-   * Constructs a new TimeField with tye given initial value.
+   * Construct a new time field with the given value.
    *
-   * @param time the initial value for the field
+   * @param value the value for the field
    */
-  public TimeField(LocalTime time) {
-    this("", time);
+  public TimeField(LocalTime value) {
+    super();
+    setValue(value);
+    postInit();
   }
 
   /**
-   * Constructs a new TimeField with default settings.
+   * Construct a new time field with the given label and value.
+   *
+   * @param label the label for the field
+   * @param value the value for the field
+   */
+  public TimeField(String label, LocalTime value) {
+    super(label);
+    setValue(value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new time field.
    */
   public TimeField() {
-    this("", null);
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setUnrestrictedProperty("type", "time");
   }
 
   /**
@@ -171,25 +212,6 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime> i
   public LocalTime getValue() {
     String text = getText();
     return text == null || text.isEmpty() ? null : TimeField.fromTime(text);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public TimeField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**

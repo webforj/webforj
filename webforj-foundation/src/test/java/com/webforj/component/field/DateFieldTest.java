@@ -5,9 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
+import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,15 +27,66 @@ class DateFieldTest {
   @InjectMocks
   DateField component = new DateField();
 
-  @Test
-  @DisplayName("setText through IllegalArgumentException if text is not valid date")
-  void setTextValidatesHex() throws IllegalAccessException {
-    ReflectionUtils.nullifyControl(component);
-    assertThrows(IllegalArgumentException.class, () -> component.setText("not a date"));
-    assertThrows(IllegalArgumentException.class, () -> component.setText("20-13-01"));
+  @Nested
+  class Constructors {
 
-    assertDoesNotThrow(() -> component.setText("2020-01-01"));
-    assertDoesNotThrow(() -> component.setText(""));
+    @Test
+    void shouldCreateFieldWithLabelValueAndListener() {
+      EventListener<ValueChangeEvent<LocalDate>> listener = event -> {
+      };
+      component = new DateField("label", LocalDate.now(), listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(LocalDate.now(), component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndListener() {
+      EventListener<ValueChangeEvent<LocalDate>> listener = event -> {
+      };
+      component = new DateField("label", listener);
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithListener() {
+      EventListener<ValueChangeEvent<LocalDate>> listener = event -> {
+      };
+      component = new DateField(listener);
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+      assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabel() {
+      component = new DateField("label");
+      assertEquals("label", component.getLabel());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithValue() {
+      component = new DateField(LocalDate.now());
+      assertEquals(LocalDate.now(), component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithLabelAndValue() {
+      component = new DateField("label", LocalDate.now());
+      assertEquals("label", component.getLabel());
+      assertEquals(LocalDate.now(), component.getValue());
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
+
+    @Test
+    void shouldCreateFieldWithDefaults() {
+      component = new DateField();
+      assertEquals(Expanse.MEDIUM, component.getExpanse());
+    }
   }
 
   @Test
@@ -106,7 +161,6 @@ class DateFieldTest {
     assertEquals(validMax, component.getMax());
   }
 
-
   @Test
   @DisplayName("setMin and setMax validate relationship with each other")
   void setMinMaxValidatesRelationship() {
@@ -123,7 +177,6 @@ class DateFieldTest {
     assertThrows(IllegalArgumentException.class, () -> {
       component.setMax(max);
     }, "Minimum date must be earlier than or equal to the maximum date");
-
 
     LocalDate validMin = LocalDate.of(2020, 1, 1);
     LocalDate validMax = LocalDate.of(2023, 1, 1);

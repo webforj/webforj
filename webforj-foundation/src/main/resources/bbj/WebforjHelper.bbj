@@ -5,6 +5,7 @@ use com.webforj.component.optiondialog.FileChooserDialog
 use com.webforj.component.optiondialog.FileUploadDialog
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
+use java.util.Locale
 
 class public BBjEventProxy implements EventProxy
 
@@ -211,6 +212,44 @@ class public WebforjHelper implements WebforjBBjBridge
 
     method public void sleep(int seconds!)
         wait(seconds!)
+    methodend
+
+    method public String maskString(String input!, String mask!)
+      methodret STR(input!, mask!, err=failed_string_mask)
+
+      failed_string_mask:
+      methodret null()
+    methodend
+
+    method public String maskNumber(double input!, String mask!)
+      methodret STR(input!, mask!, err=failed_number_mask)
+
+      failed_number_mask:
+      methodret null()
+    methodend
+
+    method public String maskDateTime(int julian!, Double time!, String mask!)
+      if time! <> null() then
+        methodret DATE(julian!, time!, mask!)
+      else
+        methodret DATE(julian!, mask!)
+      fi
+
+      failed_datetime_mask:
+      methodret null()
+    methodend
+
+    method public Integer parseDate(String date!, String mask!, Locale locale!)
+      methodret JUL(date!, mask!, locale!.toString(), err=failed_parse_date)
+
+      failed_parse_date:
+      methodret null()
+    methodend
+
+    method public Double parseTime(String time!, String mask!, Locale locale!)
+      methodret TIME(time!, mask!, locale!.toString(), err=failed_parse_time)
+      failed_parse_time:
+      methodret null()
     methodend
 
     method public BBjControl createWidget(String class!, BBjWindow w!)

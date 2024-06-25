@@ -15,7 +15,6 @@ import com.basis.startup.type.BBjVector;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.data.selection.SelectionRange;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.lang.reflect.InvocationTargetException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -101,7 +100,7 @@ class DwcTextFieldTest {
 
     @Test
     @DisplayName("setting/getting value when control is null")
-    void settingGettingValueWhenControlIsNull() throws IllegalAccessException, BBjException {
+    void settingGettingValueWhenControlIsNull() throws IllegalAccessException {
       DwcTextFieldMock spy = spy(component);
       ReflectionUtils.nullifyControl(spy);
       spy.setValue("test");
@@ -113,7 +112,7 @@ class DwcTextFieldTest {
 
     @Test
     @DisplayName("setting/getting value when control is not null")
-    void settingGettingValueWhenControlIsNotNull() throws BBjException {
+    void settingGettingValueWhenControlIsNotNull() {
       DwcTextFieldMock spy = spy(component);
       doReturn("test").when(spy).getText();
       spy.setValue("test");
@@ -172,8 +171,7 @@ class DwcTextFieldTest {
 
     @Test
     @DisplayName("onAttach will reapply the selection")
-    void catchup() throws BBjException, IllegalAccessException, NoSuchMethodException,
-        InvocationTargetException {
+    void catchup() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
       component.setSelectionRange(0, 10);
 

@@ -9,7 +9,6 @@ import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.LegacyDwcComponent;
 import com.webforj.component.slider.event.SliderScrollEvent;
 import com.webforj.component.slider.sink.SliderScrollEventSink;
-import com.webforj.component.textarea.TextArea;
 import com.webforj.component.window.Window;
 import com.webforj.concern.legacy.LegacyHasEnable;
 import com.webforj.concern.legacy.LegacyHasFocus;

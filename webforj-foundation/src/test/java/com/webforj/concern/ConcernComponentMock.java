@@ -10,6 +10,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 class ConcernComponentMock extends Component implements HasAttribute<ConcernComponentMock>,
@@ -23,7 +24,10 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasValue<ConcernComponentMock, Double>, HasClientValidation<ConcernComponentMock>,
     HasClientValidationStyle<ConcernComponentMock>, HasClientAutoValidation<ConcernComponentMock>,
     HasClientAutoValidationOnLoad<ConcernComponentMock>, HasRequired<ConcernComponentMock>,
-    HasPattern<ConcernComponentMock>, HasHelperText<ConcernComponentMock> {
+    HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>,
+    HasHelperText<ConcernComponentMock>, HasMask<ConcernComponentMock>,
+    HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
+    HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -38,10 +42,12 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private int maxLength;
   private Double min;
   private int minLength;
+  private Double step;
   private String placeholder;
   private boolean readOnly;
   private String tooltip;
   private Double value;
+  private Double restoreValue;
   private ComponentRegistry registry = new ComponentRegistry(this, e -> {
   });
   private boolean isInvalid = false;
@@ -52,7 +58,11 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private boolean autoValidateOnLoad = false;
   private boolean required = false;
   private String pattern = null;
+  private String mask = null;
+  private TypingMode typingMode = TypingMode.INSERT;
+  private Locale locale;
   private String helperText;
+  private String predictedText;
 
   @Override
   public String getAttribute(String attribute) {
@@ -374,6 +384,17 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   }
 
   @Override
+  public TypingMode getTypingMode() {
+    return this.typingMode;
+  }
+
+  @Override
+  public ConcernComponentMock setTypingMode(TypingMode typingMode) {
+    this.typingMode = typingMode;
+    return this;
+  }
+
+  @Override
   public ConcernComponentMock setPattern(String pattern) {
     this.pattern = pattern;
     return this;
@@ -385,6 +406,57 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   }
 
   @Override
+  public ConcernComponentMock setMask(String mask) {
+    this.mask = mask;
+    return this;
+  }
+
+  @Override
+  public String getMask() {
+    return this.mask;
+  }
+
+  @Override
+  public ConcernComponentMock setRestoreValue(Double value) {
+    this.restoreValue = value;
+    return this;
+  }
+
+  @Override
+  public Double getRestoreValue() {
+    return this.restoreValue;
+  }
+
+  @Override
+  public ConcernComponentMock restoreValue() {
+    this.value = this.restoreValue;
+    return this;
+  }
+
+  @Override
+  public ConcernComponentMock setLocale(Locale locale) {
+    this.locale = locale;
+    return this;
+  }
+
+  @Override
+  public Locale getLocale() {
+    return this.locale;
+  }
+
+  @Override
+  public Double getStep() {
+    return this.step;
+  }
+
+  @Override
+  public ConcernComponentMock setStep(Double step) {
+    this.step = step;
+    return this;
+  }
+
+
+  @Override
   public ConcernComponentMock setHelperText(String helperText) {
     this.helperText = helperText;
     return this;
@@ -393,6 +465,17 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public String getHelperText() {
     return this.helperText;
+  }
+
+  @Override
+  public ConcernComponentMock setPredictedText(String predictedText) {
+    this.predictedText = predictedText;
+    return this;
+  }
+
+  @Override
+  public String getPredictedText() {
+    return this.predictedText;
   }
 
   @Override

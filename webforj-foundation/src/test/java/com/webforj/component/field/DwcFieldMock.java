@@ -1,6 +1,38 @@
 package com.webforj.component.field;
 
-public class DwcFieldMock extends DwcFieldInitializer<DwcFieldMock, String> {
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
+
+class DwcFieldMock extends DwcFieldInitializer<DwcFieldMock, String> {
+
+  public DwcFieldMock(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+  }
+
+  public DwcFieldMock(String label, String value,
+      EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+  }
+
+  public DwcFieldMock(String label, String value) {
+    super(label, value);
+  }
+
+  public DwcFieldMock(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+  }
+
+  public DwcFieldMock(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+  }
+
+  public DwcFieldMock(String label) {
+    super(label);
+  }
+
+  public DwcFieldMock() {
+    super();
+  }
 
   /**
    * {@inheritDoc}

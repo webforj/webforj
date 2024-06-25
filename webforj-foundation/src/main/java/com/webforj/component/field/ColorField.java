@@ -1,5 +1,7 @@
 package com.webforj.component.field;
 
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.awt.Color;
 
 /**
@@ -27,42 +29,81 @@ import java.awt.Color;
 public final class ColorField extends DwcFieldInitializer<ColorField, Color> {
 
   /**
-   * Construct a new color field with the given label and value.
+   * Constructs a new color field with a label, value, and a value change listener.
    *
-   * @param label the label for the field
-   * @param color the value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
    */
-  public ColorField(String label, Color color) {
-    super();
-
-    setUnrestrictedProperty("type", "color");
-    setLabel(label);
-    setValue(color);
+  public ColorField(String label, Color value, EventListener<ValueChangeEvent<Color>> listener) {
+    super(label, value, listener);
+    postInit();
   }
 
   /**
-   * Construct a new color field with the given label.
+   * Constructs a new color field with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public ColorField(String label, EventListener<ValueChangeEvent<Color>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new color field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public ColorField(EventListener<ValueChangeEvent<Color>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new color field with a label.
+   *
+   * @param label the label of the field
    */
   public ColorField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
    * Construct a new color field with the given value.
    *
-   * @param color the value for the field
+   * @param value the value for the field
    */
-  public ColorField(Color color) {
-    this("", color);
+  public ColorField(Color value) {
+    super();
+    setValue(value);
+    postInit();
   }
 
   /**
-   * Construct a new color field.
+   * Construct a new color field with the given label and value.
+   *
+   * @param label the label for the field
+   * @param value the value for the field
+   */
+  public ColorField(String label, Color value) {
+    super(label);
+    setValue(value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new color field.
    */
   public ColorField() {
-    this("");
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setUnrestrictedProperty("type", "color");
   }
 
   /**

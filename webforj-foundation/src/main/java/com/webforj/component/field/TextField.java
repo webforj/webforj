@@ -1,15 +1,15 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasPlaceholder;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 
 /**
  * The TextField provides a user interface component to create a basic single-line text fields.
  *
  * <p>
  * The TextField can be configured to hint the browser to display a particular virtual keyboard for
- * numeric, email, phone number, or URL input and apply built-in validation to reject values that do
- * not adhere to the specified type.
+ * email, phone number, or URL input and apply built-in validation to reject values that do not
+ * adhere to the specified type.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -22,7 +22,7 @@ import com.webforj.concern.HasPlaceholder;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class TextField extends DwcTextField<TextField> implements HasPlaceholder<TextField> {
+public sealed class TextField extends DwcTextField<TextField> permits TextFieldSpinner {
 
   /**
    * Describes the type of the input field.
@@ -73,22 +73,79 @@ public final class TextField extends DwcTextField<TextField> implements HasPlace
   private Type type;
 
   /**
-   * Construct a new text field with the given type, label and value.
+   * Constructs a new TextField with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public TextField(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+  }
+
+  /**
+   * Constructs a new TextField with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public TextField(String label, String value, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+  }
+
+  /**
+   * Constructs a new TextField with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public TextField(String label, String value) {
+    super(label, value);
+  }
+
+  /**
+   * Constructs a new TextField with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public TextField(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+  }
+
+  /**
+   * Constructs a new TextField with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public TextField(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+  }
+
+  /**
+   * Constructs a new TextField with a label.
+   *
+   * @param label the label of the field
+   */
+  public TextField(String label) {
+    super(label);
+  }
+
+  /**
+   * Construct a TextField with the given type, label and value.
    *
    * @param type the type of field
    * @param label the label for the field
    * @param value the value for the field
    */
   public TextField(Type type, String label, String value) {
-    super();
-
+    super(label, value, "");
     setType(type);
-    setLabel(label);
-    setValue(value);
   }
 
   /**
-   * Construct a new text field with the given type and label.
+   * Construct a TextField with the given type and label.
    *
    * @param type the type of field
    * @param label the label for the field
@@ -98,7 +155,7 @@ public final class TextField extends DwcTextField<TextField> implements HasPlace
   }
 
   /**
-   * Construct a new text field with the given type and empty value.
+   * Construct a TextField field with the given type and empty value.
    *
    * @param type the type of field
    */
@@ -107,29 +164,10 @@ public final class TextField extends DwcTextField<TextField> implements HasPlace
   }
 
   /**
-   * Construct a new text field with the given label and value.
-   *
-   * @param label the label for the field
-   * @param value the value for the field
-   */
-  public TextField(String label, String value) {
-    this(Type.TEXT, label, value);
-  }
-
-  /**
-   * Construct a new text field with the given label.
-   *
-   * @param label the label for the field
-   */
-  public TextField(String label) {
-    this(label, "");
-  }
-
-  /**
-   * Construct a new text field without any given data.
+   * Constructs a new TextField.
    */
   public TextField() {
-    this("");
+    super();
   }
 
   /**
@@ -151,23 +189,5 @@ public final class TextField extends DwcTextField<TextField> implements HasPlace
    */
   public Type getType() {
     return type;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public TextField setPlaceholder(String placeholder) {
-    return super.setComponentPlaceholder(placeholder);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getPlaceholder() {
-    return super.getComponentPlaceholder();
   }
 }

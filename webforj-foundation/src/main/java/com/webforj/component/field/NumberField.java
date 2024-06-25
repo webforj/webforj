@@ -1,11 +1,12 @@
 package com.webforj.component.field;
 
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
-import com.webforj.concern.HasPlaceholder;
+import com.webforj.concern.HasStep;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 
 /**
  * The NumberField provides a user interface component let the user enter a number. They include
@@ -26,43 +27,91 @@ import com.webforj.concern.HasPlaceholder;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class NumberField extends DwcFieldInitializer<NumberField, Double> implements
-    HasMin<NumberField, Double>, HasMax<NumberField, Double>, HasPlaceholder<NumberField>,
-    HasHighlightOnFocus<NumberField>, HasHorizontalAlignment<NumberField> {
+public final class NumberField extends DwcFieldInitializer<NumberField, Double>
+    implements HasMin<NumberField, Double>, HasMax<NumberField, Double>,
+    HasStep<NumberField, Double>, HasHorizontalAlignment<NumberField> {
 
   private Double min = null;
   private Double max = null;
   private Double step = null;
 
   /**
-   * Construct a new text field with the given label and value.
+   * Constructs a new NumberField with a label, value, and placeholder.
    *
-   * @param label the label for the field
-   * @param value the value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  public NumberField(String label, Double value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new NumberField with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public NumberField(String label, Double value, EventListener<ValueChangeEvent<Double>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new PasswordField with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
    */
   public NumberField(String label, Double value) {
-    super();
-
-    setComponentHorizontalAlignment(Alignment.RIGHT);
-    setUnrestrictedProperty("type", "number");
-    setLabel(label);
-    setValue(value);
+    super(label, value);
+    postInit();
   }
 
   /**
-   * Construct a new number field with the given label.
+   * Constructs a new NumberField with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public NumberField(String label, EventListener<ValueChangeEvent<Double>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new NumberField with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public NumberField(EventListener<ValueChangeEvent<Double>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new NumberField with a label.
+   *
+   * @param label the label of the field
    */
   public NumberField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
-   * Construct a new number field.
+   * Constructs a new NumberField.
    */
   public NumberField() {
-    this("");
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setComponentHorizontalAlignment(Alignment.RIGHT);
+    setUnrestrictedProperty("type", "number");
   }
 
   /**
@@ -132,6 +181,7 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    * @param step the step value for the granularity. If null, then no rules are forced.
    * @return the component
    */
+  @Override
   public NumberField setStep(Double step) {
     this.step = step;
     setUnrestrictedProperty("step", step == null ? "any" : step);
@@ -144,50 +194,9 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double> 
    *
    * @return the step value for the granularity
    */
+  @Override
   public Double getStep() {
     return step;
-  }
-
-  /**
-   * Set the placeholder of field.
-   *
-   * @param placeholder the placeholder of field
-   * @return the field type
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public NumberField setPlaceholder(String placeholder) {
-    return setComponentPlaceholder(placeholder);
-  }
-
-  /**
-   * Get the placeholder of field.
-   *
-   * @return the placeholder of field
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getPlaceholder() {
-    return getComponentPlaceholder();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public NumberField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
   }
 
   /**

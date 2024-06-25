@@ -9,11 +9,13 @@ import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMaxLength;
 import com.webforj.concern.HasMinLength;
 import com.webforj.concern.HasPattern;
+import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.selection.SelectionRange;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
- * The Base class for all DWC text fields components.
+ * The Base class for all DWC none masked text fields components.
  *
  * <p>
  * This abstract class serves as the foundation for all text field components within the framework.
@@ -41,16 +43,88 @@ import com.webforj.exceptions.WebforjRuntimeException;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializer<T, String>
-    implements HasMinLength<T>, HasMaxLength<T>, HasHighlightOnFocus<T>, HasHorizontalAlignment<T>,
-    HasPattern<T> {
+    implements HasMinLength<T>, HasMaxLength<T>, HasHorizontalAlignment<T>, HasPattern<T> {
 
   private int minLength = 0;
   private int maxLength = 524288;
   private SelectionRange range = null;
   private String pattern = null;
 
-  protected DwcTextField() {
+  /**
+   * Constructs a new field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  DwcTextField(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  DwcTextField(String label, String value, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  DwcTextField(String label, String value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  DwcTextField(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  DwcTextField(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field with a label.
+   *
+   * @param label the label of the field
+   */
+  DwcTextField(String label) {
+    super(label);
+    postInit();
+  }
+
+  /**
+   * Constructs a new field.
+   */
+  DwcTextField() {
     super();
+    postInit();
+  }
+
+  private void postInit() {
     setComponentDefaultHorizontalAlignment(Alignment.LEFT);
   }
 
@@ -200,25 +274,6 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
     }
 
     return "";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public T setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**

@@ -1,7 +1,7 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasPlaceholder;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 
 /**
  * The PasswordField provides a way for the user to securely enter a password.
@@ -22,39 +22,86 @@ import com.webforj.concern.HasPlaceholder;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class PasswordField extends DwcTextField<PasswordField>
-    implements HasPlaceholder<PasswordField> {
-
+public final class PasswordField extends DwcTextField<PasswordField> {
   private boolean passwordReveal = true;
 
   /**
-   * Constructs a new password field with the given label and password.
+   * Constructs a new PasswordField with a label, value, and placeholder.
    *
-   * @param label the label for the field
-   * @param password the value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
    */
-  public PasswordField(String label, String password) {
-    super();
-
-    setUnrestrictedProperty("type", "password");
-    setLabel(label);
-    setValue(password);
+  public PasswordField(String label, String value, String placeholder) {
+    super(label, value, placeholder);
+    postInit();
   }
 
   /**
-   * Constructs a new password field with the given label.
+   * Constructs a new PasswordField with a label, value, and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  public PasswordField(String label, String value,
+      EventListener<ValueChangeEvent<String>> listener) {
+    super(label, value, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new PasswordField with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  public PasswordField(String label, String value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new PasswordField with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public PasswordField(String label, EventListener<ValueChangeEvent<String>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new PasswordField with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public PasswordField(EventListener<ValueChangeEvent<String>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new PasswordField with a label.
+   *
+   * @param label the label of the field
    */
   public PasswordField(String label) {
-    this(label, "");
+    super(label);
+    postInit();
   }
 
   /**
-   * Constructs a new password field.
+   * Constructs a new PasswordField.
    */
   public PasswordField() {
-    this("");
+    super();
+    postInit();
+  }
+
+  private void postInit() { // NOSONAR
+    setUnrestrictedProperty("type", "password");
   }
 
   /**
@@ -76,24 +123,6 @@ public final class PasswordField extends DwcTextField<PasswordField>
    */
   public boolean isPasswordReveal() {
     return passwordReveal;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public PasswordField setPlaceholder(String placeholder) {
-    return super.setComponentPlaceholder(placeholder);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public String getPlaceholder() {
-    return super.getComponentPlaceholder();
   }
 }
 

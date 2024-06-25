@@ -17,6 +17,7 @@ import com.webforj.webstorage.CookieStorage;
 import com.webforj.webstorage.LocalStorage;
 import com.webforj.webstorage.SessionStorage;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * This is the central class representing an app. In order to implement an app, extend this class
@@ -89,6 +90,34 @@ public abstract class App {
    */
   public static Request getRequest() {
     return Request.getCurrent();
+  }
+
+  /**
+   * Sets the locale used by the application.
+   *
+   * @param locale The locale to use
+   */
+  public static void setLocale(Locale locale) {
+    StringTable.put("!LOCALE", locale.toString());
+  }
+
+  /**
+   * Gets the locale used by the application.
+   *
+   * <p>
+   * This method will attempt to determine the application's locale using its configuration
+   * settings. If the locale isn't specified or if there's an error in parsing the locale, it
+   * defaults to the JVM's locale.
+   * </p>
+   *
+   * @return the user locale
+   */
+  public static Locale getLocale() {
+    try {
+      return new Locale(StringTable.get("!LOCALE"));
+    } catch (Exception e) {
+      return Locale.getDefault();
+    }
   }
 
   /**

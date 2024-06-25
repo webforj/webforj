@@ -1,9 +1,9 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalDate;
 
 /**
@@ -26,49 +26,88 @@ import java.time.LocalDate;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
-public final class DateField extends DwcFieldInitializer<DateField, LocalDate> implements
-    HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate>, HasHighlightOnFocus<DateField> {
+public final class DateField extends DwcFieldInitializer<DateField, LocalDate>
+    implements HasMin<DateField, LocalDate>, HasMax<DateField, LocalDate> {
 
   private LocalDate min = null;
   private LocalDate max = null;
 
   /**
-   * Construct a new DateField with the given label and value.
+   * Constructs a new date field with a label, value, and a value change listener.
    *
-   * @param label the label for the field
-   * @param date the initial value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
    */
-  public DateField(String label, LocalDate date) {
-    super();
-
-    setUnrestrictedProperty("type", "date");
-    setLabel(label);
-    setValue(date);
+  public DateField(String label, LocalDate value,
+      EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, value, listener);
+    postInit();
   }
 
   /**
-   * Construct a new DateField with the given label.
+   * Constructs a new date field with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public DateField(String label, EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new date field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public DateField(EventListener<ValueChangeEvent<LocalDate>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new date field with a label.
+   *
+   * @param label the label of the field
    */
   public DateField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
-   * Construct a new DateField with the given value.
+   * Construct a new date field with the given value.
    *
-   * @param date the initial value for the field
+   * @param value the value for the field
    */
-  public DateField(LocalDate date) {
-    this("", date);
+  public DateField(LocalDate value) {
+    super();
+    setValue(value);
+    postInit();
   }
 
   /**
-   * Construct a new DateField.
+   * Construct a new date field with the given label and value.
+   *
+   * @param label the label for the field
+   * @param value the value for the field
+   */
+  public DateField(String label, LocalDate value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new date field.
    */
   public DateField() {
-    this("", null);
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setUnrestrictedProperty("type", "date");
   }
 
   /**
@@ -187,25 +226,6 @@ public final class DateField extends DwcFieldInitializer<DateField, LocalDate> i
   public LocalDate getValue() {
     String text = getText();
     return text == null || text.isEmpty() ? null : DateField.fromDate(text);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public DateField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**

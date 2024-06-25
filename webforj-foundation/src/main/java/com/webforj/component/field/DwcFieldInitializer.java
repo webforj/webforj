@@ -8,8 +8,12 @@ import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasReadOnly;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A {@link DwcField} that is used to initialize a {@link BBjEditBox} control.
@@ -30,7 +34,70 @@ import com.webforj.utilities.BBjFunctionalityHelper;
 abstract class DwcFieldInitializer<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
     extends DwcField<T, V> {
 
-  protected DwcFieldInitializer() {
+  /**
+   * Constructs a new field with a label, value, and placeholder.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param placeholder the placeholder of the field
+   */
+  DwcFieldInitializer(String label, V value, String placeholder) {
+    super(label, value, placeholder);
+  }
+
+  /**
+   * Constructs a new field with a label, value, and a value change listener.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
+   */
+  DwcFieldInitializer(String label, V value, EventListener<ValueChangeEvent<V>> listener) {
+    super(label, value, listener);
+  }
+
+  /**
+   * Constructs a new field with a label and value.
+   *
+   * @param label the label of the field
+   * @param value the value of the field
+   */
+  DwcFieldInitializer(String label, V value) {
+    super(label, value);
+  }
+
+  /**
+   * Constructs a new field with a label and a value change listener.
+   *
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  DwcFieldInitializer(String label, EventListener<ValueChangeEvent<V>> listener) {
+    super(label, listener);
+  }
+
+  /**
+   * Constructs a new field with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  DwcFieldInitializer(EventListener<ValueChangeEvent<V>> listener) {
+    super(listener);
+  }
+
+  /**
+   * Constructs a new field with a label.
+   *
+   * @param label the label of the field
+   */
+  DwcFieldInitializer(String label) {
+    super(label);
+  }
+
+  /**
+   * Constructs a new field.
+   */
+  DwcFieldInitializer() {
     super();
   }
 
@@ -38,9 +105,27 @@ abstract class DwcFieldInitializer<T extends DwcValidatableComponent<T, V> & Has
    * {@inheritDoc}
    */
   @Override
-  protected void onCreate(Window p) {
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("accept", "autoValidate", "autoValidateOnLoad",
+        "autoWasValidated", "autocomplete", "autocorrect", "autofocus", "disabled", "expanse",
+        "hasFocus", "highlightBehaviors", "invalid", "invalidMessage", "label", "max", "maxlength",
+        "min", "minlength", "multiple", "name", "passwordReveal", "pattern", "placeholder",
+        "readonly", "required", "showSpinners", "size", "spellcheck", "spinnable", "step",
+        "tabTraversable", "type", "valid", "validationIcon", "validationPopoverDistance",
+        "validationPopoverPlacement", "validationPopoverSkidding", "validationStyle", "validator",
+        "value"));
+
+    return properties;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onCreate(Window window) {
     try {
-      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
+      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
       setControl(w.addEditBox(getText(), flags));
     } catch (BBjException | IllegalAccessException e) {

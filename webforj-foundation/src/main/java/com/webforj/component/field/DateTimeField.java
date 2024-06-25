@@ -1,9 +1,9 @@
 package com.webforj.component.field;
 
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
-import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -39,49 +39,87 @@ import java.time.temporal.ChronoUnit;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public final class DateTimeField extends DwcFieldInitializer<DateTimeField, LocalDateTime>
-    implements HasMin<DateTimeField, LocalDateTime>, HasMax<DateTimeField, LocalDateTime>,
-    HasHighlightOnFocus<DateTimeField> {
+    implements HasMin<DateTimeField, LocalDateTime>, HasMax<DateTimeField, LocalDateTime> {
 
   private LocalDateTime min = null;
   private LocalDateTime max = null;
 
   /**
-   * Construct a new DateTimeField with the given label and value.
+   * Constructs a new DateTimeField with a label, value, and a value change listener.
    *
-   * @param label the label for the field
-   * @param dateTime the initial value for the field
+   * @param label the label of the field
+   * @param value the value of the field
+   * @param listener the value change listener
    */
-  public DateTimeField(String label, LocalDateTime dateTime) {
-    super();
-
-    setUnrestrictedProperty("type", "datetime-local");
-    setLabel(label);
-    setValue(dateTime);
+  public DateTimeField(String label, LocalDateTime value,
+      EventListener<ValueChangeEvent<LocalDateTime>> listener) {
+    super(label, value, listener);
+    postInit();
   }
 
   /**
-   * Construct a new DateTimeField with the given label.
+   * Constructs a new DateTimeField with a label and a value change listener.
    *
-   * @param label the label for the field
+   * @param label the label of the field
+   * @param listener the value change listener
+   */
+  public DateTimeField(String label, EventListener<ValueChangeEvent<LocalDateTime>> listener) {
+    super(label, listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new DateTimeField with a value change listener.
+   *
+   * @param listener the value change listener
+   */
+  public DateTimeField(EventListener<ValueChangeEvent<LocalDateTime>> listener) {
+    super(listener);
+    postInit();
+  }
+
+  /**
+   * Constructs a new DateTimeField with a label.
+   *
+   * @param label the label of the field
    */
   public DateTimeField(String label) {
-    this(label, null);
+    super(label);
+    postInit();
   }
 
   /**
    * Construct a new DateTimeField with the given value.
    *
-   * @param dateTime the initial value for the field
+   * @param value the value for the field
    */
-  public DateTimeField(LocalDateTime dateTime) {
-    this("", dateTime);
+  public DateTimeField(LocalDateTime value) {
+    super();
+    setValue(value);
+    postInit();
   }
 
   /**
-   * Construct a new DateTimeField.
+   * Construct a new DateTimeField with the given label and value.
+   *
+   * @param label the label for the field
+   * @param value the value for the field
+   */
+  public DateTimeField(String label, LocalDateTime value) {
+    super(label, value);
+    postInit();
+  }
+
+  /**
+   * Constructs a new DateTimeField.
    */
   public DateTimeField() {
-    this("", null);
+    super();
+    postInit();
+  }
+
+  private void postInit() {
+    setUnrestrictedProperty("type", "datetime-local");
   }
 
   /**
@@ -208,25 +246,6 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
     String text = getText();
     return text == null || text.isEmpty() ? null
         : LocalDateTime.parse(text).truncatedTo(ChronoUnit.SECONDS);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public Behavior getHighlightOnFocus() {
-    return getComponentHighlightOnFocus();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @ExcludeFromJacocoGeneratedReport
-  public DateTimeField setHighlightOnFocus(Behavior highlight) {
-    setComponentHighlightOnFocus(highlight);
-    return getSelf();
   }
 
   /**
