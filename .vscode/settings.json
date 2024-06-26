@@ -12,4 +12,7 @@
     "connectionId": "vscode",
     "projectKey": "webforj"
   },
+  "java.completion.favoriteStaticMembers": [
+    "com.webforj.component.optiondialog.OptionDialog.*"
+]
 }
