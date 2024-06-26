@@ -3,3 +3,17 @@ changelog:
     labels:
       - ignore-for-release
       - dependencies
+  categories:
+    - title: Breaking Changes 🛠
+      labels:
+        - 'Breaking Change'
+    - title: New Features And Enhancements 🎉
+      labels:
+        - 'Type: Enhancement'
+        - 'Type: Feature'
+    - title: Bug Fixes 🐛
+      labels:
+        - 'Type: Bug'
+    - title: Other Changes
+      labels:
+        - "*"
