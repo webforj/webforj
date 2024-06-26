@@ -1,4 +1,4 @@
-"moulde: components":
+"module: components":
 - changed-files:
   - any-glob-to-any-file: 'webforj-components/**'
 
