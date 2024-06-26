@@ -4,7 +4,6 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WebforjBBjBridge;
-
 import java.util.HashMap;
 
 public final class Environment {
@@ -13,15 +12,17 @@ public final class Environment {
   private final BBjAPI api;
   private final BBjSysGui sysgui;
   private final WebforjBBjBridge helper;
+  private boolean debug = false;
 
-  private Environment(BBjAPI api, WebforjBBjBridge helper) throws BBjException {
+  private Environment(BBjAPI api, WebforjBBjBridge helper, boolean debug) throws BBjException {
     this.api = api;
     this.sysgui = api.openSysGui("X0");
     this.helper = helper;
+    this.debug = debug;
   }
 
-  public static void init(BBjAPI api, WebforjBBjBridge helper) throws BBjException {
-    Environment env = new Environment(api, helper);
+  public static void init(BBjAPI api, WebforjBBjBridge helper, int debug) throws BBjException {
+    Environment env = new Environment(api, helper, debug > 0);
     Environment.instanceMap.put(Thread.currentThread().getName(), env);
   }
 
@@ -31,6 +32,16 @@ public final class Environment {
 
   public static Environment getCurrent() {
     return Environment.instanceMap.get(Thread.currentThread().getName());
+  }
+
+  /**
+   * Checks if debug mode is enabled for the current environment.
+   *
+   * @return true if debug mode is enabled, false otherwise.
+   * @since 24.10
+   */
+  public boolean isDebug() {
+    return this.debug;
   }
 
   /**
