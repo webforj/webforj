@@ -24,6 +24,7 @@ import java.util.Map;
  * manipulate the page.
  *
  * @author Hyyan Abo Fakher
+ * @since 23.00
  */
 public final class Page implements HasJsExecution {
   private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
@@ -732,6 +733,9 @@ public final class Page implements HasJsExecution {
    *
    * @param inputStream The InputStream representing the file content
    * @param fileName The name of the file to download
+   *
+   * @return The current page instance
+   * @since 24.02
    */
   public Page download(InputStream inputStream, String fileName) {
     Path tempFilePath = null;
@@ -753,6 +757,9 @@ public final class Page implements HasJsExecution {
    *
    * @param content The byte array representing the file content
    * @param fileName The name of the file to download
+   *
+   * @return The current page instance
+   * @since 24.02
    */
   public Page download(byte[] content, String fileName) {
     Path tempFilePath = null;
@@ -774,6 +781,9 @@ public final class Page implements HasJsExecution {
    *
    * @param file The file to download
    * @param fileName The name of the file to download
+   *
+   * @return The current page instance
+   * @since 24.02
    */
   public Page download(File file, String fileName) {
     try {
@@ -789,6 +799,9 @@ public final class Page implements HasJsExecution {
    * Sends the given file to the client for download.
    *
    * @param file The file to download
+   *
+   * @return The current page instance
+   * @since 24.02
    */
   public Page download(File file) {
     return download(file, file.getName());
@@ -801,6 +814,9 @@ public final class Page implements HasJsExecution {
    *        with <code>context://</code> then the url will be resolved as a context url which points
    *        to the root of the resources folder of your application
    * @param fileName The name of the file to download
+   *
+   * @return The current page instance
+   * @since 24.02
    */
   public Page download(String path, String fileName) {
     try {
@@ -832,7 +848,9 @@ public final class Page implements HasJsExecution {
    *        and so forth. For more information, see
    *        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open#windowfeatures">
    *        Window features</a>.
+   *
    * @return The current page instance
+   * @since 24.10
    */
   public Page open(String url, String windowName, String features) {
     String theWindowName = windowName == null || windowName.isEmpty() ? "_blank" : windowName;
@@ -856,7 +874,9 @@ public final class Page implements HasJsExecution {
    *        _parent, _top, and _unfencedTop can also be used. For more information, see
    *        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open#target"> Window
    *        name</a>.
+   *
    * @return The current page instance
+   * @since 24.10
    */
   public Page open(String url, String windowName) {
     return open(url, windowName, "");
@@ -866,7 +886,9 @@ public final class Page implements HasJsExecution {
    * Opens the given URL in a window with the given name.
    *
    * @param url The URL to open
+   *
    * @return The current page instance
+   * @since 24.10
    */
   public Page open(String url) {
     return open(url, null, "");
