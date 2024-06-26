@@ -42,7 +42,7 @@ if class$="" then
 fi
 
 h! = new ::WebforjHelper.bbj::WebforjHelper()
-Environment.init(BBjAPI(), h!)
+Environment.init(BBjAPI(), h!, DEBUG)
 
 Class.forName(class$,err=class_not_found)
 app! = eval("new "+class$+"()",err=_error)
@@ -98,7 +98,7 @@ ErrTrap:
 RELEASE
 
 class_not_found:
-    if DEBUG=0 then
+    if !Environment.getCurrent().isDebug() then
         a=msgbox("Class not found!",64,"Error")
     else
         a=msgbox("Class "+class$+" not found!",64,"Error")
@@ -107,7 +107,7 @@ release
 
 _error:
 
-    if DEBUG=0 then
+    if !Environment.getCurrent().isDebug() then
         a=msgbox("An error has occured!",48,"Error")
     else
         error$ = ""
