@@ -39,24 +39,23 @@ The webforJ's [HelloWorld repository](https://github.com/webforj/webforj-hello-w
     gap: 20px;
     margin: 20px;
     padding: 20px;
-    border: 1px dotted;
+    border: 1px dashed;
+    border-radius: 10px;
   }
 """)
 @AppTitle("webforJ Hello World")
-public class HelloWorldApp extends App {
+public class WebforjHelloWorld extends App {
   
   Paragraph hello = new Paragraph("Hello World!");
   Button btn = new Button("Say Hello");
 
   @Override
   public void run() throws WebforjException {
-
     Frame mainFrame = new Frame();
     mainFrame.addClassName("mainFrame");
 
-    btn.setTheme(ButtonTheme.SUCCESS)
-        .setExpanse(Expanse.XLARGE)
-        .addClickListener(e -> msgbox("Hello World!"));
+    btn.setTheme(ButtonTheme.PRIMARY)
+        .addClickListener(e -> showMessageDialog("Hello World!", "webforJ Message"));
 
     mainFrame.add(hello, btn);
   }
