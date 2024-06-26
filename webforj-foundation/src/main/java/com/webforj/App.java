@@ -287,25 +287,12 @@ public abstract class App {
   }
 
   /**
-   * Set the terminate action for the application when the application terminates normally.
+   * Get the console instance.
    *
-   * @param action The action to be executed on termination
-   * @return The application instance
+   * @return the console instance
    */
-  public App setTerminateAction(AppCloseAction action) {
-    setAppAction(action, true);
-    return this;
-  }
-
-  /**
-   * Set the error action for the application when the application terminates with an error.
-   *
-   * @param action The action to be executed on error
-   * @return The application instance
-   */
-  public App setErrorAction(AppCloseAction action) {
-    setAppAction(action, false);
-    return this;
+  public static BrowserConsole console() {
+    return new BrowserConsole();
   }
 
   /**
@@ -403,8 +390,26 @@ public abstract class App {
     }
   }
 
-  private void preRun() {
-    Environment.getCurrent().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
+  /**
+   * Set the terminate action for the application when the application terminates normally.
+   *
+   * @param action The action to be executed on termination
+   * @return The application instance
+   */
+  public App setTerminateAction(AppCloseAction action) {
+    setAppAction(action, true);
+    return this;
+  }
+
+  /**
+   * Set the error action for the application when the application terminates with an error.
+   *
+   * @param action The action to be executed on error
+   * @return The application instance
+   */
+  public App setErrorAction(AppCloseAction action) {
+    setAppAction(action, false);
+    return this;
   }
 
   /**
@@ -483,6 +488,10 @@ public abstract class App {
 
     return new PrivateNamespace(prefix, name, fCreateIfMissing);
 
+  }
+
+  private void preRun() {
+    Environment.getCurrent().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
   }
 
   /**
