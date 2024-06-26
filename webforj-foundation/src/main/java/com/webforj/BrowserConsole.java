@@ -612,8 +612,7 @@ public final class BrowserConsole {
     String theMessage = String.valueOf(message);
 
     // Handle exceptions
-    if (message instanceof Exception) {
-      Exception ex = (Exception) message;
+    if (message instanceof Exception ex) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       ex.printStackTrace(pw);
