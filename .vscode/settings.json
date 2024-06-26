@@ -13,6 +13,7 @@
     "projectKey": "webforj"
   },
   "java.completion.favoriteStaticMembers": [
-    "com.webforj.component.optiondialog.OptionDialog.*"
+    "com.webforj.component.optiondialog.OptionDialog.*",
+    "com.webforj.App.console"
 ]
 }
