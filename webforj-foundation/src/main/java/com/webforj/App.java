@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.component.optiondialog.OptionDialog;
 import com.webforj.environment.StringTable;
 import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.environment.namespace.GroupNamespace;
@@ -78,7 +79,9 @@ public abstract class App {
    * Get the current page instance.
    *
    * @return the current page instance
+   * @deprecated since 24.10, for removal in 25.00. Use {@link Page#getCurrent()} instead
    */
+  @Deprecated(since = "24.10", forRemoval = true)
   public static Page getPage() {
     return Page.getCurrent();
   }
@@ -87,7 +90,9 @@ public abstract class App {
    * Get the current request instance.
    *
    * @return the current request instance
+   * @deprecated since 24.10, for removal in 25.00. Use {@link Request#getCurrent()} instead
    */
+  @Deprecated(since = "24.10", forRemoval = true)
   public static Request getRequest() {
     return Request.getCurrent();
   }
@@ -226,7 +231,7 @@ public abstract class App {
    * Get the application protocol.
    *
    * @return The application protocol
-   * @deprecated Use {@link Request#getProtocol()} instead
+   * @deprecated since 24.02, for removal in 25.00. Use {@link Request#getProtocol()} instead
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getProtocol() {
@@ -240,7 +245,7 @@ public abstract class App {
    * Get the application host.
    *
    * @return The application host
-   * @deprecated Use {@link Request#getHost()} instead
+   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getHost()} instead
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getHost() {
@@ -254,7 +259,7 @@ public abstract class App {
    * Get the application port.
    *
    * @return The application port
-   * @deprecated Use {@link Request#getPort()} instead
+   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getPort()} instead
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getPort() {
@@ -269,7 +274,8 @@ public abstract class App {
    *
    * @return The application URL
    * @throws WebforjRuntimeException if failed to get the application URL
-   * @deprecated Use {@link Request#getUrl()} instead
+   *
+   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getUrl()} instead.
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getUrl() {
@@ -344,7 +350,8 @@ public abstract class App {
    * @param options
    * @return
    *
-   * @deprecated since 24.02, for removal in 25.00
+   * @deprecated since 24.02, for removal in 25.00. Use
+   *             {@link OptionDialog#showMessageDialog(Object)}
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options) {
@@ -358,7 +365,8 @@ public abstract class App {
    * @param title
    * @return
    *
-   * @deprecated since 24.02, for removal in 25.00
+   * @deprecated since 24.02, for removal in 25.00. Use
+   *             {@link OptionDialog#showMessageDialog(Object)}
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options, String title) {
@@ -418,7 +426,9 @@ public abstract class App {
    * Gets the CookieStorage.
    *
    * @return the CookieStorage instance
+   * @deprecated since 24.10, for removal in 25.00. Use {@link CookieStorage#getCurrent()} instead
    */
+  @Deprecated(since = "24.10", forRemoval = true)
   public static CookieStorage getCookieStorage() {
     return CookieStorage.getCurrent();
   }
@@ -427,7 +437,9 @@ public abstract class App {
    * Gets the SessionStorage.
    *
    * @return the SessionStorage instance
+   * @deprecated since 24.10, for removal in 25.00. Use {@link SessionStorage#getCurrent()} instead
    */
+  @Deprecated(since = "24.10", forRemoval = true)
   public static SessionStorage getSessionStorage() {
     return SessionStorage.getCurrent();
   }
@@ -436,15 +448,17 @@ public abstract class App {
    * Gets the LocalStorage.
    *
    * @return the LocalStorage instance
+   * @deprecated since 24.10, for removal in 25.00. Use {@link LocalStorage#getCurrent()} instead
    */
+  @Deprecated(since = "24.10", forRemoval = true)
   public static LocalStorage getLocalStorage() {
     return LocalStorage.getCurrent();
   }
 
   /**
-   * Override this method to implement your app behavior
+   * Override this method to implement your app behavior.
    *
-   * @throws WebforjAppInitializeException
+   * @throws WebforjException if an error occurs
    */
   public abstract void run() throws WebforjException;
 
@@ -477,6 +491,7 @@ public abstract class App {
    * @param action The action to set
    * @param isTerminateAction Flag to determine if it's a terminate action or error action
    */
+  @SuppressWarnings("squid:S3776")
   private void setAppAction(AppCloseAction action, boolean isTerminateAction) {
     try {
       BBjWebManager webManager = getEnvironment().getBBjAPI().getWebManager();
