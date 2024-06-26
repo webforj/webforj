@@ -117,6 +117,7 @@ import java.util.Locale;
  * @author Hyyan Abo Fakher
  * @since 24.10
  */
+
 // We're purposefully ignoring the deep inheritance warning here because we've designed our class
 // hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
 // our framework's specific goals and emphasizes the need for caution when considering any changes.
@@ -124,9 +125,11 @@ import java.util.Locale;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
+// @formatter:off
 public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, Double>
     implements HasMin<MaskedNumberField, Double>, HasMax<MaskedNumberField, Double>
     permits MaskedNumberFieldSpinner {
+  // @formatter:on
   static final String DEFAULT_MASK = "-########";
   private String groupCharacter = null;
   private String decimalCharacter = null;

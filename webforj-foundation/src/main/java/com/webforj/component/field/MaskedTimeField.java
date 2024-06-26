@@ -96,6 +96,7 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 24.10
  */
+
 // We're purposefully ignoring the deep inheritance warning here because we've designed our class
 // hierarchy to meet the unique requirements of our UI framework. This design closely aligns with
 // our framework's specific goals and emphasizes the need for caution when considering any changes.
@@ -103,8 +104,10 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
+// @formatter:off
 public sealed class MaskedTimeField extends DwcDateTimeMaskedField<MaskedTimeField, LocalTime>
     permits MaskedTimeFieldSpinner {
+  // @formatter:on
   static final String DEFAULT_MASK = "%h:%mz %a";
   private final HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
   private LocalTime value;

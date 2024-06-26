@@ -287,8 +287,10 @@ import java.util.List;
 // Any changes to the inheritance structure should be thoughtfully evaluated in the context of our
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
+// @formatter:off
 public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateField, LocalDate>
     permits MaskedDateFieldSpinner {
+  // @formatter:on
   static final String DEFAULT_MASK = "%Mz/%Dz/%Yl";
   private final JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
   private LocalDate value;
