@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -565,6 +566,160 @@ class DwcComponentTest {
     assertEquals(0, component.getEventListeners(MouseEnterEvent.class).size());
     assertEquals(0, component.getEventListeners(MouseExitEvent.class).size());
     assertEquals(0, component.getEventListeners(RightMouseDownEvent.class).size());
+  }
+
+  @Nested
+  class StyleApi {
+
+    @Test
+    void shouldSetGetStyleWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setStyle("key", "value");
+      assertSame("value", component.getStyle("key"));
+
+      verify(control, times(0)).setStyle("key", "value");
+      verify(control, times(0)).getStyle("key");
+    }
+
+    @Test
+    void shouldSetGetStyleWhenControlIsNotNull() throws BBjException {
+      doReturn("value").when(control).getStyle("key");
+
+      component.setStyle("key", "value");
+      assertSame("value", component.getStyle("key"));
+
+      verify(control, times(1)).setStyle("key", "value");
+      verify(control, times(1)).getStyle("key");
+    }
+
+    @Test
+    void shouldRemoveStyleWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setStyle("key", "value");
+      assertSame("value", component.getStyle("key"));
+
+      component.removeStyle("key");
+      assertSame(null, component.getStyle("key"));
+
+      verify(control, times(0)).unsetStyle("key");
+    }
+
+    @Test
+    void shouldRemoveStyleWhenControlIsNotNull() throws BBjException {
+      doReturn("value").when(control).getStyle("key");
+
+      component.setStyle("key", "value");
+      assertSame("value", component.getStyle("key"));
+
+      component.removeStyle("key");
+      verify(control, times(1)).unsetStyle("key");
+    }
+
+    @Test
+    void shouldGetComputedStyleWhenControlNotNull() throws BBjException {
+      doReturn("value").when(control).getComputedStyle("key");
+
+      assertSame("value", component.getComputedStyle("key"));
+      verify(control, times(1)).getComputedStyle("key");
+    }
+
+    @Test
+    void shouldGetComputedStyleWhenControlNull() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setStyle("key", "value");
+      assertSame("value", component.getComputedStyle("key"));
+    }
+
+    @Test
+    void shouldCatchBbjException() throws BBjException {
+      doThrow(BBjException.class).when(control).setStyle("key", "value");
+      doThrow(BBjException.class).when(control).getStyle("key");
+      doThrow(BBjException.class).when(control).unsetStyle("key");
+      doThrow(BBjException.class).when(control).getComputedStyle("key");
+
+      assertThrows(WebforjRuntimeException.class, () -> component.setStyle("key", "value"));
+      assertThrows(WebforjRuntimeException.class, () -> component.getStyle("key"));
+      assertThrows(WebforjRuntimeException.class, () -> component.removeStyle("key"));
+      assertThrows(WebforjRuntimeException.class, () -> component.getComputedStyle("key"));
+    }
+
+    @Test
+    void shouldReApplyingStyleChanges() throws BBjException, IllegalAccessException {
+      component.setStyle("key1", "value1");
+      component.setStyle("key2", "value2");
+      component.removeStyle("key2");
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(2)).setStyle("key1", "value1");
+    }
+  }
+
+  @Nested
+  class SizeApi {
+
+    @Test
+    void shouldSetGetSize() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      DwcComponentMock spy = spy(component);
+      spy.setSize("100px", "200px");
+      spy.setMinSize("50px", "100px");
+      spy.setMaxSize("200px", "300px");
+
+      assertEquals("100px", spy.getWidth());
+      assertEquals("50px", spy.getMinWidth());
+      assertEquals("200px", spy.getMaxWidth());
+      assertEquals("200px", spy.getHeight());
+      assertEquals("100px", spy.getMinHeight());
+      assertEquals("300px", spy.getMaxHeight());
+
+      verify(spy, times(1)).setStyle("width", "100px");
+      verify(spy, times(1)).setStyle("min-width", "50px");
+      verify(spy, times(1)).setStyle("max-width", "200px");
+      verify(spy, times(1)).setStyle("height", "200px");
+      verify(spy, times(1)).setStyle("min-height", "100px");
+      verify(spy, times(1)).setStyle("max-height", "300px");
+
+      spy.setSize(null, null);
+      spy.setMinSize(null, null);
+      spy.setMaxSize(null, null);
+
+      assertNull(spy.getWidth());
+      assertNull(spy.getMinWidth());
+      assertNull(spy.getMaxWidth());
+      assertNull(spy.getHeight());
+      assertNull(spy.getMinHeight());
+      assertNull(spy.getMaxHeight());
+
+      verify(spy, times(1)).removeStyle("width");
+      verify(spy, times(1)).removeStyle("min-width");
+      verify(spy, times(1)).removeStyle("max-width");
+      verify(spy, times(1)).removeStyle("height");
+      verify(spy, times(1)).removeStyle("min-height");
+      verify(spy, times(1)).removeStyle("max-height");
+    }
+
+    @Test
+    void shouldGetComputedSize() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      DwcComponentMock spy = spy(component);
+      spy.setSize("100px", "200px");
+      spy.setMinSize("50px", "100px");
+      spy.setMaxSize("200px", "300px");
+
+      assertEquals("100px", spy.getComputedWidth());
+      assertEquals("50px", spy.getComputedMinWidth());
+      assertEquals("200px", spy.getComputedMaxWidth());
+      assertEquals("200px", spy.getComputedHeight());
+      assertEquals("100px", spy.getComputedMinHeight());
+      assertEquals("300px", spy.getComputedMaxHeight());
+    }
   }
 }
 

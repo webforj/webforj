@@ -11,6 +11,7 @@ import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasProperty;
+import com.webforj.concern.HasSize;
 import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasText;
 import com.webforj.concern.HasVisibility;
@@ -26,7 +27,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
  */
 public abstract class HtmlComponent<T extends HtmlComponent<T>> extends ElementComposite
     implements HasStyle<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>, HasText<T>,
-    HasHtml<T>, HasVisibility<T> {
+    HasHtml<T>, HasVisibility<T>, HasSize<T> {
 
   /**
    * Alias for {@link #getBoundComponent()}.
