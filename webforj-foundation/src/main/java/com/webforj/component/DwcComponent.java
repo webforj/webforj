@@ -6,8 +6,6 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
-import com.webforj.App;
-import com.webforj.component.event.ComponentEvent;
 import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.event.MouseEnterEvent;
 import com.webforj.component.event.MouseExitEvent;
@@ -18,6 +16,7 @@ import com.webforj.component.event.sink.RightMouseDownEventSink;
 import com.webforj.component.optioninput.RadioButtonGroup;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
+import com.webforj.concern.HasSize;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasProperty;
@@ -63,7 +62,7 @@ import java.util.stream.Collectors;
  */
 public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     implements HasText<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>, HasStyle<T>,
-    HasVisibility<T>, HasTooltip<T> {
+    HasVisibility<T>, HasTooltip<T>, HasSize<T> {
 
   private final List<String> classNames = new ArrayList<>();
   private final List<String> removedClassNames = new ArrayList<>();
@@ -93,6 +92,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private Enum<? extends ExpanseBase> expanse = null;
   private String placeholder = "";
   private Enum<? extends ThemeBase> theme = null;
+  private String width = "";
+  private String minWidth = "";
+  private String maxWidth = "";
+  private String height = "";
+  private String minHeight = "";
+  private String maxHeight = "";
 
   /**
    * {@inheritDoc}
@@ -501,6 +506,198 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
 
     return visible;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setWidth(String width) {
+    this.width = width;
+
+    if (width == null) {
+      removeStyle("width"); // NOSONAR
+    } else {
+      setStyle("width", width);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getWidth() {
+    return width;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedWidth() {
+    return getComputedStyle("width");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setMinWidth(String minWidth) {
+    this.minWidth = minWidth;
+
+    if (minWidth == null) {
+      removeStyle("min-width"); // NOSONAR
+    } else {
+      setStyle("min-width", minWidth);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMinWidth() {
+    return minWidth;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedMinWidth() {
+    return getComputedStyle("min-width");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setMaxWidth(String maxWidth) {
+    this.maxWidth = maxWidth;
+
+    if (maxWidth == null) {
+      removeStyle("max-width"); // NOSONAR
+    } else {
+      setStyle("max-width", maxWidth);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMaxWidth() {
+    return maxWidth;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedMaxWidth() {
+    return getComputedStyle("max-width");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setHeight(String height) {
+    this.height = height;
+
+    if (height == null) {
+      removeStyle("height"); // NOSONAR
+    } else {
+      setStyle("height", height);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getHeight() {
+    return height;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedHeight() {
+    return getComputedStyle("height");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setMinHeight(String minHeight) {
+    this.minHeight = minHeight;
+
+    if (minHeight == null) {
+      removeStyle("min-height"); // NOSONAR
+    } else {
+      setStyle("min-height", minHeight);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMinHeight() {
+    return minHeight;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedMinHeight() {
+    return getComputedStyle("min-height");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setMaxHeight(String maxHeight) {
+    this.maxHeight = maxHeight;
+
+    if (maxHeight == null) {
+      removeStyle("max-height"); // NOSONAR
+    } else {
+      setStyle("max-height", maxHeight);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getMaxHeight() {
+    return maxHeight;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getComputedMaxHeight() {
+    return getComputedStyle("max-height");
   }
 
   /**

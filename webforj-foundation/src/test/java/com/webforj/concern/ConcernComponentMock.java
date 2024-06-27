@@ -27,7 +27,8 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasPattern<ConcernComponentMock>, HasTypingMode<ConcernComponentMock>,
     HasHelperText<ConcernComponentMock>, HasMask<ConcernComponentMock>,
     HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
-    HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock> {
+    HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock>,
+    HasSize<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -63,6 +64,12 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private Locale locale;
   private String helperText;
   private String predictedText;
+  private String width;
+  private String minWidth;
+  private String maxWidth;
+  private String height;
+  private String minHeight;
+  private String maxHeight;
 
   @Override
   public String getAttribute(String attribute) {
@@ -477,6 +484,103 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   public String getPredictedText() {
     return this.predictedText;
   }
+
+  @Override
+  public ConcernComponentMock setWidth(String width) {
+    this.width = width;
+    return this;
+  }
+
+  @Override
+  public String getWidth() {
+    return this.width;
+  }
+
+  @Override
+  public String getComputedWidth() {
+    return this.width;
+  }
+
+  @Override
+  public ConcernComponentMock setMinWidth(String minWidth) {
+    this.minWidth = minWidth;
+    return this;
+  }
+
+  @Override
+  public String getMinWidth() {
+    return this.minWidth;
+  }
+
+  @Override
+  public String getComputedMinWidth() {
+    return this.minWidth;
+  }
+
+  @Override
+  public ConcernComponentMock setMaxWidth(String maxWidth) {
+    this.maxWidth = maxWidth;
+    return this;
+  }
+
+  @Override
+  public String getMaxWidth() {
+    return this.maxWidth;
+  }
+
+  @Override
+  public String getComputedMaxWidth() {
+    return this.maxWidth;
+  }
+
+  @Override
+  public ConcernComponentMock setHeight(String height) {
+    this.height = height;
+    return this;
+  }
+
+  @Override
+  public String getHeight() {
+    return this.height;
+  }
+
+  @Override
+  public String getComputedHeight() {
+    return this.height;
+  }
+
+  @Override
+  public ConcernComponentMock setMinHeight(String minHeight) {
+    this.minHeight = minHeight;
+    return this;
+  }
+
+  @Override
+  public String getMinHeight() {
+    return this.minHeight;
+  }
+
+  @Override
+  public String getComputedMinHeight() {
+    return this.minHeight;
+  }
+
+  @Override
+  public ConcernComponentMock setMaxHeight(String maxHeight) {
+    this.maxHeight = maxHeight;
+    return this;
+  }
+
+  @Override
+  public String getMaxHeight() {
+    return this.maxHeight;
+  }
+
+  @Override
+  public String getComputedMaxHeight() {
+    return this.maxHeight;
+  }
+
 
   @Override
   protected void onCreate(Window window) {
