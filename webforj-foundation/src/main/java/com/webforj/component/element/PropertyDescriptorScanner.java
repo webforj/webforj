@@ -1,5 +1,7 @@
 package com.webforj.component.element;
 
+import com.webforj.component.element.annotation.PropertyExclude;
+import com.webforj.component.element.annotation.PropertyMethods;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -39,14 +41,20 @@ final class PropertyDescriptorScanner {
 
     for (Field field : clazz.getDeclaredFields()) {
       field.setAccessible(true); // NOSONAR
+
+      if (field.isAnnotationPresent(PropertyExclude.class)) {
+        continue;
+      }
+
       try {
         if (PropertyDescriptor.class.isAssignableFrom(field.getType())) {
           @SuppressWarnings("unchecked")
           PropertyDescriptor<V> descriptor = (PropertyDescriptor<V>) field.get(instance);
           if (descriptorFilter.test(descriptor)) {
-            Method getter = findGetter(clazz, descriptor);
-            Method setter = findSetter(clazz, descriptor);
-            properties.add(new PropertyDescriptorInfo<>(descriptor, getter, setter));
+            Method getter = findGetter(clazz, field, descriptor);
+            Method setter = findSetter(clazz, field, descriptor);
+            Class<?> targetClass = getTargetClass(field);
+            properties.add(new PropertyDescriptorInfo<>(descriptor, getter, setter, targetClass));
           }
         }
       } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -57,57 +65,81 @@ final class PropertyDescriptorScanner {
     return properties;
   }
 
-  private static <T, V> Method findSetter(Class<T> clazz, PropertyDescriptor<V> descriptor) {
-    String propName = descriptor.getName();
+  private static <T, V> Method findSetter(Class<T> clazz, Field field,
+      PropertyDescriptor<V> descriptor) {
+    PropertyMethods methodsAnnotation = field.getAnnotation(PropertyMethods.class);
+    String methodName;
+    Class<?> targetClass = clazz;
+
+    if (methodsAnnotation != null && !methodsAnnotation.setter().isEmpty()) {
+      methodName = methodsAnnotation.setter();
+      if (methodsAnnotation.target() != void.class) {
+        targetClass = methodsAnnotation.target();
+      }
+    } else {
+      String propName = descriptor.getName();
+      methodName = "set" + capitalize(propName);
+    }
+
     Class<V> propType = descriptor.getType();
-    String methodName = "set" + capitalize(propName);
-    Method setter = findMethod(clazz, methodName, getPrimitiveType(propType));
+    Method setter = findMethod(targetClass, methodName, getPrimitiveType(propType));
 
     if (setter == null) {
-      setter = findMethod(clazz, methodName, propType);
+      setter = findMethod(targetClass, methodName, propType);
     }
 
     if (setter == null) {
       // Additional logic for handling complex types like List<Object>
-      setter = findCompatibleSetter(clazz, methodName, descriptor);
+      setter = findCompatibleSetter(targetClass, methodName, descriptor);
     }
 
     if (setter == null) {
-      throw new WebforjRuntimeException(
-          "Setter method for " + propName + " is not found in class " + clazz.getName());
+      throw new WebforjRuntimeException("Setter method for " + descriptor.getName()
+          + " is not found in class " + targetClass.getName());
     }
 
     return setter;
   }
 
-  private static <T, V> Method findGetter(Class<T> clazz, PropertyDescriptor<V> descriptor) {
-    String propName = descriptor.getName();
-    Class<V> propType = descriptor.getType();
-    Method getter = null;
+  private static <T, V> Method findGetter(Class<T> clazz, Field field,
+      PropertyDescriptor<V> descriptor) {
+    PropertyMethods methodsAnnotation = field.getAnnotation(PropertyMethods.class);
+    String methodName;
+    Class<?> targetClass = clazz;
 
-    if (propType.equals(boolean.class) || propType.equals(Boolean.class)) {
-      String isGetterName = "is" + capitalize(propName);
-      String hasGetterName = "has" + capitalize(propName);
-
-      getter = findMethod(clazz, isGetterName);
-      if (getter == null) {
-        getter = findMethod(clazz, hasGetterName);
+    if (methodsAnnotation != null && !methodsAnnotation.getter().isEmpty()) {
+      methodName = methodsAnnotation.getter();
+      if (methodsAnnotation.target() != void.class) {
+        targetClass = methodsAnnotation.target();
       }
+    } else {
+      String propName = descriptor.getName();
+      Class<V> propType = descriptor.getType();
+      if (propType.equals(boolean.class) || propType.equals(Boolean.class)) {
+        String isGetterName = "is" + capitalize(propName);
+        String hasGetterName = "has" + capitalize(propName);
+
+        Method getter = findMethod(targetClass, isGetterName);
+        if (getter == null) {
+          getter = findMethod(targetClass, hasGetterName);
+        }
+        if (getter != null) {
+          return getter;
+        }
+      }
+      methodName = "get" + capitalize(propName);
     }
 
-    if (getter == null) {
-      String getGetterName = "get" + capitalize(propName);
-      getter = findMethod(clazz, getGetterName);
-    }
+    Method getter = findMethod(targetClass, methodName);
 
     if (getter == null) {
       // Additional logic for handling complex types like List<Object>
-      getter = findCompatibleGetter(clazz, propName, descriptor);
+      getter = findCompatibleGetter(targetClass, descriptor.getName(), descriptor);
     }
 
     if (getter == null) {
-      throw new WebforjRuntimeException(
-          "Getter method for property '" + propName + "' not found in class " + clazz.getName());
+      throw new WebforjRuntimeException("Getter method for property '" + descriptor.getName()
+          + "' not found in class " + targetClass.getName());
     }
 
     return getter;
@@ -139,7 +171,6 @@ final class PropertyDescriptorScanner {
     return null;
   }
 
-
   private static Method findMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
     // First, try to find a method with an exact match.
     try {
@@ -169,7 +200,7 @@ final class PropertyDescriptorScanner {
 
     for (int i = 0; i < paramTypes.length; i++) {
       // Check if each parameter is assignable, allowing for broader compatibility
-      // such as Object, List, Collection, etc., for complex types.0
+      // such as Object, List, Collection, etc., for complex types.
       if (!methodParamTypes[i].isAssignableFrom(paramTypes[i])) {
         return false;
       }
@@ -213,5 +244,14 @@ final class PropertyDescriptorScanner {
       return name;
     }
     return name.substring(0, 1).toUpperCase() + name.substring(1);
+  }
+
+  private static Class<?> getTargetClass(Field field) {
+    PropertyMethods methodsAnnotation = field.getAnnotation(PropertyMethods.class);
+    if (methodsAnnotation != null && methodsAnnotation.target() != void.class) {
+      return methodsAnnotation.target();
+    }
+
+    return field.getDeclaringClass();
   }
 }
