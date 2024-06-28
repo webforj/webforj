@@ -296,6 +296,66 @@ public abstract class App {
   }
 
   /**
+   * Gets the busy indicator instance.
+   *
+   * @return the busy indicator instance
+   * @since 24.10
+   */
+  public static BusyIndicator getBusyIndicator() {
+    try {
+      return new BusyIndicator(
+          Environment.getCurrent().getBBjAPI().getWebManager().getBusyIndicator());
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException(e);
+    }
+  }
+
+  /**
+   * Shows or hides the application busy indicator.
+   *
+   * @param busy true to show the busy indicator, false to hide it
+   * @return the busy indicator instance
+   *
+   * @since 24.10
+   */
+  public static BusyIndicator busy(boolean busy) {
+    return getBusyIndicator().setVisible(busy);
+  }
+
+  /**
+   * Shows the application busy indicator with the specified text message.
+   *
+   * @param text The text message to show
+   * @param allowHtml true to allow HTML in the text message, false otherwise
+   * @return the busy indicator instance
+   *
+   * @since 24.10
+   */
+  public static BusyIndicator busy(String text, boolean allowHtml) {
+    BusyIndicator indicator = getBusyIndicator();
+    if (allowHtml) {
+      indicator.setHtml(text);
+    } else {
+      indicator.setText(text);
+    }
+
+    indicator.setVisible(true);
+    return indicator;
+  }
+
+  /**
+   * Shows the application busy indicator with the specified text message.
+   *
+   * @param text The text message to show
+   * @return the busy indicator instance
+   *
+   * @since 24.10
+   */
+  public static BusyIndicator busy(String text) {
+    return busy(text, false);
+  }
+
+  /**
    * Log a String to the browser console (console.log)
    *
    * @param output The message to log
@@ -367,36 +427,6 @@ public abstract class App {
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options, String title) {
     return Environment.getCurrent().getWebforjHelper().msgbox(alert, options, title);
-  }
-
-  /**
-   * Show or hide a busy indicator overlay
-   *
-   * @param busy A boolean value true=show false=hide
-   */
-  public static void busy(boolean busy) {
-    try {
-      if (busy) {
-        Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setText("");
-      }
-      Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(busy);
-    } catch (BBjException e) {
-      // ignore
-    }
-  }
-
-  /**
-   * show the busy indicator with the text passed to this method
-   *
-   * @param busyText the text to show
-   */
-  public static void busy(String busyText) {
-    try {
-      Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setText(busyText);
-      Environment.getCurrent().getBBjAPI().getBuiManager().getBusyIndicator().setVisible(true);
-    } catch (BBjException e) {
-      // ignore
-    }
   }
 
   /**
