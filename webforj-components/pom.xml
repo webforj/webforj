@@ -25,6 +25,7 @@
     <module>webforj-terminal</module>
     <module>webforj-googlecharts</module>
     <module>webforj-html-elements</module>
+    <module>webforj-loading</module>
     <module>webforj-login</module>
     <module>webforj-youtube</module>
     <module>webforj-table</module>
