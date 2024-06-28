@@ -1,6 +1,6 @@
 package com.webforj.component.element;
 
-import com.webforj.component.element.annotation.IgnoreProperty;
+import com.webforj.component.element.annotation.PropertyExclude;
 import com.webforj.component.element.annotation.PropertyMethods;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.lang.reflect.Field;
@@ -42,7 +42,7 @@ final class PropertyDescriptorScanner {
     for (Field field : clazz.getDeclaredFields()) {
       field.setAccessible(true); // NOSONAR
 
-      if (field.isAnnotationPresent(IgnoreProperty.class)) {
+      if (field.isAnnotationPresent(PropertyExclude.class)) {
         continue;
       }
 
