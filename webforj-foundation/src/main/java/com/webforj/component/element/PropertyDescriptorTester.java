@@ -54,11 +54,12 @@ public final class PropertyDescriptorTester {
     V defaultValue = descriptor.getDefaultValue();
 
     try {
-      info.getSetter().invoke(instance, defaultValue);
+      Object targetInstance = getTargetInstance(instance, info.getTargetClass());
+      info.getSetter().invoke(targetInstance, defaultValue);
 
       Method getter = info.getGetter();
       @SuppressWarnings("unchecked")
-      V value = (V) getter.invoke(instance);
+      V value = (V) getter.invoke(targetInstance);
 
       if (!isEqual(defaultValue, value)) {
         throw new AssertionError("Property '" + descriptor.getName()
@@ -69,6 +70,25 @@ public final class PropertyDescriptorTester {
         | InvocationTargetException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  private static <T> Object getTargetInstance(T instance, Class<?> targetClass) {
+    if (targetClass.isInstance(instance)) {
+      return instance;
+    }
+
+    for (Class<?> innerClass : instance.getClass().getDeclaredClasses()) {
+      if (targetClass.equals(innerClass)) {
+        try {
+          return innerClass.getDeclaredConstructor(instance.getClass()).newInstance(instance);
+        } catch (Exception e) {
+          throw new WebforjRuntimeException(e);
+        }
+      }
+    }
+
+    throw new WebforjRuntimeException(
+        "Target class instance could not be created for " + targetClass.getName());
   }
 
   private static <V> boolean isEqual(V a, V b) {

@@ -15,19 +15,23 @@ class PropertyDescriptorInfo<V> {
   private final PropertyDescriptor<V> descriptor;
   private final Method reader;
   private final Method writer;
+  private final Class<?> targetClass;
 
   /**
    * Constructs a new PropertyDescriptorInfo instance with the provided property descriptor, read
-   * method, and write method.
+   * method, write method, and target class.
    *
    * @param descriptor The property descriptor associated with this information.
    * @param reader The read method associated with the property descriptor.
    * @param writer The write method associated with the property descriptor.
+   * @param targetClass The class containing the getter and setter methods.
    */
-  PropertyDescriptorInfo(PropertyDescriptor<V> descriptor, Method reader, Method writer) {
+  PropertyDescriptorInfo(PropertyDescriptor<V> descriptor, Method reader, Method writer,
+      Class<?> targetClass) {
     this.descriptor = descriptor;
     this.reader = reader;
     this.writer = writer;
+    this.targetClass = targetClass;
   }
 
   /**
@@ -55,5 +59,14 @@ class PropertyDescriptorInfo<V> {
    */
   public Method getSetter() {
     return writer;
+  }
+
+  /**
+   * Retrieves the target class containing the getter and setter methods.
+   *
+   * @return The target class.
+   */
+  public Class<?> getTargetClass() {
+    return targetClass;
   }
 }
