@@ -25,7 +25,6 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRestrictedAccessException;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -47,7 +46,7 @@ class DwcComponentTest {
 
   @Test
   @DisplayName("placeholder")
-  void placeholder() throws IllegalAccessException, BBjException {
+  void placeholder() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
     component.setComponentPlaceholder("placeholder");
     assertEquals("placeholder", component.getComponentPlaceholder());
@@ -180,8 +179,7 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("onAttach will re-apply readonly changes")
-    void onAttachWillReApplyingReadOnlyChanges() throws BBjException, NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException {
+    void onAttachWillReApplyingReadOnlyChanges() throws BBjException, IllegalAccessException {
       component.setReadOnly(true);
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
@@ -235,7 +233,7 @@ class DwcComponentTest {
         attribute is restricted
         """)
     void setAttributeWillThrowDwcjRestrictedAccessExceptionWhenAttributeIsRestricted()
-        throws IllegalAccessException, BBjException {
+        throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
       List<String> restrictedAttributes = component.getRestrictedAttributes();
@@ -283,8 +281,7 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("onAttach will re-apply attributes changes")
-    void onAttachWillReApplyingAttributesChanges() throws NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException, BBjException {
+    void onAttachWillReApplyingAttributesChanges() throws IllegalAccessException, BBjException {
       ReflectionUtils.nullifyControl(component);
 
       component.setAttribute("key-1", "value-1");
@@ -342,8 +339,7 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("onAttach will re-apply properties changes")
-    void onAttachWillReApplyingPropertiesChanges() throws BBjException, NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException {
+    void onAttachWillReApplyingPropertiesChanges() throws BBjException, IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
       component.setProperty("key-1", "value-1");
       component.setProperty("key-2", "value-2");
@@ -366,7 +362,7 @@ class DwcComponentTest {
       ReflectionUtils.nullifyControl(component);
 
       component.setText("value");
-      assertSame("value", component.getText());
+      assertEquals("value", component.getText());
 
       verify(control, times(0)).setText("value");
       verify(control, times(0)).getText();
@@ -378,7 +374,7 @@ class DwcComponentTest {
       doReturn("value").when(control).getText();
 
       component.setText("value");
-      assertSame("value", component.getText());
+      assertEquals("value", component.getText());
 
       verify(control, times(1)).setText("value");
       verify(control, times(1)).getText();
@@ -399,7 +395,7 @@ class DwcComponentTest {
         BBjException a DwcjRuntimeException is thrown
         """)
     void settingGettingTextWhenControlThrowsBbjException() throws BBjException {
-      doThrow(BBjException.class).when(control).setText("value");
+      doThrow(BBjException.class).when(control).setText(anyString());
       doThrow(BBjException.class).when(control).getText();
 
       assertThrows(WebforjRuntimeException.class, () -> component.setText("value"));
@@ -408,14 +404,41 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("catchup will re-apply text changes")
-    void catchupWillReApplyingTextChanges() throws BBjException, NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException {
+    void catchupWillReApplyingTextChanges() throws BBjException, IllegalAccessException {
       component.setText("value");
 
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
 
       verify(control, times(2)).setText("value");
+    }
+
+    @Test
+    void shouldSetGetHtmlWhenControlNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+
+      String html = "<p>hello</p>";
+      String expected = "<html><p>hello</p></html>";
+
+      component.setHtml(html);
+      assertEquals(html, component.getHtml());
+
+      verify(control, times(0)).setText(expected);
+      verify(control, times(0)).getText();
+    }
+
+    @Test
+    void shouldSetGetHtmlWhenControlNotNull() throws BBjException {
+      String html = "<p>hello</p>";
+      String expected = "<html><p>hello</p></html>";
+
+      doReturn(expected).when(control).getText();
+
+      component.setHtml(html);
+      assertEquals(html, component.getHtml());
+
+      verify(control, times(1)).setText(expected);
+      verify(control, times(1)).getText();
     }
   }
 
@@ -448,8 +471,8 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("onAttach will re-apply highlightOnFocus changes")
-    void onAttachWillReApplyingHighlightOnFocusChanges() throws BBjException, NoSuchMethodException,
-        IllegalAccessException, InvocationTargetException {
+    void onAttachWillReApplyingHighlightOnFocusChanges()
+        throws BBjException, IllegalAccessException {
       component.setHighlightOnFocus(HasHighlightOnFocus.Behavior.ALL);
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
@@ -501,8 +524,7 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("catchup will reapply alignment changes")
-    void catchupWillReapplyAlignmentChanges() throws BBjException, IllegalAccessException,
-        NoSuchMethodException, InvocationTargetException {
+    void catchupWillReapplyAlignmentChanges() throws BBjException, IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
       component.setHorizontalAlignment(DwcComponentMock.Alignment.RIGHT);
@@ -520,8 +542,8 @@ class DwcComponentTest {
 
     @Test
     @DisplayName("catchup will skip alignment changes if it is the default alignment")
-    void catchupWillSkipAlignmentChangesIfItIsTheDefaultAlignment() throws BBjException,
-        IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    void catchupWillSkipAlignmentChangesIfItIsTheDefaultAlignment()
+        throws BBjException, IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
       component.setDefaultHorizontalAlignment(DwcComponentMock.Alignment.RIGHT);

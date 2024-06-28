@@ -6,6 +6,7 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
+import com.webforj.App;
 import com.webforj.component.event.EventSinkListenerRegistry;
 import com.webforj.component.event.MouseEnterEvent;
 import com.webforj.component.event.MouseExitEvent;
@@ -16,10 +17,11 @@ import com.webforj.component.event.sink.RightMouseDownEventSink;
 import com.webforj.component.optioninput.RadioButtonGroup;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
-import com.webforj.concern.HasSize;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
+import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasProperty;
+import com.webforj.concern.HasSize;
 import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasText;
 import com.webforj.concern.HasTooltip;
@@ -61,8 +63,8 @@ import java.util.stream.Collectors;
  * @since 23.05
  */
 public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
-    implements HasText<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>, HasStyle<T>,
-    HasVisibility<T>, HasTooltip<T>, HasSize<T> {
+    implements HasText<T>, HasHtml<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>,
+    HasStyle<T>, HasVisibility<T>, HasTooltip<T>, HasSize<T> {
 
   private final List<String> classNames = new ArrayList<>();
   private final List<String> removedClassNames = new ArrayList<>();
@@ -294,28 +296,21 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     return new ArrayList<>();
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public T setText(String text) {
+  void doSetText(String text) {
+    String theText = text == null ? "" : text;
+
     if (control != null) {
       try {
-        control.setText(text);
+        control.setText(theText);
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
     }
 
-    this.text = text;
-    return getSelf();
+    this.text = theText;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String getText() {
+  String doGetText() {
     if (control != null) {
       try {
         return control.getText();
@@ -324,7 +319,48 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       }
     }
 
-    return text == null ? "" : text;
+    return text;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setHtml(String html) {
+    doSetText(addHtmlTag(html));
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getHtml() {
+    return removeHtmlTag(doGetText());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setText(String text) {
+    String value = text == null ? "" : text;
+    if (!isWrappedWithHtmlTag(value)) {
+      value = sanitizeHtml(value);
+      doSetText(value);
+    } else {
+      setHtml(value);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getText() {
+    return sanitizeHtml(doGetText());
   }
 
   /**
@@ -1070,7 +1106,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     }
 
     if (text != null && !text.isEmpty()) {
-      setText(text);
+      doSetText(text);
     }
 
     if (readOnly) {
@@ -1143,5 +1179,36 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     T self = (T) this;
 
     return self;
+  }
+
+  private String sanitizeHtml(String html) {
+    return (html == null ? "" : html).replaceAll("\\<[^>]*>", "");
+  }
+
+  private boolean isWrappedWithHtmlTag(String text) {
+    return (text == null ? "" : text).trim().startsWith("<html>");
+  }
+
+  private String addHtmlTag(String text) {
+    String value = text == null ? "" : text;
+    if (!isWrappedWithHtmlTag(value)) {
+      value = "<html>" + value + "</html>";
+    }
+
+    return value;
+  }
+
+  private String removeHtmlTag(String text) {
+    String value = text == null ? "" : text;
+
+    if (value.startsWith("<html>")) {
+      value = value.substring(6);
+    }
+
+    if (value.endsWith("</html>")) {
+      value = value.substring(0, value.length() - 7);
+    }
+
+    return value;
   }
 }
