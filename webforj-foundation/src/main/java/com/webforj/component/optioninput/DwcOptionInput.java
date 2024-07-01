@@ -61,16 +61,55 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
   private String helperText = "";
 
   /**
-   * Creates a new AbstractOptionInput component.
+   * Creates a new DwcOptionInput component.
    *
-   * @param text Desired text for the AbstractOptionInput.
-   * @param checked True if the AbstractOptionInput should be created as checked, false otherwise.
+   * @param text Desired text for the DwcOptionInput.
+   * @param checked True if the DwcOptionInput should be created as checked, false otherwise.
    */
-  protected DwcOptionInput(String text, boolean checked) {
+  DwcOptionInput(String text, boolean checked, EventListener<ValueChangeEvent<Boolean>> listener) {
     super();
     setText(text);
     setChecked(checked);
     setExpanse(Expanse.MEDIUM);
+
+    if (listener != null) {
+      addValueChangeListener(listener);
+    }
+  }
+
+  /**
+   * Creates a new DwcOptionInput component.
+   *
+   * @param text Desired text for the DwcOptionInput.
+   * @param checked True if the DwcOptionInput should be created as checked, false otherwise.
+   */
+  DwcOptionInput(String text, boolean checked) {
+    this(text, checked, null);
+  }
+
+  /**
+   * Creates a new DwcOptionInput component.
+   *
+   * @param text The text for the DwcOptionInput.
+   */
+  DwcOptionInput(String text) {
+    this(text, false);
+  }
+
+  /**
+   * Creates a new DwcOptionInput component.
+   *
+   * @param checked True if the DwcOptionInput should be created as checked, false otherwise.
+   */
+  DwcOptionInput(boolean checked) {
+    this("", checked);
+  }
+
+  /**
+   * Creates a new DwcOptionInput component.
+   */
+  DwcOptionInput() {
+    this("");
   }
 
   /**

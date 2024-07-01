@@ -80,6 +80,33 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
    *
    * @param name the name of the RadioButtonGroup.
    * @param buttons the list of RadioButtons to add.
+   * @param listener event listener for value change events.
+   */
+  public RadioButtonGroup(String name, List<RadioButton> buttons,
+      EventListener<ValueChangeEvent<String>> listener) {
+    setName(name);
+    add(buttons.toArray(new RadioButton[0]));
+
+    if (listener != null) {
+      addValueChangeListener(listener);
+    }
+  }
+
+  /**
+   * Creates a RadioButtonGroup with a name and a list of RadioButtons.
+   *
+   * @param name the name of the RadioButtonGroup.
+   * @param buttons the list of RadioButtons to add.
+   */
+  public RadioButtonGroup(String name, List<RadioButton> buttons) {
+    this(name, buttons, null);
+  }
+
+  /**
+   * Creates a RadioButtonGroup with a name and a list of RadioButtons.
+   *
+   * @param name the name of the RadioButtonGroup.
+   * @param buttons the list of RadioButtons to add.
    */
   public RadioButtonGroup(String name, RadioButton... buttons) {
     setName(name);

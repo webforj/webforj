@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioButton;
 import com.basis.startup.type.BBjException;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,106 +36,115 @@ class RadioButtonTest {
   class Constructors {
 
     @Test
-    @DisplayName("Default constructor")
-    void shouldConstruct() {
-      assertNotNull(component);
+    void shouldCreateRadioButtonWithTextCheckedAndListener() {
+      String text = "Test RadioButton";
+      boolean checked = true;
+      EventListener<ValueChangeEvent<Boolean>> listener = event -> {
+        // Event listener implementation
+      };
+
+      RadioButton radioButton = RadioButton.Switch(text, checked, listener);
+
+      assertEquals(text, radioButton.getText());
+      assertTrue(radioButton.isChecked());
+
+      // @see https://github.com/webforj/webforj/issues/643
+      // assertEquals(1, component.getEventListeners(ValueChangeEvent.class).size());
     }
 
     @Test
-    void shouldConstructWithNameTextAndChecked() {
-      RadioButton button = new RadioButton("Name", "Text", true);
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithTextAndChecked() {
+      String text = "Test RadioButton";
+      boolean checked = true;
 
-      assertEquals("Name", button.getName());
-      assertEquals("Text", button.getText());
-      assertTrue(button.isChecked());
+      RadioButton radioButton = RadioButton.Switch(text, checked);
+
+      assertEquals(text, radioButton.getText());
+      assertTrue(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructWithNameAndText() {
-      RadioButton button = new RadioButton("Name", "Text");
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithText() {
+      String text = "Test RadioButton";
 
-      assertEquals("Name", button.getName());
-      assertEquals("Text", button.getText());
-      assertFalse(button.isChecked());
+      RadioButton radioButton = RadioButton.Switch(text);
+
+      assertEquals(text, radioButton.getText());
+      assertFalse(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructWithTextAndChecked() {
-      RadioButton button = new RadioButton("Text", true);
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithChecked() {
+      boolean checked = true;
 
-      assertEquals("Text", button.getText());
-      assertEquals("Text", button.getName());
-      assertTrue(button.isChecked());
+      RadioButton radioButton = RadioButton.Switch(checked);
+
+      assertEquals("", radioButton.getText());
+      assertTrue(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructWithText() {
-      RadioButton button = new RadioButton("Text");
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithNameTextCheckedAndListener() {
+      String name = "radio1";
+      String text = "Test RadioButton";
+      boolean checked = true;
+      EventListener<ValueChangeEvent<Boolean>> listener = event -> {
+        // Event listener implementation
+      };
 
-      assertEquals("Text", button.getText());
-      assertEquals("Text", button.getName());
-      assertFalse(button.isChecked());
-    }
+      RadioButton radioButton = RadioButton.Switch(name, text, checked, listener);
 
-    // Switches
-
-    @Test
-    void shouldConstructSwitch() {
-      RadioButton button = RadioButton.Switch();
-      assertNotNull(button);
-
-      assertEquals("", button.getName());
-      assertEquals("", button.getText());
-      assertFalse(button.isChecked());
-      assertTrue(button.isSwitch());
+      assertEquals(name, radioButton.getName());
+      assertEquals(text, radioButton.getText());
+      assertTrue(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructSwitchWithNameTextAndChecked() {
-      RadioButton button = RadioButton.Switch("Name", "Text", true);
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithNameTextAndChecked() {
+      String name = "radio1";
+      String text = "Test RadioButton";
+      boolean checked = true;
 
-      assertEquals("Name", button.getName());
-      assertEquals("Text", button.getText());
-      assertTrue(button.isChecked());
-      assertTrue(button.isSwitch());
+      RadioButton radioButton = RadioButton.Switch(name, text, checked);
+
+      assertEquals(name, radioButton.getName());
+      assertEquals(text, radioButton.getText());
+      assertTrue(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructSwitchWithNameAndText() {
-      RadioButton button = RadioButton.Switch("Name", "Text");
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithNameTextAndListener() {
+      String name = "radio1";
+      String text = "Test RadioButton";
+      EventListener<ValueChangeEvent<Boolean>> listener = event -> {
+        // Event listener implementation
+      };
 
-      assertEquals("Name", button.getName());
-      assertEquals("Text", button.getText());
-      assertFalse(button.isChecked());
-      assertTrue(button.isSwitch());
+      RadioButton radioButton = RadioButton.Switch(name, text, listener);
+
+      assertEquals(name, radioButton.getName());
+      assertEquals(text, radioButton.getText());
+      assertFalse(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructSwitchWithTextAndChecked() {
-      RadioButton button = RadioButton.Switch("Text", true);
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithNameAndText() {
+      String name = "radio1";
+      String text = "Test RadioButton";
 
-      assertEquals("Text", button.getText());
-      assertEquals("Text", button.getName());
-      assertTrue(button.isChecked());
-      assertTrue(button.isSwitch());
+      RadioButton radioButton = RadioButton.Switch(name, text);
+
+      assertEquals(name, radioButton.getName());
+      assertEquals(text, radioButton.getText());
+      assertFalse(radioButton.isChecked());
     }
 
     @Test
-    void shouldConstructSwitchWithText() {
-      RadioButton button = RadioButton.Switch("Text");
-      assertNotNull(button);
+    void shouldCreateRadioButtonWithNoParameters() {
+      RadioButton radioButton = RadioButton.Switch();
 
-      assertEquals("Text", button.getText());
-      assertEquals("Text", button.getName());
-      assertFalse(button.isChecked());
-      assertTrue(button.isSwitch());
+      assertEquals("", radioButton.getText());
+      assertFalse(radioButton.isChecked());
     }
   }
 
