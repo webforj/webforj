@@ -24,17 +24,44 @@ import com.webforj.utilities.BBjFunctionalityHelper;
  * @since 23.02
  */
 public final class Button extends DwcButton<Button> {
+  static final ButtonTheme DEFAULT_THEME = ButtonTheme.DEFAULT;
 
   /**
    * Construct the button with the given text and a {@link ButtonClickEvent}.
    *
    * @param text the text of the button
-   * @param onClickListener the listener to be called when the button is clicked
+   * @param theme the button theme
+   * @param clickListener the listener to be called when the button is clicked
+   * @since 24.10
    */
-  public Button(String text, EventListener<ButtonClickEvent> onClickListener) {
+  public Button(String text, ButtonTheme theme, EventListener<ButtonClickEvent> clickListener) {
     super();
     setText(text);
-    addClickListener(onClickListener);
+    setTheme(theme);
+    if (clickListener != null) {
+      addClickListener(clickListener);
+    }
+  }
+
+  /**
+   * Construct the button with the given text and a {@link ButtonClickEvent}.
+   *
+   * @param text the text of the button
+   * @param theme the button theme
+   * @since 24.10
+   */
+  public Button(String text, ButtonTheme theme) {
+    this(text, theme, null);
+  }
+
+  /**
+   * Construct the button with the given text and a {@link ButtonClickEvent}.
+   *
+   * @param text the text of the button
+   * @param clickListener the listener to be called when the button is clicked
+   */
+  public Button(String text, EventListener<ButtonClickEvent> clickListener) {
+    this(text, DEFAULT_THEME, clickListener);
   }
 
   /**
@@ -43,8 +70,7 @@ public final class Button extends DwcButton<Button> {
    * @param text the text of the button
    */
   public Button(String text) {
-    super();
-    setText(text);
+    this(text, DEFAULT_THEME);
   }
 
   /**
