@@ -21,6 +21,7 @@
     <module>webforj-drawer</module>
     <module>webforj-flexlayout</module>
     <module>webforj-markdown</module>
+    <module>webforj-spinner</module>
     <module>webforj-splitter</module>
     <module>webforj-terminal</module>
     <module>webforj-googlecharts</module>
