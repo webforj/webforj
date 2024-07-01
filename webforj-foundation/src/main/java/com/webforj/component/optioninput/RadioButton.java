@@ -4,6 +4,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.Arrays;
@@ -70,6 +72,55 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
   private boolean isSwitch = false;
 
   /**
+   * Creates a new RadioButton component.
+   *
+   * @param text Desired text for the RadioButton.
+   * @param checked True if the RadioButton should be created as selected, false otherwise.
+   * @param listener Event listener for value change events.
+   *
+   * @since 24.10
+   */
+  RadioButton(String text, boolean checked, EventListener<ValueChangeEvent<Boolean>> listener) {
+    this(text, text, checked, listener);
+  }
+
+  /**
+   * Creates a new RadioButton component.
+   *
+   * @param text Desired text for the RadioButton.
+   * @param checked True if the RadioButton should be created as selected, false otherwise.
+   */
+  RadioButton(String text, boolean checked) {
+    this(text, checked, null);
+  }
+
+  /**
+   * Creates a new RadioButton component.
+   *
+   * @param checked True if the RadioButton should be created as selected, false otherwise.
+   * @since 24.10
+   */
+  RadioButton(boolean checked) {
+    this("", checked);
+  }
+
+  /**
+   * Creates a new radio button component.
+   *
+   * @param name The name of the radio button.
+   * @param text Desired text for the radio button.
+   * @param checked True if the radio button should be created as checked, false otherwise.
+   * @param listener Event listener for value change events.
+   *
+   * @since 24.10
+   */
+  public RadioButton(String name, String text, boolean checked,
+      EventListener<ValueChangeEvent<Boolean>> listener) {
+    super(text, checked, listener);
+    setName(name);
+  }
+
+  /**
    * Creates a new radio button component.
    *
    * @param name The name of the radio button.
@@ -79,8 +130,20 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    * @since 24.01
    */
   public RadioButton(String name, String text, boolean checked) {
-    super(text, checked);
-    setName(name);
+    this(name, text, checked, null);
+  }
+
+  /**
+   * Creates a new radio button component.
+   *
+   * @param name The name of the radio button.
+   * @param text The text for the radio button.
+   * @param listener Event listener for value change events.
+   *
+   * @since 24.10
+   */
+  public RadioButton(String name, String text, EventListener<ValueChangeEvent<Boolean>> listener) {
+    this(name, text, false, listener);
   }
 
   /**
@@ -96,43 +159,93 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
   }
 
   /**
-   * Creates a new radio button component.
+   * Creates a new RadioButton component.
    *
-   * @param text The text for the radio button.
-   * @param checked True if the radio button should be created as checked, false otherwise.
+   * @param text The text for the RadioButton.
    */
-  public RadioButton(String text, boolean checked) {
-    this(text, text, checked);
-  }
-
-  /**
-   * Creates a new radio button component with a random name.
-   *
-   * @param text The text for the radio button.
-   */
-  public RadioButton(String text) {
+  RadioButton(String text) {
     this(text, text, false);
   }
 
   /**
-   * Creates a new radio button component with a random name.
+   * Creates a new RadioButton component.
    */
-  public RadioButton() {
-    this("", false);
+  RadioButton() {
+    this("");
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @param text Desired text for the RadioButton.
+   * @param checked True if the RadioButton should be created as selected, false otherwise.
+   * @param listener Event listener for value change events.
+   *
+   * @return The created radio button with the switch style.
+   * @since 24.10
+   */
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String text, boolean checked,
+      EventListener<ValueChangeEvent<Boolean>> listener) {
+    return new RadioButton(text, checked, listener).setSwitch(true);
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @param text Desired text for the RadioButton.
+   * @param checked True if the RadioButton should be created as selected, false otherwise.
+   *
+   * @return The created radio button with the switch style.
+   * @since 23.02
+   */
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String text, boolean checked) {
+    return new RadioButton(text, checked).setSwitch(true);
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @param checked True if the RadioButton should be created as selected, false otherwise.
+   *
+   * @return The created radio button with the switch style.
+   * @since 24.10
+   */
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(boolean checked) {
+    return new RadioButton(checked).setSwitch(true);
   }
 
   /**
    * Factory method to create a radio button which is rendered as a switch button.
    *
    * @param name The name of the radio button.
-   * @param text The text for the radio button.
+   * @param text Desired text for the radio button.
+   * @param checked True if the radio button should be created as checked, false otherwise.
+   * @param listener Event listener for value change events.
+   *
+   * @return The created radio button with the switch style.
+   * @since 24.10
+   */
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String name, String text, boolean checked,
+      EventListener<ValueChangeEvent<Boolean>> listener) {
+    return new RadioButton(name, text, checked, listener).setSwitch(true);
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
+   *
+   * @param name The name of the radio button.
+   * @param text Desired text for the radio button.
    * @param checked True if the radio button should be created as checked, false otherwise.
    *
    * @return The created radio button with the switch style.
-   *
    * @since 24.01
    */
-  public static RadioButton Switch(String name, String text, boolean checked) { // NOSONAR
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String name, String text, boolean checked) {
     return new RadioButton(name, text, checked).setSwitch(true);
   }
 
@@ -141,37 +254,40 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    *
    * @param name The name of the radio button.
    * @param text The text for the radio button.
+   * @param listener Event listener for value change events.
    *
    * @return The created radio button with the switch style.
+   * @since 24.10
+   */
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String name, String text,
+      EventListener<ValueChangeEvent<Boolean>> listener) {
+    return new RadioButton(name, text, listener).setSwitch(true);
+  }
+
+  /**
+   * Factory method to create a radio button which is rendered as a switch button.
    *
+   * @param name The name of the radio button.
+   * @param text The text for the radio button.
+   *
+   * @return The created radio button with the switch style.
    * @since 24.01
    */
-  public static RadioButton Switch(String name, String text) { // NOSONAR
-    return RadioButton.Switch(name, text, false);
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String name, String text) {
+    return new RadioButton(name, text).setSwitch(true);
   }
 
   /**
    * Factory method to create a radio button which is rendered as a switch button.
    *
-   * @param text The text for the radio button.
-   * @param checked True if the radio button should be created as checked, false otherwise.
-   *
+   * @param text The text for the RadioButton.
    * @return The created radio button with the switch style.
    * @since 23.02
    */
-  public static RadioButton Switch(String text, boolean checked) { // NOSONAR
-    return new RadioButton(text, checked).setSwitch(true);
-  }
-
-  /**
-   * Factory method to create a radio button which is rendered as a switch button.
-   *
-   * @param text The text for the radio button.
-   *
-   * @return The created radio button with the switch style.
-   * @since 23.02
-   */
-  public static RadioButton Switch(String text) { // NOSONAR
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch(String text) {
     return new RadioButton(text).setSwitch(true);
   }
 
@@ -181,7 +297,8 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    * @return The created radio button with the switch style.
    * @since 23.02
    */
-  public static RadioButton Switch() { // NOSONAR
+  @SuppressWarnings("squid:S100")
+  public static RadioButton Switch() {
     return new RadioButton().setSwitch(true);
   }
 

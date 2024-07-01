@@ -4,6 +4,8 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.window.Window;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.Arrays;
@@ -36,28 +38,48 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
   private boolean indeterminate;
 
   /**
-   * Creates a new checkbox component.
+   * Creates a new CheckBox component.
    *
-   * @param text Desired text for the checkbox.
-   * @param checked True if the checkbox should be created as checked, false otherwise.
+   * @param text Desired text for the CheckBox.
+   * @param checked True if the CheckBox should be created as checked, false otherwise.
+   * @param listener Event listener for value change events.
    */
-  public CheckBox(String text, boolean checked) {
-    super(text, checked);
+  CheckBox(String text, boolean checked, EventListener<ValueChangeEvent<Boolean>> listener) {
+    super(text, checked, listener);
   }
 
   /**
-   * Creates a new checkbox component.
+   * Creates a new CheckBox component.
    *
-   * @param text The text for the checkbox.
+   * @param text Desired text for the CheckBox.
+   * @param checked True if the CheckBox should be created as checked, false otherwise.
    */
-  public CheckBox(String text) {
+  CheckBox(String text, boolean checked) {
+    this(text, checked, null);
+  }
+
+  /**
+   * Creates a new CheckBox component.
+   *
+   * @param text The text for the CheckBox.
+   */
+  CheckBox(String text) {
     this(text, false);
   }
 
   /**
-   * Creates a new checkbox component.
+   * Creates a new CheckBox component.
+   *
+   * @param checked True if the CheckBox should be created as checked, false otherwise.
    */
-  public CheckBox() {
+  CheckBox(boolean checked) {
+    this("", checked);
+  }
+
+  /**
+   * Creates a new CheckBox component.
+   */
+  CheckBox() {
     this("");
   }
 

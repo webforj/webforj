@@ -1,7 +1,6 @@
 package com.webforj.component.optioninput;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,12 +11,15 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import java.util.List;
+
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasClientValidationStyle.ValidationStyle;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class RadioButtonGroupTest {
 
   @Mock
-  BBjRadioGroup group;
+  BBjRadioGroup bbjGroup;
 
   @Mock
   Window window;
@@ -45,12 +47,82 @@ class RadioButtonGroupTest {
   }
 
   @Nested
+  class Constructors {
+
+    @Test
+    void shouldCreateRadioButtonGroupWithNameButtonsAndListener() {
+      String name = "group1";
+      RadioButton button1 = new RadioButton("Option 1");
+      RadioButton button2 = new RadioButton("Option 2");
+      EventListener<ValueChangeEvent<String>> listener = event -> {
+        // Event listener implementation
+      };
+
+      RadioButtonGroup group = new RadioButtonGroup(name, List.of(button1, button2), listener);
+
+      assertEquals(name, group.getName());
+      assertEquals(2, group.getRadioButtons().size());
+    }
+
+    @Test
+    void shouldCreateRadioButtonGroupWithNameAndButtons() {
+      String name = "group1";
+      RadioButton button1 = new RadioButton("Option 1");
+      RadioButton button2 = new RadioButton("Option 2");
+
+      RadioButtonGroup group = new RadioButtonGroup(name, List.of(button1, button2));
+
+      assertEquals(name, group.getName());
+      assertEquals(2, group.getRadioButtons().size());
+    }
+
+    @Test
+    void shouldCreateRadioButtonGroupWithNameAndVarArgsButtons() {
+      String name = "group1";
+      RadioButton button1 = new RadioButton("Option 1");
+      RadioButton button2 = new RadioButton("Option 2");
+
+      RadioButtonGroup group = new RadioButtonGroup(name, button1, button2);
+
+      assertEquals(name, group.getName());
+      assertEquals(2, group.getRadioButtons().size());
+    }
+
+    @Test
+    void shouldCreateRadioButtonGroupWithName() {
+      String name = "group1";
+
+      RadioButtonGroup group = new RadioButtonGroup(name);
+
+      assertEquals(name, group.getName());
+      assertTrue(group.getRadioButtons().isEmpty());
+    }
+
+    @Test
+    void shouldCreateRadioButtonGroupWithVarArgsButtons() {
+      RadioButton button1 = new RadioButton("Option 1");
+      RadioButton button2 = new RadioButton("Option 2");
+
+      RadioButtonGroup group = new RadioButtonGroup(button1, button2);
+
+      assertEquals(2, group.getRadioButtons().size());
+    }
+
+    @Test
+    void shouldCreateRadioButtonGroupWithNoParameters() {
+      RadioButtonGroup group = new RadioButtonGroup();
+
+      assertTrue(group.getRadioButtons().isEmpty());
+    }
+  }
+
+  @Nested
   @DisplayName("Adding API")
   class AddingApi {
 
     @Test
     @DisplayName("When group is null")
-    void whenGroupIsNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNull() throws IllegalAccessException {
       nullifyGroup();
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
       component.add(buttons);
@@ -61,17 +133,17 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When group is not null")
-    void whenGroupIsNotNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNotNull() throws BBjException {
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
       component.add(buttons);
 
       verify(window, times(2)).add(any(RadioButton.class));
-      verify(group, times(2)).add(any());
+      verify(bbjGroup, times(2)).add(any());
     }
 
     @Test
     @DisplayName("When button is already attached to a window")
-    void whenButtonIsAlreadyAttachedToAWindow() throws BBjException, IllegalAccessException {
+    void whenButtonIsAlreadyAttachedToAWindow() throws BBjException {
       RadioButton[] buttons = {spy(new RadioButton()), new RadioButton()};
       when(buttons[0].isAttached()).thenReturn(true);
 
@@ -79,12 +151,12 @@ class RadioButtonGroupTest {
 
       verify(window, times(0)).add(buttons[0]);
       verify(window, times(1)).add(buttons[1]);
-      verify(group, times(2)).add(any());
+      verify(bbjGroup, times(2)).add(any());
     }
 
     @Test
     @DisplayName("Buttons are assigned to the group")
-    void buttonsAreAssignedToTheGroup() throws BBjException, IllegalAccessException {
+    void buttonsAreAssignedToTheGroup() {
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
       component.add(buttons);
 
@@ -94,10 +166,9 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
-    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown()
-        throws BBjException, IllegalAccessException {
+    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
-      doThrow(BBjException.class).when(group).add(any());
+      doThrow(BBjException.class).when(bbjGroup).add(any());
 
       assertThrows(WebforjRuntimeException.class, () -> component.add(buttons));
     }
@@ -109,7 +180,7 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When group is null")
-    void whenGroupIsNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNull() throws IllegalAccessException {
       nullifyGroup();
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
       component.add(buttons);
@@ -122,7 +193,7 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When group is not null")
-    void whenGroupIsNotNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNotNull() throws BBjException {
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
       component.add(buttons);
 
@@ -131,12 +202,12 @@ class RadioButtonGroupTest {
       assertEquals(1, component.getRadioButtons().size());
       assertEquals(buttons[0], component.getRadioButtons().get(0));
 
-      verify(group, times(1)).remove(any());
+      verify(bbjGroup, times(1)).remove(any());
     }
 
     @Test
     @DisplayName("Buttons are de-assigned from the group")
-    void buttonsAreAssignedToTheGroup() throws BBjException, IllegalAccessException {
+    void buttonsAreAssignedToTheGroup() {
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
       component.add(buttons);
 
@@ -148,10 +219,9 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
-    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown()
-        throws BBjException, IllegalAccessException {
+    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
       RadioButton[] buttons = {new RadioButton(), new RadioButton()};
-      doThrow(BBjException.class).when(group).remove(any());
+      doThrow(BBjException.class).when(bbjGroup).remove(any());
 
       assertThrows(WebforjRuntimeException.class, () -> component.remove(buttons[1]));
     }
@@ -163,7 +233,7 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When group is null")
-    void whenGroupIsNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNull() throws IllegalAccessException {
       nullifyGroup();
       RadioButton[] buttons =
           {new RadioButton("Option 1", false), new RadioButton("Options 2", true)};
@@ -174,22 +244,21 @@ class RadioButtonGroupTest {
 
     @Test
     @DisplayName("When group is not null")
-    void whenGroupIsNotNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNotNull() throws BBjException {
       RadioButton[] buttons =
           {new RadioButton("Option 1", false), new RadioButton("Options 2", true)};
       component.add(buttons);
 
       RadioButton checked = component.getChecked();
-      verify(group, times(1)).getSelected();
+      verify(bbjGroup, times(1)).getSelected();
     }
 
     @Test
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
-    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown()
-        throws BBjException, IllegalAccessException {
+    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
       RadioButton[] buttons =
           {new RadioButton("Option 1", false), new RadioButton("Options 2", true)};
-      doThrow(BBjException.class).when(group).getSelected();
+      doThrow(BBjException.class).when(bbjGroup).getSelected();
 
       assertThrows(WebforjRuntimeException.class, () -> component.getChecked());
     }
@@ -206,23 +275,22 @@ class RadioButtonGroupTest {
       component.setName("name");
 
       assertEquals("name", component.getName());
-      verify(group, times(0)).setName(any());
+      verify(bbjGroup, times(0)).setName(any());
     }
 
     @Test
     @DisplayName("When group is not null")
-    void whenGroupIsNotNull() throws BBjException, IllegalAccessException {
+    void whenGroupIsNotNull() throws BBjException {
       component.setName("name");
 
       assertEquals("name", component.getName());
-      verify(group, times(1)).setName(any());
+      verify(bbjGroup, times(1)).setName(any());
     }
 
     @Test
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
-    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown()
-        throws BBjException, IllegalAccessException {
-      doThrow(BBjException.class).when(group).setName(any());
+    void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
+      doThrow(BBjException.class).when(bbjGroup).setName(any());
       assertThrows(WebforjRuntimeException.class, () -> component.setName("name"));
     }
   }
