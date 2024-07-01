@@ -81,6 +81,7 @@ public class Frame extends Window {
       BasisNumber ctx =
           BasisNumber.createBasisNumber(Environment.getCurrent().getSysGui().getAvailableContext());
       BBjWindow wnd = Environment.getCurrent().getSysGui().addWindow(ctx, "", flags);
+      wnd.setUserData(this);
       setTitle(title);
       init(wnd);
     } catch (NumberFormatException | BBjException e) {

@@ -2,10 +2,15 @@ package com.webforj;
 
 import com.basis.bbj.proxies.BBjBuiCloseAction;
 import com.basis.bbj.proxies.BBjWebManager;
+import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.AnnotationProcessor;
+import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.optiondialog.OptionDialog;
+import com.webforj.component.window.Frame;
 import com.webforj.environment.StringTable;
 import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.environment.namespace.GroupNamespace;
@@ -18,6 +23,8 @@ import com.webforj.webstorage.CookieStorage;
 import com.webforj.webstorage.LocalStorage;
 import com.webforj.webstorage.SessionStorage;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -427,6 +434,33 @@ public abstract class App {
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options, String title) {
     return Environment.getCurrent().getWebforjHelper().msgbox(alert, options, title);
+  }
+
+  /**
+   * Get the list of all created frames in the application.
+   *
+   * @return the list of all frames in the application
+   */
+  public static List<Frame> getFrames() {
+    BBjVector windows = Environment.getCurrent().getSysGui().getWindows();
+    List<Frame> frames = new ArrayList<>();
+
+    try {
+      for (int i = 0; i < windows.size(); i++) {
+        Object window = windows.get(i);
+        if (window instanceof BBjTopLevelWindow) {
+          BBjTopLevelWindow topLevelWindow = (BBjTopLevelWindow) window;
+          Object userData = topLevelWindow.getUserData();
+          if (userData instanceof Frame frame) {
+            frames.add(frame);
+          }
+        }
+      }
+    } catch (BBjException e) {
+      // pass
+    }
+
+    return frames;
   }
 
   /**
