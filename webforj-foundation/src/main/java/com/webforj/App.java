@@ -447,12 +447,12 @@ public abstract class App {
 
     try {
       for (int i = 0; i < windows.size(); i++) {
-        Object current = windows.get(i);
-        if (current instanceof BBjTopLevelWindow) {
-          BBjTopLevelWindow window = (BBjTopLevelWindow) current;
-          Object userData = window.getUserData();
-          if (userData instanceof Frame) {
-            frames.add((Frame) userData);
+        Object window = windows.get(i);
+        if (window instanceof BBjTopLevelWindow) {
+          BBjTopLevelWindow topLevelWindow = (BBjTopLevelWindow) window;
+          Object userData = topLevelWindow.getUserData();
+          if (userData instanceof Frame frame) {
+            frames.add(frame);
           }
         }
       }
