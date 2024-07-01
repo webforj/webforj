@@ -1,5 +1,6 @@
 package com.webforj;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -10,8 +11,12 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjBusyIndicator;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjWebManager;
+import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.BBjVector;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.component.window.Frame;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -141,6 +146,29 @@ class AppTest {
         App.busy(false);
         verify(busyIndicator).setVisible(false);
       }
+    }
+  }
+
+  @Test
+  void shouldReturnFrame() throws BBjException {
+    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+
+      Frame f1 = mock(Frame.class);
+      Frame f2 = mock(Frame.class);
+
+      BBjTopLevelWindow w1 = mock(BBjTopLevelWindow.class);
+      when(w1.getUserData()).thenReturn(f1);
+      BBjTopLevelWindow w2 = mock(BBjTopLevelWindow.class);
+      when(w2.getUserData()).thenReturn(f2);
+
+      when(sysGui.getWindows()).thenReturn(new BBjVector(List.of(w1, w2)));
+
+      List<Frame> frames = App.getFrames();
+      verify(sysGui).getWindows();
+
+      assertTrue(frames.contains(f1));
+      assertTrue(frames.contains(f2));
     }
   }
 }
