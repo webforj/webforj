@@ -418,16 +418,22 @@ public class Toast extends ElementCompositeContainer
     }
 
     List<Frame> frames = App.getFrames();
-    if (frames.isEmpty()) {
-      if (createIfNotExist) {
-        try {
-          frame = new Frame();
-        } catch (WebforjAppInitializeException e) {
-          throw new IllegalStateException("Failed to create a frame container for the toast", e);
+    if (!frames.isEmpty()) {
+      for (Frame f : frames) {
+        if (!f.isDestroyed()) {
+          frame = f;
+          break;
         }
       }
-    } else {
-      frame = frames.get(0);
+    }
+
+    if (frame == null && createIfNotExist) {
+      try {
+        frame = new Frame();
+        frame.setVisible(false);
+      } catch (WebforjAppInitializeException e) {
+        throw new IllegalStateException("Failed to create a frame container for the toast", e);
+      }
     }
 
     if (frame != null) {
