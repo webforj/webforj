@@ -33,4 +33,12 @@ public class SliderSlideEvent extends ComponentEvent<Slider> {
   public boolean isAdjusting() {
     return (boolean) this.getEventMap().get("adjusting");
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Slider getComponent() {
+    return (Slider) super.getComponent();
+  }
 }
