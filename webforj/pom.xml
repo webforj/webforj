@@ -74,6 +74,11 @@
       <artifactId>webforj-table</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-toast</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Extensions -->
 
   </dependencies>

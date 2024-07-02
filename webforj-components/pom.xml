@@ -24,6 +24,7 @@
     <module>webforj-spinner</module>
     <module>webforj-splitter</module>
     <module>webforj-terminal</module>
+    <module>webforj-toast</module>
     <module>webforj-googlecharts</module>
     <module>webforj-html-elements</module>
     <module>webforj-loading</module>
