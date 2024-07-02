@@ -3,658 +3,841 @@ package com.webforj.component.slider;
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
-
-import com.webforj.Environment;
+import com.google.gson.annotations.SerializedName;
+import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
-import com.webforj.component.LegacyDwcComponent;
-import com.webforj.component.slider.event.SliderScrollEvent;
-import com.webforj.component.slider.sink.SliderScrollEventSink;
+import com.webforj.component.DwcFocusableComponent;
+import com.webforj.component.Theme;
+import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.slider.event.SliderSlideEvent;
+import com.webforj.component.slider.sink.SliderSlideEventSink;
 import com.webforj.component.window.Window;
-import com.webforj.concern.legacy.LegacyHasEnable;
-import com.webforj.concern.legacy.LegacyHasFocus;
-import com.webforj.concern.legacy.LegacyHasMouseWheelCondition;
-import com.webforj.concern.legacy.LegacyHasTabTraversal;
+import com.webforj.concern.HasMax;
+import com.webforj.concern.HasMin;
+import com.webforj.concern.HasTheme;
+import com.webforj.concern.HasValue;
+import com.webforj.data.event.ValueChangeEvent;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Objects;
 
-public final class Slider extends LegacyDwcComponent implements LegacyHasFocus,
-    LegacyHasMouseWheelCondition, LegacyHasTabTraversal, LegacyHasEnable {
+/**
+ * A component that lets the user graphically select a value by sliding a knob within a bounded
+ * interval. The knob is always positioned at the points that match integer values within the
+ * specified interval.
+ *
+ * @since 24.10
+ */
+public final class Slider extends DwcFocusableComponent<Slider> implements HasMin<Slider, Integer>,
+    HasMax<Slider, Integer>, HasValue<Slider, Integer>, HasTheme<Slider, Theme> {
 
-  private BBjSlider bbjSlider;
+  static final String PROP_ORIENTATION = "orientation";
+  static final String PROP_SLIDE_BY_WHEEL = "slidableByWheel";
+  static final String PROP_SLIDE_BY_CLICKING_TICKS = "slideByClickingPips";
+  static final String PROP_TOOLTIP_VISIBLE = "tooltips";
+  static final String PROP_TOOLTIP_VISIBLE_ON_SLIDE_ONLY = "tooltipsOnlyWhenSliding";
+  static final String PROP_TOOLTIP = "tooltipExpression";
+  static final String PROP_FILLED = "connect";
 
+  private final EventSinkListenerRegistry<SliderSlideEvent> slideEventSinkListenerRegistry =
+      new EventSinkListenerRegistry<>(new SliderSlideEventSink(this, getEventDispatcher()),
+          SliderSlideEvent.class);
 
-  public enum Theme {
-    DEFAULT, DANGER, GRAY, INFO, SUCCESS, WARNING
-  }
-
-  public enum Orientation {
-    HORIZONTAL("horizontal"), VERTICAL("vertical");
-
-    public final String value;
-
-    private Orientation(String value) {
-      this.value = value;
-    }
-  }
-
-  private ArrayList<Consumer<SliderScrollEvent>> callbacks = new ArrayList<>();
-  private SliderScrollEventSink scrollEventSink;
-
+  private Integer min = 0;
+  private Integer max = 100;
+  private int majorTickSpacing = 0;
+  private int minorTickSpacing = 0;
+  private boolean snapToTicks = false;
   private Orientation orientation = Orientation.HORIZONTAL;
-  private Boolean inverted = false;
-  private Integer majorTickSpacing = 1;
-  private Integer minorTickSpacing = 1;
-  private Integer maximum = 100;
-  private Integer minimum = 0;
-  private Boolean paintLabels = false;
-  private Boolean paintTicks = false;
-  private Boolean snapToTicks = false;
-  private Integer value = 0;
+  private Integer value = 50;
+  private boolean ticksVisible = false;
+  private boolean inverted = false;
+  private Map<Integer, String> labels = null;
+  private boolean labelsVisible = false;
+  private boolean allowMajorLabelsOverlap = false;
+  private boolean registeredSlideValueChangeListener = false;
+  private boolean slideByWheel = true;
+  private boolean slideByClickingTicks = true;
+  private String tooltipText = "";
+  private boolean tooltipVisible = false;
+  private boolean tooltipVisibleOnSlideOnly = false;
+  private boolean filled = false;
 
+  /**
+   * Describes the orientation of the slider.
+   */
+  public enum Orientation {
+    /**
+     * The slider is rendered horizontally.
+     */
+    @SerializedName("horizontal")
+    HORIZONTAL,
 
+    /**
+     * The slider is rendered vertically.
+     */
+    @SerializedName("vertical")
+    VERTICAL
+  }
+
+  /**
+   * Constructs a slider with the specified value, minimum value, maximum value, and orientation.
+   *
+   * @param value The value of the slider.
+   * @param min The minimum value of the slider.
+   * @param max The maximum value of the slider.
+   * @param orientation The orientation of the slider.
+   */
+  public Slider(Integer value, Integer min, Integer max, Orientation orientation) {
+    super();
+    setValue(value);
+    setMin(min);
+    setMax(max);
+    setOrientation(orientation);
+  }
+
+  /**
+   * Constructs a slider with the specified value, minimum value, and maximum value.
+   *
+   * @param value The value of the slider.
+   * @param min The minimum value of the slider.
+   * @param max The maximum value of the slider.
+   */
+  public Slider(Integer value, Integer min, Integer max) {
+    this(value, min, max, Orientation.HORIZONTAL);
+  }
+
+  /**
+   * Constructs a slider with the specified value, maximum value, and orientation.
+   *
+   * @param value The value of the slider.
+   * @param max The maximum value of the slider.
+   * @param orientation The orientation of the slider.
+   */
+  public Slider(Integer value, Integer max, Orientation orientation) {
+    this(value, 0, max, orientation);
+  }
+
+  /**
+   * Constructs a slider with the specified value and maximum value.
+   *
+   * @param value The value of the slider.
+   * @param max The maximum value of the slider.
+   */
+  public Slider(Integer value, Integer max) {
+    this(value, 0, max, Orientation.HORIZONTAL);
+  }
+
+  /**
+   * Constructs a slider with the specified value and orientation.
+   *
+   * @param value The value of the slider.
+   * @param orientation The orientation of the slider.
+   */
+  public Slider(Integer value, Orientation orientation) {
+    this(value, 0, 100, orientation);
+  }
+
+  /**
+   * Constructs a slider with the specified value.
+   *
+   * @param value The value of the slider.
+   */
+  public Slider(Integer value) {
+    this(value, Orientation.HORIZONTAL);
+  }
+
+  /**
+   * Constructs a slider with the default values.
+   */
   public Slider() {
-    this.mouseWheelCondition = MouseWheelCondition.DEFAULT;
-    this.tabTraversable = true;
-  }
-
-  @Override
-  protected void onCreate(Window p) {
-
-    try {
-      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
-      byte[] flags =
-          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      control = w.addHorizontalSlider(w.getAvailableControlID(), BASISNUMBER_1, BASISNUMBER_1,
-          BASISNUMBER_250, BASISNUMBER_250, flags);
-      bbjSlider = (BBjSlider) control;
-      onAttach();
-    } catch (Exception e) {
-      Environment.logError(e);
-    }
-
+    this(0);
   }
 
   /**
-   * Sets a callback to fire when the slider control is scrolled.
+   * Sets the orientation of the slider.
    *
-   * @param callback Function written with behavior to be executed when the event is fired
-   * @return The object itself
-   */
-  public Slider onScroll(Consumer<SliderScrollEvent> callback) {
-    if (this.control != null) {
-      if (this.scrollEventSink == null) {
-        this.scrollEventSink = new SliderScrollEventSink(this);
-      }
-      this.scrollEventSink.addCallback(callback);
-    } else {
-      this.callbacks.add(callback);
-    }
-    return this;
-  }
-
-  /**
-   * This method gets the orientation of the ProgressBar control. By default, the minimum value of a
-   * vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider,
-   * the minimum value is to the left and the maximum value is to the right. The orientation
-   * reverses for inverted sliders.
-   *
-   * @return Returns whether the control orientation is inverted.
-   */
-  public Boolean isInverted() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getInverted();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.inverted;
-  }
-
-  /**
-   * This method returns the labels from a ProgressBar control.
-   *
-   * @return Returns a Java Map<Integer,String> structure, where each Integer key is the slider
-   *         position of the corresponding String label.
-   */
-  public Map<Integer, String> getLabels() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getLabels();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return new HashMap<>();
-  }
-
-  /**
-   * This method queries the slider's major tick spacing.
-   *
-   * @return Returns the slider's major tick spacing.
-   */
-  public Integer getMajorTickSpacing() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getMajorTickSpacing();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.majorTickSpacing;
-  }
-
-  /**
-   * This method returns the maximum value of the ProgressBar control.
-   *
-   * @return Returns the maximum value of the control.
-   */
-  public Integer getMaximum() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getMaximum();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.maximum;
-  }
-
-  /**
-   * This method returns the minimum value of the ProgressBar control.
-   *
-   * @return Returns the minimum value of the control.
-   */
-  public Integer getMinimum() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getMinimum();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.minimum;
-  }
-
-  /**
-   * This method queries the minor tick spacing of the ProgressBar control.
-   *
-   * @return Returns the slider's minor tick spacing.
-   */
-  public Integer getMinorTickSpacing() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getMinorTickSpacing();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.minorTickSpacing;
-  }
-
-  /**
-   * This method returns the orientation of the ProgressBar control.
-   *
-   * @return Returns the orientation of the control (0 = HORIZONTAL, 1 = VERTICAL).
-   */
-  public Integer getOrientation() {
-    if (this.control != null) {
-      return bbjSlider.getOrientation();
-    }
-    if (this.orientation == Orientation.HORIZONTAL) {
-      return 0;
-    }
-    return 1;
-  }
-
-  /**
-   * This method queries whether to paint labels on the ProgressBar control.
-   *
-   * @return Returns whether labels are painted on this slider.
-   */
-  public Boolean isPaintLabels() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getPaintLabels();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.paintLabels;
-  }
-
-  /**
-   * This method queries whether to paint ticks on the ProgressBar control.
-   *
-   * @return Returns whether ticks are painted on this slider.
-   */
-  public Boolean isPaintTicks() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getPaintTicks();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.paintTicks;
-  }
-
-  /**
-   * This method queries whether a ProgressBar control should snap to the nearest tick when the user
-   * drags the thumb.
-   *
-   * @return Returns whether the BBjSlider should snap to the nearest tick when the user drags the
-   *         thumb.
-   */
-  public Boolean isSnapToTicks() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getSnapToTicks();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.snapToTicks;
-  }
-
-  /**
-   * This method returns the current value of the ProgressBar control.
-   *
-   * @return Returns the current value of the control.
-   */
-  public Integer getValue() {
-    if (this.control != null) {
-      try {
-        return bbjSlider.getValue();
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this.value;
-  }
-
-  /**
-   * This method sets the orientation of the ProgressBar control. By default, the minimum value of a
-   * vertical slider is at the bottom and the maximum value is at the top. For a horizontal slider,
-   * the minimum value is to the left and the maximum value is to the right. The orientation
-   * reverses for inverted sliders.
-   *
-   * @param inverted - Specifies whether the slider orientation is inverted.
-   * @return Returns this
-   */
-  public Slider setInverted(Boolean inverted) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setInverted(inverted);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.inverted = inverted;
-    return this;
-  }
-
-  /**
-   * This method sets the custom labels for a ProgressBar control.
-   *
-   * @param labels - A Java Map<Integer,String> structure, where the Integer key is the slider
-   *        position of the corresponding String label.
-   * @return Returns this
-   */
-  public Slider setLabels(Map<Integer, String> labels) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setLabels(labels);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    return this;
-  }
-
-  /**
-   * This method sets the major tick spacing for a ProgressBar control.
-   *
-   * @param prop - Specifies the major tick spacing.
-   * @return Returns this
-   */
-  public Slider setMajorTickSpacing(Integer tick) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setMajorTickSpacing(tick);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.majorTickSpacing = tick;
-    return this;
-  }
-
-  /**
-   * This method sets the maximum value of the ProgressBar control.
-   *
-   * @param value - Specifies the maximum value.
-   * @return Returns this
-   */
-  public Slider setMaximum(Integer maximum) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setMaximum(maximum);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.maximum = maximum;
-    return this;
-  }
-
-  /**
-   * This method sets the minimum value of the ProgressBar control.
-   *
-   * @param value - Specifies the minimum value.
-   * @return Returns this
-   */
-  public Slider setMinimum(Integer minimum) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setMinimum(minimum);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.minimum = minimum;
-    return this;
-  }
-
-  /**
-   * This method sets the minor tick spacing of a ProgressBar control.
-   *
-   * @param tick - Specifies the minor tick spacing.
-   * @return Returns this
-   */
-  public Slider setMinorTickSpacing(Integer tick) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setMinorTickSpacing(tick);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.minorTickSpacing = tick;
-    return this;
-  }
-
-  /**
-   * Will set the slider to vertical if the string "vertical" is passed. Defaults to horizontal for
-   * any other string.
-   *
-   * @param orientation String "vertical" to set the slider's orientation to vertical, "horizontal"
-   *        for horizontal(default)
-   * @return The object itself
+   * @param orientation the orientation of the slider
+   * @return the component itself
    */
   public Slider setOrientation(Orientation orientation) {
-    if (this.control != null) {
-      this.setAttribute("orientation", orientation.value);
-    }
+    Objects.requireNonNull(orientation, "The orientation cannot be null");
     this.orientation = orientation;
+    setUnrestrictedProperty(PROP_ORIENTATION, orientation);
     return this;
   }
 
   /**
-   * This method sets whether labels are painted on a ProgressBar control.
+   * Gets the orientation of the slider.
    *
-   * @param paint - Specifies whether labels are painted on the
-   * @return Returns this
+   * @return the orientation of the slider
    */
-  public Slider setPaintLabels(Boolean paint) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setPaintLabels(paint);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.paintLabels = paint;
-    return this;
+  public Orientation getOrientation() {
+    return orientation;
   }
 
   /**
-   * This method sets whether ticks are painted on a ProgressBar control.
-   *
-   * @param paint - Specifies whether ticks are painted on the control.
-   * @return Returns this
+   * {@inheritDoc}
    */
-  public Slider setPaintTicks(Boolean paint) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setPaintTicks(paint);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.paintTicks = paint;
-    return this;
-  }
-
-  /**
-   * This method sets whether a ProgressBar control should snap to the nearest tick when the user
-   * drags the thumb.
-   *
-   * @param snap - Specifies whether the control should snap to the nearest tick when the user drags
-   *        the thumb.
-   * @return Returns this
-   */
-  public Slider setSnapToTicks(Boolean snap) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setSnapToTicks(snap);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
-    this.snapToTicks = snap;
-    return this;
-  }
-
-  /**
-   * This method sets the value of the ProgressBar control.
-   *
-   * @param value - Specifies the slider value.
-   * @return Returns this
-   */
+  @Override
   public Slider setValue(Integer value) {
-    if (this.control != null) {
-      try {
-        bbjSlider.setValue(value);
-      } catch (BBjException e) {
-        Environment.logError(e);
-      }
-    }
+    Objects.requireNonNull(value, "The value cannot be null");
     this.value = value;
-    return this;
-  }
 
-
-
-  @Override
-  public Slider focus() {
-    super.focusComponent();
-    return this;
-  }
-
-  @Override
-  public Boolean isTabTraversable() {
-    if (this.control != null) {
+    BBjSlider slider = inferSlider();
+    if (slider != null) {
       try {
-        bbjSlider.isTabTraversable();
+        slider.setValue(value);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new WebforjRuntimeException(e);
       }
     }
-    return this.tabTraversable;
+
+    return this;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Slider setTabTraversable(Boolean traverse) {
-    if (this.control != null) {
+  public Integer getValue() {
+    return value;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Slider setMin(Integer min) {
+    Objects.requireNonNull(min, "The minimum value cannot be null");
+    this.min = min;
+
+    BBjSlider slider = inferSlider();
+    if (slider != null) {
       try {
-        bbjSlider.setTabTraversable(traverse);
+        slider.setMinimum(min);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new WebforjRuntimeException(e);
       }
     }
-    this.tabTraversable = traverse;
+
     return this;
   }
 
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public MouseWheelCondition getScrollWheelBehavior() {
-    return this.mouseWheelCondition;
+  public Integer getMin() {
+    return min;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Slider setScrollWheelBehavior(MouseWheelCondition condition) {
-    if (this.control != null) {
+  public Slider setMax(Integer max) {
+    Objects.requireNonNull(max, "The maximum value cannot be null");
+    this.max = max;
+
+    BBjSlider slider = inferSlider();
+    if (slider != null) {
       try {
-        bbjSlider.setScrollWheelBehavior(condition.mouseWheelEnabledCondition);
+        slider.setMaximum(max);
       } catch (BBjException e) {
-        Environment.logError(e);
+        throw new WebforjRuntimeException(e);
       }
     }
+
     return this;
   }
 
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Slider setText(String text) {
-    super.setText(text);
+  public Integer getMax() {
+    return max;
+  }
+
+  /**
+   * Sets the major tick spacing.
+   *
+   * <p>
+   * The number of values between the major tick marks -- the larger marks that break up the minor
+   * tick marks.
+   * </p>
+   *
+   * @param majorTickSpacing the major tick spacing
+   * @return the component itself
+   */
+  public Slider setMajorTickSpacing(int majorTickSpacing) {
+    this.majorTickSpacing = majorTickSpacing;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setMajorTickSpacing(majorTickSpacing);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
     return this;
   }
 
-  @Override
-  public Slider setVisible(Boolean visible) {
-    super.setVisible(visible);
+  /**
+   * Gets the major tick spacing.
+   *
+   * @return the major tick spacing
+   */
+  public int getMajorTickSpacing() {
+    return majorTickSpacing;
+  }
+
+  /**
+   * Sets the minor tick spacing.
+   *
+   * <p>
+   * The number of values between the minor tick marks -- the smaller marks that occur between the
+   * major tick marks.
+   * </p>
+   *
+   * @param minorTickSpacing the minor tick spacing
+   * @return the component itself
+   */
+  public Slider setMinorTickSpacing(int minorTickSpacing) {
+    this.minorTickSpacing = minorTickSpacing;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setMinorTickSpacing(minorTickSpacing);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
     return this;
   }
 
-  @Override
-  public Slider setEnabled(boolean enabled) {
-    super.setComponentEnabled(enabled);
+  /**
+   * Gets the minor tick spacing.
+   *
+   * @return the minor tick spacing
+   */
+  public int getMinorTickSpacing() {
+    return minorTickSpacing;
+  }
+
+  /**
+   * Sets whether the slider should snap to the nearest tick mark.
+   *
+   * @param snapToTicks {@code true} if the slider should snap to the nearest tick mark,
+   *        {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setSnapToTicks(boolean snapToTicks) {
+    this.snapToTicks = snapToTicks;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setSnapToTicks(snapToTicks);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
     return this;
   }
 
-  @Override
-  public boolean isEnabled() {
-    return super.isComponentEnabled();
+  /**
+   * Gets whether the slider should snap to the nearest tick mark.
+   *
+   * @return {@code true} if the slider should snap to the nearest tick mark, {@code false}
+   *         otherwise
+   */
+  public boolean isSnapToTicks() {
+    return snapToTicks;
   }
 
+  /**
+   * Sets whether the slider should show tick marks.
+   *
+   * @param ticksVisible {@code true} if the slider should show tick marks, {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setTicksVisible(boolean ticksVisible) {
+    this.ticksVisible = ticksVisible;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setPaintTicks(ticksVisible);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets whether the slider should show tick marks.
+   *
+   * @return {@code true} if the slider should show tick marks, {@code false} otherwise
+   */
+  public boolean isTicksVisible() {
+    return ticksVisible;
+  }
+
+  /**
+   * Sets whether the slider should be inverted.
+   *
+   * <p>
+   * By default, the minimum value of a vertical slider is at the bottom and the maximum value is at
+   * the top. For a horizontal slider, the minimum value is to the left and the maximum value is to
+   * the right. The orientation reverses for inverted sliders.
+   * </p>
+   *
+   * @param inverted {@code true} if the slider should be inverted, {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setInverted(boolean inverted) {
+    this.inverted = inverted;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setInverted(inverted);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets whether the slider should be inverted.
+   *
+   * @return {@code true} if the slider should be inverted, {@code false} otherwise
+   */
+  public boolean isInverted() {
+    return inverted;
+  }
+
+  /**
+   * Sets the labels for the tick marks.
+   *
+   * <p>
+   * The labels are displayed at the tick marks. The keys are the values of the tick marks and the
+   * values are the labels to be displayed.
+   * </p>
+   *
+   * @param labels the labels for the tick marks
+   * @return the component itself
+   */
+  public Slider setLabels(Map<Integer, String> labels) {
+    this.labels = labels;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setLabels(labels);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets the labels for the tick marks.
+   *
+   * @return the labels for the tick marks
+   */
+  public Map<Integer, String> getLabels() {
+    Map<Integer, String> result = new LinkedHashMap<>();
+    boolean hasCustomLabels = labels != null && !labels.isEmpty();
+
+    if (allowMajorLabelsOverlap || !hasCustomLabels) {
+      int minValue = this.min;
+      int maxValue = this.max;
+      int majorTickSpacingValue = this.majorTickSpacing;
+
+      if (majorTickSpacingValue > 0) {
+        for (int index = minValue; index <= maxValue; index += majorTickSpacingValue) {
+          result.put(index, String.valueOf(index));
+        }
+      }
+    }
+
+    if (hasCustomLabels) {
+      for (Map.Entry<Integer, String> entry : labels.entrySet()) {
+        result.put(entry.getKey(), entry.getValue());
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Sets whether the slider should show labels for the tick marks.
+   *
+   * @param labelsVisible {@code true} if the slider should show labels for the tick marks,
+   *        {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setLabelsVisible(boolean labelsVisible) {
+    this.labelsVisible = labelsVisible;
+    BBjSlider slider = inferSlider();
+
+    if (slider != null) {
+      try {
+        slider.setPaintLabels(labelsVisible);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Gets whether the slider should show labels for the tick marks.
+   *
+   * @return {@code true} if the slider should show labels for the tick marks, {@code false}
+   *         otherwise
+   */
+  public boolean isLabelsVisible() {
+    return labelsVisible;
+  }
+
+  /**
+   * Sets whether the major custom labels and auto-generated labels are allowed to overlap.
+   *
+   * <p>
+   * When true, the slider will paint major ticks labels and the custom labels at the same time.
+   * </p>
+   *
+   * @param allowMajorLabelsOverlap {@code true} if the major custom labels and auto-generated
+   *        labels are allowed to overlap, {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setAllowMajorLabelsOverlap(boolean allowMajorLabelsOverlap) {
+    this.allowMajorLabelsOverlap = allowMajorLabelsOverlap;
+    setUnrestrictedProperty("allowMajorLabelsOverlap", allowMajorLabelsOverlap);
+
+    return this;
+  }
+
+  /**
+   * Gets whether the major custom labels and auto-generated labels are allowed to overlap.
+   *
+   * @return {@code true} if the major custom labels and auto-generated labels are allowed to
+   *         overlap, {@code false} otherwise
+   */
+  public boolean isAllowMajorLabelsOverlap() {
+    return allowMajorLabelsOverlap;
+  }
+
+  /**
+   * Sets whether the slider should be slidable by the mouse wheel.
+   *
+   * @param slideByWheel {@code true} if the slider should be slidable by the mouse wheel,
+   *        {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setSlideByWheel(boolean slideByWheel) {
+    this.slideByWheel = slideByWheel;
+    setUnrestrictedProperty(PROP_SLIDE_BY_WHEEL, slideByWheel);
+
+    return this;
+  }
+
+  /**
+   * Gets whether the slider should be slidable by the mouse wheel.
+   *
+   * @return {@code true} if the slider should be slidable by the mouse wheel, {@code false}
+   *         otherwise
+   */
+  public boolean isSlideByWheel() {
+    return slideByWheel;
+  }
+
+  /**
+   * Sets whether the slider should be slidable by clicking on the ticks.
+   *
+   * @param slideByClickingTicks {@code true} if the slider should be slidable by clicking on the
+   *        ticks, {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setSlideByClickingTicks(boolean slideByClickingTicks) {
+    this.slideByClickingTicks = slideByClickingTicks;
+    setUnrestrictedProperty(PROP_SLIDE_BY_CLICKING_TICKS, slideByClickingTicks);
+
+    return this;
+  }
+
+  /**
+   * Gets whether the slider should be slidable by clicking on the ticks.
+   *
+   * @return {@code true} if the slider should be slidable by clicking on the ticks, {@code false}
+   *         otherwise
+   */
+  public boolean isSlideByClickingTicks() {
+    return slideByClickingTicks;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Slider setTheme(Theme theme) {
+    super.setComponentTheme(theme);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Theme getTheme() {
+    return super.getComponentTheme();
+  }
+
+  /**
+   * Sets the tooltip text.
+   *
+   * <p>
+   * The tooltip can be a JavaScript expression to format the tooltip. If the expression has the
+   * 'return' keyword in it, then it is used as is; otherwise, it is wrapped with 'return' and ';'
+   * to make a function. For example, "return x + '$'".
+   * </p>
+   *
+   * @param text the tooltip text
+   * @return the component itself
+   */
   @Override
   public Slider setTooltipText(String text) {
-    super.setTooltipText(text);
+    Objects.requireNonNull(text, "The tooltip text cannot be null");
+    this.tooltipText = text;
+    setUnrestrictedProperty(PROP_TOOLTIP, text);
+
+    if (text.trim().length() > 0 && !isTooltipVisible()) {
+      setTooltipVisible(true);
+    }
+
     return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getTooltipText() {
+    return tooltipText;
+  }
+
+  /**
+   * Sets whether the tooltip should be visible.
+   *
+   * @param tooltipVisible {@code true} if the tooltip should be visible, {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setTooltipVisible(boolean tooltipVisible) {
+    this.tooltipVisible = tooltipVisible;
+    setUnrestrictedProperty(PROP_TOOLTIP_VISIBLE, tooltipVisible);
+
+    return this;
+  }
+
+  /**
+   * Gets whether the tooltip should be visible.
+   *
+   * @return {@code true} if the tooltip should be visible, {@code false} otherwise
+   */
+  public boolean isTooltipVisible() {
+    return tooltipVisible;
+  }
+
+  /**
+   * Sets whether the tooltip should be visible only when sliding.
+   *
+   * @param tooltipVisibleOnSlideOnly {@code true} if the tooltip should be visible only when
+   *        sliding, {@code false} otherwise
+   * @return the component itself
+   */
+  public Slider setTooltipVisibleOnSlideOnly(boolean tooltipVisibleOnSlideOnly) {
+    if (tooltipVisibleOnSlideOnly && !isTooltipVisible()) {
+      setTooltipVisible(true);
+    }
+
+    this.tooltipVisibleOnSlideOnly = tooltipVisibleOnSlideOnly;
+    setUnrestrictedProperty(PROP_TOOLTIP_VISIBLE_ON_SLIDE_ONLY, tooltipVisibleOnSlideOnly);
+
+    return this;
+  }
+
+  /**
+   * Gets whether the tooltip should be visible only when sliding.
+   *
+   * @return {@code true} if the tooltip should be visible only when sliding, {@code false}
+   *         otherwise
+   */
+  public boolean isTooltipVisibleOnSlideOnly() {
+    return tooltipVisibleOnSlideOnly;
+  }
+
+  /**
+   * Sets whether the knob will be connected to the slider edge.
+   *
+   * @param filled {@code true} if the knob will be connected to the slider edge, {@code false}
+   *        otherwise
+   * @return the component itself
+   */
+  public Slider setFilled(boolean filled) {
+    this.filled = filled;
+    setUnrestrictedProperty(PROP_FILLED, filled);
+    return this;
+  }
+
+  /**
+   * Gets whether the knob will be connected to the slider edge.
+   *
+   * @return {@code true} if the knob will be connected to the slider edge, {@code false} otherwise
+   */
+  public boolean isFilled() {
+    return filled;
+  }
+
+  /**
+   * Adds a {@link SliderSlideEvent} listener for the component.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<SliderSlideEvent> addSlideEvent(
+      EventListener<SliderSlideEvent> listener) {
+    return this.slideEventSinkListenerRegistry.addEventListener(listener);
+  }
+
+  /**
+   * Alias for {@link #addSlideEvent(EventListener)}.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<SliderSlideEvent> onSlide(EventListener<SliderSlideEvent> listener) {
+    return addSlideEvent(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ListenerRegistration<ValueChangeEvent<Integer>> addValueChangeListener(
+      EventListener<ValueChangeEvent<Integer>> listener) {
+    ListenerRegistration<ValueChangeEvent<Integer>> registration =
+        getEventDispatcher().addListener(ValueChangeEvent.class, listener);
+
+    if (!registeredSlideValueChangeListener) {
+      addSlideEvent((ev -> {
+        if (ev.isAdjusting()) {
+          return;
+        }
+
+        ValueChangeEvent<Integer> valueChangeEvent = new ValueChangeEvent<>(this, ev.getValue());
+        getEventDispatcher().dispatchEvent(valueChangeEvent);
+      }));
+
+      registeredSlideValueChangeListener = true;
+    }
+
+    return registration;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void attachControlCallbacks() {
+    super.attachControlCallbacks();
+    slideEventSinkListenerRegistry.attach();
   }
 
   @Override
-  public Slider setAttribute(String attribute, String value) {
-    super.setAttribute(attribute, value);
-    return this;
-  }
-
-  @Override
-  public Slider setStyle(String property, String value) {
-    super.setStyle(property, value);
-    return this;
-  }
-
-  @Override
-  public Slider addClassName(String selector) {
-    super.addClassName(selector);
-    return this;
-  }
-
-  @Override
-  public Slider removeClassName(String selector) {
-    super.removeClassName(selector);
-    return this;
-  }
-
-
-
-  public Slider setTheme(Theme theme) {
-    super.setControlTheme(theme);
-    return this;
-  }
-
-
-
-  @Override
-  @SuppressWarnings("java:S3776") // tolerate cognitive complexity for now, it's just a batch list
-                                  // of checks
   protected void onAttach() {
     super.onAttach();
 
-
-    if (!this.callbacks.isEmpty()) {
-      this.scrollEventSink = new SliderScrollEventSink(this);
-      while (!this.callbacks.isEmpty()) {
-        this.scrollEventSink.addCallback(this.callbacks.remove(0));
-      }
+    if (min != 0) {
+      setMin(min);
     }
 
-
-    if (Boolean.TRUE.equals(this.inverted)) {
-      this.setInverted(this.inverted);
+    if (max != 100) {
+      setMax(max);
     }
 
-    if (this.majorTickSpacing != 1) {
-      this.setMajorTickSpacing(this.majorTickSpacing);
+    if (majorTickSpacing != 0) {
+      setMajorTickSpacing(majorTickSpacing);
     }
 
-    if (this.minorTickSpacing != 0) {
-      this.setMinorTickSpacing(this.minorTickSpacing);
+    if (minorTickSpacing != 0) {
+      setMinorTickSpacing(minorTickSpacing);
     }
 
-    if (this.maximum != 100) {
-      this.setMaximum(this.maximum);
+    if (snapToTicks) {
+      setSnapToTicks(snapToTicks);
     }
 
-    if (this.minimum != 0) {
-      this.setMinimum(this.minimum);
+    if (value != 0) {
+      setValue(value);
     }
 
-    if (Boolean.TRUE.equals(this.paintLabels)) {
-      this.setPaintLabels(this.paintLabels);
+    if (ticksVisible) {
+      setTicksVisible(ticksVisible);
     }
 
-    if (Boolean.TRUE.equals(this.paintTicks)) {
-      this.setPaintTicks(this.paintLabels);
+    if (inverted) {
+      setInverted(inverted);
     }
 
-    if (Boolean.TRUE.equals(this.snapToTicks)) {
-      this.setPaintTicks(this.paintLabels);
+    if (labels != null && !labels.isEmpty()) {
+      setLabels(labels);
     }
 
-    if (this.value != 0) {
-      this.setValue(this.value);
+    if (labelsVisible) {
+      setLabelsVisible(labelsVisible);
     }
-
-    if (this.orientation != Orientation.HORIZONTAL) {
-      this.setOrientation(Orientation.VERTICAL);
-    }
-
-    if (Boolean.FALSE.equals(this.tabTraversable)) {
-      this.setTabTraversable(this.tabTraversable);
-    }
-
-    if (this.mouseWheelCondition != MouseWheelCondition.DEFAULT) {
-      this.setScrollWheelBehavior(this.mouseWheelCondition);
-    }
-
-
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onCreate(Window window) {
+    try {
+      BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
+      byte[] flags =
+          BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
+      setControl(w.addHorizontalSlider(flags));
+    } catch (Exception e) {
+      throw new WebforjRuntimeException("Failed to create the BBjSlider Control", e);
+    }
+  }
+
+  private BBjSlider inferSlider() {
+    try {
+      return (BBjSlider) ComponentAccessor.getDefault().getControl(this);
+    } catch (IllegalAccessException e) {
+      throw new WebforjRuntimeException(e);
+    }
+  }
 }
