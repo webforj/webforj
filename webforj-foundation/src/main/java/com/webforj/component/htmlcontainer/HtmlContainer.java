@@ -24,10 +24,14 @@ import com.webforj.component.htmlcontainer.sink.HtmlContainerPageLoadEventSink;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
+import com.webforj.component.element.Element;
 
 /**
  * A HtmlContainer control
+ *
+ * @deprecated since 24.10, for removal in 25.00. Use {@link Element} instead.
  */
+@Deprecated(since = "24.10", forRemoval = true)
 public final class HtmlContainer extends LegacyDwcComponent
     implements LegacyHasFocus, LegacyHasEnable, LegacyHasTabTraversal {
 
