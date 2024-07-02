@@ -18,8 +18,18 @@ import com.webforj.exceptions.WebforjAppInitializeException;
 import java.util.List;
 
 /**
- * webforJ toast component. A subtle notification commonly used in modern applications. It can be
- * used to provide feedback about an operation or to display a system message.
+ * A subtle notification commonly used in modern applications. It provides feedback about an
+ * operation or displays a system message.
+ *
+ * <p>
+ * Example usage:
+ *
+ * <pre>
+ * {@code
+ * Toast.show("Operation completed", Theme.GRAY);
+ * }
+ * </pre>
+ * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 24.10
@@ -27,6 +37,7 @@ import java.util.List;
 @NodeName("dwc-toast")
 public class Toast extends ElementCompositeContainer
     implements HasClassName<Toast>, HasStyle<Toast>, HasText<Toast>, HasHtml<Toast> {
+
   static final Placement DEFAULT_PLACEMENT = Placement.BOTTOM;
   static final Theme DEFAULT_THEME = Theme.DEFAULT;
   static final int DEFAULT_DURATION = 3000;
@@ -108,7 +119,7 @@ public class Toast extends ElementCompositeContainer
       PropertyDescriptor.property("theme", Theme.DEFAULT);
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text, duration, theme, and placement.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -123,7 +134,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text, duration, and theme.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -134,7 +145,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text and theme.
    *
    * @param text the text of the toast.
    * @param theme the theme of the toast.
@@ -144,7 +155,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text, duration, and placement.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -155,7 +166,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text and placement.
    *
    * @param text the text of the toast.
    * @param placement the toast placement.
@@ -165,7 +176,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text and duration.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -175,7 +186,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with specified text.
    *
    * @param text the text of the toast.
    */
@@ -184,7 +195,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Create a new toast.
+   * Constructs a new toast with an empty text.
    */
   public Toast() {
     this("");
@@ -225,12 +236,8 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Set The duration in milliseconds to show the toast.
-   *
-   * <p>
-   * After that this time is elapsed, the toast will be hidden automatically. If the duration number
-   * is negative the toast will never close automatically
-   * </p>
+   * Sets the duration in milliseconds to show the toast. After this time elapses, the toast will
+   * hide automatically. If the duration is negative, the toast will not close automatically.
    *
    * @param duration the duration in milliseconds to show the toast.
    * @return the component itself.
@@ -241,7 +248,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Get The duration in milliseconds to show the toast.
+   * Returns the duration in milliseconds to show the toast.
    *
    * @return the duration in milliseconds to show the toast.
    */
@@ -250,7 +257,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Set the toast placement.
+   * Sets the toast placement.
    *
    * @param placement the toast placement.
    * @return the component itself.
@@ -261,7 +268,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Get the toast placement.
+   * Returns the toast placement.
    *
    * @return the toast placement.
    */
@@ -270,7 +277,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Set the theme of the toast.
+   * Sets the theme of the toast.
    *
    * @param theme the theme of the toast.
    * @return the component itself.
@@ -281,7 +288,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Get the theme of the toast.
+   * Returns the theme of the toast.
    *
    * @return the theme of the toast.
    */
@@ -290,7 +297,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * opens the toast.
+   * Opens the toast.
    *
    * @return the component itself.
    */
@@ -304,7 +311,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * closes and destroys the toast.
+   * Closes and destroys the toast.
    */
   public void close() {
     set(openedProp, false);
@@ -312,7 +319,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text, duration, theme, and placement.
+   * Shows a toast with the given text, duration, theme, and placement.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -328,7 +335,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text, duration, theme, and placement.
+   * Shows a toast with the given text, duration, and theme.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -343,7 +350,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text and theme.
+   * Shows a toast with the given text and theme.
    *
    * @param text the text of the toast.
    * @param theme the theme of the toast.
@@ -357,7 +364,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text, duration, and placement.
+   * Shows a toast with the given text, duration, and placement.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -372,7 +379,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text and placement.
+   * Shows a toast with the given text and placement.
    *
    * @param text the text of the toast.
    * @param placement the toast placement.
@@ -386,7 +393,7 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text and duration.
+   * Shows a toast with the given text and duration.
    *
    * @param text the text of the toast.
    * @param duration the duration in milliseconds to show the toast.
@@ -400,10 +407,9 @@ public class Toast extends ElementCompositeContainer
   }
 
   /**
-   * Show a toast with the given text.
+   * Shows a toast with the given text.
    *
    * @param text the text of the toast.
-   *
    * @return the component itself.
    */
   public static Toast show(String text) {
@@ -416,7 +422,6 @@ public class Toast extends ElementCompositeContainer
     if (frame != null) {
       return frame;
     }
-
     List<Frame> frames = App.getFrames();
     if (!frames.isEmpty()) {
       for (Frame f : frames) {
@@ -426,7 +431,6 @@ public class Toast extends ElementCompositeContainer
         }
       }
     }
-
     if (frame == null && createIfNotExist) {
       try {
         frame = new Frame();
@@ -435,7 +439,6 @@ public class Toast extends ElementCompositeContainer
         throw new IllegalStateException("Failed to create a frame container for the toast", e);
       }
     }
-
     if (frame != null) {
       frame.addLifecycleObserver((component, event) -> {
         if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
@@ -443,7 +446,6 @@ public class Toast extends ElementCompositeContainer
         }
       });
     }
-
     return frame;
   }
 
