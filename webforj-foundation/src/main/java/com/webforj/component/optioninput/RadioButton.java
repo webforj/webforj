@@ -80,7 +80,8 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    *
    * @since 24.10
    */
-  RadioButton(String text, boolean checked, EventListener<ValueChangeEvent<Boolean>> listener) {
+  public RadioButton(String text, boolean checked,
+      EventListener<ValueChangeEvent<Boolean>> listener) {
     this(text, text, checked, listener);
   }
 
@@ -90,7 +91,7 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    * @param text Desired text for the RadioButton.
    * @param checked True if the RadioButton should be created as selected, false otherwise.
    */
-  RadioButton(String text, boolean checked) {
+  public RadioButton(String text, boolean checked) {
     this(text, checked, null);
   }
 
@@ -100,7 +101,7 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    * @param checked True if the RadioButton should be created as selected, false otherwise.
    * @since 24.10
    */
-  RadioButton(boolean checked) {
+  public RadioButton(boolean checked) {
     this("", checked);
   }
 
@@ -163,14 +164,14 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
    *
    * @param text The text for the RadioButton.
    */
-  RadioButton(String text) {
+  public RadioButton(String text) {
     this(text, text, false);
   }
 
   /**
    * Creates a new RadioButton component.
    */
-  RadioButton() {
+  public RadioButton() {
     this("");
   }
 

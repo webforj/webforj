@@ -44,7 +44,7 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
    * @param checked True if the CheckBox should be created as checked, false otherwise.
    * @param listener Event listener for value change events.
    */
-  CheckBox(String text, boolean checked, EventListener<ValueChangeEvent<Boolean>> listener) {
+  public CheckBox(String text, boolean checked, EventListener<ValueChangeEvent<Boolean>> listener) {
     super(text, checked, listener);
   }
 
@@ -54,7 +54,7 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
    * @param text Desired text for the CheckBox.
    * @param checked True if the CheckBox should be created as checked, false otherwise.
    */
-  CheckBox(String text, boolean checked) {
+  public CheckBox(String text, boolean checked) {
     this(text, checked, null);
   }
 
@@ -63,7 +63,7 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
    *
    * @param text The text for the CheckBox.
    */
-  CheckBox(String text) {
+  public CheckBox(String text) {
     this(text, false);
   }
 
@@ -72,14 +72,14 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
    *
    * @param checked True if the CheckBox should be created as checked, false otherwise.
    */
-  CheckBox(boolean checked) {
+  public CheckBox(boolean checked) {
     this("", checked);
   }
 
   /**
    * Creates a new CheckBox component.
    */
-  CheckBox() {
+  public CheckBox() {
     this("");
   }
 
