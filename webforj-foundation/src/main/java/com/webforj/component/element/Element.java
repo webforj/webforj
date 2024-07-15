@@ -16,6 +16,7 @@ import com.webforj.component.DwcContainer;
 import com.webforj.component.DwcFocusableMixin;
 import com.webforj.component.JsExecutor;
 import com.webforj.component.element.annotation.ElementAnnotationProcessor;
+import com.webforj.component.element.annotation.EventOptions;
 import com.webforj.component.element.event.ElementDefinedEvent;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
@@ -37,6 +38,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -779,7 +781,8 @@ public final class Element extends DwcContainer<Element>
     sb.append("}");
 
     // Deserialize arguments on the client side and call the function
-    sb.append("const rawArgs = JSON.parse(`").append(jsonArgs).append("`);");
+    sb.append("const rawArgs = JSON.parse(atob(`")
+        .append(Base64.getEncoder().encodeToString(jsonArgs.getBytes())).append("`));");
 
     // Resolve the special arguments
     sb.append("const args = rawArgs.map(arg => {");

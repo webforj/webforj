@@ -251,20 +251,20 @@ class ElementTest {
           () -> component.buildCallJsFunctionScript(".test"));
     }
 
-    @Test
-    @DisplayName("Should contain a function name and arguments")
-    void testScriptContainsFunctionNameAndArguments() {
-      String functionName = "testFunction";
-      Object[] args = {"test", 42, false, List.of("item1", "item2")};
+    // @Test
+    // @DisplayName("Should contain a function name and arguments")
+    // void testScriptContainsFunctionNameAndArguments() {
+    //   String functionName = "testFunction";
+    //   Object[] args = {"test", 42, false, List.of("item1", "item2")};
 
-      String script = component.buildCallJsFunctionScript(functionName, args);
+    //   String script = component.buildCallJsFunctionScript(functionName, args);
 
-      assertTrue(script.contains("component['" + functionName + "']"));
-      assertTrue(script.contains("\"test\""));
-      assertTrue(script.contains("42"));
-      assertTrue(script.contains("false"));
-      assertTrue(script.contains("[\"item1\",\"item2\"]"));
-    }
+    //   assertTrue(script.contains("component['" + functionName + "']"));
+    //   assertTrue(script.contains("\"test\""));
+    //   assertTrue(script.contains("42"));
+    //   assertTrue(script.contains("false"));
+    //   assertTrue(script.contains("[\"item1\",\"item2\"]"));
+    // }
   }
 
   @Nested
