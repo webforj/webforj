@@ -1,6 +1,5 @@
 package com.webforj.component.terminal;
 
-import com.webforj.App;
 import com.webforj.PendingResult;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementComposite;
