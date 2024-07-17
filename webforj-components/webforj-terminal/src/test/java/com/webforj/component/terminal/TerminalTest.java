@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import com.webforj.PendingResult;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptorTester;
-import com.webforj.component.terminal.events.TerminalDataEvent;
-import com.webforj.component.terminal.events.TerminalKeyEvent;
+import com.webforj.component.terminal.event.TerminalDataEvent;
+import com.webforj.component.terminal.event.TerminalKeyEvent;
 import com.webforj.dispatcher.EventListener;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,26 +65,6 @@ class TerminalTest {
 
       mock.blur();
       verify(element).callJsFunctionAsync(Terminal.JS_METHOD_REMOVE_FOCUS);
-    }
-
-    @Test
-    void shouldWrite() {
-      Terminal mock = spy(Terminal.class);
-      Element element = mock(Element.class);
-      when(mock.getOriginalElement()).thenReturn(element);
-
-      mock.write("Hello");
-      verify(element).callJsFunctionAsync(Terminal.JS_METHOD_WRITE, "Hello");
-    }
-
-    @Test
-    void shouldWriteln() {
-      Terminal mock = spy(Terminal.class);
-      Element element = mock(Element.class);
-      when(mock.getOriginalElement()).thenReturn(element);
-
-      mock.writeln("Hello");
-      verify(element).callJsFunctionAsync(Terminal.JS_METHOD_WRITELN, "Hello");
     }
 
     @Test
