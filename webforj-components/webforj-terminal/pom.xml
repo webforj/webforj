@@ -11,7 +11,7 @@
 
   <artifactId>webforj-terminal</artifactId>
   <name>webforj-terminal</name>
-  <description>A terminal emulator for webforj</description>
+  <description>A terminal component for webforj</description>
 
   <dependencies>
     <dependency>
