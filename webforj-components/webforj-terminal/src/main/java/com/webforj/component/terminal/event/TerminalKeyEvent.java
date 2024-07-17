@@ -1,4 +1,4 @@
-package com.webforj.component.terminal.events;
+package com.webforj.component.terminal.event;
 
 import com.webforj.component.element.annotation.EventName;
 import com.webforj.component.element.annotation.EventOptions;
