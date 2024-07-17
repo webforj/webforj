@@ -406,31 +406,32 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
   }
 
   Terminal doWrite(String type, Object data, Consumer<Object> callback) {
-    boolean hasCallback = callback != null;
+    // boolean hasCallback = callback != null;
 
-    Gson gson = new Gson();
-    String dataStr = gson.toJson(data);
-    String base64Data = Base64.getEncoder().encodeToString(dataStr.getBytes());
-    String script = String.format("""
-        (async () => {
-          await customElements.whenDefined('dwc-terminal');
-          const type = '%s';
-          const hasCallback = %s;
-          const data = JSON.parse(atob('%s'));
-          if (hasCallback) {
-            return await component[type](data);
-          } else {
-            component[type](data);
-          }
-        })();
-        """, type, Boolean.toString(hasCallback), base64Data);
+    // Gson gson = new Gson();
+    // String dataStr = gson.toJson(data);
+    // String base64Data = Base64.getEncoder().encodeToString(dataStr.getBytes());
+    // String script = String.format("""
+    // (async () => {
+    // await customElements.whenDefined('dwc-terminal');
+    // const type = '%s';
+    // const hasCallback = %s;
+    // const data = JSON.parse(atob('%s'));
+    // if (hasCallback) {
+    // return await component[type](data);
+    // } else {
+    // component[type](data);
+    // }
+    // })();
+    // """, type, Boolean.toString(hasCallback), base64Data);
 
-    getElement().executeJsAsync(script).thenAccept(obj -> {
-      if (hasCallback) {
-        callback.accept(data);
-      }
-    });
+    // getElement().executeJsAsync(script).thenAccept(obj -> {
+    // if (hasCallback) {
+    // callback.accept(data);
+    // }
+    // });
 
+    getElement().whenDefined().thenAccept(component -> component.callJsFunction(type, data));
     return this;
   }
 }
