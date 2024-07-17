@@ -1,6 +1,5 @@
 package com.webforj.component.terminal;
 
-import com.google.gson.Gson;
 import com.webforj.PendingResult;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementComposite;
@@ -11,7 +10,6 @@ import com.webforj.component.terminal.event.TerminalKeyEvent;
 import com.webforj.concern.HasSize;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
-import java.util.Base64;
 import java.util.function.Consumer;
 
 /**
@@ -182,17 +180,17 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
     return this;
   }
 
-  /**
-   * Writes data to the terminal.
-   *
-   * @param data the data to write
-   * @param callback callback that fires when the data was processed by the parser
-   *
-   * @return the component itself
-   */
-  public Terminal write(Object data, Consumer<Object> callback) {
-    return doWrite(JS_METHOD_WRITE, data, callback);
-  }
+  // /**
+  // * Writes data to the terminal.
+  // *
+  // * @param data the data to write
+  // * @param callback callback that fires when the data was processed by the parser
+  // *
+  // * @return the component itself
+  // */
+  // public Terminal write(Object data, Consumer<Object> callback) {
+  // return doWrite(JS_METHOD_WRITE, data, callback);
+  // }
 
   /**
    * Writes data to the terminal.
@@ -204,17 +202,17 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
     return doWrite(JS_METHOD_WRITE, data, null);
   }
 
-  /**
-   * Writes data to the terminal followed by a new line.
-   *
-   * @param data the data to write
-   * @param callback callback that fires when the data was processed by the parser
-   *
-   * @return the component itself
-   */
-  public Terminal writeln(Object data, Consumer<Object> callback) {
-    return doWrite(JS_METHOD_WRITELN, data, callback);
-  }
+  // /**
+  // * Writes data to the terminal followed by a new line.
+  // *
+  // * @param data the data to write
+  // * @param callback callback that fires when the data was processed by the parser
+  // *
+  // * @return the component itself
+  // */
+  // public Terminal writeln(Object data, Consumer<Object> callback) {
+  // return doWrite(JS_METHOD_WRITELN, data, callback);
+  // }
 
   /**
    * Writes data to the terminal followed by a new line.
