@@ -4,9 +4,16 @@ import com.basis.bbj.proxies.BBjClientFile;
 import com.basis.bbj.proxies.BBjClientFileSystem;
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.CustomObject;
 import com.webforj.concern.HasJsExecution;
+import com.webforj.dispatcher.EventDispatcher;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
+import com.webforj.event.page.PageUnloadEvent;
+import com.webforj.event.page.PageUnloadEventHandler;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.Assets;
 import java.io.File;
@@ -30,6 +37,8 @@ public final class Page implements HasJsExecution {
   private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
+  private EventDispatcher dispatcher = new EventDispatcher();
+  private boolean isBrowserCloseEventRegistered = false;
 
   private Page() {}
 
@@ -892,6 +901,42 @@ public final class Page implements HasJsExecution {
    */
   public Page open(String url) {
     return open(url, null, "");
+  }
+
+  /**
+   * Adds a listener to be notified when the page is unloaded by the browser.
+   *
+   * @param listener The listener to add
+   * @return The registration object that can be used to remove the listener
+   * @since 24.10
+   */
+  public ListenerRegistration<PageUnloadEvent> addUnloadListener(
+      EventListener<PageUnloadEvent> listener) {
+    if (!isBrowserCloseEventRegistered) {
+      isBrowserCloseEventRegistered = true;
+
+      try {
+        BBjWebManager webManager = getEnvironment().getBBjAPI().getWebManager();
+        CustomObject handler = getEnvironment().getWebforjHelper()
+            .getEventProxy(new PageUnloadEventHandler(this, dispatcher), "handleEvent");
+        webManager.setCallback(SysGuiEventConstants.ON_BROWSER_CLOSE, handler, "onEvent");
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException("Failed to register browser close event.", e);
+      }
+    }
+
+    return dispatcher.addListener(PageUnloadEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addUnloadListener(EventListener)}.
+   *
+   * @param listener The listener to add
+   * @return The registration object that can be used to remove the listener
+   * @since 24.10
+   */
+  public ListenerRegistration<PageUnloadEvent> onUnload(EventListener<PageUnloadEvent> listener) {
+    return addUnloadListener(listener);
   }
 
   private void performDownload(String sourceFilePath, String fileName) throws BBjException {

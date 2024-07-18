@@ -21,8 +21,12 @@ import com.basis.bbj.proxies.BBjClientFileSystem;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.dispatcher.EventListener;
+import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.event.page.PageUnloadEvent;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.File;
 import java.io.InputStream;
@@ -220,6 +224,29 @@ class PageTest {
     void shouldOpenUrl() throws BBjException {
       page.open("http://example.com");
       verify(thinClient).browse("http://example.com", "_blank", "");
+    }
+  }
+
+  @Nested
+  class UnloadListener {
+
+    @Test
+    void shouldAddUnloadListener() throws BBjException {
+      EventListener<PageUnloadEvent> listener = mock(EventListener.class);
+      ListenerRegistration<PageUnloadEvent> registration = page.onUnload(listener);
+      assertNotNull(registration);
+
+      verify(webManager, times(1)).setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(),
+          eq("onEvent"));
+    }
+
+    @Test
+    void addUnloadListenerShouldThrowException() throws BBjException {
+      doThrow(BBjException.class).when(webManager)
+          .setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(), eq("onEvent"));
+      EventListener<PageUnloadEvent> listener = mock(EventListener.class);
+
+      assertThrows(WebforjRuntimeException.class, () -> page.onUnload(listener));
     }
   }
 }
