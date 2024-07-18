@@ -9,6 +9,7 @@ SETESC EscTrap
 SETERR _error
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
+BBjAPI().setCustomEventCallback("webforjTerminateSignal","terminate")
 
 DEBUG = 0
 dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
@@ -53,7 +54,8 @@ REM app! =  Class.forName(class$).getDeclaredConstructor().newInstance()
 process_events,err=_error
 
 terminate:
-    release
+    Environment.cleanup()
+RELEASE
 
 determineClasspathEntries:
         pw$="admin123"
@@ -86,14 +88,14 @@ EscTrap:
         System.out.println("ESCAPE")
     FI
     if app! <> null() then
-        app!.cleanup()
+        app!.terminate()
     fi
 RELEASE
 
 ErrTrap:
     System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
     if app! <> null() then
-        app!.cleanup()
+        app!.terminate()
     fi
 RELEASE
 
