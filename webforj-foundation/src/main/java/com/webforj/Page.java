@@ -712,17 +712,33 @@ public final class Page implements HasJsExecution {
   @Override
   public PendingResult<Object> executeJsAsync(String js) {
     try {
-      // create the handler if it doesn't exist
       if (executeJsAsyncHandler == null) {
         executeJsAsyncHandler = new PageExecuteJsAsyncHandler(getEnvironment());
         executeJsAsyncHandler.register();
       }
 
       PendingResult<Object> result = new PendingResult<>();
-      int index = getWebManager().executeAsyncScript(js);
+      int index = getWebManager().executeAsyncScript(js, true, true);
       executeJsAsyncHandler.getPendingResults().put(index, result);
 
       return result;
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to execute async script.", e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void executeJsVoidAsync(String js) {
+    try {
+      if (executeJsAsyncHandler == null) {
+        executeJsAsyncHandler = new PageExecuteJsAsyncHandler(getEnvironment());
+        executeJsAsyncHandler.register();
+      }
+
+      getWebManager().executeAsyncScript(js, true, false);
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to execute async script.", e);
     }

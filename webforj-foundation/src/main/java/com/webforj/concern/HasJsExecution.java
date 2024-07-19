@@ -73,4 +73,32 @@ public interface HasJsExecution {
    *         execution.
    */
   public PendingResult<Object> executeJsAsync(String js);
+
+  /**
+   * Executes a JavaScript script asynchronously without returning any result to the server.
+   *
+   * <p>
+   * Initiates asynchronous execution of the provided JavaScript code. The method returns
+   * immediately and does not provide any result back to the server. Similar to synchronous
+   * execution, if the execution context (such as a component) is not ready, the script execution is
+   * queued until the context is available. The script has access to the current context through the
+   * {@code component} keyword, if applicable.
+   * </p>
+   *
+   * <p>
+   * The results of the script execution are converted to corresponding Java types as follows:
+   * <ul>
+   * <li>JavaScript numbers to {@code java.lang.Integer}, {@code java.lang.Long}, or
+   * {@code java.lang.Double}.</li>
+   * <li>JavaScript strings to {@code java.lang.String}.</li>
+   * <li>JavaScript booleans to {@code java.lang.Boolean}.</li>
+   * <li>JavaScript null or undefined to {@code null}.</li>
+   * <li>All other JavaScript types to their string representations.</li>
+   * </ul>
+   * </p>
+   *
+   * @param js The JavaScript code to execute asynchronously.
+   * @since 24.11
+   */
+  public void executeJsVoidAsync(String js);
 }

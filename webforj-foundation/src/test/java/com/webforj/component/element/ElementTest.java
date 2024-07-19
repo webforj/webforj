@@ -27,7 +27,6 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -106,7 +105,7 @@ class ElementTest {
     }
 
     @Test
-    void shouldRemoveComponentFromSlot() throws BBjException {
+    void shouldRemoveComponentFromSlot() {
       DwcComponentMock child1 = new DwcComponentMock() {
         {
           setControl(control);
@@ -241,14 +240,15 @@ class ElementTest {
     @Test
     @DisplayName("should not accept empty function name")
     void shouldNotAcceptEmptyFunctionName() {
-      assertThrows(IllegalArgumentException.class, () -> component.buildCallJsFunctionScript(""));
+      assertThrows(IllegalArgumentException.class,
+          () -> component.buildCallJsFunctionScript("", true));
     }
 
     @Test
     @DisplayName("function name must not start with dot")
     void functionNameMustNotStartWithDot() {
       assertThrows(IllegalArgumentException.class,
-          () -> component.buildCallJsFunctionScript(".test"));
+          () -> component.buildCallJsFunctionScript(".test", true));
     }
   }
 

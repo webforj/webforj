@@ -270,6 +270,14 @@ public final class Element extends DwcContainer<Element>
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void executeJsVoidAsync(String js) {
+    jsExecutor.executeJsVoidAsync(js);
+  }
+
+  /**
    * Synchronously calls a specified JavaScript function on an HTML element with provided arguments.
    *
    * <p>
@@ -317,7 +325,7 @@ public final class Element extends DwcContainer<Element>
    * @see #executeJs(String)
    */
   public Object callJsFunction(String functionName, Object... arguments) {
-    String script = buildCallJsFunctionScript(functionName, arguments);
+    String script = buildCallJsFunctionScript(functionName, true, arguments);
     return executeJs(script);
   }
 
@@ -372,12 +380,63 @@ public final class Element extends DwcContainer<Element>
 
     waitForAllComponents(arguments).thenAccept(untilAttached -> { // NOSONAR
       whenDefined().thenAccept(element -> {
-        String script = buildCallJsFunctionScript(functionName, arguments);
+        String script = buildCallJsFunctionScript(functionName, true, arguments);
         executeJsAsync(script).thenAccept(result::complete);
       });
     });
 
     return result;
+  }
+
+  /**
+   * Asynchronously calls a specified JavaScript function on an HTML element with provided arguments
+   * without returning a result to the server.
+   *
+   * <p>
+   * This method is similar to {@link #callJsFunction(String, Object...)} but operates
+   * asynchronously. It invokes the JavaScript function named {@code functionName} on the context of
+   * an HTML element. The function execution is queued until the element is attached to the DOM.
+   * </p>
+   *
+   * <p>
+   * Arguments are serialized as a JSON array. Special argument types are handled as follows:
+   * </p>
+   * <ul>
+   * <li>{@code this} is replaced with the current instance of the client element.</li>
+   * <li>Any {@code Component} instance is replaced with its corresponding client component
+   * instance, once it is attached to the DOM.</li>
+   * </ul>
+   *
+   * <p>
+   * This method does not block the executing thread. It uses {@link #executeJsAsync(String)} for
+   * JavaScript execution. The method waits for all {@code Component} arguments to attach to the
+   * DOM, which means the invocation may never complete if a component is never attached.
+   * </p>
+   *
+   * <p>
+   * <b>Example Usage:</b>
+   *
+   * <pre>
+   * {@code
+   * // Assuming 'component' is a valid component that may or may not be attached to the DOM yet
+   * el.callJsFunctionVoidAsync("functionName", component, "arg1", 123);
+   * }
+   * </pre>
+   * </p>
+   *
+   * @param functionName the name of the JavaScript function to call
+   * @param arguments the arguments to pass to the function
+   *
+   * @see #callJsFunctionAsync(String, Object...)
+   * @see #executeJsVoidAsync(String)
+   */
+  public void callJsFunctionVoidAsync(String functionName, Object... arguments) {
+    waitForAllComponents(arguments).thenAccept(untilAttached -> { // NOSONAR
+      whenDefined().thenAccept(element -> {
+        String script = buildCallJsFunctionScript(functionName, false, arguments);
+        executeJsVoidAsync(script);
+      });
+    });
   }
 
   /**
@@ -719,13 +778,14 @@ public final class Element extends DwcContainer<Element>
    * </p>
    *
    * @param functionName The name of the JavaScript function to be called.
+   * @param shouldWait Whether to wait for the result of the function call or not.
    * @param arguments The arguments to be passed to the JavaScript function.
    *
    * @return A JavaScript script that, when executed, will perform the specified function call with
    *         the given arguments on the HTML element. If any condition is not met, the script may
    *         return {@code null}.
    */
-  String buildCallJsFunctionScript(String functionName, Object... arguments) {
+  String buildCallJsFunctionScript(String functionName, boolean shouldWait, Object... arguments) {
     if (functionName == null || functionName.trim().isEmpty()) {
       throw new IllegalArgumentException("The function name cannot be null or empty");
     }
@@ -795,8 +855,12 @@ public final class Element extends DwcContainer<Element>
     sb.append("  return arg;");
     sb.append("});");
 
-    sb.append("return await component['").append(functionName)
-        .append("']" + ".apply(component, args);");
+    if (shouldWait) {
+      sb.append("return await component['").append(functionName)
+          .append("'].apply(component, args);");
+    } else {
+      sb.append("component['").append(functionName).append("'].apply(component, args);");
+    }
 
     sb.append("})();"); // end of async function
 
@@ -824,7 +888,15 @@ public final class Element extends DwcContainer<Element>
      */
     @Override
     protected int doExecuteJsAsync(String script) throws BBjException {
-      return inferControl().executeAsyncScript(script, true);
+      return inferControl().executeAsyncScript(script, true, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int doExecuteJsVoidAsync(String script) throws BBjException {
+      return inferControl().executeAsyncScript(script, true, false);
     }
   }
 }
