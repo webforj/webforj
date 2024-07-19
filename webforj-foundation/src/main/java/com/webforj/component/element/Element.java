@@ -429,6 +429,7 @@ public final class Element extends DwcContainer<Element>
    *
    * @see #callJsFunctionAsync(String, Object...)
    * @see #executeJsVoidAsync(String)
+   * @since 24.11
    */
   public void callJsFunctionVoidAsync(String functionName, Object... arguments) {
     waitForAllComponents(arguments).thenAccept(untilAttached -> { // NOSONAR
