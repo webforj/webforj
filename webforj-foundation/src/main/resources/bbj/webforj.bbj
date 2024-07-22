@@ -45,12 +45,17 @@ fi
 h! = new ::WebforjHelper.bbj::WebforjHelper()
 Environment.init(BBjAPI(), h!, DEBUG)
 
+hotr$=""
+hotr$=stbl("WEBFORJ_HOTRELOAD",err=*next)
+if hotr$="1" then
+    gosub prepHotReload
+fi
+
 Class.forName(class$,err=class_not_found)
 app! = eval("new "+class$+"()",err=_error)
 app!.initialize()
 
-REM app! =  Class.forName(class$).getDeclaredConstructor().newInstance()
-
+proc_ev:
 process_events,err=_error
 
 terminate:
@@ -68,18 +73,41 @@ determineClasspathEntries:
         cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
         cp! = Api!.getClasspath(cp$)
 
-        al! = new java.util.ArrayList()
+        cp_entries! = new java.util.ArrayList()
         it!=cp!.iterator()
         while it!.hasNext()
             c$ = it!.next()
             if c$(1,1)="(" or pos("lib/webforj-" =c$)>0 then
                 continue
             fi
-            al!.add(c$)
+            cp_entries!.add(c$)
         wend
 
-        BBjAPI().getObjectTable().put("dwcjcp",al!)
+        BBjAPI().getObjectTable().put("dwcjcp",cp_entries!)
 return
+
+prepHotReload:
+    if cp_entries! = null() then
+        gosub determineClasspathEntries
+    fi
+
+    it! = cp_entries!.iterator()
+    while it!.hasNext()
+        cpe! = new java.io.File(it!.next())
+        if !cpe!.isDirectory() then
+            cpe! = cpe!.getParentFile()
+        fi
+        BBjAPI().getFileSystem().watchDirectory(cpe!.getAbsolutePath(), "onHotReload")
+    wend
+    BBjAPI().getWebManager().executeAsyncScript("console.log('Hot Reload enabled.')")
+return
+
+onHotReload:
+    BBjAPI().getWebManager().setEndAction(BBjAPI().getWebManager().urlAction(BBjAPI().getWebManager().getUrl()))
+    BBjAPI().getAdmin("admin", pw$).getEnvironment().reloadClasspath(cp$)
+    release
+return
+
 
 EscTrap:
     IF AND(CHR(TCB(19)),$08$)=$08$ THEN
@@ -88,24 +116,26 @@ EscTrap:
         System.out.println("ESCAPE")
     FI
     if app! <> null() then
-        app!.terminate()
+        app!.cleanup()
     fi
 RELEASE
 
 ErrTrap:
     System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
     if app! <> null() then
-        app!.terminate()
+        app!.cleanup()
     fi
 RELEASE
 
 class_not_found:
     if !Environment.getCurrent().isDebug() then
-        a=msgbox("Class not found!",64,"Error")
+       msg$="Class not found!"
     else
-        a=msgbox("Class "+class$+" not found!",64,"Error")
+        msg$="Class "+class$+" not found!"
     fi
-release
+    wnd!=BBjAPI().openSysGui("X0").addWindow("Error",$01101083$)
+    wnd!.addStaticText(msg$)
+goto proc_ev
 
 _error:
 
