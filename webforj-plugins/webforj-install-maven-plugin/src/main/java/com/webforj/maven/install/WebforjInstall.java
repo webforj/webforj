@@ -91,6 +91,24 @@ public class WebforjInstall extends AbstractMojo {
   @Parameter(property = "debug")
   private String debug;
 
+  /**
+   * Optional parameter to put class files in classpath instead of JAR
+   */
+  @Parameter(property = "useclassfiles")
+  private String useclassfiles;
+
+  /**
+   * Optional String pointing to the (in Docker potentially mapped) classes folder name
+   */
+  @Parameter(property = "classfolder")
+  private String classfolder;
+
+  /**
+   * Optional watch parameter to enable hot reloading.
+   */
+  @Parameter(property = "watch")
+  private String watch;
+
 
   /**
    * A private Tika instance.
@@ -109,8 +127,8 @@ public class WebforjInstall extends AbstractMojo {
     Args.check(project.getArtifact() != null, "project artifact is null!");
     final File file = Args.notEmpty(project.getArtifact().getFile(), "artifact file is null!");
 
-    getLog().info("-------DWCJ Deploy to Server:-------------");
-    getLog().info("Installing DWCJ App using URL: " + deployurl);
+    getLog().info("-------webforJ Deploy to Server:-------------");
+    getLog().info("Installing webforJ App using URL: " + deployurl);
 
     Try.withResources(HttpClients::createDefault, () -> createMultipartEntity(file))
         .of((httpClient, reqEntity) -> {
