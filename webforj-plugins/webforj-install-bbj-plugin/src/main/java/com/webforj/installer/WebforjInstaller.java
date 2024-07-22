@@ -327,8 +327,7 @@ public final class WebforjInstaller {
       log.info("Creating BBj classpath");
       ArrayList<String> cpEntries = new ArrayList<>();
       cpEntries.add("(_webforj_default)");
-      cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true)
-        +"*");
+      cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true) + "*");
 
       Boolean useclassfiles = configuration.get("useclassfiles")!=null
         && configuration.get("useclassfiles").equals("true");
