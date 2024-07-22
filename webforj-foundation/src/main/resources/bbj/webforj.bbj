@@ -16,11 +16,16 @@ dummy$=STBL("!OPTIONS","ERROR_UNWINDS=true")
 
 class$=""
 DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
+WATCH=NUM(STBL("WEBFORJ_HOTRELOAD",err=*next),err=*next)
 
 for i=1 to 10
     tmp$=argv(i,err=*break)
     if cvs(tmp$,4)="DEBUG" then
         DEBUG=1
+        continue
+    fi
+    if cvs(tmp$,4)="WATCH" then
+        WATCH=1
         continue
     fi
     if len(tmp$)>6 and tmp$(1,6)="class=" then
@@ -45,9 +50,7 @@ fi
 h! = new ::WebforjHelper.bbj::WebforjHelper()
 Environment.init(BBjAPI(), h!, DEBUG)
 
-hotr$=""
-hotr$=stbl("WEBFORJ_HOTRELOAD",err=*next)
-if hotr$="1" then
+if WATCH then
     gosub prepHotReload
 fi
 
