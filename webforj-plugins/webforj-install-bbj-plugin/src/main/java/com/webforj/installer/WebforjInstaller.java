@@ -322,16 +322,17 @@ public final class WebforjInstaller {
         api = BBjAdminFactory.getBBjAdmin(user, password);
       }
 
-      Boolean useclassfiles =
-          configuration.get("useclassfiles") != null && configuration.get("useclassfiles").equals("true");
-
-      String classfolder = Optional.ofNullable(configuration.get("classfolder")).orElse("");
 
       // create BBj classpath
       log.info("Creating BBj classpath");
       ArrayList<String> cpEntries = new ArrayList<>();
       cpEntries.add("(_webforj_default)");
-      cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true) + "*");
+      cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true)
+        +"*");
+
+      Boolean useclassfiles = configuration.get("useclassfiles")!=null
+        && configuration.get("useclassfiles").equals("true");
+      String classfolder = Optional.ofNullable(configuration.get("classfolder")).orElse("");
 
       if (Boolean.TRUE.equals(useclassfiles) && !classfolder.isEmpty()) {
         cpEntries.add(FilenameUtils.normalize(classfolder, true));
