@@ -180,18 +180,17 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
     return this;
   }
 
-  /**
-   * Writes data to the terminal.
-   *
-   * @param data the data to write
-   * @param callback callback that fires when the data was processed by the parser
-   *
-   * @return the component itself
-   */
-  public Terminal write(Object data, Consumer<Object> callback) {
-    getElement().callJsFunctionAsync(JS_METHOD_WRITE, data).thenAccept(callback);
-    return this;
-  }
+  // /**
+  // * Writes data to the terminal.
+  // *
+  // * @param data the data to write
+  // * @param callback callback that fires when the data was processed by the parser
+  // *
+  // * @return the component itself
+  // */
+  // public Terminal write(Object data, Consumer<Object> callback) {
+  // return doWrite(JS_METHOD_WRITE, data, callback);
+  // }
 
   /**
    * Writes data to the terminal.
@@ -200,22 +199,20 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
    * @return the component itself
    */
   public Terminal write(Object data) {
-    getElement().callJsFunctionVoidAsync(JS_METHOD_WRITE, data);
-    return this;
+    return doWrite(JS_METHOD_WRITE, data, null);
   }
 
-  /**
-   * Writes data to the terminal followed by a new line.
-   *
-   * @param data the data to write
-   * @param callback callback that fires when the data was processed by the parser
-   *
-   * @return the component itself
-   */
-  public Terminal writeln(Object data, Consumer<Object> callback) {
-    getElement().callJsFunctionAsync(JS_METHOD_WRITELN, data).thenAccept(callback);
-    return this;
-  }
+  // /**
+  // * Writes data to the terminal followed by a new line.
+  // *
+  // * @param data the data to write
+  // * @param callback callback that fires when the data was processed by the parser
+  // *
+  // * @return the component itself
+  // */
+  // public Terminal writeln(Object data, Consumer<Object> callback) {
+  // return doWrite(JS_METHOD_WRITELN, data, callback);
+  // }
 
   /**
    * Writes data to the terminal followed by a new line.
@@ -224,8 +221,7 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
    * @return the component itself
    */
   public Terminal writeln(Object data) {
-    getElement().callJsFunctionVoidAsync(JS_METHOD_WRITELN, data);
-    return this;
+    return doWrite(JS_METHOD_WRITELN, data, null);
   }
 
   /**
@@ -405,5 +401,35 @@ public class Terminal extends ElementComposite implements HasSize<Terminal> {
 
   Element getOriginalElement() {
     return getElement();
+  }
+
+  Terminal doWrite(String type, Object data, Consumer<Object> callback) {
+    // boolean hasCallback = callback != null;
+
+    // Gson gson = new Gson();
+    // String dataStr = gson.toJson(data);
+    // String base64Data = Base64.getEncoder().encodeToString(dataStr.getBytes());
+    // String script = String.format("""
+    // (async () => {
+    // await customElements.whenDefined('dwc-terminal');
+    // const type = '%s';
+    // const hasCallback = %s;
+    // const data = JSON.parse(atob('%s'));
+    // if (hasCallback) {
+    // return await component[type](data);
+    // } else {
+    // component[type](data);
+    // }
+    // })();
+    // """, type, Boolean.toString(hasCallback), base64Data);
+
+    // getElement().executeJsAsync(script).thenAccept(obj -> {
+    // if (hasCallback) {
+    // callback.accept(data);
+    // }
+    // });
+
+    getElement().whenDefined().thenAccept(component -> component.callJsFunction(type, data));
+    return this;
   }
 }
