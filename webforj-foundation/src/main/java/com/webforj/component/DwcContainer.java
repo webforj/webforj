@@ -104,6 +104,15 @@ public abstract class DwcContainer<T extends DwcContainer<T>> extends DwcCompone
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDestroy() {
+    getComponents().forEach(Component::destroy);
+    super.onDestroy();
+  }
+
+  /**
    * Abstract method for adding a single component to the container. This method must be implemented
    * by subclasses to define the specific behavior of component addition.
    *
