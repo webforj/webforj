@@ -68,6 +68,58 @@ class TerminalTest {
     }
 
     @Test
+    void shouldWriteVoid() {
+      Terminal mock = spy(Terminal.class);
+      Element element = mock(Element.class);
+      when(mock.getOriginalElement()).thenReturn(element);
+
+      String text = "Hello";
+      mock.write(text);
+      verify(element).callJsFunctionVoidAsync(Terminal.JS_METHOD_WRITE, text);
+    }
+
+    @Test
+    void shouldWrite() {
+      Terminal mock = spy(Terminal.class);
+      Element element = mock(Element.class);
+      when(mock.getOriginalElement()).thenReturn(element);
+
+      String text = "Hello";
+      when(element.callJsFunctionAsync(Terminal.JS_METHOD_WRITE, text))
+          .thenReturn(PendingResult.completedWith("Hello"));
+
+      mock.write(text, data -> {
+      });
+      verify(element).callJsFunctionAsync(Terminal.JS_METHOD_WRITE, text);
+    }
+
+    @Test
+    void shouldWritelnVoid() {
+      Terminal mock = spy(Terminal.class);
+      Element element = mock(Element.class);
+      when(mock.getOriginalElement()).thenReturn(element);
+
+      String text = "Hello";
+      mock.writeln(text);
+      verify(element).callJsFunctionVoidAsync(Terminal.JS_METHOD_WRITELN, text);
+    }
+
+    @Test
+    void shouldWriteln() {
+      Terminal mock = spy(Terminal.class);
+      Element element = mock(Element.class);
+      when(mock.getOriginalElement()).thenReturn(element);
+
+      String text = "Hello";
+      when(element.callJsFunctionAsync(Terminal.JS_METHOD_WRITELN, text))
+          .thenReturn(PendingResult.completedWith("Hello"));
+
+      mock.writeln(text, data -> {
+      });
+      verify(element).callJsFunctionAsync(Terminal.JS_METHOD_WRITELN, text);
+    }
+
+    @Test
     void shouldClear() {
       Terminal mock = spy(Terminal.class);
       Element element = mock(Element.class);
