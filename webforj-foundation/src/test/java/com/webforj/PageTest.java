@@ -78,7 +78,7 @@ class PageTest {
   }
 
   @Test
-  void testExecuteJsAsync() {
+  void shouldExecuteJsAsync() throws BBjException {
     String script = "console.log('script')";
     PendingResult<Object> operation = page.executeJsAsync(script);
 
@@ -91,10 +91,19 @@ class PageTest {
 
     assertEquals("Executed: " + script, resultRef.get());
     assertTrue(operation.isDone());
+
+    verify(webManager).executeAsyncScript(script, true, true);
   }
 
   @Test
-  void testReload() throws BBjException {
+  void shouldExecuteJsVoidAsync() throws BBjException {
+    String script = "console.log('script')";
+    page.executeJsVoidAsync(script);
+    verify(webManager).executeAsyncScript(script, true, false);
+  }
+
+  @Test
+  void testReload() {
     page.reload();
     verify(page, times(1)).executeJsAsync("window.location.reload();");
   }

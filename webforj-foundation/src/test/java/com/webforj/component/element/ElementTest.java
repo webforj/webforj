@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -27,7 +28,6 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -106,7 +106,7 @@ class ElementTest {
     }
 
     @Test
-    void shouldRemoveComponentFromSlot() throws BBjException {
+    void shouldRemoveComponentFromSlot() {
       DwcComponentMock child1 = new DwcComponentMock() {
         {
           setControl(control);
@@ -241,14 +241,15 @@ class ElementTest {
     @Test
     @DisplayName("should not accept empty function name")
     void shouldNotAcceptEmptyFunctionName() {
-      assertThrows(IllegalArgumentException.class, () -> component.buildCallJsFunctionScript(""));
+      assertThrows(IllegalArgumentException.class,
+          () -> component.buildCallJsFunctionScript("", true));
     }
 
     @Test
     @DisplayName("function name must not start with dot")
     void functionNameMustNotStartWithDot() {
       assertThrows(IllegalArgumentException.class,
-          () -> component.buildCallJsFunctionScript(".test"));
+          () -> component.buildCallJsFunctionScript(".test", true));
     }
   }
 
@@ -258,7 +259,7 @@ class ElementTest {
 
     @Test
     @DisplayName("Should wait for components to be attached before invoking JS function")
-    void shouldWaitForComponentsToBeAttached() throws Exception {
+    void shouldWaitForComponentsToBeAttached() {
       // Mock the component
       Element spy = spy(component);
       when(spy.isDefined()).thenReturn(true);
@@ -283,6 +284,37 @@ class ElementTest {
       argPending.complete(arg);
       assertTrue(callResult.isDone());
       assertEquals("call result", ref.get());
+    }
+  }
+
+  @Nested
+  @DisplayName("callJsFunctionVoidAsync Method")
+  class CallJsFunctionVoidAsyncMethod {
+
+    @Test
+    @DisplayName("Should wait for components to be attached before invoking JS function")
+    void shouldWaitForComponentsToBeAttached() {
+      // Mock the component
+      Element spy = spy(component);
+      when(spy.isDefined()).thenReturn(true);
+      doNothing().when(spy).executeJsVoidAsync(anyString());
+
+      // Mock the container
+      Element container = mock(Element.class);
+      container.add(spy);
+
+      // Mock the argument Component
+      ComponentMock arg = mock(ComponentMock.class);
+      PendingResult<Component> argPending = new PendingResult<>();
+      when(arg.whenAttached()).thenReturn(argPending);
+
+      // Call the function
+      spy.callJsFunctionVoidAsync("testFunction", arg);
+
+      verify(spy, times(0)).executeJsVoidAsync(anyString());
+
+      argPending.complete(arg);
+      verify(spy, times(1)).executeJsVoidAsync(anyString());
     }
   }
 }

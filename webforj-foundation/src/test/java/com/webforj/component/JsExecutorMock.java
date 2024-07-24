@@ -28,4 +28,10 @@ class JsExecutorMock extends JsExecutor {
   public boolean isExecuted(String script) {
     return executedScripts.contains(script);
   }
+
+  @Override
+  protected int doExecuteJsVoidAsync(String script) throws BBjException {
+    executedScripts.add(script);
+    return asyncScriptIdCounter++;
+  }
 }

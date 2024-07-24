@@ -58,7 +58,11 @@ public abstract class JsExecutor implements HasJsExecution {
         new ArrayList<>(this.scriptsStore);
 
     if (!scriptsStoreCopy.isEmpty()) {
-      scriptsStoreCopy.forEach(entry -> executeJsAsync(entry.getKey(), entry.getValue()));
+      scriptsStoreCopy.forEach(entry -> {
+        String script = entry.getKey();
+        PendingResult<Object> result = entry.getValue();
+        executeJsAsync(script, result, result != null);
+      });
     }
   }
 
@@ -86,19 +90,22 @@ public abstract class JsExecutor implements HasJsExecution {
    */
   @Override
   public PendingResult<Object> executeJsAsync(String script) {
-    return executeJsAsync(script, null);
+    return executeJsAsync(script, null, true);
   }
 
   /**
-   * Executes a provided JavaScript script asynchronously and returns a PendingResult.
+   * Executes a provided JavaScript script asynchronously and returns a PendingResult if possible.
    *
    * @param script The JavaScript code to execute asynchronously.
    * @param pending A {@link PendingResult} that will be completed when the script execution is
    *        finished.
+   * @param returnResult A boolean value indicating whether the script result should be returned to
+   *        the server in the next event cycle.
    *
    * @return An {@link PendingResult} representing the pending result of the script execution.
    */
-  private PendingResult<Object> executeJsAsync(String script, PendingResult<Object> pending) {
+  private PendingResult<Object> executeJsAsync(String script, PendingResult<Object> pending,
+      boolean returnResult) {
     PendingResult<Object> result = pending;
     if (result == null) {
       result = new PendingResult<>();
@@ -107,8 +114,8 @@ public abstract class JsExecutor implements HasJsExecution {
     if (component.isAttached()) {
       try {
         if (!result.isCancelled()) {
-          int id = doExecuteJsAsync(script);
-          resultsStore.put(id, result);
+          int id = returnResult ? doExecuteJsAsync(script) : doExecuteJsVoidAsync(script);
+          resultsStore.put(id, returnResult ? result : null);
         }
       } catch (BBjException e) {
         if (pending != null) {
@@ -116,10 +123,18 @@ public abstract class JsExecutor implements HasJsExecution {
         }
       }
     } else {
-      scriptsStore.add(new SimpleEntry<>(script, result));
+      scriptsStore.add(new SimpleEntry<>(script, returnResult ? result : null));
     }
 
     return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void executeJsVoidAsync(String script) {
+    executeJsAsync(script, null, false);
   }
 
   /**
@@ -150,4 +165,15 @@ public abstract class JsExecutor implements HasJsExecution {
    * @throws BBjException if an error occurs during script execution.
    */
   protected abstract int doExecuteJsAsync(String script) throws BBjException;
+
+  /**
+   * Abstract method to execute JavaScript asynchronously without returning any result to the
+   * server.
+   *
+   * @param script The JavaScript code to execute asynchronously.
+   * @return An integer identifier for the asynchronous execution.
+   *
+   * @throws BBjException if an error occurs during script execution.
+   */
+  protected abstract int doExecuteJsVoidAsync(String script) throws BBjException;
 }
