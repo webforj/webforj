@@ -3,11 +3,9 @@ package com.webforj;
 import com.basis.bbj.proxies.BBjBuiCloseAction;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
-import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.AnnotationProcessor;
-import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.optiondialog.OptionDialog;
 import com.webforj.component.window.Frame;
@@ -70,13 +68,16 @@ public abstract class App {
       }
     }
 
-    preRun();
+    Page.getCurrent().onUnload(ev -> terminate());
+
     try {
+      onWillRun();
       AnnotationProcessor processor = new AnnotationProcessor();
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
       run();
       processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
       isInitialized = true;
+      onDidRun();
     } catch (WebforjException e) {
       Environment.logError(e);
     }
@@ -486,18 +487,21 @@ public abstract class App {
   }
 
   /**
-   * Call this method to terminate your App.
+   * Terminate the application.
    */
-  public void terminate() {
-    Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("doTerminate", null);
-    cleanup();
-    Environment.cleanup();
+  public final void terminate() {
+    onWillTerminate();
+    Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("webforjTerminateSignal", null);
+    onDidTerminate();
   }
 
   /**
    * Override this method to implement custom cleanup e.g. kill all background threads that may
    * still run
+   *
+   * @deprecated since 24.10, for removal in 25.00. Use {@link #onWillTerminate()} and
    */
+  @Deprecated(since = "24.10", forRemoval = true)
   public void cleanup() {}
 
   /**
@@ -563,8 +567,54 @@ public abstract class App {
 
   }
 
-  private void preRun() {
-    Environment.getCurrent().getBBjAPI().setCustomEventCallback("doTerminate", "terminate");
+  /**
+   * A hook method that is called after the app is run.
+   *
+   * <p>
+   * This method is called after the app has been completely initialized. It is called only once
+   * during the app's lifecycle before the {@code run()} method is called. Use this method to
+   * perform any additional initialization tasks.
+   * </p>
+   */
+  protected void onWillRun() {
+    // no-op
+  }
+
+  /**
+   * A hook method that is called after the app is run.
+   *
+   * <p>
+   * This method is called after the app has been completely initialized. It is called only once
+   * during the app's lifecycle after the {@code run()} method is called. Use this method to perform
+   * any additional initialization tasks.
+   * </p>
+   */
+  protected void onDidRun() {
+    // no-op
+  }
+
+  /**
+   * A hook method that is called before the app is terminated.
+   *
+   * <p>
+   * This method is called before the app is terminated. Use this method to perform any cleanup
+   * tasks.
+   * </p>
+   */
+  protected void onWillTerminate() {
+    // no-op
+  }
+
+  /**
+   * A hook method that is called after the app is terminated.
+   *
+   * <p>
+   * This method is called after the app is terminated. Use this method to perform any cleanup
+   * tasks.
+   * </p>
+   */
+  protected void onDidTerminate() {
+    // no-op
   }
 
   /**

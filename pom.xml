@@ -5,7 +5,7 @@
 
   <groupId>com.webforj</groupId>
   <artifactId>webforj-parent</artifactId>
-  <version>24.10-SNAPSHOT</version>
+  <version>24.11-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>webforj</name>
   <description>
@@ -106,7 +106,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.14.0</version>
+        <version>3.15.0</version>
       </dependency>
       <dependency>
         <groupId>org.junit</groupId>
@@ -206,7 +206,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.7.0</version>
+          <version>3.8.0</version>
           <configuration>
             <detectJavaApiLink>false</detectJavaApiLink>
             <failOnError>false</failOnError>

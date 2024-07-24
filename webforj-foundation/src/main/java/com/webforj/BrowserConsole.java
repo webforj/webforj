@@ -164,7 +164,7 @@ public final class BrowserConsole {
      * @return the console instance
      */
     default BrowserConsole smaller() {
-      getInstance().setStyle("font-size", "smaller");
+      getInstance().setStyle("font-size", "x-small");
       return getInstance();
     }
 
@@ -174,7 +174,7 @@ public final class BrowserConsole {
      * @return the console instance
      */
     default BrowserConsole larger() {
-      getInstance().setStyle("font-size", "larger");
+      getInstance().setStyle("font-size", "x-large");
       return getInstance();
     }
 

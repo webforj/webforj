@@ -328,7 +328,16 @@ public final class WebforjInstaller {
       ArrayList<String> cpEntries = new ArrayList<>();
       cpEntries.add("(_webforj_default)");
       cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true) + "*");
-      cpEntries.add(FilenameUtils.normalize(zipFilePathName, true));
+
+      Boolean useclassfiles = configuration.get("useclassfiles") != null
+          && configuration.get("useclassfiles").equals("true");
+      String classfolder = Optional.ofNullable(configuration.get("classfolder")).orElse("");
+
+      if (Boolean.TRUE.equals(useclassfiles) && !classfolder.isEmpty()) {
+        cpEntries.add(FilenameUtils.normalize(classfolder, true));
+      } else {
+        cpEntries.add(FilenameUtils.normalize(zipFilePathName, true));
+      }
 
       String apphandle = APP_HANDLE_PREFIX + appname.toLowerCase();
       log.info("set entries {}", cpEntries);
@@ -357,6 +366,12 @@ public final class WebforjInstaller {
           configuration.get("debug") != null && configuration.get("debug").equals("true");
       if (Boolean.TRUE.equals(debug)) {
         newApp.getArguments().add("DEBUG");
+      }
+
+      Boolean watch =
+          configuration.get("watch") != null && configuration.get("watch").equals("true");
+      if (Boolean.TRUE.equals(watch)) {
+        newApp.getArguments().add("WATCH");
       }
 
       String classname = configuration.get("classname");

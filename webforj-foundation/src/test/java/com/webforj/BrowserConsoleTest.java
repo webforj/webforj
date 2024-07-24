@@ -83,13 +83,13 @@ class BrowserConsoleTest {
     @Test
     void shouldSetFontSizeToSmaller() {
       console.size().smaller();
-      assertEquals("smaller", console.getStyles().get("font-size"));
+      assertEquals("x-small", console.getStyles().get("font-size"));
     }
 
     @Test
     void shouldSetFontSizeToLarger() {
       console.size().larger();
-      assertEquals("larger", console.getStyles().get("font-size"));
+      assertEquals("x-large", console.getStyles().get("font-size"));
     }
 
     @Test
