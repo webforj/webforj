@@ -158,7 +158,7 @@ class DwcComponentTest {
     @Test
     @DisplayName("Setting/getting readonly when control is not null")
     void settingGettingReadOnlyWhenControlIsNotNull() throws BBjException {
-      when(control.isEditable()).thenReturn(true);
+      when(control.isEditable()).thenReturn(false);
       component.setReadOnly(true);
 
       assertTrue(component.isReadOnly());
