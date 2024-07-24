@@ -329,8 +329,8 @@ public final class WebforjInstaller {
       cpEntries.add("(_webforj_default)");
       cpEntries.add(FilenameUtils.normalize(depdir.getAbsolutePath() + File.separator, true) + "*");
 
-      Boolean useclassfiles = configuration.get("useclassfiles")!=null
-        && configuration.get("useclassfiles").equals("true");
+      Boolean useclassfiles = configuration.get("useclassfiles") != null
+          && configuration.get("useclassfiles").equals("true");
       String classfolder = Optional.ofNullable(configuration.get("classfolder")).orElse("");
 
       if (Boolean.TRUE.equals(useclassfiles) && !classfolder.isEmpty()) {
