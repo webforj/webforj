@@ -1,12 +1,12 @@
 package com.webforj.router;
 
-import com.basis.bbj.comm.i;
+import static com.webforj.App.console;
+
 import com.webforj.App;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.window.Frame;
 import com.webforj.concern.HasComponents;
-import static com.webforj.App.console;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +117,7 @@ public class Router {
                 + parent.getClass().getName());
       }
       currentViews.remove(parent); // Remove tracking for the cleared view
+      viewCache.remove(currentView.getClass()); // Remove the cleared view from the cache
     }
   }
 

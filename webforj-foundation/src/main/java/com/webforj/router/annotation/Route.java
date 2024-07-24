@@ -38,7 +38,7 @@ public @interface Route {
    * of the application.
    * </p>
    *
-   * @return the parent of the route
+   * @return the target of the route
    */
   Class<? extends Component> target() default Frame.class;
 
