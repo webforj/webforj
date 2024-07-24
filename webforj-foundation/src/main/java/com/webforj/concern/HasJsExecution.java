@@ -85,18 +85,6 @@ public interface HasJsExecution {
    * {@code component} keyword, if applicable.
    * </p>
    *
-   * <p>
-   * The results of the script execution are converted to corresponding Java types as follows:
-   * <ul>
-   * <li>JavaScript numbers to {@code java.lang.Integer}, {@code java.lang.Long}, or
-   * {@code java.lang.Double}.</li>
-   * <li>JavaScript strings to {@code java.lang.String}.</li>
-   * <li>JavaScript booleans to {@code java.lang.Boolean}.</li>
-   * <li>JavaScript null or undefined to {@code null}.</li>
-   * <li>All other JavaScript types to their string representations.</li>
-   * </ul>
-   * </p>
-   *
    * @param js The JavaScript code to execute asynchronously.
    * @since 24.11
    */
