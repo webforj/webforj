@@ -34,6 +34,7 @@ public class WelcomeApp extends App {
   @Override
   public void run() throws WebforjAppInitializeException {
     panel = new Frame();
+    panel.setFrameId("com.webforj.utilities.WelcomeApp");
     panel.setStyle("display", "inline-grid");
     panel.setStyle("gap", "20px");
     panel.setStyle("padding", "20px");

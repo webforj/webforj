@@ -59,6 +59,8 @@ public class Frame extends Window {
     }
   }
 
+  private String frameId;
+
   /**
    * Constructs a new Frame window.
    *
@@ -83,6 +85,7 @@ public class Frame extends Window {
       BBjWindow wnd = Environment.getCurrent().getSysGui().addWindow(ctx, "", flags);
       wnd.setUserData(this);
       setTitle(title);
+      setFrameId(getComponentId());
       init(wnd);
     } catch (NumberFormatException | BBjException e) {
       throw new WebforjAppInitializeException("Failed to create Frame", e);
@@ -123,6 +126,27 @@ public class Frame extends Window {
     init(bbjWindow);
   }
 
+  /**
+   * Sets the frame ID.
+   *
+   * @param frameId the frame ID to set
+   */
+  public void setFrameId(String frameId) {
+    this.frameId = frameId;
+  }
+
+  /**
+   * Gets the frame ID.
+   *
+   * @return the frame ID
+   */
+  public String getFrameId() {
+    return frameId;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void add(Component... components) {
     for (Component c : components) {
