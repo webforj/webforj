@@ -896,7 +896,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   protected boolean isComponentReadOnly() {
     if (control instanceof Editable) {
       try {
-        return ((Editable) control).isEditable();
+        return !((Editable) control).isEditable();
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
