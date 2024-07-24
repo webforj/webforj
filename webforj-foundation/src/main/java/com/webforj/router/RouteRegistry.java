@@ -6,6 +6,9 @@ import java.util.Map;
 
 /**
  * Represents a route registry.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 24.11
  */
 public class RouteRegistry {
   private Map<String, Class<? extends Component>> routes = new HashMap<>();
