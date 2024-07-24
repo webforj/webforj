@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -258,7 +259,7 @@ class ElementTest {
 
     @Test
     @DisplayName("Should wait for components to be attached before invoking JS function")
-    void shouldWaitForComponentsToBeAttached() throws Exception {
+    void shouldWaitForComponentsToBeAttached() {
       // Mock the component
       Element spy = spy(component);
       when(spy.isDefined()).thenReturn(true);
@@ -283,6 +284,37 @@ class ElementTest {
       argPending.complete(arg);
       assertTrue(callResult.isDone());
       assertEquals("call result", ref.get());
+    }
+  }
+
+  @Nested
+  @DisplayName("callJsFunctionVoidAsync Method")
+  class CallJsFunctionVoidAsyncMethod {
+
+    @Test
+    @DisplayName("Should wait for components to be attached before invoking JS function")
+    void shouldWaitForComponentsToBeAttached() {
+      // Mock the component
+      Element spy = spy(component);
+      when(spy.isDefined()).thenReturn(true);
+      doNothing().when(spy).executeJsVoidAsync(anyString());
+
+      // Mock the container
+      Element container = mock(Element.class);
+      container.add(spy);
+
+      // Mock the argument Component
+      ComponentMock arg = mock(ComponentMock.class);
+      PendingResult<Component> argPending = new PendingResult<>();
+      when(arg.whenAttached()).thenReturn(argPending);
+
+      // Call the function
+      spy.callJsFunctionVoidAsync("testFunction", arg);
+
+      verify(spy, times(0)).executeJsVoidAsync(anyString());
+
+      argPending.complete(arg);
+      verify(spy, times(1)).executeJsVoidAsync(anyString());
     }
   }
 }
