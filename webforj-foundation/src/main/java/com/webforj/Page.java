@@ -733,11 +733,6 @@ public final class Page implements HasJsExecution {
   @Override
   public void executeJsVoidAsync(String js) {
     try {
-      if (executeJsAsyncHandler == null) {
-        executeJsAsyncHandler = new PageExecuteJsAsyncHandler(getEnvironment());
-        executeJsAsyncHandler.register();
-      }
-
       getWebManager().executeAsyncScript(js, true, false);
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to execute async script.", e);
