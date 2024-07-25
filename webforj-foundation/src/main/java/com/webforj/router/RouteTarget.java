@@ -8,7 +8,7 @@ import com.webforj.component.Component;
  * <p>
  * The route target is responsible for rendering the given route component. The target can be a
  * frame or any other component which can render the given component. A component should implement
- * to provide a custom rendering behavior.
+ * this interface to provide a custom rendering behavior.
  * </p>
  *
  * @author Hyyan Abo Fakher
