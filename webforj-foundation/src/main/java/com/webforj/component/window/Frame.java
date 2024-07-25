@@ -127,18 +127,18 @@ public class Frame extends Window {
   }
 
   /**
-   * Sets the frame ID.
+   * Sets the frame's ID.
    *
-   * @param frameId the frame ID to set
+   * @param id The ID to be set.
    */
-  public void setFrameId(String frameId) {
-    this.frameId = frameId;
+  public void setFrameId(String id) {
+    this.frameId = id;
   }
 
   /**
-   * Gets the frame ID.
+   * Gets the frame's route ID.
    *
-   * @return the frame ID
+   * @return The ID of the Frame.
    */
   public String getFrameId() {
     return frameId;
