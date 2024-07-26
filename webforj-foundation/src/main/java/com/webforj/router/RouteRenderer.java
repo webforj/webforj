@@ -5,12 +5,17 @@ import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.window.Frame;
 import com.webforj.concern.HasComponents;
+import com.webforj.data.tree.Vnode;
+import com.webforj.data.tree.VnodeDiff;
 import com.webforj.router.exception.RouteHasNoTargetException;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.exception.RouteRenderException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The {@code RouteRenderer} class is responsible for rendering the components for the given routes.
@@ -26,9 +31,9 @@ import java.util.Map;
  */
 public class RouteRenderer {
   private final RouteRegistry registry;
-  private final Map<Class<? extends Component>, Component> viewCache = new HashMap<>();
-  private final Map<Object, Component> currentViews = new HashMap<>();
+  private final Map<Class<? extends Component>, Component> componentsCache = new HashMap<>();
   private final Map<String, Frame> frameCache = new HashMap<>();
+  private Vnode<Class<? extends Component>> lastPath;
 
   /**
    * Constructs a new {@code RouteResolver} instance with the given {@code RouteRegistry}.
@@ -58,77 +63,102 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the component class to render
-   * @return the rendered component
    */
-  public Component render(Class<? extends Component> componentClass) {
+  public void render(Class<? extends Component> componentClass) {
     if (componentClass == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
 
-    Class<? extends Component> targetClass = registry.getTarget(componentClass);
-    if (targetClass == null) {
-      throw new RouteHasNoTargetException("Missing target for component '"
-          + componentClass.getName() + "' registered for route: "
-          + registry.getRoute(componentClass) + ". Make sure to provide a valid target component.");
+    Optional<Vnode<Class<? extends Component>>> currentPath = registry.getPathTree(componentClass);
+    if (!currentPath.isPresent()) {
+      throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
     }
 
-    if (!Frame.class.isAssignableFrom(targetClass)) {
-      Component parent = render(targetClass);
-      clearTargetContent(parent);
-      Component componentInstance = getOrCreateComponent(componentClass);
+    VnodeDiff<Class<? extends Component>> diff = new VnodeDiff<>(lastPath, currentPath.get());
+    Set<Class<? extends Component>> toAdd = diff.getToAdd();
+    Set<Class<? extends Component>> toRemove = diff.getToRemove();
 
-      // Render the component in the parent component
-      if (parent instanceof RouteTarget) {
-        ((RouteTarget) parent).showRouteContent(componentInstance);
-      } else if (parent instanceof HasComponents) {
-        ((HasComponents) parent).add(componentInstance);
+    detachNodes(toRemove);
+    attachNodes(toAdd);
+
+    this.lastPath = currentPath.get();
+  }
+
+  private void attachNodes(Set<Class<? extends Component>> nodes) {
+    Iterator<Class<? extends Component>> iterator = nodes.iterator();
+    while (iterator.hasNext()) {
+      Class<? extends Component> node = iterator.next();
+
+      // If the root node is a Frame, render its children
+      // we don't need to render the Frame itself, frames
+      // are rendered by the application
+      if (Frame.class.isAssignableFrom(node)) {
+        continue;
+      }
+
+      Component componentInstance = getOrCreateComponent(node);
+      Class<? extends Component> targetClass = registry.getTarget(node);
+      if (targetClass == null) {
+        throw new RouteHasNoTargetException("No route target found for component: " + node.getName()
+            + ", route is registered as " + registry.getRoute(node)
+            + " If no target is required, use Frame.class as the target.");
+      }
+
+      Component targetInstance = Frame.class.isAssignableFrom(targetClass) ? getFrameComponent(node)
+          : getOrCreateComponent(targetClass);
+
+      if (targetInstance instanceof RouteTarget) {
+        ((RouteTarget) targetInstance).showRouteContent(componentInstance);
+      } else if (targetInstance instanceof HasComponents) {
+        ((HasComponents) targetInstance).add(componentInstance);
       } else {
         throw new RouteRenderException("Cannot render route's component in parent "
             + "that does not implement RouteTarget or HasComponents interface. "
-            + "Trying to render component '" + componentClass.getName() + "' "
-            + "in parent, registered for " + registry.getRoute(componentClass) + " : "
-            + parent.getClass().getName());
-
+            + "Trying to render component '" + componentInstance.getClass().getName()
+            + "' in parent: " + targetInstance.getClass().getName());
       }
-
-      // Track the current view for the parent
-      currentViews.put(parent, componentInstance);
-    } else {
-      // The component's parent is a Frame
-      // We need to find the Frame instance to add the component to
-      Frame frame = getFrameComponent(componentClass);
-      if (frame == null) {
-        throw new RouteHasNoTargetException(
-            "No route target found for component: " + componentClass.getName()
-                + ", route is registered as " + registry.getRoute(componentClass)
-                + " Trying to render component in a Frame but no Frame is available."
-                + " Make sure to provide a valid Frame target for the component.");
-      }
-
-      clearTargetContent(frame);
-      Component componentInstance = getOrCreateComponent(componentClass);
-      frame.add(componentInstance);
-
-      // Track the current view for the parent
-      currentViews.put(frame, componentInstance);
     }
+  }
 
-    return viewCache.get(componentClass);
+  private void detachNodes(Set<Class<? extends Component>> node) {
+    Iterator<Class<? extends Component>> iterator = node.iterator();
+    while (iterator.hasNext()) {
+      Class<? extends Component> nodeClass = iterator.next();
+      Component componentInstance = componentsCache.get(nodeClass);
+      if (componentInstance == null) {
+        continue;
+      }
+
+      Class<? extends Component> targetClass = registry.getTarget(nodeClass);
+      Component targetInstance =
+          Frame.class.isAssignableFrom(targetClass) ? getFrameComponent(nodeClass)
+              : getOrCreateComponent(targetClass);
+
+      if (targetInstance instanceof RouteTarget) {
+        ((RouteTarget) targetInstance).removeRouteContent(componentInstance);
+      } else if (targetInstance instanceof HasComponents) {
+        ((HasComponents) targetInstance).remove(componentInstance);
+      } else {
+        throw new RouteRenderException("Cannot remove route's component in parent "
+            + "that does not implement RouteTarget or HasComponents interface. "
+            + "Trying to remove component '" + componentInstance.getClass().getName()
+            + "' in parent: " + targetInstance.getClass().getName());
+      }
+    }
   }
 
   private Component getOrCreateComponent(Class<? extends Component> componentClass) {
     // Use the cache in case the component has already been created
-    Component componentInstance = viewCache.get(componentClass);
+    Component componentInstance = componentsCache.get(componentClass);
     if (componentInstance == null || componentInstance.isDestroyed()) {
       // try to create the component instance
       try {
         componentInstance = componentClass.getDeclaredConstructor().newInstance();
-        viewCache.put(componentClass, componentInstance);
+        componentsCache.put(componentClass, componentInstance);
 
         componentInstance.addLifecycleObserver((component, event) -> {
           if (event == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
-            viewCache.remove(componentClass);
-            currentViews.values().remove(component);
+            componentsCache.remove(componentClass);
           }
         });
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -138,25 +168,6 @@ public class RouteRenderer {
     }
 
     return componentInstance;
-  }
-
-  private void clearTargetContent(Object parent) {
-    Component currentView = currentViews.get(parent);
-    if (currentView != null) {
-      if (parent instanceof RouteTarget) {
-        ((RouteTarget) parent).removeRouteContent(currentView);
-      } else if (parent instanceof HasComponents) {
-        ((HasComponents) parent).remove(currentView);
-      } else {
-        throw new RouteRenderException("Cannot clear target content in parent "
-            + "that does not implement RouteTarget or HasComponents interface. "
-            + "Trying to clear content of component '" + currentView.getClass().getName() + "' "
-            + "in parent: " + parent.getClass().getName());
-      }
-
-      // Remove tracking for the cleared view
-      currentViews.remove(parent);
-    }
   }
 
   private Frame getFrameComponent(Class<? extends Component> componentClass) {

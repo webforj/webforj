@@ -1,18 +1,7 @@
 package com.webforj.router;
 
-import static com.webforj.App.console;
-
-import com.webforj.App;
 import com.webforj.component.Component;
-import com.webforj.component.ComponentLifecycleObserver;
-import com.webforj.component.window.Frame;
-import com.webforj.concern.HasComponents;
-import com.webforj.router.annotation.Route;
 import com.webforj.router.exception.RouteNotFoundException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Router class responsible for navigating and rendering components based on registered routes.
