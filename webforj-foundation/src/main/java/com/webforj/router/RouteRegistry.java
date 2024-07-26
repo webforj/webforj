@@ -2,19 +2,21 @@ package com.webforj.router;
 
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
+import com.webforj.data.tree.Vnode;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a route registry.
- *
- * @author Hyyan Abo Fakher
- * @since 24.11
  */
 public class RouteRegistry {
   private Map<String, Class<? extends Component>> routes = new ConcurrentHashMap<>();
   private Map<Class<?>, Class<? extends Component>> targets = new ConcurrentHashMap<>();
   private Map<Class<?>, String> frameIds = new ConcurrentHashMap<>();
+  private Map<Class<? extends Component>, Vnode<Class<? extends Component>>> tree =
+      new ConcurrentHashMap<>();
 
   /**
    * Registers a route with the given path and component class.
@@ -27,13 +29,17 @@ public class RouteRegistry {
   public void register(String path, Class<? extends Component> component,
       Class<? extends Component> target, String frameId) {
     routes.put(path, component);
+    targets.put(component, target);
 
+    if (frameId != null && !frameId.isEmpty() && Frame.class.isAssignableFrom(target)) {
+      frameIds.put(component, frameId);
+    }
+
+    // Build the component relationship tree
+    Vnode<Class<? extends Component>> componentTree = tree.computeIfAbsent(component, Vnode::new);
     if (target != null) {
-      targets.put(component, target);
-
-      if (frameId != null && !frameId.isEmpty() && Frame.class.isAssignableFrom(target)) {
-        frameIds.put(component, frameId);
-      }
+      Vnode<Class<? extends Component>> targetTree = tree.computeIfAbsent(target, Vnode::new);
+      targetTree.addChild(componentTree);
     }
   }
 
@@ -57,37 +63,6 @@ public class RouteRegistry {
    */
   public void register(String path, Class<? extends Component> component) {
     register(path, component, Frame.class, null);
-  }
-
-  /**
-   * Registers a route with auto generated name and the given path and component class.
-   *
-   * @param component the component that should be rendered when the route is matched
-   */
-  public void register(Class<? extends Component> component) {
-    register(ViewNameGenerator.generate(component), component);
-  }
-
-  /**
-   * Registers a route with auto generated name and the given path and component class.
-   *
-   * @param component the component that should be rendered when the route is matched
-   * @param target the target component of where the component should be rendered
-   * @param frameRouteId the frame ID where the component should be rendered
-   */
-  public void register(Class<? extends Component> component, Class<? extends Component> target,
-      String frameRouteId) {
-    register(ViewNameGenerator.generate(component), component, target, frameRouteId);
-  }
-
-  /**
-   * Registers a route with auto generated name and the given path and component class.
-   *
-   * @param component the component that should be rendered when the route is matched
-   * @param target the target component of where the component should be rendered
-   */
-  public void register(Class<? extends Component> component, Class<? extends Component> target) {
-    register(ViewNameGenerator.generate(component), component, target, null);
   }
 
   /**
@@ -132,11 +107,43 @@ public class RouteRegistry {
   }
 
   /**
+   * Returns the tree path from the root to the given component class.
+   *
+   * @param componentClass the component class
+   * @return the tree path from the root to the given component class
+   */
+  public Optional<Vnode<Class<? extends Component>>> getPathTree(
+      Class<? extends Component> componentClass) {
+    // Find the root component for the given component
+    Class<? extends Component> currentComponent = componentClass;
+    LinkedList<Class<? extends Component>> pathComponents = new LinkedList<>();
+
+    while (targets.containsKey(currentComponent)) {
+      pathComponents.addFirst(currentComponent);
+      currentComponent = targets.get(currentComponent);
+    }
+    pathComponents.addFirst(currentComponent); // add the root component
+
+    // Build the path tree from root to the given component
+    Vnode<Class<? extends Component>> rootNode = new Vnode<>(pathComponents.removeFirst());
+    Vnode<Class<? extends Component>> currentNode = rootNode;
+
+    for (Class<? extends Component> component : pathComponents) {
+      Vnode<Class<? extends Component>> childNode = new Vnode<>(component);
+      currentNode.addChild(childNode);
+      currentNode = childNode;
+    }
+
+    return Optional.of(rootNode);
+  }
+
+  /**
    * Clears the registry.
    */
   public void clear() {
     routes.clear();
     targets.clear();
     frameIds.clear();
+    tree.clear();
   }
 }
