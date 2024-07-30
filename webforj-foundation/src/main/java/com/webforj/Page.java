@@ -7,14 +7,20 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.CustomObject;
+import com.webforj.component.element.annotation.EventOptions;
+import com.webforj.component.element.annotation.EventOptionsAnnotationProcessor;
 import com.webforj.concern.HasJsExecution;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
+import com.webforj.event.page.PageEvent;
+import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
 import com.webforj.event.page.PageUnloadEventHandler;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.sink.page.PageEventSink;
+import com.webforj.sink.page.PageEventSinkRegistry;
 import com.webforj.utilities.Assets;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +45,8 @@ public final class Page implements HasJsExecution {
   private Environment environment = Environment.getCurrent();
   private EventDispatcher dispatcher = new EventDispatcher();
   private boolean isBrowserCloseEventRegistered = false;
+  private final Map<String, PageEventSinkRegistry> registries = new HashMap<>();
+  private final EventDispatcher eventDispatcher = new EventDispatcher();
 
   private Page() {}
 
@@ -915,6 +923,78 @@ public final class Page implements HasJsExecution {
   }
 
   /**
+   * Adds a {@link PageEvent} listener for the page.
+   *
+   * @param type the type/name of the event. (e.g. "click").
+   * @param listener the event listener to be added
+   * @param options the options associated with the event listener
+   * @param processEventOptionsAnnotation whether to process the {@link EventOptions} annotation of
+   *        the event listener or not.
+   *
+   * @return A registration object for removing the event listener
+   * @since 24.11
+   */
+  public ListenerRegistration<PageEvent> addEventListener(String type,
+      EventListener<PageEvent> listener, PageEventOptions options,
+      boolean processEventOptionsAnnotation) {
+
+    PageEventOptions optionsFromListener = null;
+
+    if (processEventOptionsAnnotation) {
+      optionsFromListener = EventOptionsAnnotationProcessor.processEventOptions(listener.getClass(),
+          new PageEventOptions());
+    }
+
+    final PageEventOptions finalEventOptions =
+        (new PageEventOptions()).mergeWith(optionsFromListener, options);
+
+    // create a sink for each event type
+    PageEventSinkRegistry registry = registries.computeIfAbsent(type, k -> {
+      return new PageEventSinkRegistry(new PageEventSink(this, type, getEventDispatcher()),
+          PageEvent.class);
+    });
+
+    return registry.addEventListener(new EventListener<PageEvent>() {
+      @Override
+      public void onEvent(PageEvent event) {
+        if (String.valueOf(event.getId()).equals(registry.getCallbackId(this))) {
+          listener.onEvent(event);
+        }
+      }
+    }, finalEventOptions);
+  }
+
+
+  /**
+   * Adds a {@link PageEvent} listener for the page.
+   *
+   * @param type the type/name of the event. (e.g. "click").
+   * @param listener the event listener to be added
+   * @param options the options associated with the event listener
+   *
+   * @return A registration object for removing the event listener
+   * @since 24.11
+   */
+  public ListenerRegistration<PageEvent> addEventListener(String type,
+      EventListener<PageEvent> listener, PageEventOptions options) {
+    return addEventListener(type, listener, options, true);
+  }
+
+  /**
+   * Adds a {@link PageEvent} listener for the page.
+   *
+   * @param type the type/name of the event. (e.g. "click").
+   * @param listener the event listener to be added
+   *
+   * @return A registration object for removing the event listener
+   * @since 24.11
+   */
+  public ListenerRegistration<PageEvent> addEventListener(String type,
+      EventListener<PageEvent> listener) {
+    return addEventListener(type, listener, null);
+  }
+
+  /**
    * Adds a listener to be notified when the page is unloaded by the browser.
    *
    * @param listener The listener to add
@@ -948,6 +1028,10 @@ public final class Page implements HasJsExecution {
    */
   public ListenerRegistration<PageUnloadEvent> onUnload(EventListener<PageUnloadEvent> listener) {
     return addUnloadListener(listener);
+  }
+
+  private EventDispatcher getEventDispatcher() {
+    return eventDispatcher;
   }
 
   private void performDownload(String sourceFilePath, String fileName) throws BBjException {

@@ -3,6 +3,7 @@ package com.webforj;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,11 +23,14 @@ import com.basis.bbj.proxies.BBjClientFileSystem;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
+import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.event.page.PageEvent;
+import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.File;
@@ -35,6 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 class PageTest {
   Page page;
@@ -256,6 +262,30 @@ class PageTest {
       EventListener<PageUnloadEvent> listener = mock(EventListener.class);
 
       assertThrows(WebforjRuntimeException.class, () -> page.onUnload(listener));
+    }
+  }
+
+  @Test
+  void shouldAddEventWithDifferentParams() throws BBjException {
+    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+
+      BBjWebEventOptions optionsMock = mock(BBjWebEventOptions.class);
+      when(webManager.newEventOptions()).thenReturn(optionsMock);
+
+      String type = "click";
+      EventListener<PageEvent> listener = event -> {
+      };
+      PageEventOptions options1 = new PageEventOptions(null, "code", "filter");
+      PageEventOptions options2 = new PageEventOptions(null, "code", null);
+
+      ListenerRegistration<PageEvent> r1 = page.addEventListener(type, listener, options1);
+      ListenerRegistration<PageEvent> r2 = page.addEventListener(type, listener, options2);
+      ListenerRegistration<PageEvent> r3 = page.addEventListener(type, listener, options1);
+
+      assertNotSame(r1, r2);
+      assertNotSame(r1, r3);
+      assertNotSame(r2, r3);
     }
   }
 }

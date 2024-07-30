@@ -16,7 +16,7 @@ import java.util.Map;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public final class ElementEventOptions {
+public class ElementEventOptions {
 
   private final Map<String, String> data;
   private String code;
@@ -307,18 +307,18 @@ public final class ElementEventOptions {
   }
 
   /**
-   * Merges the current ElementEventOptions instance with other passed instances. This method
-   * updates the current instance's properties with those from the passed instances. For each
-   * setting (items, code, and filter), the last non-empty value encountered will take precedence.
+   * Merges the current EventOptions instance with other passed instances. This method updates the
+   * current instance's properties with those from the passed instances. For each setting (items,
+   * code, and filter), the last non-empty value encountered will take precedence.
    *
    * <p>
    * If any of the objects in the argument list is null, it is safely ignored during the merging
    * process.
    * </p>
    *
-   * @param options Varargs parameter that accepts multiple ElementEventOptions objects. It can be
-   *        passed as separate arguments or as an array of ElementEventOptions.
-   * @return The current ElementEventOptions instance after merging with the passed instances.
+   * @param options Varargs parameter that accepts multiple EventOptions objects. It can be passed
+   *        as separate arguments or as an array of EventOptions.
+   * @return The current EventOptions instance after merging with the passed instances.
    */
   public ElementEventOptions mergeWith(ElementEventOptions... options) {
     if (options == null) {
