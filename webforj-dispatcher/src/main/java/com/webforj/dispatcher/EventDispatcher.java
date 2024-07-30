@@ -142,16 +142,17 @@ public class EventDispatcher {
 
     if (list != null && !list.isEmpty()) {
       for (EventListener<?> listener : list) {
+        EventListener<T> l;
         try {
-          @SuppressWarnings("unchecked")
-          EventListener<T> l = (EventListener<T>) listener;
-          // Check if the filter allows this listener to receive the event
-          if (filter.test(l, event)) {
-            l.onEvent(event);
-          }
+          l = (EventListener<T>) listener;
         } catch (ClassCastException e) {
           throw new IllegalStateException(
               "Listener " + listener + " is not compatible with event " + event, e);
+        }
+
+        // Check if the filter allows this listener to receive the event
+        if (filter.test(l, event)) {
+          l.onEvent(event);
         }
       }
     }
