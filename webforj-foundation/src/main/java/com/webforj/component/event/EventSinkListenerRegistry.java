@@ -7,6 +7,7 @@ import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import java.util.Map;
  * @author Hyyan Abo Fakher
  * @since 24.11
  */
-public class EventSinkListenerRegistry<E extends ComponentEvent<?>, T> {
+public class EventSinkListenerRegistry<E extends EventObject, T> {
   private final DwcEventSink<T> sink;
   private final Class<? super E> event;
   private final List<DwcListenerRegistration> registrations = new ArrayList<>();

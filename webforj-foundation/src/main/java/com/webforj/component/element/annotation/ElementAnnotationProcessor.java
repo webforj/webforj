@@ -70,30 +70,6 @@ public final class ElementAnnotationProcessor {
    * @return The event options
    */
   public static ElementEventOptions processEventOptions(Class<?> clazz) {
-    EventOptions annotation = clazz.getAnnotation(EventOptions.class);
-    ElementEventOptions options = new ElementEventOptions();
-
-    if (annotation != null) {
-      // Set code and filter
-      options.setCode(annotation.code());
-      options.setFilter(annotation.filter());
-
-      // Add the data
-      for (EventOptions.EventData dataItem : annotation.data()) {
-        options.addData(dataItem.key(), dataItem.exp());
-      }
-
-      // Set debounce
-      if (annotation.debounce().value() >= 0) {
-        options.setDebounce(annotation.debounce().value(), annotation.debounce().phase());
-      }
-
-      // Set throttle
-      if (annotation.throttle() >= 0) {
-        options.setThrottle(annotation.throttle());
-      }
-    }
-
-    return options;
+    return EventOptionsAnnotationProcessor.processEventOptions(clazz, new ElementEventOptions());
   }
 }
