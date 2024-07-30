@@ -4,31 +4,36 @@ import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.data.tree.Vnode;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Represents a route registry.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 24.11
  */
 public class RouteRegistry {
   private Map<String, Class<? extends Component>> routes = new ConcurrentHashMap<>();
   private Map<Class<?>, Class<? extends Component>> targets = new ConcurrentHashMap<>();
   private Map<Class<?>, String> frameIds = new ConcurrentHashMap<>();
-  private Map<Class<? extends Component>, Vnode<Class<? extends Component>>> tree =
+  private Map<Class<? extends Component>, Vnode<Class<? extends Component>>> componentsTree =
       new ConcurrentHashMap<>();
 
   /**
    * Registers a route with the given path and component class.
    *
-   * @param path the path of the route
+   * @param route the route path
    * @param component the component that should be rendered when the route is matched
    * @param target the target component of where the component should be rendered
    * @param frameId the frame ID where the component should be rendered
    */
-  public void register(String path, Class<? extends Component> component,
+  public void register(String route, Class<? extends Component> component,
       Class<? extends Component> target, String frameId) {
-    routes.put(path, component);
+    routes.put(route, component);
     targets.put(component, target);
 
     if (frameId != null && !frameId.isEmpty() && Frame.class.isAssignableFrom(target)) {
@@ -36,9 +41,11 @@ public class RouteRegistry {
     }
 
     // Build the component relationship tree
-    Vnode<Class<? extends Component>> componentTree = tree.computeIfAbsent(component, Vnode::new);
+    Vnode<Class<? extends Component>> componentTree =
+        componentsTree.computeIfAbsent(component, Vnode::new);
     if (target != null) {
-      Vnode<Class<? extends Component>> targetTree = tree.computeIfAbsent(target, Vnode::new);
+      Vnode<Class<? extends Component>> targetTree =
+          componentsTree.computeIfAbsent(target, Vnode::new);
       targetTree.addChild(componentTree);
     }
   }
@@ -46,44 +53,87 @@ public class RouteRegistry {
   /**
    * Registers a route with the given path and component class.
    *
-   * @param path the path of the route
+   * @param route the route path
    * @param component the component that should be rendered when the route is matched
    * @param target the target component of where the component should be rendered
    */
-  public void register(String path, Class<? extends Component> component,
+  public void register(String route, Class<? extends Component> component,
       Class<? extends Component> target) {
-    register(path, component, target, null);
+    register(route, component, target, null);
   }
 
   /**
    * Registers a route with the given path and component class.
    *
-   * @param path the path of the route
+   * @param route the route path
    * @param component the component that should be rendered when the route is matched
    */
-  public void register(String path, Class<? extends Component> component) {
-    register(path, component, Frame.class, null);
+  public void register(String route, Class<? extends Component> component) {
+    register(route, component, Frame.class, null);
   }
 
   /**
-   * Returns the component class of the route with the given path.
+   * Returns the component class of the passed route as registered in the registry.
+   *
+   * <p>
+   * Passing the full path of the route will return not return the component class of the route. The
+   * route should be the path as registered in the registry. for example, if the route is registered
+   * as "/users/:id", the path should be "/users/:id"
+   * </p>
    *
    * @param path the path of the route
-   * @return the component class of the route with the given path
+   * @return the component class of the passed route
    */
-  public Class<? extends Component> getComponent(String path) {
+  public Class<? extends Component> getComponentByRoute(String path) {
     return routes.get(path);
   }
 
   /**
-   * Returns the path of the route with the given component class.
+   * Returns the route path for the given component class as registered in the registry.
    *
    * @param component the component class
-   * @return the path of the route with the given component class
+   * @return the route path for the given component class
    */
-  public String getRoute(Class<? extends Component> component) {
+  public String getRouteByComponent(Class<? extends Component> component) {
     return routes.entrySet().stream().filter(entry -> entry.getValue().equals(component))
         .map(Map.Entry::getKey).findFirst().orElse(null);
+  }
+
+  /**
+   * Returns the full resolved path of the route for the given component class.
+   *
+   * <p>
+   * The resolved path is the full path of the route including the parent components. for example,
+   * if the route is registered as "/users/edit/:id" and the parent component is "/users", the
+   * resolved path will be "/users/edit/:id".
+   * </p>
+   *
+   * @param component the component class
+   * @return the full path of the route with the given component class
+   */
+  public String getResolvedRouteByComponent(Class<? extends Component> component) {
+    LinkedList<String> pathComponents = new LinkedList<>();
+    Class<? extends Component> currentComponent = component;
+
+    while (currentComponent != null) {
+      String path = getRouteByComponent(currentComponent);
+      if (path != null) {
+        pathComponents.addFirst(path);
+      }
+      currentComponent = targets.get(currentComponent);
+    }
+
+    return String.join("/", pathComponents);
+  }
+
+  /**
+   * Returns the full paths of all registered routes.
+   *
+   * @return a list of full paths of all registered routes
+   */
+  public List<String> getResolvedRoutes() {
+    return routes.keySet().stream().map(route -> getResolvedRouteByComponent(routes.get(route)))
+        .distinct().collect(Collectors.toList());
   }
 
   /**
@@ -107,12 +157,12 @@ public class RouteRegistry {
   }
 
   /**
-   * Returns the tree path from the root to the given component class.
+   * Returns the root component class of the given component class.
    *
    * @param componentClass the component class
-   * @return the tree path from the root to the given component class
+   * @return the root component class of the given component class
    */
-  public Optional<Vnode<Class<? extends Component>>> getPathTree(
+  public Optional<Vnode<Class<? extends Component>>> getComponentsTree(
       Class<? extends Component> componentClass) {
     // Find the root component for the given component
     Class<? extends Component> currentComponent = componentClass;
@@ -144,6 +194,6 @@ public class RouteRegistry {
     routes.clear();
     targets.clear();
     frameIds.clear();
-    tree.clear();
+    componentsTree.clear();
   }
 }

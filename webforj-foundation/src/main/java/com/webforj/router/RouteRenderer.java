@@ -18,12 +18,15 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * The {@code RouteRenderer} class is responsible for rendering the components for the given routes.
+ * The {@code RouteRenderer} class is responsible for navigating and rendering components based on
+ * registered routes.
  *
  * <p>
- * This class is responsible for rendering the components for the given routes. The class will
- * create an instance of the component and render it in the parent component. If the parent
- * component is a Frame, the component will be rendered in the Frame.
+ * This class is class is responsible for navigating and rendering components based on registered
+ * routes. The class uses the {@code RouteRegistry} to resolve the routes and render the components
+ * in the parent component according to the route configuration. The navigator keeps track of the
+ * last path that was rendered and only renders the components that have changed since the last
+ * render.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -36,7 +39,7 @@ public class RouteRenderer {
   private Vnode<Class<? extends Component>> lastPath;
 
   /**
-   * Constructs a new {@code RouteResolver} instance with the given {@code RouteRegistry}.
+   * Constructs a new {@code RouteRenderer} instance with the given {@code RouteRegistry}.
    *
    * @param registry the route registry
    */
@@ -54,22 +57,18 @@ public class RouteRenderer {
   }
 
   /**
-   * Renders the component for the given route.
-   *
-   * <p>
-   * This method renders the component for the given route. The method will create an instance of
-   * the component and render it in the parent component. If the parent component is a Frame, the
-   * component will be rendered in the Frame.
-   * </p>
+   * Navigates to the given component class.
    *
    * @param componentClass the component class to render
+   * @return the rendered component
    */
-  public void render(Class<? extends Component> componentClass) {
+  public Component navigate(Class<? extends Component> componentClass) {
     if (componentClass == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
 
-    Optional<Vnode<Class<? extends Component>>> currentPath = registry.getPathTree(componentClass);
+    Optional<Vnode<Class<? extends Component>>> currentPath =
+        registry.getComponentsTree(componentClass);
     if (!currentPath.isPresent()) {
       throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
     }
@@ -82,6 +81,7 @@ public class RouteRenderer {
     attachNodes(toAdd);
 
     this.lastPath = currentPath.get();
+    return componentsCache.get(componentClass);
   }
 
   private void attachNodes(Set<Class<? extends Component>> nodes) {
@@ -100,7 +100,7 @@ public class RouteRenderer {
       Class<? extends Component> targetClass = registry.getTarget(node);
       if (targetClass == null) {
         throw new RouteHasNoTargetException("No route target found for component: " + node.getName()
-            + ", route is registered as " + registry.getRoute(node)
+            + ", route is registered as " + registry.getRouteByComponent(node)
             + " If no target is required, use Frame.class as the target.");
       }
 
