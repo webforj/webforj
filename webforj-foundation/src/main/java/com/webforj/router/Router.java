@@ -75,16 +75,16 @@ public class Router {
     String matchedRoute = null;
 
     List<String> routes = registry.getResolvedRoutes();
-    RouteCompiler compiler = new RouteCompiler();
-    RouteMatcher matcher = new RouteMatcher();
+    // RouteCompiler compiler = new RouteCompiler();
+    // RouteMatcher matcher = new RouteMatcher();
 
-    for (String route : routes) {
-      if (matcher.matches(path, compiler.compile(route))) {
-        matchedRoute = route;
-        matchedComponent = registry.getComponentByRoute(route);
-        break;
-      }
-    }
+    // for (String route : routes) {
+    // if (matcher.matches(path, compiler.compile(route))) {
+    // matchedRoute = route;
+    // matchedComponent = registry.getComponentByRoute(route);
+    // break;
+    // }
+    // }
 
     if (matchedComponent != null) {
       this.removeHistoryStateListener();
