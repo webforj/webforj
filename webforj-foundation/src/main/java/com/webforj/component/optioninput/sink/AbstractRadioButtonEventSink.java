@@ -22,7 +22,7 @@ import java.util.UUID;
  * @author Hyyan Abo Fakher
  * @since 23.01
  */
-public abstract class AbstractRadioButtonEventSink implements DwcEventSink {
+public abstract class AbstractRadioButtonEventSink implements DwcEventSink<Component> {
 
   private final RadioButtonGroup component;
   private EventDispatcher dispatcher;
