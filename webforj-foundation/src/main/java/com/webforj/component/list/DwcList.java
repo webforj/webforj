@@ -8,7 +8,7 @@ import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.component.list.sink.ListSelectEventSink;
 import com.webforj.concern.HasExpanse;
@@ -57,8 +57,8 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   private final LinkedHashMap<Object, ListItem> items = new LinkedHashMap<>();
   private final List<ListItem> selectedItems = new ArrayList<>();
 
-  private final EventSinkListenerRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ListSelectEventSink<V>(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ListSelectEventSink<V>(this, getEventDispatcher()),
           ListSelectEvent.class);
 
   private String label = "";

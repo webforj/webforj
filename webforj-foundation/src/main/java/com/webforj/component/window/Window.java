@@ -5,7 +5,7 @@ import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.Component;
 import com.webforj.component.DwcContainer;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.window.event.WindowClickEvent;
 import com.webforj.component.window.sink.WindowClickEventSink;
 import com.webforj.dispatcher.EventListener;
@@ -26,8 +26,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
 public abstract class Window extends DwcContainer<Window> {
 
   private BBjWindow wnd;
-  private final EventSinkListenerRegistry<WindowClickEvent> clickEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new WindowClickEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<WindowClickEvent> clickEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new WindowClickEventSink(this, getEventDispatcher()),
           WindowClickEvent.class);
 
   static {

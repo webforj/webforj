@@ -1,5 +1,6 @@
 package com.webforj.component.event;
 
+import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.event.sink.DwcEventSink;
 import com.webforj.dispatcher.EventDispatcher;
@@ -11,20 +12,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * EventSinkListenerRegistry is used to manage the event listeners (add/remove) for a Control sink
+ * EventSinkListenerRegistry is used to manage the event listeners (add/remove) for a object sink
  * and the corresponding event.
  *
- * @param <T> the event type
+ * @param <T> the object type
+ * @param <E> the event type
  *
  * @author Hyyan Abo Fakher
- * @since 23.01
+ * @since 24.11
  */
-public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
-  private final DwcEventSink sink;
-  private final Class<? super T> event;
+public class EventSinkListenerRegistry<E extends ComponentEvent<?>, T> {
+  private final DwcEventSink<T> sink;
+  private final Class<? super E> event;
   private final List<DwcListenerRegistration> registrations = new ArrayList<>();
   private String singleCallbackId = "";
-  private final Map<EventListener<T>, String> callbackIds = new HashMap<>();
+  private final Map<EventListener<E>, String> callbackIds = new HashMap<>();
 
   /**
    * Creates a new EventSinkManager.
@@ -32,7 +34,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    * @param sink The corresponding sink to the event
    * @param event The corresponding event to the sink
    */
-  public EventSinkListenerRegistry(DwcEventSink sink, Class<? super T> event) {
+  protected EventSinkListenerRegistry(DwcEventSink<T> sink, Class<? super E> event) {
     this.sink = sink;
     this.event = event;
   }
@@ -43,8 +45,8 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    * @param listener The event listener to be added
    * @param options The options to be passed to the BBj event callback if the event supports options
    */
-  public ListenerRegistration<T> addEventListener(EventListener<T> listener, Object options) {
-    ListenerRegistration<T> registration = getEventDispatcher().addListener(event, listener);
+  public ListenerRegistration<E> addEventListener(EventListener<E> listener, Object options) {
+    ListenerRegistration<E> registration = getEventDispatcher().addListener(event, listener);
     DwcListenerRegistration dwcRegistration = new DwcListenerRegistration(registration, options);
 
     if (getSink().isConnected()) {
@@ -61,7 +63,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    *
    * @param listener The event listener to be added
    */
-  public ListenerRegistration<T> addEventListener(EventListener<T> listener) {
+  public ListenerRegistration<E> addEventListener(EventListener<E> listener) {
     return addEventListener(listener, null);
   }
 
@@ -88,7 +90,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    *
    * @return the callback id for the given listener if the registry is connected
    */
-  public String getCallbackId(EventListener<T> listener) {
+  public String getCallbackId(EventListener<E> listener) {
     if (!singleCallbackId.equals("")) {
       return singleCallbackId;
     }
@@ -101,7 +103,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    *
    * @return the sink instance.
    */
-  DwcEventSink getSink() {
+  DwcEventSink<T> getSink() {
     return sink;
   }
 
@@ -111,10 +113,10 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
    *
    * @author Hyyan Abo Fakher
    */
-  private final class DwcListenerRegistration extends ListenerRegistration<T> {
+  private final class DwcListenerRegistration extends ListenerRegistration<E> {
     private final Object options;
 
-    DwcListenerRegistration(ListenerRegistration<T> registration, Object options) {
+    DwcListenerRegistration(ListenerRegistration<E> registration, Object options) {
       super(getEventDispatcher(), registration.getEventClass(), registration.getListener());
       this.options = options;
     }
@@ -123,7 +125,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
     public void remove() {
       EventDispatcher dispatcher = getEventDispatcher();
       dispatcher.removeListener(getEventClass(), getListener());
-      DwcEventSink eventSink = getSink();
+      DwcEventSink<T> eventSink = getSink();
 
       if (!eventSink.isConnected()) {
         return;
@@ -146,7 +148,7 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
     }
 
     void connect() {
-      DwcEventSink eventSink = getSink();
+      DwcEventSink<T> eventSink = getSink();
 
       if (eventSink.isMultipleCallbacks()) {
         String callbackId = eventSink.setCallback(options);
@@ -155,12 +157,15 @@ public class EventSinkListenerRegistry<T extends ComponentEvent<?>> {
         if (singleCallbackId.equals("")) {
           singleCallbackId = eventSink.setCallback(options);
           callbackIds.put(getListener(), singleCallbackId);
-          eventSink.getComponent().addLifecycleObserver((component, lifecycleEvent) -> {
-            if (lifecycleEvent == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
-              callbackIds.remove(getListener());
-              singleCallbackId = "";
-            }
-          });
+          Object component = eventSink.getComponent();
+          if (component instanceof Component comp) {
+            comp.addLifecycleObserver((component1, lifecycleEvent) -> {
+              if (lifecycleEvent == ComponentLifecycleObserver.LifecycleEvent.DESTROY) {
+                callbackIds.remove(getListener());
+                singleCallbackId = "";
+              }
+            });
+          }
         }
       }
     }

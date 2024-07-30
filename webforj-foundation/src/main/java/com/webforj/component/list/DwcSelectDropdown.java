@@ -3,7 +3,7 @@ package com.webforj.component.list;
 import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.ComponentAccessor;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.list.event.ListClickEvent;
 import com.webforj.component.list.event.ListCloseEvent;
 import com.webforj.component.list.event.ListOpenEvent;
@@ -40,14 +40,14 @@ import com.webforj.exceptions.WebforjRuntimeException;
 @SuppressWarnings("squid:S110")
 public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends DwcList<T, Object>
     implements BindAware {
-  private final EventSinkListenerRegistry<ListOpenEvent> openEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ListOpenEvent> openEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
           ListOpenEvent.class);
-  private final EventSinkListenerRegistry<ListCloseEvent> closeEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ListCloseEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ListCloseEvent> closeEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ListCloseEventSink(this, getEventDispatcher()),
           ListCloseEvent.class);
-  private final EventSinkListenerRegistry<ListClickEvent> clickEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ListClickEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ListClickEvent> clickEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ListClickEventSink(this, getEventDispatcher()),
           ListClickEvent.class);
 
   private String openWidth = "";

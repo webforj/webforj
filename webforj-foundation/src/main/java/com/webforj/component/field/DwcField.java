@@ -3,7 +3,7 @@ package com.webforj.component.field;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.event.sink.KeypressEventSink;
@@ -41,11 +41,11 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
     implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>, HasExpanse<T, Expanse>, HasFocusStatus,
     HasHighlightOnFocus<T>, HasPlaceholder<T>, ValueChangeModeAware<T>, HasHelperText<T> {
 
-  private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
           ModifyEvent.class);
-  private final EventSinkListenerRegistry<KeypressEvent> keypressEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new KeypressEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<KeypressEvent> keypressEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new KeypressEventSink(this, getEventDispatcher()),
           KeypressEvent.class);
 
   private boolean autoFocus = false;

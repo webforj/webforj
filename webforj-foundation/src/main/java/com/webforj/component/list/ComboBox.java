@@ -3,7 +3,7 @@ package com.webforj.component.list;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.WindowAccessor;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.event.sink.KeypressEventSink;
@@ -55,11 +55,11 @@ import java.util.List;
 public final class ComboBox extends DwcSelectDropdown<ComboBox>
     implements HasReadOnly<ComboBox>, HasHighlightOnFocus<ComboBox>, HasPlaceholder<ComboBox> {
 
-  private final EventSinkListenerRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
           ModifyEvent.class);
-  private final EventSinkListenerRegistry<KeypressEvent> keypressEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new KeypressEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<KeypressEvent> keypressEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new KeypressEventSink(this, getEventDispatcher()),
           KeypressEvent.class);
 
   private boolean allowCustomValue = true;

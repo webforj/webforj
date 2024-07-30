@@ -8,7 +8,7 @@ import com.basis.startup.type.BBjException;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.Component;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.optioninput.event.RadioButtonGroupChangeEvent;
 import com.webforj.component.optioninput.sink.RadioButtonGroupChangeSink;
 import com.webforj.component.window.Window;
@@ -71,8 +71,8 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
   private boolean registeredChangeValueChangeListener = false;
 
   private EventDispatcher dispatcher = new EventDispatcher();
-  private EventSinkListenerRegistry<RadioButtonGroupChangeEvent> changedEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new RadioButtonGroupChangeSink(this, dispatcher),
+  private ComponentEventSinkRegistry<RadioButtonGroupChangeEvent> changedEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new RadioButtonGroupChangeSink(this, dispatcher),
           RadioButtonGroupChangeEvent.class);
 
   /**

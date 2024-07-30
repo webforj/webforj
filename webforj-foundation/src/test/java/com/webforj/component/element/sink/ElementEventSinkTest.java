@@ -19,7 +19,7 @@ import com.basis.startup.type.CustomObject;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import java.util.HashMap;
@@ -46,8 +46,8 @@ class ElementEventSinkTest {
       dispatchedEvent[0] = e;
     };
     ElementEventSink sink = new ElementEventSink(component, eventType, dispatcher);
-    EventSinkListenerRegistry<ElementEvent> registry =
-        new EventSinkListenerRegistry<>(sink, ElementEvent.class);
+    ComponentEventSinkRegistry<ElementEvent> registry =
+        new ComponentEventSinkRegistry<>(sink, ElementEvent.class);
     registry.addEventListener(listener);
 
     sink.handleEvent(event);

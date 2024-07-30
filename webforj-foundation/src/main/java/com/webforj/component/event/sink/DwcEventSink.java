@@ -1,16 +1,17 @@
 package com.webforj.component.event.sink;
 
-import com.webforj.component.Component;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
  * The sink is responsible for setting and removing the callback on a BBjControl.
  *
+ * @param <T> the type of the component associated with this event sink.
+ *
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public interface DwcEventSink {
+public interface DwcEventSink<T> {
 
   /**
    * Sets a callback on an underlying BBj control with the given options.
@@ -71,5 +72,5 @@ public interface DwcEventSink {
    *
    * @return the component associated with this event sink.
    */
-  public Component getComponent();
+  public T getComponent();
 }

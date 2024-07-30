@@ -15,7 +15,7 @@ import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.Theme;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.tabbedpane.event.TabCloseEvent;
 import com.webforj.component.tabbedpane.event.TabDeselectEvent;
 import com.webforj.component.tabbedpane.event.TabSelectEvent;
@@ -195,14 +195,14 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
         }
       };
 
-  private final EventSinkListenerRegistry<TabSelectEvent> selectEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new TabSelectEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<TabSelectEvent> selectEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new TabSelectEventSink(this, getEventDispatcher()),
           TabSelectEvent.class);
-  private final EventSinkListenerRegistry<TabDeselectEvent> deselectEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new TabDeselectEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<TabDeselectEvent> deselectEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new TabDeselectEventSink(this, getEventDispatcher()),
           TabDeselectEvent.class);
-  private final EventSinkListenerRegistry<TabCloseEvent> closeEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new TabCloseEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<TabCloseEvent> closeEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new TabCloseEventSink(this, getEventDispatcher()),
           TabCloseEvent.class);
 
   /**

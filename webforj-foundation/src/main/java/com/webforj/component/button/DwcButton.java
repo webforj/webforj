@@ -8,7 +8,7 @@ import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.button.sink.ButtonClickEventSink;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasHorizontalAlignment;
@@ -42,8 +42,8 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
     HasFocusStatus {
   private boolean disableOnClick = false;
 
-  private final EventSinkListenerRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ButtonClickEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ButtonClickEventSink(this, getEventDispatcher()),
           ButtonClickEvent.class);
 
   protected DwcButton() {

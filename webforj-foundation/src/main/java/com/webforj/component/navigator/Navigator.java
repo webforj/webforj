@@ -6,7 +6,7 @@ import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.navigator.event.NavigatorChangeEvent;
 import com.webforj.component.navigator.event.NavigatorMoveEvent;
 import com.webforj.component.navigator.event.NavigatorMoveFirstEvent;
@@ -95,17 +95,17 @@ public class Navigator extends DwcFocusableComponent<Navigator>
 
   private static final String PART_NULL_ERROR_MESSAGE = "Part cannot be null";
 
-  private final EventSinkListenerRegistry<NavigatorMoveFirstEvent> firstEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new NavigatorMoveFirstEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<NavigatorMoveFirstEvent> firstEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new NavigatorMoveFirstEventSink(this, getEventDispatcher()),
           NavigatorMoveFirstEvent.class);
-  private final EventSinkListenerRegistry<NavigatorMoveLastEvent> lastEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new NavigatorMoveLastEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<NavigatorMoveLastEvent> lastEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new NavigatorMoveLastEventSink(this, getEventDispatcher()),
           NavigatorMoveLastEvent.class);
-  private final EventSinkListenerRegistry<NavigatorMoveNextEvent> nextEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new NavigatorMoveNextEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<NavigatorMoveNextEvent> nextEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new NavigatorMoveNextEventSink(this, getEventDispatcher()),
           NavigatorMoveNextEvent.class);
-  private final EventSinkListenerRegistry<NavigatorMovePreviousEvent> previousEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(
+  private final ComponentEventSinkRegistry<NavigatorMovePreviousEvent> previousEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(
           new NavigatorMovePreviousEventSink(this, getEventDispatcher()),
           NavigatorMovePreviousEvent.class);
 

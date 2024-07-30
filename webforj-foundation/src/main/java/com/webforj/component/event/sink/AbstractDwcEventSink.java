@@ -7,6 +7,7 @@ import com.basis.startup.type.CustomObject;
 import com.webforj.Environment;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.component.Component;
 import com.webforj.component.DwcComponent;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -20,7 +21,7 @@ import java.util.UUID;
  * @author Hyyan Abo Fakher
  * @since 23.05
  */
-public abstract class AbstractDwcEventSink implements DwcEventSink {
+public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
   private final DwcComponent<?> component;
   private EventDispatcher dispatcher;
   private final Object eventType;

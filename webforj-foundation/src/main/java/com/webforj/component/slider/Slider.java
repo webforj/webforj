@@ -8,7 +8,7 @@ import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Theme;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.slider.event.SliderSlideEvent;
 import com.webforj.component.slider.sink.SliderSlideEventSink;
 import com.webforj.component.window.Window;
@@ -43,8 +43,8 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
   static final String PROP_TOOLTIP = "tooltipExpression";
   static final String PROP_FILLED = "connect";
 
-  private final EventSinkListenerRegistry<SliderSlideEvent> slideEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new SliderSlideEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<SliderSlideEvent> slideEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new SliderSlideEventSink(this, getEventDispatcher()),
           SliderSlideEvent.class);
 
   private Integer min = 0;

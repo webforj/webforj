@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class EventSinkListenerRegistryTest {
-  EventSinkListenerRegistry<MouseEnterEvent> registry;
+  ComponentEventSinkRegistry<MouseEnterEvent> registry;
   EventDispatcher dispatcher;
   EventSinkMock sink;
 
@@ -30,7 +30,7 @@ class EventSinkListenerRegistryTest {
   void setUp() {
     dispatcher = new EventDispatcher();
     sink = spy(new EventSinkMock(new DwcComponentMock(), dispatcher, 0));
-    registry = new EventSinkListenerRegistry<>(sink, MouseEnterEvent.class);
+    registry = new ComponentEventSinkRegistry<>(sink, MouseEnterEvent.class);
   }
 
   static Stream<Arguments> connectionStates() {

@@ -4,7 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.Focusable;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.event.BlurEvent;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.FocusEvent;
 import com.webforj.component.event.sink.BlurEventSink;
 import com.webforj.component.event.sink.FocusEventSink;
@@ -34,8 +34,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
 public final class DwcFocusableMixin<T extends DwcComponent<T>>
     implements HasFocus<T>, HasFocusStatus, HasEnablement<T> {
   private final DwcComponent<T> component;
-  private final EventSinkListenerRegistry<FocusEvent> focusEventSinkListenerRegistry;
-  private final EventSinkListenerRegistry<BlurEvent> blurEventSinkListenerRegistry;
+  private final ComponentEventSinkRegistry<FocusEvent> focusEventSinkListenerRegistry;
+  private final ComponentEventSinkRegistry<BlurEvent> blurEventSinkListenerRegistry;
   private boolean enabled = true;
   private boolean focusable = true;
   private Boolean wasFocused = null;
@@ -47,9 +47,9 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
    */
   public DwcFocusableMixin(DwcComponent<T> component) {
     this.component = component;
-    focusEventSinkListenerRegistry = new EventSinkListenerRegistry<>(
+    focusEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
         new FocusEventSink(component, component.getEventDispatcher()), FocusEvent.class);
-    blurEventSinkListenerRegistry = new EventSinkListenerRegistry<>(
+    blurEventSinkListenerRegistry = new ComponentEventSinkRegistry<>(
         new BlurEventSink(component, component.getEventDispatcher()), BlurEvent.class);
   }
 

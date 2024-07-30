@@ -6,8 +6,7 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
-import com.webforj.App;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.MouseEnterEvent;
 import com.webforj.component.event.MouseExitEvent;
 import com.webforj.component.event.RightMouseDownEvent;
@@ -73,14 +72,14 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   private final Map<String, String> styles = new HashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
   private final EventDispatcher dispatcher = new EventDispatcher();
-  private final EventSinkListenerRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new MouseEnterEventSink(this, dispatcher),
+  private final ComponentEventSinkRegistry<MouseEnterEvent> mouseEnterEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new MouseEnterEventSink(this, dispatcher),
           MouseEnterEvent.class);
-  private final EventSinkListenerRegistry<MouseExitEvent> mouseExitEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new MouseExitEventSink(this, dispatcher),
+  private final ComponentEventSinkRegistry<MouseExitEvent> mouseExitEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new MouseExitEventSink(this, dispatcher),
           MouseExitEvent.class);
-  private final EventSinkListenerRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new RightMouseDownEventSink(this, dispatcher),
+  private final ComponentEventSinkRegistry<RightMouseDownEvent> rightMouseDownEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new RightMouseDownEventSink(this, dispatcher),
           RightMouseDownEvent.class);
 
   private BBjControl control;
@@ -1080,7 +1079,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
 
   /**
    * Goes through every supported EventSinkListenerRegistry and calls the
-   * {@link EventSinkListenerRegistry#attach()} method.
+   * {@link ComponentEventSinkRegistry#attach()} method.
    *
    * <p>
    * If a the subclass of TypedDwcComponent overrides this method, it must call this method

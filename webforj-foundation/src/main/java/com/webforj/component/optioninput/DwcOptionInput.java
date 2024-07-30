@@ -8,7 +8,7 @@ import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.event.CheckEvent;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.ToggleEvent;
 import com.webforj.component.event.UncheckEvent;
 import com.webforj.component.event.sink.CheckEventSink;
@@ -45,14 +45,14 @@ public abstract class DwcOptionInput<T extends DwcValidatableComponent<T, Boolea
     extends DwcValidatableComponent<T, Boolean>
     implements HasTextPosition<T>, HasExpanse<T, Expanse>, HasFocusStatus, HasHelperText<T> {
 
-  private final EventSinkListenerRegistry<CheckEvent> checkEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new CheckEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<CheckEvent> checkEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new CheckEventSink(this, getEventDispatcher()),
           CheckEvent.class);
-  private final EventSinkListenerRegistry<UncheckEvent> uncheckEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new UncheckEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<UncheckEvent> uncheckEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new UncheckEventSink(this, getEventDispatcher()),
           UncheckEvent.class);
-  private final EventSinkListenerRegistry<ToggleEvent> toggleEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ToggleEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ToggleEvent> toggleEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ToggleEventSink(this, getEventDispatcher()),
           ToggleEvent.class);
 
   private HasTextPosition.Position textPosition = HasTextPosition.Position.RIGHT;

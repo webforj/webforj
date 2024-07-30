@@ -23,7 +23,7 @@ import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.element.sink.ElementDefinedEventSink;
 import com.webforj.component.element.sink.ElementEventSink;
 import com.webforj.component.event.BlurEvent;
-import com.webforj.component.event.EventSinkListenerRegistry;
+import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.ExecuteAsyncScriptEvent;
 import com.webforj.component.event.FocusEvent;
 import com.webforj.component.event.sink.ExecuteAsyncScriptEventSink;
@@ -59,15 +59,15 @@ public final class Element extends DwcContainer<Element>
     implements HasHtml<Element>, HasFocus<Element>, HasEnablement<Element>, HasJsExecution {
 
   private final String nodeName;
-  private final Map<String, EventSinkListenerRegistry<ElementEvent>> registries = new HashMap<>();
+  private final Map<String, ComponentEventSinkRegistry<ElementEvent>> registries = new HashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
   private final DwcFocusableMixin<Element> focusableMixin = new DwcFocusableMixin<>(this);
   private final JsExecutor jsExecutor = new ElementJsExecutor(this);
-  private final EventSinkListenerRegistry<ElementDefinedEvent> definedEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ElementDefinedEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ElementDefinedEvent> definedEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ElementDefinedEventSink(this, getEventDispatcher()),
           ElementDefinedEvent.class);
-  private final EventSinkListenerRegistry<ExecuteAsyncScriptEvent> scriptEventSinkListenerRegistry =
-      new EventSinkListenerRegistry<>(new ExecuteAsyncScriptEventSink(this, getEventDispatcher()),
+  private final ComponentEventSinkRegistry<ExecuteAsyncScriptEvent> scriptEventSinkListenerRegistry =
+      new ComponentEventSinkRegistry<>(new ExecuteAsyncScriptEventSink(this, getEventDispatcher()),
           ExecuteAsyncScriptEvent.class);
   private final List<PendingResult<Element>> whenDefinedResults = new ArrayList<>();
   private final Map<String, List<Component>> slots = new HashMap<>();
@@ -209,9 +209,9 @@ public final class Element extends DwcContainer<Element>
         (new ElementEventOptions()).mergeWith(optionsFromListener, options);
 
     // create a sink for each event type
-    EventSinkListenerRegistry<ElementEvent> registry = registries.computeIfAbsent(type, k -> {
-      return new EventSinkListenerRegistry<>(new ElementEventSink(this, type, getEventDispatcher()),
-          ElementEvent.class);
+    ComponentEventSinkRegistry<ElementEvent> registry = registries.computeIfAbsent(type, k -> {
+      return new ComponentEventSinkRegistry<>(
+          new ElementEventSink(this, type, getEventDispatcher()), ElementEvent.class);
     });
 
     return registry.addEventListener(new EventListener<ElementEvent>() {
