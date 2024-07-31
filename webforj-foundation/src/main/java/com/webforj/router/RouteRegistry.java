@@ -127,6 +127,21 @@ public class RouteRegistry {
   }
 
   /**
+   * Returns the component class for the given full path by resolving the full path dynamically.
+   *
+   * @param fullPath the full path of the route
+   * @return the component class associated with the full path, or null if not found
+   */
+  public Class<? extends Component> getResolvedComponentByRoute(String fullPath) {
+    for (Map.Entry<String, Class<? extends Component>> entry : routes.entrySet()) {
+      if (getResolvedRouteByComponent(entry.getValue()).equals(fullPath)) {
+        return entry.getValue();
+      }
+    }
+    return null;
+  }
+
+  /**
    * Returns the full paths of all registered routes.
    *
    * @return a list of full paths of all registered routes

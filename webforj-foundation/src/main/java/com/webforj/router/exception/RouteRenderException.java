@@ -13,7 +13,7 @@ package com.webforj.router.exception;
 public class RouteRenderException extends RuntimeException {
 
   /**
-   * Constructs a new {@code RouteRenderExpcetion} with the given message.
+   * Constructs a new {@code RouteRenderException} with the given message.
    *
    * @param message the exception message
    */
@@ -22,7 +22,7 @@ public class RouteRenderException extends RuntimeException {
   }
 
   /**
-   * Constructs a new {@code RouteRenderExpcetion} with the given message and cause.
+   * Constructs a new {@code RouteRenderException} with the given message and cause.
    *
    * @param message the exception message
    * @param cause the exception cause

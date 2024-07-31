@@ -183,7 +183,7 @@ public class RoutePattern {
    *
    * @return the list of parameter names
    */
-  public List<String> getParamNames() {
+  public List<String> getParameterNames() {
     return paramNames;
   }
 
