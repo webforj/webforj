@@ -202,4 +202,35 @@ class RoutePatternTest {
     assertFalse(pattern.matches(nonMatchingPath));
     assertTrue(pattern.extractParameters(nonMatchingPath).isEmpty());
   }
+
+  @Test
+  void shouldHandlePatternWithOnlyParameters() {
+    RoutePattern pattern = new RoutePattern("/:param1/:param2");
+    String path = "/value1/value2";
+
+    assertTrue(pattern.matches(path));
+    Map<String, String> params = pattern.extractParameters(path);
+    assertEquals(2, params.size());
+    assertEquals("value1", params.get("param1"));
+    assertEquals("value2", params.get("param2"));
+  }
+
+  @Test
+  void shouldHandleMultipleWildcards() {
+    RoutePattern pattern = new RoutePattern("/files/*/*");
+    String path = "/files/documents/images/photos";
+
+    assertTrue(pattern.matches(path));
+    Map<String, String> params = pattern.extractParameters(path);
+    assertEquals(1, params.size());
+    assertEquals("documents/images/photos", params.get("*"));
+  }
+
+  @Test
+  void shouldNotMatchInvalidUnescapedCharacters() {
+    RoutePattern pattern = new RoutePattern("/files/:filename<[^/]+>");
+    String path = "/files/file/with/slash.txt";
+
+    assertFalse(pattern.matches(path));
+  }
 }

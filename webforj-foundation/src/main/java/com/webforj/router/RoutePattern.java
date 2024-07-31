@@ -53,9 +53,9 @@ import java.util.regex.Pattern;
  * @since 24.11
  */
 public class RoutePattern {
+  private final String pattern;
   private final Pattern regexPattern;
   private final List<String> paramNames = new ArrayList<>();
-  private final String originalPattern;
   private boolean hasWildcard = false;
 
   /**
@@ -78,7 +78,7 @@ public class RoutePattern {
    * @param pattern the route pattern string (e.g., "/customer/:id<[0-9]+>/named/:name/*")
    */
   public RoutePattern(String pattern) {
-    this.originalPattern = pattern;
+    this.pattern = pattern;
     String regex = buildRegexFromPattern(pattern);
     this.regexPattern = Pattern.compile(regex);
   }
@@ -155,8 +155,8 @@ public class RoutePattern {
    *
    * @return the original pattern string
    */
-  public String getRoutePattern() {
-    return originalPattern;
+  public String getPattern() {
+    return pattern;
   }
 
   /**
@@ -230,9 +230,9 @@ public class RoutePattern {
    */
   public String buildUrl(Map<String, String> params) { // NOSONAR
     StringBuilder urlBuilder = new StringBuilder();
-    String[] parts = getRoutePattern().split("/");
+    String[] parts = getPattern().split("/");
 
-    boolean endsWithSlash = getRoutePattern().endsWith("/");
+    boolean endsWithSlash = getPattern().endsWith("/");
 
     for (int i = 0; i < parts.length; i++) { // NOSONAR
       String part = parts[i];
@@ -316,7 +316,8 @@ public class RoutePattern {
         continue;
       }
 
-      Matcher matcher = Pattern.compile(":([a-zA-Z_][\\w]*)(\\*|\\?)?(?:<(.*?)>)?").matcher(part); // NOSONAR
+      @SuppressWarnings("squid:S6035")
+      Matcher matcher = Pattern.compile(":([a-zA-Z_][\\w]*)(\\*|\\?)?(?:<(.*?)>)?").matcher(part);
       if (matcher.matches()) {
         String paramName = matcher.group(1);
         String modifier = matcher.group(2);
