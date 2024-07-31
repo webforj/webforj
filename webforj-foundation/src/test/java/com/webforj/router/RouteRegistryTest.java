@@ -8,12 +8,11 @@ import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.component.window.Window;
 import com.webforj.data.tree.Vnode;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Optional;
 
 class RouteRegistryTest {
 
@@ -82,6 +81,17 @@ class RouteRegistryTest {
       routeRegistry.register("child", TestComponent.class, TestTargetComponent.class);
 
       assertEquals("parent/child", routeRegistry.getResolvedRouteByComponent(TestComponent.class));
+    }
+
+    @Test
+    void shouldGetResolvedComponentByRoute() {
+      routeRegistry.register("parent", TestTargetComponent.class);
+      routeRegistry.register("child", TestComponent.class, TestTargetComponent.class);
+
+      Class<? extends Component> rootNode =
+          routeRegistry.getResolvedComponentByRoute("parent/child");
+
+      assertEquals(TestComponent.class, rootNode);
     }
 
     @Test
