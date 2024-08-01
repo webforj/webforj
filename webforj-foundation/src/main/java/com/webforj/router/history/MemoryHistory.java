@@ -1,12 +1,12 @@
 package com.webforj.router.history;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.router.Location;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Memory-based implementation of the History interface.
@@ -83,6 +83,16 @@ public class MemoryHistory implements History {
   @Override
   public int size() {
     return history.size();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Location getLocation() {
+    return currentIndex >= 0 && currentIndex < history.size()
+        ? history.get(currentIndex).getLocation()
+        : null;
   }
 
   /**

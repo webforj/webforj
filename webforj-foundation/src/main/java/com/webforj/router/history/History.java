@@ -43,6 +43,13 @@ public interface History {
   int size();
 
   /**
+   * Returns the current location.
+   *
+   * @return the current location
+   */
+  Location getLocation();
+
+  /**
    * Pushes the given state object onto the session history stack with the specified location.
    *
    * @param state the state object
