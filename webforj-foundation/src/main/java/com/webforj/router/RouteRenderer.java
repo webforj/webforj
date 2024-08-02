@@ -1,23 +1,21 @@
 package com.webforj.router;
 
 import com.webforj.App;
-import com.webforj.PendingResult;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.window.Frame;
 import com.webforj.concern.HasComponents;
+import com.webforj.data.WorkflowExecutor;
 import com.webforj.data.tree.Vnode;
 import com.webforj.data.tree.VnodeDiff;
 import com.webforj.router.exception.RouteHasNoTargetException;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.exception.RouteRenderException;
+import static com.webforj.App.console;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * The {@code RouteRenderer} class manages the navigation and rendering of components within an
@@ -43,7 +41,6 @@ import java.util.Set;
  * destroyed if observers veto these actions.
  * </p>
  *
- * @author Hyyan Abo Fakher
  * @since 24.11
  */
 public class RouteRenderer {
@@ -101,17 +98,15 @@ public class RouteRenderer {
    * </p>
    *
    * <p>
-   * The method returns a {@link PendingResult} that completes when the navigation process finishes,
-   * either successfully or unsuccessfully. If successful, the result contains the final component
-   * that matches the navigation target.
+   * The method returns an Optional component that matches the navigation target.
    * </p>
    *
    * @param componentClass the target component class for navigation.
-   *
-   * @return a pending result with the final component if navigation is successful.
+   * @param onComplete the callback to be invoked with the result of the navigation.
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public PendingResult<Optional<Component>> navigate(Class<? extends Component> componentClass) {
+  public void navigate(Class<? extends Component> componentClass,
+      Consumer<Optional<Component>> onComplete) {
     if (componentClass == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
@@ -125,53 +120,80 @@ public class RouteRenderer {
     VnodeDiff<Class<? extends Component>> diff = new VnodeDiff<>(lastPath, currentPath.get());
     Set<Class<? extends Component>> toAdd = diff.getToAdd();
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
-    PendingResult<Optional<Component>> result = new PendingResult<>();
 
-    processAllRemoval(toRemove).thenCompose(removalSuccess -> {
+    console().log("to add: " + toAdd);
+    console().log("to remove: " + toRemove);
+
+    processRemovals(toRemove, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
-        return processAllAdditions(toAdd);
+        processAdditions(toAdd, additionSuccess -> {
+          if (Boolean.TRUE.equals(additionSuccess)) {
+            lastPath = currentPath.get();
+            console().log("Updated last path: " + lastPath);
+          }
+
+          if (onComplete != null) {
+            onComplete.accept((Boolean.TRUE.equals(additionSuccess)
+                ? Optional.ofNullable(componentsCache.get(componentClass))
+                : Optional.empty()));
+          }
+        });
       } else {
-        return PendingResult.completedWith(false);
-      }
-    }).thenAccept(additionSuccess -> {
-      if (Boolean.TRUE.equals(additionSuccess)) {
-        lastPath = currentPath.get();
-        result.complete(Optional.ofNullable(componentsCache.get(componentClass)));
-      } else {
-        result.complete(Optional.empty());
+        if (onComplete != null) {
+          onComplete.accept(Optional.empty());
+        }
       }
     });
-
-    return result;
   }
 
   /**
-   * Processes the removal of multiple components in the order specified by the path differences.
+   * Navigates to the specified component class, triggering the appropriate lifecycle events and
+   * managing the addition or removal of components as necessary.
    *
    * <p>
-   * The method handles the removal of components by first notifying the lifecycle observers. If any
-   * observer vetoes the removal (returns {@code false}), the component is retained in the cache and
-   * the removal process is aborted for that component and all subsequent components.
+   * This method calculates the difference between the current path and the target path, determining
+   * which components need to be added or removed. It then processes removals first, ensuring a
+   * clean state before adding new components.
    * </p>
    *
-   * @param toRemove the set of components to be removed.
-   * @return a {@link PendingResult} that indicates whether all removals were successful.
+   * @param componentClass the target component class for navigation.
+   * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  protected PendingResult<Boolean> processAllRemoval(Set<Class<? extends Component>> toRemove) {
-    PendingResult<Boolean> result = PendingResult.completedWith(true);
+  public void navigate(Class<? extends Component> componentClass) {
+    navigate(componentClass, null);
+  }
 
-    for (Class<? extends Component> componentClass : toRemove) {
-      result = result.thenCompose(success -> {
-        if (Boolean.FALSE.equals(success)) {
-          return PendingResult.completedWith(false);
+  /**
+   * Processes the removal of multiple components, ensuring lifecycle observers are notified before
+   * each component is removed. The process is halted if any observer vetoes a removal.
+   *
+   * @param componentsToRemove the components to be removed.
+   * @param onComplete the callback to be invoked with the result of the operation.
+   */
+  private void processRemovals(Set<Class<? extends Component>> componentsToRemove,
+      Consumer<Boolean> onComplete) {
+    List<Class<? extends Component>> componentList = new ArrayList<>(componentsToRemove);
+    WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
+    AtomicBoolean removalFailed = new AtomicBoolean(false);
+
+    for (Class<? extends Component> componentClass : componentList) {
+      executor.addTask((ctx, cb) -> {
+        if (removalFailed.get()) {
+          cb.accept(false); // Skip remaining removals if any have failed
+          return;
         }
-
-        return processSingleRemoval(componentClass);
+        processSingleRemoval(componentClass, success -> {
+          if (!Boolean.TRUE.equals(success)) {
+            removalFailed.set(true);
+          }
+          cb.accept(success);
+        });
       });
     }
 
-    return result;
+    executor.run(null, success -> onComplete.accept(!removalFailed.get()));
   }
+
 
   /**
    * Processes the removal of a single component, ensuring lifecycle observers are notified before
@@ -183,25 +205,31 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the component class to be removed.
-   * @return a {@link PendingResult} indicating whether the removal was successful.
+   * @param onComplete the callback to be invoked with the result of the operation.
    */
-  protected PendingResult<Boolean> processSingleRemoval(Class<? extends Component> componentClass) {
-    Component componentInstance = componentsCache.get(componentClass);
-    if (componentInstance == null) {
-      return PendingResult.completedWith(true);
+  protected void processSingleRemoval(Class<? extends Component> componentClass,
+      Consumer<Boolean> onComplete) {
+    if (Frame.class.isAssignableFrom(componentClass)) {
+      onComplete.accept(true);
+      return;
     }
 
-    return notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_DESTROY)
-        .thenCompose(allowed -> {
+    Component componentInstance = componentsCache.get(componentClass);
+    if (componentInstance == null) {
+      onComplete.accept(true);
+      return;
+    }
+
+    notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_DESTROY,
+        allowed -> {
           if (Boolean.FALSE.equals(allowed)) {
-            // Component destruction is denied; keep it in the cache.
-            return PendingResult.completedWith(false);
+            onComplete.accept(false);
+            return;
           }
 
           detachNode(componentClass, componentInstance);
-          return notify(componentInstance,
-              RouteRendererLifecycleObserver.LifecycleEvent.AFTER_DESTROY)
-                  .thenCompose(success -> PendingResult.completedWith(true));
+          notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.AFTER_DESTROY,
+              success -> onComplete.accept(true));
         });
   }
 
@@ -239,36 +267,36 @@ public class RouteRenderer {
   }
 
   /**
-   * Processes the addition of multiple components in the order specified by the path differences.
+   * Processes the addition of multiple components, ensuring lifecycle observers are notified before
+   * each component is added. The process is halted if any observer vetoes an addition.
    *
-   * <p>
-   * Components are only added if the lifecycle observers approve their creation. If a component is
-   * vetoed during the creation process, it is removed from the cache and the process stops.
-   * </p>
-   *
-   * @param toAdd the set of components to be added.
-   * @return a {@link PendingResult} that indicates whether all additions were successful.
+   * @param componentsToAdd the components to be added.
+   * @param onComplete the callback to be invoked with the result of the operation.
    */
-  protected PendingResult<Boolean> processAllAdditions(Set<Class<? extends Component>> toAdd) {
-    PendingResult<Boolean> result = PendingResult.completedWith(true);
+  private void processAdditions(Set<Class<? extends Component>> componentsToAdd,
+      Consumer<Boolean> onComplete) {
+    List<Class<? extends Component>> componentList = new ArrayList<>(componentsToAdd);
+    WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
+    AtomicBoolean additionFailed = new AtomicBoolean(false);
 
-    for (Class<? extends Component> componentClass : toAdd) {
-      // frames are rendered by the application
-      if (Frame.class.isAssignableFrom(componentClass)) {
-        continue;
-      }
-
-      result = result.thenCompose(success -> {
-        if (Boolean.FALSE.equals(success)) {
-          return PendingResult.completedWith(false);
+    for (Class<? extends Component> componentClass : componentList) {
+      executor.addTask((ctx, cb) -> {
+        if (additionFailed.get()) {
+          cb.accept(false); // Skip remaining additions if any have failed
+          return;
         }
-
-        return processSingleAddition(componentClass);
+        processSingleAddition(componentClass, success -> {
+          if (!Boolean.TRUE.equals(success)) {
+            additionFailed.set(true);
+          }
+          cb.accept(success);
+        });
       });
     }
 
-    return result;
+    executor.run(null, success -> onComplete.accept(!additionFailed.get()));
   }
+
 
   /**
    * Processes the addition of a single component, ensuring lifecycle observers are notified before
@@ -281,27 +309,33 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the component class to be added.
-   * @return a {@link PendingResult} indicating whether the addition was successful.
+   * @param onComplete the callback to be invoked with the result of the operation.
    */
-  protected PendingResult<Boolean> processSingleAddition(
-      Class<? extends Component> componentClass) {
-    return getOrCreateComponentAsync(componentClass).thenCompose(componentInstance -> {
+  protected void processSingleAddition(Class<? extends Component> componentClass,
+      Consumer<Boolean> onComplete) {
+    if (Frame.class.isAssignableFrom(componentClass)) {
+      onComplete.accept(true);
+      return;
+    }
+
+    getOrCreateComponentAsync(componentClass, componentInstance -> {
       if (componentInstance == null) {
         componentsCache.remove(componentClass);
-        return PendingResult.completedWith(false);
+        onComplete.accept(false);
+        return;
       }
 
-      return notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE)
-          .thenCompose(allowed -> {
+      notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE,
+          allowed -> {
             if (Boolean.FALSE.equals(allowed)) {
               componentsCache.remove(componentClass);
-              return PendingResult.completedWith(false);
+              onComplete.accept(false);
+              return;
             }
 
             attachNode(componentClass, componentInstance);
-            return notify(componentInstance,
-                RouteRendererLifecycleObserver.LifecycleEvent.AFTER_CREATE)
-                    .thenCompose(success -> PendingResult.completedWith(true));
+            notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.AFTER_CREATE,
+                success -> onComplete.accept(true));
           });
     });
   }
@@ -320,6 +354,10 @@ public class RouteRenderer {
    */
   protected void attachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
+    if (registry.getRouteByComponent(componentClass) == null) {
+      throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
+    }
+
     Class<? extends Component> targetClass = registry.getTarget(componentClass);
     if (targetClass == null) {
       throw new RouteHasNoTargetException(
@@ -384,31 +422,30 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the class of the component to retrieve or create.
-   * @return a {@link PendingResult} that completes with the component instance or null if denied.
+   * @param onComplete the callback to be invoked with the result of the operation.
    */
-  protected PendingResult<Component> getOrCreateComponentAsync(
-      Class<? extends Component> componentClass) {
-    Component[] componentHolder = new Component[1];
-    componentHolder[0] = componentsCache.get(componentClass);
+  protected void getOrCreateComponentAsync(Class<? extends Component> componentClass,
+      Consumer<Component> onComplete) {
+    Component componentInstance = componentsCache.get(componentClass);
 
-    if (componentHolder[0] == null || componentHolder[0].isDestroyed()) {
-      return notify(null, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE)
-          .thenCompose(allowed -> {
-            if (Boolean.FALSE.equals(allowed)) {
-              componentsCache.remove(componentClass);
-              return PendingResult.completedWith(null);
-            }
+    if (componentInstance == null || componentInstance.isDestroyed()) {
+      notify(null, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
+        if (Boolean.FALSE.equals(allowed)) {
+          componentsCache.remove(componentClass);
+          onComplete.accept(null);
+          return;
+        }
 
-            Component newComponent = getOrCreateComponent(componentClass);
-            if (newComponent == null) {
-              componentsCache.remove(componentClass);
-            }
+        Component newComponent = getOrCreateComponent(componentClass);
+        if (newComponent == null) {
+          componentsCache.remove(componentClass);
+        }
 
-            return PendingResult.completedWith(newComponent);
-          });
+        onComplete.accept(newComponent);
+      });
+    } else {
+      onComplete.accept(componentInstance);
     }
-
-    return PendingResult.completedWith(componentHolder[0]);
   }
 
   /**
@@ -464,22 +501,35 @@ public class RouteRenderer {
    *
    * @param component the component associated with the event.
    * @param event the lifecycle event.
-   *
-   * @return a {@link PendingResult} indicating whether the event should proceed.
+   * @param onComplete the callback to be invoked with the result of the notification.
    */
-  protected PendingResult<Boolean> notify(Component component,
-      RouteRendererLifecycleObserver.LifecycleEvent event) {
-    PendingResult<Boolean> result = PendingResult.completedWith(true);
-    for (RouteRendererLifecycleObserver observer : observers) {
-      result = result.thenCompose(allowed -> {
-        if (Boolean.FALSE.equals(allowed)) {
-          return PendingResult.completedWith(false);
-        }
+  protected void notify(Component component, RouteRendererLifecycleObserver.LifecycleEvent event,
+      Consumer<Boolean> onComplete) {
+    WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
+    AtomicBoolean vetoed = new AtomicBoolean(false);
 
-        return observer.onRouteRendererLifecycleEvent(component, event);
+    for (RouteRendererLifecycleObserver observer : observers) {
+      executor.addTask((ctx, cb) -> {
+        if (vetoed.get()) {
+          cb.accept(false); // Skip further notification if vetoed
+          return;
+        }
+        observer.onRouteRendererLifecycleEvent(component, event, result -> {
+          if (Boolean.FALSE.equals(result)) {
+            vetoed.set(true);
+            cb.accept(false);
+            onComplete.accept(false); // Stop workflow if vetoed
+            return;
+          }
+          cb.accept(true);
+        });
       });
     }
 
-    return result;
+    executor.run(null, success -> {
+      if (!vetoed.get()) {
+        onComplete.accept(true);
+      }
+    });
   }
 }

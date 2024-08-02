@@ -116,4 +116,14 @@ public class Location implements Serializable {
 
     return uriBuilder.toString();
   }
+
+  /**
+   * Gets the full URI string with query parameters and fragment.
+   *
+   * @return the full URI string
+   */
+  @Override
+  public String toString() {
+    return getFullURI();
+  }
 }

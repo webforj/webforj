@@ -17,7 +17,7 @@ public interface DidEnterObserver extends Serializable {
    * This method is called after the router renders the route's component and attach it to the DOM.
    *
    * @param event the event object
-   * @param routeParams the route parameters bag
+   * @param parameters the route parameters bag
    */
-  void onDidEnterRoute(DidEnterEvent event, ParametersBag routeParams);
+  void onDidEnterRoute(DidEnterEvent event, ParametersBag parameters);
 }

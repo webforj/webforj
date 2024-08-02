@@ -1,5 +1,6 @@
 package com.webforj.component.window;
 
+import java.util.Objects;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -132,6 +133,7 @@ public class Frame extends Window {
    * @param id The ID to be set.
    */
   public void setFrameId(String id) {
+    Objects.requireNonNull(id, "Frame ID cannot be null");
     this.frameId = id;
   }
 

@@ -18,9 +18,9 @@ public class DidLeaveEvent extends RouteObserverEvent {
    *
    * @param router the router instance
    * @param location the location instance
-   * @param routeParams the route parameters bag instance
+   * @param parameters the route parameters bag instance
    */
-  public DidLeaveEvent(Router router, Location location, ParametersBag routeParams) {
-    super(router, location, routeParams);
+  public DidLeaveEvent(Router router, Location location, ParametersBag parameters) {
+    super(router, location, parameters);
   }
 }
