@@ -18,7 +18,7 @@ public interface DidLeaveObserver extends Serializable {
    * DOM.
    *
    * @param event the event object
-   * @param routeParams the route parameters bag
+   * @param parameters the route parameters bag
    */
-  void onDidLeaveRoute(DidLeaveEvent event, ParametersBag routeParams);
+  void onDidLeaveRoute(DidLeaveEvent event, ParametersBag parameters);
 }

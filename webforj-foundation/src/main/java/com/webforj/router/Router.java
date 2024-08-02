@@ -1,6 +1,7 @@
 package com.webforj.router;
 
-import com.webforj.PendingResult;
+import static com.webforj.App.console;
+
 import com.webforj.component.Component;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
@@ -13,12 +14,12 @@ import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.history.History;
 import com.webforj.router.history.MemoryHistory;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
-import static com.webforj.App.console;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Router class responsible for navigating to a given path.
@@ -84,9 +85,9 @@ public class Router {
    * </p>
    *
    * @param location the location to navigate to
-   * @return the rendered component
+   * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public PendingResult<Optional<Component>> navigate(Location location) {
+  public void navigate(Location location, Consumer<Optional<Component>> onComplete) {
     Objects.requireNonNull(location, "Location must not be null");
 
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
@@ -103,15 +104,31 @@ public class Router {
     // remove the history state listener to avoid loops
     removeHistoryStateListener();
 
-    return renderer.navigate(componentClass.get()).thenApply(component -> {
+    renderer.navigate(componentClass.get(), component -> {
       if (component.isPresent()) {
         console().log("Router : Navigating to: " + component.get().getClass().getSimpleName());
         history.pushState(location);
         addHistoryStateListener();
-
       }
-      return component;
+
+      if (onComplete != null) {
+        onComplete.accept(component);
+      }
     });
+  }
+
+  /**
+   * Navigates to the given location.
+   *
+   * <p>
+   * This method navigates to the given location. If the location does not match any of the
+   * registered routes, a {@code RouteNotFoundException} will be thrown.
+   * </p>
+   *
+   * @param location the location to navigate to
+   */
+  public void navigate(Location location) {
+    navigate(location, null);
   }
 
   /**
@@ -260,8 +277,8 @@ public class Router {
    */
   protected void addHistoryStateListener() {
     this.removeHistoryStateListener();
-    historyListener =
-        history.addHistoryStateChangeListener(e -> e.getLocation().ifPresent(this::navigate));
+    historyListener = history.addHistoryStateChangeListener(
+        e -> e.getLocation().ifPresent(location -> navigate(location, null)));
   }
 
   /**
@@ -282,22 +299,29 @@ public class Router {
      * {@inheritDoc}
      */
     @Override
-    public PendingResult<Boolean> onRouteRendererLifecycleEvent(Component component,
-        LifecycleEvent event) {
+    public void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
+        Consumer<Boolean> cb) {
       ParametersBag routeParams = ParametersBag
           .of(matchedPattern.extractParameters(willNavigateToLocation.getSegments().getPath()));
 
       switch (event) {
         case BEFORE_CREATE:
-          return fireWillEnterEvent(component, willNavigateToLocation, routeParams);
+          fireWillEnterEvent(component, willNavigateToLocation, routeParams, cb);
+          break;
         case AFTER_CREATE:
-          return fireDidEnterEvent(component, willNavigateToLocation, routeParams);
+          fireDidEnterEvent(component, willNavigateToLocation, routeParams);
+          cb.accept(true);
+          break;
         case BEFORE_DESTROY:
-          return fireWillLeaveEvent(component, willNavigateToLocation, routeParams);
+          fireWillLeaveEvent(component, willNavigateToLocation, routeParams, cb);
+          break;
         case AFTER_DESTROY:
-          return fireDidLeaveEvent(component, willNavigateToLocation, routeParams);
+          fireDidLeaveEvent(component, willNavigateToLocation, routeParams);
+          cb.accept(true);
+          break;
         default:
-          return PendingResult.completedWith(true);
+          cb.accept(true);
+          break;
       }
     }
 
@@ -307,21 +331,18 @@ public class Router {
      * @param component the component
      * @param location the location
      * @param routeParams the route parameters bag
-     *
-     * @return a PendingResult that resolves to a boolean value indicating whether the routing
-     *         process should continue
+     * @param cb the callback to indicate completion
      */
-    PendingResult<Boolean> fireWillEnterEvent(Component component, Location location,
-        ParametersBag routeParams) {
-      WillEnterEvent event = new WillEnterEvent(Router.this, location, routeParams);
-
+    void fireWillEnterEvent(Component component, Location location, ParametersBag routeParams,
+        Consumer<Boolean> cb) {
+      WillEnterEvent event = new WillEnterEvent(Router.this, location, routeParams, cb);
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof WillEnterObserver willEnterObserver) {
-        return willEnterObserver.onWillEnterRoute(event, routeParams);
+        willEnterObserver.onWillEnterRoute(event, routeParams);
+      } else {
+        cb.accept(true);
       }
-
-      return PendingResult.completedWith(true);
     }
 
     /**
@@ -330,21 +351,14 @@ public class Router {
      * @param component the component
      * @param location the location
      * @param routeParams the route parameters bag
-     *
-     * @return a PendingResult that resolves to a boolean value indicating whether the routing
-     *         process should continue
      */
-    PendingResult<Boolean> fireDidEnterEvent(Component component, Location location,
-        ParametersBag routeParams) {
+    void fireDidEnterEvent(Component component, Location location, ParametersBag routeParams) {
       DidEnterEvent event = new DidEnterEvent(Router.this, location, routeParams);
-
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof DidEnterObserver didEnterObserver) {
         didEnterObserver.onDidEnterRoute(event, routeParams);
       }
-
-      return PendingResult.completedWith(true);
     }
 
     /**
@@ -353,21 +367,18 @@ public class Router {
      * @param component the component
      * @param location the location
      * @param routeParams the route parameters bag
-     *
-     * @return a PendingResult that resolves to a boolean value indicating whether the routing
-     *         process should continue
+     * @param cb the callback to indicate completion
      */
-    PendingResult<Boolean> fireWillLeaveEvent(Component component, Location location,
-        ParametersBag routeParams) {
-      WillLeaveEvent event = new WillLeaveEvent(Router.this, location, routeParams);
-
+    void fireWillLeaveEvent(Component component, Location location, ParametersBag routeParams,
+        Consumer<Boolean> cb) {
+      WillLeaveEvent event = new WillLeaveEvent(Router.this, location, routeParams, cb);
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof WillLeaveObserver willLeaveObserver) {
-        return willLeaveObserver.onWillLeaveRoute(event, routeParams);
+        willLeaveObserver.onWillLeaveRoute(event, routeParams);
+      } else {
+        cb.accept(true);
       }
-
-      return PendingResult.completedWith(true);
     }
 
     /**
@@ -376,21 +387,14 @@ public class Router {
      * @param component the component
      * @param location the location
      * @param routeParams the route parameters bag
-     *
-     * @return a PendingResult that resolves to a boolean value indicating whether the routing
-     *         process should continue
      */
-    PendingResult<Boolean> fireDidLeaveEvent(Component component, Location location,
-        ParametersBag routeParams) {
+    void fireDidLeaveEvent(Component component, Location location, ParametersBag routeParams) {
       DidLeaveEvent event = new DidLeaveEvent(Router.this, location, routeParams);
-
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof DidLeaveObserver didLeaveObserver) {
         didLeaveObserver.onDidLeaveRoute(event, routeParams);
       }
-
-      return PendingResult.completedWith(true);
     }
   }
 }

@@ -23,13 +23,13 @@ class RouteObserverEvent extends EventObject {
    *
    * @param router the router instance
    * @param location the location instance
-   * @param routeParams the route parameters bag instance
+   * @param parameters the route parameters bag instance
    */
-  protected RouteObserverEvent(Router router, Location location, ParametersBag routeParams) {
+  protected RouteObserverEvent(Router router, Location location, ParametersBag parameters) {
     super(router);
     this.router = router;
     this.location = location;
-    this.routeParams = routeParams;
+    this.routeParams = parameters;
   }
 
   /**

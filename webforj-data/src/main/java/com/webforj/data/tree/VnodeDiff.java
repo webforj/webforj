@@ -1,6 +1,6 @@
 package com.webforj.data.tree;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -15,9 +15,9 @@ import java.util.Set;
  * @since 24.11
  */
 public class VnodeDiff<T> {
-  private final Set<T> toAdd = new HashSet<>();
-  private final Set<T> toRemove = new HashSet<>();
-  private final Set<T> toKeep = new HashSet<>();
+  private final Set<T> toAdd = new LinkedHashSet<>(); // Changed to LinkedHashSet
+  private final Set<T> toRemove = new LinkedHashSet<>(); // Changed to LinkedHashSet
+  private final Set<T> toKeep = new LinkedHashSet<>(); // Changed to LinkedHashSet
 
   /**
    * Constructs a new {@code VnodeDiff} instance by comparing two TreeNode instances.
@@ -27,6 +27,33 @@ public class VnodeDiff<T> {
    */
   public VnodeDiff(Vnode<T> current, Vnode<T> next) {
     computeDiff(current, next);
+  }
+
+  /**
+   * Returns the set of nodes to add.
+   *
+   * @return the set of nodes to add
+   */
+  public Set<T> getToAdd() {
+    return toAdd;
+  }
+
+  /**
+   * Returns the set of nodes to remove.
+   *
+   * @return the set of nodes to remove
+   */
+  public Set<T> getToRemove() {
+    return toRemove;
+  }
+
+  /**
+   * Returns the set of nodes to keep.
+   *
+   * @return the set of nodes to keep
+   */
+  public Set<T> getToKeep() {
+    return toKeep;
   }
 
   private void computeDiff(Vnode<T> current, Vnode<T> next) {
@@ -77,8 +104,8 @@ public class VnodeDiff<T> {
       toAdd.add(next.getData());
     }
 
-    Set<T> currentChildrenData = new HashSet<>();
-    Set<T> nextChildrenData = new HashSet<>();
+    Set<T> currentChildrenData = new LinkedHashSet<>(); // Changed to LinkedHashSet
+    Set<T> nextChildrenData = new LinkedHashSet<>(); // Changed to LinkedHashSet
 
     for (Vnode<T> child : current.getChildren()) {
       currentChildrenData.add(child.getData());
@@ -107,32 +134,4 @@ public class VnodeDiff<T> {
       }
     }
   }
-
-  /**
-   * Returns the set of nodes to add.
-   *
-   * @return the set of nodes to add
-   */
-  public Set<T> getToAdd() {
-    return toAdd;
-  }
-
-  /**
-   * Returns the set of nodes to remove.
-   *
-   * @return the set of nodes to remove
-   */
-  public Set<T> getToRemove() {
-    return toRemove;
-  }
-
-  /**
-   * Returns the set of nodes to keep.
-   *
-   * @return the set of nodes to keep
-   */
-  public Set<T> getToKeep() {
-    return toKeep;
-  }
 }
-

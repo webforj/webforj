@@ -168,6 +168,10 @@ public class RouteRegistry {
    * @return the frame ID of the view class
    */
   public String getFrameRouteId(Class<? extends Component> component) {
+    if (component == null) {
+      return null;
+    }
+
     return frameIds.get(component);
   }
 

@@ -1,7 +1,7 @@
 package com.webforj.router;
 
-import com.webforj.PendingResult;
 import com.webforj.component.Component;
+import java.util.function.Consumer;
 
 /**
  * An interface for observing lifecycle events of components managed by the RouteRenderer.
@@ -47,8 +47,9 @@ public interface RouteRendererLifecycleObserver {
    *
    * @param component The component associated with the lifecycle event
    * @param event The type of lifecycle event
-   *
-   * @return A PendingResult indicating whether the operation should proceed
+   * @param continueCallback The callback to indicate whether the operation should proceed. The
+   *        consumer should accept {@code true} to continue or {@code false} to halt.
    */
-  PendingResult<Boolean> onRouteRendererLifecycleEvent(Component component, LifecycleEvent event);
+  void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
+      Consumer<Boolean> continueCallback);
 }
