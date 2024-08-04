@@ -121,17 +121,13 @@ public class RouteRenderer {
     Set<Class<? extends Component>> toAdd = diff.getToAdd();
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
 
+    lastPath = currentPath.get();
     console().log("to add: " + toAdd);
     console().log("to remove: " + toRemove);
 
     processRemovals(toRemove, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
         processAdditions(toAdd, additionSuccess -> {
-          if (Boolean.TRUE.equals(additionSuccess)) {
-            lastPath = currentPath.get();
-            console().log("Updated last path: " + lastPath);
-          }
-
           if (onComplete != null) {
             onComplete.accept((Boolean.TRUE.equals(additionSuccess)
                 ? Optional.ofNullable(componentsCache.get(componentClass))

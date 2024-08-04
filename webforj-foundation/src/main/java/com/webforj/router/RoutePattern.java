@@ -95,6 +95,11 @@ public class RoutePattern {
    * @return true if the path matches the pattern, false otherwise
    */
   public boolean matches(String path) {
+    // if path does not start with a slash, add it
+    if (!path.startsWith("/")) {
+      path = "/" + path; // NOSONAR
+    }
+
     return regexPattern.matcher(path).matches();
   }
 
