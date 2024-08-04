@@ -4,22 +4,26 @@ import com.webforj.router.event.WillLeaveEvent;
 import java.io.Serializable;
 
 /**
- * {@code WillLeaveObserver} is an interface that is used to observe the router before it destroys a
- * route's component.
+ * {@code WillLeaveObserver} is an interface that is used to observe the router before it attempts
+ * to leave a route and detach its component from the DOM.
  *
+ * @author Hyyan Abo Fakher
  * @since 24.11
+ *
+ * @see WillLeaveEvent
  */
 @FunctionalInterface
 public interface WillLeaveObserver extends Serializable {
 
   /**
-   * This method is called before the router destroys the route's component and detaches it from the
-   * DOM.
+   * This method is called before the router attempts to leave the route's component and detach it
+   * from the DOM.
    *
    * <p>
-   * Observers should use the {@link WillLeaveEvent#accept(boolean)} method to indicate that the
-   * route's component should be destroyed or the {@link WillLeaveEvent#reject()} method to indicate
-   * that the route should be vetoed.
+   * When this method is called, the route's component is still attached to the DOM. Observers
+   * should use the {@link WillLeaveEvent#accept()} method to indicate that the route's component
+   * should be detached or the {@link WillLeaveEvent#reject()} method to indicate that the route
+   * should be vetoed.
    * </p>
    *
    * @param event the event object

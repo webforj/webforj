@@ -13,9 +13,11 @@ import java.util.function.Consumer;
  *
  * @author Hyyan Abo Fakher
  * @since 24.11
+ *
+ * @see RouteRenderer
  */
 @FunctionalInterface
-public interface RouteRendererLifecycleObserver {
+public interface RouteRendererObserver {
 
   /**
    * Represents the lifecycle events in the routing and rendering process.

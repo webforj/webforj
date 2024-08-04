@@ -6,15 +6,20 @@ import com.webforj.router.Router;
 import java.util.function.Consumer;
 
 /**
- * {@code WillLeaveEvent} is an event object which is fired before the router leaves a route.
+ * {@code WillLeaveEvent} is an event object which is fired before the router attempts to leave a
+ * route and detach its component from the DOM.
  *
  * <p>
- * Observers can use the {@link #accept()} method to allow the route to proceed or the
- * {@link #reject()} method to veto the route.
+ * When this event is fired, the route's component is still attached to the DOM. The {@link #veto()}
+ * method should be called to allow proceeding or to veto the attempt to detach the route's
+ * component from the DOM.
  * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 24.11
+ *
+ * @see DidLeaveEvent
+ * @see WillEnterEvent
  */
 public class WillLeaveEvent extends RouteObserverEvent {
 
@@ -27,7 +32,8 @@ public class WillLeaveEvent extends RouteObserverEvent {
    * @param router the router instance
    * @param location the location instance
    * @param parameters the route parameters bag instance
-   * @param allowLeave the callback consumer to signal whether the route should be allowed
+   * @param allowLeave the callback consumer to signal whether the router should be allowed to
+   *        proceed to the next step
    */
   public WillLeaveEvent(Router router, Location location, ParametersBag parameters,
       Consumer<Boolean> allowLeave) {
@@ -36,11 +42,36 @@ public class WillLeaveEvent extends RouteObserverEvent {
   }
 
   /**
-   * Signals that whether the route should be allowed to proceed.
+   * Signals whether the router should be allowed to proceed to the next step.
    *
-   * @param value {@code true} to allow the route to proceed, {@code false} to veto the route
+   * @param value when {@code true}, the router will be allowed to proceed to the next step and
+   *        detach the route's component from the DOM; when {@code false}, the router will be vetoed
+   *        and the route's component will not be detached from the DOM
+   *
+   * @see #accept()
+   * @see #reject()
    */
-  public void accept(boolean value) {
+  public void veto(boolean value) {
     allowLeave.accept(value);
+  }
+
+  /**
+   * Signals that the router should be allowed to proceed to the next step and detach the route's
+   * component from the DOM.
+   *
+   * @see #reject()
+   */
+  public void accept() {
+    veto(true);
+  }
+
+  /**
+   * Signals that the router attempt to detach the route's component from the DOM should be vetoed.
+   * The route's component will not be detached from the DOM.
+   *
+   * @see #accept()
+   */
+  public void reject() {
+    veto(false);
   }
 }

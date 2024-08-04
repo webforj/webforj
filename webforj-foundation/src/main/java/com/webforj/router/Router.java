@@ -53,7 +53,7 @@ public class Router {
     this.registry = registry;
     this.history = history;
     this.renderer = renderer;
-    this.renderer.addLifecycleObserver(new RouterLifecycleHandler());
+    this.renderer.addObserver(new RouterLifecycleHandler());
     this.addHistoryStateListener();
   }
 
@@ -300,7 +300,7 @@ public class Router {
   /**
    * RouterLifecycleHandler class responsible for handling the router lifecycle events.
    */
-  private final class RouterLifecycleHandler implements RouteRendererLifecycleObserver {
+  private final class RouterLifecycleHandler implements RouteRendererObserver {
 
     /**
      * {@inheritDoc}
