@@ -47,7 +47,7 @@ public class RouteRenderer {
   private final RouteRegistry registry;
   private final Map<Class<? extends Component>, Component> componentsCache = new HashMap<>();
   private final Map<String, Frame> frameCache = new HashMap<>();
-  private final List<RouteRendererLifecycleObserver> observers = new ArrayList<>();
+  private final List<RouteRendererObserver> observers = new ArrayList<>();
   private Vnode<Class<? extends Component>> lastPath;
 
   /**
@@ -74,7 +74,7 @@ public class RouteRenderer {
    *
    * @param observer the observer to be added.
    */
-  public void addLifecycleObserver(RouteRendererLifecycleObserver observer) {
+  public void addObserver(RouteRendererObserver observer) {
     observers.add(observer);
   }
 
@@ -83,7 +83,7 @@ public class RouteRenderer {
    *
    * @param observer the observer to be removed.
    */
-  public void removeLifecycleObserver(RouteRendererLifecycleObserver observer) {
+  public void removeObserver(RouteRendererObserver observer) {
     observers.remove(observer);
   }
 
@@ -216,7 +216,7 @@ public class RouteRenderer {
       return;
     }
 
-    notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_DESTROY,
+    notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY,
         allowed -> {
           if (Boolean.FALSE.equals(allowed)) {
             onComplete.accept(false);
@@ -224,7 +224,7 @@ public class RouteRenderer {
           }
 
           detachNode(componentClass, componentInstance);
-          notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.AFTER_DESTROY,
+          notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY,
               success -> onComplete.accept(true));
         });
   }
@@ -321,7 +321,7 @@ public class RouteRenderer {
         return;
       }
 
-      notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE,
+      notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE,
           allowed -> {
             if (Boolean.FALSE.equals(allowed)) {
               componentsCache.remove(componentClass);
@@ -330,7 +330,7 @@ public class RouteRenderer {
             }
 
             attachNode(componentClass, componentInstance);
-            notify(componentInstance, RouteRendererLifecycleObserver.LifecycleEvent.AFTER_CREATE,
+            notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE,
                 success -> onComplete.accept(true));
           });
     });
@@ -425,7 +425,7 @@ public class RouteRenderer {
     Component componentInstance = componentsCache.get(componentClass);
 
     if (componentInstance == null || componentInstance.isDestroyed()) {
-      notify(null, RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
+      notify(null, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
         if (Boolean.FALSE.equals(allowed)) {
           componentsCache.remove(componentClass);
           onComplete.accept(null);
@@ -499,12 +499,12 @@ public class RouteRenderer {
    * @param event the lifecycle event.
    * @param onComplete the callback to be invoked with the result of the notification.
    */
-  protected void notify(Component component, RouteRendererLifecycleObserver.LifecycleEvent event,
+  protected void notify(Component component, RouteRendererObserver.LifecycleEvent event,
       Consumer<Boolean> onComplete) {
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
     AtomicBoolean vetoed = new AtomicBoolean(false);
 
-    for (RouteRendererLifecycleObserver observer : observers) {
+    for (RouteRendererObserver observer : observers) {
       executor.addTask((ctx, cb) -> {
         if (vetoed.get()) {
           cb.accept(false); // Skip further notification if vetoed

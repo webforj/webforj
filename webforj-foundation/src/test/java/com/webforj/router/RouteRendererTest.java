@@ -116,8 +116,8 @@ class RouteRendererTest {
       });
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
-      routeRenderer.addLifecycleObserver((component, event, cb) -> {
-        if (event == RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_DESTROY) {
+      routeRenderer.addObserver((component, event, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY) {
           observerCalled.set(true);
         }
         cb.accept(true);
@@ -137,8 +137,8 @@ class RouteRendererTest {
       });
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
-      routeRenderer.addLifecycleObserver((component, event, cb) -> {
-        if (event == RouteRendererLifecycleObserver.LifecycleEvent.AFTER_DESTROY) {
+      routeRenderer.addObserver((component, event, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.AFTER_DESTROY) {
           observerCalled.set(true);
         }
         cb.accept(true);
@@ -158,9 +158,9 @@ class RouteRendererTest {
       });
 
       AtomicReference<Component> componentRef = new AtomicReference<>();
-      routeRenderer.addLifecycleObserver((component, event, cb) -> {
+      routeRenderer.addObserver((component, event, cb) -> {
         componentRef.set(component);
-        if (event == RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_DESTROY) {
+        if (event == RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY) {
           cb.accept(false);
         } else {
           cb.accept(true);
@@ -180,8 +180,8 @@ class RouteRendererTest {
       routeRegistry.register("/test", TestComponent.class);
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
-      routeRenderer.addLifecycleObserver((component, event, cb) -> {
-        if (event == RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE) {
+      routeRenderer.addObserver((component, event, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.BEFORE_CREATE) {
           observerCalled.set(true);
         }
         cb.accept(true);
@@ -198,8 +198,8 @@ class RouteRendererTest {
       routeRegistry.register("/test", TestComponent.class);
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
-      routeRenderer.addLifecycleObserver((component, event, cb) -> {
-        if (event == RouteRendererLifecycleObserver.LifecycleEvent.AFTER_CREATE) {
+      routeRenderer.addObserver((component, event, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.AFTER_CREATE) {
           observerCalled.set(true);
         }
         cb.accept(true);
