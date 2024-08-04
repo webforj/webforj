@@ -94,8 +94,13 @@ public class Router {
     Optional<Class<? extends Component>> componentClass =
         routePattern.map(RoutePattern::getPattern).map(registry::getResolvedComponentByRoute);
 
-    if (!routePattern.isPresent() || !componentClass.isPresent()) {
-      throw new RouteNotFoundException("Route not found: " + location);
+    if (!routePattern.isPresent()) {
+      throw new RouteNotFoundException("Failed to match route for location: " + location);
+    }
+
+    if (!componentClass.isPresent()) {
+      throw new RouteNotFoundException(
+          "Path matched but no component found for location: " + location);
     }
 
     matchedPattern = routePattern.get();
@@ -263,6 +268,8 @@ public class Router {
     for (String route : routes) {
       RoutePattern pattern = routesCache.computeIfAbsent(route, RoutePattern::new);
       String currentSegment = location.getSegments().getPath();
+      console().log("Router : Matching route: " + route + " with path: " + currentSegment
+          + " .Does it match? " + pattern.matches(currentSegment));
       if (pattern.matches(currentSegment)) {
         mp = pattern;
         break;
@@ -293,7 +300,7 @@ public class Router {
   /**
    * RouterLifecycleHandler class responsible for handling the router lifecycle events.
    */
-  protected class RouterLifecycleHandler implements RouteRendererLifecycleObserver {
+  private final class RouterLifecycleHandler implements RouteRendererLifecycleObserver {
 
     /**
      * {@inheritDoc}
