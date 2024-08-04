@@ -92,7 +92,7 @@ public class Router {
 
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
     Optional<Class<? extends Component>> componentClass =
-        routePattern.map(RoutePattern::getPattern).map(registry::getResolvedComponentByRoute);
+        routePattern.map(RoutePattern::getPattern).map(registry::getComponentByRoute);
 
     if (!routePattern.isPresent()) {
       throw new RouteNotFoundException("Failed to match route for location: " + location);
@@ -263,7 +263,7 @@ public class Router {
    */
   protected Optional<RoutePattern> getRoutePatternForLocation(Location location) {
     RoutePattern mp = null;
-    List<String> routes = registry.getResolvedRoutes();
+    List<String> routes = registry.getAvailableRoutes();
 
     for (String route : routes) {
       RoutePattern pattern = routesCache.computeIfAbsent(route, RoutePattern::new);
