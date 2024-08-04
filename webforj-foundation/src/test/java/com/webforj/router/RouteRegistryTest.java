@@ -76,20 +76,11 @@ class RouteRegistryTest {
     }
 
     @Test
-    void shouldGetResolvedRouteByComponent() {
-      routeRegistry.register("parent", TestTargetComponent.class);
-      routeRegistry.register("child", TestComponent.class, TestTargetComponent.class);
-
-      assertEquals("parent/child", routeRegistry.getResolvedRouteByComponent(TestComponent.class));
-    }
-
-    @Test
     void shouldGetResolvedComponentByRoute() {
       routeRegistry.register("parent", TestTargetComponent.class);
-      routeRegistry.register("child", TestComponent.class, TestTargetComponent.class);
+      routeRegistry.register("parent/child", TestComponent.class, TestTargetComponent.class);
 
-      Class<? extends Component> rootNode =
-          routeRegistry.getResolvedComponentByRoute("parent/child");
+      Class<? extends Component> rootNode = routeRegistry.getComponentByRoute("parent/child");
 
       assertEquals(TestComponent.class, rootNode);
     }
@@ -97,9 +88,9 @@ class RouteRegistryTest {
     @Test
     void shouldGetResolvedRoutes() {
       routeRegistry.register("parent", TestTargetComponent.class);
-      routeRegistry.register("child", TestComponent.class, TestTargetComponent.class);
+      routeRegistry.register("parent/child", TestComponent.class, TestTargetComponent.class);
 
-      List<String> resolvedRoutes = routeRegistry.getResolvedRoutes();
+      List<String> resolvedRoutes = routeRegistry.getAvailableRoutes();
 
       assertEquals(2, resolvedRoutes.size());
       assertTrue(resolvedRoutes.contains("parent"));
@@ -109,7 +100,7 @@ class RouteRegistryTest {
     @Test
     void shouldGetComponentsTree() {
       routeRegistry.register("parent", TestTargetComponent.class);
-      routeRegistry.register("child", TestComponent.class, TestTargetComponent.class);
+      routeRegistry.register("parent/child", TestComponent.class, TestTargetComponent.class);
 
       Optional<Vnode<Class<? extends Component>>> tree =
           routeRegistry.getComponentsTree(TestComponent.class);
@@ -134,7 +125,7 @@ class RouteRegistryTest {
     assertNull(routeRegistry.getComponentByRoute("test"));
     assertNull(routeRegistry.getTarget(TestComponent.class));
     assertNull(routeRegistry.getFrameRouteId(TestComponent.class));
-    assertTrue(routeRegistry.getResolvedRoutes().isEmpty());
+    assertTrue(routeRegistry.getAvailableRoutes().isEmpty());
   }
 
   static class TestComponent extends Component {

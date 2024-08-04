@@ -73,13 +73,7 @@ public class RouteRegistry {
   }
 
   /**
-   * Returns the component class of the passed route as registered in the registry.
-   *
-   * <p>
-   * Passing the full path of the route will return not return the component class of the route. The
-   * route should be the path as registered in the registry. for example, if the route is registered
-   * as "/users/:id", the path should be "/users/:id"
-   * </p>
+   * Returns the component class of the passed route.
    *
    * @param path the path of the route
    * @return the component class of the passed route
@@ -89,7 +83,7 @@ public class RouteRegistry {
   }
 
   /**
-   * Returns the route path for the given component class as registered in the registry.
+   * Returns the route path for the given component class.
    *
    * @param component the component class
    * @return the route path for the given component class
@@ -100,55 +94,13 @@ public class RouteRegistry {
   }
 
   /**
-   * Returns the full resolved path of the route for the given component class.
-   *
-   * <p>
-   * The resolved path is the full path of the route including the parent components. for example,
-   * if the route is registered as "/users/edit/:id" and the parent component is "/users", the
-   * resolved path will be "/users/edit/:id".
-   * </p>
-   *
-   * @param component the component class
-   * @return the full path of the route with the given component class
-   */
-  public String getResolvedRouteByComponent(Class<? extends Component> component) {
-    LinkedList<String> pathComponents = new LinkedList<>();
-    Class<? extends Component> currentComponent = component;
-
-    while (currentComponent != null) {
-      String path = getRouteByComponent(currentComponent);
-      if (path != null) {
-        pathComponents.addFirst(path);
-      }
-      currentComponent = targets.get(currentComponent);
-    }
-
-    return String.join("/", pathComponents);
-  }
-
-  /**
-   * Returns the component class for the given full path by resolving the full path dynamically.
-   *
-   * @param fullPath the full path of the route
-   * @return the component class associated with the full path, or null if not found
-   */
-  public Class<? extends Component> getResolvedComponentByRoute(String fullPath) {
-    for (Map.Entry<String, Class<? extends Component>> entry : routes.entrySet()) {
-      if (getResolvedRouteByComponent(entry.getValue()).equals(fullPath)) {
-        return entry.getValue();
-      }
-    }
-    return null;
-  }
-
-  /**
    * Returns the full paths of all registered routes.
    *
    * @return a list of full paths of all registered routes
    */
-  public List<String> getResolvedRoutes() {
-    return routes.keySet().stream().map(route -> getResolvedRouteByComponent(routes.get(route)))
-        .distinct().collect(Collectors.toList());
+  public List<String> getAvailableRoutes() {
+    return routes.keySet().stream().map(route -> getRouteByComponent(routes.get(route))).distinct()
+        .collect(Collectors.toList());
   }
 
   /**
