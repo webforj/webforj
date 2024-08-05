@@ -8,12 +8,23 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.router.event.DidEnterEvent;
 import com.webforj.router.event.DidLeaveEvent;
+import com.webforj.router.event.DidNavigateEvent;
 import com.webforj.router.event.WillEnterEvent;
 import com.webforj.router.event.WillLeaveEvent;
+import com.webforj.router.event.WillNavigateEvent;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.history.History;
+import com.webforj.router.history.Location;
 import com.webforj.router.history.MemoryHistory;
+import com.webforj.router.history.ParametersBag;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
+import com.webforj.router.observer.DidEnterObserver;
+import com.webforj.router.observer.DidLeaveObserver;
+import com.webforj.router.observer.DidNavigateObserver;
+import com.webforj.router.observer.RouteRendererObserver;
+import com.webforj.router.observer.WillEnterObserver;
+import com.webforj.router.observer.WillLeaveObserver;
+import com.webforj.router.observer.WillNavigateObserver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +98,7 @@ public class Router {
    * @param location the location to navigate to
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Location location, Consumer<Optional<Component>> onComplete) {
+  public void navigate(Location location, Consumer<Component> onComplete) {
     Objects.requireNonNull(location, "Location must not be null");
 
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
@@ -110,10 +121,25 @@ public class Router {
     removeHistoryStateListener();
 
     renderer.navigate(componentClass.get(), component -> {
-      if (component.isPresent()) {
-        console().log("Router : Navigating to: " + component.get().getClass().getSimpleName());
-        history.pushState(location);
-        addHistoryStateListener();
+      console().log("Router : Navigating to: " + component.getClass().getSimpleName());
+      ParametersBag routeParams = ParametersBag
+          .of(matchedPattern.extractParameters(willNavigateToLocation.getSegments().getPath()));
+      WillNavigateEvent event = new WillNavigateEvent(this, willNavigateToLocation, routeParams);
+      getEventDispatcher().dispatchEvent(event);
+
+      if (component instanceof WillNavigateObserver willNavigateObserver) {
+        willNavigateObserver.onWillNavigate(event, routeParams);
+      }
+
+      history.pushState(location);
+      addHistoryStateListener();
+
+      DidNavigateEvent didNavigateEvent =
+          new DidNavigateEvent(this, willNavigateToLocation, routeParams);
+      getEventDispatcher().dispatchEvent(didNavigateEvent);
+
+      if (component instanceof DidNavigateObserver didNavigateObserver) {
+        didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
       }
 
       if (onComplete != null) {
@@ -218,6 +244,50 @@ public class Router {
    */
   public ListenerRegistration<DidLeaveEvent> onDidLeave(EventListener<DidLeaveEvent> listener) {
     return addDidLeaveListener(listener);
+  }
+
+  /**
+   * Adds a {@link WillNavigateEvent} listener for the component.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<WillNavigateEvent> addWillNavigateListener(
+      EventListener<WillNavigateEvent> listener) {
+    return getEventDispatcher().addListener(WillNavigateEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addWillNavigateListener(EventListener)}.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<WillNavigateEvent> onWillNavigate(
+      EventListener<WillNavigateEvent> listener) {
+    return addWillNavigateListener(listener);
+  }
+
+  /**
+   * Adds a {@link DidNavigateEvent} listener for the component.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<DidNavigateEvent> addDidNavigateListener(
+      EventListener<DidNavigateEvent> listener) {
+    return getEventDispatcher().addListener(DidNavigateEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addDidNavigateListener(EventListener)}.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   */
+  public ListenerRegistration<DidNavigateEvent> onDidNavigate(
+      EventListener<DidNavigateEvent> listener) {
+    return addDidNavigateListener(listener);
   }
 
   /**
@@ -346,7 +416,7 @@ public class Router {
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof WillEnterObserver willEnterObserver) {
-        willEnterObserver.onWillEnterRoute(event, routeParams);
+        willEnterObserver.onWillEnter(event, routeParams);
       } else {
         cb.accept(true);
       }
@@ -364,7 +434,7 @@ public class Router {
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof DidEnterObserver didEnterObserver) {
-        didEnterObserver.onDidEnterRoute(event, routeParams);
+        didEnterObserver.onDidEnter(event, routeParams);
       }
     }
 
@@ -382,7 +452,7 @@ public class Router {
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof WillLeaveObserver willLeaveObserver) {
-        willLeaveObserver.onWillLeaveRoute(event, routeParams);
+        willLeaveObserver.onWillLeave(event, routeParams);
       } else {
         cb.accept(true);
       }
@@ -400,7 +470,7 @@ public class Router {
       getEventDispatcher().dispatchEvent(event);
 
       if (component instanceof DidLeaveObserver didLeaveObserver) {
-        didLeaveObserver.onDidLeaveRoute(event, routeParams);
+        didLeaveObserver.onDidLeave(event, routeParams);
       }
     }
   }

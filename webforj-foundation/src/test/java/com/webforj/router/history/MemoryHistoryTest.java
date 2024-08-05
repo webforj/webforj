@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
-import com.webforj.router.Location;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

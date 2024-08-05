@@ -1,5 +1,5 @@
 
-package com.webforj.router;
+package com.webforj.router.history;
 
 import java.io.Serializable;
 import java.util.ArrayList;

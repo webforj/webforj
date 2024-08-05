@@ -1,4 +1,4 @@
-package com.webforj.router;
+package com.webforj.router.history;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

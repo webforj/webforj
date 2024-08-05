@@ -1,8 +1,8 @@
 package com.webforj.router.event;
 
-import com.webforj.router.Location;
-import com.webforj.router.ParametersBag;
 import com.webforj.router.Router;
+import com.webforj.router.history.Location;
+import com.webforj.router.history.ParametersBag;
 
 /**
  * {@code DidNavigateEvent} is an event object which is fired after the router has successfully

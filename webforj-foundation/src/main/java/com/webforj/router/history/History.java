@@ -2,7 +2,6 @@ package com.webforj.router.history;
 
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
-import com.webforj.router.Location;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 
 /**

@@ -1,9 +1,9 @@
 package com.webforj.router.history.event;
 
+import com.webforj.router.history.History;
+import com.webforj.router.history.Location;
 import java.util.EventObject;
 import java.util.Optional;
-import com.webforj.router.Location;
-import com.webforj.router.history.History;
 
 /**
  * Represents a history state change event.

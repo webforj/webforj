@@ -1,5 +1,7 @@
 package com.webforj.router;
 
+import static com.webforj.App.console;
+
 import com.webforj.App;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
@@ -11,9 +13,14 @@ import com.webforj.data.tree.VnodeDiff;
 import com.webforj.router.exception.RouteHasNoTargetException;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.exception.RouteRenderException;
-import static com.webforj.App.console;
+import com.webforj.router.observer.RouteRendererObserver;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -105,8 +112,7 @@ public class RouteRenderer {
    * @param onComplete the callback to be invoked with the result of the navigation.
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void navigate(Class<? extends Component> componentClass,
-      Consumer<Optional<Component>> onComplete) {
+  public void navigate(Class<? extends Component> componentClass, Consumer<Component> onComplete) {
     if (componentClass == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
@@ -129,15 +135,9 @@ public class RouteRenderer {
       if (Boolean.TRUE.equals(removalSuccess)) {
         processAdditions(toAdd, additionSuccess -> {
           if (onComplete != null) {
-            onComplete.accept((Boolean.TRUE.equals(additionSuccess)
-                ? Optional.ofNullable(componentsCache.get(componentClass))
-                : Optional.empty()));
+            onComplete.accept(componentsCache.get(componentClass));
           }
         });
-      } else {
-        if (onComplete != null) {
-          onComplete.accept(Optional.empty());
-        }
       }
     });
   }
@@ -216,17 +216,16 @@ public class RouteRenderer {
       return;
     }
 
-    notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY,
-        allowed -> {
-          if (Boolean.FALSE.equals(allowed)) {
-            onComplete.accept(false);
-            return;
-          }
+    notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY, allowed -> {
+      if (Boolean.FALSE.equals(allowed)) {
+        onComplete.accept(false);
+        return;
+      }
 
-          detachNode(componentClass, componentInstance);
-          notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY,
-              success -> onComplete.accept(true));
-        });
+      detachNode(componentClass, componentInstance);
+      notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY,
+          success -> onComplete.accept(true));
+    });
   }
 
   /**
@@ -321,18 +320,17 @@ public class RouteRenderer {
         return;
       }
 
-      notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE,
-          allowed -> {
-            if (Boolean.FALSE.equals(allowed)) {
-              componentsCache.remove(componentClass);
-              onComplete.accept(false);
-              return;
-            }
+      notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
+        if (Boolean.FALSE.equals(allowed)) {
+          componentsCache.remove(componentClass);
+          onComplete.accept(false);
+          return;
+        }
 
-            attachNode(componentClass, componentInstance);
-            notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE,
-                success -> onComplete.accept(true));
-          });
+        attachNode(componentClass, componentInstance);
+        notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE,
+            success -> onComplete.accept(true));
+      });
     });
   }
 
