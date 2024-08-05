@@ -1,11 +1,12 @@
-package com.webforj.router;
+package com.webforj.router.observer;
 
 import com.webforj.router.event.DidEnterEvent;
+import com.webforj.router.history.ParametersBag;
 import java.io.Serializable;
 
 /**
- * {@code DidEnterObserver} is an interface that is used to observe the router after it enters a
- * route and attaches its component to the DOM.
+ * {@code DidEnterRouteObserver} is an interface that is used to observe the router after it enters
+ * a route and attaches its component to the DOM.
  *
  * <p>
  * When this method is called, the route's component is already attached to the DOM.
@@ -25,5 +26,5 @@ public interface DidEnterObserver extends Serializable {
    * @param event the event object
    * @param parameters the route parameters bag
    */
-  void onDidEnterRoute(DidEnterEvent event, ParametersBag parameters);
+  void onDidEnter(DidEnterEvent event, ParametersBag parameters);
 }

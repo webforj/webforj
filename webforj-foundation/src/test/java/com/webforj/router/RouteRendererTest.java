@@ -2,6 +2,7 @@ package com.webforj.router;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -19,6 +20,7 @@ import com.webforj.component.window.Frame;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasComponents;
 import com.webforj.router.exception.RouteNotFoundException;
+import com.webforj.router.observer.RouteRendererObserver;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,8 +73,8 @@ class RouteRendererTest {
 
     AtomicBoolean resultReceived = new AtomicBoolean(false);
     routeRenderer.navigate(TestComponent.class, result -> {
-      assertTrue(result.isPresent(), "not present");
-      assertEquals(TestComponent.class, result.get().getClass());
+      assertNotNull(result);
+      assertEquals(TestComponent.class, result.getClass());
       resultReceived.set(true);
     });
 
@@ -93,13 +95,13 @@ class RouteRendererTest {
 
     AtomicBoolean parentResultReceived = new AtomicBoolean(false);
     routeRenderer.navigate(ParentComponent.class, parentResult -> {
-      assertTrue(parentResult.isPresent());
-      assertEquals(ParentComponent.class, parentResult.get().getClass());
+      assertNotNull(parentResult);
+      assertEquals(ParentComponent.class, parentResult.getClass());
       parentResultReceived.set(true);
 
       routeRenderer.navigate(ChildComponent.class, childResult -> {
-        assertTrue(childResult.isPresent());
-        assertEquals(ChildComponent.class, childResult.get().getClass());
+        assertNotNull(childResult);
+        assertEquals(ChildComponent.class, childResult.getClass());
       });
     });
 
@@ -125,7 +127,7 @@ class RouteRendererTest {
 
       routeRenderer.navigate(UnregisteredComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertTrue(result.isPresent());
+        assertNotNull(result);
       });
     }
 
@@ -146,7 +148,7 @@ class RouteRendererTest {
 
       routeRenderer.navigate(UnregisteredComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertTrue(result.isPresent());
+        assertNotNull(result);
       });
     }
 
@@ -189,7 +191,7 @@ class RouteRendererTest {
 
       routeRenderer.navigate(TestComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertTrue(result.isPresent());
+        assertNotNull(result);
       });
     }
 
@@ -207,7 +209,7 @@ class RouteRendererTest {
 
       routeRenderer.navigate(TestComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertTrue(result.isPresent());
+        assertNotNull(result);
       });
     }
 

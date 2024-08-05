@@ -1,9 +1,9 @@
 package com.webforj.router.event;
 
 
-import com.webforj.router.Location;
-import com.webforj.router.ParametersBag;
 import com.webforj.router.Router;
+import com.webforj.router.history.Location;
+import com.webforj.router.history.ParametersBag;
 import java.util.EventObject;
 
 /**

@@ -1,6 +1,7 @@
-package com.webforj.router;
+package com.webforj.router.observer;
 
 import com.webforj.component.Component;
+import com.webforj.router.RouteRenderer;
 import java.util.function.Consumer;
 
 /**

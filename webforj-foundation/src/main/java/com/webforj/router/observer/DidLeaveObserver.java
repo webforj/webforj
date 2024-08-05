@@ -1,6 +1,8 @@
-package com.webforj.router;
+package com.webforj.router.observer;
 
 import com.webforj.router.event.DidLeaveEvent;
+import com.webforj.router.event.WillLeaveEvent;
+import com.webforj.router.history.ParametersBag;
 import java.io.Serializable;
 
 /**
@@ -26,5 +28,5 @@ public interface DidLeaveObserver extends Serializable {
    * @param event the event object
    * @param parameters the route parameters bag
    */
-  void onDidLeaveRoute(DidLeaveEvent event, ParametersBag parameters);
+  void onDidLeave(DidLeaveEvent event, ParametersBag parameters);
 }

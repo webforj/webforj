@@ -2,6 +2,7 @@ package com.webforj.router;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -66,21 +67,21 @@ class RouteRendererScenariosTest {
   @Test
   void shouldNavigateToMain() {
     routeRenderer.navigate(MainView.class, c -> {
-      assertTrue(c.isPresent());
-      assertEquals(MainView.class, c.get().getClass());
+      assertNotNull(c);
+      assertEquals(MainView.class, c.getClass());
     });
   }
 
   @Test
   void shouldNavigateFromMainToAbout() {
     routeRenderer.navigate(MainView.class, mainResult -> {
-      assertTrue(mainResult.isPresent());
-      MainView mainView = (MainView) mainResult.get();
+      assertNotNull(mainResult);
+      MainView mainView = (MainView) mainResult;
       assertEquals(MainView.class, mainView.getClass());
 
       routeRenderer.navigate(AboutView.class, aboutResult -> {
-        assertTrue(aboutResult.isPresent());
-        AboutView aboutView = (AboutView) aboutResult.get();
+        assertNotNull(aboutResult);
+        AboutView aboutView = (AboutView) aboutResult;
         assertEquals(AboutView.class, aboutView.getClass());
         assertFalse(mainView.isDestroyed());
       });
@@ -90,13 +91,13 @@ class RouteRendererScenariosTest {
   @Test
   void shouldNavigateFromMainToSubMain() {
     routeRenderer.navigate(MainView.class, mainResult -> {
-      assertTrue(mainResult.isPresent());
-      MainView mainView = (MainView) mainResult.get();
+      assertNotNull(mainResult);
+      MainView mainView = (MainView) mainResult;
       assertEquals(MainView.class, mainView.getClass());
 
       routeRenderer.navigate(SubMainView.class, subMainResult -> {
-        assertTrue(subMainResult.isPresent());
-        SubMainView subMainView = (SubMainView) subMainResult.get();
+        assertNotNull(subMainResult);
+        SubMainView subMainView = (SubMainView) subMainResult;
         assertEquals(SubMainView.class, subMainView.getClass());
         assertFalse(mainView.isDestroyed());
       });
@@ -106,13 +107,13 @@ class RouteRendererScenariosTest {
   @Test
   void shouldNavigateFromSubMainToMain() {
     routeRenderer.navigate(SubMainView.class, subMainResult -> {
-      assertTrue(subMainResult.isPresent());
-      SubMainView subMainView = (SubMainView) subMainResult.get();
+      assertNotNull(subMainResult);
+      SubMainView subMainView = (SubMainView) subMainResult;
       assertEquals(SubMainView.class, subMainView.getClass());
 
       routeRenderer.navigate(MainView.class, mainResult -> {
-        assertTrue(mainResult.isPresent());
-        MainView mainView = (MainView) mainResult.get();
+        assertNotNull(mainResult);
+        MainView mainView = (MainView) mainResult;
         assertEquals(MainView.class, mainView.getClass());
         assertTrue(subMainView.isDestroyed());
       });

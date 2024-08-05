@@ -1,6 +1,7 @@
-package com.webforj.router;
+package com.webforj.router.observer;
 
 import com.webforj.router.event.DidNavigateEvent;
+import com.webforj.router.history.ParametersBag;
 import java.io.Serializable;
 
 /**
@@ -27,5 +28,5 @@ public interface DidNavigateObserver extends Serializable {
    * @param event the event object
    * @param parameters the route parameters bag
    */
-  void onDidNavigateToRoute(DidNavigateEvent event, ParametersBag parameters);
+  void onDidNavigate(DidNavigateEvent event, ParametersBag parameters);
 }
