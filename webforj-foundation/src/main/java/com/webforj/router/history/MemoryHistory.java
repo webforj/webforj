@@ -6,6 +6,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Memory-based implementation of the History interface.
@@ -88,10 +89,12 @@ public class MemoryHistory implements History {
    * {@inheritDoc}
    */
   @Override
-  public Location getLocation() {
-    return currentIndex >= 0 && currentIndex < history.size()
-        ? history.get(currentIndex).getLocation()
-        : null;
+  public Optional<Location> getLocation() {
+    if (currentIndex >= 0 && currentIndex < history.size()) {
+      return Optional.of(history.get(currentIndex).getLocation());
+    } else {
+      return Optional.empty();
+    }
   }
 
   /**

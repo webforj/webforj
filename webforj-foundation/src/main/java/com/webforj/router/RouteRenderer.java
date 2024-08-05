@@ -1,7 +1,5 @@
 package com.webforj.router;
 
-import static com.webforj.App.console;
-
 import com.webforj.App;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
@@ -112,7 +110,7 @@ public class RouteRenderer {
    * @param onComplete the callback to be invoked with the result of the navigation.
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void navigate(Class<? extends Component> componentClass, Consumer<Component> onComplete) {
+  public void render(Class<? extends Component> componentClass, Consumer<Component> onComplete) {
     if (componentClass == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
@@ -128,8 +126,6 @@ public class RouteRenderer {
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
 
     lastPath = currentPath.get();
-    console().log("to add: " + toAdd);
-    console().log("to remove: " + toRemove);
 
     processRemovals(toRemove, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
@@ -156,7 +152,7 @@ public class RouteRenderer {
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
   public void navigate(Class<? extends Component> componentClass) {
-    navigate(componentClass, null);
+    render(componentClass, null);
   }
 
   /**
@@ -166,7 +162,7 @@ public class RouteRenderer {
    * @param componentsToRemove the components to be removed.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
-  private void processRemovals(Set<Class<? extends Component>> componentsToRemove,
+  protected void processRemovals(Set<Class<? extends Component>> componentsToRemove,
       Consumer<Boolean> onComplete) {
     List<Class<? extends Component>> componentList = new ArrayList<>(componentsToRemove);
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
@@ -268,7 +264,7 @@ public class RouteRenderer {
    * @param componentsToAdd the components to be added.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
-  private void processAdditions(Set<Class<? extends Component>> componentsToAdd,
+  protected void processAdditions(Set<Class<? extends Component>> componentsToAdd,
       Consumer<Boolean> onComplete) {
     List<Class<? extends Component>> componentList = new ArrayList<>(componentsToAdd);
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
@@ -383,7 +379,7 @@ public class RouteRenderer {
    * @param componentClass the class of the component to retrieve or create.
    * @return the component instance, either from the cache or newly created.
    */
-  private Component getOrCreateComponent(Class<? extends Component> componentClass) {
+  protected Component getOrCreateComponent(Class<? extends Component> componentClass) {
     // Use the cache in case the component has already been created
     Component componentInstance = componentsCache.get(componentClass);
     if (componentInstance == null || componentInstance.isDestroyed()) {

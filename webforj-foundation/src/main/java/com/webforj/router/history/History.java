@@ -3,6 +3,7 @@ package com.webforj.router.history;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
+import java.util.Optional;
 
 /**
  * Represents the session history.
@@ -46,7 +47,7 @@ public interface History {
    *
    * @return the current location
    */
-  Location getLocation();
+  Optional<Location> getLocation();
 
   /**
    * Pushes the given state object onto the session history stack with the specified location.

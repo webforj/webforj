@@ -17,7 +17,7 @@ import com.webforj.router.history.ParametersBag;
  * @author Hyyan Abo Fakher
  * @since 24.11
  */
-public class WillNavigateEvent extends RouteObserverEvent {
+public class WillNavigateEvent extends RouteEvent {
 
   /**
    * Creates a new {@code WillNavigateEvent} instance with the given {@code Router},

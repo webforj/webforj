@@ -2,7 +2,6 @@ package com.webforj.router.observer;
 
 import com.webforj.router.event.WillNavigateEvent;
 import com.webforj.router.history.ParametersBag;
-import java.io.Serializable;
 
 /**
  * {@code WillNavigateObserver} is an interface that is used to observe the router before it updates
@@ -21,7 +20,7 @@ import java.io.Serializable;
  * @see WillNavigateEvent
  */
 @FunctionalInterface
-public interface WillNavigateObserver extends Serializable {
+public interface WillNavigateObserver {
 
   /**
    * This method is called before the router updates the history.

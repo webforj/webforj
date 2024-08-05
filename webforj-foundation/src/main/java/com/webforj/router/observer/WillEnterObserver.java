@@ -2,7 +2,6 @@ package com.webforj.router.observer;
 
 import com.webforj.router.event.WillEnterEvent;
 import com.webforj.router.history.ParametersBag;
-import java.io.Serializable;
 
 /**
  * {@code WillEnterObserver} is an interface that is used to observe the router before it attempts
@@ -14,7 +13,7 @@ import java.io.Serializable;
  * @see WillEnterEvent
  */
 @FunctionalInterface
-public interface WillEnterObserver extends Serializable {
+public interface WillEnterObserver {
 
   /**
    * This method is called before the router attempts to enter the route's component and attach it

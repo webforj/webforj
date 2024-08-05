@@ -13,7 +13,7 @@ import com.webforj.router.history.ParametersBag;
  *
  * @see WillEnterEvent
  */
-public class DidEnterEvent extends RouteObserverEvent {
+public class DidEnterEvent extends RouteEvent {
 
   /**
    * Creates a new {@code DidEnterEvent} instance with the given {@code Router}, {@code Location}

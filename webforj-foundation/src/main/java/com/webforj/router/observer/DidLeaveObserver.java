@@ -3,7 +3,6 @@ package com.webforj.router.observer;
 import com.webforj.router.event.DidLeaveEvent;
 import com.webforj.router.event.WillLeaveEvent;
 import com.webforj.router.history.ParametersBag;
-import java.io.Serializable;
 
 /**
  * {@code DidLeaveObserver} is an interface that is used to observe the router after it leaves a
@@ -19,7 +18,7 @@ import java.io.Serializable;
  * @see WillLeaveEvent
  */
 @FunctionalInterface
-public interface DidLeaveObserver extends Serializable {
+public interface DidLeaveObserver {
 
   /**
    * This method is called after the router leaves the route's component and detaches it from the

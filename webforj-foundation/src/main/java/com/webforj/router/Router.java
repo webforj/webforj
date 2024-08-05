@@ -1,7 +1,5 @@
 package com.webforj.router;
 
-import static com.webforj.App.console;
-
 import com.webforj.component.Component;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
@@ -46,6 +44,7 @@ public class Router {
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private ListenerRegistration<HistoryStateChangeEvent> historyListener;
   private Location willNavigateToLocation;
+  private NavigationOptions willNavigateOptions;
   private RoutePattern matchedPattern;
 
   /**
@@ -96,9 +95,10 @@ public class Router {
    * </p>
    *
    * @param location the location to navigate to
+   * @param options the navigate options
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Location location, Consumer<Component> onComplete) {
+  public void navigate(Location location, NavigationOptions options, Consumer<Component> onComplete) {
     Objects.requireNonNull(location, "Location must not be null");
 
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
@@ -116,36 +116,50 @@ public class Router {
 
     matchedPattern = routePattern.get();
     willNavigateToLocation = location;
+    willNavigateOptions = options;
 
     // remove the history state listener to avoid loops
     removeHistoryStateListener();
 
-    renderer.navigate(componentClass.get(), component -> {
-      console().log("Router : Navigating to: " + component.getClass().getSimpleName());
-      ParametersBag routeParams = ParametersBag
-          .of(matchedPattern.extractParameters(willNavigateToLocation.getSegments().getPath()));
-      WillNavigateEvent event = new WillNavigateEvent(this, willNavigateToLocation, routeParams);
-      getEventDispatcher().dispatchEvent(event);
-
-      if (component instanceof WillNavigateObserver willNavigateObserver) {
-        willNavigateObserver.onWillNavigate(event, routeParams);
-      }
-
-      history.pushState(location);
-      addHistoryStateListener();
-
-      DidNavigateEvent didNavigateEvent =
-          new DidNavigateEvent(this, willNavigateToLocation, routeParams);
-      getEventDispatcher().dispatchEvent(didNavigateEvent);
-
-      if (component instanceof DidNavigateObserver didNavigateObserver) {
-        didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
-      }
+    renderer.render(componentClass.get(), component -> {
+      handleNavigateComplete(component, location);
 
       if (onComplete != null) {
         onComplete.accept(component);
       }
+
+      addHistoryStateListener();
     });
+  }
+
+  /**
+   * Navigates to the given location.
+   *
+   * <p>
+   * This method navigates to the given location. If the location does not match any of the
+   * registered routes, a {@code RouteNotFoundException} will be thrown.
+   * </p>
+   *
+   * @param location the location to navigate to
+   * @param options the navigate options
+   */
+  public void navigate(Location location, NavigationOptions options) {
+    navigate(location, options, null);
+  }
+
+  /**
+   * Navigates to the given location.
+   *
+   * <p>
+   * This method navigates to the given location. If the location does not match any of the
+   * registered routes, a {@code RouteNotFoundException} will be thrown.
+   * </p>
+   *
+   * @param location the location to navigate to
+   * @param onComplete the callback to be invoked with the result of the navigation
+   */
+  public void navigate(Location location, Consumer<Component> onComplete) {
+    navigate(location, new NavigationOptions(), onComplete);
   }
 
   /**
@@ -159,7 +173,114 @@ public class Router {
    * @param location the location to navigate to
    */
   public void navigate(Location location) {
-    navigate(location, null);
+    navigate(location, new NavigationOptions(), null);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component.
+   *
+   * <p>
+   * This method navigates to the location corresponding to the given component. If no route matches
+   * the component, a {@code RouteNotFoundException} will be thrown.
+   * </p>
+   *
+   * @param component the component class to navigate to
+   * @param options the navigate options
+   * @param routeParameters a map of parameters to be included in the URL
+   * @param onComplete the callback to be invoked with the result of the navigation
+   */
+  public void navigate(Class<? extends Component> component, NavigationOptions options,
+      Map<String, String> routeParameters, Consumer<Component> onComplete) {
+    Objects.requireNonNull(component, "Component class must not be null");
+
+    String route = registry.getRouteByComponent(component);
+    if (route == null) {
+      throw new RouteNotFoundException(
+          "No route found for component: " + component.getSimpleName());
+    }
+
+    RoutePattern pattern = routesCache.computeIfAbsent(route, RoutePattern::new);
+    String path = pattern.buildUrl(routeParameters != null ? routeParameters : Map.of());
+    Location location = new Location(path);
+
+    navigate(location, options, onComplete);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component with options and parameters.
+   *
+   * @param component the component class to navigate to
+   * @param options the navigate options
+   * @param params a map of parameters to be included in the URL
+   */
+  public void navigate(Class<? extends Component> component, NavigationOptions options,
+      Map<String, String> params) {
+    navigate(component, options, params, null);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component with parameters and a completion
+   * callback.
+   *
+   * @param component the component class to navigate to
+   * @param params a map of parameters to be included in the URL
+   * @param onComplete the callback to be invoked with the result of the navigation
+   */
+  public void navigate(Class<? extends Component> component, Map<String, String> params,
+      Consumer<Component> onComplete) {
+    navigate(component, new NavigationOptions(), params, onComplete);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component with parameters.
+   *
+   * @param component the component class to navigate to
+   * @param params a map of parameters to be included in the URL
+   */
+  public void navigate(Class<? extends Component> component, Map<String, String> params) {
+    navigate(component, new NavigationOptions(), params, null);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component with options and a completion
+   * callback.
+   *
+   * @param component the component class to navigate to
+   * @param options the navigate options
+   * @param onComplete the callback to be invoked with the result of the navigation
+   */
+  public void navigate(Class<? extends Component> component, NavigationOptions options,
+      Consumer<Component> onComplete) {
+    navigate(component, options, null, onComplete);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component with options.
+   *
+   * @param component the component class to navigate to
+   * @param options the navigate options
+   */
+  public void navigate(Class<? extends Component> component, NavigationOptions options) {
+    navigate(component, options, null, null);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component with a completion callback.
+   *
+   * @param component the component class to navigate to
+   * @param onComplete the callback to be invoked with the result of the navigation
+   */
+  public void navigate(Class<? extends Component> component, Consumer<Component> onComplete) {
+    navigate(component, new NavigationOptions(), null, onComplete);
+  }
+
+  /**
+   * Navigates to the location corresponding to the given component.
+   *
+   * @param component the component class to navigate to
+   */
+  public void navigate(Class<? extends Component> component) {
+    navigate(component, new NavigationOptions(), null, null);
   }
 
   /**
@@ -338,8 +459,6 @@ public class Router {
     for (String route : routes) {
       RoutePattern pattern = routesCache.computeIfAbsent(route, RoutePattern::new);
       String currentSegment = location.getSegments().getPath();
-      console().log("Router : Matching route: " + route + " with path: " + currentSegment
-          + " .Does it match? " + pattern.matches(currentSegment));
       if (pattern.matches(currentSegment)) {
         mp = pattern;
         break;
@@ -355,7 +474,7 @@ public class Router {
   protected void addHistoryStateListener() {
     this.removeHistoryStateListener();
     historyListener = history.addHistoryStateChangeListener(
-        e -> e.getLocation().ifPresent(location -> navigate(location, null)));
+        e -> e.getLocation().ifPresent(location -> navigate(location)));
   }
 
   /**
@@ -364,6 +483,48 @@ public class Router {
   protected void removeHistoryStateListener() {
     if (historyListener != null) {
       historyListener.remove();
+    }
+  }
+
+  private void handleNavigateComplete(Component component, Location location) {
+    ParametersBag routeParams = ParametersBag
+        .of(matchedPattern.extractParameters(willNavigateToLocation.getSegments().getPath()));
+    WillNavigateEvent event = new WillNavigateEvent(this, willNavigateToLocation, routeParams);
+
+    if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+      getEventDispatcher().dispatchEvent(event);
+    }
+
+    if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
+        && component instanceof WillNavigateObserver willNavigateObserver) {
+      willNavigateObserver.onWillNavigate(event, routeParams);
+    }
+
+    if (willNavigateOptions != null && willNavigateOptions.isUpdateHistory()) {
+      NavigationOptions.NavigationType type = willNavigateOptions.getNavigationType();
+      Object state = willNavigateOptions.getState();
+      switch (type) {
+        case PUSH:
+          history.pushState(state, location);
+          break;
+        case REPLACE:
+          history.replaceState(state, location);
+          break;
+        default:
+          break;
+      }
+    }
+
+    DidNavigateEvent didNavigateEvent =
+        new DidNavigateEvent(this, willNavigateToLocation, routeParams);
+
+    if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+      getEventDispatcher().dispatchEvent(didNavigateEvent);
+    }
+
+    if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
+        && component instanceof DidNavigateObserver didNavigateObserver) {
+      didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
     }
   }
 
@@ -413,9 +574,13 @@ public class Router {
     void fireWillEnterEvent(Component component, Location location, ParametersBag routeParams,
         Consumer<Boolean> cb) {
       WillEnterEvent event = new WillEnterEvent(Router.this, location, routeParams, cb);
-      getEventDispatcher().dispatchEvent(event);
 
-      if (component instanceof WillEnterObserver willEnterObserver) {
+      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(event);
+      }
+
+      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
+          && component instanceof WillEnterObserver willEnterObserver) {
         willEnterObserver.onWillEnter(event, routeParams);
       } else {
         cb.accept(true);
@@ -431,9 +596,13 @@ public class Router {
      */
     void fireDidEnterEvent(Component component, Location location, ParametersBag routeParams) {
       DidEnterEvent event = new DidEnterEvent(Router.this, location, routeParams);
-      getEventDispatcher().dispatchEvent(event);
 
-      if (component instanceof DidEnterObserver didEnterObserver) {
+      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(event);
+      }
+
+      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
+          && component instanceof DidEnterObserver didEnterObserver) {
         didEnterObserver.onDidEnter(event, routeParams);
       }
     }
@@ -449,9 +618,13 @@ public class Router {
     void fireWillLeaveEvent(Component component, Location location, ParametersBag routeParams,
         Consumer<Boolean> cb) {
       WillLeaveEvent event = new WillLeaveEvent(Router.this, location, routeParams, cb);
-      getEventDispatcher().dispatchEvent(event);
 
-      if (component instanceof WillLeaveObserver willLeaveObserver) {
+      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(event);
+      }
+
+      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
+          && component instanceof WillLeaveObserver willLeaveObserver) {
         willLeaveObserver.onWillLeave(event, routeParams);
       } else {
         cb.accept(true);
@@ -467,9 +640,13 @@ public class Router {
      */
     void fireDidLeaveEvent(Component component, Location location, ParametersBag routeParams) {
       DidLeaveEvent event = new DidLeaveEvent(Router.this, location, routeParams);
-      getEventDispatcher().dispatchEvent(event);
 
-      if (component instanceof DidLeaveObserver didLeaveObserver) {
+      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(event);
+      }
+
+      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
+          && component instanceof DidLeaveObserver didLeaveObserver) {
         didLeaveObserver.onDidLeave(event, routeParams);
       }
     }
