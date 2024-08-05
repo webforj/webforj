@@ -1,8 +1,6 @@
 package com.webforj.router.event;
 
-import com.webforj.router.Router;
-import com.webforj.router.history.Location;
-import com.webforj.router.history.ParametersBag;
+import com.webforj.router.NavigationContext;
 
 /**
  * {@code DidNavigateEvent} is an event object which is fired after the router has successfully
@@ -19,14 +17,11 @@ import com.webforj.router.history.ParametersBag;
 public class DidNavigateEvent extends RouteEvent {
 
   /**
-   * Creates a new {@code DidNavigateEvent} instance with the given {@code Router},
-   * {@code Location}, and {@code ParametersBag}.
+   * Creates a new {@code DidNavigateEvent} instance with the given {@code NavigationContext}.
    *
-   * @param router the router instance
-   * @param location the location instance
-   * @param parameters the route parameters bag instance
+   * @param context the navigation context
    */
-  public DidNavigateEvent(Router router, Location location, ParametersBag parameters) {
-    super(router, location, parameters);
+  public DidNavigateEvent(NavigationContext context) {
+    super(context);
   }
 }

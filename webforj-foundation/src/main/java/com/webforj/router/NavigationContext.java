@@ -2,9 +2,19 @@ package com.webforj.router;
 
 import com.webforj.router.history.Location;
 import com.webforj.router.history.ParametersBag;
+import java.util.Optional;
 
 /**
- * The navigation context.
+ * The {@code NavigationContext} class encapsulates the context information for a navigation event
+ * within the router. It contains essential details such as the router instance, location,
+ * navigation options, route pattern, and route parameters.
+ *
+ * <p>
+ * This context is used throughout the routing process to provide a consistent set of data that
+ * defines the navigation event. It is particularly useful for managing the state and options
+ * related to a specific navigation action, enabling various components and observers to access this
+ * information as needed.
+ * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 24.11
@@ -17,13 +27,14 @@ public class NavigationContext {
   private final ParametersBag routeParameters;
 
   /**
-   * Creates a new navigation context.
+   * Constructs a new {@code NavigationContext} with the specified parameters.
    *
-   * @param router the router
-   * @param location the location
-   * @param options the navigation options
-   * @param routePattern the route pattern
-   * @param routeParameters the route parameters
+   * @param router the router instance handling the navigation
+   * @param location the target location for the navigation
+   * @param options the navigation options, which may define additional behaviors like history
+   *        update and event firing
+   * @param routePattern the pattern that matches the route being navigated to
+   * @param routeParameters the parameters extracted from the route, often used for dynamic routing
    */
   public NavigationContext(Router router, Location location, NavigationOptions options,
       RoutePattern routePattern, ParametersBag routeParameters) {
@@ -35,45 +46,62 @@ public class NavigationContext {
   }
 
   /**
-   * Gets the router.
+   * Returns the router associated with this navigation context.
    *
-   * @return the router
+   * @return the {@link Router} instance managing the navigation
    */
   public Router getRouter() {
     return router;
   }
 
   /**
-   * Gets the location.
+   * Returns the location associated with this navigation context.
    *
-   * @return the location
+   * @return the {@link Location} object representing the target of the navigation
    */
   public Location getLocation() {
     return location;
   }
 
   /**
-   * Gets the navigation options.
+   * Returns the navigation options for this context, if present.
    *
-   * @return the navigation options
+   * <p>
+   * These options may include configurations such as whether to update the history, fire events, or
+   * invoke observers during the navigation process.
+   * </p>
+   *
+   * @return an {@link Optional} containing the {@link NavigationOptions} if they are specified,
+   *         otherwise an empty {@code Optional}
    */
-  public NavigationOptions getOptions() {
-    return options;
+  public Optional<NavigationOptions> getOptions() {
+    return Optional.ofNullable(options);
   }
 
   /**
-   * Gets the route pattern.
+   * Returns the route pattern that matches the current route.
    *
-   * @return the route pattern
+   * <p>
+   * The route pattern is used to determine which route definition applies to the current
+   * navigation, helping to identify the target component and associated behaviors.
+   * </p>
+   *
+   * @return the {@link RoutePattern} object for the matched route
    */
   public RoutePattern getRoutePattern() {
     return routePattern;
   }
 
   /**
-   * Gets the route parameters.
+   * Returns the parameters extracted from the route.
    *
-   * @return the route parameters
+   * <p>
+   * These parameters are often used for dynamic routes where parts of the URL may vary. For
+   * example, a route defined as "/user/:id" will extract the "id" parameter from the URL and make
+   * it available through this method.
+   * </p>
+   *
+   * @return the {@link ParametersBag} containing the route parameters
    */
   public ParametersBag getRouteParameters() {
     return routeParameters;
