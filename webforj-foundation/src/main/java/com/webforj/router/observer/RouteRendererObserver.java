@@ -1,6 +1,7 @@
 package com.webforj.router.observer;
 
 import com.webforj.component.Component;
+import com.webforj.router.NavigationContext;
 import com.webforj.router.RouteRenderer;
 import java.util.function.Consumer;
 
@@ -50,9 +51,10 @@ public interface RouteRendererObserver {
    *
    * @param component The component associated with the lifecycle event
    * @param event The type of lifecycle event
+   * @param context The navigation context
    * @param continueCallback The callback to indicate whether the operation should proceed. The
    *        consumer should accept {@code true} to continue or {@code false} to halt.
    */
   void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
-      Consumer<Boolean> continueCallback);
+      NavigationContext context, Consumer<Boolean> continueCallback);
 }

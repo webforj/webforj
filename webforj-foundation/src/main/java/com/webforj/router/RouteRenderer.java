@@ -106,19 +106,21 @@ public class RouteRenderer {
    * The method returns an Optional component that matches the navigation target.
    * </p>
    *
-   * @param componentClass the target component class for navigation.
+   * @param component the target component class for navigation.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the navigation.
+   *
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void render(Class<? extends Component> componentClass, Consumer<Component> onComplete) {
-    if (componentClass == null) {
+  public void render(Class<? extends Component> component, NavigationContext context,
+      Consumer<Component> onComplete) {
+    if (component == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
 
-    Optional<Vnode<Class<? extends Component>>> currentPath =
-        registry.getComponentsTree(componentClass);
+    Optional<Vnode<Class<? extends Component>>> currentPath = registry.getComponentsTree(component);
     if (!currentPath.isPresent()) {
-      throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
+      throw new RouteNotFoundException("No route found for component: " + component.getName());
     }
 
     VnodeDiff<Class<? extends Component>> diff = new VnodeDiff<>(lastPath, currentPath.get());
@@ -127,11 +129,11 @@ public class RouteRenderer {
 
     lastPath = currentPath.get();
 
-    processRemovals(toRemove, removalSuccess -> {
+    processRemovals(toRemove, context, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
-        processAdditions(toAdd, additionSuccess -> {
+        processAdditions(toAdd, context, additionSuccess -> {
           if (onComplete != null) {
-            onComplete.accept(componentsCache.get(componentClass));
+            onComplete.accept(componentsCache.get(component));
           }
         });
       }
@@ -148,11 +150,54 @@ public class RouteRenderer {
    * clean state before adding new components.
    * </p>
    *
-   * @param componentClass the target component class for navigation.
+   * @param component the target component class for navigation.
+   * @param context the navigation context to pass through the process.
+   *
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void navigate(Class<? extends Component> componentClass) {
-    render(componentClass, null);
+  public void render(Class<? extends Component> component, NavigationContext context) {
+    render(component, context, null);
+  }
+
+  /**
+   * Navigates to the specified component class, triggering the appropriate lifecycle events and
+   * managing the addition or removal of components as necessary.
+   *
+   * <p>
+   * This method calculates the difference between the current path and the target path, determining
+   * which components need to be added or removed. It then processes removals first, ensuring a
+   * clean state before adding new components.
+   * </p>
+   *
+   * <p>
+   * The method returns an Optional component that matches the navigation target.
+   * </p>
+   *
+   * @param component the target component class for navigation.
+   * @param onComplete the callback to be invoked with the result of the navigation.
+   *
+   * @throws RouteNotFoundException if the target route cannot be resolved.
+   */
+  public void render(Class<? extends Component> component, Consumer<Component> onComplete) {
+    render(component, null, onComplete);
+  }
+
+  /**
+   * Navigates to the specified component class, triggering the appropriate lifecycle events and
+   * managing the addition or removal of components as necessary.
+   *
+   * <p>
+   * This method calculates the difference between the current path and the target path, determining
+   * which components need to be added or removed. It then processes removals first, ensuring a
+   * clean state before adding new components.
+   * </p>
+   *
+   * @param component the target component class for navigation.
+   *
+   * @throws RouteNotFoundException if the target route cannot be resolved.
+   */
+  public void render(Class<? extends Component> component) {
+    render(component, null, null);
   }
 
   /**
@@ -160,10 +205,11 @@ public class RouteRenderer {
    * each component is removed. The process is halted if any observer vetoes a removal.
    *
    * @param componentsToRemove the components to be removed.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
   protected void processRemovals(Set<Class<? extends Component>> componentsToRemove,
-      Consumer<Boolean> onComplete) {
+      NavigationContext context, Consumer<Boolean> onComplete) {
     List<Class<? extends Component>> componentList = new ArrayList<>(componentsToRemove);
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
     AtomicBoolean removalFailed = new AtomicBoolean(false);
@@ -174,7 +220,7 @@ public class RouteRenderer {
           cb.accept(false); // Skip remaining removals if any have failed
           return;
         }
-        processSingleRemoval(componentClass, success -> {
+        processSingleRemoval(componentClass, context, success -> {
           if (!Boolean.TRUE.equals(success)) {
             removalFailed.set(true);
           }
@@ -186,7 +232,6 @@ public class RouteRenderer {
     executor.run(null, success -> onComplete.accept(!removalFailed.get()));
   }
 
-
   /**
    * Processes the removal of a single component, ensuring lifecycle observers are notified before
    * the component is removed.
@@ -197,10 +242,11 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the component class to be removed.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
   protected void processSingleRemoval(Class<? extends Component> componentClass,
-      Consumer<Boolean> onComplete) {
+      NavigationContext context, Consumer<Boolean> onComplete) {
     if (Frame.class.isAssignableFrom(componentClass)) {
       onComplete.accept(true);
       return;
@@ -212,16 +258,17 @@ public class RouteRenderer {
       return;
     }
 
-    notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY, allowed -> {
-      if (Boolean.FALSE.equals(allowed)) {
-        onComplete.accept(false);
-        return;
-      }
+    notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY, context,
+        allowed -> {
+          if (Boolean.FALSE.equals(allowed)) {
+            onComplete.accept(false);
+            return;
+          }
 
-      detachNode(componentClass, componentInstance);
-      notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY,
-          success -> onComplete.accept(true));
-    });
+          detachNode(componentClass, componentInstance);
+          notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY, context,
+              success -> onComplete.accept(true));
+        });
   }
 
   /**
@@ -262,10 +309,11 @@ public class RouteRenderer {
    * each component is added. The process is halted if any observer vetoes an addition.
    *
    * @param componentsToAdd the components to be added.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
   protected void processAdditions(Set<Class<? extends Component>> componentsToAdd,
-      Consumer<Boolean> onComplete) {
+      NavigationContext context, Consumer<Boolean> onComplete) {
     List<Class<? extends Component>> componentList = new ArrayList<>(componentsToAdd);
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
     AtomicBoolean additionFailed = new AtomicBoolean(false);
@@ -276,7 +324,7 @@ public class RouteRenderer {
           cb.accept(false); // Skip remaining additions if any have failed
           return;
         }
-        processSingleAddition(componentClass, success -> {
+        processSingleAddition(componentClass, context, success -> {
           if (!Boolean.TRUE.equals(success)) {
             additionFailed.set(true);
           }
@@ -287,7 +335,6 @@ public class RouteRenderer {
 
     executor.run(null, success -> onComplete.accept(!additionFailed.get()));
   }
-
 
   /**
    * Processes the addition of a single component, ensuring lifecycle observers are notified before
@@ -300,33 +347,35 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the component class to be added.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
   protected void processSingleAddition(Class<? extends Component> componentClass,
-      Consumer<Boolean> onComplete) {
+      NavigationContext context, Consumer<Boolean> onComplete) {
     if (Frame.class.isAssignableFrom(componentClass)) {
       onComplete.accept(true);
       return;
     }
 
-    getOrCreateComponentAsync(componentClass, componentInstance -> {
+    getOrCreateComponentAsync(componentClass, context, componentInstance -> {
       if (componentInstance == null) {
         componentsCache.remove(componentClass);
         onComplete.accept(false);
         return;
       }
 
-      notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
-        if (Boolean.FALSE.equals(allowed)) {
-          componentsCache.remove(componentClass);
-          onComplete.accept(false);
-          return;
-        }
+      notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, context,
+          allowed -> {
+            if (Boolean.FALSE.equals(allowed)) {
+              componentsCache.remove(componentClass);
+              onComplete.accept(false);
+              return;
+            }
 
-        attachNode(componentClass, componentInstance);
-        notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE,
-            success -> onComplete.accept(true));
-      });
+            attachNode(componentClass, componentInstance);
+            notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_CREATE, context,
+                success -> onComplete.accept(true));
+          });
     });
   }
 
@@ -412,14 +461,15 @@ public class RouteRenderer {
    * </p>
    *
    * @param componentClass the class of the component to retrieve or create.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the operation.
    */
   protected void getOrCreateComponentAsync(Class<? extends Component> componentClass,
-      Consumer<Component> onComplete) {
+      NavigationContext context, Consumer<Component> onComplete) {
     Component componentInstance = componentsCache.get(componentClass);
 
     if (componentInstance == null || componentInstance.isDestroyed()) {
-      notify(null, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
+      notify(null, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, context, allowed -> {
         if (Boolean.FALSE.equals(allowed)) {
           componentsCache.remove(componentClass);
           onComplete.accept(null);
@@ -491,10 +541,11 @@ public class RouteRenderer {
    *
    * @param component the component associated with the event.
    * @param event the lifecycle event.
+   * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the notification.
    */
   protected void notify(Component component, RouteRendererObserver.LifecycleEvent event,
-      Consumer<Boolean> onComplete) {
+      NavigationContext context, Consumer<Boolean> onComplete) {
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
     AtomicBoolean vetoed = new AtomicBoolean(false);
 
@@ -504,7 +555,7 @@ public class RouteRenderer {
           cb.accept(false); // Skip further notification if vetoed
           return;
         }
-        observer.onRouteRendererLifecycleEvent(component, event, result -> {
+        observer.onRouteRendererLifecycleEvent(component, event, context, result -> {
           if (Boolean.FALSE.equals(result)) {
             vetoed.set(true);
             cb.accept(false);

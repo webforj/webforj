@@ -1,8 +1,6 @@
 package com.webforj.router.event;
 
-import com.webforj.router.Router;
-import com.webforj.router.history.Location;
-import com.webforj.router.history.ParametersBag;
+import com.webforj.router.NavigationContext;
 
 /**
  * {@code WillNavigateEvent} is an event object which is fired before the router has completed the
@@ -20,14 +18,11 @@ import com.webforj.router.history.ParametersBag;
 public class WillNavigateEvent extends RouteEvent {
 
   /**
-   * Creates a new {@code WillNavigateEvent} instance with the given {@code Router},
-   * {@code Location}, and {@code ParametersBag}.
+   * Creates a new {@code WillNavigateEvent} instance with the given {@code NavigationContext}.
    *
-   * @param router the router instance
-   * @param location the location instance
-   * @param parameters the route parameters bag instance
+   * @param context the navigation context
    */
-  public WillNavigateEvent(Router router, Location location, ParametersBag parameters) {
-    super(router, location, parameters);
+  public WillNavigateEvent(NavigationContext context) {
+    super(context);
   }
 }

@@ -1,8 +1,6 @@
 package com.webforj.router.event;
 
-import com.webforj.router.Router;
-import com.webforj.router.history.Location;
-import com.webforj.router.history.ParametersBag;
+import com.webforj.router.NavigationContext;
 import java.util.function.Consumer;
 
 /**
@@ -26,18 +24,16 @@ public class WillLeaveEvent extends RouteEvent {
   private final transient Consumer<Boolean> allowLeave;
 
   /**
-   * Creates a new {@code WillLeaveEvent} instance with the given {@code Router}, {@code Location},
-   * {@code ParametersBag}, and {@code Consumer<Boolean>}.
+   * Creates a new {@code WillLeaveEvent} instance with the given {@code NavigationContext} instance
+   * and the callback consumer to signal whether the router should be allowed to proceed to the next
+   * step.
    *
-   * @param router the router instance
-   * @param location the location instance
-   * @param parameters the route parameters bag instance
+   * @param context the navigation context
    * @param allowLeave the callback consumer to signal whether the router should be allowed to
    *        proceed to the next step
    */
-  public WillLeaveEvent(Router router, Location location, ParametersBag parameters,
-      Consumer<Boolean> allowLeave) {
-    super(router, location, parameters);
+  public WillLeaveEvent(NavigationContext context, Consumer<Boolean> allowLeave) {
+    super(context);
     this.allowLeave = allowLeave;
   }
 

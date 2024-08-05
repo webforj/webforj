@@ -16,12 +16,7 @@ import com.webforj.router.history.Location;
 import com.webforj.router.history.MemoryHistory;
 import com.webforj.router.history.ParametersBag;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
-import com.webforj.router.observer.DidEnterObserver;
-import com.webforj.router.observer.DidLeaveObserver;
 import com.webforj.router.observer.DidNavigateObserver;
-import com.webforj.router.observer.RouteRendererObserver;
-import com.webforj.router.observer.WillEnterObserver;
-import com.webforj.router.observer.WillLeaveObserver;
 import com.webforj.router.observer.WillNavigateObserver;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +38,6 @@ public class Router {
   private final Map<String, RoutePattern> routesCache = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private ListenerRegistration<HistoryStateChangeEvent> historyListener;
-  private Location willNavigateToLocation;
-  private NavigationOptions willNavigateOptions;
-  private RoutePattern matchedPattern;
 
   /**
    * Creates a new {@code Router} instance with the given {@code RouteRegistry}, {@code History} and
@@ -63,7 +55,7 @@ public class Router {
     this.registry = registry;
     this.history = history;
     this.renderer = renderer;
-    this.renderer.addObserver(new RouterLifecycleHandler());
+    this.renderer.addObserver(new RouteRendererDispatcher(getEventDispatcher()));
     this.addHistoryStateListener();
   }
 
@@ -98,7 +90,8 @@ public class Router {
    * @param options the navigate options
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Location location, NavigationOptions options, Consumer<Component> onComplete) {
+  public void navigate(Location location, NavigationOptions options,
+      Consumer<Component> onComplete) {
     Objects.requireNonNull(location, "Location must not be null");
 
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
@@ -114,15 +107,15 @@ public class Router {
           "Path matched but no component found for location: " + location);
     }
 
-    matchedPattern = routePattern.get();
-    willNavigateToLocation = location;
-    willNavigateOptions = options;
+    RoutePattern matchedPattern = routePattern.get();
+    NavigationContext context = new NavigationContext(this, location, options, matchedPattern,
+        ParametersBag.of(matchedPattern.extractParameters(location.getSegments().getPath())));
 
     // remove the history state listener to avoid loops
     removeHistoryStateListener();
 
-    renderer.render(componentClass.get(), component -> {
-      handleNavigateComplete(component, location);
+    renderer.render(componentClass.get(), context, component -> {
+      handleNavigateComplete(component, context);
 
       if (onComplete != null) {
         onComplete.accept(component);
@@ -486,169 +479,47 @@ public class Router {
     }
   }
 
-  private void handleNavigateComplete(Component component, Location location) {
-    ParametersBag routeParams = ParametersBag
-        .of(matchedPattern.extractParameters(willNavigateToLocation.getSegments().getPath()));
-    WillNavigateEvent event = new WillNavigateEvent(this, willNavigateToLocation, routeParams);
+  private void handleNavigateComplete(Component component, NavigationContext context) {
+    ParametersBag routeParams = context.getRouteParameters();
+    Location willNavigateToLocation = context.getLocation();
+    Optional<NavigationOptions> willNavigateOptions = context.getOptions();
 
-    if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
-      getEventDispatcher().dispatchEvent(event);
-    }
-
-    if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
-        && component instanceof WillNavigateObserver willNavigateObserver) {
-      willNavigateObserver.onWillNavigate(event, routeParams);
-    }
-
-    if (willNavigateOptions != null && willNavigateOptions.isUpdateHistory()) {
-      NavigationOptions.NavigationType type = willNavigateOptions.getNavigationType();
-      Object state = willNavigateOptions.getState();
-      switch (type) {
-        case PUSH:
-          history.pushState(state, location);
-          break;
-        case REPLACE:
-          history.replaceState(state, location);
-          break;
-        default:
-          break;
-      }
-    }
-
-    DidNavigateEvent didNavigateEvent =
-        new DidNavigateEvent(this, willNavigateToLocation, routeParams);
-
-    if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
-      getEventDispatcher().dispatchEvent(didNavigateEvent);
-    }
-
-    if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
-        && component instanceof DidNavigateObserver didNavigateObserver) {
-      didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
-    }
-  }
-
-  /**
-   * RouterLifecycleHandler class responsible for handling the router lifecycle events.
-   */
-  private final class RouterLifecycleHandler implements RouteRendererObserver {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
-        Consumer<Boolean> cb) {
-      ParametersBag routeParams = ParametersBag
-          .of(matchedPattern.extractParameters(willNavigateToLocation.getSegments().getPath()));
-
-      switch (event) {
-        case BEFORE_CREATE:
-          fireWillEnterEvent(component, willNavigateToLocation, routeParams, cb);
-          break;
-        case AFTER_CREATE:
-          fireDidEnterEvent(component, willNavigateToLocation, routeParams);
-          cb.accept(true);
-          break;
-        case BEFORE_DESTROY:
-          fireWillLeaveEvent(component, willNavigateToLocation, routeParams, cb);
-          break;
-        case AFTER_DESTROY:
-          fireDidLeaveEvent(component, willNavigateToLocation, routeParams);
-          cb.accept(true);
-          break;
-        default:
-          cb.accept(true);
-          break;
-      }
-    }
-
-    /**
-     * Fires the {@link WillEnterEvent} event.
-     *
-     * @param component the component
-     * @param location the location
-     * @param routeParams the route parameters bag
-     * @param cb the callback to indicate completion
-     */
-    void fireWillEnterEvent(Component component, Location location, ParametersBag routeParams,
-        Consumer<Boolean> cb) {
-      WillEnterEvent event = new WillEnterEvent(Router.this, location, routeParams, cb);
-
-      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
+    WillNavigateEvent event = new WillNavigateEvent(context);
+    willNavigateOptions.ifPresent(options -> {
+      if (options.isFireEvents()) {
         getEventDispatcher().dispatchEvent(event);
       }
 
-      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
-          && component instanceof WillEnterObserver willEnterObserver) {
-        willEnterObserver.onWillEnter(event, routeParams);
-      } else {
-        cb.accept(true);
-      }
-    }
-
-    /**
-     * Fires the {@link DidEnterEvent} event.
-     *
-     * @param component the component
-     * @param location the location
-     * @param routeParams the route parameters bag
-     */
-    void fireDidEnterEvent(Component component, Location location, ParametersBag routeParams) {
-      DidEnterEvent event = new DidEnterEvent(Router.this, location, routeParams);
-
-      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
-        getEventDispatcher().dispatchEvent(event);
+      if (options.isInvokeObservers()
+          && component instanceof WillNavigateObserver willNavigateObserver) {
+        willNavigateObserver.onWillNavigate(event, routeParams);
       }
 
-      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
-          && component instanceof DidEnterObserver didEnterObserver) {
-        didEnterObserver.onDidEnter(event, routeParams);
-      }
-    }
-
-    /**
-     * Fires the {@link WillLeaveEvent} event.
-     *
-     * @param component the component
-     * @param location the location
-     * @param routeParams the route parameters bag
-     * @param cb the callback to indicate completion
-     */
-    void fireWillLeaveEvent(Component component, Location location, ParametersBag routeParams,
-        Consumer<Boolean> cb) {
-      WillLeaveEvent event = new WillLeaveEvent(Router.this, location, routeParams, cb);
-
-      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
-        getEventDispatcher().dispatchEvent(event);
+      if (options.isUpdateHistory()) {
+        NavigationOptions.NavigationType type = options.getNavigationType();
+        Object state = options.getState();
+        switch (type) {
+          case PUSH:
+            history.pushState(state, willNavigateToLocation);
+            break;
+          case REPLACE:
+            history.replaceState(state, willNavigateToLocation);
+            break;
+          default:
+            break;
+        }
       }
 
-      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
-          && component instanceof WillLeaveObserver willLeaveObserver) {
-        willLeaveObserver.onWillLeave(event, routeParams);
-      } else {
-        cb.accept(true);
-      }
-    }
+      DidNavigateEvent didNavigateEvent = new DidNavigateEvent(context);
 
-    /**
-     * Fires the {@link DidLeaveEvent} event.
-     *
-     * @param component the component
-     * @param location the location
-     * @param routeParams the route parameters bag
-     */
-    void fireDidLeaveEvent(Component component, Location location, ParametersBag routeParams) {
-      DidLeaveEvent event = new DidLeaveEvent(Router.this, location, routeParams);
-
-      if (willNavigateOptions != null && willNavigateOptions.isFireEvents()) {
-        getEventDispatcher().dispatchEvent(event);
+      if (options.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(didNavigateEvent);
       }
 
-      if (willNavigateOptions != null && willNavigateOptions.isInvokeObservers()
-          && component instanceof DidLeaveObserver didLeaveObserver) {
-        didLeaveObserver.onDidLeave(event, routeParams);
+      if (options.isInvokeObservers()
+          && component instanceof DidNavigateObserver didNavigateObserver) {
+        didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
       }
-    }
+    });
   }
 }
