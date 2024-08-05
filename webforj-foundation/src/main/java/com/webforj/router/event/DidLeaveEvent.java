@@ -13,7 +13,7 @@ import com.webforj.router.history.ParametersBag;
  *
  * @see WillLeaveEvent
  */
-public class DidLeaveEvent extends RouteObserverEvent {
+public class DidLeaveEvent extends RouteEvent {
 
   /**
    * Creates a new {@code DidLeaveEvent} instance with the given {@code Router}, {@code Location}

@@ -2,7 +2,6 @@ package com.webforj.router.observer;
 
 import com.webforj.router.event.DidNavigateEvent;
 import com.webforj.router.history.ParametersBag;
-import java.io.Serializable;
 
 /**
  * {@code DidNavigateObserver} is an interface that is used to observe the router after it has
@@ -19,7 +18,7 @@ import java.io.Serializable;
  * @see DidNavigateEvent
  */
 @FunctionalInterface
-public interface DidNavigateObserver extends Serializable {
+public interface DidNavigateObserver {
 
   /**
    * This method is called after the router has successfully navigated to a new route, attached its

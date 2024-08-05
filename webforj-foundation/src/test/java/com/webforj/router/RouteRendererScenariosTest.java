@@ -66,7 +66,7 @@ class RouteRendererScenariosTest {
 
   @Test
   void shouldNavigateToMain() {
-    routeRenderer.navigate(MainView.class, c -> {
+    routeRenderer.render(MainView.class, c -> {
       assertNotNull(c);
       assertEquals(MainView.class, c.getClass());
     });
@@ -74,12 +74,12 @@ class RouteRendererScenariosTest {
 
   @Test
   void shouldNavigateFromMainToAbout() {
-    routeRenderer.navigate(MainView.class, mainResult -> {
+    routeRenderer.render(MainView.class, mainResult -> {
       assertNotNull(mainResult);
       MainView mainView = (MainView) mainResult;
       assertEquals(MainView.class, mainView.getClass());
 
-      routeRenderer.navigate(AboutView.class, aboutResult -> {
+      routeRenderer.render(AboutView.class, aboutResult -> {
         assertNotNull(aboutResult);
         AboutView aboutView = (AboutView) aboutResult;
         assertEquals(AboutView.class, aboutView.getClass());
@@ -90,12 +90,12 @@ class RouteRendererScenariosTest {
 
   @Test
   void shouldNavigateFromMainToSubMain() {
-    routeRenderer.navigate(MainView.class, mainResult -> {
+    routeRenderer.render(MainView.class, mainResult -> {
       assertNotNull(mainResult);
       MainView mainView = (MainView) mainResult;
       assertEquals(MainView.class, mainView.getClass());
 
-      routeRenderer.navigate(SubMainView.class, subMainResult -> {
+      routeRenderer.render(SubMainView.class, subMainResult -> {
         assertNotNull(subMainResult);
         SubMainView subMainView = (SubMainView) subMainResult;
         assertEquals(SubMainView.class, subMainView.getClass());
@@ -106,12 +106,12 @@ class RouteRendererScenariosTest {
 
   @Test
   void shouldNavigateFromSubMainToMain() {
-    routeRenderer.navigate(SubMainView.class, subMainResult -> {
+    routeRenderer.render(SubMainView.class, subMainResult -> {
       assertNotNull(subMainResult);
       SubMainView subMainView = (SubMainView) subMainResult;
       assertEquals(SubMainView.class, subMainView.getClass());
 
-      routeRenderer.navigate(MainView.class, mainResult -> {
+      routeRenderer.render(MainView.class, mainResult -> {
         assertNotNull(mainResult);
         MainView mainView = (MainView) mainResult;
         assertEquals(MainView.class, mainView.getClass());

@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * @see DidEnterEvent
  * @see WillLeaveEvent
  */
-public class WillEnterEvent extends RouteObserverEvent {
+public class WillEnterEvent extends RouteEvent {
 
   private final transient Consumer<Boolean> allowEnter;
 

@@ -12,7 +12,7 @@ import java.util.EventObject;
  * @author Hyyan Abo Fakher
  * @since 24.11
  */
-class RouteObserverEvent extends EventObject {
+class RouteEvent extends EventObject {
   private final transient Router router;
   private final Location location;
   private final ParametersBag routeParams;
@@ -25,7 +25,7 @@ class RouteObserverEvent extends EventObject {
    * @param location the location instance
    * @param parameters the route parameters bag instance
    */
-  protected RouteObserverEvent(Router router, Location location, ParametersBag parameters) {
+  protected RouteEvent(Router router, Location location, ParametersBag parameters) {
     super(router);
     this.router = router;
     this.location = location;

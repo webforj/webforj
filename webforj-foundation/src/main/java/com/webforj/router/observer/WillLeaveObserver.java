@@ -2,7 +2,6 @@ package com.webforj.router.observer;
 
 import com.webforj.router.event.WillLeaveEvent;
 import com.webforj.router.history.ParametersBag;
-import java.io.Serializable;
 
 /**
  * {@code WillLeaveObserver} is an interface that is used to observe the router before it attempts
@@ -14,7 +13,7 @@ import java.io.Serializable;
  * @see WillLeaveEvent
  */
 @FunctionalInterface
-public interface WillLeaveObserver extends Serializable {
+public interface WillLeaveObserver {
 
   /**
    * This method is called before the router attempts to leave the route's component and detach it

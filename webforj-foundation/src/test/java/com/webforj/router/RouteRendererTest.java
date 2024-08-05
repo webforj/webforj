@@ -72,7 +72,7 @@ class RouteRendererTest {
     routeRegistry.register("test", TestComponent.class);
 
     AtomicBoolean resultReceived = new AtomicBoolean(false);
-    routeRenderer.navigate(TestComponent.class, result -> {
+    routeRenderer.render(TestComponent.class, result -> {
       assertNotNull(result);
       assertEquals(TestComponent.class, result.getClass());
       resultReceived.set(true);
@@ -94,12 +94,12 @@ class RouteRendererTest {
     routeRegistry.register("/child", ChildComponent.class, ParentComponent.class);
 
     AtomicBoolean parentResultReceived = new AtomicBoolean(false);
-    routeRenderer.navigate(ParentComponent.class, parentResult -> {
+    routeRenderer.render(ParentComponent.class, parentResult -> {
       assertNotNull(parentResult);
       assertEquals(ParentComponent.class, parentResult.getClass());
       parentResultReceived.set(true);
 
-      routeRenderer.navigate(ChildComponent.class, childResult -> {
+      routeRenderer.render(ChildComponent.class, childResult -> {
         assertNotNull(childResult);
         assertEquals(ChildComponent.class, childResult.getClass());
       });
@@ -114,7 +114,7 @@ class RouteRendererTest {
     void shouldInvokeLifecycleObserversBeforeDestroy() {
       routeRegistry.register("/test", TestComponent.class);
       routeRegistry.register("/unregistered", UnregisteredComponent.class);
-      routeRenderer.navigate(TestComponent.class, result -> {
+      routeRenderer.render(TestComponent.class, result -> {
       });
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
@@ -125,7 +125,7 @@ class RouteRendererTest {
         cb.accept(true);
       });
 
-      routeRenderer.navigate(UnregisteredComponent.class, result -> {
+      routeRenderer.render(UnregisteredComponent.class, result -> {
         assertTrue(observerCalled.get());
         assertNotNull(result);
       });
@@ -135,7 +135,7 @@ class RouteRendererTest {
     void shouldInvokeLifecycleObserversAfterDestroy() {
       routeRegistry.register("/test", TestComponent.class);
       routeRegistry.register("/unregistered", UnregisteredComponent.class);
-      routeRenderer.navigate(TestComponent.class, result -> {
+      routeRenderer.render(TestComponent.class, result -> {
       });
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
@@ -146,7 +146,7 @@ class RouteRendererTest {
         cb.accept(true);
       });
 
-      routeRenderer.navigate(UnregisteredComponent.class, result -> {
+      routeRenderer.render(UnregisteredComponent.class, result -> {
         assertTrue(observerCalled.get());
         assertNotNull(result);
       });
@@ -156,7 +156,7 @@ class RouteRendererTest {
     void shouldNotRemoveComponentIfBeforeDestroyVetoed() {
       routeRegistry.register("/test", TestComponent.class);
       routeRegistry.register("/unregistered", UnregisteredComponent.class);
-      routeRenderer.navigate(TestComponent.class, result -> {
+      routeRenderer.render(TestComponent.class, result -> {
       });
 
       AtomicReference<Component> componentRef = new AtomicReference<>();
@@ -189,7 +189,7 @@ class RouteRendererTest {
         cb.accept(true);
       });
 
-      routeRenderer.navigate(TestComponent.class, result -> {
+      routeRenderer.render(TestComponent.class, result -> {
         assertTrue(observerCalled.get());
         assertNotNull(result);
       });
@@ -207,7 +207,7 @@ class RouteRendererTest {
         cb.accept(true);
       });
 
-      routeRenderer.navigate(TestComponent.class, result -> {
+      routeRenderer.render(TestComponent.class, result -> {
         assertTrue(observerCalled.get());
         assertNotNull(result);
       });
