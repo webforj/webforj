@@ -1,7 +1,7 @@
 package com.webforj.router;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.component.Component;
@@ -31,9 +31,9 @@ class RouteRegistryTest {
       Class<Frame> target = Frame.class;
       routeRegistry.register("test", view, target, "frame1");
 
-      assertEquals(view, routeRegistry.getComponentByRoute("test"));
-      assertEquals(target, routeRegistry.getTarget(TestComponent.class));
-      assertEquals("frame1", routeRegistry.getFrameRouteId(view));
+      assertEquals(view, routeRegistry.getComponentByRoute("test").get());
+      assertEquals(target, routeRegistry.getTarget(TestComponent.class).get());
+      assertEquals("frame1", routeRegistry.getFrameRouteId(view).get());
     }
 
     @Test
@@ -42,9 +42,9 @@ class RouteRegistryTest {
       Class<TestTargetComponent> target = TestTargetComponent.class;
       routeRegistry.register("test", view, target);
 
-      assertEquals(view, routeRegistry.getComponentByRoute("test"));
-      assertEquals(target, routeRegistry.getTarget(TestComponent.class));
-      assertNull(routeRegistry.getFrameRouteId(TestComponent.class));
+      assertEquals(view, routeRegistry.getComponentByRoute("test").get());
+      assertEquals(target, routeRegistry.getTarget(TestComponent.class).get());
+      assertFalse(routeRegistry.getFrameRouteId(TestComponent.class).isPresent());
     }
 
     @Test
@@ -52,8 +52,8 @@ class RouteRegistryTest {
       Class<TestComponent> view = TestComponent.class;
       routeRegistry.register("test", view);
 
-      assertEquals(view, routeRegistry.getComponentByRoute("test"));
-      assertEquals(Frame.class, routeRegistry.getTarget(TestComponent.class));
+      assertEquals(view, routeRegistry.getComponentByRoute("test").get());
+      assertEquals(Frame.class, routeRegistry.getTarget(TestComponent.class).get());
     }
   }
 
@@ -63,16 +63,16 @@ class RouteRegistryTest {
     void shouldGetComponentByRoute() {
       routeRegistry.register("test", TestComponent.class);
 
-      assertEquals(TestComponent.class, routeRegistry.getComponentByRoute("test"));
-      assertNull(routeRegistry.getComponentByRoute("/nonexistent"));
+      assertEquals(TestComponent.class, routeRegistry.getComponentByRoute("test").get());
+      assertFalse(routeRegistry.getComponentByRoute("/nonexistent").isPresent());
     }
 
     @Test
     void shouldGetRouteByComponent() {
       routeRegistry.register("test", TestComponent.class);
 
-      assertEquals("test", routeRegistry.getRouteByComponent(TestComponent.class));
-      assertNull(routeRegistry.getRouteByComponent(TestTargetComponent.class));
+      assertEquals("test", routeRegistry.getRouteByComponent(TestComponent.class).get());
+      assertFalse(routeRegistry.getRouteByComponent(TestTargetComponent.class).isPresent());
     }
 
     @Test
@@ -80,7 +80,7 @@ class RouteRegistryTest {
       routeRegistry.register("parent", TestTargetComponent.class);
       routeRegistry.register("parent/child", TestComponent.class, TestTargetComponent.class);
 
-      Class<? extends Component> rootNode = routeRegistry.getComponentByRoute("parent/child");
+      Class<? extends Component> rootNode = routeRegistry.getComponentByRoute("parent/child").get();
 
       assertEquals(TestComponent.class, rootNode);
     }
@@ -122,26 +122,34 @@ class RouteRegistryTest {
 
     routeRegistry.clear();
 
-    assertNull(routeRegistry.getComponentByRoute("test"));
-    assertNull(routeRegistry.getTarget(TestComponent.class));
-    assertNull(routeRegistry.getFrameRouteId(TestComponent.class));
+    assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
+    assertFalse(routeRegistry.getTarget(TestComponent.class).isPresent());
+    assertFalse(routeRegistry.getFrameRouteId(TestComponent.class).isPresent());
     assertTrue(routeRegistry.getAvailableRoutes().isEmpty());
   }
 
   static class TestComponent extends Component {
 
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // no-op
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // no-op
+    }
   }
 
   static class TestTargetComponent extends Component {
     @Override
-    protected void onCreate(Window window) {}
+    protected void onCreate(Window window) {
+      // no-op
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // no-op
+    }
   }
 }

@@ -95,8 +95,8 @@ public class Router {
     Objects.requireNonNull(location, "Location must not be null");
 
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
-    Optional<Class<? extends Component>> componentClass =
-        routePattern.map(RoutePattern::getPattern).map(registry::getComponentByRoute);
+    Optional<Class<? extends Component>> componentClass = routePattern.map(RoutePattern::getPattern)
+        .map(c -> registry.getComponentByRoute(c).orElse(null));
 
     if (!routePattern.isPresent()) {
       throw new RouteNotFoundException("Failed to match route for location: " + location);
@@ -186,13 +186,13 @@ public class Router {
       Map<String, String> routeParameters, Consumer<Component> onComplete) {
     Objects.requireNonNull(component, "Component class must not be null");
 
-    String route = registry.getRouteByComponent(component);
-    if (route == null) {
+    Optional<String> route = registry.getRouteByComponent(component);
+    if (!route.isPresent()) {
       throw new RouteNotFoundException(
           "No route found for component: " + component.getSimpleName());
     }
 
-    RoutePattern pattern = routesCache.computeIfAbsent(route, RoutePattern::new);
+    RoutePattern pattern = routesCache.computeIfAbsent(route.get(), RoutePattern::new);
     String path = pattern.buildUrl(routeParameters != null ? routeParameters : Map.of());
     Location location = new Location(path);
 
