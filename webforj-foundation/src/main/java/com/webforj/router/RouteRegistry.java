@@ -116,8 +116,7 @@ public class RouteRegistry {
    * @return a list of full paths of all registered routes
    */
   public List<String> getAvailableRoutes() {
-    return routeEntries.values().stream()
-        .sorted(Comparator.comparingInt(RouteEntry::getPriority).reversed())
+    return routeEntries.values().stream().sorted(Comparator.comparingInt(RouteEntry::getPriority))
         .map(RouteEntry::getPath).collect(Collectors.toList());
   }
 
