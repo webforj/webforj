@@ -90,11 +90,12 @@ class RouteRegistryTest {
       routeRegistry.register("parent", TestTargetComponent.class);
       routeRegistry.register("parent/child", TestComponent.class, TestTargetComponent.class);
 
-      List<String> resolvedRoutes = routeRegistry.getAvailableRoutes();
+      List<RouteEntry> resolvedRoutes = routeRegistry.getAvailableRoutes();
+      List<String> routePaths = resolvedRoutes.stream().map(RouteEntry::getPath).toList();
 
       assertEquals(2, resolvedRoutes.size());
-      assertTrue(resolvedRoutes.contains("parent"));
-      assertTrue(resolvedRoutes.contains("parent/child"));
+      assertTrue(routePaths.contains("parent"));
+      assertTrue(routePaths.contains("parent/child"));
     }
 
     @Test
