@@ -67,4 +67,18 @@ public @interface Route {
    * @return the frame ID
    */
   String frame() default "";
+
+  /**
+   * Sets the priority of the route.
+   *
+   * <p>
+   * The priority is used to determine the order of the route when matching the route path. The
+   * route with the highest priority will be matched first. If two routes have the same priority,
+   * then the route that was registered first will be matched first. The default priority is
+   * {@code 1}.
+   * </p>
+   *
+   * @return the priority of the route
+   */
+  int priority() default 1;
 }
