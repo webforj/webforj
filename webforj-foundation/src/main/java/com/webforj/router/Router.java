@@ -447,10 +447,10 @@ public class Router {
    */
   protected Optional<RoutePattern> getRoutePatternForLocation(Location location) {
     RoutePattern mp = null;
-    List<String> routes = registry.getAvailableRoutes();
+    List<RouteEntry> routes = registry.getAvailableRoutes();
 
-    for (String route : routes) {
-      RoutePattern pattern = routesCache.computeIfAbsent(route, RoutePattern::new);
+    for (RouteEntry route : routes) {
+      RoutePattern pattern = routesCache.computeIfAbsent(route.getPath(), RoutePattern::new);
       String currentSegment = location.getSegments().getPath();
       if (pattern.matches(currentSegment)) {
         mp = pattern;

@@ -111,13 +111,13 @@ public class RouteRegistry {
   }
 
   /**
-   * Returns the full paths of all registered routes, sorted by priority.
+   * Returns the all registered routes.
    *
-   * @return a list of full paths of all registered routes
+   * @return a list of all registered routes
    */
-  public List<String> getAvailableRoutes() {
+  public List<RouteEntry> getAvailableRoutes() {
     return routeEntries.values().stream().sorted(Comparator.comparingInt(RouteEntry::getPriority))
-        .map(RouteEntry::getPath).collect(Collectors.toList());
+        .collect(Collectors.toUnmodifiableList());
   }
 
   /**
