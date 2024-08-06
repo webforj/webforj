@@ -72,10 +72,28 @@ public final class RouteScanner {
       }
     }
 
-    // Sort routes by priority
-    routes.sort((r1, r2) -> Integer.compare(r2.getPriority(), r1.getPriority()));
-
     return routes;
+  }
+
+  /**
+   * Registers the provided list of {@link RouteEntry} objects with the specified
+   * {@link RouteRegistry}.
+   *
+   * <p>
+   * This method takes a list of {@link RouteEntry} objects, typically obtained from the
+   * {@link #scanForRoutes(String)} method, and registers each entry with the provided
+   * {@link RouteRegistry}. This involves mapping the route paths to their corresponding component
+   * classes and other metadata.
+   * </p>
+   *
+   * @param registry the route registry where discovered routes will be registered
+   * @param routes the list of routes to register
+   */
+  public static void registerRoutes(RouteRegistry registry, List<RouteEntry> routes) {
+    for (RouteEntry entry : routes) {
+      registry.register(entry.getPath(), entry.getComponent(), entry.getTarget(),
+          entry.getFrameId().orElse(null));
+    }
   }
 
   /**
@@ -108,106 +126,5 @@ public final class RouteScanner {
     }
 
     return routePath;
-  }
-
-  /**
-   * Registers the provided list of {@link RouteEntry} objects with the specified
-   * {@link RouteRegistry}.
-   *
-   * <p>
-   * This method takes a list of {@link RouteEntry} objects, typically obtained from the
-   * {@link #scanForRoutes(String)} method, and registers each entry with the provided
-   * {@link RouteRegistry}. This involves mapping the route paths to their corresponding component
-   * classes and other metadata.
-   * </p>
-   *
-   * @param registry the route registry where discovered routes will be registered
-   * @param routes the list of routes to register
-   */
-  public static void registerRoutes(RouteRegistry registry, List<RouteEntry> routes) {
-    for (RouteEntry entry : routes) {
-      registry.register(entry.getValue(), entry.getComponent(), entry.getTarget(),
-          entry.getFrameId());
-    }
-  }
-
-  /**
-   * Helper class to hold route information.
-   *
-   * <p>
-   * The {@code RouteEntry} class encapsulates the details of a route, including the route path,
-   * component class, target class, frame ID, and priority. It is used internally by the
-   * {@link RouteScanner} to manage and sort routes before registration.
-   * </p>
-   */
-  public static class RouteEntry {
-    private final String routePath;
-    private final Class<? extends Component> component;
-    private final Class<? extends Component> target;
-    private final String frameId;
-    private final int priority;
-
-    /**
-     * Constructs a new {@code RouteEntry} instance with the specified parameters.
-     *
-     * @param routePath the path for the route
-     * @param componentClass the component class associated with the route
-     * @param targetClass the target class for the route, if any
-     * @param frameId the frame ID associated with the route, if any
-     * @param priority the priority of the route
-     */
-    public RouteEntry(String routePath, Class<? extends Component> componentClass,
-        Class<? extends Component> targetClass, String frameId, int priority) {
-      this.routePath = routePath;
-      this.component = componentClass;
-      this.target = targetClass;
-      this.frameId = frameId;
-      this.priority = priority;
-    }
-
-    /**
-     * Returns the path for the route.
-     *
-     * @return the route path
-     */
-    public String getValue() {
-      return routePath;
-    }
-
-    /**
-     * Returns the component class associated with the route.
-     *
-     * @return the component class
-     */
-    public Class<? extends Component> getComponent() {
-      return component;
-    }
-
-    /**
-     * Returns the target class for the route, if any.
-     *
-     * @return the target class, or {@code null} if none
-     */
-    public Class<? extends Component> getTarget() {
-      return target;
-    }
-
-    /**
-     * Returns the frame ID associated with the route, if any.
-     *
-     * @return the frame ID, or {@code null} if none
-     */
-    public String getFrameId() {
-      return frameId;
-    }
-
-    /**
-     * Returns the priority of the route.
-     *
-     * @return the route priority
-     */
-    public int getPriority() {
-      return priority;
-    }
   }
 }

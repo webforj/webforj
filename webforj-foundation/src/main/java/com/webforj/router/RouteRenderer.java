@@ -285,10 +285,15 @@ public class RouteRenderer {
    */
   protected void detachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
-    Class<? extends Component> targetClass = registry.getTarget(componentClass);
+    Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
+    if (!targetClass.isPresent()) {
+      throw new RouteHasNoTargetException(
+          "No route target found for component: " + componentClass.getName());
+    }
+
     Component targetInstance =
-        Frame.class.isAssignableFrom(targetClass) ? getFrameComponent(componentClass)
-            : getOrCreateComponent(targetClass);
+        Frame.class.isAssignableFrom(targetClass.get()) ? getFrameComponent(componentClass)
+            : getOrCreateComponent(targetClass.get());
 
     if (targetInstance instanceof RouteTarget) {
       ((RouteTarget) targetInstance).removeRouteContent(componentInstance);
@@ -393,12 +398,13 @@ public class RouteRenderer {
    */
   protected void attachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
-    if (registry.getRouteByComponent(componentClass) == null) {
+
+    if (!registry.getRouteByComponent(componentClass).isPresent()) {
       throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
     }
 
-    Class<? extends Component> targetClass = registry.getTarget(componentClass);
-    if (targetClass == null) {
+    Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
+    if (!targetClass.isPresent()) {
       throw new RouteHasNoTargetException(
           "No route target found for component: " + componentClass.getName()
               + ", route is registered as " + registry.getRouteByComponent(componentClass)
@@ -406,8 +412,8 @@ public class RouteRenderer {
     }
 
     Component targetInstance =
-        Frame.class.isAssignableFrom(targetClass) ? getFrameComponent(componentClass)
-            : getOrCreateComponent(targetClass);
+        Frame.class.isAssignableFrom(targetClass.get()) ? getFrameComponent(componentClass)
+            : getOrCreateComponent(targetClass.get());
 
     if (targetInstance instanceof RouteTarget) {
       ((RouteTarget) targetInstance).showRouteContent(componentInstance);
@@ -497,7 +503,7 @@ public class RouteRenderer {
    */
   @SuppressWarnings("squid:S3776")
   protected Frame getFrameComponent(Class<? extends Component> componentClass) {
-    String frameId = registry.getFrameRouteId(componentClass);
+    String frameId = registry.getFrameRouteId(componentClass).orElse(null);
     String cacheKey = frameId != null ? frameId : "com.webforj.utilities.WelcomeApp";
     final boolean[] isNewFrame = {false};
 

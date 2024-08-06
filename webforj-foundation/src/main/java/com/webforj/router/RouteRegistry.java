@@ -3,9 +3,11 @@ package com.webforj.router;
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.data.tree.Vnode;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -13,15 +15,41 @@ import java.util.stream.Collectors;
 /**
  * Represents a route registry.
  *
+ * <p>
+ * This class manages the registration and retrieval of routes, including their associated
+ * components, target classes, and frame IDs. It also maintains the hierarchy of components and
+ * supports various methods for querying the registered routes.
+ * </p>
+ *
  * @author Hyyan Abo Fakher
  * @since 24.11
  */
 public class RouteRegistry {
-  private Map<String, Class<? extends Component>> routes = new ConcurrentHashMap<>();
-  private Map<Class<?>, Class<? extends Component>> targets = new ConcurrentHashMap<>();
-  private Map<Class<?>, String> frameIds = new ConcurrentHashMap<>();
-  private Map<Class<? extends Component>, Vnode<Class<? extends Component>>> componentsTree =
+  private final Map<String, RouteEntry> routeEntries = new ConcurrentHashMap<>();
+  private final Map<Class<? extends Component>, Vnode<Class<? extends Component>>> componentsTree =
       new ConcurrentHashMap<>();
+
+  /**
+   * Registers a route using a {@link RouteEntry}.
+   *
+   * @param entry the {@link RouteEntry} containing the route details
+   */
+  public void register(RouteEntry entry) {
+    String route = entry.getPath();
+    routeEntries.put(route, entry);
+
+    Class<? extends Component> component = entry.getComponent();
+    Class<? extends Component> target = entry.getTarget();
+
+    // Build the component relationship tree
+    Vnode<Class<? extends Component>> componentTree =
+        componentsTree.computeIfAbsent(component, Vnode::new);
+    if (target != null) {
+      Vnode<Class<? extends Component>> targetTree =
+          componentsTree.computeIfAbsent(target, Vnode::new);
+      targetTree.addChild(componentTree);
+    }
+  }
 
   /**
    * Registers a route with the given path and component class.
@@ -33,21 +61,8 @@ public class RouteRegistry {
    */
   public void register(String route, Class<? extends Component> component,
       Class<? extends Component> target, String frameId) {
-    routes.put(route, component);
-    targets.put(component, target);
-
-    if (frameId != null && !frameId.isEmpty() && Frame.class.isAssignableFrom(target)) {
-      frameIds.put(component, frameId);
-    }
-
-    // Build the component relationship tree
-    Vnode<Class<? extends Component>> componentTree =
-        componentsTree.computeIfAbsent(component, Vnode::new);
-    if (target != null) {
-      Vnode<Class<? extends Component>> targetTree =
-          componentsTree.computeIfAbsent(target, Vnode::new);
-      targetTree.addChild(componentTree);
-    }
+    RouteEntry entry = new RouteEntry(route, component, target, frameId, 10);
+    register(entry);
   }
 
   /**
@@ -76,74 +91,78 @@ public class RouteRegistry {
    * Returns the component class of the passed route.
    *
    * @param path the path of the route
-   * @return the component class of the passed route
+   * @return an Optional containing the component class of the passed route, or an empty Optional if
+   *         not found
    */
-  public Class<? extends Component> getComponentByRoute(String path) {
-    return routes.get(path);
+  public Optional<Class<? extends Component>> getComponentByRoute(String path) {
+    return Optional.ofNullable(routeEntries.get(path)).map(RouteEntry::getComponent);
   }
 
   /**
    * Returns the route path for the given component class.
    *
    * @param component the component class
-   * @return the route path for the given component class
+   * @return an Optional containing the route path for the given component class, or an empty
+   *         Optional if not found
    */
-  public String getRouteByComponent(Class<? extends Component> component) {
-    return routes.entrySet().stream().filter(entry -> entry.getValue().equals(component))
-        .map(Map.Entry::getKey).findFirst().orElse(null);
+  public Optional<String> getRouteByComponent(Class<? extends Component> component) {
+    return routeEntries.values().stream().filter(entry -> entry.getComponent().equals(component))
+        .map(RouteEntry::getPath).findFirst();
   }
 
   /**
-   * Returns the full paths of all registered routes.
+   * Returns the full paths of all registered routes, sorted by priority.
    *
    * @return a list of full paths of all registered routes
    */
   public List<String> getAvailableRoutes() {
-    return routes.keySet().stream().map(route -> getRouteByComponent(routes.get(route))).distinct()
-        .collect(Collectors.toList());
+    return routeEntries.values().stream()
+        .sorted(Comparator.comparingInt(RouteEntry::getPriority).reversed())
+        .map(RouteEntry::getPath).collect(Collectors.toList());
   }
 
   /**
-   * Returns the parent class of the component class.
+   * Returns the target class of the component class.
    *
    * @param component the component class
-   * @return the parent class of the component class
+   * @return an Optional containing the target class of the component class, or an empty Optional if
+   *         not found
    */
-  public Class<? extends Component> getTarget(Class<? extends Component> component) {
-    return targets.get(component);
+  public Optional<Class<? extends Component>> getTarget(Class<? extends Component> component) {
+    Optional<?> found =
+        routeEntries.values().stream().filter(entry -> entry.getComponent().equals(component))
+            .map(RouteEntry::getTarget).filter(Objects::nonNull).findFirst();
+
+    return found.map(target -> (Class<? extends Component>) target);
   }
 
   /**
-   * Returns the frame ID of the view class.
+   * Returns the frame ID of the component class.
    *
    * @param component the component class
-   * @return the frame ID of the view class
+   * @return an Optional containing the frame ID of the component class, or an empty Optional if not
+   *         set
    */
-  public String getFrameRouteId(Class<? extends Component> component) {
-    if (component == null) {
-      return null;
-    }
-
-    return frameIds.get(component);
+  public Optional<String> getFrameRouteId(Class<? extends Component> component) {
+    return routeEntries.values().stream().filter(entry -> entry.getComponent().equals(component))
+        .map(RouteEntry::getFrameId).filter(Optional::isPresent).map(Optional::get).findFirst();
   }
 
   /**
    * Returns the root component class of the given component class.
    *
    * @param componentClass the component class
-   * @return the root component class of the given component class
+   * @return an Optional containing the root component class of the given component class
    */
   public Optional<Vnode<Class<? extends Component>>> getComponentsTree(
       Class<? extends Component> componentClass) {
     // Find the root component for the given component
-    Class<? extends Component> currentComponent = componentClass;
     LinkedList<Class<? extends Component>> pathComponents = new LinkedList<>();
+    populatePathComponents(componentClass, pathComponents);
 
-    while (targets.containsKey(currentComponent)) {
-      pathComponents.addFirst(currentComponent);
-      currentComponent = targets.get(currentComponent);
+    if (pathComponents.isEmpty()) {
+      return Optional.empty();
     }
-    pathComponents.addFirst(currentComponent); // add the root component
 
     // Build the path tree from root to the given component
     Vnode<Class<? extends Component>> rootNode = new Vnode<>(pathComponents.removeFirst());
@@ -158,13 +177,24 @@ public class RouteRegistry {
     return Optional.of(rootNode);
   }
 
+  private void populatePathComponents(Class<? extends Component> componentClass,
+      LinkedList<Class<? extends Component>> pathComponents) {
+    Class<? extends Component> currentComponent = componentClass;
+    while (currentComponent != null) {
+      pathComponents.addFirst(currentComponent);
+      Class<? extends Component> targetComponent = getTarget(currentComponent).orElse(null);
+      if (targetComponent == null || targetComponent.equals(currentComponent)) {
+        break;
+      }
+      currentComponent = targetComponent;
+    }
+  }
+
   /**
    * Clears the registry.
    */
   public void clear() {
-    routes.clear();
-    targets.clear();
-    frameIds.clear();
+    routeEntries.clear();
     componentsTree.clear();
   }
 }
