@@ -233,4 +233,17 @@ class RoutePatternTest {
 
     assertFalse(pattern.matches(path));
   }
+
+  @Test
+  void shouldMatchAndExtractParametersWithoutLeadingSlash() {
+    RoutePattern pattern = new RoutePattern("files/:id");
+    String path = "files/Dashboard";
+
+    assertTrue(pattern.matches(path));
+
+    Map<String, String> params = pattern.extractParameters(path);
+
+    assertEquals(1, params.size());
+    assertEquals("Dashboard", params.get("id"));
+  }
 }

@@ -116,6 +116,10 @@ public class RoutePattern {
    * @return a map of parameter names to values if matched, otherwise an empty map
    */
   public Map<String, String> extractParameters(String path) {
+    if (!path.startsWith("/")) {
+      path = "/" + path; // NOSONAR
+    }
+
     Matcher matcher = regexPattern.matcher(path);
     if (!matcher.matches()) {
       return Collections.emptyMap();

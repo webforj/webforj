@@ -271,7 +271,7 @@ public class RouteRenderer {
 
     Component componentInstance = componentsCache.get(componentClass);
     if (componentInstance == null || (componentInstance != null
-        && (componentInstance.isAttached() || componentInstance.isDestroyed()))) {
+        && (!componentInstance.isAttached() || componentInstance.isDestroyed()))) {
       onComplete.accept(true);
       return;
     }
