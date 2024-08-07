@@ -12,7 +12,6 @@ import com.webforj.router.exception.RouteHasNoTargetException;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.exception.RouteRenderException;
 import com.webforj.router.observer.RouteRendererObserver;
-import static com.webforj.App.console;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,10 +128,6 @@ public class RouteRenderer {
     VnodeDiff<Class<? extends Component>> diff = new VnodeDiff<>(lastPath, currentPath.get());
     Set<Class<? extends Component>> toAdd = diff.getToAdd();
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
-
-    console().log("RouteRenderer: Rendering component: " + component.getName());
-    console().log("RouteRenderer: Components to add: " + toAdd);
-    console().log("RouteRenderer: Components to remove: " + toRemove);
 
     processRemovals(toRemove, context, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
