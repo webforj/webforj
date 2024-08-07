@@ -12,8 +12,10 @@ import com.webforj.router.exception.RouteHasNoTargetException;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.exception.RouteRenderException;
 import com.webforj.router.observer.RouteRendererObserver;
+import static com.webforj.App.console;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,14 +108,15 @@ public class RouteRenderer {
    * The method returns an Optional component that matches the navigation target.
    * </p>
    *
+   * @param <T> the type of the the component.
    * @param component the target component class for navigation.
    * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the navigation.
    *
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void render(Class<? extends Component> component, NavigationContext context,
-      Consumer<Component> onComplete) {
+  public <T extends Component> void render(Class<T> component, NavigationContext context,
+      Consumer<Optional<T>> onComplete) {
     if (component == null) {
       throw new RouteNotFoundException("Route not found for component: null");
     }
@@ -127,15 +130,29 @@ public class RouteRenderer {
     Set<Class<? extends Component>> toAdd = diff.getToAdd();
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
 
-    lastPath = currentPath.get();
+    console().log("RouteRenderer: Rendering component: " + component.getName());
+    console().log("RouteRenderer: Components to add: " + toAdd);
+    console().log("RouteRenderer: Components to remove: " + toRemove);
 
     processRemovals(toRemove, context, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
         processAdditions(toAdd, context, additionSuccess -> {
+          if (Boolean.TRUE.equals(additionSuccess)) {
+            lastPath = currentPath.get();
+          }
+
           if (onComplete != null) {
-            onComplete.accept(componentsCache.get(component));
+            Component componentCache = componentsCache.get(component);
+            T componentInstance = componentCache != null ? component.cast(componentCache) : null;
+            onComplete.accept(
+                Boolean.TRUE.equals(additionSuccess) ? Optional.ofNullable(componentInstance)
+                    : Optional.empty());
           }
         });
+      } else {
+        if (onComplete != null) {
+          onComplete.accept(Optional.empty());
+        }
       }
     });
   }
@@ -150,12 +167,13 @@ public class RouteRenderer {
    * clean state before adding new components.
    * </p>
    *
+   * @param <T> the type of the the component.
    * @param component the target component class for navigation.
    * @param context the navigation context to pass through the process.
    *
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void render(Class<? extends Component> component, NavigationContext context) {
+  public <T extends Component> void render(Class<T> component, NavigationContext context) {
     render(component, context, null);
   }
 
@@ -173,12 +191,13 @@ public class RouteRenderer {
    * The method returns an Optional component that matches the navigation target.
    * </p>
    *
+   * @param <T> the type of the the component.
    * @param component the target component class for navigation.
    * @param onComplete the callback to be invoked with the result of the navigation.
    *
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void render(Class<? extends Component> component, Consumer<Component> onComplete) {
+  public <T extends Component> void render(Class<T> component, Consumer<Optional<T>> onComplete) {
     render(component, null, onComplete);
   }
 
@@ -192,11 +211,12 @@ public class RouteRenderer {
    * clean state before adding new components.
    * </p>
    *
+   * @param <T> the type of the the component.
    * @param component the target component class for navigation.
    *
    * @throws RouteNotFoundException if the target route cannot be resolved.
    */
-  public void render(Class<? extends Component> component) {
+  public <T extends Component> void render(Class<T> component) {
     render(component, null, null);
   }
 
@@ -211,6 +231,8 @@ public class RouteRenderer {
   protected void processRemovals(Set<Class<? extends Component>> componentsToRemove,
       NavigationContext context, Consumer<Boolean> onComplete) {
     List<Class<? extends Component>> componentList = new ArrayList<>(componentsToRemove);
+    // reverse the list to remove the leaf nodes first
+    Collections.reverse(componentList);
     WorkflowExecutor<Boolean> executor = new WorkflowExecutor<>();
     AtomicBoolean removalFailed = new AtomicBoolean(false);
 
@@ -253,7 +275,8 @@ public class RouteRenderer {
     }
 
     Component componentInstance = componentsCache.get(componentClass);
-    if (componentInstance == null) {
+    if (componentInstance == null || (componentInstance != null
+        && (componentInstance.isAttached() || componentInstance.isDestroyed()))) {
       onComplete.accept(true);
       return;
     }
@@ -289,6 +312,11 @@ public class RouteRenderer {
     if (!targetClass.isPresent()) {
       throw new RouteHasNoTargetException(
           "No route target found for component: " + componentClass.getName());
+    }
+
+    if (componentInstance.isDestroyed()) {
+      componentsCache.remove(componentClass);
+      return;
     }
 
     Component targetInstance =
@@ -369,6 +397,11 @@ public class RouteRenderer {
         return;
       }
 
+      if (componentInstance.isAttached()) {
+        onComplete.accept(true);
+        return;
+      }
+
       notify(componentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, context,
           allowed -> {
             if (Boolean.FALSE.equals(allowed)) {
@@ -401,6 +434,10 @@ public class RouteRenderer {
 
     if (!registry.getRouteByComponent(componentClass).isPresent()) {
       throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
+    }
+
+    if (componentInstance.isAttached()) {
+      return;
     }
 
     Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);

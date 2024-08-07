@@ -11,13 +11,15 @@ import com.webforj.router.event.WillEnterEvent;
 import com.webforj.router.event.WillLeaveEvent;
 import com.webforj.router.event.WillNavigateEvent;
 import com.webforj.router.exception.RouteNotFoundException;
+import com.webforj.router.history.BrowserHistory;
 import com.webforj.router.history.History;
 import com.webforj.router.history.Location;
-import com.webforj.router.history.MemoryHistory;
 import com.webforj.router.history.ParametersBag;
+import com.webforj.router.history.SegmentsBag;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 import com.webforj.router.observer.DidNavigateObserver;
 import com.webforj.router.observer.WillNavigateObserver;
+import static com.webforj.App.console;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,20 +40,22 @@ public class Router {
   private final Map<String, RoutePattern> routesCache = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private ListenerRegistration<HistoryStateChangeEvent> historyListener;
+  private String root;
 
   /**
-   * Creates a new {@code Router} instance with the given {@code RouteRegistry}, {@code History} and
-   * {@code ComponentNavigator}.
+   * Creates a new {@code Router} instance.
    *
+   * @param root the base path to use for all routes
    * @param registry the route registry
    * @param history the history object to use for history management
    * @param renderer the route RouteRenderer
    */
-  public Router(RouteRegistry registry, History history, RouteRenderer renderer) {
+  public Router(String root, RouteRegistry registry, History history, RouteRenderer renderer) {
     Objects.requireNonNull(registry, "RouteRegistry must not be null");
     Objects.requireNonNull(history, "History must not be null");
     Objects.requireNonNull(renderer, "RouteRenderer must not be null");
 
+    this.root = root;
     this.registry = registry;
     this.history = history;
     this.renderer = renderer;
@@ -60,7 +64,39 @@ public class Router {
   }
 
   /**
-   * Creates a new {@code Router} instance with the given {@code RouteRegistry} and {@code History}.
+   * Creates a new {@code Router} instance.
+   *
+   * @param root the base path to use for all routes
+   * @param registry the route registry
+   * @param history the history object to use for history management
+   */
+  public Router(String root, RouteRegistry registry, History history) {
+    this(root, registry, history, new RouteRenderer(registry));
+  }
+
+  /**
+   * Creates a new {@code Router} instance.
+   *
+   * @param root the base path to use for all routes
+   * @param registry the route registry
+   */
+  public Router(String root, RouteRegistry registry) {
+    this(root, registry, new BrowserHistory());
+  }
+
+  /**
+   * Creates a new {@code Router} instance.
+   *
+   * @param registry the route registry
+   * @param history the history object to use for history management
+   * @param renderer the route RouteRenderer
+   */
+  public Router(RouteRegistry registry, History history, RouteRenderer renderer) {
+    this(null, registry, history, renderer);
+  }
+
+  /**
+   * Creates a new {@code Router} instance.
    *
    * @param registry the route registry
    * @param history the history object to use for history management
@@ -70,12 +106,12 @@ public class Router {
   }
 
   /**
-   * Creates a new {@code Router} instance with the given {@code RouteRegistry}.
+   * Creates a new {@code Router} instance.
    *
    * @param registry the route registry
    */
   public Router(RouteRegistry registry) {
-    this(registry, new MemoryHistory());
+    this(registry, new BrowserHistory());
   }
 
   /**
@@ -91,31 +127,36 @@ public class Router {
    * @param onComplete the callback to be invoked with the result of the navigation
    */
   public void navigate(Location location, NavigationOptions options,
-      Consumer<Component> onComplete) {
+      Consumer<Optional<? extends Component>> onComplete) {
     Objects.requireNonNull(location, "Location must not be null");
 
-    Optional<RoutePattern> routePattern = getRoutePatternForLocation(location);
+    Location locationRootless = detachRoot(location);
+    console().log("Navigating to: " + locationRootless.getFullURI());
+    Optional<RoutePattern> routePattern = getRoutePatternForLocation(locationRootless);
     Optional<Class<? extends Component>> componentClass = routePattern.map(RoutePattern::getPattern)
         .map(c -> registry.getComponentByRoute(c).orElse(null));
 
     if (!routePattern.isPresent()) {
-      throw new RouteNotFoundException("Failed to match route for location: " + location);
+      throw new RouteNotFoundException("Failed to match route for location: " + locationRootless);
     }
 
     if (!componentClass.isPresent()) {
       throw new RouteNotFoundException(
-          "Path matched but no component found for location: " + location);
+          "Path matched but no component found for location: " + locationRootless);
     }
 
     RoutePattern matchedPattern = routePattern.get();
-    NavigationContext context = new NavigationContext(this, location, options, matchedPattern,
-        ParametersBag.of(matchedPattern.extractParameters(location.getSegments().getPath())));
+    NavigationContext context =
+        new NavigationContext(this, locationRootless, options, matchedPattern, ParametersBag
+            .of(matchedPattern.extractParameters(locationRootless.getSegments().getPath())));
 
     // remove the history state listener to avoid loops
     removeHistoryStateListener();
 
     renderer.render(componentClass.get(), context, component -> {
-      handleNavigateComplete(component, context);
+      if (component.isPresent()) {
+        handleNavigateComplete(component.get(), context);
+      }
 
       if (onComplete != null) {
         onComplete.accept(component);
@@ -151,7 +192,7 @@ public class Router {
    * @param location the location to navigate to
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Location location, Consumer<Component> onComplete) {
+  public void navigate(Location location, Consumer<Optional<? extends Component>> onComplete) {
     navigate(location, new NavigationOptions(), onComplete);
   }
 
@@ -177,13 +218,14 @@ public class Router {
    * the component, a {@code RouteNotFoundException} will be thrown.
    * </p>
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param options the navigate options
    * @param routeParameters a map of parameters to be included in the URL
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Class<? extends Component> component, NavigationOptions options,
-      Map<String, String> routeParameters, Consumer<Component> onComplete) {
+  public <T extends Component> void navigate(Class<T> component, NavigationOptions options,
+      Map<String, String> routeParameters, Consumer<Optional<T>> onComplete) {
     Objects.requireNonNull(component, "Component class must not be null");
 
     Optional<String> route = registry.getRouteByComponent(component);
@@ -192,21 +234,26 @@ public class Router {
           "No route found for component: " + component.getSimpleName());
     }
 
-    RoutePattern pattern = routesCache.computeIfAbsent(route.get(), RoutePattern::new);
+    RoutePattern pattern = getRoutesCache().computeIfAbsent(route.get(), RoutePattern::new);
     String path = pattern.buildUrl(routeParameters != null ? routeParameters : Map.of());
     Location location = new Location(path);
 
-    navigate(location, options, onComplete);
+    navigate(location, options, c -> {
+      if (onComplete != null && c.isPresent()) {
+        onComplete.accept(c.map(component::cast));
+      }
+    });
   }
 
   /**
    * Navigates to the location corresponding to the given component with options and parameters.
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param options the navigate options
    * @param params a map of parameters to be included in the URL
    */
-  public void navigate(Class<? extends Component> component, NavigationOptions options,
+  public <T extends Component> void navigate(Class<T> component, NavigationOptions options,
       Map<String, String> params) {
     navigate(component, options, params, null);
   }
@@ -215,12 +262,13 @@ public class Router {
    * Navigates to the location corresponding to the given component with parameters and a completion
    * callback.
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param params a map of parameters to be included in the URL
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Class<? extends Component> component, Map<String, String> params,
-      Consumer<Component> onComplete) {
+  public <T extends Component> void navigate(Class<T> component, Map<String, String> params,
+      Consumer<Optional<T>> onComplete) {
     navigate(component, new NavigationOptions(), params, onComplete);
   }
 
@@ -238,41 +286,45 @@ public class Router {
    * Navigates to the location corresponding to the given component with options and a completion
    * callback.
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param options the navigate options
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Class<? extends Component> component, NavigationOptions options,
-      Consumer<Component> onComplete) {
+  public <T extends Component> void navigate(Class<T> component, NavigationOptions options,
+      Consumer<Optional<T>> onComplete) {
     navigate(component, options, null, onComplete);
   }
 
   /**
    * Navigates to the location corresponding to the given component with options.
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param options the navigate options
    */
-  public void navigate(Class<? extends Component> component, NavigationOptions options) {
+  public <T extends Component> void navigate(Class<T> component, NavigationOptions options) {
     navigate(component, options, null, null);
   }
 
   /**
    * Navigates to the location corresponding to the given component with a completion callback.
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public void navigate(Class<? extends Component> component, Consumer<Component> onComplete) {
+  public <T extends Component> void navigate(Class<T> component, Consumer<Optional<T>> onComplete) {
     navigate(component, new NavigationOptions(), null, onComplete);
   }
 
   /**
    * Navigates to the location corresponding to the given component.
    *
+   * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    */
-  public void navigate(Class<? extends Component> component) {
+  public <T extends Component> void navigate(Class<T> component) {
     navigate(component, new NavigationOptions(), null, null);
   }
 
@@ -432,6 +484,15 @@ public class Router {
   }
 
   /**
+   * Retrieves the base path.
+   *
+   * @return the base path
+   */
+  public String getRoot() {
+    return root;
+  }
+
+  /**
    * Retrieves the event dispatcher.
    *
    * @return the event dispatcher
@@ -450,7 +511,7 @@ public class Router {
     List<RouteEntry> routes = registry.getAvailableRoutes();
 
     for (RouteEntry route : routes) {
-      RoutePattern pattern = routesCache.computeIfAbsent(route.getPath(), RoutePattern::new);
+      RoutePattern pattern = getRoutesCache().computeIfAbsent(route.getPath(), RoutePattern::new);
       String currentSegment = location.getSegments().getPath();
       if (pattern.matches(currentSegment)) {
         mp = pattern;
@@ -462,12 +523,24 @@ public class Router {
   }
 
   /**
+   * Gets the routes cache.
+   *
+   * @return the routes cache
+   */
+  protected Map<String, RoutePattern> getRoutesCache() {
+    return routesCache;
+  }
+
+  /**
    * Adds a history state listener.
    */
   protected void addHistoryStateListener() {
     this.removeHistoryStateListener();
-    historyListener = history.addHistoryStateChangeListener(
-        e -> e.getLocation().ifPresent(location -> navigate(location)));
+    historyListener =
+        history.addHistoryStateChangeListener(e -> e.getLocation().ifPresent(location -> {
+          console().log(location.getFullURI());
+          navigate(location);
+        }));
   }
 
   /**
@@ -481,7 +554,6 @@ public class Router {
 
   private void handleNavigateComplete(Component component, NavigationContext context) {
     ParametersBag routeParams = context.getRouteParameters();
-    Location willNavigateToLocation = context.getLocation();
     Optional<NavigationOptions> willNavigateOptions = context.getOptions();
 
     WillNavigateEvent event = new WillNavigateEvent(context);
@@ -498,12 +570,15 @@ public class Router {
       if (options.isUpdateHistory()) {
         NavigationOptions.NavigationType type = options.getNavigationType();
         Object state = options.getState();
+        Location willNavigateToLocation = attachRoot(context.getLocation());
+        Location finalWillNavigateToLocation = willNavigateToLocation;
+
         switch (type) {
           case PUSH:
-            history.pushState(state, willNavigateToLocation);
+            history.pushState(state, finalWillNavigateToLocation);
             break;
           case REPLACE:
-            history.replaceState(state, willNavigateToLocation);
+            history.replaceState(state, finalWillNavigateToLocation);
             break;
           default:
             break;
@@ -521,5 +596,63 @@ public class Router {
         didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
       }
     });
+  }
+
+  /**
+   * Strips the root from the given location.
+   *
+   * @param location the location to strip the root from
+   * @return the location without the root
+   */
+  protected Location detachRoot(Location location) {
+    String normalizeRoot = normalizePath(getRoot());
+    String path = normalizePath(location.getSegments().getPath());
+
+    if (!normalizeRoot.isEmpty() && path.startsWith(normalizeRoot)) {
+      path = path.substring(normalizeRoot.length());
+      path = normalizePath(path);
+    }
+
+    return new Location(new SegmentsBag(path), location.getQueryParameters(),
+        location.getFragment());
+  }
+
+  /**
+   * Adds the root to the given location.
+   *
+   * @param location the location to add the root to
+   * @return the location with the root added
+   */
+  protected Location attachRoot(Location location) {
+    String normalizeRoot = normalizePath(getRoot());
+    String path = normalizePath(location.getSegments().getPath());
+
+    if (!normalizeRoot.isEmpty() && !path.startsWith(normalizeRoot)) {
+      path = normalizeRoot + "/" + path; // NOSONAR
+      path = normalizePath(path);
+    }
+
+    // Ensure the path starts with a leading slash
+    if (!path.startsWith("/")) {
+      path = "/" + path; // NOSONAR
+    }
+
+    return new Location(new SegmentsBag(path), location.getQueryParameters(),
+        location.getFragment());
+  }
+
+  /**
+   * Normalizes the given path.
+   *
+   * @param path the path to normalize
+   * @return the normalized path
+   */
+  protected String normalizePath(String path) {
+    if (path == null || path.isEmpty()) {
+      return "";
+    }
+
+    // Remove leading and trailing slashes and normalize internal double slashes
+    return path.replaceAll("/+", "/").replaceAll("^/|/$", ""); // NOSONAR
   }
 }

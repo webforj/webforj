@@ -43,6 +43,7 @@ import com.webforj.router.observer.WillNavigateObserver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -109,7 +110,7 @@ class RouterTest {
       AtomicReference<Location> currentLocation = new AtomicReference<>();
 
       Location location = new Location("/main");
-      Consumer<Component> onComplete = component -> {
+      Consumer<Optional<? extends Component>> onComplete = component -> {
         onCompleteCalled.set(true);
         currentLocation.set(history.getLocation().orElse(null));
       };
@@ -124,7 +125,7 @@ class RouterTest {
     void shouldNavigateToLocationWithOptionsAndCallback() {
       AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
       NavigationOptions options = new NavigationOptions();
-      Consumer<Component> onComplete = component -> onCompleteCalled.set(true);
+      Consumer<Optional<? extends Component>> onComplete = component -> onCompleteCalled.set(true);
 
       Location location = new Location("/main");
       router.navigate(location, options, onComplete);
@@ -146,7 +147,7 @@ class RouterTest {
     @Test
     void shouldNavigateToLocationWithCallbackOnly() {
       AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
-      Consumer<Component> onComplete = component -> onCompleteCalled.set(true);
+      Consumer<Optional<? extends Component>> onComplete = component -> onCompleteCalled.set(true);
 
       Location location = new Location("/main");
       router.navigate(location, onComplete);
@@ -173,7 +174,7 @@ class RouterTest {
       params.put("id", "123");
 
       NavigationOptions options = new NavigationOptions();
-      Consumer<Component> onComplete = component -> onCompleteCalled.set(true);
+      Consumer<Optional<PageView>> onComplete = component -> onCompleteCalled.set(true);
 
       router.navigate(PageView.class, options, params, onComplete);
 
@@ -199,7 +200,7 @@ class RouterTest {
       Map<String, String> params = new HashMap<>();
       params.put("id", "123");
 
-      Consumer<Component> onComplete = component -> onCompleteCalled.set(true);
+      Consumer<Optional<PageView>> onComplete = component -> onCompleteCalled.set(true);
 
       router.navigate(PageView.class, params, onComplete);
 
@@ -221,7 +222,7 @@ class RouterTest {
     void shouldNavigateToComponentWithOptionsAndCallback() {
       AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
       NavigationOptions options = new NavigationOptions();
-      Consumer<Component> onComplete = component -> onCompleteCalled.set(true);
+      Consumer<Optional<MainView>> onComplete = component -> onCompleteCalled.set(true);
 
       router.navigate(MainView.class, options, onComplete);
 
@@ -241,7 +242,7 @@ class RouterTest {
     @Test
     void shouldNavigateToComponentWithCallbackOnly() {
       AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
-      Consumer<Component> onComplete = component -> onCompleteCalled.set(true);
+      Consumer<Optional<MainView>> onComplete = component -> onCompleteCalled.set(true);
 
       router.navigate(MainView.class, onComplete);
 
@@ -267,7 +268,7 @@ class RouterTest {
       router.onDidEnter(didEnterListener);
 
       Location location = new Location("/main");
-      Consumer<Component> onComplete = component -> {
+      Consumer<Optional<? extends Component>> onComplete = component -> {
         verify(willEnterListener, atLeast(1)).onEvent(any(WillEnterEvent.class));
         verify(didEnterListener, atLeast(1)).onEvent(any(DidEnterEvent.class));
       };
@@ -284,7 +285,7 @@ class RouterTest {
         router.onDidLeave(didLeaveListener);
 
         Location location = new Location("/main");
-        Consumer<Component> onComplete = component -> {
+        Consumer<Optional<? extends Component>> onComplete = component -> {
           verify(willLeaveListener, atLeast(1)).onEvent(any(WillLeaveEvent.class));
           verify(didLeaveListener, atLeast(1)).onEvent(any(DidLeaveEvent.class));
         };
@@ -302,7 +303,7 @@ class RouterTest {
 
 
       Location location = new Location("/main");
-      Consumer<Component> onComplete = component -> {
+      Consumer<Optional<? extends Component>> onComplete = component -> {
         verify(willNavigateListener, atLeast(1)).onEvent(any(WillNavigateEvent.class));
         verify(didNavigateListener, atLeast(1)).onEvent(any(DidNavigateEvent.class));
       };
@@ -317,7 +318,7 @@ class RouterTest {
     void shouldHandleObservers() {
       AtomicReference<PageView> pageViewRef = new AtomicReference<>();
       router.navigate(new Location("/main/123"), c -> {
-        PageView pageView = (PageView) c;
+        PageView pageView = (PageView) c.get();
         pageViewRef.set(pageView);
 
         assertTrue(pageView.onWillEnterInvoked);
@@ -398,7 +399,7 @@ class RouterTest {
       params.put("id", "123");
 
       router.navigate(PageView.class, options, params, c -> {
-        PageView pageView = (PageView) c;
+        PageView pageView = (PageView) c.get();
         assertFalse(pageView.onWillEnterInvoked);
         assertFalse(pageView.onDidEnterInvoked);
         assertFalse(pageView.onWillNavigateInvoked);

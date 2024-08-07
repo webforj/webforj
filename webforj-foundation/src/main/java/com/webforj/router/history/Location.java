@@ -55,6 +55,19 @@ public class Location implements Serializable {
   }
 
   /**
+   * Constructs a Location object from path segments, query string, and fragment.
+   *
+   * @param segments the list of path segments
+   * @param query the query string
+   * @param fragment the fragment
+   */
+  public Location(SegmentsBag segments, ParametersBag query, String fragment) {
+    this.segments = segments;
+    this.parameters = query;
+    this.fragment = fragment;
+  }
+
+  /**
    * Constructs a Location object from a location string.
    *
    * @param location the location string

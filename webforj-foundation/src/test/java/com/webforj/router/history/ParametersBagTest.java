@@ -71,61 +71,54 @@ class ParametersBagTest {
     assertEquals("value2", allParams.get("param2"));
   }
 
-  @Test
-  void shouldReturnParameterWithDefaultValue() {
-    ParametersBag bag = new ParametersBag();
-    bag.put("param1", "value1");
-    assertEquals("value1", bag.get("param1", "default"));
-    assertEquals("default", bag.get("param2", "default"));
-  }
 
   @Test
   void shouldReturnAlphabeticCharacters() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "a1b2c3");
-    assertEquals("abc", bag.getAlpha("param1", ""));
+    assertEquals("abc", bag.getAlpha("param1").get());
   }
 
   @Test
   void shouldReturnAlphanumericCharacters() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "a1b2c3!");
-    assertEquals("a1b2c3", bag.getAlnum("param1", ""));
+    assertEquals("a1b2c3", bag.getAlnum("param1").get());
   }
 
   @Test
   void shouldReturnDigitsOnly() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "a1b2c3");
-    assertEquals("123", bag.getDigits("param1", ""));
+    assertEquals("123", bag.getDigits("param1").get());
   }
 
   @Test
   void shouldReturnIntegerValue() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "123");
-    assertEquals(123, bag.getInt("param1", 0).intValue());
+    assertEquals(123, bag.getInt("param1").get());
   }
 
   @Test
   void shouldReturnFloatValue() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "123.45");
-    assertEquals(123.45f, bag.getFloat("param1", 0.0f), 0.001);
+    assertEquals(123.45f, bag.getFloat("param1").get(), 0.001);
   }
 
   @Test
   void shouldReturnDoubleValue() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "123.456");
-    assertEquals(123.456, bag.getDouble("param1", 0.0), 0.001);
+    assertEquals(123.456, bag.getDouble("param1").get(), 0.001);
   }
 
   @Test
   void shouldReturnBooleanValue() {
     ParametersBag bag = new ParametersBag();
     bag.put("param1", "true");
-    assertTrue(bag.getBoolean("param1", false));
+    assertTrue(bag.getBoolean("param1").get());
   }
 
   @Test
