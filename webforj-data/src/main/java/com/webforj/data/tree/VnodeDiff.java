@@ -15,9 +15,9 @@ import java.util.Set;
  * @since 24.11
  */
 public class VnodeDiff<T> {
-  private final Set<T> toAdd = new LinkedHashSet<>(); // Changed to LinkedHashSet
-  private final Set<T> toRemove = new LinkedHashSet<>(); // Changed to LinkedHashSet
-  private final Set<T> toKeep = new LinkedHashSet<>(); // Changed to LinkedHashSet
+  private final Set<T> toAdd = new LinkedHashSet<>();
+  private final Set<T> toRemove = new LinkedHashSet<>();
+  private final Set<T> toKeep = new LinkedHashSet<>();
 
   /**
    * Constructs a new {@code VnodeDiff} instance by comparing two TreeNode instances.
