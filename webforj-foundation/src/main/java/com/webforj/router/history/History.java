@@ -36,11 +36,11 @@ public interface History {
   History go(int index);
 
   /**
-   * Returns the number of pages in session history including the currently loaded page.
+   * Returns the number of pages in the history stack.
    *
-   * @return the number of pages in session history
+   * @return the number of pages in the history stack
    */
-  int size();
+  public int size();
 
   /**
    * Returns the current location.
