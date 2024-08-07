@@ -104,8 +104,8 @@ public class VnodeDiff<T> {
       toAdd.add(next.getData());
     }
 
-    Set<T> currentChildrenData = new LinkedHashSet<>(); // Changed to LinkedHashSet
-    Set<T> nextChildrenData = new LinkedHashSet<>(); // Changed to LinkedHashSet
+    Set<T> currentChildrenData = new LinkedHashSet<>();
+    Set<T> nextChildrenData = new LinkedHashSet<>();
 
     for (Vnode<T> child : current.getChildren()) {
       currentChildrenData.add(child.getData());
