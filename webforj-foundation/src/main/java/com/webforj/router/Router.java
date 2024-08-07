@@ -19,7 +19,6 @@ import com.webforj.router.history.SegmentsBag;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 import com.webforj.router.observer.DidNavigateObserver;
 import com.webforj.router.observer.WillNavigateObserver;
-import static com.webforj.App.console;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +130,6 @@ public class Router {
     Objects.requireNonNull(location, "Location must not be null");
 
     Location locationRootless = detachRoot(location);
-    console().log("Navigating to: " + locationRootless.getFullURI());
     Optional<RoutePattern> routePattern = getRoutePatternForLocation(locationRootless);
     Optional<Class<? extends Component>> componentClass = routePattern.map(RoutePattern::getPattern)
         .map(c -> registry.getComponentByRoute(c).orElse(null));
@@ -538,7 +536,6 @@ public class Router {
     this.removeHistoryStateListener();
     historyListener =
         history.addHistoryStateChangeListener(e -> e.getLocation().ifPresent(location -> {
-          console().log(location.getFullURI());
           navigate(location);
         }));
   }
@@ -610,7 +607,7 @@ public class Router {
 
     if (!normalizeRoot.isEmpty() && path.startsWith(normalizeRoot)) {
       path = path.substring(normalizeRoot.length());
-      path = normalizePath(path);
+      path = "/" + normalizePath(path);
     }
 
     return new Location(new SegmentsBag(path), location.getQueryParameters(),
