@@ -74,7 +74,7 @@ class RouteRendererTest {
     AtomicBoolean resultReceived = new AtomicBoolean(false);
     routeRenderer.render(TestComponent.class, result -> {
       assertNotNull(result);
-      assertEquals(TestComponent.class, result.getClass());
+      assertEquals(TestComponent.class, result.get().getClass());
       resultReceived.set(true);
     });
 
@@ -96,12 +96,12 @@ class RouteRendererTest {
     AtomicBoolean parentResultReceived = new AtomicBoolean(false);
     routeRenderer.render(ParentComponent.class, parentResult -> {
       assertNotNull(parentResult);
-      assertEquals(ParentComponent.class, parentResult.getClass());
+      assertEquals(ParentComponent.class, parentResult.get().getClass());
       parentResultReceived.set(true);
 
       routeRenderer.render(ChildComponent.class, childResult -> {
         assertNotNull(childResult);
-        assertEquals(ChildComponent.class, childResult.getClass());
+        assertEquals(ChildComponent.class, childResult.get().getClass());
       });
     });
 
@@ -114,8 +114,7 @@ class RouteRendererTest {
     void shouldInvokeLifecycleObserversBeforeDestroy() {
       routeRegistry.register("/test", TestComponent.class);
       routeRegistry.register("/unregistered", UnregisteredComponent.class);
-      routeRenderer.render(TestComponent.class, result -> {
-      });
+      routeRenderer.render(TestComponent.class);
 
       AtomicBoolean observerCalled = new AtomicBoolean(false);
       routeRenderer.addObserver((component, event, context, cb) -> {
@@ -148,7 +147,7 @@ class RouteRendererTest {
 
       routeRenderer.render(UnregisteredComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertNotNull(result);
+        assertTrue(result.isPresent());
       });
     }
 
@@ -156,8 +155,7 @@ class RouteRendererTest {
     void shouldNotRemoveComponentIfBeforeDestroyVetoed() {
       routeRegistry.register("/test", TestComponent.class);
       routeRegistry.register("/unregistered", UnregisteredComponent.class);
-      routeRenderer.render(TestComponent.class, result -> {
-      });
+      routeRenderer.render(TestComponent.class);
 
       AtomicReference<Component> componentRef = new AtomicReference<>();
       routeRenderer.addObserver((component, event, context, cb) -> {
@@ -191,7 +189,7 @@ class RouteRendererTest {
 
       routeRenderer.render(TestComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertNotNull(result);
+        assertTrue(result.isPresent());
       });
     }
 
@@ -209,27 +207,26 @@ class RouteRendererTest {
 
       routeRenderer.render(TestComponent.class, result -> {
         assertTrue(observerCalled.get());
-        assertNotNull(result);
+        assertTrue(result.isPresent());
       });
     }
 
-    // @Test
-    // void shouldNotCreateComponentIfBeforeCreateVetoed() {
-    // routeRegistry.register("/test", TestComponent.class);
+    @Test
+    void shouldNotCreateComponentIfVetoedBeforeCreate() {
+      routeRegistry.register("/test", TestComponent.class);
 
-    // AtomicReference<Component> componentRef = new AtomicReference<>();
-    // routeRenderer.addLifecycleObserver((component, event, cb) -> {
-    // componentRef.set(component);
-    // if (event == RouteRendererLifecycleObserver.LifecycleEvent.BEFORE_CREATE) {
-    // cb.accept(false);
-    // } else {
-    // cb.accept(true);
-    // }
-    // });
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.BEFORE_CREATE) {
+          cb.accept(false);
+        } else {
+          cb.accept(true);
+        }
+      });
 
-    // routeRenderer.render(TestComponent.class);
-    // assertFalse(componentRef.get().isAttached());
-    // }
+      routeRenderer.render(TestComponent.class, result -> {
+        assertFalse(result.isPresent());
+      });
+    }
   }
 
   // Mock TestComponent class used in tests

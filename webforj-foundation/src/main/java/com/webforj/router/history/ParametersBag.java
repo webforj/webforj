@@ -127,199 +127,106 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    * Returns the value for a specific parameter.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   *
-   * @return the parameter value
-   */
-  public String get(String key, String defaultValue) {
-    return parameters.getOrDefault(key, defaultValue);
-  }
-
-  /**
-   * Returns the value for a specific parameter.
-   *
-   * @param key the parameter key
-   * @return the parameter value
+   * @return an {@code Optional} containing the parameter value if present, or an empty
+   *         {@code Optional} otherwise
    */
   public Optional<String> get(String key) {
-    return Optional.ofNullable(get(key, null));
+    return Optional.ofNullable(parameters.get(key));
   }
 
   /**
    * Returns the alphabetic characters of the parameter value.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   *
-   * @return the alphabetic characters of the parameter value
+   * @return an {@code Optional} containing the alphabetic characters of the parameter value if
+   *         present, or an empty {@code Optional} otherwise
    */
-  public String getAlpha(String key, String defaultValue) {
-    String value = get(key).orElse(defaultValue);
-    if (value == null) {
-      return null;
-    }
-
-    return value.replaceAll("[^a-zA-Z]", "");
-  }
-
-  /**
-   * Returns the alphabetic characters of the parameter value.
-   *
-   * @param key the parameter key
-   * @return the alphabetic characters of the parameter value
-   */
-  public String getAlpha(String key) {
-    return getAlpha(key, null);
+  public Optional<String> getAlpha(String key) {
+    return get(key).map(value -> value.replaceAll("[^a-zA-Z]", ""));
   }
 
   /**
    * Returns the alphabetic characters and digits of the parameter value.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   *
-   * @return the alphabetic characters and digits of the parameter value
-   */
-  public String getAlnum(String key, String defaultValue) {
-    String value = get(key).orElse(defaultValue);
-    if (value == null) {
-      return null;
-    }
-
-    return value.replaceAll("[^a-zA-Z0-9]", "");
-  }
-
-  /**
-   * Returns the alphabetic characters and digits of the parameter value.
-   *
-   * @param key the parameter key
-   * @return the alphabetic characters and digits of the parameter value
+   * @return an {@code Optional} containing the alphabetic characters and digits of the parameter
+   *         value if present, or an empty {@code Optional} otherwise
    */
   public Optional<String> getAlnum(String key) {
-    return Optional.ofNullable(getAlnum(key, null));
+    return get(key).map(value -> value.replaceAll("[^a-zA-Z0-9]", ""));
   }
 
   /**
    * Returns the digits of the parameter value.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   *
-   * @return the digits of the parameter value
-   */
-  public String getDigits(String key, String defaultValue) {
-    String value = get(key).orElse(defaultValue);
-    if (value == null) {
-      return null;
-    }
-
-    return value.replaceAll("\\D", "");
-  }
-
-  /**
-   * Returns the digits of the parameter value.
-   *
-   * @param key the parameter key
-   * @return the digits of the parameter value
+   * @return an {@code Optional} containing the digits of the parameter value if present, or an
+   *         empty {@code Optional} otherwise
    */
   public Optional<String> getDigits(String key) {
-    return Optional.ofNullable(getDigits(key, null));
+    return get(key).map(value -> value.replaceAll("\\D", ""));
   }
 
   /**
    * Returns the parameter value as an integer.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   * @return the parameter value as an integer
-   */
-  public Integer getInt(String key, Integer defaultValue) {
-    try {
-      return Integer.parseInt(get(key, String.valueOf(defaultValue)));
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
-  }
-
-  /**
-   * Returns the parameter value as an integer.
-   *
-   * @param key the parameter key
-   * @return the parameter value as an integer
+   * @return an {@code Optional} containing the parameter value as an integer if present and
+   *         parsable, or an empty {@code Optional} otherwise
    */
   public Optional<Integer> getInt(String key) {
-    return Optional.ofNullable(getInt(key, null));
+    return get(key).flatMap(value -> {
+      try {
+        return Optional.of(Integer.parseInt(value));
+      } catch (NumberFormatException e) {
+        return Optional.empty();
+      }
+    });
   }
 
   /**
    * Returns the parameter value as a float.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   * @return the parameter value as a float
-   */
-  public Float getFloat(String key, Float defaultValue) {
-    try {
-      return Float.parseFloat(get(key, String.valueOf(defaultValue)));
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
-  }
-
-  /**
-   * Returns the parameter value as a float.
-   *
-   * @param key the parameter key
-   * @return the parameter value as a float
+   * @return an {@code Optional} containing the parameter value as a float if present and parsable,
+   *         or an empty {@code Optional} otherwise
    */
   public Optional<Float> getFloat(String key) {
-    return Optional.ofNullable(getFloat(key, null));
+    return get(key).flatMap(value -> {
+      try {
+        return Optional.of(Float.parseFloat(value));
+      } catch (NumberFormatException e) {
+        return Optional.empty();
+      }
+    });
   }
 
   /**
    * Returns the parameter value as a double.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   * @return the parameter value as a double
-   */
-  public Double getDouble(String key, Double defaultValue) {
-    try {
-      return Double.parseDouble(get(key, String.valueOf(defaultValue)));
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
-  }
-
-  /**
-   * Returns the parameter value as a double.
-   *
-   * @param key the parameter key
-   * @return the parameter value as a double
+   * @return an {@code Optional} containing the parameter value as a double if present and parsable,
+   *         or an empty {@code Optional} otherwise
    */
   public Optional<Double> getDouble(String key) {
-    return Optional.ofNullable(getDouble(key, null));
+    return get(key).flatMap(value -> {
+      try {
+        return Optional.of(Double.parseDouble(value));
+      } catch (NumberFormatException e) {
+        return Optional.empty();
+      }
+    });
   }
 
   /**
    * Returns the parameter value as a boolean.
    *
    * @param key the parameter key
-   * @param defaultValue the default value
-   * @return the parameter value as a boolean
-   */
-  public Boolean getBoolean(String key, Boolean defaultValue) {
-    return Boolean.parseBoolean(get(key, String.valueOf(defaultValue)));
-  }
-
-  /**
-   * Returns the parameter value as a boolean.
-   *
-   * @param key the parameter key
-   * @return the parameter value as a boolean
+   * @return an {@code Optional} containing the parameter value as a boolean if present and
+   *         parsable, or an empty {@code Optional} otherwise
    */
   public Optional<Boolean> getBoolean(String key) {
-    return Optional.ofNullable(getBoolean(key, null));
+    return get(key).map(Boolean::parseBoolean);
   }
 
   /**

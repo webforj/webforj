@@ -34,7 +34,7 @@ class RouteRendererScenariosTest {
     routeRegistry = new RouteRegistry();
     routeRegistry.register("main", MainView.class); // /main
     routeRegistry.register("about", AboutView.class); // /about
-    routeRegistry.register("submain", SubMainView.class, MainView.class); // /main/submain
+    routeRegistry.register("main/submain", SubMainView.class, MainView.class); // /main/submain
 
     routeRenderer = spy(new RouteRenderer(routeRegistry));
 
@@ -68,7 +68,7 @@ class RouteRendererScenariosTest {
   void shouldNavigateToMain() {
     routeRenderer.render(MainView.class, c -> {
       assertNotNull(c);
-      assertEquals(MainView.class, c.getClass());
+      assertEquals(MainView.class, c.get().getClass());
     });
   }
 
@@ -76,12 +76,12 @@ class RouteRendererScenariosTest {
   void shouldNavigateFromMainToAbout() {
     routeRenderer.render(MainView.class, mainResult -> {
       assertNotNull(mainResult);
-      MainView mainView = (MainView) mainResult;
+      MainView mainView = mainResult.get();
       assertEquals(MainView.class, mainView.getClass());
 
       routeRenderer.render(AboutView.class, aboutResult -> {
         assertNotNull(aboutResult);
-        AboutView aboutView = (AboutView) aboutResult;
+        AboutView aboutView = aboutResult.get();
         assertEquals(AboutView.class, aboutView.getClass());
         assertFalse(mainView.isDestroyed());
       });
@@ -92,12 +92,12 @@ class RouteRendererScenariosTest {
   void shouldNavigateFromMainToSubMain() {
     routeRenderer.render(MainView.class, mainResult -> {
       assertNotNull(mainResult);
-      MainView mainView = (MainView) mainResult;
+      MainView mainView = mainResult.get();
       assertEquals(MainView.class, mainView.getClass());
 
       routeRenderer.render(SubMainView.class, subMainResult -> {
         assertNotNull(subMainResult);
-        SubMainView subMainView = (SubMainView) subMainResult;
+        SubMainView subMainView = subMainResult.get();
         assertEquals(SubMainView.class, subMainView.getClass());
         assertFalse(mainView.isDestroyed());
       });
@@ -108,12 +108,12 @@ class RouteRendererScenariosTest {
   void shouldNavigateFromSubMainToMain() {
     routeRenderer.render(SubMainView.class, subMainResult -> {
       assertNotNull(subMainResult);
-      SubMainView subMainView = (SubMainView) subMainResult;
+      SubMainView subMainView = subMainResult.get();
       assertEquals(SubMainView.class, subMainView.getClass());
 
       routeRenderer.render(MainView.class, mainResult -> {
         assertNotNull(mainResult);
-        MainView mainView = (MainView) mainResult;
+        MainView mainView = mainResult.get();
         assertEquals(MainView.class, mainView.getClass());
         assertTrue(subMainView.isDestroyed());
       });
@@ -122,16 +122,16 @@ class RouteRendererScenariosTest {
 
   @NodeName("view-main")
   static class MainView extends ElementCompositeContainer {
-    // Mock implementation of MainView
+    // Mock implementation
   }
 
   @NodeName("view-about")
   static class AboutView extends ElementCompositeContainer {
-    // Mock implementation of AboutView
+    // Mock implementation
   }
 
   @NodeName("view-submain")
   static class SubMainView extends ElementCompositeContainer {
-    // Mock implementation of SubMainView
+    // Mock implementation
   }
 }
