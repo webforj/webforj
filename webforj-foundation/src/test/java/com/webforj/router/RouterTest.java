@@ -430,15 +430,100 @@ class RouterTest {
     }
   }
 
+  @Nested
+  class RouteRetrieval {
+
+    @Test
+    void shouldReturnRoutePatternForValidLocation() {
+      Location location = new Location("/main");
+      Optional<RoutePattern> routePattern = router.getRouteByLocation(location);
+      assertTrue(routePattern.isPresent());
+      assertEquals("/main", routePattern.get().getPattern());
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalForInvalidLocation() {
+      Location location = new Location("/invalidPath");
+      Optional<RoutePattern> routePattern = router.getRouteByLocation(location);
+      assertFalse(routePattern.isPresent());
+    }
+
+    @Test
+    void shouldReturnLocationForComponentWithParams() {
+      ParametersBag params = new ParametersBag();
+      params.put("id", "123");
+
+      Optional<Location> location = router.getLocation(PageView.class, params);
+      assertTrue(location.isPresent());
+      assertEquals("/main/123", location.get().getFullURI());
+    }
+
+    @Test
+    void shouldReturnLocationForComponentWithoutParams() {
+      Optional<Location> location = router.getLocation(MainView.class);
+      assertTrue(location.isPresent());
+      assertEquals("/main", location.get().getFullURI());
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalForComponentWithoutRoute() {
+      Optional<Location> location = router.getLocation(NonRegisteredView.class);
+      assertFalse(location.isPresent());
+    }
+
+    @Test
+    void shouldReturnUriForComponentWithParams() {
+      ParametersBag params = new ParametersBag();
+      params.put("id", "123");
+
+      Optional<String> uri = router.getUri(PageView.class, params);
+      assertTrue(uri.isPresent());
+      assertEquals("/main/123", uri.get());
+    }
+
+    @Test
+    void shouldReturnUriForComponentWithoutParams() {
+      Optional<String> uri = router.getUri(MainView.class);
+      assertTrue(uri.isPresent());
+      assertEquals("/main", uri.get());
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalForComponentWithoutRouteUri() {
+      Optional<String> uri = router.getUri(NonRegisteredView.class);
+      assertFalse(uri.isPresent());
+    }
+
+    @Test
+    void shouldReturnLastResolvedLocation() {
+      Location location = new Location("/main");
+      router.navigate(location);
+      Optional<Location> resolvedLocation = router.getResolvedLocation();
+      assertTrue(resolvedLocation.isPresent());
+      assertEquals("/main", resolvedLocation.get().getFullURI());
+    }
+
+    @Test
+    void shouldReturnEmptyOptionalWhenNoResolvedLocation() {
+      Optional<Location> resolvedLocation = router.getResolvedLocation();
+      assertFalse(resolvedLocation.isPresent());
+    }
+  }
+
+  @NodeName("view-nonregistered")
+  static class NonRegisteredView extends ElementCompositeContainer {
+    // Mock implementation
+  }
+
 
   @NodeName("view-about")
   static class AboutView extends ElementCompositeContainer {
-    // Mock implementation of MainView
+    // Mock implementation
   }
 
   @NodeName("view-main")
   static class MainView extends ElementCompositeContainer {
-    // Mock implementation of MainView
+    // Mock implementation
   }
 
   @NodeName("view-page")
