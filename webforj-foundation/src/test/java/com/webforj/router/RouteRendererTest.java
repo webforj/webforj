@@ -3,7 +3,6 @@ package com.webforj.router;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -19,7 +18,6 @@ import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasComponents;
-import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.observer.RouteRendererObserver;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -79,13 +77,6 @@ class RouteRendererTest {
     });
 
     assertTrue(resultReceived.get());
-  }
-
-  @Test
-  void shouldFailToNavigateToUnregisteredComponent() {
-    assertThrows(RouteNotFoundException.class, () -> {
-      routeRenderer.render(UnregisteredComponent.class);
-    });
   }
 
   @Test

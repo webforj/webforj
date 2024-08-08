@@ -40,9 +40,7 @@ import com.webforj.router.observer.DidNavigateObserver;
 import com.webforj.router.observer.WillEnterObserver;
 import com.webforj.router.observer.WillLeaveObserver;
 import com.webforj.router.observer.WillNavigateObserver;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -170,8 +168,9 @@ class RouterTest {
     @Test
     void shouldNavigateToComponentWithParamsAndOptionsAndCallback() {
       AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
-      Map<String, String> params = new HashMap<>();
+      ParametersBag params = new ParametersBag();
       params.put("id", "123");
+
 
       NavigationOptions options = new NavigationOptions();
       Consumer<Optional<PageView>> onComplete = component -> onCompleteCalled.set(true);
@@ -184,7 +183,7 @@ class RouterTest {
 
     @Test
     void shouldNavigateToComponentWithParamsAndOptions() {
-      Map<String, String> params = new HashMap<>();
+      ParametersBag params = new ParametersBag();
       params.put("id", "123");
 
       NavigationOptions options = new NavigationOptions();
@@ -197,7 +196,7 @@ class RouterTest {
     @Test
     void shouldNavigateToComponentWithParamsAndCallback() {
       AtomicBoolean onCompleteCalled = new AtomicBoolean(false);
-      Map<String, String> params = new HashMap<>();
+      ParametersBag params = new ParametersBag();
       params.put("id", "123");
 
       Consumer<Optional<PageView>> onComplete = component -> onCompleteCalled.set(true);
@@ -210,7 +209,7 @@ class RouterTest {
 
     @Test
     void shouldNavigateToComponentWithParamsOnly() {
-      Map<String, String> params = new HashMap<>();
+      ParametersBag params = new ParametersBag();
       params.put("id", "123");
 
       router.navigate(PageView.class, params);
@@ -395,7 +394,7 @@ class RouterTest {
     void shouldNotInvokeObserversWhenInvokeObserversIsFalse() {
       NavigationOptions options = new NavigationOptions().setInvokeObservers(false);
 
-      Map<String, String> params = new HashMap<>();
+      ParametersBag params = new ParametersBag();
       params.put("id", "123");
 
       router.navigate(PageView.class, options, params, c -> {

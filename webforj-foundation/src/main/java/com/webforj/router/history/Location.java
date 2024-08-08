@@ -139,4 +139,56 @@ public class Location implements Serializable {
   public String toString() {
     return getFullURI();
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((segments == null) ? 0 : segments.hashCode());
+    result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
+    result = prime * result + ((fragment == null) ? 0 : fragment.hashCode());
+    return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Location other = (Location) obj;
+    if (segments == null) {
+      if (other.segments != null) {
+        return false;
+      }
+    } else if (!segments.equals(other.segments)) {
+      return false;
+    }
+    if (parameters == null) {
+      if (other.parameters != null) {
+        return false;
+      }
+    } else if (!parameters.equals(other.parameters)) {
+      return false;
+    }
+    if (fragment == null) {
+      if (other.fragment != null) {
+        return false;
+      }
+    } else if (!fragment.equals(other.fragment)) {
+      return false;
+    }
+    return true;
+  }
 }

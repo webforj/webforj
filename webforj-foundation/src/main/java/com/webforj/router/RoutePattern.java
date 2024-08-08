@@ -1,5 +1,6 @@
 package com.webforj.router;
 
+import com.webforj.router.history.ParametersBag;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -301,6 +302,37 @@ public class RoutePattern {
     }
 
     return urlBuilder.toString();
+  }
+
+  /**
+   * Constructs a URL from a RoutePattern and a map of parameters.
+   *
+   * <p>
+   * The URL is constructed by replacing parameters in the pattern with corresponding values from
+   * the provided map. Wildcard segments capture remaining path components.
+   * </p>
+   *
+   * <p>
+   * Rules for URL construction:
+   * <ul>
+   * <li>If the pattern includes named parameters (e.g., ":paramName"), the corresponding values
+   * from the map replace these parameters.</li>
+   * <li>If the pattern includes optional parameters (e.g., ":paramName?"), these are appended to
+   * the URL only if present in the map.</li>
+   * <li>If the pattern includes wildcard segments (e.g., "*", ":paramName*"), the map should
+   * provide a value for "*" or ":paramName*" that captures the remaining path segments.</li>
+   * <li>Static segments in the pattern are directly appended to the URL.</li>
+   * <li>The method trims trailing slashes from the URL unless the original pattern ends with a
+   * slash.</li>
+   * </ul>
+   * </p>
+   *
+   * @param params a map of parameter names to values
+   * @return the constructed URL
+   * @throws IllegalArgumentException if a required parameter is missing in the provided map
+   */
+  public String buildUrl(ParametersBag params) { // NOSONAR
+    return buildUrl(params.all());
   }
 
   /**

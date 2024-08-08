@@ -40,6 +40,7 @@ public class Router {
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private ListenerRegistration<HistoryStateChangeEvent> historyListener;
   private String root;
+  private Location lastResolvedLocation;
 
   /**
    * Creates a new {@code Router} instance.
@@ -219,11 +220,11 @@ public class Router {
    * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param options the navigate options
-   * @param routeParameters a map of parameters to be included in the URL
+   * @param parameters a map of parameters to be included in the URL
    * @param onComplete the callback to be invoked with the result of the navigation
    */
   public <T extends Component> void navigate(Class<T> component, NavigationOptions options,
-      Map<String, String> routeParameters, Consumer<Optional<T>> onComplete) {
+      ParametersBag parameters, Consumer<Optional<T>> onComplete) {
     Objects.requireNonNull(component, "Component class must not be null");
 
     Optional<String> route = registry.getRouteByComponent(component);
@@ -233,12 +234,16 @@ public class Router {
     }
 
     RoutePattern pattern = getRoutesCache().computeIfAbsent(route.get(), RoutePattern::new);
-    String path = pattern.buildUrl(routeParameters != null ? routeParameters : Map.of());
+    String path = pattern.buildUrl(parameters != null ? parameters : new ParametersBag());
     Location location = new Location(path);
 
     navigate(location, options, c -> {
-      if (onComplete != null && c.isPresent()) {
-        onComplete.accept(c.map(component::cast));
+      if (onComplete != null) {
+        if (c.isPresent()) {
+          onComplete.accept(Optional.of(component.cast(c.get())));
+        } else {
+          onComplete.accept(Optional.empty());
+        }
       }
     });
   }
@@ -249,11 +254,11 @@ public class Router {
    * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
    * @param options the navigate options
-   * @param params a map of parameters to be included in the URL
+   * @param parameters a map of parameters to be included in the URL
    */
   public <T extends Component> void navigate(Class<T> component, NavigationOptions options,
-      Map<String, String> params) {
-    navigate(component, options, params, null);
+      ParametersBag parameters) {
+    navigate(component, options, parameters, null);
   }
 
   /**
@@ -262,22 +267,22 @@ public class Router {
    *
    * @param <T> the type of the component to navigate to
    * @param component the component class to navigate to
-   * @param params a map of parameters to be included in the URL
+   * @param parameters a map of parameters to be included in the URL
    * @param onComplete the callback to be invoked with the result of the navigation
    */
-  public <T extends Component> void navigate(Class<T> component, Map<String, String> params,
+  public <T extends Component> void navigate(Class<T> component, ParametersBag parameters,
       Consumer<Optional<T>> onComplete) {
-    navigate(component, new NavigationOptions(), params, onComplete);
+    navigate(component, new NavigationOptions(), parameters, onComplete);
   }
 
   /**
    * Navigates to the location corresponding to the given component with parameters.
    *
    * @param component the component class to navigate to
-   * @param params a map of parameters to be included in the URL
+   * @param parameters a map of parameters to be included in the URL
    */
-  public void navigate(Class<? extends Component> component, Map<String, String> params) {
-    navigate(component, new NavigationOptions(), params, null);
+  public void navigate(Class<? extends Component> component, ParametersBag parameters) {
+    navigate(component, new NavigationOptions(), parameters, null);
   }
 
   /**
@@ -536,7 +541,9 @@ public class Router {
     this.removeHistoryStateListener();
     historyListener =
         history.addHistoryStateChangeListener(e -> e.getLocation().ifPresent(location -> {
-          navigate(location);
+          NavigationOptions options = new NavigationOptions();
+          options.setUpdateHistory(false);
+          navigate(location, options);
         }));
   }
 
@@ -565,20 +572,26 @@ public class Router {
       }
 
       if (options.isUpdateHistory()) {
-        NavigationOptions.NavigationType type = options.getNavigationType();
-        Object state = options.getState();
         Location willNavigateToLocation = attachRoot(context.getLocation());
         Location finalWillNavigateToLocation = willNavigateToLocation;
 
-        switch (type) {
-          case PUSH:
-            history.pushState(state, finalWillNavigateToLocation);
-            break;
-          case REPLACE:
-            history.replaceState(state, finalWillNavigateToLocation);
-            break;
-          default:
-            break;
+        // Check if the location has changed
+        if (lastResolvedLocation == null || (lastResolvedLocation != null
+            && !lastResolvedLocation.equals(finalWillNavigateToLocation))) {
+          NavigationOptions.NavigationType type = options.getNavigationType();
+          Object state = options.getState();
+          lastResolvedLocation = finalWillNavigateToLocation;
+
+          switch (type) {
+            case PUSH:
+              history.pushState(state, finalWillNavigateToLocation);
+              break;
+            case REPLACE:
+              history.replaceState(state, finalWillNavigateToLocation);
+              break;
+            default:
+              break;
+          }
         }
       }
 

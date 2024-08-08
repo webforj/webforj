@@ -173,4 +173,40 @@ public class SegmentsBag implements Serializable, Iterable<String> {
   public String toString() {
     return getPath();
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((segments == null) ? 0 : segments.hashCode());
+    return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    SegmentsBag other = (SegmentsBag) obj;
+    if (segments == null) {
+      if (other.segments != null) {
+        return false;
+      }
+    } else if (!segments.equals(other.segments)) {
+      return false;
+    }
+    return true;
+  }
 }
