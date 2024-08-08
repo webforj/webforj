@@ -305,8 +305,7 @@ public class RouteRenderer {
       Component componentInstance) {
     Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
     if (!targetClass.isPresent()) {
-      throw new RouteHasNoTargetException(
-          "No route target found for component: " + componentClass.getName());
+      targetClass = Optional.ofNullable(Frame.class);
     }
 
     if (componentInstance.isDestroyed()) {
