@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
  */
 public class RouteRegistry {
   private final Map<String, RouteEntry> routeEntries = new ConcurrentHashMap<>();
-  private final Map<Class<? extends Component>, Vnode<Class<? extends Component>>> componentsTree =
-      new ConcurrentHashMap<>();
 
   /**
    * Scans the given base package for classes annotated with {@link Route} and {@link RouteAlias}
@@ -54,7 +52,7 @@ public class RouteRegistry {
 
       for (Class<?> cls : annotatedClasses) {
         if (Component.class.isAssignableFrom(cls)) {
-          registry.registerAnnotated((Class<? extends Component>) cls);
+          registry.register((Class<? extends Component>) cls);
         } else {
           throw new IllegalStateException(
               "Class " + cls.getName() + " does not extend Component but has @Route annotation.");
@@ -73,18 +71,6 @@ public class RouteRegistry {
   public void register(RouteEntry entry) {
     String route = entry.getPath();
     routeEntries.put(route, entry);
-
-    Class<? extends Component> component = entry.getComponent();
-    Class<? extends Component> target = entry.getTarget();
-
-    // Build the component relationship tree
-    Vnode<Class<? extends Component>> componentTree =
-        componentsTree.computeIfAbsent(component, Vnode::new);
-    if (target != null) {
-      Vnode<Class<? extends Component>> targetTree =
-          componentsTree.computeIfAbsent(target, Vnode::new);
-      targetTree.addChild(componentTree);
-    }
   }
 
   /**
@@ -128,7 +114,7 @@ public class RouteRegistry {
    *
    * @param component the component class to be registered
    */
-  public void registerAnnotated(Class<? extends Component> component) {
+  public void register(Class<? extends Component> component) {
     Route routeAnnotation = component.getAnnotation(Route.class);
     if (routeAnnotation != null) {
       // Process Route annotation
@@ -146,6 +132,37 @@ public class RouteRegistry {
       throw new IllegalStateException(
           "Class " + component.getName() + " does not have a @Route annotation.");
     }
+  }
+
+  /**
+   * Unregisters the route with the given path.
+   *
+   * @param route the route path to unregister
+   */
+  public void unregister(String route) {
+    RouteEntry toRemove = routeEntries.get(route);
+    if (toRemove != null) {
+      // Remove the specified route
+      routeEntries.remove(route);
+
+      // Find and remove all children of the specified route
+      Set<String> childRoutes = routeEntries.keySet().stream()
+          .filter(r -> r.startsWith(route + "/")).collect(Collectors.toSet());
+
+      for (String childRoute : childRoutes) {
+        routeEntries.remove(childRoute);
+      }
+    }
+  }
+
+  /**
+   * Unregisters the route associated with the given component class.
+   *
+   * @param componentClass the component class to unregister
+   */
+  public void unregister(Class<? extends Component> componentClass) {
+    Optional<String> route = getRouteByComponent(componentClass);
+    route.ifPresent(this::unregister);
   }
 
   /**
@@ -216,6 +233,11 @@ public class RouteRegistry {
    */
   public Optional<Vnode<Class<? extends Component>>> getComponentsTree(
       Class<? extends Component> componentClass) {
+    if (routeEntries.values().stream()
+        .noneMatch(entry -> entry.getComponent().equals(componentClass))) {
+      return Optional.empty();
+    }
+
     // Find the root component for the given component
     LinkedList<Class<? extends Component>> pathComponents = new LinkedList<>();
     populatePathComponents(componentClass, pathComponents);
@@ -236,6 +258,7 @@ public class RouteRegistry {
 
     return Optional.of(rootNode);
   }
+
 
   private void populatePathComponents(Class<? extends Component> componentClass,
       LinkedList<Class<? extends Component>> pathComponents) {
@@ -287,6 +310,5 @@ public class RouteRegistry {
    */
   public void clear() {
     routeEntries.clear();
-    componentsTree.clear();
   }
 }
