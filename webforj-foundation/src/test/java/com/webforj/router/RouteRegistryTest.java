@@ -60,7 +60,7 @@ class RouteRegistryTest {
 
     @Test
     void shouldRegisterAnnotatedRoute() {
-      routeRegistry.registerAnnotated(TestView.class);
+      routeRegistry.register(TestView.class);
 
       String path = "target/test";
       assertTrue(routeRegistry.getComponentByRoute(path).isPresent());
@@ -69,13 +69,113 @@ class RouteRegistryTest {
 
     @Test
     void shouldRegisterAnnotatedRouteWithAlias() {
-      routeRegistry.registerAnnotated(TargetView.class);
+      routeRegistry.register(TargetView.class);
 
       assertTrue(routeRegistry.getComponentByRoute("alias1").isPresent());
       assertEquals(TargetView.class, routeRegistry.getComponentByRoute("alias1").get());
 
       assertTrue(routeRegistry.getComponentByRoute("alias2").isPresent());
       assertEquals(TargetView.class, routeRegistry.getComponentByRoute("alias2").get());
+    }
+  }
+
+  @Nested
+  class UnregisteringRouteByPath {
+
+    @Test
+    void shouldUnregisterRoute() {
+      routeRegistry.register("test", TestView.class);
+      assertTrue(routeRegistry.getComponentByRoute("test").isPresent());
+
+      routeRegistry.unregister("test");
+      assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
+    }
+
+    @Test
+    void shouldUnregisterNestedRoute() {
+      routeRegistry.register("parent", TargetView.class);
+      routeRegistry.register("parent/child", TestView.class, TargetView.class);
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent/child").isPresent());
+
+      routeRegistry.unregister("parent/child");
+      assertFalse(routeRegistry.getComponentByRoute("parent/child").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+    }
+
+    @Test
+    void shouldUnregisterRouteAndRemoveComponentFromTree() {
+      routeRegistry.register("test", TestView.class);
+      assertTrue(routeRegistry.getComponentByRoute("test").isPresent());
+
+      routeRegistry.unregister("test");
+      assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
+      assertFalse(routeRegistry.getComponentsTree(TestView.class).isPresent());
+    }
+
+    @Test
+    void shouldUnregisterRouteAndRetainParentComponentInTree() {
+      routeRegistry.register("parent", TargetView.class);
+      routeRegistry.register("parent/child", TestView.class, TargetView.class);
+
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent/child").isPresent());
+
+      routeRegistry.unregister("parent/child");
+
+      assertFalse(routeRegistry.getComponentByRoute("parent/child").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+      assertTrue(routeRegistry.getComponentsTree(TargetView.class).isPresent());
+    }
+  }
+
+  @Nested
+  class UnregisteringRoutesByComponent {
+
+    @Test
+    void shouldUnregisterRouteByComponent() {
+      routeRegistry.register("test", TestView.class);
+      assertTrue(routeRegistry.getComponentByRoute("test").isPresent());
+
+      routeRegistry.unregister(TestView.class);
+      assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
+    }
+
+    @Test
+    void shouldUnregisterNestedRouteByComponent() {
+      routeRegistry.register("parent", TargetView.class);
+      routeRegistry.register("parent/child", TestView.class, TargetView.class);
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent/child").isPresent());
+
+      routeRegistry.unregister(TestView.class);
+      assertFalse(routeRegistry.getComponentByRoute("parent/child").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+    }
+
+    @Test
+    void shouldUnregisterRouteByComponentAndRemoveComponentFromTree() {
+      routeRegistry.register("test", TestView.class);
+      assertTrue(routeRegistry.getComponentByRoute("test").isPresent());
+
+      routeRegistry.unregister(TestView.class);
+      assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
+      assertFalse(routeRegistry.getComponentsTree(TestView.class).isPresent());
+    }
+
+    @Test
+    void shouldUnregisterRouteByComponentAndRetainParentComponentInTree() {
+      routeRegistry.register("parent", TargetView.class);
+      routeRegistry.register("parent/child", TestView.class, TargetView.class);
+
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent/child").isPresent());
+
+      routeRegistry.unregister(TestView.class);
+
+      assertFalse(routeRegistry.getComponentByRoute("parent/child").isPresent());
+      assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
+      assertTrue(routeRegistry.getComponentsTree(TargetView.class).isPresent());
     }
   }
 
