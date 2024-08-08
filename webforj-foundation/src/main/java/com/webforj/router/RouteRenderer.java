@@ -270,8 +270,8 @@ public class RouteRenderer {
     }
 
     Component componentInstance = componentsCache.get(componentClass);
-    if (componentInstance == null || (componentInstance != null
-        && (!componentInstance.isAttached() || componentInstance.isDestroyed()))) {
+    if (componentInstance == null
+        || (componentInstance != null && componentInstance.isDestroyed())) {
       onComplete.accept(true);
       return;
     }
@@ -439,9 +439,9 @@ public class RouteRenderer {
     Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
     if (!targetClass.isPresent()) {
       // throw new RouteHasNoTargetException(
-      //     "No route target found for component: " + componentClass.getName()
-      //         + ", route is registered as " + registry.getRouteByComponent(componentClass)
-      //         + " If no target is required, use Frame.class as the target.");
+      // "No route target found for component: " + componentClass.getName()
+      // + ", route is registered as " + registry.getRouteByComponent(componentClass)
+      // + " If no target is required, use Frame.class as the target.");
 
       targetClass = Optional.ofNullable(Frame.class);
     }
