@@ -427,9 +427,10 @@ public class RouteRenderer {
   protected void attachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
 
-    if (!registry.getRouteByComponent(componentClass).isPresent()) {
-      throw new RouteNotFoundException("No route found for component: " + componentClass.getName());
-    }
+    // if (!registry.getRouteByComponent(componentClass).isPresent()) {
+    // throw new RouteNotFoundException("No route found for component: " +
+    // componentClass.getName());
+    // }
 
     if (componentInstance.isAttached()) {
       return;
@@ -437,10 +438,12 @@ public class RouteRenderer {
 
     Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
     if (!targetClass.isPresent()) {
-      throw new RouteHasNoTargetException(
-          "No route target found for component: " + componentClass.getName()
-              + ", route is registered as " + registry.getRouteByComponent(componentClass)
-              + " If no target is required, use Frame.class as the target.");
+      // throw new RouteHasNoTargetException(
+      //     "No route target found for component: " + componentClass.getName()
+      //         + ", route is registered as " + registry.getRouteByComponent(componentClass)
+      //         + " If no target is required, use Frame.class as the target.");
+
+      targetClass = Optional.ofNullable(Frame.class);
     }
 
     Component targetInstance =
