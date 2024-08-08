@@ -36,7 +36,7 @@ public class Router {
   private final RouteRegistry registry;
   private final History history;
   private final RouteRenderer renderer;
-  private final Map<String, RoutePattern> routesCache = new HashMap<>();
+  private final Map<String, RoutePattern> patterns = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
   private ListenerRegistration<HistoryStateChangeEvent> historyListener;
   private String root;
@@ -131,7 +131,7 @@ public class Router {
     Objects.requireNonNull(location, "Location must not be null");
 
     Location locationRootless = detachRoot(location);
-    Optional<RoutePattern> routePattern = getRoutePatternForLocation(locationRootless);
+    Optional<RoutePattern> routePattern = getRouteByLocation(locationRootless);
     Optional<Class<? extends Component>> componentClass = routePattern.map(RoutePattern::getPattern)
         .map(c -> registry.getComponentByRoute(c).orElse(null));
 
@@ -233,7 +233,7 @@ public class Router {
           "No route found for component: " + component.getSimpleName());
     }
 
-    RoutePattern pattern = getRoutesCache().computeIfAbsent(route.get(), RoutePattern::new);
+    RoutePattern pattern = patterns.computeIfAbsent(route.get(), RoutePattern::new);
     String path = pattern.buildUrl(parameters != null ? parameters : new ParametersBag());
     Location location = new Location(path);
 
@@ -329,6 +329,134 @@ public class Router {
    */
   public <T extends Component> void navigate(Class<T> component) {
     navigate(component, new NavigationOptions(), null, null);
+  }
+
+  /**
+   * Retrieves the route registry used by the router.
+   *
+   * @return the route registry
+   */
+  public RouteRegistry getRegistry() {
+    return registry;
+  }
+
+  /**
+   * Retrieves the route renderer used by the router.
+   *
+   * @return the route renderer
+   */
+  public RouteRenderer getRenderer() {
+    return renderer;
+  }
+
+  /**
+   * Retrieves the history object used by the router.
+   *
+   * @return the history object
+   */
+  public History getHistory() {
+    return history;
+  }
+
+  /**
+   * Retrieves the root path used by the router.
+   *
+   * @return the root path
+   */
+  public String getRoot() {
+    return root;
+  }
+
+  /**
+   * Gets the {@link RoutePattern} for the given location.
+   *
+   * @param location the location to get the RoutePattern for
+   */
+  public Optional<RoutePattern> getRouteByLocation(Location location) {
+    Location locationRootless = detachRoot(location);
+    RoutePattern matchedPattern = null;
+    List<RouteEntry> routes = registry.getAvailableRoutes();
+
+    for (RouteEntry route : routes) {
+      RoutePattern pattern = patterns.computeIfAbsent(route.getPath(), RoutePattern::new);
+      String currentSegment = locationRootless.getSegments().getPath();
+      if (pattern.matches(currentSegment)) {
+        matchedPattern = pattern;
+        break;
+      }
+    }
+
+    return Optional.ofNullable(matchedPattern);
+  }
+
+  /**
+   * Retrieves the location for the given component.
+   *
+   * @param component the component class to get the location for
+   * @param parameters a map of parameters to be included in the URL
+   *
+   * @return the location for the given component
+   */
+  public Optional<Location> getLocation(Class<? extends Component> component,
+      ParametersBag parameters) {
+    Objects.requireNonNull(component, "Component class must not be null");
+
+    Optional<String> route = registry.getRouteByComponent(component);
+    if (!route.isPresent()) {
+      return Optional.empty();
+    }
+
+    RoutePattern pattern = patterns.computeIfAbsent(route.get(), RoutePattern::new);
+    String path = pattern.buildUrl(parameters != null ? parameters : new ParametersBag());
+    Location location = new Location(path);
+
+    return Optional.of(location);
+  }
+
+  /**
+   * Retrieves the location for the given component.
+   *
+   * @param component the component class to get the location for
+   * @return the location for the given component
+   */
+  public Optional<Location> getLocation(Class<? extends Component> component) {
+    return getLocation(component, null);
+  }
+
+  /**
+   * Retrieves the URI for the given component.
+   *
+   * @param component the component class to get the URI for
+   * @param parameters a map of parameters to be included in the URL
+   *
+   * @return the URI for the given component
+   */
+  public Optional<String> getUri(Class<? extends Component> component, ParametersBag parameters) {
+    Optional<Location> location = getLocation(component, parameters);
+    if (location.isPresent()) {
+      return Optional.of(location.get().getFullURI());
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * Retrieves the URI for the given component.
+   *
+   * @param component the component class to get the URI for
+   * @return the URI for the given component
+   */
+  public Optional<String> getUri(Class<? extends Component> component) {
+    return getUri(component, null);
+  }
+
+  /**
+   * Gets the last resolved location by the router if any.
+   *
+   * @return the last resolved location
+   */
+  public Optional<Location> getResolvedLocation() {
+    return Optional.ofNullable(lastResolvedLocation);
   }
 
   /**
@@ -460,78 +588,12 @@ public class Router {
   }
 
   /**
-   * Retrieves the route registry.
-   *
-   * @return the route registry
-   */
-  public RouteRegistry getRegistry() {
-    return registry;
-  }
-
-  /**
-   * Retrieves the component navigator.
-   *
-   * @return the component navigator
-   */
-  public RouteRenderer getRenderer() {
-    return renderer;
-  }
-
-  /**
-   * Retrieves the history object.
-   *
-   * @return the history object
-   */
-  public History getHistory() {
-    return history;
-  }
-
-  /**
-   * Retrieves the base path.
-   *
-   * @return the base path
-   */
-  public String getRoot() {
-    return root;
-  }
-
-  /**
    * Retrieves the event dispatcher.
    *
    * @return the event dispatcher
    */
   protected EventDispatcher getEventDispatcher() {
     return eventDispatcher;
-  }
-
-  /**
-   * Gets the RoutePattern for the given location.
-   *
-   * @param location the location to get the RoutePattern for
-   */
-  protected Optional<RoutePattern> getRoutePatternForLocation(Location location) {
-    RoutePattern mp = null;
-    List<RouteEntry> routes = registry.getAvailableRoutes();
-
-    for (RouteEntry route : routes) {
-      RoutePattern pattern = getRoutesCache().computeIfAbsent(route.getPath(), RoutePattern::new);
-      String currentSegment = location.getSegments().getPath();
-      if (pattern.matches(currentSegment)) {
-        mp = pattern;
-        break;
-      }
-    }
-
-    return Optional.ofNullable(mp);
-  }
-
-  /**
-   * Gets the routes cache.
-   *
-   * @return the routes cache
-   */
-  protected Map<String, RoutePattern> getRoutesCache() {
-    return routesCache;
   }
 
   /**
