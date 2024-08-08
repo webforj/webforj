@@ -3,12 +3,17 @@ package com.webforj.router;
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.data.tree.Vnode;
+import com.webforj.router.annotation.Route;
+import com.webforj.router.annotation.RouteAlias;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -28,6 +33,37 @@ public class RouteRegistry {
   private final Map<String, RouteEntry> routeEntries = new ConcurrentHashMap<>();
   private final Map<Class<? extends Component>, Vnode<Class<? extends Component>>> componentsTree =
       new ConcurrentHashMap<>();
+
+  /**
+   * Scans the given base package for classes annotated with {@link Route} and {@link RouteAlias}
+   * annotations and build a new {@link RouteRegistry} instance.
+   *
+   * @param basePackage the base package to scan for route-annotated classes
+   *
+   * @return a new {@link RouteRegistry} instance containing the discovered routes and aliases
+   * @throws IllegalStateException if a class annotated with {@link Route} does not extend
+   */
+  public static RouteRegistry ofPackage(String basePackage) {
+    RouteRegistry registry = new RouteRegistry();
+
+    try (ScanResult scanResult = new ClassGraph().enableClassInfo().enableAnnotationInfo()
+        .acceptPackages(basePackage).scan()) {
+
+      Set<Class<?>> annotatedClasses = scanResult.getClassesWithAnnotation(Route.class.getName())
+          .loadClasses().stream().collect(Collectors.toSet());
+
+      for (Class<?> cls : annotatedClasses) {
+        if (Component.class.isAssignableFrom(cls)) {
+          registry.registerAnnotated((Class<? extends Component>) cls);
+        } else {
+          throw new IllegalStateException(
+              "Class " + cls.getName() + " does not extend Component but has @Route annotation.");
+        }
+      }
+    }
+
+    return registry;
+  }
 
   /**
    * Registers a route using a {@link RouteEntry}.
@@ -85,6 +121,31 @@ public class RouteRegistry {
    */
   public void register(String route, Class<? extends Component> component) {
     register(route, component, Frame.class, null);
+  }
+
+  /**
+   * Registers a route using the annotations present on the component class.
+   *
+   * @param component the component class to be registered
+   */
+  public void registerAnnotated(Class<? extends Component> component) {
+    Route routeAnnotation = component.getAnnotation(Route.class);
+    if (routeAnnotation != null) {
+      // Process Route annotation
+      String routePath = buildFullRoutePath(component);
+      RouteEntry entry = new RouteEntry(routePath, component, routeAnnotation.target(),
+          routeAnnotation.frame(), routeAnnotation.priority());
+      register(entry);
+
+      // Process RouteAlias annotations if Route is present
+      RouteAlias[] aliases = component.getAnnotationsByType(RouteAlias.class);
+      for (RouteAlias alias : aliases) {
+        register(alias.value(), component, routeAnnotation.target(), routeAnnotation.frame());
+      }
+    } else {
+      throw new IllegalStateException(
+          "Class " + component.getName() + " does not have a @Route annotation.");
+    }
   }
 
   /**
@@ -187,6 +248,38 @@ public class RouteRegistry {
       }
       currentComponent = targetComponent;
     }
+  }
+
+  /**
+   * Builds the full route path for the given component class, respecting the hierarchy of routes.
+   *
+   * <p>
+   * If the target of a route is another route-annotated class, the path should include the parent
+   * route's path as a prefix.
+   * </p>
+   *
+   * @param componentClass the component class for which to build the full route path
+   * @return the full route path as a string
+   */
+  private String buildFullRoutePath(Class<? extends Component> componentClass) {
+    Route routeAnnotation = componentClass.getAnnotation(Route.class);
+    String routePath = routeAnnotation.value();
+
+    // Generate a view name if the route path is auto-generated
+    if (Route.AUTO_GENERATED_VIEW_NAME.equals(routePath)) {
+      routePath = ViewNameGenerator.generate(componentClass);
+    }
+
+    Class<? extends Component> targetClass = routeAnnotation.target();
+    if (targetClass != Frame.class && targetClass != null) {
+      Route targetRouteAnnotation = targetClass.getAnnotation(Route.class);
+      if (targetRouteAnnotation != null) {
+        String targetPath = buildFullRoutePath(targetClass);
+        routePath = (targetPath + "/" + routePath).replaceAll("//", "/"); // NOSONAR
+      }
+    }
+
+    return routePath;
   }
 
   /**
