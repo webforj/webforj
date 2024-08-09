@@ -174,7 +174,11 @@ public final class DwcFocusableMixin<T extends DwcComponent<T>>
       setEnabled(enabled);
     }
 
-    if (this.wasFocused != null) {
+    if (!focusable) {
+      setFocusable(focusable);
+    }
+
+    if (focusable && this.wasFocused != null) {
       this.focus();
     }
   }
