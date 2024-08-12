@@ -544,6 +544,15 @@ public class Login extends ElementCompositeContainer
     return addCancelListener(listener);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDidDestroy() {
+    close();
+    super.onDidDestroy();
+  }
+
   Element getOriginalElement() {
     return getElement();
   }
