@@ -797,6 +797,7 @@ public final class Element extends DwcContainer<Element>
 
     StringBuilder sb = new StringBuilder();
     sb.append("(async () => {");
+    sb.append("try {");
 
     // Serialize arguments as a JSON array
     Gson gson = new Gson();
@@ -862,6 +863,12 @@ public final class Element extends DwcContainer<Element>
     } else {
       sb.append("component['").append(functionName).append("'].apply(component, args);");
     }
+
+    sb.append("} catch (error) {");
+    sb.append("  console.error('An error occurred while executing the function \"")
+        .append(functionName).append("\":', error);");
+    sb.append("  return null;");
+    sb.append("}");
 
     sb.append("})();"); // end of async function
 
