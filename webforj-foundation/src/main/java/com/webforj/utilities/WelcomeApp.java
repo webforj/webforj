@@ -195,7 +195,7 @@ public class WelcomeApp extends App {
    * @param className the fully qualified name of the app class.
    */
   private void launchClass(String className) {
-    panel.setVisible(false);
+    panel.destroy();
     try {
       App app = (App) Class.forName(className).getDeclaredConstructor().newInstance();
       app.initialize();
@@ -207,8 +207,6 @@ public class WelcomeApp extends App {
           e);
     } catch (WebforjAppInitializeException e) {
       throw new WebforjLaunchException("Failed to launch class: " + className, e);
-    } finally {
-      panel.setVisible(false);
     }
   }
 }
