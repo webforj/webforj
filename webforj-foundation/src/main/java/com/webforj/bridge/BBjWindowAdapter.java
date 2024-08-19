@@ -13,5 +13,6 @@ public class BBjWindowAdapter extends Window {
 
   public BBjWindowAdapter(BBjWindow w) {
     setBbjWindow(w);
+    create(this);
   }
 }
