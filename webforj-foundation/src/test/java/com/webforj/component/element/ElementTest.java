@@ -3,6 +3,7 @@ package com.webforj.component.element;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,7 +28,6 @@ import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -128,7 +128,7 @@ class ElementTest {
       component.remove(child1);
       assertEquals(1, component.getComponentCount());
       assertFalse(component.hasComponent(child1));
-      assertTrue(component.findComponentSlot(child1).isEmpty());
+      assertNull(component.findComponentSlot(child1));
       assertEquals(child2, component.getFirstComponentInSlot("first"));
     }
   }
@@ -172,8 +172,7 @@ class ElementTest {
 
     @Test
     @DisplayName("onAttach will re-apply html changes")
-    void onAttachWillReapplyHtmlChanges()
-        throws BBjException, IllegalAccessException, InvocationTargetException {
+    void onAttachWillReapplyHtmlChanges() throws BBjException, IllegalAccessException {
       component.setHtml("html");
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();

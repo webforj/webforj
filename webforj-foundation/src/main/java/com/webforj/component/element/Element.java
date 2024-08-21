@@ -15,6 +15,7 @@ import com.webforj.component.Component;
 import com.webforj.component.DwcContainer;
 import com.webforj.component.DwcFocusableMixin;
 import com.webforj.component.JsExecutor;
+import com.webforj.component.SlotRegistry;
 import com.webforj.component.element.annotation.ElementAnnotationProcessor;
 import com.webforj.component.element.annotation.EventOptions;
 import com.webforj.component.element.event.ElementDefinedEvent;
@@ -31,7 +32,6 @@ import com.webforj.component.optioninput.RadioButtonGroup;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasEnablement;
 import com.webforj.concern.HasFocus;
-import com.webforj.concern.HasHtml;
 import com.webforj.concern.HasJsExecution;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -39,10 +39,10 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An HTML Element component.
@@ -56,12 +56,13 @@ import java.util.Map;
  * @since 23.06
  */
 public final class Element extends DwcContainer<Element>
-    implements HasHtml<Element>, HasFocus<Element>, HasEnablement<Element>, HasJsExecution {
+    implements HasFocus<Element>, HasEnablement<Element>, HasJsExecution {
 
   private final String nodeName;
   private final Map<String, ComponentEventSinkRegistry<ElementEvent>> registries = new HashMap<>();
   private final Map<String, Object> properties = new HashMap<>();
   private final DwcFocusableMixin<Element> focusableMixin = new DwcFocusableMixin<>(this);
+  private SlotRegistry slotRegistry = new SlotRegistry();
   private final JsExecutor jsExecutor = new ElementJsExecutor(this);
   private final ComponentEventSinkRegistry<ElementDefinedEvent> definedEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ElementDefinedEventSink(this, getEventDispatcher()),
@@ -70,7 +71,6 @@ public final class Element extends DwcContainer<Element>
       new ComponentEventSinkRegistry<>(new ExecuteAsyncScriptEventSink(this, getEventDispatcher()),
           ExecuteAsyncScriptEvent.class);
   private final List<PendingResult<Element>> whenDefinedResults = new ArrayList<>();
-  private final Map<String, List<Component>> slots = new HashMap<>();
   private boolean isDefined = false;
   private String html;
 
@@ -452,7 +452,7 @@ public final class Element extends DwcContainer<Element>
    * @throws IllegalStateException if the given components is destroyed.
    */
   public void add(String slot, Component... component) {
-    slots.computeIfAbsent(slot, k -> new ArrayList<>()).addAll(List.of(component));
+    slotRegistry.addComponentsToSlot(slot, component);
     add(component);
   }
 
@@ -462,14 +462,7 @@ public final class Element extends DwcContainer<Element>
   @Override
   public void remove(Component... components) {
     super.remove(components);
-
-    // remove the components from the slots
-    for (Component component : components) {
-      String slot = findComponentSlot(component);
-      if (!slot.isEmpty()) {
-        slots.get(slot).remove(component);
-      }
-    }
+    slotRegistry.removeComponentsFromSlot(components);
   }
 
   /**
@@ -482,14 +475,7 @@ public final class Element extends DwcContainer<Element>
    *         component is not found in any slot.
    */
   public String findComponentSlot(Component component) {
-    for (Map.Entry<String, List<Component>> entry : slots.entrySet()) {
-      if (entry.getValue().contains(component)) {
-        // Return the slot name (key) where the component is found
-        return entry.getKey();
-      }
-    }
-
-    return "";
+    return slotRegistry.findComponentSlot(component);
   }
 
   /**
@@ -499,7 +485,7 @@ public final class Element extends DwcContainer<Element>
    * @return the list of components assigned to the given slot
    */
   public List<Component> getComponentsInSlot(String slot) {
-    return slots.getOrDefault(slot, Collections.emptyList());
+    return slotRegistry.getComponentsInSlot(slot);
   }
 
   /**
@@ -511,8 +497,7 @@ public final class Element extends DwcContainer<Element>
    * @return the list of components of type T assigned to the given slot
    */
   public <T extends Component> List<T> getComponentsInSlot(String slot, Class<T> classOfT) {
-    return slots.getOrDefault(slot, Collections.emptyList()).stream().filter(classOfT::isInstance)
-        .map(classOfT::cast).toList();
+    return slotRegistry.getComponentsInSlot(slot, classOfT);
   }
 
   /**
@@ -522,7 +507,7 @@ public final class Element extends DwcContainer<Element>
    * @return the first component assigned to the given slot
    */
   public Component getFirstComponentInSlot(String slot) {
-    return getComponentsInSlot(slot).stream().findFirst().orElse(null);
+    return slotRegistry.getFirstComponentInSlot(slot);
   }
 
   /**
@@ -534,7 +519,7 @@ public final class Element extends DwcContainer<Element>
    * @return the first component of type T assigned to the given slot, or null if none is found
    */
   public <T extends Component> T getFirstComponentInSlot(String slot, Class<T> classOfT) {
-    return getComponentsInSlot(slot, classOfT).stream().findFirst().orElse(null);
+    return slotRegistry.getFirstComponentInSlot(slot, classOfT);
   }
 
   /**
@@ -696,7 +681,7 @@ public final class Element extends DwcContainer<Element>
       if (!(component instanceof RadioButtonGroup)) {
         String slot = findComponentSlot(component);
         BBjControl control = ComponentAccessor.getDefault().getControl(component);
-        inferControl().setSlot(slot, control);
+        inferControl().setSlot(Optional.ofNullable(slot).orElse(""), control);
       }
     } catch (IllegalAccessException | BBjException e) {
       throw new IllegalArgumentException(
