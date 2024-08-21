@@ -1,19 +1,19 @@
-package com.webforj.component.html.event;
+package com.webforj.component.element.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import com.webforj.component.html.HtmlComponent;
+import com.webforj.component.element.ElementComposite;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class HtmlClickEventTest {
+class ElementClickEventTest {
 
-  private HtmlClickEvent clickEvent;
+  private ElementClickEvent<?> clickEvent;
 
   @BeforeEach
   void setUp() {
@@ -29,56 +29,56 @@ class HtmlClickEventTest {
     eventMap.put("altKey", true);
     eventMap.put("metaKey", false);
 
-    clickEvent = new HtmlClickEvent(mock(HtmlComponent.class), eventMap);
+    clickEvent = new ElementClickEvent(mock(ElementComposite.class), eventMap);
   }
 
   @Test
-  void testGetScreenX() {
+  void shouldGetScreenX() {
     assertEquals(100, clickEvent.getScreenX());
   }
 
   @Test
-  void testGetScreenY() {
+  void shouldGetScreenY() {
     assertEquals(200, clickEvent.getScreenY());
   }
 
   @Test
-  void testGetClientX() {
+  void shouldGetClientX() {
     assertEquals(50, clickEvent.getClientX());
   }
 
   @Test
-  void testGetClientY() {
+  void shouldGetClientY() {
     assertEquals(100, clickEvent.getClientY());
   }
 
   @Test
-  void testGetDetail() {
+  void shouldGetDetail() {
     assertEquals(1, clickEvent.getDetail());
   }
 
   @Test
-  void testGetButton() {
+  void shouldGetButton() {
     assertEquals(1, clickEvent.getButton());
   }
 
   @Test
-  void testIsCtrlKey() {
+  void shouldCheckIfCtrlKeyIsPressed() {
     assertTrue(clickEvent.isCtrlKey());
   }
 
   @Test
-  void testIsShiftKey() {
+  void shouldCheckIfShiftKeyIsPressed() {
     assertFalse(clickEvent.isShiftKey());
   }
 
   @Test
-  void testIsAltKey() {
+  void shouldCheckIfAltKeyIsPressed() {
     assertTrue(clickEvent.isAltKey());
   }
 
   @Test
-  void testIsMetaKey() {
+  void shouldCheckIfMetaKeyIsPressed() {
     assertFalse(clickEvent.isMetaKey());
   }
 }

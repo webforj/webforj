@@ -1,32 +1,32 @@
-package com.webforj.component.html.event;
+package com.webforj.component.element.event;
 
+import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.annotation.EventName;
 import com.webforj.component.element.annotation.EventOptions;
 import com.webforj.component.element.annotation.EventOptions.EventData;
 import com.webforj.component.event.ComponentEvent;
-import com.webforj.component.html.HtmlComponent;
 import java.util.Map;
 
 /**
- * Event fired when an HtmlComponent is clicked.
+ * Event fired when an ElementComposite is clicked.
  *
  * @param <T> the component type
  *
  * @author Hyyan Abo Fakher
- * @since 23.06
+ * @since 24.11
  */
 @EventName("click")
 @EventOptions(data = {@EventData(key = "screenX", exp = "event.screenX"),
-    @EventData(key = "screenY", exp = "component.screenY"),
+    @EventData(key = "screenY", exp = "event.screenY"),
     @EventData(key = "clientX", exp = "event.clientX"),
-    @EventData(key = "clientY", exp = "component.clientY"),
+    @EventData(key = "clientY", exp = "event.clientY"),
     @EventData(key = "detail", exp = "event.detail"),
     @EventData(key = "button", exp = "event.button"),
     @EventData(key = "ctrlKey", exp = "event.ctrlKey"),
     @EventData(key = "shiftKey", exp = "event.shiftKey"),
     @EventData(key = "altKey", exp = "event.altKey"),
     @EventData(key = "metaKey", exp = "event.metaKey")})
-public class HtmlClickEvent<T extends HtmlComponent<T>> extends ComponentEvent<HtmlComponent<T>> {
+public class ElementClickEvent<T extends ElementComposite> extends ComponentEvent<T> {
 
   /**
    * Creates a new component event.
@@ -34,7 +34,7 @@ public class HtmlClickEvent<T extends HtmlComponent<T>> extends ComponentEvent<H
    * @param component the source component
    * @param eventMap the event data
    */
-  public HtmlClickEvent(HtmlComponent<T> component, Map<String, Object> eventMap) {
+  public ElementClickEvent(T component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
 
@@ -136,5 +136,13 @@ public class HtmlClickEvent<T extends HtmlComponent<T>> extends ComponentEvent<H
   @Override
   public T getComponent() {
     return (T) super.getComponent();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return "ElementClickEvent{" + "component=" + getComponent() + ", eventMap=" + getData() + '}';
   }
 }
