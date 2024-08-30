@@ -2,6 +2,8 @@ package com.webforj.component.button;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.webforj.bridge.WindowAccessor;
+import com.webforj.component.Component;
+import com.webforj.component.Expanse;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.window.Window;
 import com.webforj.dispatcher.EventListener;
@@ -71,6 +73,31 @@ public final class Button extends DwcButton<Button> {
    */
   public Button(String text) {
     this(text, DEFAULT_THEME);
+  }
+
+  /**
+   * Construct the button with the given icon and a {@link ButtonClickEvent}.
+   *
+   * @param icon the icon of the button
+   * @param clickListener the listener to be called when the button is clicked
+   * @since 24.11
+   */
+  public Button(Component icon, EventListener<ButtonClickEvent> clickListener) {
+    super();
+    setIcon(icon);
+    if (clickListener != null) {
+      addClickListener(clickListener);
+    }
+  }
+
+  /**
+   * Construct the button with the given icon.
+   *
+   * @param icon the icon of the button
+   * @since 24.11
+   */
+  public Button(Component icon) {
+    this(icon, null);
   }
 
   /**

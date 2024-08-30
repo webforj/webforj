@@ -1,8 +1,10 @@
 package com.webforj.component.field;
 
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
+import com.webforj.component.Component;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
+import com.webforj.component.SlotAssigner;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
@@ -14,6 +16,7 @@ import com.webforj.concern.HasHelperText;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasPlaceholder;
+import com.webforj.concern.HasPrefixAndSuffix;
 import com.webforj.concern.HasReadOnly;
 import com.webforj.concern.HasRequired;
 import com.webforj.data.concern.ValueChangeModeAware;
@@ -37,10 +40,12 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @since 23.05
  */
 public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
-    extends DwcValidatableComponent<T, V>
-    implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>, HasExpanse<T, Expanse>, HasFocusStatus,
-    HasHighlightOnFocus<T>, HasPlaceholder<T>, ValueChangeModeAware<T>, HasHelperText<T> {
-
+    extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
+    HasExpanse<T, Expanse>, HasFocusStatus, HasHighlightOnFocus<T>, HasPlaceholder<T>,
+    ValueChangeModeAware<T>, HasHelperText<T>, HasPrefixAndSuffix<T> {
+  private static final String PREFIX_SLOT = "prefix";
+  private static final String SUFFIX_SLOT = "suffix";
+  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
           ModifyEvent.class);
@@ -370,6 +375,48 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setPrefixComponent(Component prefix) {
+    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getPrefixComponent() {
+    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setSuffixComponent(Component suffix) {
+    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getSuffixComponent() {
+    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+  }
+
+  /**
    * Adds a {@link ModifyEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -453,6 +500,15 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onAttach() {
+    super.onAttach();
+    getSlotAssigner().attach();
+  }
+
+  /**
    * Converts the value from a string to the appropriate type.
    *
    * @param value the value to be converted
@@ -470,5 +526,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
 
     ValueChangeEvent<V> valueChangeEvent = new ValueChangeEvent<>(this, value);
     getEventDispatcher().dispatchEvent(valueChangeEvent);
+  }
+
+  SlotAssigner getSlotAssigner() {
+    return slotAssigner;
   }
 }

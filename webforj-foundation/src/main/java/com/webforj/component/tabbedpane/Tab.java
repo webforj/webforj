@@ -1,5 +1,7 @@
 package com.webforj.component.tabbedpane;
 
+import com.webforj.component.Component;
+import com.webforj.component.SlotRegistry;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.UUID;
@@ -24,12 +26,32 @@ import java.util.UUID;
  * @see TabbedPane
  */
 public final class Tab {
+  static final String PREFIX_SLOT = "prefix";
+  static final String SUFFIX_SLOT = "suffix";
   private Object key = null;
   private String text = "";
   private String tooltip = "";
   private boolean enabled = true;
   private boolean closable = false;
+  private Component prefix = null;
+  private Component suffix = null;
+  private final SlotRegistry slotRegistry = new SlotRegistry();
   private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+  /**
+   * Constructs a tab with the given text and prefix component.
+   *
+   * @param text the tab text.
+   * @param prefix the prefix component
+   * @since 24.11
+   */
+  public Tab(String text, Component prefix) {
+    this.key = UUID.randomUUID();
+    setText(text);
+    if (prefix != null) {
+      setPrefixComponent(prefix);
+    }
+  }
 
   /**
    * Constructs a tab with the given text.
@@ -37,8 +59,7 @@ public final class Tab {
    * @param text the tab text.
    */
   public Tab(String text) {
-    this.key = UUID.randomUUID();
-    this.text = text;
+    this(text, null);
   }
 
   /**
@@ -161,6 +182,70 @@ public final class Tab {
   }
 
   /**
+   * Sets the prefix component for the tab.
+   *
+   * <p>
+   * The prefix component is the component that is displayed in the tab's prefix slot. If a prefix
+   * component is already set, then the old prefix component will be destroyed and replaced with the
+   * new one.
+   * </p>
+   *
+   * @param prefix the prefix component to set
+   * @return the tab
+   * @since 24.11
+   */
+  public Tab setPrefixComponent(Component prefix) {
+    Component oldValue = this.prefix;
+    this.prefix = prefix;
+    this.changeSupport.firePropertyChange(PREFIX_SLOT, oldValue, prefix);
+    slotRegistry.replaceComponentsInSlot(PREFIX_SLOT, prefix);
+
+    return this;
+  }
+
+  /**
+   * Retrieves the prefix component for the tab.
+   *
+   * @return the prefix component for the tab
+   * @since 24.11
+   */
+  public Component getPrefixComponent() {
+    return prefix;
+  }
+
+  /**
+   * Sets the suffix component for the tab.
+   *
+   * <p>
+   * The suffix component is the component that is displayed in the tab's suffix slot. If a suffix
+   * component is already set, then the old suffix component will be destroyed and replaced with the
+   * new one.
+   * </p>
+   *
+   * @param suffix the suffix component to set
+   * @return the tab
+   * @since 24.11
+   */
+  public Tab setSuffixComponent(Component suffix) {
+    Component oldValue = this.suffix;
+    this.suffix = suffix;
+    this.changeSupport.firePropertyChange(SUFFIX_SLOT, oldValue, suffix);
+    slotRegistry.addComponentsToSlot(SUFFIX_SLOT, suffix);
+
+    return this;
+  }
+
+  /**
+   * Retrieves the suffix component for the tab.
+   *
+   * @return the suffix component for the tab
+   * @since 24.11
+   */
+  public Component getSuffixComponent() {
+    return suffix;
+  }
+
+  /**
    * Adds a property change listener.
    *
    * @param listener the listener
@@ -169,5 +254,14 @@ public final class Tab {
   Tab addPropertyChangeListener(PropertyChangeListener listener) {
     this.changeSupport.addPropertyChangeListener(listener);
     return this;
+  }
+
+  /**
+   * Gets the slot registry associated with this tab.
+   *
+   * @return the slot registry
+   */
+  SlotRegistry getSlotRegistry() {
+    return slotRegistry;
   }
 }

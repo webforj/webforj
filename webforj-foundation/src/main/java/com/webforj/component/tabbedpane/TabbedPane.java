@@ -14,6 +14,7 @@ import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
+import com.webforj.component.SlotAssigner;
 import com.webforj.component.Theme;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.tabbedpane.event.TabCloseEvent;
@@ -1183,25 +1184,6 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
       Tab tab = tabs.get(entry.getKey());
       Component component = entry.getValue();
       doAdd(tab, component);
-
-      int index = indexOf(tab);
-      BBjTabCtrl tabCtrl = inferTabCtrl();
-
-      try {
-        if (!tab.isEnabled()) {
-          tabCtrl.setEnabledAt(index, false);
-        }
-
-        if (tab.isClosable()) {
-          tabCtrl.setCloseableAt(index, true);
-        }
-
-        if (tab.getTooltip() != null && !tab.getTooltip().isBlank()) {
-          tabCtrl.setToolTipTextAt(index, tab.getTooltip());
-        }
-      } catch (BBjException e) {
-        throw new WebforjRuntimeException(e);
-      }
     }
 
     // re-apply selected tab if any
@@ -1220,6 +1202,8 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
         } else {
           tabCtrl.addTab(tab.getText(), -1);
         }
+
+        processTabMeta(tabCtrl, tab);
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
@@ -1236,9 +1220,40 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
         } else {
           tabCtrl.insertTab(index, tab.getText(), -1);
         }
+
+        processTabMeta(tabCtrl, tab);
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
+    }
+  }
+
+  private void processTabMeta(BBjTabCtrl tabCtrl, Tab tab) {
+    int index = indexOf(tab);
+    try {
+      if (!tab.isEnabled()) {
+        tabCtrl.setEnabledAt(index, false);
+      }
+
+      if (tab.isClosable()) {
+        tabCtrl.setCloseableAt(index, true);
+      }
+
+      if (tab.getTooltip() != null && !tab.getTooltip().isBlank()) {
+        tabCtrl.setToolTipTextAt(index, tab.getTooltip());
+      }
+
+      SlotAssigner assigner = new SlotAssigner(this, (slot, targeControl, slotControl) -> {
+        try {
+          ((BBjTabCtrl) targeControl).setSlotAt(index, slot, slotControl);
+        } catch (BBjException e) {
+          throw new WebforjRuntimeException("Failed to set slot for tab at index " + index, e);
+        }
+      }, tab.getSlotRegistry());
+      assigner.attach();
+
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException(e);
     }
   }
 
@@ -1306,14 +1321,6 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
     }
   }
 
-  BBjTabCtrl inferTabCtrl() {
-    try {
-      return (BBjTabCtrl) ComponentAccessor.getDefault().getControl(this);
-    } catch (IllegalAccessException e) {
-      throw new WebforjRuntimeException(e);
-    }
-  }
-
   private static <K, V> LinkedHashMap<K, V> insertInMapAt(LinkedHashMap<K, V> map, int index, K key,
       V value) {
     int i = 0;
@@ -1333,5 +1340,13 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
     }
 
     return newMap;
+  }
+
+  BBjTabCtrl inferTabCtrl() {
+    try {
+      return (BBjTabCtrl) ComponentAccessor.getDefault().getControl(this);
+    } catch (IllegalAccessException e) {
+      throw new WebforjRuntimeException(e);
+    }
   }
 }

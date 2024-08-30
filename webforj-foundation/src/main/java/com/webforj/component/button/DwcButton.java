@@ -4,14 +4,17 @@ import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
+import com.webforj.component.Component;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
+import com.webforj.component.SlotAssigner;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.button.sink.ButtonClickEventSink;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasHorizontalAlignment;
+import com.webforj.concern.HasPrefixAndSuffix;
 import com.webforj.concern.HasTheme;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -39,7 +42,11 @@ import java.util.List;
  */
 public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
-    HasFocusStatus {
+    HasFocusStatus, HasPrefixAndSuffix<T> {
+  private static final String PREFIX_SLOT = "prefix";
+  private static final String SUFFIX_SLOT = "suffix";
+  private static final String ICON_SLOT = "icon";
+  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private boolean disableOnClick = false;
 
   private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
@@ -178,6 +185,68 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setPrefixComponent(Component prefix) {
+    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getPrefixComponent() {
+    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setSuffixComponent(Component suffix) {
+    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getSuffixComponent() {
+    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+  }
+
+  /**
+   * Sets the icon of the button.
+   *
+   * @param icon the icon of the button
+   * @return the icon component
+   */
+  public Component setIcon(Component icon) {
+    getSlotAssigner().reAssign(null, icon);
+    return icon;
+  }
+
+  /**
+   * Returns the icon of the button.
+   *
+   * @return the icon component
+   */
+  public Component getIcon() {
+    return getSlotAssigner().getSlotComponent(null);
+  }
+
+  /**
    * Adds a {@link ButtonClickEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -226,6 +295,7 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   @Override
   protected void onAttach() {
     super.onAttach();
+    getSlotAssigner().attach();
 
     if (Boolean.TRUE.equals(disableOnClick)) {
       setDisableOnClick(disableOnClick);
@@ -238,5 +308,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  SlotAssigner getSlotAssigner() {
+    return slotAssigner;
   }
 }

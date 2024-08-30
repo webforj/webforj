@@ -3,6 +3,8 @@ package com.webforj.component.list;
 import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.ComponentAccessor;
+import com.webforj.component.Component;
+import com.webforj.component.SlotAssigner;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.list.event.ListClickEvent;
 import com.webforj.component.list.event.ListCloseEvent;
@@ -11,6 +13,7 @@ import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.component.list.sink.ListClickEventSink;
 import com.webforj.component.list.sink.ListCloseEventSink;
 import com.webforj.component.list.sink.ListOpenEventSink;
+import com.webforj.concern.HasPrefixAndSuffix;
 import com.webforj.data.binding.Binding;
 import com.webforj.data.binding.BindingContext;
 import com.webforj.data.binding.concern.BindAware;
@@ -39,7 +42,10 @@ import com.webforj.exceptions.WebforjRuntimeException;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends DwcList<T, Object>
-    implements BindAware {
+    implements BindAware, HasPrefixAndSuffix<T> {
+  private static final String PREFIX_SLOT = "prefix";
+  private static final String SUFFIX_SLOT = "suffix";
+  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private final ComponentEventSinkRegistry<ListOpenEvent> openEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
           ListOpenEvent.class);
@@ -308,6 +314,48 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   }
 
   /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setPrefixComponent(Component prefix) {
+    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getPrefixComponent() {
+    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setSuffixComponent(Component suffix) {
+    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getSuffixComponent() {
+    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+  }
+
+  /**
    * Adds a {@link ListOpenEvent} listener for the component.
    *
    * @param listener the event listener to be added
@@ -422,6 +470,7 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   @Override
   protected void onAttach() {
     super.onAttach();
+    getSlotAssigner().attach();
 
     catchupItemsChanges();
     catchupSingleSelection();
@@ -437,5 +486,9 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
+  }
+
+  SlotAssigner getSlotAssigner() {
+    return slotAssigner;
   }
 }

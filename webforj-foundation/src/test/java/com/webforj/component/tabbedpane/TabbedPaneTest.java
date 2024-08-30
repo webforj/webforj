@@ -8,7 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,11 +21,14 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjTabCtrl;
 import com.basis.startup.type.BBjException;
+import com.webforj.bridge.ComponentAccessor;
+import com.webforj.component.Component;
 import com.webforj.component.DwcComponentMock;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.tabbedpane.event.TabCloseEvent;
 import com.webforj.component.tabbedpane.event.TabDeselectEvent;
 import com.webforj.component.tabbedpane.event.TabSelectEvent;
+import com.webforj.component.window.Window;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -34,9 +41,13 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class TabbedPaneTest {
 
   @Mock
@@ -82,24 +93,48 @@ class TabbedPaneTest {
 
     @Test
     void shouldCatchupWithTabConfigurationsAfterAdding() throws BBjException {
+      Window window = mock(Window.class);
       TabbedPane spy = spy(component);
       when(spy.isAttached()).thenReturn(true);
+      doReturn(window).when(spy).getWindow();
 
       DwcComponentMock panel = new DwcComponentMock();
       Tab addedTab = spy.addTab("Tab1", panel);
 
       assertEquals(spy.getTabs().get(0), addedTab);
 
-      addedTab.setEnabled(false);
-      addedTab.setClosable(true);
-      addedTab.setTooltip("Tooltip");
-      addedTab.setText("New Tab");
+      Component prefix = mock(Component.class);
+      Component suffix = mock(Component.class);
+      doReturn(window).when(prefix).getWindow();
+      doReturn(window).when(suffix).getWindow();
 
-      verify(control, times(1)).addTab("Tab1", panel.getControl());
-      verify(control, times(1)).setTitleAt(0, "New Tab");
-      verify(control, times(1)).setEnabledAt(0, false);
-      verify(control, times(1)).setCloseableAt(0, true);
-      verify(control, times(1)).setToolTipTextAt(0, "Tooltip");
+      try (
+          MockedStatic<ComponentAccessor> componentAccessor = mockStatic(ComponentAccessor.class)) {
+        componentAccessor.when(ComponentAccessor::getDefault)
+            .thenReturn(mock(ComponentAccessor.class));
+        componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(spy))
+            .thenReturn(control);
+        componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(prefix))
+            .thenReturn(mock(BBjControl.class));
+        componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(suffix))
+            .thenReturn(mock(BBjControl.class));
+
+        addedTab.setEnabled(false);
+        addedTab.setClosable(true);
+        addedTab.setTooltip("Tooltip");
+        addedTab.setText("New Tab");
+
+        addedTab.setPrefixComponent(prefix);
+        addedTab.setSuffixComponent(suffix);
+
+        verify(control, times(1)).addTab("Tab1", panel.getControl());
+        verify(control, times(1)).setTitleAt(0, "New Tab");
+        verify(control, times(1)).setEnabledAt(0, false);
+        verify(control, times(1)).setCloseableAt(0, true);
+        verify(control, times(1)).setToolTipTextAt(0, "Tooltip");
+        verify(control, times(1)).setSlotAt(eq(0), eq("prefix"), any());
+        verify(control, times(1)).setSlotAt(eq(0), eq("suffix"), any());
+      }
     }
 
     @Test
@@ -124,22 +159,42 @@ class TabbedPaneTest {
     void onAttachWillCatchWithAddedTabs() throws IllegalAccessException, BBjException {
       ReflectionUtils.nullifyControl(component);
 
+      Window window = mock(Window.class);
+      TabbedPane spy = spy(component);
+      doReturn(window).when(spy).getWindow();
+
       DwcComponentMock panel = new DwcComponentMock();
-      Tab tab = component.addTab("Tab1", panel);
+      Component prefix = mock(Component.class);
+      Component suffix = mock(Component.class);
+
+      Tab tab = spy.addTab("Tab1", panel);
       tab.setEnabled(false);
       tab.setClosable(true);
       tab.setText("New Tab");
+      tab.setPrefixComponent(prefix);
+      tab.setSuffixComponent(suffix);
 
-      verify(control, times(0)).addTab(tab.getText(), panel.getControl());
+      verify(control, times(0)).addTab(eq(tab.getText()), any());
       verify(control, times(0)).setEnabledAt(0, false);
       verify(control, times(0)).setCloseableAt(0, true);
+      verify(control, times(0)).setSlotAt(eq(0), eq("prefix"), any(BBjControl.class));
+      verify(control, times(0)).setSlotAt(eq(0), eq("suffix"), any(BBjControl.class));
 
-      ReflectionUtils.unNullifyControl(component, control);
-      component.onAttach();
+      try (
+          MockedStatic<ComponentAccessor> componentAccessor = mockStatic(ComponentAccessor.class)) {
+        componentAccessor.when(ComponentAccessor::getDefault)
+            .thenReturn(mock(ComponentAccessor.class));
+        componentAccessor.when(() -> ComponentAccessor.getDefault().getControl(spy))
+            .thenReturn(control);
 
-      verify(control, times(1)).addTab(tab.getText(), panel.getControl());
-      verify(control, times(1)).setEnabledAt(0, false);
-      verify(control, times(1)).setCloseableAt(0, true);
+        spy.onAttach();
+
+        verify(control, times(1)).addTab(eq(tab.getText()), any());
+        verify(control, times(1)).setEnabledAt(0, false);
+        verify(control, times(1)).setCloseableAt(0, true);
+        verify(control, times(1)).setSlotAt(eq(0), eq("prefix"), any());
+        verify(control, times(1)).setSlotAt(eq(0), eq("suffix"), any());
+      }
     }
   }
 

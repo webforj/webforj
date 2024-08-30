@@ -28,7 +28,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasHelperText<ConcernComponentMock>, HasMask<ConcernComponentMock>,
     HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
     HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock>,
-    HasSize<ConcernComponentMock> {
+    HasSize<ConcernComponentMock>, HasPrefixAndSuffix<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -70,6 +70,8 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private String height;
   private String minHeight;
   private String maxHeight;
+  private Component prefixComponent;
+  private Component suffixComponent;
 
   @Override
   public String getAttribute(String attribute) {
@@ -579,6 +581,28 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   @Override
   public String getComputedMaxHeight() {
     return this.maxHeight;
+  }
+
+  @Override
+  public ConcernComponentMock setSuffixComponent(Component suffix) {
+    this.suffixComponent = suffix;
+    return this;
+  }
+
+  @Override
+  public Component getSuffixComponent() {
+    return this.suffixComponent;
+  }
+
+  @Override
+  public ConcernComponentMock setPrefixComponent(Component prefix) {
+    this.prefixComponent = prefix;
+    return this;
+  }
+
+  @Override
+  public Component getPrefixComponent() {
+    return this.prefixComponent;
   }
 
 
