@@ -118,7 +118,7 @@ class DwcSelectDropdownTest {
 
   @Test
   @DisplayName("deselect remove selection when control is defined")
-  void shouldRemoveSelectionWhenControlIsDefined() throws IllegalAccessException, BBjException {
+  void shouldRemoveSelectionWhenControlIsDefined() throws BBjException {
     component.insert("item 1", "item 2");
     component.selectIndex(1);
 
