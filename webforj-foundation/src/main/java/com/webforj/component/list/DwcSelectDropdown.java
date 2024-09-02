@@ -2,9 +2,9 @@ package com.webforj.component.list;
 
 import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.startup.type.BBjException;
+import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.Component;
-import com.webforj.component.SlotAssigner;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.list.event.ListClickEvent;
 import com.webforj.component.list.event.ListCloseEvent;
@@ -43,9 +43,6 @@ import com.webforj.exceptions.WebforjRuntimeException;
 @SuppressWarnings("squid:S110")
 public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends DwcList<T, Object>
     implements BindAware, HasPrefixAndSuffix<T> {
-  private static final String PREFIX_SLOT = "prefix";
-  private static final String SUFFIX_SLOT = "suffix";
-  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private final ComponentEventSinkRegistry<ListOpenEvent> openEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
           ListOpenEvent.class);
@@ -319,8 +316,9 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setPrefixComponent(Component prefix) {
-    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    super.setPrefixComponent(prefix);
     return getSelf();
   }
 
@@ -330,8 +328,9 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Component getPrefixComponent() {
-    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+    return super.getPrefixComponent();
   }
 
   /**
@@ -340,8 +339,9 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setSuffixComponent(Component suffix) {
-    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    super.setSuffixComponent(suffix);
     return getSelf();
   }
 
@@ -351,8 +351,9 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Component getSuffixComponent() {
-    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+    return super.getSuffixComponent();
   }
 
   /**
@@ -470,7 +471,6 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   @Override
   protected void onAttach() {
     super.onAttach();
-    getSlotAssigner().attach();
 
     catchupItemsChanges();
     catchupSingleSelection();
@@ -486,9 +486,5 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
-  }
-
-  SlotAssigner getSlotAssigner() {
-    return slotAssigner;
   }
 }

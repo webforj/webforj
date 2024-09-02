@@ -4,7 +4,6 @@ import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
-import com.webforj.component.SlotAssigner;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
@@ -43,9 +42,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
     extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
     HasExpanse<T, Expanse>, HasFocusStatus, HasHighlightOnFocus<T>, HasPlaceholder<T>,
     ValueChangeModeAware<T>, HasHelperText<T>, HasPrefixAndSuffix<T> {
-  private static final String PREFIX_SLOT = "prefix";
-  private static final String SUFFIX_SLOT = "suffix";
-  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
           ModifyEvent.class);
@@ -380,8 +376,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setPrefixComponent(Component prefix) {
-    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    super.setPrefixComponent(prefix);
     return getSelf();
   }
 
@@ -391,8 +388,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Component getPrefixComponent() {
-    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+    return super.getPrefixComponent();
   }
 
   /**
@@ -401,8 +399,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setSuffixComponent(Component suffix) {
-    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    super.setSuffixComponent(suffix);
     return getSelf();
   }
 
@@ -412,8 +411,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Component getSuffixComponent() {
-    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+    return super.getSuffixComponent();
   }
 
   /**
@@ -500,15 +500,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void onAttach() {
-    super.onAttach();
-    getSlotAssigner().attach();
-  }
-
-  /**
    * Converts the value from a string to the appropriate type.
    *
    * @param value the value to be converted
@@ -526,9 +517,5 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
 
     ValueChangeEvent<V> valueChangeEvent = new ValueChangeEvent<>(this, value);
     getEventDispatcher().dispatchEvent(valueChangeEvent);
-  }
-
-  SlotAssigner getSlotAssigner() {
-    return slotAssigner;
   }
 }

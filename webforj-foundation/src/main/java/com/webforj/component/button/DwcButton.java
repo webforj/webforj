@@ -7,7 +7,6 @@ import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.Component;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
-import com.webforj.component.SlotAssigner;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.button.sink.ButtonClickEventSink;
 import com.webforj.component.event.ComponentEventSinkRegistry;
@@ -43,10 +42,7 @@ import java.util.List;
 public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
     HasFocusStatus, HasPrefixAndSuffix<T> {
-  private static final String PREFIX_SLOT = "prefix";
-  private static final String SUFFIX_SLOT = "suffix";
   private static final String ICON_SLOT = "icon";
-  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private boolean disableOnClick = false;
 
   private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
@@ -190,8 +186,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setPrefixComponent(Component prefix) {
-    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    super.setPrefixComponent(prefix);
     return getSelf();
   }
 
@@ -201,8 +198,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Component getPrefixComponent() {
-    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+    return super.getPrefixComponent();
   }
 
   /**
@@ -211,8 +209,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public T setSuffixComponent(Component suffix) {
-    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    super.setSuffixComponent(suffix);
     return getSelf();
   }
 
@@ -222,8 +221,9 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
+  @ExcludeFromJacocoGeneratedReport
   public Component getSuffixComponent() {
-    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+    return super.getSuffixComponent();
   }
 
   /**
@@ -295,7 +295,6 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   @Override
   protected void onAttach() {
     super.onAttach();
-    getSlotAssigner().attach();
 
     if (Boolean.TRUE.equals(disableOnClick)) {
       setDisableOnClick(disableOnClick);
@@ -308,9 +307,5 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
     } catch (IllegalAccessException e) {
       throw new WebforjRuntimeException(e);
     }
-  }
-
-  SlotAssigner getSlotAssigner() {
-    return slotAssigner;
   }
 }

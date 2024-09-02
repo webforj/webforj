@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,9 +13,7 @@ import static org.mockito.Mockito.verify;
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.webforj.component.Component;
 import com.webforj.component.ReflectionUtils;
-import com.webforj.component.SlotAssigner;
 import com.webforj.component.list.event.ListClickEvent;
 import com.webforj.component.list.event.ListCloseEvent;
 import com.webforj.component.list.event.ListOpenEvent;
@@ -198,41 +195,6 @@ class DwcSelectDropdownTest {
       component.onAttach();
 
       verify(control, times(1)).openList();
-    }
-  }
-
-  @Nested
-  class SlotsApi {
-
-    @Test
-    void shouldSetAndGetPrefix() {
-      Component prefixComponent = mock(Component.class);
-      component.setPrefixComponent(prefixComponent);
-      assertEquals(prefixComponent, component.getPrefixComponent());
-    }
-
-    @Test
-    void shouldSetAndGetSuffix() {
-      Component suffixComponent = mock(Component.class);
-      component.setSuffixComponent(suffixComponent);
-      assertEquals(suffixComponent, component.getSuffixComponent());
-    }
-
-    @Test
-    void shouldAttachPrefixAndSuffix() {
-      component = spy(component);
-      SlotAssigner slotAssigner = mock(SlotAssigner.class);
-      doReturn(slotAssigner).when(component).getSlotAssigner();
-
-      Component prefixComponent = mock(Component.class);
-      Component suffixComponent = mock(Component.class);
-      component.setPrefixComponent(prefixComponent);
-      component.setSuffixComponent(suffixComponent);
-
-      component.onAttach();
-
-      verify(slotAssigner, times(1)).attach();
-      verify(slotAssigner, times(1)).attach();
     }
   }
 
