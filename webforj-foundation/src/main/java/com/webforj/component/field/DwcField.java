@@ -376,7 +376,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public T setPrefixComponent(Component prefix) {
     super.setPrefixComponent(prefix);
     return getSelf();
@@ -388,7 +387,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public Component getPrefixComponent() {
     return super.getPrefixComponent();
   }
@@ -399,7 +397,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public T setSuffixComponent(Component suffix) {
     super.setSuffixComponent(suffix);
     return getSelf();
@@ -411,7 +408,6 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public Component getSuffixComponent() {
     return super.getSuffixComponent();
   }

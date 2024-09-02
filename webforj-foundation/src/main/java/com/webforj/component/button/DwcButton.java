@@ -42,7 +42,6 @@ import java.util.List;
 public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
     HasFocusStatus, HasPrefixAndSuffix<T> {
-  private static final String ICON_SLOT = "icon";
   private boolean disableOnClick = false;
 
   private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
@@ -186,7 +185,6 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public T setPrefixComponent(Component prefix) {
     super.setPrefixComponent(prefix);
     return getSelf();
@@ -198,7 +196,6 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public Component getPrefixComponent() {
     return super.getPrefixComponent();
   }
@@ -209,7 +206,6 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public T setSuffixComponent(Component suffix) {
     super.setSuffixComponent(suffix);
     return getSelf();
@@ -221,7 +217,6 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * @since 24.11
    */
   @Override
-  @ExcludeFromJacocoGeneratedReport
   public Component getSuffixComponent() {
     return super.getSuffixComponent();
   }
@@ -229,11 +224,19 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   /**
    * Sets the icon of the button.
    *
+   * <p>
+   * Setting the icon will remove the text label of the button and only show the icon. Additionally,
+   * the icon the button expands will be set to {@link Expanse#NONE}.
+   * </p>
+   *
    * @param icon the icon of the button
    * @return the icon component
+   *
+   * @since 24.11
    */
   public Component setIcon(Component icon) {
     getSlotAssigner().reAssign(null, icon);
+    setExpanse(Expanse.NONE);
     return icon;
   }
 
@@ -241,6 +244,8 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * Returns the icon of the button.
    *
    * @return the icon component
+   *
+   * @since 24.11
    */
   public Component getIcon() {
     return getSlotAssigner().getSlotComponent(null);

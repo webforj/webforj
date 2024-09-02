@@ -1,11 +1,13 @@
 package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
 import com.basis.startup.type.BBjException;
+import com.webforj.component.Component;
 import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.event.BlurEvent;
@@ -183,5 +185,23 @@ class DwcFieldTest {
     assertEquals("helper text", component.getHelperText());
 
     assertEquals("helper text", component.getProperty("helperText"));
+  }
+
+  @Nested
+  class SlotsApi {
+
+    @Test
+    void shouldSetAndGetPrefix() {
+      Component prefixComponent = mock(Component.class);
+      component.setPrefixComponent(prefixComponent);
+      assertEquals(prefixComponent, component.getPrefixComponent());
+    }
+
+    @Test
+    void shouldSetAndGetSuffix() {
+      Component suffixComponent = mock(Component.class);
+      component.setSuffixComponent(suffixComponent);
+      assertEquals(suffixComponent, component.getSuffixComponent());
+    }
   }
 }
