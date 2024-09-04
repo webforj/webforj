@@ -40,11 +40,12 @@ jobs:
         run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }} -q
 
       - name: Commit & Push changes
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "build: bump version to ${{ github.event.inputs.version }}"
-          git push origin HEAD:${{ github.ref }}
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.ACTOR_TOKEN }}
+          author_email: ${{ secrets.ACTOR_EMAIL }}
+          author_name: ${{ secrets.ACTOR_NAME }}
+          message: 'build: bump version to ${{ github.event.inputs.version }}'
 
       - name: Create Release
         if: ${{ github.event.inputs.createTag == 'true' }}
