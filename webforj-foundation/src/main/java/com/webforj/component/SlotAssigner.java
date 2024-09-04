@@ -228,7 +228,7 @@ public final class SlotAssigner {
 
     BBjControl targetControl = getControl(targetComponent);
     BBjControl slotControl = getControl(component);
-    String theSlot = slot == SlotRegistry.DEFAULT_SLOT ? "" : slot;
+    String theSlot = Objects.equals(slot, SlotRegistry.DEFAULT_SLOT) ? "" : slot;
     Optional.ofNullable(assigner)
         .ifPresentOrElse(invoker -> invoker.assign(theSlot, targetControl, slotControl), () -> {
           try {
