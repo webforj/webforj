@@ -11,7 +11,7 @@
 
   <artifactId>webforj-icons</artifactId>
   <name>${project.artifactId}</name>
-  <description>Icon components for webforj</description>
+  <description>Icon components for webforJ</description>
 
   <dependencies>
     <dependency>
