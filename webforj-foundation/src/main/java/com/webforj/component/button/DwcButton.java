@@ -4,6 +4,7 @@ import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
+import com.webforj.component.Component;
 import com.webforj.component.DwcFocusableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.button.event.ButtonClickEvent;
@@ -12,6 +13,7 @@ import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasHorizontalAlignment;
+import com.webforj.concern.HasPrefixAndSuffix;
 import com.webforj.concern.HasTheme;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -39,7 +41,7 @@ import java.util.List;
  */
 public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
-    HasFocusStatus {
+    HasFocusStatus, HasPrefixAndSuffix<T> {
   private boolean disableOnClick = false;
 
   private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
@@ -175,6 +177,78 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
     super.setName(name);
     setUnrestrictedAttribute("name", name);
     return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setPrefixComponent(Component prefix) {
+    super.setPrefixComponent(prefix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getPrefixComponent() {
+    return super.getPrefixComponent();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setSuffixComponent(Component suffix) {
+    super.setSuffixComponent(suffix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getSuffixComponent() {
+    return super.getSuffixComponent();
+  }
+
+  /**
+   * Sets the icon of the button.
+   *
+   * <p>
+   * Setting the icon will remove the text label of the button and only show the icon. Additionally,
+   * the icon the button expands will be set to {@link Expanse#NONE}.
+   * </p>
+   *
+   * @param icon the icon of the button
+   * @return the icon component
+   *
+   * @since 24.11
+   */
+  public Component setIcon(Component icon) {
+    getSlotAssigner().reAssign(null, icon);
+    setExpanse(Expanse.NONE);
+    return icon;
+  }
+
+  /**
+   * Returns the icon of the button.
+   *
+   * @return the icon component
+   *
+   * @since 24.11
+   */
+  public Component getIcon() {
+    return getSlotAssigner().getSlotComponent(null);
   }
 
   /**

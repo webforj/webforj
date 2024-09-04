@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import com.basis.bbj.proxies.sysgui.BBjListButton;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.webforj.component.Component;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.list.event.ListClickEvent;
 import com.webforj.component.list.event.ListCloseEvent;
@@ -116,7 +118,7 @@ class DwcSelectDropdownTest {
 
   @Test
   @DisplayName("deselect remove selection when control is defined")
-  void shouldRemoveSelectionWhenControlIsDefined() throws IllegalAccessException, BBjException {
+  void shouldRemoveSelectionWhenControlIsDefined() throws BBjException {
     component.insert("item 1", "item 2");
     component.selectIndex(1);
 
@@ -247,5 +249,23 @@ class DwcSelectDropdownTest {
     assertEquals("custom-type", component.getDropdownType());
 
     assertEquals("custom-type", component.getProperty("type"));
+  }
+
+  @Nested
+  class SlotsApi {
+
+    @Test
+    void shouldSetAndGetPrefix() {
+      Component prefixComponent = mock(Component.class);
+      component.setPrefixComponent(prefixComponent);
+      assertEquals(prefixComponent, component.getPrefixComponent());
+    }
+
+    @Test
+    void shouldSetAndGetSuffix() {
+      Component suffixComponent = mock(Component.class);
+      component.setSuffixComponent(suffixComponent);
+      assertEquals(suffixComponent, component.getSuffixComponent());
+    }
   }
 }

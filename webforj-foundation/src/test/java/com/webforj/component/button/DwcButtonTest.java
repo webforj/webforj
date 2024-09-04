@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjButton;
 import com.basis.startup.type.BBjException;
+import com.webforj.component.Component;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.dispatcher.EventListener;
@@ -101,6 +103,31 @@ class DwcButtonTest {
 
       r.remove();
       assertEquals(0, component.getEventListeners(ButtonClickEvent.class).size());
+    }
+  }
+
+  @Nested
+  class SlotsApi {
+
+    @Test
+    void shouldSetAndGetPrefix() {
+      Component prefixComponent = mock(Component.class);
+      component.setPrefixComponent(prefixComponent);
+      assertEquals(prefixComponent, component.getPrefixComponent());
+    }
+
+    @Test
+    void shouldSetAndGetSuffix() {
+      Component suffixComponent = mock(Component.class);
+      component.setSuffixComponent(suffixComponent);
+      assertEquals(suffixComponent, component.getSuffixComponent());
+    }
+
+    @Test
+    void shouldSetAndGetIcon() {
+      Component iconComponent = mock(Component.class);
+      component.setIcon(iconComponent);
+      assertEquals(iconComponent, component.getIcon());
     }
   }
 }

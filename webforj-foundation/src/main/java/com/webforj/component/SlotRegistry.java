@@ -8,13 +8,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@code SlotRegistry} manages components by associating them with named slots.
+ * {@code SlotRegistry} manages the association of components with named slots.
+ *
+ * <p>
+ * It allows components to be dynamically added to, replaced, and removed from named slots,
+ * including a default slot when no specific slot is provided. Each component can only be associated
+ * with one slot at a time, and lifecycle events are tracked to remove components upon destruction.
+ * </p>
+ *
+ * <p>
+ * {@code SlotRegistry} is primarily useful for managing flexible, dynamic component arrangements
+ * within a window or UI container, where different components may be associated with different
+ * slots and need to be managed centrally.
+ * </p>
+ *
+ * @see SlotAssigner
  *
  * @author Hyyan Abo Fakher
  * @since 24.11
  */
 public class SlotRegistry {
-  static final String DEFAULT_SLOT = "__default__";
+  public static final String DEFAULT_SLOT = "__default__";
   private final Map<String, List<Component>> slots = new LinkedHashMap<>();
 
   /**
@@ -167,6 +181,15 @@ public class SlotRegistry {
    */
   public <T extends Component> T getFirstComponentInSlot(String slot, Class<T> classOfT) {
     return getComponentsInSlot(slot, classOfT).stream().findFirst().orElse(null);
+  }
+
+  /**
+   * Returns the names of all slots.
+   *
+   * @return the list of slot names.
+   */
+  public List<String> getSlots() {
+    return new ArrayList<>(slots.keySet());
   }
 
   /**

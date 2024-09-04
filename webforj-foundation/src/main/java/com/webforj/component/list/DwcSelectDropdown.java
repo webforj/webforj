@@ -2,7 +2,9 @@ package com.webforj.component.list;
 
 import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.startup.type.BBjException;
+import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
+import com.webforj.component.Component;
 import com.webforj.component.event.ComponentEventSinkRegistry;
 import com.webforj.component.list.event.ListClickEvent;
 import com.webforj.component.list.event.ListCloseEvent;
@@ -11,6 +13,7 @@ import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.component.list.sink.ListClickEventSink;
 import com.webforj.component.list.sink.ListCloseEventSink;
 import com.webforj.component.list.sink.ListOpenEventSink;
+import com.webforj.concern.HasPrefixAndSuffix;
 import com.webforj.data.binding.Binding;
 import com.webforj.data.binding.BindingContext;
 import com.webforj.data.binding.concern.BindAware;
@@ -39,7 +42,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 // framework's needs. The current structure is essential for meeting those needs.
 @SuppressWarnings("squid:S110")
 public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends DwcList<T, Object>
-    implements BindAware {
+    implements BindAware, HasPrefixAndSuffix<T> {
   private final ComponentEventSinkRegistry<ListOpenEvent> openEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ListOpenEventSink(this, getEventDispatcher()),
           ListOpenEvent.class);
@@ -305,6 +308,48 @@ public abstract class DwcSelectDropdown<T extends DwcList<T, Object>> extends Dw
   @Override
   public Object getValue() {
     return getSelectedKey();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setPrefixComponent(Component prefix) {
+    super.setPrefixComponent(prefix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getPrefixComponent() {
+    return super.getPrefixComponent();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setSuffixComponent(Component suffix) {
+    super.setSuffixComponent(suffix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getSuffixComponent() {
+    return super.getSuffixComponent();
   }
 
   /**

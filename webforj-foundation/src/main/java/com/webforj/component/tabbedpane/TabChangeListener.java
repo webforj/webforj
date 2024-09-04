@@ -2,6 +2,8 @@ package com.webforj.component.tabbedpane;
 
 import com.basis.bbj.proxies.sysgui.BBjTabCtrl;
 import com.basis.startup.type.BBjException;
+import com.webforj.component.Component;
+import com.webforj.component.SlotAssigner;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -50,6 +52,14 @@ final class TabChangeListener implements PropertyChangeListener {
 
         case "tooltip":
           setToolTip(index, (String) evt.getNewValue());
+          break;
+
+        case "prefix":
+          setSlot(index, "prefix", (Component) evt.getNewValue());
+          break;
+
+        case "suffix":
+          setSlot(index, "suffix", (Component) evt.getNewValue());
           break;
 
         default:
@@ -123,6 +133,29 @@ final class TabChangeListener implements PropertyChangeListener {
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
+    }
+  }
+
+  /**
+   * Sets the slot of the tab at the specified index.
+   *
+   * @param index The index of the tab.
+   * @param slot The slot to set.
+   * @param component The component to set.
+   */
+  private void setSlot(int index, String slot, Component component) {
+    BBjTabCtrl tabCtrl = this.tabbedPane.inferTabCtrl();
+    if (tabCtrl != null) {
+      SlotAssigner assigner =
+          new SlotAssigner(this.tabbedPane, (theSlot, targeControl, slotControl) -> {
+            try {
+              ((BBjTabCtrl) targeControl).setSlotAt(index, theSlot, slotControl);
+            } catch (BBjException e) {
+              throw new WebforjRuntimeException("Failed to set slot for tab at index " + index, e);
+            }
+          });
+      assigner.reAssign(slot, component);
+      assigner.attach();
     }
   }
 }

@@ -64,7 +64,9 @@ import java.util.stream.Collectors;
 public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     implements HasText<T>, HasHtml<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>,
     HasStyle<T>, HasVisibility<T>, HasTooltip<T>, HasSize<T> {
-
+  private static final String PREFIX_SLOT = "prefix";
+  private static final String SUFFIX_SLOT = "suffix";
+  private final SlotAssigner slotAssigner = new SlotAssigner(this);
   private final List<String> classNames = new ArrayList<>();
   private final List<String> removedClassNames = new ArrayList<>();
   private final List<String> removedStyles = new ArrayList<>();
@@ -1063,6 +1065,72 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   }
 
   /**
+   * Sets the prefix component for the component.
+   *
+   * <p>
+   * The prefix component is the component that is displayed in the component's prefix slot. If a
+   * prefix component is already set, then the old prefix component will be destroyed and replaced
+   * with the new one.
+   * </p>
+   *
+   * @param prefix the prefix component to set
+   * @return the component itself.
+   *
+   * @since 24.11
+   */
+  protected T setPrefixComponent(Component prefix) {
+    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    return getSelf();
+  }
+
+  /**
+   * Retrieves the prefix component for the component.
+   *
+   * @return the prefix component for the component.
+   * @since 24.11
+   */
+  protected Component getPrefixComponent() {
+    return getSlotAssigner().getSlotComponent(PREFIX_SLOT);
+  }
+
+  /**
+   * Sets the suffix component for the component.
+   *
+   * <p>
+   * The suffix component is the component that is displayed in the component's suffix slot. If a
+   * suffix component is already set, then the old suffix component will be destroyed and replaced
+   * with the new one.
+   * </p>
+   *
+   * @param suffix the suffix component to set
+   * @return the component itself.
+   *
+   * @since 24.11
+   */
+  protected T setSuffixComponent(Component suffix) {
+    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    return getSelf();
+  }
+
+  /**
+   * Retrieves the suffix component for the component.
+   *
+   * @return the suffix component for the component.
+   */
+  protected Component getSuffixComponent() {
+    return getSlotAssigner().getSlotComponent(SUFFIX_SLOT);
+  }
+
+  /**
+   * Retrieves the slot assigner for the component.
+   *
+   * @return the slot assigner for the component.
+   */
+  protected SlotAssigner getSlotAssigner() {
+    return slotAssigner;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -1098,6 +1166,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   @Override
   protected void onAttach() {
     super.onAttach();
+    getSlotAssigner().attach();
     attachControlCallbacks();
 
     if (!Boolean.TRUE.equals(visible)) {

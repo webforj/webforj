@@ -159,6 +159,17 @@ class SlotRegistryTest {
     assertTrue(components.isEmpty());
   }
 
+  @Test
+  void shouldReturnSlots() {
+    slotRegistry.addComponentsToSlot("header", component1);
+    slotRegistry.addComponentsToSlot("footer", component2);
+
+    List<String> slots = slotRegistry.getSlots();
+    assertEquals(2, slots.size());
+    assertTrue(slots.contains("header"));
+    assertTrue(slots.contains("footer"));
+  }
+
   static class TestComponent extends Component {
 
     @Override

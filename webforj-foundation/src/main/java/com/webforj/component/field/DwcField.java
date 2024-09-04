@@ -1,6 +1,7 @@
 package com.webforj.component.field;
 
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
+import com.webforj.component.Component;
 import com.webforj.component.DwcValidatableComponent;
 import com.webforj.component.Expanse;
 import com.webforj.component.event.ComponentEventSinkRegistry;
@@ -14,6 +15,7 @@ import com.webforj.concern.HasHelperText;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasPlaceholder;
+import com.webforj.concern.HasPrefixAndSuffix;
 import com.webforj.concern.HasReadOnly;
 import com.webforj.concern.HasRequired;
 import com.webforj.data.concern.ValueChangeModeAware;
@@ -37,10 +39,9 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @since 23.05
  */
 public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
-    extends DwcValidatableComponent<T, V>
-    implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>, HasExpanse<T, Expanse>, HasFocusStatus,
-    HasHighlightOnFocus<T>, HasPlaceholder<T>, ValueChangeModeAware<T>, HasHelperText<T> {
-
+    extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
+    HasExpanse<T, Expanse>, HasFocusStatus, HasHighlightOnFocus<T>, HasPlaceholder<T>,
+    ValueChangeModeAware<T>, HasHelperText<T>, HasPrefixAndSuffix<T> {
   private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
           ModifyEvent.class);
@@ -367,6 +368,48 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   @Override
   public String getHelperText() {
     return this.helperText;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setPrefixComponent(Component prefix) {
+    super.setPrefixComponent(prefix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getPrefixComponent() {
+    return super.getPrefixComponent();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public T setSuffixComponent(Component suffix) {
+    super.setSuffixComponent(suffix);
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @since 24.11
+   */
+  @Override
+  public Component getSuffixComponent() {
+    return super.getSuffixComponent();
   }
 
   /**
