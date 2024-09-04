@@ -102,6 +102,11 @@
         <artifactId>gson</artifactId>
         <version>2.10.1</version>
       </dependency>
+      <dependency>
+        <groupId>io.github.classgraph</groupId>
+        <artifactId>classgraph</artifactId>
+        <version>4.8.157</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.commons</groupId>
