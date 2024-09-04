@@ -314,6 +314,6 @@ public enum FeatherIcon implements IconFactory {
    */
   @Override
   public String toString() {
-    return name().toLowerCase(Locale.ENGLISH).replace('-', '_');
+    return name().toLowerCase(Locale.ENGLISH).replace('_', '-');
   }
 }
