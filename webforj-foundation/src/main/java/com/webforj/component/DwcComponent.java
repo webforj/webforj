@@ -1166,7 +1166,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   @Override
   protected void onAttach() {
     super.onAttach();
-    getSlotAssigner().attach();
     attachControlCallbacks();
 
     if (!Boolean.TRUE.equals(visible)) {
@@ -1234,6 +1233,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     if (horizontalAlignment != null && horizontalAlignment != defaultHorizontalAlignment) {
       setComponentHorizontalAlignment(horizontalAlignment);
     }
+
+    getSlotAssigner().attach();
   }
 
   /**
