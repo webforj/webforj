@@ -212,8 +212,8 @@ class RouteRegistryTest {
       routeRegistry.register("parent", TargetView.class);
       routeRegistry.register("parent/child", TestView.class, TargetView.class);
 
-      List<RouteEntry> resolvedRoutes = routeRegistry.getAvailableRoutes();
-      List<String> routePaths = resolvedRoutes.stream().map(RouteEntry::getPath).toList();
+      List<RouteConfiguration> resolvedRoutes = routeRegistry.getAvailableRoutes();
+      List<String> routePaths = resolvedRoutes.stream().map(RouteConfiguration::getPath).toList();
 
       assertEquals(2, resolvedRoutes.size());
       assertTrue(routePaths.contains("parent"));

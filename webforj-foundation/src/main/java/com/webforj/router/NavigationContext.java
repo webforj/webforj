@@ -17,7 +17,7 @@ import java.util.Optional;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class NavigationContext {
   private final Router router;

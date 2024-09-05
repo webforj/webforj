@@ -13,7 +13,7 @@ import com.webforj.router.history.ParametersBag;
  * is updated.
  * </p>
  *
- * @since 24.11
+ * @since 24.12
  *
  * @see DidNavigateEvent
  */

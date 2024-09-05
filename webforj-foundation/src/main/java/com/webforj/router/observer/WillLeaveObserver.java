@@ -8,7 +8,7 @@ import com.webforj.router.history.ParametersBag;
  * to leave a route and detach its component from the DOM.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  *
  * @see WillLeaveEvent
  */

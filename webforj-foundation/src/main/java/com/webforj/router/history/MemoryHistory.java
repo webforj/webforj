@@ -12,7 +12,7 @@ import java.util.Optional;
  * Memory-based implementation of the History interface.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class MemoryHistory implements History {
   private EventDispatcher dispatcher = new EventDispatcher();

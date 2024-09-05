@@ -6,7 +6,7 @@ import com.webforj.component.Component;
  * Generates view names based on the given component class.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public final class ViewNameGenerator {
 

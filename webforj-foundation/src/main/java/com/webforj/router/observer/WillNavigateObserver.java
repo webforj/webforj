@@ -15,7 +15,7 @@ import com.webforj.router.history.ParametersBag;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  *
  * @see WillNavigateEvent
  */

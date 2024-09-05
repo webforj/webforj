@@ -15,7 +15,7 @@ import java.util.List;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class Location implements Serializable {
   private final SegmentsBag segments;

@@ -7,7 +7,7 @@ import com.webforj.router.history.Location;
  * Options for navigating to a new location.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class NavigationOptions {
 

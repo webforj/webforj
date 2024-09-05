@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * conjunction with a primary {@link Route} annotation.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -7,7 +7,7 @@ import com.webforj.router.NavigationContext;
  * attaches its component to the DOM.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  *
  * @see WillEnterEvent
  */

@@ -13,7 +13,7 @@ import java.util.Optional;
  * SegmentsBag is a container for path segments.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class SegmentsBag implements Serializable, Iterable<String> {
   private List<String> segments;

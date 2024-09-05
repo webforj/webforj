@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * Annotates a class to define a component as a route in the application.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -16,7 +16,7 @@ import java.util.Optional;
  * for detailed information on how the API works in the browser.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class BrowserHistory implements History {
   private Gson gson = new Gson();

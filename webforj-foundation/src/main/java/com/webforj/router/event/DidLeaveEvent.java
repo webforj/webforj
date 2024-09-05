@@ -7,7 +7,7 @@ import com.webforj.router.NavigationContext;
  * detaches its component from the DOM.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  *
  * @see WillLeaveEvent
  */

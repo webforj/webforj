@@ -8,7 +8,7 @@ package com.webforj.router.exception;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class RouteRenderException extends RuntimeException {
 

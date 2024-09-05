@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class RouteRendererDispatcher implements RouteRendererObserver {
   private final EventDispatcher eventDispatcher;

@@ -12,7 +12,7 @@ import com.webforj.component.Component;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public interface RouteTarget {
   /**

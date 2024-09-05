@@ -9,7 +9,7 @@ import java.util.Optional;
  * Represents the session history.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public interface History {
 

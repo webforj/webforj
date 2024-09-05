@@ -46,7 +46,7 @@ import java.util.function.Consumer;
  * destroyed if observers veto these actions.
  * </p>
  *
- * @since 24.11
+ * @since 24.12
  */
 public class RouteRenderer {
   private final RouteRegistry registry;

@@ -6,18 +6,17 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A class to hold route information.
+ * A class to hold route configuration details.
  *
  * <p>
- * The {@code RouteEntry} class encapsulates the details of a route, including the route path,
- * component class, target class, frame ID, and priority. It is used to manage and sort routes
- * before registration.
+ * The {@code RouteConfiguration} class encapsulates the details of a route. It is used to manage
+ * and sort routes before registration.
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
-public class RouteEntry {
+public class RouteConfiguration {
   private final String path;
   private final Class<? extends Component> component;
   private final Class<? extends Component> target;
@@ -33,7 +32,7 @@ public class RouteEntry {
    * @param frameId the frame ID associated with the route, if any
    * @param priority the priority of the route
    */
-  public RouteEntry(String path, Class<? extends Component> component,
+  public RouteConfiguration(String path, Class<? extends Component> component,
       Class<? extends Component> target, String frameId, int priority) {
     Objects.requireNonNull(path, "Route path cannot be null");
     Objects.requireNonNull(component, "Route component class cannot be null");
@@ -59,7 +58,7 @@ public class RouteEntry {
    * @param target the target class for the route, if any
    * @param priority the priority of the route
    */
-  public RouteEntry(String path, Class<? extends Component> component,
+  public RouteConfiguration(String path, Class<? extends Component> component,
       Class<? extends Component> target, int priority) {
     this(path, component, target, null, priority);
   }
@@ -71,7 +70,7 @@ public class RouteEntry {
    * @param component the component class associated with the route
    * @param priority the priority of the route
    */
-  public RouteEntry(String path, Class<? extends Component> component, int priority) {
+  public RouteConfiguration(String path, Class<? extends Component> component, int priority) {
     this(path, component, Frame.class, null, priority);
   }
 
@@ -83,7 +82,7 @@ public class RouteEntry {
    * @param priority the priority of the route
    * @param frameId the frame ID associated with the route, if any
    */
-  public RouteEntry(String path, Class<? extends Component> component, int priority,
+  public RouteConfiguration(String path, Class<? extends Component> component, int priority,
       String frameId) {
     this(path, component, priority);
   }
@@ -95,7 +94,7 @@ public class RouteEntry {
    * @param path the path for the route
    * @param component the component class associated with the route
    */
-  public RouteEntry(String path, Class<? extends Component> component) {
+  public RouteConfiguration(String path, Class<? extends Component> component) {
     this(path, component, 10);
   }
 

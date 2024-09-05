@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * Router class responsible for navigating to a given path.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class Router {
   private final RouteRegistry registry;
@@ -375,9 +375,9 @@ public class Router {
   public Optional<RoutePattern> getRouteByLocation(Location location) {
     Location locationRootless = detachRoot(location);
     RoutePattern matchedPattern = null;
-    List<RouteEntry> routes = registry.getAvailableRoutes();
+    List<RouteConfiguration> routes = registry.getAvailableRoutes();
 
-    for (RouteEntry route : routes) {
+    for (RouteConfiguration route : routes) {
       RoutePattern pattern = patterns.computeIfAbsent(route.getPath(), RoutePattern::new);
       String currentSegment = locationRootless.getSegments().getPath();
       if (pattern.matches(currentSegment)) {

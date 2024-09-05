@@ -13,7 +13,7 @@ import java.util.Optional;
  * {@code RouteObserverEvent} is base class for all route observer events.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 class RouteEvent extends EventObject {
   private final transient NavigationContext context;

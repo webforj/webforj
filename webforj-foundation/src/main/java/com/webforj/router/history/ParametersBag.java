@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * ParametersBag is a container query parameters.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class ParametersBag implements Serializable, Iterable<Map.Entry<String, String>> {
   private Map<String, String> parameters;

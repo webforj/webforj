@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class RoutePattern {
   private final String pattern;

@@ -9,7 +9,7 @@ import java.util.Optional;
  * Represents a history state change event.
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
 public class HistoryStateChangeEvent extends EventObject {
   private final Location location;
