@@ -18,7 +18,7 @@ import java.nio.file.Paths;
  * @since 23.06
  */
 @NodeName("img")
-public class Img extends HtmlComponent<Iframe> {
+public class Img extends HtmlComponent<Img> {
 
   private final PropertyDescriptor<String> srcProp = PropertyDescriptor.attribute("src", "");
   private final PropertyDescriptor<String> altProp = PropertyDescriptor.attribute("alt", "");
