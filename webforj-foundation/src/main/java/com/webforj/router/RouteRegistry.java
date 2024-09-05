@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @since 24.12
  */
 public class RouteRegistry {
-  private final Set<RouteConfiguration> routeEntries =
+  private final Set<RouteConfiguration> routeConfigs =
       new TreeSet<>(Comparator.comparingInt(RouteConfiguration::getPriority)
           .thenComparing(RouteConfiguration::getPath, Comparator.reverseOrder()));
 
@@ -68,9 +68,11 @@ public class RouteRegistry {
    * Registers a route using a {@link RouteConfiguration}.
    *
    * @param entry the {@link RouteConfiguration} containing the route details
+   * @return the current {@link RouteRegistry} instance
    */
-  public void register(RouteConfiguration entry) {
-    routeEntries.add(entry);
+  public RouteRegistry register(RouteConfiguration entry) {
+    routeConfigs.add(entry);
+    return this;
   }
 
   /**
@@ -80,11 +82,13 @@ public class RouteRegistry {
    * @param component the component that should be rendered when the route is matched
    * @param target the target component of where the component should be rendered
    * @param frameId the frame ID where the component should be rendered
+   *
+   * @return the current {@link RouteRegistry} instance
    */
-  public void register(String route, Class<? extends Component> component,
+  public RouteRegistry register(String route, Class<? extends Component> component,
       Class<? extends Component> target, String frameId) {
     RouteConfiguration entry = new RouteConfiguration(route, component, target, frameId, 10);
-    register(entry);
+    return register(entry);
   }
 
   /**
@@ -93,10 +97,12 @@ public class RouteRegistry {
    * @param route the route path
    * @param component the component that should be rendered when the route is matched
    * @param target the target component of where the component should be rendered
+   *
+   * @return the current {@link RouteRegistry} instance
    */
-  public void register(String route, Class<? extends Component> component,
+  public RouteRegistry register(String route, Class<? extends Component> component,
       Class<? extends Component> target) {
-    register(route, component, target, null);
+    return register(route, component, target, null);
   }
 
   /**
@@ -104,30 +110,33 @@ public class RouteRegistry {
    *
    * @param route the route path
    * @param component the component that should be rendered when the route is matched
+   *
+   * @return the current {@link RouteRegistry} instance
    */
-  public void register(String route, Class<? extends Component> component) {
-    register(route, component, Frame.class, null);
+  public RouteRegistry register(String route, Class<? extends Component> component) {
+    return register(route, component, Frame.class, null);
   }
 
   /**
    * Registers a route using the annotations present on the component class.
    *
    * @param component the component class to be registered
+   * @return the current {@link RouteRegistry} instance
    */
-  public void register(Class<? extends Component> component) {
+  public RouteRegistry register(Class<? extends Component> component) {
     Route routeAnnotation = component.getAnnotation(Route.class);
     if (routeAnnotation != null) {
       // Process Route annotation
       String routePath = buildFullRoutePath(component);
-      RouteConfiguration entry = new RouteConfiguration(routePath, component, routeAnnotation.target(),
-          routeAnnotation.frame(), routeAnnotation.priority());
+      RouteConfiguration entry = new RouteConfiguration(routePath, component,
+          routeAnnotation.target(), routeAnnotation.frame(), routeAnnotation.priority());
       register(entry);
 
       // Process RouteAlias annotations if Route is present
       RouteAlias[] aliases = component.getAnnotationsByType(RouteAlias.class);
       for (RouteAlias alias : aliases) {
-        RouteConfiguration aliasEntry = new RouteConfiguration(alias.value(), component, routeAnnotation.target(),
-            routeAnnotation.frame(), alias.priority());
+        RouteConfiguration aliasEntry = new RouteConfiguration(alias.value(), component,
+            routeAnnotation.target(), routeAnnotation.frame(), alias.priority());
 
         register(aliasEntry);
       }
@@ -135,25 +144,31 @@ public class RouteRegistry {
       throw new IllegalStateException(
           "Class " + component.getName() + " does not have a @Route annotation.");
     }
+
+    return this;
   }
 
   /**
    * Unregisters the route with the given path.
    *
    * @param route the route path to unregister
+   * @return the current {@link RouteRegistry} instance
    */
-  public void unregister(String route) {
-    routeEntries.removeIf(entry -> entry.getPath().equals(route));
+  public RouteRegistry unregister(String route) {
+    routeConfigs.removeIf(entry -> entry.getPath().equals(route));
+    return this;
   }
 
   /**
    * Unregisters the route associated with the given component class.
    *
    * @param componentClass the component class to unregister
+   * @return the current {@link RouteRegistry} instance
    */
-  public void unregister(Class<? extends Component> componentClass) {
+  public RouteRegistry unregister(Class<? extends Component> componentClass) {
     Optional<String> route = getRouteByComponent(componentClass);
     route.ifPresent(this::unregister);
+    return this;
   }
 
   /**
@@ -164,7 +179,7 @@ public class RouteRegistry {
    *         not found
    */
   public Optional<Class<? extends Component>> getComponentByRoute(String path) {
-    return routeEntries.stream().filter(entry -> entry.getPath().equals(path))
+    return routeConfigs.stream().filter(entry -> entry.getPath().equals(path))
         .<Class<? extends Component>>map(RouteConfiguration::getComponent).findFirst();
   }
 
@@ -176,7 +191,7 @@ public class RouteRegistry {
    *         Optional if not found
    */
   public Optional<String> getRouteByComponent(Class<? extends Component> component) {
-    return routeEntries.stream().filter(entry -> entry.getComponent().equals(component))
+    return routeConfigs.stream().filter(entry -> entry.getComponent().equals(component))
         .map(RouteConfiguration::getPath).map(String::trim).findFirst();
   }
 
@@ -186,7 +201,7 @@ public class RouteRegistry {
    * @return a list of all registered routes
    */
   public List<RouteConfiguration> getAvailableRoutes() {
-    return routeEntries.stream().toList();
+    return routeConfigs.stream().toList();
   }
 
   /**
@@ -197,7 +212,7 @@ public class RouteRegistry {
    *         not found
    */
   public Optional<Class<? extends Component>> getTarget(Class<? extends Component> component) {
-    return routeEntries.stream().filter(entry -> entry.getComponent().equals(component))
+    return routeConfigs.stream().filter(entry -> entry.getComponent().equals(component))
         .<Class<? extends Component>>map(RouteConfiguration::getTarget).filter(Objects::nonNull)
         .findFirst();
   }
@@ -210,8 +225,9 @@ public class RouteRegistry {
    *         set
    */
   public Optional<String> getFrameRouteId(Class<? extends Component> component) {
-    return routeEntries.stream().filter(entry -> entry.getComponent().equals(component))
-        .map(RouteConfiguration::getFrameId).filter(Optional::isPresent).map(Optional::get).findFirst();
+    return routeConfigs.stream().filter(entry -> entry.getComponent().equals(component))
+        .map(RouteConfiguration::getFrameId).filter(Optional::isPresent).map(Optional::get)
+        .findFirst();
   }
 
   /**
@@ -222,7 +238,7 @@ public class RouteRegistry {
    */
   public Optional<Vnode<Class<? extends Component>>> getComponentsTree(
       Class<? extends Component> componentClass) {
-    if (routeEntries.stream().noneMatch(entry -> entry.getComponent().equals(componentClass))) {
+    if (routeConfigs.stream().noneMatch(entry -> entry.getComponent().equals(componentClass))) {
       return Optional.empty();
     }
 
@@ -245,19 +261,6 @@ public class RouteRegistry {
     }
 
     return Optional.of(rootNode);
-  }
-
-  private void populatePathComponents(Class<? extends Component> componentClass,
-      LinkedList<Class<? extends Component>> pathComponents) {
-    Class<? extends Component> currentComponent = componentClass;
-    while (currentComponent != null) {
-      pathComponents.addFirst(currentComponent);
-      Class<? extends Component> targetComponent = getTarget(currentComponent).orElse(null);
-      if (targetComponent == null || targetComponent.equals(currentComponent)) {
-        break;
-      }
-      currentComponent = targetComponent;
-    }
   }
 
   /**
@@ -296,6 +299,19 @@ public class RouteRegistry {
    * Clears the registry.
    */
   public void clear() {
-    routeEntries.clear();
+    routeConfigs.clear();
+  }
+
+  private void populatePathComponents(Class<? extends Component> componentClass,
+      LinkedList<Class<? extends Component>> pathComponents) {
+    Class<? extends Component> currentComponent = componentClass;
+    while (currentComponent != null) {
+      pathComponents.addFirst(currentComponent);
+      Class<? extends Component> targetComponent = getTarget(currentComponent).orElse(null);
+      if (targetComponent == null || targetComponent.equals(currentComponent)) {
+        break;
+      }
+      currentComponent = targetComponent;
+    }
   }
 }
