@@ -116,7 +116,7 @@ public class RoutePattern {
    * @param path the path to extract parameters from
    * @return a map of parameter names to values if matched, otherwise an empty map
    */
-  public Map<String, String> extractParameters(String path) {
+  public Map<String, String> getParameters(String path) {
     if (!path.startsWith("/")) {
       path = "/" + path; // NOSONAR
     }
@@ -179,22 +179,8 @@ public class RoutePattern {
    *
    * @return the regular expression pattern
    */
-  public Pattern getRouteRegex() {
+  public Pattern getRegex() {
     return regexPattern;
-  }
-
-  /**
-   * Gets the list of parameter names in the order they appear in the pattern.
-   *
-   * <p>
-   * The list includes all named parameters and wildcard segments extracted from the route pattern.
-   * This list is used to map extracted values from the path and to construct URLs.
-   * </p>
-   *
-   * @return the list of parameter names
-   */
-  public List<String> getParameterNames() {
-    return paramNames;
   }
 
   /**
@@ -238,7 +224,7 @@ public class RoutePattern {
    * @return the constructed URL
    * @throws IllegalArgumentException if a required parameter is missing in the provided map
    */
-  public String buildUrl(Map<String, String> params) { // NOSONAR
+  public String generateUrl(Map<String, String> params) { // NOSONAR
     StringBuilder urlBuilder = new StringBuilder();
     String[] parts = getPattern().split("/");
 
@@ -247,7 +233,7 @@ public class RoutePattern {
     for (int i = 0; i < parts.length; i++) { // NOSONAR
       String part = parts[i];
 
-      if (part.isEmpty()) {
+      if (part.isEmpty() || part.startsWith("@")) {
         continue;
       }
 
@@ -331,8 +317,8 @@ public class RoutePattern {
    * @return the constructed URL
    * @throws IllegalArgumentException if a required parameter is missing in the provided map
    */
-  public String buildUrl(ParametersBag params) { // NOSONAR
-    return buildUrl(params.all());
+  public String generateUrl(ParametersBag params) { // NOSONAR
+    return generateUrl(params.all());
   }
 
   /**
@@ -347,6 +333,10 @@ public class RoutePattern {
 
     for (String part : parts) { // NOSONAR
       if (part.isEmpty()) {
+        continue;
+      }
+
+      if (part.startsWith("@")) {
         continue;
       }
 
@@ -398,4 +388,5 @@ public class RoutePattern {
     regexBuilder.append("$");
     return regexBuilder.toString();
   }
+
 }

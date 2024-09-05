@@ -37,7 +37,7 @@ class RoutePatternPerfTest {
     // Perform matching
     paths.forEach((path, expectedParams) -> {
       assertTrue(pattern.matches(path), "Path should match: " + path);
-      Map<String, String> params = pattern.extractParameters(path);
+      Map<String, String> params = pattern.getParameters(path);
       String[] expected = expectedParams.split(",");
       assertEquals(expected[0], params.get("id"), "Parameter 'id' should match");
       assertEquals(expected[1], params.get("type"), "Parameter 'type' should match");

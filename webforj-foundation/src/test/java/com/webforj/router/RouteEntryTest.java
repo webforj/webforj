@@ -9,7 +9,7 @@ import com.webforj.component.window.Window;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class RouteConfigurationTest {
+class RouteEntryTest {
 
   @Nested
   class Constructors {
@@ -21,7 +21,7 @@ class RouteConfigurationTest {
       String frameId = "frame1";
       int priority = 5;
 
-      RouteConfiguration entry = new RouteConfiguration(path, component, target, frameId, priority);
+      RouteEntry entry = new RouteEntry(path, component, target, frameId, priority);
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
@@ -37,7 +37,7 @@ class RouteConfigurationTest {
       Class<? extends Component> target = TestTargetComponent.class;
       int priority = 5;
 
-      RouteConfiguration entry = new RouteConfiguration(path, component, target, priority);
+      RouteEntry entry = new RouteEntry(path, component, target, priority);
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
@@ -52,7 +52,7 @@ class RouteConfigurationTest {
       Class<? extends Component> component = TestComponent.class;
       int priority = 5;
 
-      RouteConfiguration entry = new RouteConfiguration(path, component, priority);
+      RouteEntry entry = new RouteEntry(path, component, priority);
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
@@ -68,7 +68,7 @@ class RouteConfigurationTest {
       int priority = 5;
       String frameId = "frame1";
 
-      RouteConfiguration entry = new RouteConfiguration(path, component, priority, frameId);
+      RouteEntry entry = new RouteEntry(path, component, priority, frameId);
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
@@ -82,7 +82,7 @@ class RouteConfigurationTest {
       String path = "test";
       Class<? extends Component> component = TestComponent.class;
 
-      RouteConfiguration entry = new RouteConfiguration(path, component);
+      RouteEntry entry = new RouteEntry(path, component);
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());

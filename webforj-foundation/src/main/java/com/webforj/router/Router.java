@@ -145,9 +145,9 @@ public class Router {
     }
 
     RoutePattern matchedPattern = routePattern.get();
-    NavigationContext context =
-        new NavigationContext(this, locationRootless, options, matchedPattern, ParametersBag
-            .of(matchedPattern.extractParameters(locationRootless.getSegments().getPath())));
+    NavigationContext context = new NavigationContext(this, locationRootless, options,
+        matchedPattern,
+        ParametersBag.of(matchedPattern.getParameters(locationRootless.getSegments().getPath())));
 
     // remove the history state listener to avoid loops
     removeHistoryStateListener();
@@ -234,7 +234,7 @@ public class Router {
     }
 
     RoutePattern pattern = patterns.computeIfAbsent(route.get(), RoutePattern::new);
-    String path = pattern.buildUrl(parameters != null ? parameters : new ParametersBag());
+    String path = pattern.generateUrl(parameters != null ? parameters : new ParametersBag());
     Location location = new Location(path);
 
     navigate(location, options, c -> {
@@ -375,9 +375,9 @@ public class Router {
   public Optional<RoutePattern> getRouteByLocation(Location location) {
     Location locationRootless = detachRoot(location);
     RoutePattern matchedPattern = null;
-    List<RouteConfiguration> routes = registry.getAvailableRoutes();
+    List<RouteEntry> routes = registry.getAvailableRoutes();
 
-    for (RouteConfiguration route : routes) {
+    for (RouteEntry route : routes) {
       RoutePattern pattern = patterns.computeIfAbsent(route.getPath(), RoutePattern::new);
       String currentSegment = locationRootless.getSegments().getPath();
       if (pattern.matches(currentSegment)) {
@@ -407,7 +407,7 @@ public class Router {
     }
 
     RoutePattern pattern = patterns.computeIfAbsent(route.get(), RoutePattern::new);
-    String path = pattern.buildUrl(parameters != null ? parameters : new ParametersBag());
+    String path = pattern.generateUrl(parameters != null ? parameters : new ParametersBag());
     Location location = new Location(path);
 
     return Optional.of(location);

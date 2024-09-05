@@ -19,7 +19,7 @@ class RoutePatternTest {
 
     assertTrue(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertEquals(3, params.size());
     assertEquals("123", params.get("id"));
     assertEquals("john", params.get("name"));
@@ -33,7 +33,7 @@ class RoutePatternTest {
 
     assertFalse(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertTrue(params.isEmpty());
   }
 
@@ -48,18 +48,18 @@ class RoutePatternTest {
     assertTrue(pattern.matches(pathWithSomeParams));
     assertTrue(pattern.matches(pathWithNoParams));
 
-    Map<String, String> paramsAll = pattern.extractParameters(pathWithAllParams);
+    Map<String, String> paramsAll = pattern.getParameters(pathWithAllParams);
     assertEquals(2, paramsAll.size());
     assertEquals("123", paramsAll.get("id"));
     assertEquals("john", paramsAll.get("name"));
 
-    Map<String, String> paramsSome = pattern.extractParameters(pathWithSomeParams);
+    Map<String, String> paramsSome = pattern.getParameters(pathWithSomeParams);
     assertEquals(2, paramsSome.size());
 
     assertEquals("123", paramsSome.get("id"));
     assertNull(paramsSome.get("name"));
 
-    Map<String, String> paramsNone = pattern.extractParameters(pathWithNoParams);
+    Map<String, String> paramsNone = pattern.getParameters(pathWithNoParams);
     assertEquals(2, paramsAll.size());
     assertNull(paramsNone.get("id"));
     assertNull(paramsNone.get("name"));
@@ -72,7 +72,7 @@ class RoutePatternTest {
 
     assertTrue(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertEquals(1, params.size());
     assertEquals("documents/images/photo.jpg", params.get("*"));
   }
@@ -86,7 +86,7 @@ class RoutePatternTest {
     params.put("name", "john");
     params.put("*", "extra/path");
 
-    String url = pattern.buildUrl(params);
+    String url = pattern.generateUrl(params);
     assertEquals("/customer/123/named/john/extra/path", url);
   }
 
@@ -96,7 +96,7 @@ class RoutePatternTest {
     Map<String, String> params = new HashMap<>();
     params.put("id", "123");
 
-    String url = pattern.buildUrl(params);
+    String url = pattern.generateUrl(params);
     assertEquals("/customer/123/named", url);
   }
 
@@ -107,7 +107,7 @@ class RoutePatternTest {
     params.put("name", "john");
 
     IllegalArgumentException t =
-        assertThrows(IllegalArgumentException.class, () -> pattern.buildUrl(params));
+        assertThrows(IllegalArgumentException.class, () -> pattern.generateUrl(params));
     assertEquals("Missing required parameter: id", t.getMessage());
   }
 
@@ -117,7 +117,7 @@ class RoutePatternTest {
     String path = "/";
 
     assertTrue(pattern.matches(path));
-    assertTrue(pattern.extractParameters(path).isEmpty());
+    assertTrue(pattern.getParameters(path).isEmpty());
   }
 
   @Test
@@ -127,7 +127,7 @@ class RoutePatternTest {
 
     assertTrue(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertEquals(1, params.size());
     assertEquals("123", params.get("id"));
   }
@@ -148,7 +148,7 @@ class RoutePatternTest {
 
     assertTrue(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
 
     assertEquals(4, params.size());
     assertEquals("abc", params.get("identifier"));
@@ -162,7 +162,7 @@ class RoutePatternTest {
     emptyWildcardPath.put("id", "789");
     emptyWildcardPath.put("path*", "pdf/foo/bar");
 
-    String urlWithEmptyWildcard = pattern.buildUrl(emptyWildcardPath);
+    String urlWithEmptyWildcard = pattern.generateUrl(emptyWildcardPath);
     assertEquals("/product/abc/resource/789/pdf/foo/bar", urlWithEmptyWildcard);
 
     // Test with only required parameters
@@ -170,7 +170,7 @@ class RoutePatternTest {
     onlyRequiredParams.put("identifier", "xyz");
     onlyRequiredParams.put("id", "");
 
-    String urlOnlyRequired = pattern.buildUrl(onlyRequiredParams);
+    String urlOnlyRequired = pattern.generateUrl(onlyRequiredParams);
     assertEquals("/product/xyz/resource", urlOnlyRequired);
   }
 
@@ -180,7 +180,7 @@ class RoutePatternTest {
     String path = "/files/some%20file.txt";
     assertTrue(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertEquals("some%20file.txt", params.get("filename"));
   }
 
@@ -196,11 +196,11 @@ class RoutePatternTest {
 
     String path = "/static/path/to/resource";
     assertTrue(pattern.matches(path));
-    assertTrue(pattern.extractParameters(path).isEmpty());
+    assertTrue(pattern.getParameters(path).isEmpty());
 
     String nonMatchingPath = "/static/path/to/another/resource";
     assertFalse(pattern.matches(nonMatchingPath));
-    assertTrue(pattern.extractParameters(nonMatchingPath).isEmpty());
+    assertTrue(pattern.getParameters(nonMatchingPath).isEmpty());
   }
 
   @Test
@@ -209,7 +209,7 @@ class RoutePatternTest {
     String path = "/value1/value2";
 
     assertTrue(pattern.matches(path));
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertEquals(2, params.size());
     assertEquals("value1", params.get("param1"));
     assertEquals("value2", params.get("param2"));
@@ -221,7 +221,7 @@ class RoutePatternTest {
     String path = "/files/documents/images/photos";
 
     assertTrue(pattern.matches(path));
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
     assertEquals(1, params.size());
     assertEquals("documents/images/photos", params.get("*"));
   }
@@ -241,9 +241,31 @@ class RoutePatternTest {
 
     assertTrue(pattern.matches(path));
 
-    Map<String, String> params = pattern.extractParameters(path);
+    Map<String, String> params = pattern.getParameters(path);
 
     assertEquals(1, params.size());
     assertEquals("Dashboard", params.get("id"));
+  }
+
+  @Test
+  void shouldIgnoreLayoutsWhenMatching() {
+    RoutePattern pattern = new RoutePattern("/@dashboard/blog/@container/:id<[0-9]+>");
+    String path = "/blog/123";
+
+    assertTrue(pattern.matches(path));
+
+    Map<String, String> params = pattern.getParameters(path);
+    assertEquals(1, params.size());
+    assertEquals("123", params.get("id"));
+  }
+
+  @Test
+  void shouldIgnoreLayoutsWhenGeneratingUrl() {
+    RoutePattern pattern = new RoutePattern("/@dashboard/blog/@container/:id<[0-9]+>");
+    Map<String, String> params = new HashMap<>();
+    params.put("id", "123");
+
+    String url = pattern.generateUrl(params);
+    assertEquals("/blog/123", url);
   }
 }
