@@ -1,5 +1,7 @@
 package com.webforj.component;
 
+import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.startup.type.BBjException;
 import com.webforj.PendingResult;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
@@ -91,6 +93,19 @@ public abstract class Component {
    * @return The component itself
    */
   public Component setName(String name) {
+    try {
+      BBjControl control = ComponentAccessor.getDefault().getControl(this);
+      if (control != null) {
+        control.setName(name);
+      }
+      // FIXME: controll is null if setName is called before the control is added to the form - need
+      // to catch up!
+      // TODO: consider which exceptions to gracefully ignore (if any)
+    } catch (IllegalAccessException ex) {
+      throw new RuntimeException(ex);
+    } catch (BBjException e) {
+      throw new RuntimeException(e);
+    }
     this.name = name;
     return this;
   }
