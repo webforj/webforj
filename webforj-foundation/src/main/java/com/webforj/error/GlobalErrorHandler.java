@@ -24,7 +24,7 @@ public class GlobalErrorHandler implements ErrorHandler {
   public void onError(Throwable throwable, boolean debug) {
     // Log to BBj Debug log
     System.err.println(throwable.getMessage()); // NOSONAR
-    throwable.printStackTrace();
+    throwable.printStackTrace(); // NOSONAR
 
     // log to the browser console (debug only)
     console().warn(throwable);
