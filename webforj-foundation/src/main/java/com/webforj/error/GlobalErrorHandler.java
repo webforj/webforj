@@ -27,7 +27,7 @@ public class GlobalErrorHandler implements ErrorHandler {
     throwable.printStackTrace(); // NOSONAR
 
     // log to the browser console (debug only)
-    console().warn(throwable);
+    console().error(throwable);
 
     // display the error page with the stack trace
     String title = debug ? throwable.getClass().getName() : "500. That's an error";
