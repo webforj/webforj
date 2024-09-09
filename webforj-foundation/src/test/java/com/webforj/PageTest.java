@@ -121,7 +121,7 @@ class PageTest {
     @Test
     void shouldSetTitleWidthDefaultFormat() throws BBjException {
       page.setTitle("title");
-      verify(webManager).setTitle(eq("title"), eq("{BrowserTitle}"), any(Map.class));
+      verify(webManager).setTitle(eq("title"), eq(Page.DEFAULT_TITLE_FORMAT), any(Map.class));
     }
 
     @Test
