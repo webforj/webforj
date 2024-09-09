@@ -35,15 +35,15 @@ public @interface Route {
   String value() default AUTO_GENERATED_VIEW_NAME;
 
   /**
-   * Sets the target of the route.
+   * Sets the outlet of the route.
    *
    * <p>
-   * The target is the place where the route's component will be rendered. The target can be any
-   * component that extends the {@link Component} class. The default target is the {@link Frame}.
+   * The outlet is the place where the route's component will be rendered. The outlet can be any
+   * component that extends the {@link Component} class. The default outlet is the {@link Frame}.
    * </p>
    *
    * <p>
-   * When frame is used as the target, the route's component will be rendered in the frame that can
+   * When frame is used as the outlet, the route's component will be rendered in the frame that can
    * be specified using the {@link #frame()} ID. If no frame ID is set, then the first usable frame
    * will be detected and used to render the route's component. If no frame is found, then the
    * route's component will not be rendered and fail.
@@ -51,13 +51,13 @@ public @interface Route {
    *
    * @return the target of the route
    */
-  Class<? extends Component> target() default Frame.class;
+  Class<? extends Component> outlet() default Frame.class;
 
   /**
    * Sets the frame ID.
    *
    * <p>
-   * When the {@link #target()} is set to {@code Frame.class}, the frame ID can be defined using
+   * When the {@link #outlet()} is set to {@code Frame.class}, the frame ID can be defined using
    * {@link Frame#setFrameId(java.lang.String)} to specify the frame to render the route's component
    * in. If no frame ID is set, then the first usable frame will be detected and used to render the
    * route's component. If no frame is found, then the route's component will not be rendered and

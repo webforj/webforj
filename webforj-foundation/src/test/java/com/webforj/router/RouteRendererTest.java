@@ -234,7 +234,7 @@ class RouteRendererTest {
   }
 
   // Mock UnregisteredComponent class used in tests
-  static class UnregisteredComponent extends Component implements RouteTarget {
+  static class UnregisteredComponent extends Component implements RouteOutlet {
     @Override
     protected void onCreate(Window window) {
       // Do nothing
@@ -257,7 +257,7 @@ class RouteRendererTest {
   }
 
   // Mock ParentComponent class used in tests
-  static class ParentComponent extends Component implements RouteTarget {
+  static class ParentComponent extends Component implements RouteOutlet {
     @Override
     protected void onCreate(Window window) {
       // Do nothing
@@ -280,7 +280,7 @@ class RouteRendererTest {
   }
 
   // Mock ChildComponent class used in tests
-  static class ChildComponent extends Component implements RouteTarget {
+  static class ChildComponent extends Component implements RouteOutlet {
     @Override
     protected void onCreate(Window window) {
       // Do nothing

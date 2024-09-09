@@ -128,14 +128,14 @@ public class RouteRegistry {
     if (routeAnnotation != null) {
       // Process Route annotation
       String routePath = buildFullRoutePath(component);
-      RouteEntry entry = new RouteEntry(routePath, component, routeAnnotation.target(),
+      RouteEntry entry = new RouteEntry(routePath, component, routeAnnotation.outlet(),
           routeAnnotation.frame(), routeAnnotation.priority());
       register(entry);
 
       // Process RouteAlias annotations if Route is present
       RouteAlias[] aliases = component.getAnnotationsByType(RouteAlias.class);
       for (RouteAlias alias : aliases) {
-        RouteEntry aliasEntry = new RouteEntry(alias.value(), component, routeAnnotation.target(),
+        RouteEntry aliasEntry = new RouteEntry(alias.value(), component, routeAnnotation.outlet(),
             routeAnnotation.frame(), alias.priority());
 
         register(aliasEntry);
@@ -205,15 +205,15 @@ public class RouteRegistry {
   }
 
   /**
-   * Returns the target class of the component class.
+   * Returns the outlet class of the component class.
    *
    * @param component the component class
-   * @return an Optional containing the target class of the component class, or an empty Optional if
+   * @return an Optional containing the outlet class of the component class, or an empty Optional if
    *         not found
    */
-  public Optional<Class<? extends Component>> getTarget(Class<? extends Component> component) {
+  public Optional<Class<? extends Component>> getOutlet(Class<? extends Component> component) {
     return routeConfigs.stream().filter(entry -> entry.getComponent().equals(component))
-        .<Class<? extends Component>>map(RouteEntry::getTarget).filter(Objects::nonNull)
+        .<Class<? extends Component>>map(RouteEntry::getOutlet).filter(Objects::nonNull)
         .findFirst();
   }
 
@@ -282,11 +282,11 @@ public class RouteRegistry {
       routePath = ViewNameGenerator.generate(componentClass);
     }
 
-    Class<? extends Component> targetClass = routeAnnotation.target();
-    if (targetClass != Frame.class && targetClass != null) {
-      Route targetRouteAnnotation = targetClass.getAnnotation(Route.class);
+    Class<? extends Component> outletClass = routeAnnotation.outlet();
+    if (outletClass != Frame.class && outletClass != null) {
+      Route targetRouteAnnotation = outletClass.getAnnotation(Route.class);
       if (targetRouteAnnotation != null) {
-        String targetPath = buildFullRoutePath(targetClass);
+        String targetPath = buildFullRoutePath(outletClass);
         routePath = (targetPath + "/" + routePath).replaceAll("//", "/"); // NOSONAR
       }
     }
@@ -306,7 +306,7 @@ public class RouteRegistry {
     Class<? extends Component> currentComponent = componentClass;
     while (currentComponent != null) {
       pathComponents.addFirst(currentComponent);
-      Class<? extends Component> targetComponent = getTarget(currentComponent).orElse(null);
+      Class<? extends Component> targetComponent = getOutlet(currentComponent).orElse(null);
       if (targetComponent == null || targetComponent.equals(currentComponent)) {
         break;
       }

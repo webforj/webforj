@@ -302,9 +302,9 @@ public class RouteRenderer {
    */
   protected void detachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
-    Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
-    if (!targetClass.isPresent()) {
-      targetClass = Optional.ofNullable(Frame.class);
+    Optional<Class<? extends Component>> outletClass = registry.getOutlet(componentClass);
+    if (!outletClass.isPresent()) {
+      outletClass = Optional.ofNullable(Frame.class);
     }
 
     if (componentInstance.isDestroyed()) {
@@ -312,19 +312,19 @@ public class RouteRenderer {
       return;
     }
 
-    Component targetInstance =
-        Frame.class.isAssignableFrom(targetClass.get()) ? getFrameComponent(componentClass)
-            : getOrCreateComponent(targetClass.get());
+    Component outletInstance =
+        Frame.class.isAssignableFrom(outletClass.get()) ? getFrameComponent(componentClass)
+            : getOrCreateComponent(outletClass.get());
 
-    if (targetInstance instanceof RouteTarget) {
-      ((RouteTarget) targetInstance).removeRouteContent(componentInstance);
-    } else if (targetInstance instanceof HasComponents) {
-      ((HasComponents) targetInstance).remove(componentInstance);
+    if (outletInstance instanceof RouteOutlet) {
+      ((RouteOutlet) outletInstance).removeRouteContent(componentInstance);
+    } else if (outletInstance instanceof HasComponents) {
+      ((HasComponents) outletInstance).remove(componentInstance);
     } else {
-      throw new RouteRenderException("Cannot remove route's component in parent "
-          + "that does not implement RouteTarget or HasComponents interface. "
+      throw new RouteRenderException("Cannot remove route's component in outlet "
+          + "that does not implement RouteOutlet or HasComponents interface. "
           + "Trying to remove component '" + componentInstance.getClass().getName() + "' "
-          + "in parent: '" + targetInstance.getClass().getName() + "'");
+          + "in outlet: '" + outletInstance.getClass().getName() + "'");
     }
 
     componentsCache.remove(componentClass);
@@ -425,38 +425,28 @@ public class RouteRenderer {
   protected void attachNode(Class<? extends Component> componentClass,
       Component componentInstance) {
 
-    // if (!registry.getRouteByComponent(componentClass).isPresent()) {
-    // throw new RouteNotFoundException("No route found for component: " +
-    // componentClass.getName());
-    // }
-
     if (componentInstance.isAttached()) {
       return;
     }
 
-    Optional<Class<? extends Component>> targetClass = registry.getTarget(componentClass);
-    if (!targetClass.isPresent()) {
-      // throw new RouteHasNoTargetException(
-      // "No route target found for component: " + componentClass.getName()
-      // + ", route is registered as " + registry.getRouteByComponent(componentClass)
-      // + " If no target is required, use Frame.class as the target.");
-
-      targetClass = Optional.ofNullable(Frame.class);
+    Optional<Class<? extends Component>> outletClass = registry.getOutlet(componentClass);
+    if (!outletClass.isPresent()) {
+      outletClass = Optional.ofNullable(Frame.class);
     }
 
-    Component targetInstance =
-        Frame.class.isAssignableFrom(targetClass.get()) ? getFrameComponent(componentClass)
-            : getOrCreateComponent(targetClass.get());
+    Component outletInstance =
+        Frame.class.isAssignableFrom(outletClass.get()) ? getFrameComponent(componentClass)
+            : getOrCreateComponent(outletClass.get());
 
-    if (targetInstance instanceof RouteTarget) {
-      ((RouteTarget) targetInstance).showRouteContent(componentInstance);
-    } else if (targetInstance instanceof HasComponents) {
-      ((HasComponents) targetInstance).add(componentInstance);
+    if (outletInstance instanceof RouteOutlet) {
+      ((RouteOutlet) outletInstance).showRouteContent(componentInstance);
+    } else if (outletInstance instanceof HasComponents) {
+      ((HasComponents) outletInstance).add(componentInstance);
     } else {
-      throw new RouteRenderException("Cannot render route's component in parent "
-          + "that does not implement RouteTarget or HasComponents interface. "
+      throw new RouteRenderException("Cannot render route's component in outlet "
+          + "that does not implement RouteOutlet or HasComponents interface. "
           + "Trying to render component '" + componentInstance.getClass().getName() + "' "
-          + "in parent: '" + targetInstance.getClass().getName() + "'");
+          + "in outlet: '" + outletInstance.getClass().getName() + "'");
     }
   }
 

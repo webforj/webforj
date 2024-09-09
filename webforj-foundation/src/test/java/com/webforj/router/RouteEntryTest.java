@@ -25,7 +25,7 @@ class RouteEntryTest {
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
-      assertEquals(target, entry.getTarget());
+      assertEquals(target, entry.getOutlet());
       assertFalse(entry.getFrameId().isPresent());
       assertEquals(priority, entry.getPriority());
     }
@@ -41,7 +41,7 @@ class RouteEntryTest {
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
-      assertEquals(target, entry.getTarget());
+      assertEquals(target, entry.getOutlet());
       assertFalse(entry.getFrameId().isPresent());
       assertEquals(priority, entry.getPriority());
     }
@@ -56,7 +56,7 @@ class RouteEntryTest {
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
-      assertEquals(Frame.class, entry.getTarget());
+      assertEquals(Frame.class, entry.getOutlet());
       assertFalse(entry.getFrameId().isPresent());
       assertEquals(priority, entry.getPriority());
     }
@@ -72,7 +72,7 @@ class RouteEntryTest {
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
-      assertEquals(Frame.class, entry.getTarget());
+      assertEquals(Frame.class, entry.getOutlet());
       assertFalse(entry.getFrameId().isPresent());
       assertEquals(priority, entry.getPriority());
     }
@@ -86,7 +86,7 @@ class RouteEntryTest {
 
       assertEquals(path, entry.getPath());
       assertEquals(component, entry.getComponent());
-      assertEquals(Frame.class, entry.getTarget());
+      assertEquals(Frame.class, entry.getOutlet());
       assertFalse(entry.getFrameId().isPresent());
       assertEquals(10, entry.getPriority());
     }

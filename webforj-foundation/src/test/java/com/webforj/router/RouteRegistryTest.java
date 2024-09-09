@@ -34,7 +34,7 @@ class RouteRegistryTest {
       routeRegistry.register("test", view, target, "frame1");
 
       assertEquals(view, routeRegistry.getComponentByRoute("test").get());
-      assertEquals(target, routeRegistry.getTarget(TestView.class).get());
+      assertEquals(target, routeRegistry.getOutlet(TestView.class).get());
       assertEquals("frame1", routeRegistry.getFrameRouteId(view).get());
     }
 
@@ -45,7 +45,7 @@ class RouteRegistryTest {
       routeRegistry.register("test", view, target);
 
       assertEquals(view, routeRegistry.getComponentByRoute("test").get());
-      assertEquals(target, routeRegistry.getTarget(TestView.class).get());
+      assertEquals(target, routeRegistry.getOutlet(TestView.class).get());
       assertFalse(routeRegistry.getFrameRouteId(TestView.class).isPresent());
     }
 
@@ -55,7 +55,7 @@ class RouteRegistryTest {
       routeRegistry.register("test", view);
 
       assertEquals(view, routeRegistry.getComponentByRoute("test").get());
-      assertEquals(Frame.class, routeRegistry.getTarget(TestView.class).get());
+      assertEquals(Frame.class, routeRegistry.getOutlet(TestView.class).get());
     }
 
     @Test
@@ -245,12 +245,12 @@ class RouteRegistryTest {
     routeRegistry.clear();
 
     assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
-    assertFalse(routeRegistry.getTarget(TestView.class).isPresent());
+    assertFalse(routeRegistry.getOutlet(TestView.class).isPresent());
     assertFalse(routeRegistry.getFrameRouteId(TestView.class).isPresent());
     assertTrue(routeRegistry.getAvailableRoutes().isEmpty());
   }
 
-  @Route(value = "test", target = TargetView.class)
+  @Route(value = "test", outlet = TargetView.class)
   static class TestView extends Component {
 
     @Override

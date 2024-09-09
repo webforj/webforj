@@ -682,7 +682,7 @@ public class Router {
 
     if (!normalizeRoot.isEmpty() && path.startsWith(normalizeRoot)) {
       path = path.substring(normalizeRoot.length());
-      path = "/" + normalizePath(path);
+      path = "/" + normalizePath(path); // NOSONAR
     }
 
     return new Location(new SegmentsBag(path), location.getQueryParameters(),

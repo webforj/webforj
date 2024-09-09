@@ -19,7 +19,7 @@ import java.util.Optional;
 public class RouteEntry {
   private final String path;
   private final Class<? extends Component> component;
-  private final Class<? extends Component> target;
+  private final Class<? extends Component> outlet;
   private final int priority;
   private String frameId = null;
 
@@ -28,23 +28,23 @@ public class RouteEntry {
    *
    * @param path the path for the route
    * @param component the component class associated with the route
-   * @param target the target class for the route, if any
+   * @param outlet the target class for the route, if any
    * @param frameId the frame ID associated with the route, if any
    * @param priority the priority of the route
    */
   public RouteEntry(String path, Class<? extends Component> component,
-      Class<? extends Component> target, String frameId, int priority) {
+      Class<? extends Component> outlet, String frameId, int priority) {
     Objects.requireNonNull(path, "Route path cannot be null");
     Objects.requireNonNull(component, "Route component class cannot be null");
-    Objects.requireNonNull(target, "Route target class cannot be null");
+    Objects.requireNonNull(outlet, "Route outlet class cannot be null");
 
     this.path = path;
     this.component = component;
-    this.target = target;
+    this.outlet = outlet;
     this.priority = priority;
 
     Optional.ofNullable(frameId).ifPresent(id -> {
-      if (!id.isEmpty() && Frame.class.isAssignableFrom(target)) {
+      if (!id.isEmpty() && Frame.class.isAssignableFrom(outlet)) {
         this.frameId = id;
       }
     });
@@ -117,12 +117,12 @@ public class RouteEntry {
   }
 
   /**
-   * Returns the target class for the route, if any.
+   * Returns the outlet class for the route, if any.
    *
-   * @return the target class, or {@code null} if none
+   * @return the outlet class, or {@code null} if none
    */
-  public Class<? extends Component> getTarget() {
-    return target;
+  public Class<? extends Component> getOutlet() {
+    return outlet;
   }
 
   /**

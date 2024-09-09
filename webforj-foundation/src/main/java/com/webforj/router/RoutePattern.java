@@ -388,5 +388,4 @@ public class RoutePattern {
     regexBuilder.append("$");
     return regexBuilder.toString();
   }
-
 }

@@ -6,7 +6,7 @@ import com.webforj.component.Component;
  * Represents a route target which is responsible for rendering the given route component.
  *
  * <p>
- * The route target is responsible for rendering the given route component. The target can be a
+ * The route outlet is responsible for rendering the given route component. The outlet can be a
  * frame or any other component which can render the given component. A component should implement
  * this interface to provide a custom rendering behavior.
  * </p>
@@ -14,7 +14,7 @@ import com.webforj.component.Component;
  * @author Hyyan Abo Fakher
  * @since 24.12
  */
-public interface RouteTarget {
+public interface RouteOutlet {
   /**
    * Renders the given router component.
    *
