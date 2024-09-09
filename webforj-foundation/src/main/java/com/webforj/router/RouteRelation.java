@@ -1,4 +1,4 @@
-package com.webforj.data.tree;
+package com.webforj.router;
 
 import java.util.Deque;
 import java.util.Iterator;
@@ -7,30 +7,24 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * The {@code Vnode} class represents a simple tree structure.
- *
- * <p>
- * This class represents a simple tree structure. The tree structure is composed of nodes that
- * contain data and have a parent and children. The tree structure can be iterated over to traverse
- * the nodes.
- * </p>
+ * The {@code RouteRelation} class represents a route tree structure.
  *
  * @param <T> the type of the data
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
-public class Vnode<T> implements Iterable<Vnode<T>> {
+public class RouteRelation<T> implements Iterable<RouteRelation<T>> {
   private T data;
-  private Vnode<T> parent;
-  private List<Vnode<T>> children = new LinkedList<>();
+  private RouteRelation<T> parent;
+  private List<RouteRelation<T>> children = new LinkedList<>();
 
   /**
    * Constructs a new {@code RouteRelation} instance with the given data.
    *
    * @param data the data
    */
-  public Vnode(T data) {
+  public RouteRelation(T data) {
     this.data = data;
   }
 
@@ -48,7 +42,7 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    *
    * @param parent the parent
    */
-  public void setParent(Vnode<T> parent) {
+  public void setParent(RouteRelation<T> parent) {
     this.parent = parent;
   }
 
@@ -57,7 +51,7 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    *
    * @return the parent
    */
-  public Vnode<T> getParent() {
+  public RouteRelation<T> getParent() {
     return parent;
   }
 
@@ -66,7 +60,7 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    *
    * @return the children
    */
-  public List<Vnode<T>> getChildren() {
+  public List<RouteRelation<T>> getChildren() {
     return children;
   }
 
@@ -75,7 +69,7 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    *
    * @param child the child
    */
-  public void addChild(Vnode<T> child) {
+  public void addChild(RouteRelation<T> child) {
     child.setParent(this);
     this.children.add(child);
   }
@@ -85,7 +79,7 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    *
    * @param child the child
    */
-  public void removeChild(Vnode<T> child) {
+  public void removeChild(RouteRelation<T> child) {
     this.children.remove(child);
     child.setParent(null);
   }
@@ -94,7 +88,7 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    * Removes all children.
    */
   public void removeAllChildren() {
-    for (Vnode<T> child : this.children) {
+    for (RouteRelation<T> child : this.children) {
       child.setParent(null);
     }
 
@@ -105,14 +99,14 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
    * {@inheritDoc}
    */
   @Override
-  public Iterator<Vnode<T>> iterator() {
+  public Iterator<RouteRelation<T>> iterator() {
     return new VnodeIterator<>(this);
   }
 
-  private static class VnodeIterator<T> implements Iterator<Vnode<T>> {
-    private Deque<Vnode<T>> stack = new LinkedList<>();
+  private static class VnodeIterator<T> implements Iterator<RouteRelation<T>> {
+    private Deque<RouteRelation<T>> stack = new LinkedList<>();
 
-    public VnodeIterator(Vnode<T> root) {
+    public VnodeIterator(RouteRelation<T> root) {
       stack.push(root);
     }
 
@@ -122,12 +116,12 @@ public class Vnode<T> implements Iterable<Vnode<T>> {
     }
 
     @Override
-    public Vnode<T> next() {
+    public RouteRelation<T> next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
 
-      Vnode<T> current = stack.pop();
+      RouteRelation<T> current = stack.pop();
       for (int i = current.getChildren().size() - 1; i >= 0; i--) {
         stack.push(current.getChildren().get(i));
       }

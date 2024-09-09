@@ -2,7 +2,6 @@ package com.webforj.router;
 
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
-import com.webforj.data.tree.Vnode;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.annotation.RouteAlias;
 import io.github.classgraph.ClassGraph;
@@ -235,7 +234,7 @@ public class RouteRegistry {
    * @param componentClass the component class
    * @return an Optional containing the root component class of the given component class
    */
-  public Optional<Vnode<Class<? extends Component>>> getComponentsTree(
+  public Optional<RouteRelation<Class<? extends Component>>> getComponentsTree(
       Class<? extends Component> componentClass) {
     if (routeConfigs.stream().noneMatch(entry -> entry.getComponent().equals(componentClass))) {
       return Optional.empty();
@@ -250,11 +249,12 @@ public class RouteRegistry {
     }
 
     // Build the path tree from root to the given component
-    Vnode<Class<? extends Component>> rootNode = new Vnode<>(pathComponents.removeFirst());
-    Vnode<Class<? extends Component>> currentNode = rootNode;
+    RouteRelation<Class<? extends Component>> rootNode =
+        new RouteRelation<>(pathComponents.removeFirst());
+    RouteRelation<Class<? extends Component>> currentNode = rootNode;
 
     for (Class<? extends Component> component : pathComponents) {
-      Vnode<Class<? extends Component>> childNode = new Vnode<>(component);
+      RouteRelation<Class<? extends Component>> childNode = new RouteRelation<>(component);
       currentNode.addChild(childNode);
       currentNode = childNode;
     }

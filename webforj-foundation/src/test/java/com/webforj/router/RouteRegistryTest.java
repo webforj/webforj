@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.component.window.Window;
-import com.webforj.data.tree.Vnode;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.annotation.RouteAlias;
 import java.util.List;
@@ -225,11 +224,11 @@ class RouteRegistryTest {
       routeRegistry.register("parent", TargetView.class);
       routeRegistry.register("parent/child", TestView.class, TargetView.class);
 
-      Optional<Vnode<Class<? extends Component>>> tree =
+      Optional<RouteRelation<Class<? extends Component>>> tree =
           routeRegistry.getComponentsTree(TestView.class);
 
       assertTrue(tree.isPresent());
-      Vnode<Class<? extends Component>> rootNode = tree.get();
+      RouteRelation<Class<? extends Component>> rootNode = tree.get();
 
       assertEquals(Frame.class, rootNode.getData());
       assertEquals(1, rootNode.getChildren().size());

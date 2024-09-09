@@ -1,31 +1,31 @@
-package com.webforj.data.tree;
+package com.webforj.router;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * The {@code VnodeDiff} class compares two {@link Vnode} instances and determines what nodes need
- * to be added, removed, or kept.
+ * The {@code RouteRelationDiff} class compares two {@link RouteRelation} instances and determines
+ * what {@code RouteRelation} need to be added, removed, or kept.
  *
- * @param <T> the type of the data in the TreeNode
+ * @param <T> the type of the data in the RouteRelation
  *
- * @see Vnode
+ * @see RouteRelation
  *
  * @author Hyyan Abo Fakher
- * @since 24.11
+ * @since 24.12
  */
-public class VnodeDiff<T> {
+public class RouteRelationDiff<T> {
   private final Set<T> toAdd = new LinkedHashSet<>();
   private final Set<T> toRemove = new LinkedHashSet<>();
   private final Set<T> toKeep = new LinkedHashSet<>();
 
   /**
-   * Constructs a new {@code VnodeDiff} instance by comparing two TreeNode instances.
+   * Constructs a new {@code RouteRelationDiff} instance by comparing two TreeNode instances.
    *
    * @param current the current TreeNode
    * @param next the next TreeNode
    */
-  public VnodeDiff(Vnode<T> current, Vnode<T> next) {
+  public RouteRelationDiff(RouteRelation<T> current, RouteRelation<T> next) {
     computeDiff(current, next);
   }
 
@@ -56,7 +56,7 @@ public class VnodeDiff<T> {
     return toKeep;
   }
 
-  private void computeDiff(Vnode<T> current, Vnode<T> next) {
+  private void computeDiff(RouteRelation<T> current, RouteRelation<T> next) {
     if (current == null && next == null) {
       return;
     }
@@ -74,29 +74,29 @@ public class VnodeDiff<T> {
     diffTrees(current, next);
   }
 
-  private void addAllNodes(Vnode<T> node) {
+  private void addAllNodes(RouteRelation<T> node) {
     if (node == null) {
       return;
     }
 
     toAdd.add(node.getData());
-    for (Vnode<T> child : node.getChildren()) {
+    for (RouteRelation<T> child : node.getChildren()) {
       addAllNodes(child);
     }
   }
 
-  private void removeAllNodes(Vnode<T> node) {
+  private void removeAllNodes(RouteRelation<T> node) {
     if (node == null) {
       return;
     }
 
     toRemove.add(node.getData());
-    for (Vnode<T> child : node.getChildren()) {
+    for (RouteRelation<T> child : node.getChildren()) {
       removeAllNodes(child);
     }
   }
 
-  private void diffTrees(Vnode<T> current, Vnode<T> next) {
+  private void diffTrees(RouteRelation<T> current, RouteRelation<T> next) {
     if (current.getData().equals(next.getData())) {
       toKeep.add(current.getData());
     } else {
@@ -107,17 +107,17 @@ public class VnodeDiff<T> {
     Set<T> currentChildrenData = new LinkedHashSet<>();
     Set<T> nextChildrenData = new LinkedHashSet<>();
 
-    for (Vnode<T> child : current.getChildren()) {
+    for (RouteRelation<T> child : current.getChildren()) {
       currentChildrenData.add(child.getData());
     }
 
-    for (Vnode<T> child : next.getChildren()) {
+    for (RouteRelation<T> child : next.getChildren()) {
       nextChildrenData.add(child.getData());
     }
 
-    for (Vnode<T> nextChild : next.getChildren()) {
+    for (RouteRelation<T> nextChild : next.getChildren()) {
       if (currentChildrenData.contains(nextChild.getData())) {
-        for (Vnode<T> currentChild : current.getChildren()) {
+        for (RouteRelation<T> currentChild : current.getChildren()) {
           if (currentChild.getData().equals(nextChild.getData())) {
             diffTrees(currentChild, nextChild);
             break;
@@ -128,7 +128,7 @@ public class VnodeDiff<T> {
       }
     }
 
-    for (Vnode<T> currentChild : current.getChildren()) {
+    for (RouteRelation<T> currentChild : current.getChildren()) {
       if (!nextChildrenData.contains(currentChild.getData())) {
         removeAllNodes(currentChild);
       }

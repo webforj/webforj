@@ -6,8 +6,6 @@ import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.window.Frame;
 import com.webforj.concern.HasComponents;
 import com.webforj.data.WorkflowExecutor;
-import com.webforj.data.tree.Vnode;
-import com.webforj.data.tree.VnodeDiff;
 import com.webforj.router.exception.RouteNotFoundException;
 import com.webforj.router.exception.RouteRenderException;
 import com.webforj.router.observer.RouteRendererObserver;
@@ -53,7 +51,7 @@ public class RouteRenderer {
   private final Map<Class<? extends Component>, Component> componentsCache = new HashMap<>();
   private final Map<String, Frame> frameCache = new HashMap<>();
   private final List<RouteRendererObserver> observers = new ArrayList<>();
-  private Vnode<Class<? extends Component>> lastPath;
+  private RouteRelation<Class<? extends Component>> lastPath;
 
   /**
    * Constructs a new {@code RouteRenderer} with the specified {@code RouteRegistry}.
@@ -119,12 +117,14 @@ public class RouteRenderer {
       throw new RouteNotFoundException("Route not found for component: null");
     }
 
-    Optional<Vnode<Class<? extends Component>>> currentPath = registry.getComponentsTree(component);
+    Optional<RouteRelation<Class<? extends Component>>> currentPath =
+        registry.getComponentsTree(component);
     if (!currentPath.isPresent()) {
       throw new RouteNotFoundException("No route found for component: " + component.getName());
     }
 
-    VnodeDiff<Class<? extends Component>> diff = new VnodeDiff<>(lastPath, currentPath.get());
+    RouteRelationDiff<Class<? extends Component>> diff =
+        new RouteRelationDiff<>(lastPath, currentPath.get());
     Set<Class<? extends Component>> toAdd = diff.getToAdd();
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
 
