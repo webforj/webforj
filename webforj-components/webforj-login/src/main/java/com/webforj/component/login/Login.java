@@ -94,7 +94,7 @@ public class Login extends ElementCompositeContainer
     // before any events are added because moving the element will remove all
     // the event listeners
     getElement().whenDefined().thenAccept(c -> {
-      getElement().executeJsAsync("document.body.appendChild(component)");
+      getElement().executeJsVoidAsync("document.body.appendChild(component)");
     });
   }
 
@@ -548,9 +548,9 @@ public class Login extends ElementCompositeContainer
    * {@inheritDoc}
    */
   @Override
-  protected void onDidDestroy() {
+  protected void onDestroy() {
     close();
-    super.onDidDestroy();
+    super.onDestroy();
   }
 
   Element getOriginalElement() {
