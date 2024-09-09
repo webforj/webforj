@@ -20,7 +20,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface RouteAlias {
 
-
   /**
    * Sets the path of the route.
    *
