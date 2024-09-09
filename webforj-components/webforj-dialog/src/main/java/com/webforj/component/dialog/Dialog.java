@@ -598,6 +598,15 @@ public class Dialog extends ElementCompositeContainer
     return addCloseListener(listener);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDestroy() {
+    close();
+    super.onDestroy();
+  }
+
   Element getOriginalElement() {
     return getElement();
   }
