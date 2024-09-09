@@ -45,5 +45,5 @@ public @interface AppTitle {
    *
    * @see Page#setTitle(String, String, java.util.Map)
    **/
-  String format() default "{BrowserTitle}";
+  String format() default Page.DEFAULT_TITLE_FORMAT;
 }
