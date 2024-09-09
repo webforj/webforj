@@ -9,13 +9,14 @@ import java.util.Base64;
  * of a webforJ application.
  *
  * <p>
- * Applications can implement this interface to manage specific exceptions. The implementing class
- * should be named after the exception it handles, followed by the suffix {@code ErrorHandler}, and
- * should be placed in the META-INF/services directory. Additionally, it must be registered in the
- * {@code com.webforj.error.ErrorHandler} file. For example, to handle
- * {@code java.lang.NullPointerException}, the class should be named
- * {@code NullPointerExceptionErrorHandler} and placed in the META-INF/services directory, with an
- * entry in the {@code com.webforj.error.ErrorHandler} file.
+ * Applications that want to manage specific exceptions should implement this interface. The
+ * implementing class must be named after the exception it handles, with the suffix
+ * {@code ErrorHandler}. Additionally, it must be registered in the
+ * {@code com.webforj.error.ErrorHandler} file located in the {@code META-INF/services} directory.
+ *
+ * For example, to handle {@code java.lang.NullPointerException}, the class should be named
+ * {@code NullPointerExceptionErrorHandler} and registered in the
+ * {@code com.webforj.error.ErrorHandler} within the {@code META-INF/services} directory.
  * </p>
  *
  * @author Hyyan Abo Fakher
