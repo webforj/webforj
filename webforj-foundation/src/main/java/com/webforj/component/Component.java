@@ -188,7 +188,7 @@ public abstract class Component {
    *
    * @return The window instance to which this component is attached.
    */
-  public final Window getWindow() {
+  public Window getWindow() {
     return this.window;
   }
 

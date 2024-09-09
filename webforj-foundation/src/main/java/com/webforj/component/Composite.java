@@ -93,6 +93,14 @@ public abstract class Composite<T extends Component> extends Component {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Window getWindow() {
+    return getBoundComponent().getWindow();
+  }
+
+  /**
    * Initializes the bound {@code Component} and returns an instance of it. This method can be
    * implemented by the developer to provide the specific bound component in case the default
    * implementation is not sufficient.
