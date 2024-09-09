@@ -779,5 +779,37 @@ class DwcComponentTest {
       verify(slotAssigner, times(1)).attach();
     }
   }
+
+  @Nested
+  class NameApi {
+
+    @Test
+    void shouldSetGetNameWhenControlIsNull() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setName("name");
+      assertEquals("name", component.getName());
+    }
+
+    @Test
+    void shouldSetGetNameWhenControlIsNotNull() throws BBjException {
+      component.setName("name");
+      assertEquals("name", component.getName());
+
+      verify(control, times(1)).setName("name");
+    }
+
+    @Test
+    void shouldReApplyingNameChanges() throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setName("name");
+      assertEquals("name", component.getName());
+
+      ReflectionUtils.unNullifyControl(component, control);
+      component.onAttach();
+
+      verify(control, times(1)).setName("name");
+    }
+  }
 }
 
