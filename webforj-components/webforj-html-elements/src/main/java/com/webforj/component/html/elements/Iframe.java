@@ -134,7 +134,9 @@ public class Iframe extends HtmlComponent<Iframe> {
    * @param name the name of the iframe
    * @return the component itself
    */
+  @Override
   public Iframe setName(String name) {
+    super.setName(name);
     set(nameProp, name);
     return this;
   }
@@ -145,6 +147,7 @@ public class Iframe extends HtmlComponent<Iframe> {
    * @return the name of the iframe
    * @see #setName(String)
    */
+  @Override
   public String getName() {
     return get(nameProp);
   }

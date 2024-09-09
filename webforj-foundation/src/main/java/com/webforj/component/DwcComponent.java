@@ -549,6 +549,24 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
+  public T setName(String name) {
+    super.setName(name);
+
+    if (control != null) {
+      try {
+        control.setName(name);
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public T setWidth(String width) {
     this.width = width;
 
@@ -1167,6 +1185,10 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   protected void onAttach() {
     super.onAttach();
     attachControlCallbacks();
+
+    if (!getName().equals("")) {
+      setName(getName());
+    }
 
     if (!Boolean.TRUE.equals(visible)) {
       this.setVisible(visible);

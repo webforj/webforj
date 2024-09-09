@@ -59,6 +59,7 @@ public class Icon extends ElementComposite implements HasStyle<Icon>, HasClassNa
    */
   @Override
   public Icon setName(String name) {
+    super.setName(name);
     set(nameProp, name);
     return this;
   }

@@ -1,5 +1,6 @@
 package com.webforj.component;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,12 +59,21 @@ class CompositeTest {
     assertTrue(component.isDestroyed());
   }
 
+  @Test
+  void shouldSetNameOnBoundComponent() {
+    String name = "name";
+
+    component.setName(name);
+    verify(component.getBoundComponent(), times(1)).setName(name);
+    assertEquals(name, component.getName());
+  }
+
   public static class CompositeMock extends Composite<Element> {
     private Element el;
 
     @Override
     protected Element initBoundComponent() {
-      el = mock(Element.class);
+      el = spy(Element.class);
       when(el.isDestroyed()).thenReturn(false);
       return el;
     }
