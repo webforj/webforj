@@ -1,6 +1,5 @@
 package com.webforj.component.window;
 
-import java.util.Objects;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -9,6 +8,7 @@ import com.webforj.Environment;
 import com.webforj.component.Component;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.util.Objects;
 
 /**
  * Represents a Frame window in the application.

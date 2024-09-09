@@ -234,7 +234,7 @@ public class RouteRegistry {
    * @param componentClass the component class
    * @return an Optional containing the root component class of the given component class
    */
-  public Optional<RouteRelation<Class<? extends Component>>> getComponentsTree(
+  public Optional<RouteRelation<Class<? extends Component>>> getComponentHierarchy(
       Class<? extends Component> componentClass) {
     if (routeConfigs.stream().noneMatch(entry -> entry.getComponent().equals(componentClass))) {
       return Optional.empty();

@@ -118,7 +118,7 @@ public class RouteRenderer {
     }
 
     Optional<RouteRelation<Class<? extends Component>>> currentPath =
-        registry.getComponentsTree(component);
+        registry.getComponentHierarchy(component);
     if (!currentPath.isPresent()) {
       throw new RouteNotFoundException("No route found for component: " + component.getName());
     }
@@ -212,6 +212,17 @@ public class RouteRenderer {
    */
   public <T extends Component> void render(Class<T> component) {
     render(component, null, null);
+  }
+
+  /**
+   * Retrieves the rendered component instance for the specified component class. This method
+   * returns the component instance from the cache, if available.
+   *
+   * @param component the component class to retrieve.
+   * @return an optional containing the component instance, if available.
+   */
+  public Optional<Component> getRenderedComponent(Class<? extends Component> component) {
+    return Optional.ofNullable(componentsCache.get(component));
   }
 
   /**

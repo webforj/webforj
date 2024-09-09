@@ -109,7 +109,7 @@ class RouteRegistryTest {
 
       routeRegistry.unregister("test");
       assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
-      assertFalse(routeRegistry.getComponentsTree(TestView.class).isPresent());
+      assertFalse(routeRegistry.getComponentHierarchy(TestView.class).isPresent());
     }
 
     @Test
@@ -124,7 +124,7 @@ class RouteRegistryTest {
 
       assertFalse(routeRegistry.getComponentByRoute("parent/child").isPresent());
       assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
-      assertTrue(routeRegistry.getComponentsTree(TargetView.class).isPresent());
+      assertTrue(routeRegistry.getComponentHierarchy(TargetView.class).isPresent());
     }
   }
 
@@ -159,7 +159,7 @@ class RouteRegistryTest {
 
       routeRegistry.unregister(TestView.class);
       assertFalse(routeRegistry.getComponentByRoute("test").isPresent());
-      assertFalse(routeRegistry.getComponentsTree(TestView.class).isPresent());
+      assertFalse(routeRegistry.getComponentHierarchy(TestView.class).isPresent());
     }
 
     @Test
@@ -174,7 +174,7 @@ class RouteRegistryTest {
 
       assertFalse(routeRegistry.getComponentByRoute("parent/child").isPresent());
       assertTrue(routeRegistry.getComponentByRoute("parent").isPresent());
-      assertTrue(routeRegistry.getComponentsTree(TargetView.class).isPresent());
+      assertTrue(routeRegistry.getComponentHierarchy(TargetView.class).isPresent());
     }
   }
 
@@ -225,7 +225,7 @@ class RouteRegistryTest {
       routeRegistry.register("parent/child", TestView.class, TargetView.class);
 
       Optional<RouteRelation<Class<? extends Component>>> tree =
-          routeRegistry.getComponentsTree(TestView.class);
+          routeRegistry.getComponentHierarchy(TestView.class);
 
       assertTrue(tree.isPresent());
       RouteRelation<Class<? extends Component>> rootNode = tree.get();
