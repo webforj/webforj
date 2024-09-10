@@ -22,7 +22,6 @@ import com.webforj.router.history.event.HistoryStateChangeEvent;
 import com.webforj.router.observer.DidNavigateObserver;
 import com.webforj.router.observer.FrameTitleObserver;
 import com.webforj.router.observer.WillNavigateObserver;
-import static com.webforj.App.console;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -663,13 +662,9 @@ public class Router {
 
           switch (type) {
             case PUSH:
-              console().log(
-                  "Pushing state: " + state + " with location: " + finalWillNavigateToLocation);
               history.pushState(state, finalWillNavigateToLocation);
               break;
             case REPLACE:
-              console().log(
-                  "Replacing state: " + state + " with location: " + finalWillNavigateToLocation);
               history.replaceState(state, finalWillNavigateToLocation);
               break;
             default:
