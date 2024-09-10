@@ -7,8 +7,8 @@ import com.webforj.router.history.ParametersBag;
  * Allow components to provide a title for the active frame dynamically.
  *
  * <p>
- * The the {@code getFrameTitle} is invoked when before the browser's title is
- * updated but after the navigation target is resolved.
+ * The the {@code getFrameTitle} is invoked when before the browser's title is updated but after the
+ * navigation target is resolved.
  * </p>
  *
  * @author Hyyan Abo Fakher

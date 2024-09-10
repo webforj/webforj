@@ -633,18 +633,15 @@ public class Router {
       }
 
       if (options.isInvokeObservers()) {
-
         if (component instanceof WillNavigateObserver willNavigateObserver) {
           willNavigateObserver.onWillNavigate(event, routeParams);
         }
 
         if (component instanceof FrameTitleObserver pageTitleObserver) {
-          console().log("Page title observer found:" + component.getClass().getSimpleName());
           String title = pageTitleObserver.getFrameTitle(context, routeParams);
           if (title != null && !title.isEmpty()) {
             Window win = component.getWindow();
             if (win instanceof Frame frame) {
-              console().log("Setting title to:" + title);
               frame.setTitle(title);
             }
           }
@@ -654,19 +651,25 @@ public class Router {
       if (options.isUpdateHistory()) {
         Location willNavigateToLocation = attachRoot(context.getLocation());
         Location finalWillNavigateToLocation = willNavigateToLocation;
+        Location rootLocation = new Location("/" + getRoot());
 
         // Check if the location has changed
         if (lastResolvedLocation == null || (lastResolvedLocation != null
-            && !lastResolvedLocation.equals(finalWillNavigateToLocation))) {
+            && !lastResolvedLocation.equals(finalWillNavigateToLocation))
+            && !finalWillNavigateToLocation.equals(rootLocation)) {
           NavigationOptions.NavigationType type = options.getNavigationType();
           Object state = options.getState();
           lastResolvedLocation = finalWillNavigateToLocation;
 
           switch (type) {
             case PUSH:
+              console().log(
+                  "Pushing state: " + state + " with location: " + finalWillNavigateToLocation);
               history.pushState(state, finalWillNavigateToLocation);
               break;
             case REPLACE:
+              console().log(
+                  "Replacing state: " + state + " with location: " + finalWillNavigateToLocation);
               history.replaceState(state, finalWillNavigateToLocation);
               break;
             default:
