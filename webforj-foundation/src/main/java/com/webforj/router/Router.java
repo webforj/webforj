@@ -20,7 +20,7 @@ import com.webforj.router.history.ParametersBag;
 import com.webforj.router.history.SegmentsBag;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 import com.webforj.router.observer.DidNavigateObserver;
-import com.webforj.router.observer.PageTitleObserver;
+import com.webforj.router.observer.FrameTitleObserver;
 import com.webforj.router.observer.WillNavigateObserver;
 import static com.webforj.App.console;
 import java.util.HashMap;
@@ -632,9 +632,23 @@ public class Router {
         getEventDispatcher().dispatchEvent(event);
       }
 
-      if (options.isInvokeObservers()
-          && component instanceof WillNavigateObserver willNavigateObserver) {
-        willNavigateObserver.onWillNavigate(event, routeParams);
+      if (options.isInvokeObservers()) {
+
+        if (component instanceof WillNavigateObserver willNavigateObserver) {
+          willNavigateObserver.onWillNavigate(event, routeParams);
+        }
+
+        if (component instanceof FrameTitleObserver pageTitleObserver) {
+          console().log("Page title observer found:" + component.getClass().getSimpleName());
+          String title = pageTitleObserver.getFrameTitle(context, routeParams);
+          if (title != null && !title.isEmpty()) {
+            Window win = component.getWindow();
+            if (win instanceof Frame frame) {
+              console().log("Setting title to:" + title);
+              frame.setTitle(title);
+            }
+          }
+        }
       }
 
       if (options.isUpdateHistory()) {
@@ -667,23 +681,9 @@ public class Router {
         getEventDispatcher().dispatchEvent(didNavigateEvent);
       }
 
-      if (options.isInvokeObservers()) {
-        if (component instanceof DidNavigateObserver didNavigateObserver) {
-          didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
-        }
-
-        if (component instanceof PageTitleObserver pageTitleObserver) {
-          String title = pageTitleObserver.getPageTitle();
-          if (title != null && !title.isEmpty()) {
-            Window win = component.getWindow();
-            console().log("Setting title to: " + title);
-            console().log("Window: " + win);
-            if (win instanceof Frame frame) {
-              console().log("Setting frame title to: " + title);
-              frame.setTitle(title);
-            }
-          }
-        }
+      if (options.isInvokeObservers()
+          && component instanceof DidNavigateObserver didNavigateObserver) {
+        didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
       }
     });
   }
