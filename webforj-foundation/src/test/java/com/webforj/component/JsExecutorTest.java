@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 class JsExecutorTest {
   JsExecutorMock jsExecutor;
@@ -45,7 +46,8 @@ class JsExecutorTest {
     String expectedResult = "Executed: " + script;
 
     Page page = mock(Page.class);
-    mockStatic(Page.class).when(Page::getCurrent).thenReturn(page);
+    MockedStatic<Page> mockedPage = mockStatic(Page.class);
+    mockedPage.when(Page::getCurrent).thenReturn(page);
     when(jsExecutor.getPage()).thenReturn(page);
     when(page.executeJs(script)).thenReturn(expectedResult);
 
@@ -56,6 +58,8 @@ class JsExecutorTest {
 
     assertNotNull(result);
     assertEquals(expectedResult, result);
+
+    mockedPage.close();
   }
 
   @Test
