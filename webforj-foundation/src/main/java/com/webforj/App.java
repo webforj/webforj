@@ -53,9 +53,9 @@ public abstract class App {
    * This is the main entry point for the application. It is called by the framework to initialize
    * and should not be called directly.
    *
-   * @throws WebforjAppInitializeException if failed to initialize the app
+   * @throws WebforjException if the app cannot be initialized
    */
-  public final void initialize() throws WebforjAppInitializeException {
+  public final void initialize() throws WebforjException {
     if (isInitialized) {
       throw new WebforjAppInitializeException("App is already initialized.");
     }
@@ -69,18 +69,13 @@ public abstract class App {
     }
 
     Page.getCurrent().onUnload(ev -> terminate());
-
-    try {
-      onWillRun();
-      AnnotationProcessor processor = new AnnotationProcessor();
-      processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
-      run();
-      processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
-      isInitialized = true;
-      onDidRun();
-    } catch (WebforjException e) {
-      Environment.logError(e);
-    }
+    onWillRun();
+    AnnotationProcessor processor = new AnnotationProcessor();
+    processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
+    run();
+    processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
+    isInitialized = true;
+    onDidRun();
   }
 
   /**

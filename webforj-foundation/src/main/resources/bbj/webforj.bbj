@@ -1,9 +1,11 @@
 use com.webforj.Environment
+use com.webforj.Bootstrap
+use java.io.StringWriter
+use java.io.PrintWriter
 
 use ::admin.bbj::Admin
 use ::admin.bbj::UserCredentials
-use java.io.StringWriter
-use java.io.PrintWriter
+use ::WebforjHelper.bbj::WebforjHelper
 
 SETESC EscTrap
 SETERR _error
@@ -19,149 +21,111 @@ DEBUG=NUM(STBL("DEBUG",err=*next),err=*next)
 WATCH=NUM(STBL("WEBFORJ_HOTRELOAD",err=*next),err=*next)
 
 for i=1 to 10
-    tmp$=argv(i,err=*break)
-    if cvs(tmp$,4)="DEBUG" then
-        DEBUG=1
-        continue
-    fi
-    if cvs(tmp$,4)="WATCH" then
-        WATCH=1
-        continue
-    fi
-    if len(tmp$)>6 and tmp$(1,6)="class=" then
-        class$=tmp$(7)
-        continue
-    fi
+  tmp$=argv(i,err=*break)
+  if cvs(tmp$,4)="DEBUG" then
+      DEBUG=1
+      continue
+  fi
+  if cvs(tmp$,4)="WATCH" then
+      WATCH=1
+      continue
+  fi
+  if len(tmp$)>6 and cvs(tmp$(1,6), 4)="CLASS=" then
+      class$= tmp$(7)
+      continue
+  fi
 next
 
-if class$="" then
-    class$=STBL("DWCJCLASSNAME",err=*next)
-fi
+REM if class$="" then
+REM   class$=STBL("WEBFORJ_CLASS",err=*next)
+REM fi
 
 if class$="" then
-    class$=clientenv("class",err=*next)
+  class$=clientenv("class",err=*next)
 fi
-
-if class$="" then
-    class$="com.webforj.utilities.WelcomeApp"
-    gosub determineClasspathEntries
-fi
-
-h! = new ::WebforjHelper.bbj::WebforjHelper()
-Environment.init(BBjAPI(), h!, DEBUG)
 
 if WATCH then
-    gosub prepHotReload
+  gosub prepHotReload
 fi
 
-Class.forName(class$,err=class_not_found)
-app! = eval("new "+class$+"()",err=_error)
-app!.initialize()
+REM Allow webforj to handle error and end actions
+web! = BBjAPI().getWebManager()
+noneAction! = web!.noneAction()
+web!.setEndAction(noneAction!)
+web!.setEndAction(noneAction!)
 
-proc_ev:
+REM launch the app
+Bootstrap.init(BBjAPI(), new WebforjHelper(), DEBUG, class$)
 process_events,err=_error
 
 terminate:
-    Environment.cleanup()
-RELEASE
+  Environment.cleanup()
+release
 
 determineClasspathEntries:
-        pw$="admin123"
-        Api! = BBjAdminFactory.getBBjAdmin("admin","admin123",err=*next)
-        while Api! = null()
-            pw$=PROMPT("Enter the password for admin to discover Apps:","","Admin Access",mode="input-type=password")
-            if pw$="" then release
-            Api! = BBjAdminFactory.getBBjAdmin("admin",pw$,err=*next)
-        wend
-        cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
-        cp! = Api!.getClasspath(cp$)
+  pw$="admin123"
+  Api! = BBjAdminFactory.getBBjAdmin("admin","admin123",err=*next)
+  while Api! = null()
+      pw$=PROMPT("Enter the password for admin to discover Apps:","","Admin Access",mode="input-type=password")
+      if pw$="" then release
+      Api! = BBjAdminFactory.getBBjAdmin("admin",pw$,err=*next)
+  wend
+  cp$ = BBjAPI().getConfig().getCurrentCommandLineObject().getOriginalClasspathName()
+  cp! = Api!.getClasspath(cp$)
 
-        cp_entries! = new java.util.ArrayList()
-        it!=cp!.iterator()
-        while it!.hasNext()
-            c$ = it!.next()
-            if c$(1,1)="(" or pos("lib/webforj-" =c$)>0 then
-                continue
-            fi
-            cp_entries!.add(c$)
-        wend
+  cp_entries! = new java.util.ArrayList()
+  it!=cp!.iterator()
+  while it!.hasNext()
+      c$ = it!.next()
+      if c$(1,1)="(" or pos("lib/webforj-" =c$)>0 then
+          continue
+      fi
+      cp_entries!.add(c$)
+  wend
 
-        BBjAPI().getObjectTable().put("dwcjcp",cp_entries!)
+  BBjAPI().getObjectTable().put("dwcjcp",cp_entries!)
 return
 
 prepHotReload:
-    if cp_entries! = null() then
-        gosub determineClasspathEntries
-    fi
+  if cp_entries! = null() then
+      gosub determineClasspathEntries
+  fi
 
-    it! = cp_entries!.iterator()
-    while it!.hasNext()
-        cpe! = new java.io.File(it!.next())
-        if !cpe!.isDirectory() then
-            cpe! = cpe!.getParentFile()
-        fi
-        BBjAPI().getFileSystem().watchDirectory(cpe!.getAbsolutePath(), "onHotReload")
-    wend
-    BBjAPI().getWebManager().executeAsyncScript("console.log('Hot Reload enabled.')")
+  it! = cp_entries!.iterator()
+  while it!.hasNext()
+      cpe! = new java.io.File(it!.next())
+      if !cpe!.isDirectory() then
+          cpe! = cpe!.getParentFile()
+      fi
+      BBjAPI().getFileSystem().watchDirectory(cpe!.getAbsolutePath(), "onHotReload")
+  wend
+  BBjAPI().getWebManager().executeAsyncScript("console.log('Hot Reload enabled.')")
 return
 
 onHotReload:
-    BBjAPI().getWebManager().setEndAction(BBjAPI().getWebManager().urlAction(BBjAPI().getWebManager().getUrl()))
-    BBjAPI().getAdmin("admin", pw$).getEnvironment().reloadClasspath(cp$)
-    release
+  BBjAPI().getWebManager().setEndAction(BBjAPI().getWebManager().urlAction(BBjAPI().getWebManager().getUrl()))
+  BBjAPI().getAdmin("admin", pw$).getEnvironment().reloadClasspath(cp$)
+  release
 return
 
-
 EscTrap:
-    IF AND(CHR(TCB(19)),$08$)=$08$ THEN
-        System.out.println("Client Died")
-    ELSE
-        System.out.println("ESCAPE")
-    FI
-    if app! <> null() then
-        app!.cleanup()
-    fi
-RELEASE
+  IF AND(CHR(TCB(19)),$08$)=$08$ THEN
+      System.out.println("Client Died")
+  ELSE
+      System.out.println("ESCAPE")
+  FI
+  if app! <> null() then
+      app!.cleanup()
+  fi
+release
 
 ErrTrap:
-    System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
-    if app! <> null() then
-        app!.cleanup()
-    fi
-RELEASE
-
-class_not_found:
-    if !Environment.getCurrent().isDebug() then
-       msg$="Class not found!"
-    else
-        msg$="Class "+class$+" not found!"
-    fi
-    wnd!=BBjAPI().openSysGui("X0").addWindow("Error",$01101083$)
-    wnd!.addStaticText(msg$)
-goto proc_ev
+  System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
+  if app! <> null() then
+      app!.cleanup()
+  fi
+release
 
 _error:
-
-    if !Environment.getCurrent().isDebug() then
-        a=msgbox("An error has occured!",48,"Error")
-    else
-        error$ = ""
-        e! = bbjapi().getLastJavaException()
-        sg! = BBjAPI().openSysGui("X0")
-        if e! <> null() then
-            error$ = str(e!.getMessage()) + "\n"
-            st! = e!.getStackTrace()
-            sw! = new StringWriter()
-            pw! = new PrintWriter(sw!)
-            e!.printStackTrace(pw!)
-            sg!.executeScript("console.error(`" + sw!.toString() + "`);")
-        else
-            error$=errmes(-1)
-            sg!.executeScript("console.error(`" + error$ + "`);")
-        fi
-        rem sg!.executeScript("console.log('Error Details:');")
-        rem sg!.executeScript("console.log ('"+str(e!.getMessage())+"');")
-
-        rem a=msgbox("An error has occured! Find debug information in the browser console.",48,"Error")
-    fi
+  Environment.handleError(bbjapi().getLastJavaException(), DEBUG)
 release

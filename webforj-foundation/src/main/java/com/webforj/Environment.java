@@ -4,7 +4,12 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.error.ErrorHandler;
+import com.webforj.error.GlobalErrorHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 public final class Environment {
 
@@ -59,6 +64,44 @@ public final class Environment {
     getWebforjHelper().sleep(seconds);
   }
 
+  /**
+   * Handles an error that occurred during the execution of the application.
+   *
+   * <p>
+   * This method will attempt to find the appropriate error handler for the given exception and
+   * invoke the {@link ErrorHandler#onError(Throwable, boolean)} method. BBj will use this method to
+   * forward errors caught in the BBj environment to the webforJ error handling system.
+   * </p>
+   *
+   * @param ex the exception that occurred.
+   * @param debug {@code 1} if debug mode is enabled, {@code 0} otherwise.
+   *
+   * @since 24.12
+   */
+  public static void handleError(Throwable ex, int debug) {
+    handleError(ex, debug, ServiceLoader.load(ErrorHandler.class));
+  }
+
+  /**
+   * Handles an error that occurred during the execution of the application.
+   *
+   * <p>
+   * This method will attempt to find the appropriate error handler for the given exception and
+   * invoke the {@link ErrorHandler#onError(Throwable, boolean)} method. BBj will use this method to
+   * forward errors caught in the BBj environment to the webforJ error handling system.
+   * </p>
+   *
+   * @param ex the exception that occurred.
+   * @param debug {@code 1} if debug mode is enabled, {@code 0} otherwise.
+   * @param serviceLoader the service loader to use to find error handlers.
+   *
+   * @since 24.12
+   */
+  static void handleError(Throwable ex, int debug, ServiceLoader<ErrorHandler> serviceLoader) {
+    ErrorHandler handler = findHandlerForError(ex, serviceLoader);
+    handler.onError(ex, debug > 0);
+  }
+
   public BBjAPI getBBjAPI() {
     return this.api;
   }
@@ -71,25 +114,90 @@ public final class Environment {
     return helper;
   }
 
-
   /*
    * LOGGING: for now we rely on BBj's redirection of err and out into its own logging. In the
    * future we will definitely want to allow more granular debug options and the use of custom
    * loggers that fit a customer's environment Bear with us and consider this a basic solution for
    * the time being. WIP
+   *
+   * @deprecated since 24.12 for removal in 25.0
    */
-
+  @Deprecated(since = "24.12", forRemoval = true)
   public static void logError(String message, Exception e) {
     System.err.println(message); // NOSONAR
     e.printStackTrace(); // NOSONAR
   }
 
+  /**
+   * @deprecated since 24.12 for removal in 25.0
+   */
+  @Deprecated(since = "24.12", forRemoval = true)
   public static void logError(Exception e) {
     e.printStackTrace(); // NOSONAR
   }
 
+  /**
+   * @deprecated since 24.12 for removal in 25.0
+   */
+  @Deprecated(since = "24.12", forRemoval = true)
   public static void logError(String message) {
     System.err.println(message); // NOSONAR
   }
 
+  /**
+   * Finds the appropriate error handler for the given exception.
+   *
+   * @param exception the exception for which to find an error handler.
+   * @param serviceLoader the service loader to use to find error handlers.
+   *
+   * @return the appropriate error handler.
+   *
+   * @since 24.12
+   */
+  private static ErrorHandler findHandlerForError(Throwable exception,
+      ServiceLoader<ErrorHandler> serviceLoader) {
+    String throwableHandlerName = exception.getClass().getSimpleName() + "ErrorHandler";
+
+    ErrorHandler customSpecificHandler = null;
+    ErrorHandler customGlobalHandler = null;
+
+    Iterator<ErrorHandler> iterator = serviceLoader.iterator();
+    while (iterator.hasNext()) {
+      ErrorHandler handler = iterator.next();
+      String handlerName = handler.getClass().getSimpleName();
+
+      // Check for specific handler for the exception
+      if (handlerName.equals(throwableHandlerName)) {
+        customSpecificHandler = handler;
+      }
+
+      // Check for global handler
+      if (handlerName.equals("WebforjGlobalErrorHandler")) {
+        customGlobalHandler = handler;
+      }
+    }
+
+    if (customSpecificHandler != null) {
+      return customSpecificHandler;
+    } else {
+      try {
+        Class<?> defaultHandler = Class.forName("com.webforj.error." + throwableHandlerName);
+        return (ErrorHandler) defaultHandler.getDeclaredConstructor().newInstance();
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+          | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+          | SecurityException e) {
+        // do nothing and continue
+      }
+    }
+
+    if (customGlobalHandler != null) {
+      return customGlobalHandler;
+    }
+
+    return getGlobalErrorHandler();
+  }
+
+  static ErrorHandler getGlobalErrorHandler() {
+    return new GlobalErrorHandler();
+  }
 }
