@@ -71,9 +71,8 @@ public abstract class App {
     Page.getCurrent().onUnload(ev -> terminate());
     onWillRun();
     AnnotationProcessor processor = new AnnotationProcessor();
-    processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.PRE_RUN);
+    processor.processAppAnnotations(this);
     run();
-    processor.processAppAnnotations(this, AnnotationProcessor.RunningPhase.POST_RUN);
     isInitialized = true;
     onDidRun();
   }

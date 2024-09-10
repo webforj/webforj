@@ -14,49 +14,29 @@ import java.util.HashMap;
  * @author Hyyan Abo Fakher
  */
 public final class AnnotationProcessor {
-  /**
-   * The running phase of the application.
-   */
-  public enum RunningPhase {
-    /**
-     * The application is running before the run method.
-     */
-    PRE_RUN,
-    /**
-     * The application is running after the run method.
-     */
-    POST_RUN
-  }
 
   Page getPage() {
-    return App.getPage();
+    return Page.getCurrent();
   }
 
   /**
    * Process the annotations of the application.
    *
    * @param app The application to process
-   * @param phase The phase of the application
    */
-  public void processAppAnnotations(App app, RunningPhase phase) {
-    if (phase == RunningPhase.PRE_RUN) {
-      processConfiguration(app, RunningPhase.PRE_RUN);
-      processAppAttribute(app);
-      processAppMeta(app);
-      processLink(app);
-      processStyleSheet(app);
-      processInlineStyleSheet(app);
-      processJavaScript(app);
-      processInlineJavaScript(app);
-      processAppDarkTheme(app);
-      processAppLightTheme(app);
-      processAppTheme(app);
-    }
-
-    if (phase == RunningPhase.POST_RUN) {
-      // we don't need panels to override the app title
-      processAppTitle(app);
-    }
+  public void processAppAnnotations(App app) {
+    processConfiguration(app);
+    processAppTitle(app);
+    processAppAttribute(app);
+    processAppMeta(app);
+    processLink(app);
+    processStyleSheet(app);
+    processInlineStyleSheet(app);
+    processJavaScript(app);
+    processInlineJavaScript(app);
+    processAppDarkTheme(app);
+    processAppLightTheme(app);
+    processAppTheme(app);
   }
 
   /**
@@ -65,7 +45,7 @@ public final class AnnotationProcessor {
    * @param control The control to process
    */
   public void processControlAnnotations(Component control) {
-    processConfiguration(control, RunningPhase.POST_RUN);
+    processConfiguration(control);
     processLink(control);
     processStyleSheet(control);
     processInlineStyleSheet(control);
@@ -315,21 +295,15 @@ public final class AnnotationProcessor {
    * Process the Configuration annotation.
    *
    * @param clazz The class to process
-   * @param phase The phase to process
    */
-  private void processConfiguration(Object clazz, RunningPhase phase) {
+  private void processConfiguration(Object clazz) {
     STConfiuration[] configurations = clazz.getClass().getAnnotationsByType(STConfiuration.class);
     if (configurations != null) {
       for (STConfiuration configuration : configurations) {
         String key = configuration.key();
 
-        // don't allow controls to override application level configurations
-        if (phase == RunningPhase.POST_RUN && StringTable.contains(key)) {
-          continue;
-        }
-
         // make sure application level configurations are not cleared
-        if (phase == RunningPhase.PRE_RUN && StringTable.contains(key)) {
+        if (StringTable.contains(key)) {
 
           // is blacklisted ?
           String[] blackList = new String[] {"DEBUG", "PARSE_REQUEST_THEME"};

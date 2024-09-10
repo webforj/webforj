@@ -7,10 +7,26 @@ import static org.mockito.Mockito.verify;
 import com.webforj.App;
 import com.webforj.Page;
 import com.webforj.exceptions.WebforjException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 class AnnotationProcessorTest {
+  MockedStatic<Page> mockedPage;
+  Page page;
+
+  @BeforeEach
+  void setup() {
+    mockedPage = mockStatic(Page.class);
+    page = mock(Page.class);
+    mockedPage.when(Page::getCurrent).thenReturn(page);
+  }
+
+  @AfterEach
+  void tearDown() {
+    mockedPage.close();
+  }
 
   @Test
   void testProcessAppTitle() {
@@ -22,15 +38,10 @@ class AnnotationProcessorTest {
       }
     }
 
-    try (MockedStatic<App> mockedApp = mockStatic(App.class)) {
-      Page mockPage = mock(Page.class);
-      mockedApp.when(App::getPage).thenReturn(mockPage);
+    AnnotationProcessor processor = new AnnotationProcessor();
+    MockAppClass mockAppClass = new MockAppClass();
 
-      AnnotationProcessor processor = new AnnotationProcessor();
-      MockAppClass mockAppClass = new MockAppClass();
-
-      processor.processAppAnnotations(mockAppClass, AnnotationProcessor.RunningPhase.POST_RUN);
-      verify(mockPage).setTitle("Test App", "{BrowserTitle} - Generated");
-    }
+    processor.processAppAnnotations(mockAppClass);
+    verify(page).setTitle("Test App", "{BrowserTitle} - Generated");
   }
 }
