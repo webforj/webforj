@@ -6,6 +6,8 @@ import com.webforj.component.window.Window;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.environment.ObjectTable;
+import com.webforj.router.annotation.FrameTitle;
 import com.webforj.router.event.DidEnterEvent;
 import com.webforj.router.event.DidLeaveEvent;
 import com.webforj.router.event.DidNavigateEvent;
@@ -118,6 +120,22 @@ public class Router {
   }
 
   /**
+   * Get the current router instance.
+   *
+   * @return the current router instance
+   * @throws IllegalStateException if the router instance is accessed before the application is
+   */
+  public static Router getCurrent() {
+    String key = "com.webforj.router.Router.instance";
+    if (ObjectTable.contains(key)) {
+      return (Router) ObjectTable.get(key);
+    }
+
+    throw new IllegalStateException(
+        "Trying to access the current router instance before the application is initialized");
+  }
+
+  /**
    * Navigates to the given location.
    *
    * <p>
@@ -152,7 +170,7 @@ public class Router {
         matchedPattern,
         ParametersBag.of(matchedPattern.getParameters(locationRootless.getSegments().getPath())));
 
-    // remove the history state listener to avoid loops
+    // remove the history state listener to avoid loops (MemoryHistory)
     removeHistoryStateListener();
 
     renderer.render(componentClass.get(), context, component -> {
@@ -600,93 +618,6 @@ public class Router {
   }
 
   /**
-   * Adds a history state listener.
-   */
-  protected void addHistoryStateListener() {
-    this.removeHistoryStateListener();
-    historyListener =
-        history.addHistoryStateChangeListener(e -> e.getLocation().ifPresent(location -> {
-          NavigationOptions options = new NavigationOptions();
-          options.setUpdateHistory(false);
-          navigate(location, options);
-        }));
-  }
-
-  /**
-   * Removes the history state listener.
-   */
-  protected void removeHistoryStateListener() {
-    if (historyListener != null) {
-      historyListener.remove();
-    }
-  }
-
-  private void handleNavigateComplete(Component component, NavigationContext context) {
-    ParametersBag routeParams = context.getRouteParameters();
-    Optional<NavigationOptions> willNavigateOptions = context.getOptions();
-
-    WillNavigateEvent event = new WillNavigateEvent(context);
-    willNavigateOptions.ifPresent(options -> {
-      if (options.isFireEvents()) {
-        getEventDispatcher().dispatchEvent(event);
-      }
-
-      if (options.isInvokeObservers()) {
-        if (component instanceof WillNavigateObserver willNavigateObserver) {
-          willNavigateObserver.onWillNavigate(event, routeParams);
-        }
-
-        if (component instanceof FrameTitleObserver pageTitleObserver) {
-          String title = pageTitleObserver.getFrameTitle(context, routeParams);
-          if (title != null && !title.isEmpty()) {
-            Window win = component.getWindow();
-            if (win instanceof Frame frame) {
-              frame.setTitle(title);
-            }
-          }
-        }
-      }
-
-      if (options.isUpdateHistory()) {
-        Location willNavigateToLocation = attachRoot(context.getLocation());
-        Location finalWillNavigateToLocation = willNavigateToLocation;
-        Location rootLocation = new Location("/" + getRoot());
-
-        // Check if the location has changed
-        if (lastResolvedLocation == null || (lastResolvedLocation != null
-            && !lastResolvedLocation.equals(finalWillNavigateToLocation))
-            && !finalWillNavigateToLocation.equals(rootLocation)) {
-          NavigationOptions.NavigationType type = options.getNavigationType();
-          Object state = options.getState();
-          lastResolvedLocation = finalWillNavigateToLocation;
-
-          switch (type) {
-            case PUSH:
-              history.pushState(state, finalWillNavigateToLocation);
-              break;
-            case REPLACE:
-              history.replaceState(state, finalWillNavigateToLocation);
-              break;
-            default:
-              break;
-          }
-        }
-      }
-
-      DidNavigateEvent didNavigateEvent = new DidNavigateEvent(context);
-
-      if (options.isFireEvents()) {
-        getEventDispatcher().dispatchEvent(didNavigateEvent);
-      }
-
-      if (options.isInvokeObservers()
-          && component instanceof DidNavigateObserver didNavigateObserver) {
-        didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
-      }
-    });
-  }
-
-  /**
    * Strips the root from the given location.
    *
    * @param location the location to strip the root from
@@ -712,8 +643,9 @@ public class Router {
    * @return the location with the root added
    */
   protected Location attachRoot(Location location) {
+    Location rootlessLocation = detachRoot(location);
     String normalizeRoot = normalizePath(getRoot());
-    String path = normalizePath(location.getSegments().getPath());
+    String path = normalizePath(rootlessLocation.getSegments().getPath());
 
     if (!normalizeRoot.isEmpty() && !path.startsWith(normalizeRoot)) {
       path = normalizeRoot + "/" + path; // NOSONAR
@@ -725,8 +657,8 @@ public class Router {
       path = "/" + path; // NOSONAR
     }
 
-    return new Location(new SegmentsBag(path), location.getQueryParameters(),
-        location.getFragment());
+    return new Location(new SegmentsBag(path), rootlessLocation.getQueryParameters(),
+        rootlessLocation.getFragment());
   }
 
   /**
@@ -742,5 +674,125 @@ public class Router {
 
     // Remove leading and trailing slashes and normalize internal double slashes
     return path.replaceAll("/+", "/").replaceAll("^/|/$", ""); // NOSONAR
+  }
+
+  /**
+   * Sets the title of the frame of the given component.
+   *
+   * @param component the component to set the frame title for
+   * @param title the title to set
+   */
+  protected void setFrameTitle(Component component, String title) {
+    if (title != null && !title.isEmpty()) {
+      Window win = component.getWindow();
+      if (win instanceof Frame frame) {
+        frame.setTitle(title);
+      }
+    }
+  }
+
+  /**
+   * Checks if the given location is the same as the last resolved location.
+   *
+   * <p>
+   * This method is used to prevent the router from navigating to the same location multiple times.
+   * </p>
+   *
+   * @param location the location to check
+   * @return {@code true} if the location is the same as the last resolved location, {@code false}
+   *         otherwise
+   */
+  protected boolean isSameLocation(Location location) {
+    if (lastResolvedLocation == null) {
+      return false;
+    }
+
+    String lastSegments = normalizePath(detachRoot(lastResolvedLocation).getSegments().getPath());
+    String currentSegments = normalizePath(detachRoot(location).getSegments().getPath());
+
+    Location lastLocation = new Location(new SegmentsBag(lastSegments),
+        lastResolvedLocation.getQueryParameters(), lastResolvedLocation.getFragment());
+    Location currentLocation = new Location(new SegmentsBag(currentSegments),
+        location.getQueryParameters(), location.getFragment());
+
+    return lastLocation.equals(currentLocation);
+  }
+
+  /**
+   * Adds a history state listener.
+   */
+  private void addHistoryStateListener() {
+    this.removeHistoryStateListener();
+    historyListener =
+        history.addHistoryStateChangeListener(e -> e.getLocation().ifPresent(location -> {
+          NavigationOptions options = new NavigationOptions();
+          options.setUpdateHistory(false);
+          navigate(location, options);
+        }));
+  }
+
+  /**
+   * Removes the history state listener.
+   */
+  private void removeHistoryStateListener() {
+    if (historyListener != null) {
+      historyListener.remove();
+    }
+  }
+
+  private void handleNavigateComplete(Component component, NavigationContext context) {
+    ParametersBag routeParams = context.getRouteParameters();
+    Optional<NavigationOptions> willNavigateOptions = context.getOptions();
+
+    WillNavigateEvent event = new WillNavigateEvent(context);
+    willNavigateOptions.ifPresent(options -> {
+      if (options.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(event);
+      }
+
+      if (options.isInvokeObservers()
+          && component instanceof WillNavigateObserver willNavigateObserver) {
+        willNavigateObserver.onWillNavigate(event, routeParams);
+      }
+
+      Location newLocation = attachRoot(context.getLocation());
+      if (options.isUpdateHistory() && !isSameLocation(newLocation)) {
+        NavigationOptions.NavigationType type = options.getNavigationType();
+        Object state = options.getState();
+        lastResolvedLocation = newLocation;
+
+        switch (type) {
+          case PUSH:
+            history.pushState(state, newLocation);
+            break;
+          case REPLACE:
+            history.replaceState(state, newLocation);
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (component.getClass().isAnnotationPresent(FrameTitle.class)) {
+        String title = component.getClass().getAnnotation(FrameTitle.class).value();
+        setFrameTitle(component, title);
+      }
+
+      DidNavigateEvent didNavigateEvent = new DidNavigateEvent(context);
+      if (options.isFireEvents()) {
+        getEventDispatcher().dispatchEvent(didNavigateEvent);
+      }
+
+      if (options.isInvokeObservers()) {
+        if (component instanceof FrameTitleObserver pageTitleObserver) {
+          String title = pageTitleObserver.getFrameTitle(context, routeParams);
+          setFrameTitle(component, title);
+        }
+
+        if (component instanceof DidNavigateObserver didNavigateObserver) {
+          didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
+        }
+      }
+    });
   }
 }

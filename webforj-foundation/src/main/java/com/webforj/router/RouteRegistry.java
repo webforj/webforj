@@ -36,16 +36,16 @@ public class RouteRegistry {
    * Scans the given base package for classes annotated with {@link Route} and {@link RouteAlias}
    * annotations and builds a new {@link RouteRegistry} instance.
    *
-   * @param basePackage the base package to scan for route-annotated classes
+   * @param packages the packages to scan for route-annotated classes
    *
    * @return a new {@link RouteRegistry} instance containing the discovered routes and aliases
    * @throws IllegalStateException if a class annotated with {@link Route} does not extend
    */
-  public static RouteRegistry ofPackage(String basePackage) {
+  public static RouteRegistry ofPackage(String[] packages) {
     RouteRegistry registry = new RouteRegistry();
 
-    try (ScanResult scanResult = new ClassGraph().enableClassInfo().enableAnnotationInfo()
-        .acceptPackages(basePackage).scan()) {
+    try (ScanResult scanResult =
+        new ClassGraph().enableClassInfo().enableAnnotationInfo().acceptPackages(packages).scan()) {
 
       Set<Class<?>> annotatedClasses = scanResult.getClassesWithAnnotation(Route.class.getName())
           .loadClasses().stream().collect(Collectors.toSet());
