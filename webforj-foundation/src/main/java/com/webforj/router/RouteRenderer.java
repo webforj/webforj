@@ -6,7 +6,7 @@ import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.window.Frame;
 import com.webforj.concern.HasComponents;
 import com.webforj.data.WorkflowExecutor;
-import com.webforj.router.exception.RouteNotFoundException;
+import com.webforj.router.exception.NotFoundException;
 import com.webforj.router.exception.RouteRenderException;
 import com.webforj.router.observer.RouteRendererObserver;
 import java.lang.reflect.InvocationTargetException;
@@ -109,18 +109,18 @@ public class RouteRenderer {
    * @param context the navigation context to pass through the process.
    * @param onComplete the callback to be invoked with the result of the navigation.
    *
-   * @throws RouteNotFoundException if the target route cannot be resolved.
+   * @throws NotFoundException if the target route cannot be resolved.
    */
   public <T extends Component> void render(Class<T> component, NavigationContext context,
       Consumer<Optional<T>> onComplete) {
     if (component == null) {
-      throw new RouteNotFoundException("Route not found for component: null");
+      throw new NotFoundException("Route not found for component: null");
     }
 
     Optional<RouteRelation<Class<? extends Component>>> currentPath =
         registry.getComponentHierarchy(component);
     if (!currentPath.isPresent()) {
-      throw new RouteNotFoundException("No route found for component: " + component.getName());
+      throw new NotFoundException("No route found for component: " + component.getName());
     }
 
     RouteRelationDiff<Class<? extends Component>> diff =
@@ -165,7 +165,7 @@ public class RouteRenderer {
    * @param component the target component class for navigation.
    * @param context the navigation context to pass through the process.
    *
-   * @throws RouteNotFoundException if the target route cannot be resolved.
+   * @throws NotFoundException if the target route cannot be resolved.
    */
   public <T extends Component> void render(Class<T> component, NavigationContext context) {
     render(component, context, null);
@@ -189,7 +189,7 @@ public class RouteRenderer {
    * @param component the target component class for navigation.
    * @param onComplete the callback to be invoked with the result of the navigation.
    *
-   * @throws RouteNotFoundException if the target route cannot be resolved.
+   * @throws NotFoundException if the target route cannot be resolved.
    */
   public <T extends Component> void render(Class<T> component, Consumer<Optional<T>> onComplete) {
     render(component, null, onComplete);
@@ -208,7 +208,7 @@ public class RouteRenderer {
    * @param <T> the type of the the component.
    * @param component the target component class for navigation.
    *
-   * @throws RouteNotFoundException if the target route cannot be resolved.
+   * @throws NotFoundException if the target route cannot be resolved.
    */
   public <T extends Component> void render(Class<T> component) {
     render(component, null, null);

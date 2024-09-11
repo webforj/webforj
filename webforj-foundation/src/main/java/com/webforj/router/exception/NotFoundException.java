@@ -11,14 +11,14 @@ package com.webforj.router.exception;
  * @author Hyyan Abo Fakher
  * @since 24.12
  */
-public class RouteNotFoundException extends RouteRenderException {
+public class NotFoundException extends RouteRenderException {
 
   /**
    * Constructs a new {@code RouteNotFoundException} with the given message.
    *
    * @param message the exception message
    */
-  public RouteNotFoundException(String message) {
+  public NotFoundException(String message) {
     super(message);
   }
 
@@ -28,7 +28,7 @@ public class RouteNotFoundException extends RouteRenderException {
    * @param message the exception message
    * @param cause the exception cause
    */
-  public RouteNotFoundException(String message, Throwable cause) {
+  public NotFoundException(String message, Throwable cause) {
     super(message, cause);
   }
 }

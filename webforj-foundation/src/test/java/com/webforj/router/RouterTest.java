@@ -29,7 +29,7 @@ import com.webforj.router.event.DidNavigateEvent;
 import com.webforj.router.event.WillEnterEvent;
 import com.webforj.router.event.WillLeaveEvent;
 import com.webforj.router.event.WillNavigateEvent;
-import com.webforj.router.exception.RouteNotFoundException;
+import com.webforj.router.exception.NotFoundException;
 import com.webforj.router.history.History;
 import com.webforj.router.history.Location;
 import com.webforj.router.history.MemoryHistory;
@@ -98,8 +98,7 @@ class RouterTest {
   class LocationNavigation {
     @Test
     void shouldThrowExceptionWhenNavigateToInvalidLocation() {
-      assertThrows(RouteNotFoundException.class,
-          () -> router.navigate(new Location("/invalidPath")));
+      assertThrows(NotFoundException.class, () -> router.navigate(new Location("/invalidPath")));
     }
 
     @Test

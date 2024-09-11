@@ -14,7 +14,7 @@ import com.webforj.router.event.DidNavigateEvent;
 import com.webforj.router.event.WillEnterEvent;
 import com.webforj.router.event.WillLeaveEvent;
 import com.webforj.router.event.WillNavigateEvent;
-import com.webforj.router.exception.RouteNotFoundException;
+import com.webforj.router.exception.NotFoundException;
 import com.webforj.router.history.BrowserHistory;
 import com.webforj.router.history.History;
 import com.webforj.router.history.Location;
@@ -157,12 +157,11 @@ public class Router {
         .map(c -> registry.getComponentByRoute(c).orElse(null));
 
     if (!routePattern.isPresent()) {
-      throw new RouteNotFoundException(
-          "Failed to match route for location: " + location.toString());
+      throw new NotFoundException("Failed to match route for location: " + location.toString());
     }
 
     if (!componentClass.isPresent()) {
-      throw new RouteNotFoundException(
+      throw new NotFoundException(
           "Path matched but no component found for location: " + location.toString());
     }
 
@@ -253,8 +252,7 @@ public class Router {
 
     Optional<String> route = registry.getRouteByComponent(component);
     if (!route.isPresent()) {
-      throw new RouteNotFoundException(
-          "No route found for component: " + component.getSimpleName());
+      throw new NotFoundException("No route found for component: " + component.getSimpleName());
     }
 
     RoutePattern pattern = patterns.computeIfAbsent(route.get(), RoutePattern::new);
