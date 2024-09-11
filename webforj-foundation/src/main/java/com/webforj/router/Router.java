@@ -171,6 +171,8 @@ public class Router {
         matchedPattern,
         ParametersBag.of(matchedPattern.getParameters(locationRootless.getSegments().getPath())));
 
+    RouterDevUtils.logNavigationAction(context, componentClass.orElse(null));
+
     // remove the history state listener to avoid loops (MemoryHistory)
     removeHistoryStateListener();
 

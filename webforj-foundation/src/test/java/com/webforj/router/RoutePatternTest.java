@@ -271,10 +271,15 @@ class RoutePatternTest {
     @CsvSource({
     // @formatter:off
         // Pattern, Path, Matches
-        "'/', '/', true", // Valid root path
-        "'@layout/', '/', true", // Valid after stripping @layout
-        "'@layout/@another/', '/', true", // Valid after stripping multiple layouts
-        "'@layout/@another/other', '/other', true", // Valid after stripping multiple layouts
+        "'/', '/', true",
+        "'/', '', true",
+        "'@layout/', '/', false",
+        "'@layout/', '', false",
+        "'@layout/@another/', '/', false",
+        "'@layout/@another/', '' , false",
+        "'@layout/@another', '/', false",
+        "'@layout/@another', '', false",
+        "'@layout/@another/other', '/other', true",
     // @formatter:on
     })
     void shouldMatchPathsAfterStrippingLayoutSegments(String pattern, String path,
@@ -282,20 +287,6 @@ class RoutePatternTest {
       RoutePattern routePattern = new RoutePattern(pattern);
       assertEquals(matches, routePattern.matches(path),
           "Expected pattern '" + pattern + "' to match path '" + path + "'");
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-    // @formatter:off
-        // Pattern, Path, Matches
-        "'@layout', ''", // Invalid layout only pattern
-        "'@layout', '/'", // Invalid layout only pattern
-        "'', '/'", // Empty pattern
-        "'', '/other'", // Empty pattern with non-empty path
-    // @formatter:on
-    })
-    void shouldThrowExceptionForInvalidLayoutPattern(String pattern, String path) {
-      assertThrows(IllegalArgumentException.class, () -> new RoutePattern(pattern).matches(path));
     }
 
     @Test

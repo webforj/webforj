@@ -22,6 +22,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.router.NavigationOptions;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
+import com.webforj.router.RouterDevUtils;
 import com.webforj.webstorage.CookieStorage;
 import com.webforj.webstorage.LocalStorage;
 import com.webforj.webstorage.SessionStorage;
@@ -745,6 +746,7 @@ public abstract class App {
     Router router = new Router(root, registry);
     String key = "com.webforj.router.Router.instance";
     ObjectTable.put(key, router);
+    RouterDevUtils.logRouteEntires(router.getRegistry().getAvailableRoutes());
   }
 
   /**
