@@ -81,4 +81,17 @@ public @interface Route {
    * @return the priority of the route
    */
   int priority() default 10;
+
+  /**
+   * Mark the route as layout route.
+   *
+   * <p>
+   * A layout route is a pathless route and used to wrap child routes with additional components and
+   * logic, without requiring a matching path in the URL. When set to {@code true}, the route's path
+   * will be ignored and special path prefixed with "@" character will be generated.
+   * </p>
+   *
+   * @return {@code true} if the route is a layout route, {@code false} otherwise
+   */
+  boolean layout() default false;
 }

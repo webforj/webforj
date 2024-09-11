@@ -2,6 +2,7 @@ package com.webforj.router;
 
 import com.webforj.router.history.ParametersBag;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +62,6 @@ import java.util.regex.Pattern;
 public class RoutePattern {
 
   private final String pattern;
-  private final String patternWithoutLayouts;
   private final Pattern regexPattern;
   private final List<String> paramNames = new ArrayList<>();
   private boolean hasWildcard = false;
@@ -91,15 +91,8 @@ public class RoutePattern {
    *         actual route segments.
    */
   public RoutePattern(String pattern) {
+    Objects.requireNonNull(pattern, "Pattern cannot be null");
     this.pattern = pattern;
-    this.patternWithoutLayouts = trimLayouts(pattern);
-    if (patternWithoutLayouts.isEmpty()) {
-      throw new IllegalArgumentException(String.format("Route pattern validation failed for '%s'."
-          + "The pattern contains only layout components prefixed with '@', "
-          + "and no actual route segments. A valid route pattern must define at "
-          + " least one non-layout segment ", pattern));
-    }
-
     String regex = buildRegexFromPattern(pattern);
     this.regexPattern = Pattern.compile(regex);
   }
@@ -338,13 +331,13 @@ public class RoutePattern {
   private String buildRegexFromPattern(String pattern) { // NOSONAR
     StringBuilder regexBuilder = new StringBuilder("^");
     String[] parts = pattern.split("/");
+    parts = Arrays.stream(parts).filter(part -> !part.startsWith("@")).toArray(String[]::new);
+    if (parts.length == 0 && !pattern.equals("/")) {
+      return "^$";
+    }
 
     for (String part : parts) { // NOSONAR
       if (part.isEmpty()) {
-        continue;
-      }
-
-      if (part.startsWith("@")) {
         continue;
       }
 
@@ -394,49 +387,7 @@ public class RoutePattern {
     }
 
     regexBuilder.append("$");
+
     return regexBuilder.toString();
-  }
-
-  /**
-   * Trims layout segments from the provided path.
-   *
-   * <p>
-   * Layout segments are prefixed with "@" and are used to define layout components in route
-   * patterns. This method removes layout segments from the path to extract the actual route
-   * segments that will be used for matching or URL generation.
-   * </p>
-   *
-   * @param path the path to trim
-   * @return the path with layout segments removed
-   */
-  private String trimLayouts(String path) {
-    if (path == null || path.isEmpty()) {
-      return "";
-    }
-
-    String uniqueDelimiter = "%%UNIQUE_DELIMITER%%";
-    String modifiedPath = path.replace("/", uniqueDelimiter + "/"); // NOSONAR
-    String[] segments = modifiedPath.split(uniqueDelimiter);
-
-    StringBuilder result = new StringBuilder();
-
-    for (String segment : segments) { // NOSONAR
-      if (segment.startsWith("@")) {
-        continue;
-      }
-
-      if (segment.startsWith("/@")) {
-        result.append("/");
-        continue;
-      }
-
-      result.append(segment);
-    }
-
-    result = new StringBuilder(
-        // remove all consecutive slashes
-        result.toString().replaceAll("/{2,}", "/"));
-
-    return result.toString();
   }
 }

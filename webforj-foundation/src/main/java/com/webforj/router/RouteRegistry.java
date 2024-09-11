@@ -277,9 +277,14 @@ public class RouteRegistry {
     Route routeAnnotation = componentClass.getAnnotation(Route.class);
     String routePath = routeAnnotation.value();
 
+    boolean isLayout = routeAnnotation.layout();
     // Generate a view name if the route path is auto-generated
     if (Route.AUTO_GENERATED_VIEW_NAME.equals(routePath)) {
       routePath = ViewNameGenerator.generate(componentClass);
+    }
+
+    if (isLayout) {
+      routePath = "@" + ViewNameGenerator.generate(componentClass);
     }
 
     Class<? extends Component> outletClass = routeAnnotation.outlet();
