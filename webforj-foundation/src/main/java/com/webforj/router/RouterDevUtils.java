@@ -53,13 +53,13 @@ public final class RouterDevUtils {
     String json = gson.toJson(jsonArray);
     String js = "(function(routesData) {" + "   routesData.forEach(function(route) {"
         + "       console.groupCollapsed('%cRoute:%c ' + route.path, 'background: #4c47ff; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
-        + "       console.log('Path      :', route.path);"
-        + "       console.log('Component :', route.component);"
-        + "       console.log('Outlet    :', route.outlet);"
-        + "       console.log('Frame ID  :', route.FrameId);"
-        + "       console.log('Priority  :', route.priority);" + "       console.groupEnd();"
+        + "       console.info('Path      :', route.path);"
+        + "       console.info('Component :', route.component);"
+        + "       console.info('Outlet    :', route.outlet);"
+        + "       console.info('Frame ID  :', route.FrameId);"
+        + "       console.info('Priority  :', route.priority);" + "       console.groupEnd();"
         + "   });"
-        + "   console.log('%cTotal routes:%c ' + routesData.length, 'background: #28a745; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
+        + "   console.info('%cTotal routes:%c ' + routesData.length, 'background: #28a745; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
         + "})(" + json + ");";
 
     Page.getCurrent().executeJsVoidAsync(js);
@@ -87,21 +87,21 @@ public final class RouterDevUtils {
         .append(location.getFullURI())
         .append(
             "', 'background: #008080; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');")
-        .append("   console.log('Component :', '").append(component.getName()).append("');")
+        .append("   console.info('Component :', '").append(component.getName()).append("');")
 
         // Navigation Options group
         .append("   console.groupCollapsed('Options');")
-        .append("   console.log('Type               :', '").append(options.getNavigationType())
-        .append("');").append("   console.log('Fire Events        :', ")
+        .append("   console.info('Type               :', '").append(options.getNavigationType())
+        .append("');").append("   console.info('Fire Events        :', ")
         .append(options.isFireEvents()).append(");")
-        .append("   console.log('Invoke Observers   :', ").append(options.isInvokeObservers())
-        .append(");").append("   console.log('Update History     :', ")
+        .append("   console.info('Invoke Observers   :', ").append(options.isInvokeObservers())
+        .append(");").append("   console.info('Update History     :', ")
         .append(options.isUpdateHistory()).append(");").append("   console.groupEnd();"); // NOSONAR
 
     js.append("   console.groupCollapsed('Parameters');");
 
     for (Map.Entry<String, String> param : routeParameters) {
-      js.append("   console.log('").append(param.getKey()).append(" : ', '")
+      js.append("   console.info('").append(param.getKey()).append(" : ', '")
           .append(param.getValue()).append("');");
     }
 
