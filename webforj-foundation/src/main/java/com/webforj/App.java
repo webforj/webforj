@@ -808,7 +808,6 @@ public abstract class App {
 
     Router router = Router.getCurrent();
     router.getHistory().getLocation().ifPresent(location -> {
-      console().log("Navigating to first route: " + location);
       NavigationOptions options = new NavigationOptions();
       options.setUpdateHistory(false);
       Router.getCurrent().navigate(location, options);
