@@ -59,7 +59,7 @@ public final class RouterDevUtils {
         + "       console.log('Frame ID  :', route.FrameId);"
         + "       console.log('Priority  :', route.priority);" + "       console.groupEnd();"
         + "   });"
-        + "   console.log('%c Total routes:%c ' + routesData.length, 'background: #28a745; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
+        + "   console.log('%cTotal routes:%c ' + routesData.length, 'background: #28a745; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');"
         + "})(" + json + ");";
 
     Page.getCurrent().executeJsVoidAsync(js);
