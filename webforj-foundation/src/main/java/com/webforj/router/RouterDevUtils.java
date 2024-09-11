@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Utility class for working with routes.
+ * Utility class for working routes in development mode.
  *
  * @author Hyyan Abo Fakher
  * @since 24.12
