@@ -815,6 +815,12 @@ public abstract class App {
     });
   }
 
+  /**
+   * Checks if the application is routable by inspecting the presence of the {@link Routify}
+   * annotation.
+   *
+   * @return {@code true} if the app is routable, {@code false} otherwise
+   */
   private boolean isRoutable() {
     return getClass().isAnnotationPresent(Routify.class);
   }
