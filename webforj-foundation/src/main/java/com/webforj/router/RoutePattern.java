@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,8 +15,8 @@ import java.util.regex.Pattern;
  *
  * <p>
  * This class enables defining route patterns that include named parameters, optional parameters,
- * and wildcard segments. It allows matching paths against these patterns and generating URLs from
- * parameter maps.
+ * wildcard segments, and layout components. It allows matching paths against these patterns and
+ * generating URLs from parameter maps.
  * </p>
  *
  * <p>
@@ -29,6 +30,9 @@ import java.util.regex.Pattern;
  * segments. It can be named for specificity (e.g., ":path*").</li>
  * <li>Regular Expression Constraints: Parameters can have regular expression constraints (e.g.,
  * ":param<[0-9]+>").</li>
+ * <li>Layout Components: Segments starting with "@" (e.g., "/@layout") are treated as layout
+ * components. These segments are ignored for the purpose of matching and URL generation, and are
+ * meant to define layout structures within applications.</li>
  * </ul>
  * </p>
  *
@@ -41,20 +45,23 @@ import java.util.regex.Pattern;
  * <li>Extracts: id="123", name="john", "*=doe"</li>
  * </ul>
  * </li>
- * <li>Pattern: "/product/:identifier/:category?/resource/:id<[0-9]*>/:path*"
+ * <li>Pattern: "/@layout/product/:identifier/:category?/resource/:id<[0-9]*>/:path*"
  * <ul>
  * <li>Matches: "/product/abc/resource/456/docs"</li>
  * <li>Extracts: identifier="abc", category=null, id="456", path="docs"</li>
  * </ul>
- * </li>
+ * <li>Layout segment "@layout" is ignored during matching.</li>
  * </ul>
+ * </li>
  * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 24.12
  */
 public class RoutePattern {
+
   private final String pattern;
+  private final String patternWithoutLayouts;
   private final Pattern regexPattern;
   private final List<String> paramNames = new ArrayList<>();
   private boolean hasWildcard = false;
@@ -63,7 +70,7 @@ public class RoutePattern {
    * Constructs a RoutePattern from a route pattern string.
    *
    * <p>
-   * The pattern string can include parameters and constraints:
+   * The pattern string can include parameters, constraints, and layout components:
    * <ul>
    * <li><b>Named Parameters:</b> Indicated by ":paramName". These parameters must be provided when
    * constructing URLs or matching paths.</li>
@@ -73,13 +80,26 @@ public class RoutePattern {
    * defined pattern.</li>
    * <li><b>Regular Expression Constraints:</b> Added within angle brackets (e.g.,
    * ":paramName<[0-9]+>"). These constraints validate the parameter values.</li>
+   * <li><b>Layout Components:</b> Indicated by segments starting with "@" (e.g., "/@layout"). These
+   * are ignored during URL matching and generation, and are meant to specify layouts within the
+   * application's routing structure.</li>
    * </ul>
    * </p>
    *
    * @param pattern the route pattern string (e.g., "/customer/:id<[0-9]+>/named/:name/*")
+   * @throws IllegalArgumentException if the route pattern contains only layout components and no
+   *         actual route segments.
    */
   public RoutePattern(String pattern) {
     this.pattern = pattern;
+    this.patternWithoutLayouts = trimLayouts(pattern);
+    if (patternWithoutLayouts.isEmpty()) {
+      throw new IllegalArgumentException(String.format("Route pattern validation failed for '%s'."
+          + "The pattern contains only layout components prefixed with '@', "
+          + "and no actual route segments. A valid route pattern must define at "
+          + " least one non-layout segment ", pattern));
+    }
+
     String regex = buildRegexFromPattern(pattern);
     this.regexPattern = Pattern.compile(regex);
   }
@@ -89,13 +109,16 @@ public class RoutePattern {
    *
    * <p>
    * The path is tested against the compiled regular expression derived from the route pattern. The
-   * method returns true if the path adheres to the pattern, otherwise false.
+   * method returns true if the path adheres to the pattern, otherwise false. Layout components
+   * (segments prefixed with "@") are ignored during matching.
    * </p>
    *
    * @param path the path to check
    * @return true if the path matches the pattern, false otherwise
    */
   public boolean matches(String path) {
+    Objects.requireNonNull(path, "Path cannot be null");
+
     // if path does not start with a slash, add it
     if (!path.startsWith("/")) {
       path = "/" + path; // NOSONAR
@@ -111,6 +134,7 @@ public class RoutePattern {
    * The method extracts parameter values from the path based on the route pattern. Parameters are
    * initialized with {@code null} values and updated with actual values from the path if they are
    * present. Wildcard parameters capture any remaining path segments and are handled separately.
+   * Layout components (segments prefixed with "@") are ignored during parameter extraction.
    * </p>
    *
    * @param path the path to extract parameters from
@@ -127,22 +151,21 @@ public class RoutePattern {
     }
 
     Map<String, String> params = new HashMap<>();
-    // Initialize all parameters with null values
     for (String paramName : paramNames) {
       params.put(paramName, null);
     }
 
-    int groupIndex = 1; // Start from 1 because group 0 is the entire match
+    int groupIndex = 1;
     for (int i = 0; i < paramNames.size(); i++) { // NOSONAR
       String paramName = paramNames.get(i);
       if (groupIndex > matcher.groupCount()) {
-        break; // No more groups to process
+        break;
       }
 
       String value = matcher.group(groupIndex);
       if ("*".equals(paramName)) {
         params.put(paramName, value != null ? value : "");
-        break; // Wildcard captures remaining segments, stop further processing
+        break;
       }
 
       if (value != null) {
@@ -160,7 +183,7 @@ public class RoutePattern {
    *
    * <p>
    * This method returns the pattern string as provided during the construction of the
-   * {@code RoutePattern} instance.
+   * {@code RoutePattern} instance. Layout components are included in the returned pattern string.
    * </p>
    *
    * @return the original pattern string
@@ -202,7 +225,8 @@ public class RoutePattern {
    *
    * <p>
    * The URL is constructed by replacing parameters in the pattern with corresponding values from
-   * the provided map. Wildcard segments capture remaining path components.
+   * the provided map. Wildcard segments capture remaining path components. Layout components
+   * (segments prefixed with "@") are ignored during URL generation.
    * </p>
    *
    * <p>
@@ -238,22 +262,17 @@ public class RoutePattern {
       }
 
       if (part.startsWith(":")) {
-        // Extract parameter name
         String paramName = part.substring(1).replaceAll("[?<].*", "");
         boolean isNamedWildcard = part.endsWith("*");
 
         if (isNamedWildcard) {
-          // Handle named wildcard
           String wildcardValue = params.get(paramName);
           if (wildcardValue != null) {
             urlBuilder.append("/").append(wildcardValue);
           }
-
-          // Skip further processing for named wildcard
           continue;
         }
 
-        // Handle optional parameters
         if (part.contains("?")) {
           String value = params.get(paramName);
           if (value != null) {
@@ -262,7 +281,6 @@ public class RoutePattern {
           continue;
         }
 
-        // Required parameter
         String value = params.get(paramName);
         if (value == null) {
           throw new IllegalArgumentException("Missing required parameter: " + paramName);
@@ -270,18 +288,15 @@ public class RoutePattern {
 
         urlBuilder.append("/").append(value);
       } else if (part.equals("*")) {
-        // Handle plain wildcard segment
         String wildcardValue = params.get("*");
         if (wildcardValue != null) {
           urlBuilder.append("/").append(wildcardValue);
         }
       } else {
-        // Append static segments
         urlBuilder.append("/").append(part);
       }
     }
 
-    // Ensure trailing slash handling
     if (!endsWithSlash && urlBuilder.length() > 0
         && urlBuilder.charAt(urlBuilder.length() - 1) == '/') {
       urlBuilder.deleteCharAt(urlBuilder.length() - 1);
@@ -291,29 +306,15 @@ public class RoutePattern {
   }
 
   /**
-   * Constructs a URL from a RoutePattern and a map of parameters.
+   * Constructs a URL from a RoutePattern and a {@code ParametersBag}.
    *
    * <p>
-   * The URL is constructed by replacing parameters in the pattern with corresponding values from
-   * the provided map. Wildcard segments capture remaining path components.
+   * This method behaves similarly to {@link #generateUrl(Map)}, but uses a {@code ParametersBag} to
+   * provide the parameters for URL construction. Layout components (segments prefixed with "@") are
+   * ignored during URL generation.
    * </p>
    *
-   * <p>
-   * Rules for URL construction:
-   * <ul>
-   * <li>If the pattern includes named parameters (e.g., ":paramName"), the corresponding values
-   * from the map replace these parameters.</li>
-   * <li>If the pattern includes optional parameters (e.g., ":paramName?"), these are appended to
-   * the URL only if present in the map.</li>
-   * <li>If the pattern includes wildcard segments (e.g., "*", ":paramName*"), the map should
-   * provide a value for "*" or ":paramName*" that captures the remaining path segments.</li>
-   * <li>Static segments in the pattern are directly appended to the URL.</li>
-   * <li>The method trims trailing slashes from the URL unless the original pattern ends with a
-   * slash.</li>
-   * </ul>
-   * </p>
-   *
-   * @param params a map of parameter names to values
+   * @param params a {@code ParametersBag} containing parameter names and values
    * @return the constructed URL
    * @throws IllegalArgumentException if a required parameter is missing in the provided map
    */
@@ -323,6 +324,13 @@ public class RoutePattern {
 
   /**
    * Converts the route pattern into a regular expression and identifies parameter names.
+   *
+   * <p>
+   * This method parses the provided route pattern and constructs a regular expression used for
+   * matching paths. It identifies named, optional, and wildcard parameters, as well as any regular
+   * expression constraints. Layout components (segments prefixed with "@") are ignored when
+   * building the regular expression.
+   * </p>
    *
    * @param pattern the route pattern string
    * @return the regular expression corresponding to the pattern
@@ -366,7 +374,7 @@ public class RoutePattern {
           paramNames.add(paramName);
         } else if ("*".equals(modifier)) {
           regexBuilder.append("(?:/(.*))?");
-          paramNames.add(paramName); // Wildcard, to capture remaining segments
+          paramNames.add(paramName);
         } else {
           regexBuilder.append("/");
           if (regex == null) {
@@ -387,5 +395,48 @@ public class RoutePattern {
 
     regexBuilder.append("$");
     return regexBuilder.toString();
+  }
+
+  /**
+   * Trims layout segments from the provided path.
+   *
+   * <p>
+   * Layout segments are prefixed with "@" and are used to define layout components in route
+   * patterns. This method removes layout segments from the path to extract the actual route
+   * segments that will be used for matching or URL generation.
+   * </p>
+   *
+   * @param path the path to trim
+   * @return the path with layout segments removed
+   */
+  private String trimLayouts(String path) {
+    if (path == null || path.isEmpty()) {
+      return "";
+    }
+
+    String uniqueDelimiter = "%%UNIQUE_DELIMITER%%";
+    String modifiedPath = path.replace("/", uniqueDelimiter + "/"); // NOSONAR
+    String[] segments = modifiedPath.split(uniqueDelimiter);
+
+    StringBuilder result = new StringBuilder();
+
+    for (String segment : segments) { // NOSONAR
+      if (segment.startsWith("@")) {
+        continue;
+      }
+
+      if (segment.startsWith("/@")) {
+        result.append("/");
+        continue;
+      }
+
+      result.append(segment);
+    }
+
+    result = new StringBuilder(
+        // remove all consecutive slashes
+        result.toString().replaceAll("/{2,}", "/"));
+
+    return result.toString();
   }
 }

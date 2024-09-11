@@ -157,12 +157,13 @@ public class Router {
         .map(c -> registry.getComponentByRoute(c).orElse(null));
 
     if (!routePattern.isPresent()) {
-      throw new RouteNotFoundException("Failed to match route for location: " + locationRootless);
+      throw new RouteNotFoundException(
+          "Failed to match route for location: " + location.toString());
     }
 
     if (!componentClass.isPresent()) {
       throw new RouteNotFoundException(
-          "Path matched but no component found for location: " + locationRootless);
+          "Path matched but no component found for location: " + location.toString());
     }
 
     RoutePattern matchedPattern = routePattern.get();
