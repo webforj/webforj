@@ -83,7 +83,7 @@ public final class RouterDevUtils {
 
     StringBuilder js = new StringBuilder();
 
-    js.append("(function() {").append("   console.groupCollapsed('%cNavigation Action:%c ' + '")
+    js.append("(function() {").append("   console.groupCollapsed('%cNavigation :%c ' + '")
         .append(location.getFullURI())
         .append(
             "', 'background: #008080; color: white; padding: 2px 6px; border-radius: 5px;', 'color: inherit');")
