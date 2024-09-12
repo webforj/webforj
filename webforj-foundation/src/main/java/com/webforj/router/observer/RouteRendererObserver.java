@@ -6,7 +6,7 @@ import com.webforj.router.RouteRenderer;
 import java.util.function.Consumer;
 
 /**
- * An interface for observing lifecycle events of components managed by the RouteRenderer.
+ * An interface for observing lifecycle events of components managed by the {@link RouteRenderer}.
  *
  * <p>
  * This interface defines lifecycle events specific to the routing and rendering process, such as
