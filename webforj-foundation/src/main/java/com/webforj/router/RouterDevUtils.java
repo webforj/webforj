@@ -27,7 +27,7 @@ public final class RouterDevUtils {
   }
 
   /**
-   * Dumps the routes to the browser console.
+   * Logs the routes to the browser console.
    *
    * @param routes The list of routes to dump.
    */
