@@ -124,6 +124,7 @@ public class Router {
    *
    * @return the current router instance
    * @throws IllegalStateException if the router instance is accessed before the application is
+   *         initialized
    */
   public static Router getCurrent() {
     String key = "com.webforj.router.Router.instance";
