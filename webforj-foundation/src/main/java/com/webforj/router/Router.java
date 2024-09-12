@@ -153,7 +153,7 @@ public class Router {
     Objects.requireNonNull(location, "Location must not be null");
 
     Location locationRootless = detachRoot(location);
-    Optional<RoutePattern> routePattern = getRouteByLocation(locationRootless);
+    Optional<RoutePattern> routePattern = getRoutePatternByLocation(locationRootless);
     Optional<Class<? extends Component>> componentClass = routePattern.map(RoutePattern::getPattern)
         .map(c -> registry.getComponentByRoute(c).orElse(null));
 
@@ -395,7 +395,7 @@ public class Router {
    *
    * @param location the location to get the RoutePattern for
    */
-  public Optional<RoutePattern> getRouteByLocation(Location location) {
+  public Optional<RoutePattern> getRoutePatternByLocation(Location location) {
     Location locationRootless = detachRoot(location);
     RoutePattern matchedPattern = null;
     List<RouteEntry> routes = registry.getAvailableRoutes();

@@ -435,7 +435,7 @@ class RouterTest {
     @Test
     void shouldReturnRoutePatternForValidLocation() {
       Location location = new Location("/main");
-      Optional<RoutePattern> routePattern = router.getRouteByLocation(location);
+      Optional<RoutePattern> routePattern = router.getRoutePatternByLocation(location);
       assertTrue(routePattern.isPresent());
       assertEquals("/main", routePattern.get().getPattern());
     }
@@ -443,7 +443,7 @@ class RouterTest {
     @Test
     void shouldReturnEmptyOptionalForInvalidLocation() {
       Location location = new Location("/invalidPath");
-      Optional<RoutePattern> routePattern = router.getRouteByLocation(location);
+      Optional<RoutePattern> routePattern = router.getRoutePatternByLocation(location);
       assertFalse(routePattern.isPresent());
     }
 
