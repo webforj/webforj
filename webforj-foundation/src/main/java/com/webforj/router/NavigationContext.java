@@ -1,8 +1,12 @@
 package com.webforj.router;
 
+import com.webforj.component.Component;
 import com.webforj.router.history.Location;
 import com.webforj.router.history.ParametersBag;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * The {@code NavigationContext} class encapsulates the context information for a navigation event
@@ -25,6 +29,7 @@ public class NavigationContext {
   private final NavigationOptions options;
   private final RoutePattern routePattern;
   private final ParametersBag routeParameters;
+  private final LinkedHashSet<Component> components = new LinkedHashSet<>();
 
   /**
    * Constructs a new {@code NavigationContext} with the specified parameters.
@@ -43,6 +48,13 @@ public class NavigationContext {
     this.options = options;
     this.routePattern = routePattern;
     this.routeParameters = routeParameters;
+  }
+
+  /**
+   * Constructs a new {@code NavigationContext} with the specified parameters.
+   */
+  NavigationContext() {
+    this(null, null, null, null, null);
   }
 
   /**
@@ -105,5 +117,23 @@ public class NavigationContext {
    */
   public ParametersBag getRouteParameters() {
     return routeParameters;
+  }
+
+  /**
+   * Returns the list of components that has been created or reused during the navigation process.
+   *
+   * @return the list of {@link Component} classes that have been navigated to
+   */
+  public Set<Component> getComponents() {
+    return Collections.unmodifiableSet(components);
+  }
+
+  /**
+   * Adds a component to the list of navigated components.
+   *
+   * @param component the {@link Component} class to add to the list
+   */
+  void addComponent(Component component) {
+    components.add(component);
   }
 }

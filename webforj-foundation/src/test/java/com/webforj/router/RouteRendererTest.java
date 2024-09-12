@@ -20,6 +20,7 @@ import com.webforj.component.window.Window;
 import com.webforj.concern.HasComponents;
 import com.webforj.router.observer.RouteRendererObserver;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
@@ -97,6 +98,23 @@ class RouteRendererTest {
     });
 
     assertTrue(parentResultReceived.get());
+  }
+
+  @Test
+  void shouldUpdateContextWithComponents() {
+    routeRegistry.register("/parent", ParentComponent.class);
+    routeRegistry.register("/child", ChildComponent.class, ParentComponent.class);
+
+    NavigationContext context = new NavigationContext();
+    routeRenderer.render(ChildComponent.class, context);
+
+    Set<Component> components = context.getComponents();
+    assertNotNull(components);
+    assertEquals(2, components.size());
+
+    Component[] componentArray = components.toArray(new Component[0]);
+    assertEquals(ParentComponent.class, componentArray[0].getClass());
+    assertEquals(ChildComponent.class, componentArray[1].getClass());
   }
 
   @Nested
