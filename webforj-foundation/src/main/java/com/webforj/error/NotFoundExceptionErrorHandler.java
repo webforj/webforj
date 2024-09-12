@@ -26,7 +26,7 @@ public class NotFoundExceptionErrorHandler implements ErrorHandler {
         """
             <div style="margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial, sans-serif;">
               <div style="text-align: center;">
-                  <h1 style="font-size: 200px; margin: 0; color: var(--dwc-color-primary-text-dark);">404</h1>
+                  <h1 style="font-size: 80px; margin: 0; color: var(--dwc-color-primary-text-dark);">404</h1>
                   <p style="font-size: 18px;">Sorry, the page you're looking for doesn't exist.</p>
               </div>
             </div>
