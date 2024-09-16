@@ -5,6 +5,7 @@ import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.concern.HasElementClickListener;
+import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasStyle;
@@ -31,7 +32,7 @@ import com.webforj.concern.HasVisibility;
  */
 @NodeName("dwc-icon")
 public class Icon extends ElementComposite implements HasStyle<Icon>, HasClassName<Icon>,
-    HasVisibility<Icon>, HasLabel<Icon>, HasElementClickListener<Icon> {
+    HasVisibility<Icon>, HasLabel<Icon>, HasElementClickListener<Icon>, HasAttribute<Icon> {
 
   // Properties
   private final PropertyDescriptor<String> nameProp = PropertyDescriptor.property("name", "");
