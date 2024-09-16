@@ -1,5 +1,7 @@
 package com.webforj.concern;
 
+import static com.webforj.App.console;
+import static com.webforj.App.consoleLog;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
 
@@ -46,6 +48,7 @@ public interface HasAttribute<T extends Component> {
     Component component = ComponentUtil.getBoundComponent(this);
 
     if (component instanceof HasAttribute) {
+      console().log("Attribute: " + attribute + " Value: " + value);
       ((HasAttribute<?>) component).setAttribute(attribute, value);
       return (T) this;
     }

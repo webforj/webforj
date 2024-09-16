@@ -16,6 +16,7 @@
 
   <modules>
     <module>webforj-applayout</module>
+    <module>webforj-appnav</module>
     <module>webforj-code</module>
     <module>webforj-columnslayout</module>
     <module>webforj-dialog</module>

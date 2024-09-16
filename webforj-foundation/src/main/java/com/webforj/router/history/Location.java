@@ -123,7 +123,7 @@ public class Location implements Serializable {
       uriBuilder.append('?').append(query);
     }
 
-    if (fragment != null) {
+    if (fragment != null && !fragment.isEmpty()) {
       uriBuilder.append('#').append(fragment);
     }
 

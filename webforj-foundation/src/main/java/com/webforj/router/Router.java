@@ -1,5 +1,6 @@
 package com.webforj.router;
 
+import com.webforj.Page;
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.component.window.Window;
@@ -795,6 +796,11 @@ public class Router {
           didNavigateObserver.onDidNavigate(didNavigateEvent, routeParams);
         }
       }
+
+      Page.getCurrent().executeJsVoidAsync(String.format("""
+          const navigateEvent = new CustomEvent('dwc-navigate', {detail:'%s'});
+          window.dispatchEvent(navigateEvent);
+          """, context.getLocation().getFullURI()));
     });
   }
 }
