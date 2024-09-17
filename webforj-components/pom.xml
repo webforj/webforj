@@ -31,6 +31,7 @@
     <module>webforj-icons</module>
     <module>webforj-loading</module>
     <module>webforj-login</module>
+    <module>webforj-toolbar</module>
     <module>webforj-youtube</module>
     <module>webforj-table</module>
   </modules>
