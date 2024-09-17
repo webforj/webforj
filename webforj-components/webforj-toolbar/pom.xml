@@ -19,16 +19,6 @@
       <artifactId>webforj-foundation</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
-      <artifactId>webforj-applayout</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
-      <artifactId>webforj-html-elements</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
