@@ -1,6 +1,7 @@
 package com.webforj.component.layout.toolbar;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
@@ -58,8 +59,7 @@ class ToolbarTest {
     void shouldAddToContent() {
       Component header = mock(Component.class);
       component.addToContent(header);
-      assertEquals(header,
-          component.getOriginalElement().getFirstComponentInSlot(Toolbar.CONTENT_SLOT));
+      assertTrue(component.getOriginalElement().hasComponent(header));
     }
 
     @Test

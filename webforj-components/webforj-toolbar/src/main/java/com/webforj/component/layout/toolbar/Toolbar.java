@@ -26,7 +26,6 @@ public class Toolbar extends ElementCompositeContainer implements HasClassName<T
   // Slots
   static final String START_SLOT = "start";
   static final String TITLE_SLOT = "title";
-  static final String CONTENT_SLOT = "content";
   static final String END_SLOT = "end";
 
   // Property descriptors
@@ -65,23 +64,13 @@ public class Toolbar extends ElementCompositeContainer implements HasClassName<T
   }
 
   /**
-   * Adds the component to the content slot.
-   *
-   * @param components the components to be added
-   */
-  @Override
-  public void add(Component... components) {
-    addToContent(components);
-  }
-
-  /**
    * Alias for {@link #add(Component...)}.
    *
    * @param components the component to be added
    * @return the component itself
    */
   public Toolbar addToContent(Component... components) {
-    getElement().add(CONTENT_SLOT, components);
+    getElement().add(components);
     return this;
   }
 
