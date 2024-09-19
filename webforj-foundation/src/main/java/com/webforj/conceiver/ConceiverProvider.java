@@ -4,7 +4,7 @@ import com.webforj.environment.ObjectTable;
 import java.util.ServiceLoader;
 
 /**
- * Provides access to the current {@link Conceiver}
+ * Provides access to the current {@link Conceiver}.
  *
  * @since 24.12
  * @author Hyyan Abo Fakher
