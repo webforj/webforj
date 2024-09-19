@@ -4,12 +4,12 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.webforj.annotation.AppEntry;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -76,17 +76,13 @@ public final class Bootstrap {
     }
 
     try {
-      App app = (App) Class.forName(selectedClassName).getDeclaredConstructor().newInstance();
+      @SuppressWarnings("unchecked")
+      App app = ConceiverProvider.getCurrent()
+          .getApplication((Class<? extends App>) Class.forName(selectedClassName));
       app.initialize();
     } catch (ClassNotFoundException e) {
       throw new WebforjAppInitializeException("Failed to find application class '"
           + selectedClassName + "'." + " Ensure the class is in the classpath.", e);
-    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
-      throw new WebforjAppInitializeException(
-          "Failed to instantiate application class: " + selectedClassName, e);
-    } catch (InvocationTargetException e) {
-      throw new WebforjAppInitializeException(
-          "Failed to invoke constructor of application class: " + selectedClassName, e);
     }
   }
 
