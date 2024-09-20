@@ -1,19 +1,18 @@
 package com.webforj.component.element;
 
 import com.google.gson.Gson;
-import com.webforj.component.Component;
 import com.webforj.component.Composite;
 import com.webforj.component.element.annotation.ElementAnnotationProcessor;
 import com.webforj.component.element.annotation.EventName;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.event.ComponentEvent;
+import com.webforj.conceiver.Conceiver;
+import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -300,7 +299,9 @@ public abstract class ElementComposite extends Composite<Element> {
 
     // fire the custom event
     if (eventNameToClassMap.containsKey(eventName)) {
-      ComponentEvent<?> event = createEvent(eventNameToClassMap.get(eventName), eventMap);
+      Conceiver conceiver = ConceiverProvider.getCurrent();
+      Class<?> eventClass = eventNameToClassMap.get(eventName);
+      ComponentEvent<?> event = conceiver.getComponentEvent(this, eventClass, eventMap);
       EventListener<? extends ComponentEvent<?>> listener =
           listenerRegistrations.get(originalRegistration);
 
@@ -308,50 +309,6 @@ public abstract class ElementComposite extends Composite<Element> {
         getEventDispatcher().dispatchEvent(event, (l, e) -> l == listener);
       }
     }
-  }
-
-  /**
-   * Creates a custom event instance of the specified event class with the provided data.
-   *
-   * @param <E> The type of the event to create.
-   * @param eventClass The class of the event to create.
-   * @param data A map of data to initialize the event with.
-   *
-   * @return An instance of the specified event class.
-   * @throws WebforjRuntimeException if the event class cannot be instantiated or initialized
-   *         properly.
-   */
-  <E extends ComponentEvent<?>> E createEvent(Class<?> eventClass, Map<String, Object> data) {
-    E event = null;
-
-    try {
-      Constructor<?>[] constructors = eventClass.getDeclaredConstructors();
-      for (Constructor<?> constructor : constructors) {
-        constructor.setAccessible(true); // NOSONAR
-        Class<?>[] parameterTypes = constructor.getParameterTypes();
-
-        // is not inner class
-        if (parameterTypes.length == 2 && Component.class.isAssignableFrom(parameterTypes[0])
-            && parameterTypes[1] == Map.class) {
-          event = (E) constructor.newInstance(this, data); // NOSONAR
-          break;
-        }
-        // else if inner class
-        else if (parameterTypes.length == 3 && Component.class.isAssignableFrom(parameterTypes[0])
-            && Component.class.isAssignableFrom(parameterTypes[1])
-            && parameterTypes[2] == Map.class) {
-          event = (E) constructor.newInstance(this, this, data); // NOSONAR
-
-          break;
-        }
-      }
-    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException e) {
-      throw new WebforjRuntimeException(
-          "Failed to instantiate the event class " + eventClass.getSimpleName(), e);
-    }
-
-    return event;
   }
 
   /**

@@ -5,10 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,12 +18,15 @@ import com.webforj.component.element.annotation.EventName;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.event.ComponentEvent;
+import com.webforj.conceiver.ConceiverProvider;
+import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 class ElementCompositeTest {
 
@@ -187,6 +190,20 @@ class ElementCompositeTest {
       });
     }
 
+    MockedStatic<ConceiverProvider> mockedConceiverProvider;
+
+    @BeforeEach
+    void setUp() {
+      composite = new ElementCompositeMock();
+      mockedConceiverProvider = mockStatic(ConceiverProvider.class);
+      when(ConceiverProvider.getCurrent()).thenReturn(new DefaultConceiver());
+    }
+
+    @AfterEach
+    void tearDown() {
+      mockedConceiverProvider.close();
+    }
+
     @Test
     @DisplayName("should dispatch custom events")
     void shouldDispatchCustomEvents() {
@@ -208,7 +225,6 @@ class ElementCompositeTest {
 
       compositeSpy.handleEvent(mockElementEvent, elRegistrationMock);
 
-      verify(compositeSpy, times(1)).createEvent(eq(ClickEvent.class), anyMap());
       verify(listenerMock, times(1)).onEvent(any(ClickEvent.class));
     }
 
