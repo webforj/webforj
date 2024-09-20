@@ -61,8 +61,8 @@ public class DefaultConceiver implements Conceiver {
    * {@inheritDoc}
    */
   @Override
-  public <E extends ComponentEvent<?>> E getComponentEvent(Component component,
-      Class<?> eventClass, Map<String, Object> data) {
+  public <E extends ComponentEvent<?>> E getComponentEvent(Component component, Class<?> eventClass,
+      Map<String, Object> data) {
     E event = null;
 
     try {
