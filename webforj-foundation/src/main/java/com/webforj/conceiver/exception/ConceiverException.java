@@ -12,7 +12,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 public class ConceiverException extends WebforjRuntimeException {
 
   /**
-   * Constructs a new {@code DependencyFactoryException} with the given message.
+   * Constructs a new {@code ConceiverException} with the given message.
    *
    * @param message the exception message
    */
@@ -21,7 +21,7 @@ public class ConceiverException extends WebforjRuntimeException {
   }
 
   /**
-   * Constructs a new {@code DependencyFactoryException} with the given message and cause.
+   * Constructs a new {@code ConceiverException} with the given message and cause.
    *
    * @param message the exception message
    * @param cause the exception cause

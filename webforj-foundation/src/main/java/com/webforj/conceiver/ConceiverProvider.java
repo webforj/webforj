@@ -6,6 +6,11 @@ import java.util.ServiceLoader;
 /**
  * Provides access to the current {@link Conceiver}.
  *
+ * <p>
+ * The current {@link Conceiver} is the first instance of the {@link Conceiver} found in the
+ * {@code META-INF/services/com.webforj.conceiver.Conceiver} file.
+ * </p>
+ *
  * @since 24.12
  * @author Hyyan Abo Fakher
  */
