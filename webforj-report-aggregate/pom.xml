@@ -53,7 +53,11 @@
       <artifactId>webforj-applayout</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-appnav</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-code</artifactId>

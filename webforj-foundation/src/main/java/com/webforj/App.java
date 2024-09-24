@@ -6,9 +6,11 @@ import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.AnnotationProcessor;
+import com.webforj.annotation.Routify;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.optiondialog.OptionDialog;
 import com.webforj.component.window.Frame;
+import com.webforj.environment.ObjectTable;
 import com.webforj.environment.StringTable;
 import com.webforj.environment.namespace.GlobalNamespace;
 import com.webforj.environment.namespace.GroupNamespace;
@@ -17,6 +19,11 @@ import com.webforj.environment.namespace.PrivateNamespace;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.router.NavigationOptions;
+import com.webforj.router.RouteRegistry;
+import com.webforj.router.Router;
+import com.webforj.router.RouterDevUtils;
+import com.webforj.router.event.NavigateEvent;
 import com.webforj.webstorage.CookieStorage;
 import com.webforj.webstorage.LocalStorage;
 import com.webforj.webstorage.SessionStorage;
@@ -69,10 +76,14 @@ public abstract class App {
     }
 
     Page.getCurrent().onUnload(ev -> terminate());
+
+    initializeRouter();
     onWillRun();
     AnnotationProcessor processor = new AnnotationProcessor();
     processor.processAppAnnotations(this);
+    createFirstFrame();
     run();
+    resolveFirstRoute();
     isInitialized = true;
     onDidRun();
   }
@@ -532,11 +543,31 @@ public abstract class App {
   }
 
   /**
-   * Override this method to implement your app behavior.
+   * The main entry point to implement custom application logic.
    *
-   * @throws WebforjException if an error occurs
+   * <p>
+   * This method is intended to be overridden by any class extending {@code App}. The framework
+   * calls this method after the application has been fully initialized. The method is meant to
+   * contain the core functionality of the application.
+   * </p>
+   *
+   * <p>
+   * Developers should override this method to define the behavior and execution flow of their
+   * application. It is called once during the application lifecycle, and should not be invoked
+   * directly from outside the class.
+   * </p>
+   *
+   * <p>
+   * If the application uses routing (determined by the presence of the {@link Routify} annotation),
+   * this method is called after the initial route resolution and frame creation. Otherwise, it is
+   * the place where non-routable application logic can be executed.
+   * </p>
+   *
+   * @throws WebforjException if any error occurs during the execution of the application logic.
    */
-  public abstract void run() throws WebforjException;
+  public void run() throws WebforjException {
+    // no-op
+  }
 
   public static Namespace getNamespace(Namespace.NamespaceType namespaceType) {
     switch (namespaceType) {
@@ -668,6 +699,174 @@ public abstract class App {
       throw new WebforjRuntimeException(
           "Failed to set app " + (isTerminateAction ? "terminate" : "error") + " action.", e);
     }
+  }
+
+  /**
+   * Initializes the router for the application if routing is enabled.
+   *
+   * <p>
+   * This method is responsible for setting up the routing system in the application. It checks if
+   * the app is routable by inspecting the {@link Routify} annotation. If the annotation is present,
+   * it retrieves the list of packages to be scanned for route definitions and initializes the
+   * {@link Router} and {@link RouteRegistry}.
+   * </p>
+   *
+   * <p>
+   * The router is initialized with the root directory of the web application and the registry of
+   * routes, which is built by scanning the specified packages for route classes and annotations.
+   * The router instance is then stored in the {@link ObjectTable} for access during runtime through
+   * {@link Router#getCurrent()}.
+   * </p>
+   *
+   * <p>
+   * If no packages are specified in the {@link Routify} annotation, the framework defaults to using
+   * the package of the application class.
+   * </p>
+   *
+   * <p>
+   * If the app is not routable, this method will not initialize any routing components.
+   * </p>
+   *
+   * @see Router
+   * @see RouteRegistry
+   * @see Routify
+   */
+  private void initializeRouter() {
+    if (!isRoutable()) {
+      return;
+    }
+
+    String[] packages = getClass().getAnnotation(Routify.class).packages();
+    if (packages.length == 0) {
+      // default package
+      packages = new String[] {getClass().getPackageName()};
+    }
+
+    RouteRegistry registry = RouteRegistry.ofPackage(packages);
+    String root = "webapp/" + App.getApplicationName();
+    Router router = new Router(root, registry);
+    String key = "com.webforj.router.Router.instance";
+    ObjectTable.put(key, router);
+
+    if (getClass().getAnnotation(Routify.class).manageFramesVisibility()) {
+      router.onNavigate(this::handleFramesVisibility);
+    }
+
+    boolean debug = getClass().getAnnotation(Routify.class).debug();
+    router.setDebug(debug);
+
+    if (debug) {
+      RouterDevUtils.logRouteEntires(router.getRegistry().getAvailableRouteEntires());
+    }
+  }
+
+  /**
+   * Creates the first application frame if routing is enabled and the frame initialization flag is
+   * set.
+   *
+   * <p>
+   * This method is responsible for creating the first frame in the application if the app is
+   * routable and the {@code initializeFrame} attribute in the {@link Routify} annotation is set to
+   * {@code true}. This frame serves as the main window or interface element for the application.
+   * </p>
+   *
+   * <p>
+   * If the application is not routable or if frame initialization is disabled, this method will not
+   * create a frame. The method ensures that frame creation only occurs when explicitly requested
+   * through the {@link Routify} annotation.
+   * </p>
+   *
+   * @throws WebforjAppInitializeException if the frame cannot be created
+   * @see Frame
+   * @see Routify
+   */
+  private void createFirstFrame() throws WebforjAppInitializeException {
+    if (!isRoutable()) {
+      return;
+    }
+
+    boolean initFrame = getClass().getAnnotation(Routify.class).initializeFrame();
+
+    if (initFrame) {
+      Frame defaultFrame = new Frame();
+      defaultFrame.setName(getClass().getAnnotation(Routify.class).defaultFrameName());
+    }
+  }
+
+  /**
+   * Resolves the first route for the application when routing is enabled.
+   *
+   * <p>
+   * This method is responsible for determining the initial route when the application is started.
+   * It interacts with the {@link Router} instance to obtain the current location from the browser's
+   * history and navigates to it using the provided {@link NavigationOptions}. This ensures that the
+   * app starts at the correct route based on the URL.
+   * </p>
+   *
+   * <p>
+   * If the application is not routable (i.e., it is not annotated with {@link Routify}), this
+   * method will not take any action.
+   * </p>
+   *
+   * <p>
+   * The navigation is performed using the {@code REPLACE} navigation type, which updates the
+   * current route without adding a new entry to the browser history.
+   * </p>
+   *
+   * @see Router#navigate(String, NavigationOptions)
+   * @see NavigationOptions
+   */
+  private void resolveFirstRoute() {
+    if (!isRoutable()) {
+      return;
+    }
+
+    Router router = Router.getCurrent();
+    router.getHistory().getLocation().ifPresent(location -> {
+      NavigationOptions options = new NavigationOptions();
+      options.setUpdateHistory(false);
+      Router.getCurrent().navigate(location, options);
+    });
+  }
+
+  /**
+   * Handles frame visibility based on the matched route during navigation.
+   *
+   * <p>
+   * This method is called when the application is navigated to a new route. It is responsible for
+   * toggling the visibility of frames based on the matched route. When the app is navigated to a
+   * new route, the matched frame is shown, and all other frames are hidden.
+   * </p>
+   *
+   * <p>
+   * This method is registered as a navigation event listener in the {@link Router} instance during
+   * the initialization phase. It is called after the router has successfully navigated to a new
+   * route and attached its component to the DOM and updated the history.
+   * </p>
+   *
+   * @param event The navigation event object
+   */
+  private void handleFramesVisibility(NavigateEvent event) {
+    event.getContext().getActiveFrame().ifPresent(activeFrame -> {
+      List<Frame> frames = App.getFrames();
+      frames.forEach(f -> {
+        if (!f.equals(activeFrame)) {
+          f.setVisible(false);
+        }
+      });
+
+      activeFrame.setVisible(true);
+    });
+  }
+
+  /**
+   * Checks if the application is routable by inspecting the presence of the {@link Routify}
+   * annotation.
+   *
+   * @return {@code true} if the app is routable, {@code false} otherwise
+   */
+  private boolean isRoutable() {
+    return getClass().isAnnotationPresent(Routify.class);
   }
 
   Environment getEnvironment() {

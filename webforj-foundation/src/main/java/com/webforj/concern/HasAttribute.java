@@ -1,5 +1,7 @@
 package com.webforj.concern;
 
+import static com.webforj.App.console;
+import static com.webforj.App.consoleLog;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
 
