@@ -347,12 +347,12 @@ public class RouteRenderer {
    */
   protected void processSingleAddition(Class<? extends Component> componentClass,
       NavigationContext context, Consumer<Boolean> onComplete) {
+
     if (Frame.class.isAssignableFrom(componentClass)) {
       onComplete.accept(true);
       return;
     }
 
-    // Process the component itself
     getOrCreateComponentWithLifecycle(componentClass, success -> {
       if (!Boolean.TRUE.equals(success)) {
         onComplete.accept(false);
@@ -361,10 +361,12 @@ public class RouteRenderer {
 
       Component componentInstance = componentsCache.get(componentClass);
       if (!componentInstance.isAttached()) {
-        attachNode(componentClass, componentInstance);
+        attachNode(componentClass, componentInstance, attachSuccess -> {
+          onComplete.accept(attachSuccess);
+        });
+      } else {
+        onComplete.accept(true);
       }
-
-      onComplete.accept(true);
     });
   }
 
@@ -374,31 +376,37 @@ public class RouteRenderer {
    * @param componentClass the class of the component to attach.
    * @param componentInstance the instance of the component being attached.
    */
-  protected void attachNode(Class<? extends Component> componentClass,
-      Component componentInstance) {
+  protected void attachNode(Class<? extends Component> componentClass, Component componentInstance,
+      Consumer<Boolean> onComplete) {
 
     Optional<Class<? extends Component>> outletClass = registry.getOutlet(componentClass);
     if (!outletClass.isPresent()) {
-      outletClass = Optional.ofNullable(Frame.class);
+      outletClass = Optional.of(Frame.class);
     }
 
     final Class<? extends Component> outletClassFinal = outletClass.get();
-    getOrCreateComponentWithLifecycle(outletClassFinal, success -> {
-      if (!Boolean.TRUE.equals(success)) {
-        throw new RouteRenderException(
-            "Failed to create outlet component: " + outletClassFinal.getName());
-      }
+    boolean isFrame = Frame.class.isAssignableFrom(outletClassFinal);
 
-      boolean isFrame = Frame.class.isAssignableFrom(outletClassFinal);
-      Component outletInstance =
-          isFrame ? getFrameComponent(componentClass) : componentsCache.get(outletClassFinal);
-
-      if (isFrame) {
-        context.setActiveFrame((Frame) outletInstance);
-      }
-
+    if (isFrame) {
+      Component outletInstance = getFrameComponent(componentClass);
+      context.setActiveFrame((Frame) outletInstance);
       addComponentToParent(componentInstance, outletInstance);
-    });
+      onComplete.accept(true);
+    } else {
+      getOrCreateComponentWithLifecycle(outletClassFinal, success -> {
+        if (!Boolean.TRUE.equals(success)) {
+          onComplete.accept(false);
+          return;
+        }
+        Component outletInstance = componentsCache.get(outletClassFinal);
+        if (outletInstance == null) {
+          onComplete.accept(false);
+          return;
+        }
+        addComponentToParent(componentInstance, outletInstance);
+        onComplete.accept(true);
+      });
+    }
   }
 
   /**
@@ -420,7 +428,6 @@ public class RouteRenderer {
       Component newComponentInstance = getConceiver().getComponent(componentClass);
       notify(newComponentInstance, RouteRendererObserver.LifecycleEvent.BEFORE_CREATE, allowed -> {
         if (Boolean.FALSE.equals(allowed)) {
-          newComponentInstance.destroy();
           onComplete.accept(false);
           return;
         }

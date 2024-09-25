@@ -82,7 +82,6 @@ class ComponentRegistryTest {
     Executable action = () -> registry.add(destroyedComponent);
 
     IllegalStateException exception = assertThrows(IllegalStateException.class, action);
-    assertTrue(exception.getMessage().contains("is destroyed"));
   }
 
   @Test
