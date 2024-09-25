@@ -104,7 +104,8 @@ public class SlotRegistry {
    */
   public void removeSlot(String slot) {
     // Destroy all components in the slot
-    getComponentsInSlot(slot).forEach(Component::destroy);
+    List<Component> componentsToRemove = new ArrayList<>(getComponentsInSlot(slot));
+    componentsToRemove.forEach(Component::destroy);
     slots.remove(resolveSlotName(slot));
   }
 
