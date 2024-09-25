@@ -277,7 +277,8 @@ public class RouteRegistry {
     Route routeAnnotation = componentClass.getAnnotation(Route.class);
 
     if (routeAnnotation == null) {
-      throw new IllegalArgumentException("Component class must be annotated with @Route.");
+      throw new IllegalArgumentException("Component class '" + componentClass.getSimpleName()
+          + "' must be annotated with @Route.");
     }
 
     String routePath = routeAnnotation.value();
@@ -291,8 +292,8 @@ public class RouteRegistry {
       isView = className.endsWith("View");
 
       if (!isLayout && !isView) {
-        throw new IllegalArgumentException("Cannot AUTO_DETECT route type: "
-            + "component class name must end with 'Layout' or 'View'.");
+        throw new IllegalArgumentException("Cannot AUTO_DETECT route type for component class '"
+            + className + "': " + "component class name must end with 'Layout' or 'View'.");
       }
     }
 
