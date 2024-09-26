@@ -156,6 +156,5 @@ public class MemoryHistory implements History {
   /**
    * Represents an entry in the memory history stack.
    */
-  private static final record Entry(Object state, Location location) {
-  }
+  private static final record Entry(Object state, Location location) {}
 }

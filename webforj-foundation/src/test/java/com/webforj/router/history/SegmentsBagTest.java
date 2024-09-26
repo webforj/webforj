@@ -112,7 +112,8 @@ class SegmentsBagTest {
     bag.add("segment1");
     bag.add("segment2");
     int count = 0;
-    for (@SuppressWarnings("unused") String segment : bag) {
+    for (@SuppressWarnings("unused")
+    String segment : bag) {
       count++;
     }
     assertEquals(2, count);
