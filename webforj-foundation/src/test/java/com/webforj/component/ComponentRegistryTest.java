@@ -81,7 +81,7 @@ class ComponentRegistryTest {
 
     Executable action = () -> registry.add(destroyedComponent);
 
-    IllegalStateException exception = assertThrows(IllegalStateException.class, action);
+    assertThrows(IllegalStateException.class, action);
   }
 
   @Test
