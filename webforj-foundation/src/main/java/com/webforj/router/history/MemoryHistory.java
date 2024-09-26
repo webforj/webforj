@@ -91,7 +91,7 @@ public class MemoryHistory implements History {
   @Override
   public Optional<Location> getLocation() {
     if (currentIndex >= 0 && currentIndex < history.size()) {
-      return Optional.of(history.get(currentIndex).getLocation());
+      return Optional.of(history.get(currentIndex).location());
     } else {
       return Optional.empty();
     }
@@ -145,7 +145,7 @@ public class MemoryHistory implements History {
   private void fireHistoryStateChangeEventForIndex(int index) {
     if (index >= 0 && index < history.size()) {
       Entry entry = history.get(index);
-      fireHistoryStateChangeEvent(entry.getLocation(), entry.getState());
+      fireHistoryStateChangeEvent(entry.location(), entry.state());
     }
   }
 
@@ -156,21 +156,6 @@ public class MemoryHistory implements History {
   /**
    * Represents an entry in the memory history stack.
    */
-  private static final class Entry {
-    private final Object state;
-    private final Location location;
-
-    public Entry(Object state, Location location) {
-      this.state = state;
-      this.location = location;
-    }
-
-    public Object getState() {
-      return state;
-    }
-
-    public Location getLocation() {
-      return location;
-    }
+  private static final record Entry(Object state, Location location) {
   }
 }
