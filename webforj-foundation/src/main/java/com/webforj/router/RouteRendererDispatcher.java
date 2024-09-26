@@ -95,8 +95,7 @@ public class RouteRendererDispatcher implements RouteRendererObserver {
     }
 
     if (options.isPresent() && options.get().isInvokeObservers()
-        && component instanceof WillEnterObserver) {
-      WillEnterObserver observer = (WillEnterObserver) component;
+        && component instanceof WillEnterObserver observer) {
       observer.onWillEnter(event, context.getRouteParameters());
     } else {
       cb.accept(true);
@@ -125,8 +124,7 @@ public class RouteRendererDispatcher implements RouteRendererObserver {
     }
 
     if (options.isPresent() && options.get().isInvokeObservers()
-        && component instanceof DidEnterObserver) {
-      DidEnterObserver observer = (DidEnterObserver) component;
+        && component instanceof DidEnterObserver observer) {
       observer.onDidEnter(event, context.getRouteParameters());
     }
   }
@@ -156,8 +154,7 @@ public class RouteRendererDispatcher implements RouteRendererObserver {
     }
 
     if (options.isPresent() && options.get().isInvokeObservers()
-        && component instanceof WillLeaveObserver) {
-      WillLeaveObserver observer = (WillLeaveObserver) component;
+        && component instanceof WillLeaveObserver observer) {
       observer.onWillLeave(event, context.getRouteParameters());
     } else {
       cb.accept(true);
@@ -186,8 +183,7 @@ public class RouteRendererDispatcher implements RouteRendererObserver {
     }
 
     if (options.isPresent() && options.get().isInvokeObservers()
-        && component instanceof DidLeaveObserver) {
-      DidLeaveObserver observer = (DidLeaveObserver) component;
+        && component instanceof DidLeaveObserver observer) {
       observer.onDidLeave(event, context.getRouteParameters());
     }
   }
