@@ -148,10 +148,9 @@ public class WorkflowExecutor<T> {
           }
         }
       });
-    } else if (!failed) {
-      if (onTaskComplete != null) {
-        onTaskComplete.accept(context);
-      }
+    } else if (!failed && onTaskComplete != null) {
+      onTaskComplete.accept(context);
     }
+
   }
 }
