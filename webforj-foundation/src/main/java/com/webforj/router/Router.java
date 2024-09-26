@@ -456,7 +456,7 @@ public class Router {
     String path = pattern.generateUrl(parameters != null ? parameters : new ParametersBag());
     Location location = new Location(path);
 
-    return Optional.of(location);
+    return Optional.of(attachRoot(location));
   }
 
   /**
