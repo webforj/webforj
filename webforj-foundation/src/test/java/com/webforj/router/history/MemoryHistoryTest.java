@@ -107,7 +107,6 @@ class MemoryHistoryTest {
     EventListener<HistoryStateChangeEvent> mockListener = mock(EventListener.class);
     memoryHistory.addHistoryStateChangeListener(mockListener);
 
-    verify(mockDispatcher, times(1)).addListener(eq(HistoryStateChangeEvent.class),
-        eq(mockListener));
+    verify(mockDispatcher, times(1)).addListener(HistoryStateChangeEvent.class, mockListener);
   }
 }
