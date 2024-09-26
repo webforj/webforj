@@ -70,8 +70,8 @@ public class BrowserHistory implements History {
   public Optional<Location> getLocation() {
     Object result =
         Page.getCurrent().executeJs("window.location.href.replace(window.location.origin, '')");
-    if (result instanceof String) {
-      return Optional.of(new Location((String) result));
+    if (result instanceof String stringResult) {
+      return Optional.of(new Location(stringResult));
     }
 
     return Optional.empty();
