@@ -534,10 +534,10 @@ public class RouteRenderer {
   }
 
   private void addComponentToParent(Component componentInstance, Component outletInstance) {
-    if (outletInstance instanceof RouteOutlet) {
-      ((RouteOutlet) outletInstance).showRouteContent(componentInstance);
-    } else if (outletInstance instanceof HasComponents) {
-      ((HasComponents) outletInstance).add(componentInstance);
+    if (outletInstance instanceof RouteOutlet outlet) {
+      outlet.showRouteContent(componentInstance);
+    } else if (outletInstance instanceof HasComponents hasComponents) {
+      hasComponents.add(componentInstance);
     } else if (outletInstance instanceof Composite) {
       addComponentToParent(componentInstance, ComponentUtil.getBoundComponent(outletInstance));
     } else {
@@ -553,10 +553,10 @@ public class RouteRenderer {
   }
 
   private void removeComponentFromParent(Component componentInstance, Component outletInstance) {
-    if (outletInstance instanceof RouteOutlet) {
-      ((RouteOutlet) outletInstance).removeRouteContent(componentInstance);
-    } else if (outletInstance instanceof HasComponents) {
-      ((HasComponents) outletInstance).remove(componentInstance);
+    if (outletInstance instanceof RouteOutlet outlet) {
+      outlet.removeRouteContent(componentInstance);
+    } else if (outletInstance instanceof HasComponents hasComponents) {
+      hasComponents.remove(componentInstance);
     } else if (outletInstance instanceof Composite) {
       removeComponentFromParent(componentInstance, ComponentUtil.getBoundComponent(outletInstance));
     } else {
