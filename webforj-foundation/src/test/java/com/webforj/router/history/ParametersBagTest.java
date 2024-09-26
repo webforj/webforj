@@ -135,7 +135,7 @@ class ParametersBagTest {
     bag.put("param1", "value1");
     bag.put("param2", "value2");
     int count = 0;
-    for (Map.Entry<String, String> entry : bag) {
+    for (@SuppressWarnings("unused") Map.Entry<String, String> entry : bag) {
       count++;
     }
 
