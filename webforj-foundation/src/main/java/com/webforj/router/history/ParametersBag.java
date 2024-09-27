@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
 /**
- * ParametersBag is a container query parameters.
+ * ParametersBag is a container parameters.
  *
  * @author Hyyan Abo Fakher
  * @since 24.12
