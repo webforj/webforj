@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -141,5 +142,33 @@ class ParametersBagTest {
     }
 
     assertEquals(2, count);
+  }
+
+  @Test
+  void shouldReturnArrayParameterValues() {
+    ParametersBag bag = new ParametersBag();
+    List<String> values = List.of("value1", "value2", "value3");
+    bag.putArray("param1", values);
+
+    List<String> result = bag.getList("param1").orElse(null);
+
+    assertEquals(3, result.size());
+    assertEquals("value1", result.get(0));
+    assertEquals("value2", result.get(1));
+    assertEquals("value3", result.get(2));
+  }
+
+  @Test
+  void shouldReturnArrayParameterValuesWithCustomDelimiter() {
+    ParametersBag bag = new ParametersBag();
+    String customDelimiter = "|";
+    bag.put("param1", "value1|value2|value3");
+
+    List<String> result = bag.getList("param1", customDelimiter).orElse(null);
+
+    assertEquals(3, result.size());
+    assertEquals("value1", result.get(0));
+    assertEquals("value2", result.get(1));
+    assertEquals("value3", result.get(2));
   }
 }

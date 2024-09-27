@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 /**
  * ParametersBag is a container query parameters.
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
  */
 public class ParametersBag implements Serializable, Iterable<Map.Entry<String, String>> {
   private Map<String, String> parameters;
+  public static final String ARRAY_DELIMITER = ",";
 
   /**
    * Constructs an empty ParametersBag object.
@@ -78,6 +82,16 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
   }
 
   /**
+   * Adds an array of values as a single parameter using the defined delimiter.
+   *
+   * @param key the parameter key
+   * @param values the array of parameter values
+   */
+  public void putArray(String key, List<String> values) {
+    parameters.put(key, String.join(ARRAY_DELIMITER, values));
+  }
+
+  /**
    * Adds parameters.
    *
    * @param parameters the parameters to add
@@ -132,6 +146,31 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    */
   public Optional<String> get(String key) {
     return Optional.ofNullable(parameters.get(key));
+  }
+
+  /**
+   * Returns the list of values for a specific parameter (if stored as an array).
+   *
+   * @param key the parameter key
+   * @param regex the delimiting regular expression
+   * @return an {@code Optional} containing the list of parameter values if present, or an empty
+   *         {@code Optional} otherwise
+   */
+  public Optional<List<String>> getList(String key, String regex) {
+    String escapedDelimiter = Pattern.quote(regex);
+    return get(key).map(value -> Arrays.stream(value.split(escapedDelimiter)).map(String::trim)
+        .collect(Collectors.toList()));
+  }
+
+  /**
+   * Returns the list of values for a specific parameter (if stored as an array).
+   *
+   * @param key the parameter key
+   * @return an {@code Optional} containing the list of parameter values if present, or an empty
+   *         {@code Optional} otherwise
+   */
+  public Optional<List<String>> getList(String key) {
+    return getList(key, ARRAY_DELIMITER);
   }
 
   /**
