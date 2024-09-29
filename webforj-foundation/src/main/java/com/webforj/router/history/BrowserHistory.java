@@ -111,6 +111,25 @@ public class BrowserHistory implements History {
    * {@inheritDoc}
    */
   @Override
+  public <T> Optional<T> getState(Class<T> classOfT) {
+    Object result = Page.getCurrent().executeJs("btoa(JSON.stringify(window.history.state))");
+
+    if (result != null) {
+      try {
+        T state = gson.fromJson(new String(Base64.getDecoder().decode((String) result)), classOfT);
+        return Optional.ofNullable(state);
+      } catch (Exception e) {
+        return Optional.empty();
+      }
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public ListenerRegistration<HistoryStateChangeEvent> addHistoryStateChangeListener(
       EventListener<HistoryStateChangeEvent> listener) {
     if (!isPopStateListenerRegistered) {

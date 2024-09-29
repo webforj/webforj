@@ -188,8 +188,13 @@ public class Router {
     }
 
     RoutePattern matchedPattern = routePattern.get();
-    NavigationContext context = new NavigationContext(this, null, locationRootless, options,
-        matchedPattern,
+    NavigationContext context = new NavigationContext();
+    context.setRouter(this);
+    context.setComponent(null);
+    context.setLocation(locationRootless);
+    context.setOptions(options);
+    context.setRoutePattern(matchedPattern);
+    context.setRouteParameters(
         ParametersBag.of(matchedPattern.getParameters(locationRootless.getSegments().getPath())));
 
     if (isDebug()) {

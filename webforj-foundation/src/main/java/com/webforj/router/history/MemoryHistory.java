@@ -1,5 +1,6 @@
 package com.webforj.router.history;
 
+import com.google.gson.Gson;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -18,6 +19,7 @@ public class MemoryHistory implements History {
   private EventDispatcher dispatcher = new EventDispatcher();
   private final List<Entry> history;
   private int currentIndex;
+  private Gson gson = new Gson();
 
   /**
    * Constructs an empty MemoryHistory.
@@ -126,6 +128,25 @@ public class MemoryHistory implements History {
 
     fireHistoryStateChangeEvent(location, state);
     return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public <T> Optional<T> getState(Class<T> classOfT) {
+    if (currentIndex >= 0 && currentIndex < history.size()) {
+      Entry currentEntry = history.get(currentIndex);
+      Object state = currentEntry.state();
+      try {
+        String jsonState = gson.toJson(state);
+        return Optional.ofNullable(gson.fromJson(jsonState, classOfT));
+      } catch (Exception e) {
+        return Optional.empty();
+      }
+    }
+
+    return Optional.empty();
   }
 
   /**

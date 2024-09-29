@@ -90,6 +90,25 @@ public interface History {
   }
 
   /**
+   * Returns the state at the top of the history stack.
+   *
+   * @param <T> the type of the state object
+   * @return an {@link Optional} containing the state object if it is present, otherwise an empty
+   *         {@code Optional}
+   */
+  <T> Optional<T> getState(Class<T> classOfT);
+
+  /**
+   * Returns the state at the top of the history stack.
+   *
+   * @return an {@link Optional} containing the state object if it is present, otherwise an empty
+   *         {@code Optional}
+   */
+  default Optional<Object> getState() {
+    return getState(Object.class);
+  }
+
+  /**
    * Adds a listener to be notified when the history state changes.
    *
    * @param listener the listener

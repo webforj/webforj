@@ -1,6 +1,8 @@
 package com.webforj.router.history;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -108,4 +111,35 @@ class MemoryHistoryTest {
 
     verify(mockDispatcher, times(1)).addListener(HistoryStateChangeEvent.class, mockListener);
   }
+
+  @Test
+  void shouldReturnCurrentState() {
+    Location location1 = new Location("http://example.com/page1");
+    Location location2 = new Location("http://example.com/page2");
+
+    memoryHistory.pushState("state1", location1);
+    memoryHistory.pushState("state2", location2);
+
+    assertTrue(memoryHistory.getState(String.class).isPresent());
+    assertEquals("state2", memoryHistory.getState(String.class).get());
+  }
+
+  @Test
+  void shouldReturnEmptyIfNoState() {
+    assertFalse(memoryHistory.getState().isPresent());
+  }
+
+  @Test
+  void shouldHandleCorrectStateType() {
+    Location location1 = new Location("http://example.com/page1");
+    State state = new State("John", 30);
+    memoryHistory.pushState(state, location1);
+
+    Optional<State> currentState = memoryHistory.getState(State.class);
+    assertTrue(currentState.isPresent());
+    assertEquals("John", currentState.get().name());
+    assertEquals(30, currentState.get().age());
+  }
+
+  public record State(String name, int age) {}
 }

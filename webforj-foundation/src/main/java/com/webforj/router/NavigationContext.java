@@ -25,41 +25,27 @@ import java.util.Set;
  * @since 24.12
  */
 public class NavigationContext {
-  private final Router router;
+  private Router router;
   private Component component;
-  private final Location location;
-  private final NavigationOptions options;
-  private final RoutePattern routePattern;
-  private final ParametersBag routeParameters;
+  private Location location;
+  private NavigationOptions options;
+  private RoutePattern routePattern;
+  private ParametersBag routeParameters;
   private final LinkedHashSet<Component> components = new LinkedHashSet<>();
   private Frame activeFrame;
 
   /**
-   * Constructs a new {@code NavigationContext} with the specified parameters.
-   *
-   * @param router the router instance handling the navigation
-   * @param component the target component for the navigation
-   * @param location the target location for the navigation
-   * @param options the navigation options, which may define additional behaviors like history
-   *        update and event firing
-   * @param routePattern the pattern that matches the route being navigated to
-   * @param routeParameters the parameters extracted from the route, often used for dynamic routing
+   * Constructs a new {@code NavigationContext}.
    */
-  public NavigationContext(Router router, Component component, Location location,
-      NavigationOptions options, RoutePattern routePattern, ParametersBag routeParameters) {
-    this.router = router;
-    this.component = component;
-    this.location = location;
-    this.options = options;
-    this.routePattern = routePattern;
-    this.routeParameters = routeParameters;
-  }
+  NavigationContext() {}
 
   /**
-   * Constructs a new {@code NavigationContext} with the specified parameters.
+   * Sets the router for this navigation context.
+   *
+   * @param router the {@link Router} instance to set
    */
-  NavigationContext() {
-    this(null, null, null, null, null, null);
+  void setRouter(Router router) {
+    this.router = router;
   }
 
   /**
@@ -72,12 +58,30 @@ public class NavigationContext {
   }
 
   /**
+   * Sets the location for this navigation context.
+   *
+   * @param location the {@link Location} object representing the target of the navigation
+   */
+  void setLocation(Location location) {
+    this.location = location;
+  }
+
+  /**
    * Returns the location associated with this navigation context.
    *
    * @return the {@link Location} object representing the target of the navigation
    */
   public Location getLocation() {
     return location;
+  }
+
+  /**
+   * Sets the navigation options for this context.
+   *
+   * @param options the {@link NavigationOptions} object to set
+   */
+  void setOptions(NavigationOptions options) {
+    this.options = options;
   }
 
   /**
@@ -96,6 +100,15 @@ public class NavigationContext {
   }
 
   /**
+   * Sets the route pattern that matches the current route.
+   *
+   * @param routePattern the {@link RoutePattern} object to set
+   */
+  void setRoutePattern(RoutePattern routePattern) {
+    this.routePattern = routePattern;
+  }
+
+  /**
    * Returns the route pattern that matches the current route.
    *
    * <p>
@@ -107,6 +120,15 @@ public class NavigationContext {
    */
   public RoutePattern getRoutePattern() {
     return routePattern;
+  }
+
+  /**
+   * Sets the parameters extracted from the route.
+   *
+   * @param routeParameters the {@link ParametersBag} containing the route parameters to set
+   */
+  void setRouteParameters(ParametersBag routeParameters) {
+    this.routeParameters = routeParameters;
   }
 
   /**
