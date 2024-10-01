@@ -374,9 +374,8 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
   private void updatePath(String path, ParametersBag queryParameters) {
     Objects.requireNonNull(path, "Path cannot be null");
 
-    String root = Router.getCurrent().getRoot().orElse("");
-    String finalPath = RouterUtils.normalizePath(root + "/" + path); // NOSONAR
-    Location location = new Location(SegmentsBag.of(finalPath),
+
+    Location location = new Location(SegmentsBag.of(path),
         queryParameters == null ? new ParametersBag() : queryParameters, "");
     set(pathProp, location.toString());
   }
