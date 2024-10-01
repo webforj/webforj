@@ -57,7 +57,7 @@ public class Loading extends ElementCompositeContainer
 
   @PropertyMethods(target = LoadingSpinner.class, setter = "setTheme", getter = "getTheme")
   private final PropertyDescriptor<Theme> themeProp =
-      PropertyDescriptor.property("Theme", Theme.DEFAULT);
+      PropertyDescriptor.property("spinnerTheme", Theme.DEFAULT);
 
   @PropertyMethods(target = LoadingSpinner.class, setter = "setSpeed", getter = "getSpeed")
   private final PropertyDescriptor<Integer> spinnerSpeedProp =
