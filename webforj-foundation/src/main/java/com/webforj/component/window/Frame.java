@@ -83,6 +83,7 @@ public class Frame extends Window {
       BBjWindow wnd = Environment.getCurrent().getSysGui().addWindow(ctx, "", flags);
       wnd.setUserData(this);
       setTitle(title);
+      setName(title);
       init(wnd);
     } catch (NumberFormatException | BBjException e) {
       throw new WebforjAppInitializeException("Failed to create Frame", e);
@@ -123,6 +124,9 @@ public class Frame extends Window {
     init(bbjWindow);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void add(Component... components) {
     for (Component c : components) {

@@ -71,21 +71,21 @@ public final class ComponentRegistry implements HasComponents {
         throw new NullPointerException("Cannot add a null component");
       }
 
+      String name = current.getClass().getName();
       // adding a component that is destroyed should throw an exception
       if (current.isDestroyed()) {
-        throw new IllegalStateException("Cannot add a component that is destroyed");
+        throw new IllegalStateException("Cannot add a destroyed component '" + name + "'");
       }
 
       // adding a component with the same id should throw an exception
       if (this.components.containsKey(current.getComponentId())) {
-        throw new IllegalArgumentException(
-            "Component with id '" + current.getClass().getName() + "' already exists");
+        throw new IllegalArgumentException("Component with id '" + name + "' already exists");
       }
 
       // adding an already attached component should throw an exception
       if (current.isAttached() && !allowMultipleAttach) {
-        throw new IllegalArgumentException("Component with id '" + current.getClass().getName()
-            + "' is already attached to a different component");
+        throw new IllegalArgumentException(
+            "Component with id '" + name + "' is already attached to a different component");
       }
 
       // monitoring component lifecycle destruction
