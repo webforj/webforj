@@ -1,6 +1,8 @@
 name: Version
 
 on:
+  repository_dispatch:
+    types: [version]
   workflow_dispatch:
     inputs:
       version:
@@ -12,6 +14,10 @@ on:
         required: false
         default: false
 
+env:
+  VERSION: ${{ github.event.client_payload.version || github.event.inputs.version }}
+  CREATE_RELEASE: ${{ github.event.client_payload.createRelease || github.event.inputs.createRelease }}
+
 jobs:
   version:
     runs-on: ubuntu-latest
@@ -20,11 +26,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set version with SNAPSHOT if not creating a release
+        id: set_version
+        run: |
+          if [ "${{ env.CREATE_RELEASE }}" != "true" ]; then
+            echo "VERSION=${{ env.VERSION }}-SNAPSHOT" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ env.VERSION }}" >> $GITHUB_ENV
+          fi
+
       - name: Install Maven
         run: sudo apt install maven
 
       - name: Bump version in POM files
-        run: mvn versions:set -DnewVersion=${{ github.event.inputs.version }} -q
+        run: mvn versions:set -DnewVersion=${{ env.VERSION }} -q
 
       - name: Commit & Push changes
         uses: actions-js/push@master
@@ -32,14 +47,14 @@ jobs:
           github_token: ${{ secrets.ACTOR_TOKEN }}
           author_email: ${{ secrets.ACTOR_EMAIL }}
           author_name: ${{ secrets.ACTOR_NAME }}
-          message: 'build: bump version to ${{ github.event.inputs.version }}'
+          message: 'build: bump version to ${{ env.VERSION }}'
 
       - name: Create Release
-        if: ${{ github.event.inputs.createRelease == 'true' }}
+        if: ${{ env.CREATE_RELEASE == 'true' }}
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           generateReleaseNotes: true
-          tag: ${{ github.event.inputs.version }}
-          name: Release v${{ github.event.inputs.version }}
+          tag: ${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
           makeLatest: true
