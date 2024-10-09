@@ -1,4 +1,4 @@
-name: Bump Version
+name: Version
 
 on:
   workflow_dispatch:
@@ -6,32 +6,19 @@ on:
       version:
         description: "Version number"
         required: true
-      createTag:
+      createRelease:
         description: "Create a new release"
-        type: boolean
-        required: false
-        default: false
-      prerelease:
-        description: "Is prerelease ?"
-        type: boolean
-        required: false
-        default: false
-      draft:
-        description: "Is draft ?"
         type: boolean
         required: false
         default: false
 
 jobs:
-  bumpVersion:
+  version:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install xmlstarlet
-        run: sudo apt install -y xmlstarlet
 
       - name: Install Maven
         run: sudo apt install maven
@@ -48,13 +35,11 @@ jobs:
           message: 'build: bump version to ${{ github.event.inputs.version }}'
 
       - name: Create Release
-        if: ${{ github.event.inputs.createTag == 'true' }}
+        if: ${{ github.event.inputs.createRelease == 'true' }}
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           generateReleaseNotes: true
           tag: ${{ github.event.inputs.version }}
           name: Release v${{ github.event.inputs.version }}
-          draft: ${{ github.event.inputs.draft }}
-          prerelease: ${{ github.event.inputs.prerelease }}
-          makeLatest: ${{ github.event.inputs.prerelease == 'false' }}
+          makeLatest: true

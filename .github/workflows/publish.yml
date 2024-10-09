@@ -1,9 +1,14 @@
 name: Publish
+
 on:
   workflow_run:
-    workflows: ["Tests", "Bump Version"]
+    workflows: ["Verify", "Version"]
     types: [completed]
     branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   setup:
@@ -28,6 +33,7 @@ jobs:
           version_without_suffix="${version%-SNAPSHOT}"
           echo "::set-output name=version::$version"
           echo "::set-output name=version-without-suffix::$version_without_suffix"
+
   publish:
     needs: setup
     runs-on: ubuntu-latest
