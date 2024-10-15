@@ -5,7 +5,7 @@ use java.io.PrintWriter
 
 use ::admin.bbj::Admin
 use ::admin.bbj::UserCredentials
-use ::WebforjHelper.bbj::WebforjHelper
+use ::!!bbj/WebforjHelper.bbj::WebforjHelper
 
 SETESC EscTrap
 SETERR _error
