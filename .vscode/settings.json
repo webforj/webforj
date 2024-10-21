@@ -5,6 +5,7 @@
   "java.format.settings.profile": "GoogleStyle",
   "java.checkstyle.configuration": "/google_checks.xml",
   "cSpell.words": [
+    "BUIRES",
     "radiobutton"
   ],
   "java.checkstyle.version": "10.12.0",
