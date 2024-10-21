@@ -76,7 +76,7 @@ class LocationTest {
     Location location =
         new Location(List.of("segment1", "segment2"), "param1=value1&param2=value2", "fragment");
     String fullURI = location.getFullURI();
-    assertEquals("segment1/segment2?param1=value1&param2=value2#fragment", fullURI);
+    assertEquals("/segment1/segment2?param1=value1&param2=value2#fragment", fullURI);
   }
 
   @Test
@@ -84,13 +84,13 @@ class LocationTest {
     Location location =
         new Location(List.of("segment1", "segment2"), "param1=value1&param2=value2");
     String fullURI = location.getFullURI();
-    assertEquals("segment1/segment2?param1=value1&param2=value2", fullURI);
+    assertEquals("/segment1/segment2?param1=value1&param2=value2", fullURI);
   }
 
   @Test
   void shouldGetFullURIWithoutQuery() {
     Location location = new Location(List.of("segment1", "segment2"));
     String fullURI = location.getFullURI();
-    assertEquals("segment1/segment2", fullURI);
+    assertEquals("/segment1/segment2", fullURI);
   }
 }

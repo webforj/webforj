@@ -1,5 +1,6 @@
 package com.webforj.router.history;
 
+import com.webforj.router.RouterUtils;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -127,7 +128,7 @@ public class Location implements Serializable {
       uriBuilder.append('#').append(fragment);
     }
 
-    return uriBuilder.toString();
+    return RouterUtils.normalizePath("/" + uriBuilder.toString());
   }
 
   /**
