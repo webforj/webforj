@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import com.webforj.router.RouterUtils;
 
 /**
  * Represents a relative URL made up of path segments and query parameters.
@@ -127,7 +128,7 @@ public class Location implements Serializable {
       uriBuilder.append('#').append(fragment);
     }
 
-    return uriBuilder.toString();
+    return RouterUtils.normalizePath("/" + uriBuilder.toString());
   }
 
   /**
