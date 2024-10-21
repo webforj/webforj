@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.basis.util.common.ServerConstants;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.Routify;
 import com.webforj.bridge.WebforjBBjBridge;
@@ -27,6 +28,7 @@ import com.webforj.router.event.NavigateEvent;
 import com.webforj.webstorage.CookieStorage;
 import com.webforj.webstorage.LocalStorage;
 import com.webforj.webstorage.SessionStorage;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -742,8 +744,14 @@ public abstract class App {
       packages = new String[] {getClass().getPackageName()};
     }
 
+    String root = "webapp/" + getApplicationName();
+    String isBbjService = System.getProperty("com.basis.noBBjServices", "");
+    if (isBbjService.equals("true")) {
+      root = System.getProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP, "");
+      root = root.isBlank() ? "/" : root;
+    }
+
     RouteRegistry registry = RouteRegistry.ofPackage(packages);
-    String root = "webapp/" + App.getApplicationName();
     Router router = new Router(root, registry);
     String key = "com.webforj.router.Router.instance";
     ObjectTable.put(key, router);
