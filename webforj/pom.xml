@@ -9,122 +9,91 @@
     <artifactId>webforj-parent</artifactId>
     <version>24.20-SNAPSHOT</version>
   </parent>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <artifactId>webforj</artifactId>
-  <name>${project.artifactId}</name>
+  <name>The webforJ framework</name>
+  <description>The webforJ framework</description>
 
-  <description>The Webforj framework.</description>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-foundation</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- Extensions -->
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-applayout</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-appnav</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-columnslayout</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-dialog</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-drawer</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-flexlayout</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-html-elements</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-icons</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-loading</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-login</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-toolbar</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-spinner</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-splitter</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-table</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-toast</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <!-- Extensions -->
-
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.7.1</version>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <attach>false</attach>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

@@ -44,7 +44,7 @@
     <developer>
       <id>webforJ</id>
       <organization>webforJ</organization>
-      <organizationUrl>https://www.webforJ.com</organizationUrl>
+      <organizationUrl>https://www.webforj.com</organizationUrl>
     </developer>
   </developers>
 
@@ -55,6 +55,7 @@
 
   <modules>
     <module>webforj</module>
+    <module>webforj-bom</module>
     <module>webforj-components</module>
     <module>webforj-data</module>
     <module>webforj-dispatcher</module>

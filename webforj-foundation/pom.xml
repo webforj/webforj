@@ -11,9 +11,9 @@
   </parent>
 
   <artifactId>webforj-foundation</artifactId>
-  <name>${project.artifactId}</name>
+  <name>webforj-foundation</name>
   <description>
-    The Webforj foudation is the lowest-level moulde used by all the other layers of the Webforj framework.
+    The webforJ foudation is the lowest-level moulde used by all the other layers of the webforJ framework.
     It manages communication with BBj and provides core components.
   </description>
 
