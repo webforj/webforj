@@ -28,15 +28,15 @@ public final class Environment {
 
   public static void init(BBjAPI api, WebforjBBjBridge helper, int debug) throws BBjException {
     Environment env = new Environment(api, helper, debug > 0);
-    Environment.instanceMap.put(Thread.currentThread().getName(), env);
+    Environment.instanceMap.put(Thread.currentThread().getId(), env);
   }
 
   public static void cleanup() {
-    Environment.instanceMap.remove(Thread.currentThread().getName());
+    Environment.instanceMap.remove(Thread.currentThread().getId());
   }
 
   public static Environment getCurrent() {
-    return Environment.instanceMap.get(Thread.currentThread().getName());
+    return Environment.instanceMap.get(Thread.currentThread().getId());
   }
 
   /**
