@@ -3,16 +3,22 @@ package com.webforj;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.environment.ObjectTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
 public final class Environment {
 
+  private static final String RESOURCE_PREFIX = "!!";
   private static final HashMap<Object, Environment> instanceMap = new HashMap<>();
   private final BBjAPI api;
   private final BBjSysGui sysgui;
@@ -40,6 +46,16 @@ public final class Environment {
   }
 
   /**
+   * Enables or disables debug mode for the current environment.
+   *
+   * @param debug true to enable debug mode, false to disable it.
+   * @since 24.20
+   */
+  void setDebug(boolean debug) {
+    this.debug = debug;
+  }
+
+  /**
    * Checks if debug mode is enabled for the current environment.
    *
    * @return true if debug mode is enabled, false otherwise.
@@ -62,6 +78,55 @@ public final class Environment {
    */
   public void sleep(int seconds) {
     getWebforjHelper().sleep(seconds);
+  }
+
+  /**
+   * Returns the configuration for the current environment.
+   *
+   * <p>
+   * The configuration is loaded from the file specified by the {@code webforj.conf}.
+   * </p>
+   *
+   * @return the configuration for the current environment.
+   *
+   * @since 24.20
+   */
+  public Config getConfig() {
+    String lookupKey = "webforj.configuration";
+    if (ObjectTable.contains(lookupKey)) {
+      return (Config) ObjectTable.get(lookupKey);
+    }
+
+    String pathProp = System.getProperty("webforj.conf", "!!webforj.conf");
+    Config config;
+
+    if (pathProp.startsWith(RESOURCE_PREFIX)) {
+      final String resourcePath = pathProp.substring(RESOURCE_PREFIX.length());
+      final Config resourceConfig = ConfigFactory.parseResourcesAnySyntax(
+          Environment.getCurrent().getClass().getClassLoader(), resourcePath);
+      if (null == resourceConfig) {
+        config = getDefaultConfig();
+      } else {
+        config = resourceConfig.withFallback(getDefaultConfig());
+      }
+
+    } else {
+      final Path configPath = Paths.get(pathProp);
+      config = ConfigFactory.parseFile(configPath.toFile()).withFallback(getDefaultConfig());
+    }
+
+    return config;
+  }
+
+  /**
+   * Returns the default configuration for the current environment.
+   *
+   * @return the default configuration for the current environment.
+   * @since 24.20
+   */
+  Config getDefaultConfig() {
+    return ConfigFactory.parseResourcesAnySyntax(
+        Environment.getCurrent().getClass().getClassLoader(), "webforj-default.conf");
   }
 
   /**

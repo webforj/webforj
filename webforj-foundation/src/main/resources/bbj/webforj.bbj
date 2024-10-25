@@ -127,5 +127,9 @@ ErrTrap:
 release
 
 _error:
-  Environment.handleError(bbjapi().getLastJavaException(), DEBUG)
+  debugMode = DEBUG
+  if Environment.getCurrent() <> null() then
+    debugMode = num(Environment.getCurrent().isDebug())
+  fi
+  Environment.handleError(bbjapi().getLastJavaException(), debugMode)
 release

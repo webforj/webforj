@@ -2,15 +2,18 @@ package com.webforj;
 
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
+import com.typesafe.config.Config;
 import com.webforj.annotation.AppEntry;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.conceiver.ConceiverProvider;
+import com.webforj.environment.StringTable;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@code Bootstrap} class is responsible for initializing and launching the main application in
@@ -66,11 +69,19 @@ public final class Bootstrap {
   public static void init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
       throws BBjException, WebforjException {
     Environment.init(api, bridge, debug);
+    processConfig();
+    initApplication(className);
+  }
 
-    String selectedClassName =
-        className == null || className.isEmpty() ? findClassName() : className;
+  /**
+   * Launches the main application.
+   *
+   * @param className the fully qualified class name of the application to launch, or {@code null}
+   */
+  private static void initApplication(String className) throws WebforjException {
+    String selectedClassName = detectClassName(className);
 
-    if (selectedClassName == null) {
+    if (selectedClassName == null || selectedClassName.isEmpty()) {
       throw new WebforjAppInitializeException("Failed to determine application entry point."
           + " No className provided and no application class found.");
     }
@@ -84,6 +95,31 @@ public final class Bootstrap {
       throw new WebforjAppInitializeException("Failed to find application class '"
           + selectedClassName + "'." + " Ensure the class is in the classpath.", e);
     }
+  }
+
+  /**
+   * Determines the class name of the application to launch.
+   *
+   * @param className the class name provided, or {@code null} to automatically detect it.
+   */
+  private static String detectClassName(String className) throws WebforjAppInitializeException {
+    // if a class name is provided, use it
+    if (className != null && !className.isEmpty()) {
+      return className;
+    }
+
+    // check if the entry point is provided in the configuration
+    Config config = Environment.getCurrent().getConfig();
+    String entryProp = "webforj.entry";
+    if (config.hasPath(entryProp) && !config.getIsNull(entryProp)) {
+      String entry = config.getString(entryProp);
+      if (entry != null && !entry.isEmpty()) {
+        return entry;
+      }
+    }
+
+    // entry cannot be determined, scan the classpath
+    return scanClassPathForEntry();
   }
 
   /**
@@ -110,7 +146,7 @@ public final class Bootstrap {
    *         if no subclasses of {@code App} are found, multiple subclasses are found without
    *         annotations, or multiple {@code @AppEntry} annotations are detected.
    */
-  private static String findClassName() throws WebforjAppInitializeException {
+  private static String scanClassPathForEntry() throws WebforjAppInitializeException {
     String selectedClassName = null;
     try (ScanResult scanResult = new ClassGraph()
         .filterClasspathElements(classpathElement -> !classpathElement
@@ -158,5 +194,49 @@ public final class Bootstrap {
     }
 
     return selectedClassName;
+  }
+
+  /**
+   * Processes the configuration file.
+   */
+  private static void processConfig() {
+    Config config = Environment.getCurrent().getConfig();
+
+    // Set debug mode
+    String debugProp = "webforj.debug";
+    Boolean isDebug =
+        config.hasPath(debugProp) && !config.getIsNull(debugProp) ? config.getBoolean(debugProp)
+            : null;
+    if (isDebug != null) {
+      Environment.getCurrent().setDebug(isDebug);
+    }
+
+    // update the string table
+    String stringTableProp = "webforj.stringTable";
+    if (config.hasPath(stringTableProp) && !config.getIsNull(stringTableProp)) {
+      Map<String, Object> stringTable = config.getObject(stringTableProp).unwrapped();
+      for (Map.Entry<String, Object> entry : stringTable.entrySet()) {
+        StringTable.put(entry.getKey(), String.valueOf(entry.getValue()));
+      }
+    }
+
+    // Set the components base
+    String componentsProp = "webforj.components";
+    String components = config.hasPath(componentsProp) && !config.getIsNull(componentsProp)
+        ? config.getString(componentsProp)
+        : null;
+    if (components != null && !components.isEmpty()) {
+      StringTable.put("!COMPONENTS", components);
+    }
+
+    // Set the locale
+    String localeProp = "webforj.locale";
+    String locale =
+        config.hasPath(localeProp) && !config.getIsNull(localeProp) ? config.getString(localeProp)
+            : null;
+
+    if (locale != null && !locale.isEmpty()) {
+      StringTable.put("!LOCALE", locale);
+    }
   }
 }
