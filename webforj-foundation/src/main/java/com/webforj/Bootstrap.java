@@ -1,6 +1,5 @@
 package com.webforj;
 
-import com.basis.bbj.funcs.Sys;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.typesafe.config.Config;
