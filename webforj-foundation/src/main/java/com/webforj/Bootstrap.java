@@ -1,5 +1,6 @@
 package com.webforj;
 
+import com.basis.bbj.funcs.Sys;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.typesafe.config.Config;
@@ -218,15 +219,6 @@ public final class Bootstrap {
       for (Map.Entry<String, Object> entry : stringTable.entrySet()) {
         StringTable.put(entry.getKey(), String.valueOf(entry.getValue()));
       }
-    }
-
-    // Set the components base
-    String componentsProp = "webforj.components";
-    String components = config.hasPath(componentsProp) && !config.getIsNull(componentsProp)
-        ? config.getString(componentsProp)
-        : null;
-    if (components != null && !components.isEmpty()) {
-      StringTable.put("!COMPONENTS", components);
     }
 
     // Set the locale
