@@ -250,10 +250,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getProtocol() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
+    return Request.getCurrent().getProtocol();
   }
 
   /**
@@ -264,10 +261,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getHost() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerHost", null);
+    return Request.getCurrent().getHost();
   }
 
   /**
@@ -278,10 +272,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getPort() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerPort", null);
+    return Request.getCurrent().getPort();
   }
 
   /**
@@ -294,11 +285,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getUrl() {
-    try {
-      return Environment.getCurrent().getBBjAPI().getWebManager().getUrl();
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get application URL.", e);
-    }
+    return Request.getCurrent().getUrl();
   }
 
   /**
