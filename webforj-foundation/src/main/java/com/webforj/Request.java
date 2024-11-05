@@ -29,7 +29,7 @@ public final class Request {
    * @return the current request instance
    */
   public static Request getCurrent() {
-    String key = "com.webforj.request.Request";
+    String key = "com.webforj.request.Request.instance";
     if (ObjectTable.contains(key)) {
       return (Request) ObjectTable.get(key);
     }
