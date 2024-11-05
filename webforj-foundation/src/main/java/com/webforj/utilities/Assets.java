@@ -3,7 +3,6 @@ package com.webforj.utilities;
 import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.Request;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.BufferedReader;
 import java.io.IOException;
