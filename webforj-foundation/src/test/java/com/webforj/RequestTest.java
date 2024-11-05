@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjThinClient;
+import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.bridge.WebforjBBjBridge;
@@ -23,6 +24,7 @@ class RequestTest {
   BBjSysGui sysGui;
   BBjThinClient thinClient;
   WebforjBBjBridge bridge;
+  BBjWebManager webManager;
 
   @BeforeEach
   void setUp() throws BBjException {
@@ -31,14 +33,44 @@ class RequestTest {
     thinClient = mock(BBjThinClient.class);
     sysGui = mock(BBjSysGui.class);
     bridge = mock(WebforjBBjBridge.class);
+    webManager = mock(BBjWebManager.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(api.getThinClient()).thenReturn(thinClient);
+    when(api.getWebManager()).thenReturn(webManager);
     when(environment.getSysGui()).thenReturn(sysGui);
     when(environment.getWebforjHelper()).thenReturn(bridge);
 
     request = spy(Request.class);
     when(request.getEnvironment()).thenReturn(environment);
+  }
+
+  @Test
+  void shouldGetUrl() throws BBjException {
+    String url = "http://localhost:8080";
+    when(webManager.getUrl()).thenReturn(url);
+    assertEquals(url, request.getUrl().toString());
+  }
+
+  @Test
+  void shouldGetProtocol() throws BBjException {
+    String url = "http://localhost:8080";
+    when(webManager.getUrl()).thenReturn(url);
+    assertEquals("http", request.getProtocol());
+  }
+
+  @Test
+  void shouldGetHost() throws BBjException {
+    String url = "http://localhost:8080";
+    when(webManager.getUrl()).thenReturn(url);
+    assertEquals("localhost", request.getHost());
+  }
+
+  @Test
+  void shouldGetPort() throws BBjException {
+    String url = "http://localhost:8080";
+    when(webManager.getUrl()).thenReturn(url);
+    assertEquals("8080", request.getPort());
   }
 
   @Test

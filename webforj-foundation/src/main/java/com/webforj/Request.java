@@ -2,10 +2,11 @@ package com.webforj;
 
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.webstorage.CookieStorage;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -28,7 +29,7 @@ public final class Request {
    * @return the current request instance
    */
   public static Request getCurrent() {
-    String key = ".request.instance";
+    String key = "com.webforj.request.Request";
     if (ObjectTable.contains(key)) {
       return (Request) ObjectTable.get(key);
     }
@@ -64,15 +65,33 @@ public final class Request {
   }
 
   /**
+   * Gets the request URL.
+   *
+   * @return The request URL
+   * @since 24.02
+   */
+  public String getUrl() {
+    try {
+      return getEnvironment().getBBjAPI().getWebManager().getUrl();
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to get the URL.", e);
+    }
+  }
+
+  /**
    * Gets the request protocol.
    *
    * @return The request protocol
    */
   public String getProtocol() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+    URL url;
+    try {
+      url = new URL(getUrl());
+    } catch (MalformedURLException e) {
+      return null;
+    }
 
-    return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
+    return url.getProtocol();
   }
 
   /**
@@ -82,10 +101,14 @@ public final class Request {
    * @since 24.02
    */
   public String getHost() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+    URL url;
+    try {
+      url = new URL(getUrl());
+    } catch (MalformedURLException e) {
+      return null;
+    }
 
-    return (String) helper.invokeMethod(instance, "getWebServerHost", null);
+    return url.getHost();
   }
 
   /**
@@ -95,24 +118,14 @@ public final class Request {
    * @since 24.02
    */
   public String getPort() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerPort", null);
-  }
-
-  /**
-   * Gets the request URL.
-   *
-   * @return The request URL
-   * @since 24.02
-   */
-  public String getUrl() {
+    URL url;
     try {
-      return Environment.getCurrent().getBBjAPI().getWebManager().getUrl();
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get the URL.", e);
+      url = new URL(getUrl());
+    } catch (MalformedURLException e) {
+      return null;
     }
+
+    return String.valueOf(url.getPort());
   }
 
   /**
