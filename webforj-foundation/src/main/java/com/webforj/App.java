@@ -8,7 +8,6 @@ import com.basis.startup.type.BBjVector;
 import com.basis.util.common.ServerConstants;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.Routify;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.optiondialog.OptionDialog;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
@@ -28,7 +27,6 @@ import com.webforj.router.event.NavigateEvent;
 import com.webforj.webstorage.CookieStorage;
 import com.webforj.webstorage.LocalStorage;
 import com.webforj.webstorage.SessionStorage;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -250,10 +248,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getProtocol() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerProtocol", null);
+    return Request.getCurrent().getProtocol();
   }
 
   /**
@@ -264,10 +259,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getHost() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerHost", null);
+    return Request.getCurrent().getHost();
   }
 
   /**
@@ -278,10 +270,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getPort() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
-
-    return (String) helper.invokeMethod(instance, "getWebServerPort", null);
+    return Request.getCurrent().getPort();
   }
 
   /**
@@ -294,11 +283,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getUrl() {
-    try {
-      return Environment.getCurrent().getBBjAPI().getWebManager().getUrl();
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get application URL.", e);
-    }
+    return Request.getCurrent().getUrl();
   }
 
   /**

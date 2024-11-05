@@ -2,12 +2,14 @@ package com.webforj.utilities;
 
 import com.webforj.App;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.Request;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Base64;
 import java.util.stream.Collectors;
 
@@ -82,10 +84,20 @@ public class Assets {
    * @return The URL of the Jetty Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
-    WebforjBBjBridge helper = Environment.getCurrent().getWebforjHelper();
-    Object instance = helper.createInstance("::BBUtils.bbj::BBUtils");
+    URL url;
+    try {
+      url = new URL(Request.getCurrent().getUrl());
+    } catch (MalformedURLException e) {
+      return null;
+    }
 
-    return (String) helper.invokeMethod(instance, "getWebServerFilesURL", null);
+    String suffix = "/files/";
+    String isNoBbjService = System.getProperty("com.basis.noBBjServices", "");
+    if (isNoBbjService.equals("true")) {
+      suffix = "/";
+    }
+
+    return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + suffix;
   }
 
   /**
