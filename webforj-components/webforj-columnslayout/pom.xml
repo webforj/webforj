@@ -11,7 +11,7 @@
 
   <artifactId>webforj-columnslayout</artifactId>
   <name>${project.artifactId}</name>
-  <description>webforJ Columns Layout. A component that provides a flexible layout with dynamic columns based on the width of the layout. It adjusts the number of columns automatically according to the specified breakpoints.</description>
+  <description>webforJ component that provides a flexible layout with dynamic columns based on the width of the layout. It adjusts the number of columns automatically according to the specified breakpoints.</description>
 
   <dependencies>
     <dependency>
@@ -35,30 +35,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBj</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjStartup</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjUtil</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjsp</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

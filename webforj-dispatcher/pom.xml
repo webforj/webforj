@@ -12,7 +12,7 @@
 
   <artifactId>webforj-dispatcher</artifactId>
   <name>${project.artifactId}</name>
-  <description>Webforj Events Dispatcher</description>
+  <description>webforJ Events Dispatcher</description>
 
   <dependencies>
     <dependency>

@@ -12,7 +12,7 @@
   <artifactId>webforj-login</artifactId>
   <name>${project.artifactId}</name>
   <description>
-    The Login component provides a form for user authentication using a username and password.
+    webforJ Login component. It provides a form for user authentication using a username and password.
     It's designed to work with password managers, supports internationalization, and is responsive across various device sizes.
   </description>
 
@@ -38,30 +38,6 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>5.14.1</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBj</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjStartup</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjUtil</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjsp</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

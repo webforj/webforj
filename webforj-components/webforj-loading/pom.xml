@@ -11,7 +11,7 @@
 
   <artifactId>webforj-loading</artifactId>
   <name>${project.artifactId}</name>
-  <description>webforJ loading component. An overlay that can be used to indicate activity while blocking user interaction. </description>
+  <description>webforJ overlay component that can be used to indicate activity while blocking user interaction. </description>
 
   <dependencies>
     <dependency>
@@ -35,30 +35,6 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>5.14.1</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBj</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjStartup</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjUtil</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjsp</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
