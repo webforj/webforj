@@ -11,6 +11,7 @@
 
   <artifactId>webforj-dialog</artifactId>
   <name>${project.artifactId}</name>
+  <description>webforJ Dialog component</description>
 
   <dependencies>
     <dependency>
@@ -34,30 +35,6 @@
       <artifactId>mockito-junit-jupiter</artifactId>
       <version>5.14.1</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBj</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjStartup</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjUtil</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjsp</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

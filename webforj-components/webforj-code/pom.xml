@@ -12,7 +12,7 @@
   <artifactId>webforj-code</artifactId>
 
   <name>webforj-code</name>
-  <description>A widget for code display in DWCJ Apps, based on Prism.js
+  <description>A widget for code display in webforJ Apps, based on Prism.js
     </description>
 
   <dependencies>

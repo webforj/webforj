@@ -11,7 +11,7 @@
 
   <artifactId>webforj-markdown</artifactId>
   <name>webforj-markdown</name>
-  <description>A widget for Markdown display in DWCJ apps</description>
+  <description>A widget for Markdown display in webforJ apps</description>
 
   <dependencies>
     <dependency>

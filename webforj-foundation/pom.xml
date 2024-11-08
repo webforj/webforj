@@ -13,11 +13,15 @@
   <artifactId>webforj-foundation</artifactId>
   <name>webforj-foundation</name>
   <description>
-    The webforJ foudation is the lowest-level moulde used by all the other layers of the webforJ framework.
-    It manages communication with BBj and provides core components.
+    The webforJ foundation is the base module for all other layers within the webforJ framework.
+    It handles communication with BBj and supplies essential components.
   </description>
 
   <dependencies>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-engine</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-dispatcher</artifactId>
@@ -27,22 +31,6 @@
       <groupId>com.webforj</groupId>
       <artifactId>webforj-data</artifactId>
       <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBj</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjStartup</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjUtil</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -58,17 +46,6 @@
       <artifactId>config</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.basis.lib</groupId>
-      <artifactId>BBjsp</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.prometheus</groupId>
-      <artifactId>simpleclient</artifactId>
-      <version>0.16.0</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
