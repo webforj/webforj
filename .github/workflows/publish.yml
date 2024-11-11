@@ -11,47 +11,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    outputs:
-      version: ${{ steps.extract-version.outputs.version }}
-      version-without-suffix: ${{ steps.extract-version.outputs.version-without-suffix }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install xmlstarlet
-        run: sudo apt update && sudo apt install -y xmlstarlet
-
-      - name: Extract BBj Version
-        id: extract-version
-        run: |
-          version=$(xmlstarlet sel -N pom="http://maven.apache.org/POM/4.0.0" \
-            -t -v "/pom:project/pom:version" \
-            pom.xml)
-          version_without_suffix="${version%-SNAPSHOT}"
-          echo "::set-output name=version::$version"
-          echo "::set-output name=version-without-suffix::$version_without_suffix"
-
   publish:
-    needs: setup
+    name: Publish to Nexus
     runs-on: ubuntu-latest
-    container: "webforj/sandbox:${{ needs.setup.outputs.version-without-suffix }}"
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Install gpg
-        run: apk add gnupg
+        run: sudo apt-get install -y gnupg
 
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v1
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ""
-
-      - name: Install Maven
-        run: apk add maven
 
       - name: Write maven settings
         uses: whelk-io/maven-settings-xml-action@v20
@@ -84,14 +61,5 @@ jobs:
               }
             ]
 
-      - name: Install Maven Dependencies
-        run: >
-          mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjStartup.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjStartup" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
-          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBj.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBj" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
-          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjUtil.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjUtil" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
-          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjsp.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjsp" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
-          && mvn install:install-file "-Dfile=/opt/bbx/.lib/BBjAdminAPI.jar" "-DgroupId=com.basis.lib" "-DartifactId=BBjAdminAPI" "-Dversion=${{ needs.setup.outputs.version }}" "-Dpackaging=jar" -q
-          && mvn install -q -DskipTests
-
       - name: Publish to Nexus
-        run: mvn clean deploy -DskipTests -P perform-release -s /github/home/.m2/settings.xml -q
+        run: mvn clean deploy -DskipTests -P perform-release
