@@ -1,15 +1,14 @@
 package com.webforj.utilities;
 
+import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
-import com.webforj.Request;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.router.RouterUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Base64;
 import java.util.stream.Collectors;
 
@@ -84,20 +83,22 @@ public class Assets {
    * @return The URL of the Jetty Web Server's files directory.
    */
   public static String getWebServerFilesUrl() {
-    URL url;
-    try {
-      url = new URL(Request.getCurrent().getUrl());
-    } catch (MalformedURLException e) {
-      return null;
+    String url = "/files/" + App.getApplicationName() + "/";
+    boolean withBBjService = Environment.isRunningWithBBjServices();
+
+    if (!withBBjService) {
+      url = "/static/";
+      Config config = Environment.getCurrent().getConfig();
+      String assetsDirProp = "webforj.assetsDir";
+      String assetsDir = config.hasPath(assetsDirProp) && !config.getIsNull(assetsDirProp)
+          ? config.getString(assetsDirProp)
+          : null;
+      if (assetsDir != null && !assetsDir.isEmpty()) {
+        url = RouterUtils.normalizePath(assetsDir);
+      }
     }
 
-    String suffix = "/files/";
-    String isNoBbjService = System.getProperty("com.basis.noBBjServices", "");
-    if (isNoBbjService.equals("true")) {
-      suffix = "/";
-    }
-
-    return url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + suffix;
+    return url;
   }
 
   /**
@@ -112,7 +113,7 @@ public class Assets {
    * @return true if the url is an jetty url, false otherwise
    */
   public static boolean isWebServerUrl(String url) {
-    return url.toLowerCase().startsWith("webserver://");
+    return url.toLowerCase().startsWith("webserver://") || url.toLowerCase().startsWith("ws://");
   }
 
   /**
@@ -130,11 +131,11 @@ public class Assets {
   public static String resolveWebServerUrl(String url) {
     if (!isWebServerUrl(url)) {
       throw new IllegalArgumentException(
-          "URL does not being the \"webserver://\" protocol: " + url);
+          "URL does not being the 'webserver://' or 'ws://'  protocol: " + url);
     }
 
-    String fullUrl = getWebServerFilesUrl() + App.getApplicationName() + "/"
-        + url.replaceAll("(?i)webserver://", "").trim();
+    String fullUrl = getWebServerFilesUrl() + "/"
+        + url.replaceAll("(?i)webserver://", "").replaceAll("(?i)ws://", "").trim();
 
     return fullUrl.replaceAll("(?<!\\w+:/?)//+", "/");
   }

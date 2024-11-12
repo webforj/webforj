@@ -66,6 +66,16 @@ public final class Environment {
   }
 
   /**
+   * Checks if webforj is running inside BBj Services.
+   *
+   * @return true if webforj is running inside BBj Services, false otherwise.
+   */
+  public static boolean isRunningWithBBjServices() {
+    String isNoBbjService = System.getProperty("com.basis.noBBjServices", "");
+    return !isNoBbjService.equals("true");
+  }
+
+  /**
    * Suspends execution of the current task.
    *
    * <p>
