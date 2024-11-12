@@ -2,6 +2,8 @@ package com.webforj.error;
 
 import static com.webforj.App.console;
 
+import java.util.logging.Logger;
+
 /**
  * The {@code GlobalErrorHandler} class is used to handle errors that occur during the execution of
  * the webforJ application.
@@ -16,6 +18,7 @@ import static com.webforj.App.console;
  * @since 24.12
  */
 public class GlobalErrorHandler implements ErrorHandler {
+  private static final Logger log = Logger.getLogger("com.webforj.error.GlobalErrorHandler");
 
   /**
    * {@inheritDoc}
@@ -23,8 +26,7 @@ public class GlobalErrorHandler implements ErrorHandler {
   @Override
   public void onError(Throwable throwable, boolean debug) {
     // Log to BBj Debug log
-    System.err.println(throwable.getMessage()); // NOSONAR
-    throwable.printStackTrace(); // NOSONAR
+    log.severe(throwable.getMessage());
 
     // log to the browser console (debug only)
     console().error(throwable);

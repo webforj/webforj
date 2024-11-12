@@ -19,6 +19,7 @@ import com.webforj.environment.namespace.PrivateNamespace;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.router.NavigationOptions;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
@@ -31,6 +32,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * This is the central class representing an app. In order to implement an app, extend this class
@@ -39,6 +41,8 @@ import java.util.Locale;
  */
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
+  private static final Logger log = Logger.getLogger("com.webforj.App");
+
   /**
    * A default app action is to clear the browser and display a localized message of "Click to
    * reload application", with a link to the application when the application is terminated or error
@@ -67,25 +71,30 @@ public abstract class App {
       throw new WebforjAppInitializeException("App is already initialized.");
     }
 
-    String key = "PARSE_REQUEST_THEME";
-    if (StringTable.contains(key) && StringTable.get(key).equals("1")) {
-      String theme = Request.getCurrent().getQueryParameter("__theme__");
-      if (theme != null) {
-        setTheme(theme);
+    try {
+      String key = "PARSE_REQUEST_THEME";
+      if (StringTable.contains(key) && StringTable.get(key).equals("1")) {
+        String theme = Request.getCurrent().getQueryParameter("__theme__");
+        if (theme != null) {
+          setTheme(theme);
+        }
       }
+
+      Page.getCurrent().onUnload(ev -> terminate());
+
+      initializeRouter();
+      onWillRun();
+      AnnotationProcessor processor = new AnnotationProcessor();
+      processor.processAppAnnotations(this);
+      createFirstFrame();
+      run();
+      resolveFirstRoute();
+      isInitialized = true;
+      onDidRun();
+    } catch (WebforjWebManagerException ex) {
+      log.severe(
+          "Failed to initialize the app. Web Manager API are not available.");
     }
-
-    Page.getCurrent().onUnload(ev -> terminate());
-
-    initializeRouter();
-    onWillRun();
-    AnnotationProcessor processor = new AnnotationProcessor();
-    processor.processAppAnnotations(this);
-    createFirstFrame();
-    run();
-    resolveFirstRoute();
-    isInitialized = true;
-    onDidRun();
   }
 
   /**
@@ -142,13 +151,13 @@ public abstract class App {
    * Set the application theme.
    *
    * @param theme The theme to set
-   * @throws WebforjRuntimeException if failed to set the theme
+   * @throws WebforjWebManagerException if failed to set the theme
    */
   public static void setTheme(String theme) {
     try {
       Environment.getCurrent().getBBjAPI().getWebManager().setTheme(theme);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set theme.", e);
+      throw new WebforjWebManagerException("Failed to set theme.", e);
     }
   }
 
@@ -156,13 +165,13 @@ public abstract class App {
    * Get the application theme.
    *
    * @return The theme
-   * @throws WebforjRuntimeException if failed to get the theme
+   * @throws WebforjWebManagerException if failed to get the theme
    */
   public static String getTheme() {
     try {
       return Environment.getCurrent().getBBjAPI().getWebManager().getTheme();
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get theme.", e);
+      throw new WebforjWebManagerException("Failed to get theme.", e);
     }
   }
 
@@ -177,7 +186,7 @@ public abstract class App {
     try {
       Environment.getCurrent().getBBjAPI().getWebManager().setDarkTheme(darkTheme);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set dark theme.", e);
+      throw new WebforjWebManagerException("Failed to set dark theme.", e);
     }
   }
 
@@ -185,13 +194,13 @@ public abstract class App {
    * Get the name of the dark theme.
    *
    * @return The dark theme
-   * @throws WebforjRuntimeException if failed to get the dark theme
+   * @throws WebforjWebManagerException if failed to get the dark theme
    */
   public static String getDarkTheme() {
     try {
       return Environment.getCurrent().getBBjAPI().getWebManager().getDarkTheme();
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get dark theme.", e);
+      throw new WebforjWebManagerException("Failed to get dark theme.", e);
     }
   }
 
@@ -200,14 +209,13 @@ public abstract class App {
    * when the application theme is set to "system".
    *
    * @param lightTheme The light theme to set
-   * @throws WebforjRuntimeException if failed to set the light theme
+   * @throws WebforjWebManagerException if failed to set the light theme
    */
-
   public static void setLightTheme(String lightTheme) {
     try {
       Environment.getCurrent().getBBjAPI().getWebManager().setLightTheme(lightTheme);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set light theme.", e);
+      throw new WebforjWebManagerException("Failed to set light theme.", e);
     }
   }
 
@@ -215,14 +223,13 @@ public abstract class App {
    * Get the name of the light theme to use for the application.
    *
    * @return The light theme
-   * @throws WebforjRuntimeException if failed to get the light theme
+   * @throws WebforjWebManagerException if failed to get the light theme
    */
-
   public static String getLightTheme() {
     try {
       return Environment.getCurrent().getBBjAPI().getWebManager().getLightTheme();
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get light theme.", e);
+      throw new WebforjWebManagerException("Failed to get light theme.", e);
     }
   }
 
@@ -230,13 +237,13 @@ public abstract class App {
    * Get the registered DWC application name.
    *
    * @return the application name
-   * @throws WebforjRuntimeException if failed to get the application name
+   * @throws WebforjWebManagerException if failed to get the application name
    */
   public static String getApplicationName() {
     try {
       return Environment.getCurrent().getBBjAPI().getWebManager().getApplicationName();
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get application name.", e);
+      throw new WebforjWebManagerException("Failed to get application name.", e);
     }
   }
 
@@ -306,7 +313,7 @@ public abstract class App {
       return new BusyIndicator(
           Environment.getCurrent().getBBjAPI().getWebManager().getBusyIndicator());
     } catch (BBjException e) {
-      throw new WebforjRuntimeException(e);
+      throw new WebforjWebManagerException(e);
     }
   }
 
