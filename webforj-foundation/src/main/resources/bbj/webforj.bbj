@@ -109,11 +109,11 @@ onHotReload:
 return
 
 EscTrap:
-  IF AND(CHR(TCB(19)),$08$)=$08$ THEN
-      System.out.println("Client Died")
-  ELSE
-      System.out.println("ESCAPE")
-  FI
+  REM IF AND(CHR(TCB(19)),$08$)=$08$ THEN
+  REM     System.out.println("Client Died")
+  REM ELSE
+  REM     System.out.println("ESCAPE")
+  REM FI
   if app! <> null() then
       app!.cleanup()
   fi
@@ -127,9 +127,15 @@ ErrTrap:
 release
 
 _error:
-  debugMode = DEBUG
-  if Environment.getCurrent() <> null() then
-    debugMode = num(Environment.getCurrent().isDebug())
+  lastJavaException! = bbjapi().getLastJavaException()
+  if lastJavaException! <> null() then
+    debugMode = DEBUG
+    if Environment.getCurrent() <> null() then
+      debugMode = num(Environment.getCurrent().isDebug())
+    fi
+    Environment.handleError(lastJavaException!, debugMode)
+  else
+    System.err.println("Fatal Error: ")
+    System.err.println(lastJavaException!)
   fi
-  Environment.handleError(bbjapi().getLastJavaException(), debugMode)
 release

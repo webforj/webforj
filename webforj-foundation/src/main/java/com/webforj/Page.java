@@ -18,7 +18,7 @@ import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
 import com.webforj.event.page.PageUnloadEventHandler;
-import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.sink.page.PageEventSink;
 import com.webforj.sink.page.PageEventSinkRegistry;
 import com.webforj.utilities.Assets;
@@ -112,14 +112,14 @@ public final class Page implements HasJsExecution {
    * @param placeholders The parameters to use in the format
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the title
+   * @throws WebforjWebManagerException if failed to set the title
    */
   public Page setTitle(String title, String format, Map<String, String> placeholders)
-      throws WebforjRuntimeException {
+      throws WebforjWebManagerException {
     try {
       getWebManager().setTitle(title, format, placeholders);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set title.", e);
+      throw new WebforjWebManagerException("Failed to set title.", e);
     }
 
     return this;
@@ -132,7 +132,7 @@ public final class Page implements HasJsExecution {
    * @param format The format of the title
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the title
+   * @throws WebforjWebManagerException if failed to set the title
    *
    * @see #setTitle(String, String, Map)
    */
@@ -146,7 +146,7 @@ public final class Page implements HasJsExecution {
    * @param title The title to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the title
+   * @throws WebforjWebManagerException if failed to set the title
    *
    * @see #setTitle(String, String, Map)
    */
@@ -158,13 +158,13 @@ public final class Page implements HasJsExecution {
    * Get the application title.
    *
    * @return The title
-   * @throws WebforjRuntimeException if failed to get the title
+   * @throws WebforjWebManagerException if failed to get the title
    */
   public String getTitle() {
     try {
       return getWebManager().getTitle();
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get title.", e);
+      throw new WebforjWebManagerException("Failed to get title.", e);
     }
   }
 
@@ -176,13 +176,13 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the meta tag
+   * @throws WebforjWebManagerException if failed to set the meta tag
    */
   public Page setMeta(String name, String content, Map<String, String> attributes) {
     try {
       getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set meta tag.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to set meta tag.", e); // NOSONAR
     }
 
     return this;
@@ -196,13 +196,13 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set (comma separated)
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the meta tag
+   * @throws WebforjWebManagerException if failed to set the meta tag
    */
   public Page setMeta(String name, String content, String attributes) {
     try {
       getWebManager().setMeta(name, content, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set meta tag.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to set meta tag.", e); // NOSONAR
     }
 
     return this;
@@ -215,13 +215,13 @@ public final class Page implements HasJsExecution {
    * @param content The content of the meta tag
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the meta tag
+   * @throws WebforjWebManagerException if failed to set the meta tag
    */
   public Page setMeta(String name, String content) {
     try {
       getWebManager().setMeta(name, content);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set meta tag.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to set meta tag.", e); // NOSONAR
     }
 
     return this;
@@ -240,13 +240,13 @@ public final class Page implements HasJsExecution {
    *        doesn't return any elements, the default document element is used.
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the attribute
+   * @throws WebforjWebManagerException if failed to set the attribute
    */
   public Page setAttribute(String name, String value, String selector) {
     try {
       getWebManager().setAttribute(name, value, selector);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to set attribute.", e);
+      throw new WebforjWebManagerException("Failed to set attribute.", e);
     }
 
     return this;
@@ -259,7 +259,7 @@ public final class Page implements HasJsExecution {
    * @param value The value of the attribute
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the attribute
+   * @throws WebforjWebManagerException if failed to set the attribute
    */
   public Page setAttribute(String name, String value) {
     return setAttribute(name, value, "");
@@ -271,7 +271,7 @@ public final class Page implements HasJsExecution {
    * @param name The name of the attribute
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to set the attribute
+   * @throws WebforjWebManagerException if failed to set the attribute
    */
   public Page setAttribute(String name) {
     return setAttribute(name, name, "");
@@ -288,13 +288,13 @@ public final class Page implements HasJsExecution {
    *        "https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector">selector</a>
    *        doesn't return any elements, the default document element is used.
    * @return The attribute value
-   * @throws WebforjRuntimeException if failed to get the attribute
+   * @throws WebforjWebManagerException if failed to get the attribute
    */
   public String getAttribute(String name, String selector) {
     try {
       return getWebManager().getAttribute(name, selector);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to get attribute.", e);
+      throw new WebforjWebManagerException("Failed to get attribute.", e);
     }
   }
 
@@ -303,7 +303,7 @@ public final class Page implements HasJsExecution {
    *
    * @param name The name of the attribute
    * @return The attribute value
-   * @throws WebforjRuntimeException if failed to get the attribute
+   * @throws WebforjWebManagerException if failed to get the attribute
    */
   public String getAttribute(String name) {
     return getAttribute(name, "");
@@ -318,7 +318,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -328,7 +328,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -343,7 +343,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set (comma separated)
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url, boolean top, String attributes) {
     try {
@@ -353,7 +353,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectStyleUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add stylesheet.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -367,7 +367,7 @@ public final class Page implements HasJsExecution {
    * @param top Whether to inject the stylesheet at the top of the page
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url, boolean top) {
     return addStyleSheet(url, top, "");
@@ -380,7 +380,7 @@ public final class Page implements HasJsExecution {
    *        with the <code>webserver://</code>
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addStyleSheet(String url) {
     return addStyleSheet(url, false, "");
@@ -396,7 +396,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addInlineStyleSheet(String css, boolean top, Map<String, String> attributes) {
     try {
@@ -406,7 +406,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add inline stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -422,7 +422,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set (comma separated)
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addInlineStyleSheet(String css, boolean top, String attributes) {
     try {
@@ -432,7 +432,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectStyle(css, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add inline stylesheet.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add inline stylesheet.", e); // NOSONAR
     }
 
     return this;
@@ -447,7 +447,7 @@ public final class Page implements HasJsExecution {
    * @param top Whether to inject the stylesheet at the top of the page
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
   public Page addInlineStyleSheet(String css, boolean top) {
     return addInlineStyleSheet(css, top, "");
@@ -461,7 +461,7 @@ public final class Page implements HasJsExecution {
    *        folder of your application
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the stylesheet
+   * @throws WebforjWebManagerException if failed to add the stylesheet
    */
 
   public Page addInlineStyleSheet(String css) {
@@ -477,7 +477,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addJavaScript(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -487,7 +487,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add script.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add script.", e); // NOSONAR
     }
 
     return this;
@@ -502,7 +502,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set (comma separated)
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addJavaScript(String url, boolean top, String attributes) {
     try {
@@ -512,7 +512,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectScriptUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add script.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add script.", e); // NOSONAR
     }
 
     return this;
@@ -526,7 +526,7 @@ public final class Page implements HasJsExecution {
    * @param top Whether to inject the script at the top of the page
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
 
   public Page addJavaScript(String url, boolean top) {
@@ -540,7 +540,7 @@ public final class Page implements HasJsExecution {
    *        with the <code>webserver://</code>
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addJavaScript(String url) {
     return addJavaScript(url, false, "");
@@ -556,7 +556,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addInlineJavaScript(String script, boolean top, Map<String, String> attributes) {
     try {
@@ -566,7 +566,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add inline script.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add inline script.", e); // NOSONAR
     }
 
     return this;
@@ -582,7 +582,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set (comma separated)
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addInlineJavaScript(String script, boolean top, String attributes) {
     try {
@@ -592,7 +592,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectScript(script, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add inline script.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add inline script.", e); // NOSONAR
     }
 
     return this;
@@ -607,7 +607,7 @@ public final class Page implements HasJsExecution {
    * @param top Whether to inject the script at the top of the page
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addInlineJavaScript(String script, boolean top) {
     return addInlineJavaScript(script, top, "");
@@ -621,7 +621,7 @@ public final class Page implements HasJsExecution {
    *        the root of the resources folder of your application
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the script
+   * @throws WebforjWebManagerException if failed to add the script
    */
   public Page addInlineJavaScript(String script) {
     return addInlineJavaScript(script, false, "");
@@ -636,7 +636,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the link
+   * @throws WebforjWebManagerException if failed to add the link
    */
   public Page addLink(String url, boolean top, Map<String, String> attributes) {
     try {
@@ -646,7 +646,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add link.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add link.", e); // NOSONAR
     }
 
     return this;
@@ -661,7 +661,7 @@ public final class Page implements HasJsExecution {
    * @param attributes A map of attributes to set (comma separated)
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the link
+   * @throws WebforjWebManagerException if failed to add the link
    */
   public Page addLink(String url, boolean top, String attributes) {
     try {
@@ -671,7 +671,7 @@ public final class Page implements HasJsExecution {
 
       getWebManager().injectLinkUrl(url, top, attributes);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to add link.", e); // NOSONAR
+      throw new WebforjWebManagerException("Failed to add link.", e); // NOSONAR
     }
 
     return this;
@@ -685,7 +685,7 @@ public final class Page implements HasJsExecution {
    * @param top Whether to inject the link at the top of the page
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the link
+   * @throws WebforjWebManagerException if failed to add the link
    */
   public Page addLink(String url, boolean top) {
     return addLink(url, top, "");
@@ -698,7 +698,7 @@ public final class Page implements HasJsExecution {
    *        the <code>webserver://</code>
    *
    * @return The current page instance
-   * @throws WebforjRuntimeException if failed to add the link
+   * @throws WebforjWebManagerException if failed to add the link
    */
   public Page addLink(String url) {
     return addLink(url, false, "");
@@ -712,7 +712,7 @@ public final class Page implements HasJsExecution {
     try {
       return getWebManager().executeScript(script);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to execute script.", e);
+      throw new WebforjWebManagerException("Failed to execute script.", e);
     }
   }
 
@@ -733,7 +733,7 @@ public final class Page implements HasJsExecution {
 
       return result;
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to execute async script.", e);
+      throw new WebforjWebManagerException("Failed to execute async script.", e);
     }
   }
 
@@ -745,14 +745,14 @@ public final class Page implements HasJsExecution {
     try {
       getWebManager().executeAsyncScript(js, true, false);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to execute async script.", e);
+      throw new WebforjWebManagerException("Failed to execute async script.", e);
     }
   }
 
   /**
    * Reload the page in the browser.
    *
-   * @throws WebforjRuntimeException If fails to execute the script to reload the page
+   * @throws WebforjWebManagerException If fails to execute the script to reload the page
    */
   public void reload() {
     executeJsAsync("window.location.reload();");
@@ -774,7 +774,7 @@ public final class Page implements HasJsExecution {
       Files.copy(inputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
       performDownload(tempFilePath.toString(), fileName);
     } catch (IOException | BBjException e) {
-      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+      throw new WebforjWebManagerException(FAILED_TO_DOWNLOAD_FILE, e);
     } finally {
       deleteTempFile(tempFilePath);
     }
@@ -798,7 +798,7 @@ public final class Page implements HasJsExecution {
       Files.write(tempFilePath, content, StandardOpenOption.WRITE);
       performDownload(tempFilePath.toString(), fileName);
     } catch (IOException | BBjException e) {
-      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+      throw new WebforjWebManagerException(FAILED_TO_DOWNLOAD_FILE, e);
     } finally {
       deleteTempFile(tempFilePath);
     }
@@ -819,7 +819,7 @@ public final class Page implements HasJsExecution {
     try {
       performDownload(file.getAbsolutePath(), fileName);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+      throw new WebforjWebManagerException(FAILED_TO_DOWNLOAD_FILE, e);
     }
 
     return this;
@@ -858,7 +858,7 @@ public final class Page implements HasJsExecution {
         performDownload(path, fileName);
       }
     } catch (BBjException e) {
-      throw new WebforjRuntimeException(FAILED_TO_DOWNLOAD_FILE, e);
+      throw new WebforjWebManagerException(FAILED_TO_DOWNLOAD_FILE, e);
     }
 
     return this;
@@ -890,7 +890,7 @@ public final class Page implements HasJsExecution {
       BBjThinClient thinClient = getEnvironment().getBBjAPI().getThinClient();
       thinClient.browse(url, theWindowName, theFeatures);
     } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to open url.", e);
+      throw new WebforjWebManagerException("Failed to open url.", e);
     }
 
     return this;
@@ -1014,7 +1014,7 @@ public final class Page implements HasJsExecution {
             .getEventProxy(new PageUnloadEventHandler(this, dispatcher), "handleEvent");
         webManager.setCallback(SysGuiEventConstants.ON_BROWSER_CLOSE, handler, "onEvent");
       } catch (BBjException e) {
-        throw new WebforjRuntimeException("Failed to register browser close event.", e);
+        throw new WebforjWebManagerException("Failed to register browser close event.", e);
       }
     }
 

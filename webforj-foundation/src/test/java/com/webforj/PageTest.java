@@ -32,7 +32,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
-import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.exceptions.WebforjWebManagerException;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
@@ -144,7 +144,7 @@ class PageTest {
     @Test
     void setTitleShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(webManager).setTitle(any(), any(), any());
-      assertThrows(WebforjRuntimeException.class, () -> page.setTitle("title"));
+      assertThrows(WebforjWebManagerException.class, () -> page.setTitle("title"));
     }
 
     @Test
@@ -156,7 +156,7 @@ class PageTest {
     @Test
     void getTitleShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(webManager).getTitle();
-      assertThrows(WebforjRuntimeException.class, () -> page.getTitle());
+      assertThrows(WebforjWebManagerException.class, () -> page.getTitle());
     }
   }
 
@@ -175,7 +175,7 @@ class PageTest {
     void downloadInputStreamShouldThrowException() throws BBjException {
       InputStream inputStream = mock(InputStream.class);
       doThrow(BBjException.class).when(clientFile).copyToClient(anyString());
-      assertThrows(WebforjRuntimeException.class, () -> page.download(inputStream, "file.txt"));
+      assertThrows(WebforjWebManagerException.class, () -> page.download(inputStream, "file.txt"));
     }
 
     @Test
@@ -190,7 +190,7 @@ class PageTest {
     void downloadBytesArrayShouldThrowException() throws BBjException {
       byte[] bytes = new byte[0];
       doThrow(BBjException.class).when(clientFile).copyToClient(anyString());
-      assertThrows(WebforjRuntimeException.class, () -> page.download(bytes, "file.txt"));
+      assertThrows(WebforjWebManagerException.class, () -> page.download(bytes, "file.txt"));
     }
 
     @Test
@@ -210,7 +210,7 @@ class PageTest {
       when(file.getName()).thenReturn("file.txt");
       doThrow(BBjException.class).when(clientFile).copyToClient(anyString());
 
-      assertThrows(WebforjRuntimeException.class, () -> page.download(file));
+      assertThrows(WebforjWebManagerException.class, () -> page.download(file));
     }
 
     @Test
@@ -261,7 +261,7 @@ class PageTest {
           .setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(), eq("onEvent"));
       EventListener<PageUnloadEvent> listener = mock(EventListener.class);
 
-      assertThrows(WebforjRuntimeException.class, () -> page.onUnload(listener));
+      assertThrows(WebforjWebManagerException.class, () -> page.onUnload(listener));
     }
   }
 
