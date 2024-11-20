@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor
+  xsi:schemaLocation="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0 https://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd"
+  name="webforj-starter-bbj-hello-world"
+  xmlns="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <requiredProperties>
+    <requiredProperty key="webforjVersion">
+      <defaultValue>24.20</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="appName">
+      <defaultValue>My App</defaultValue>
+    </requiredProperty>
+  </requiredProperties>
+  <fileSets>
+    <fileSet filtered="true" packaged="true" encoding="UTF-8">
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*.java</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>**/*.css</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <directory>.vscode</directory>
+      <includes>
+        <include>**/*.json</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <includes>
+        <include>.editorconfig</include>
+        <include>README.md</include>
+        <include>.gitignore</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-archetypes</artifactId>
+    <version>24.20-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webforj-starter-bbj-hello-world</artifactId>
+  <name>webforj-starter-bbj-hello-world</name>
+  <description>webforJ starter archetype for a Hello World application running with BBj Services.</description>
+  <packaging>maven-archetype</packaging>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>3.3.1</version>
+      </extension>
+    </extensions>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

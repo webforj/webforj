@@ -54,6 +54,7 @@
   </issueManagement>
 
   <modules>
+    <module>webforj-archetypes</module>
     <module>webforj</module>
     <module>webforj-bom</module>
     <module>webforj-components</module>
