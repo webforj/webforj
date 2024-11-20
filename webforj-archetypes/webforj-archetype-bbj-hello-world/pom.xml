@@ -8,9 +8,9 @@
     <version>24.20-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-starter-bbj-hello-world</artifactId>
-  <name>webforj-starter-bbj-hello-world</name>
-  <description>webforJ starter archetype for a Hello World application running with BBj Services.</description>
+  <artifactId>webforj-archetype-bbj-hello-world</artifactId>
+  <name>webforj-archetype-bbj-hello-world</name>
+  <description>webforJ archetype for a Hello World application running with BBj Services.</description>
   <packaging>maven-archetype</packaging>
 
   <build>

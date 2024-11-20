@@ -15,6 +15,6 @@
   <description>${project.name}</description>
 
   <modules>
-    <module>webforj-starter-bbj-hello-world</module>
+    <module>webforj-archetype-bbj-hello-world</module>
   </modules>
 </project>
