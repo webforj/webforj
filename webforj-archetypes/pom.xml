@@ -16,5 +16,6 @@
 
   <modules>
     <module>webforj-archetype-bbj-hello-world</module>
+    <module>webforj-archetype-hello-world</module>
   </modules>
 </project>
