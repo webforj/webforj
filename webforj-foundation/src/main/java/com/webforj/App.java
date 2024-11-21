@@ -92,7 +92,8 @@ public abstract class App {
       isInitialized = true;
       onDidRun();
     } catch (WebforjWebManagerException ex) {
-      log.severe("Failed to initialize the app. Web Manager API are not available.");
+      log.severe(
+          "Failed to initialize the app. Web Manager API are not available.");
     }
   }
 
