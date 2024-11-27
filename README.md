@@ -15,54 +15,17 @@ A robust and flexible framework that can help you deliver a modern and engaging 
 
 - **Component-Based**: Create reusable and composable components to build complex UIs. Components encapsulate their own state and logic, providing a modular and maintainable structure for your application.
 
-- **Reliable**: Our team in the United States and Europe have been building tools and technologies to help our clients fulfil their needs for over 35 years. We have consistently produced reliable and innovative technologies to ensure our clients have every tool in their kit needed to tackle modern, ever-changing needs.
+- **Reliable**: Our team in the United States and Europe have been building tools and technologies to help our clients fulfil their needs for almost 40 years. We have consistently produced reliable and innovative technologies to ensure our clients have every tool in their kit needed to tackle modern, ever-changing needs.
 
 ## Documentation
 
-The webforJ's documentation site can be found [at this link](https://documentation.webforj.com/) which contains guides, API references, and examples to help you get started with the webforJ.
+The webforJ's documentation site can be found [at this link](https://docs.webforj.com/) which contains guides, API references, and examples to help you get started with the webforJ.
 
-The following documentation sections may be useful for those beginning their usage of the DWCJ:
+The following documentation sections may be useful for those beginning their usage of the webforJ:
 
-- [webforJ Installation](https://documentation.webforj.com/docs/installation/local_install)
-- [Configuring your application](https://documentation.webforj.com/docs/getting_started/configuration)
-- [Creating an application](https://documentation.webforj.com/docs/getting_started/creating_an_application)
-- [Component Overviews](https://documentation.webforj.com/docs/components/home)
-
-## Examples
-
-The webforJ's [HelloWorld repository](https://github.com/webforj/webforj-hello-world) contains a sample program which can be run in GitHub codespaces, Docker, or locally and demonstrates the basics for creating your first DWCJ program. Here is the class created in the sample:
-
-```java
-@InlineStyleSheet(/* css */"""
-  .mainFrame {
-    display: inline-grid;
-    gap: 20px;
-    margin: 20px;
-    padding: 20px;
-    border: 1px dashed;
-    border-radius: 10px;
-  }
-""")
-@AppTitle("webforJ Hello World")
-public class WebforjHelloWorld extends App {
-  
-  Paragraph hello = new Paragraph("Hello World!");
-  Button btn = new Button("Say Hello");
-
-  @Override
-  public void run() throws WebforjException {
-    Frame mainFrame = new Frame();
-    mainFrame.addClassName("mainFrame");
-
-    btn.setTheme(ButtonTheme.PRIMARY)
-        .addClickListener(e -> showMessageDialog("Hello World!", "webforJ Message"));
-
-    mainFrame.add(hello, btn);
-  }
-}
-```
-
-The above program creates some static text and a button which displays a message box when pushed. 
+- [Getting Started](https://docs.webforj.com/docs/introduction/getting-started)
+- [Application Basics](https://docs.webforj.com/docs/introduction/basics)
+- [Component Overviews](https://docs.webforj.com/docs/components/overview)
 
 ## Contributing
 
