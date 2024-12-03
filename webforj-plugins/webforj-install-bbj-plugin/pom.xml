@@ -11,7 +11,7 @@
 
   <properties>
     <webforj.version>24.20-SNAPSHOT</webforj.version>
-    <webforj.engine.version>24.20-SNAPSHOT</webforj.engine.version>
+    <webforj.engine.version>24.20</webforj.engine.version>
   </properties>
 
 
