@@ -3,7 +3,6 @@ package com.webforj.component.button;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.Component;
-import com.webforj.component.Expanse;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.window.Window;
 import com.webforj.dispatcher.EventListener;
@@ -29,7 +28,8 @@ public final class Button extends DwcButton<Button> {
   static final ButtonTheme DEFAULT_THEME = ButtonTheme.DEFAULT;
 
   /**
-   * Construct the button with the given text and a {@link ButtonClickEvent}.
+   * Construct the button with the given text, the given {@link ButtonTheme}, and the given
+   * {@link EventListener}.
    *
    * @param text the text of the button
    * @param theme the button theme
@@ -46,7 +46,7 @@ public final class Button extends DwcButton<Button> {
   }
 
   /**
-   * Construct the button with the given text and a {@link ButtonClickEvent}.
+   * Construct the button with the given text and the given {@link ButtonTheme}.
    *
    * @param text the text of the button
    * @param theme the button theme
@@ -57,7 +57,7 @@ public final class Button extends DwcButton<Button> {
   }
 
   /**
-   * Construct the button with the given text and a {@link ButtonClickEvent}.
+   * Construct the button with the given text and the given {@link EventListener}.
    *
    * @param text the text of the button
    * @param clickListener the listener to be called when the button is clicked
@@ -76,7 +76,7 @@ public final class Button extends DwcButton<Button> {
   }
 
   /**
-   * Construct the button with the given icon and a {@link ButtonClickEvent}.
+   * Construct the button with the given icon and the given {@link EventListener}.
    *
    * @param icon the icon of the button
    * @param clickListener the listener to be called when the button is clicked
@@ -101,7 +101,7 @@ public final class Button extends DwcButton<Button> {
   }
 
   /**
-   * Construct the button without any text set.
+   * Construct a button.
    */
   public Button() {
     this("");
