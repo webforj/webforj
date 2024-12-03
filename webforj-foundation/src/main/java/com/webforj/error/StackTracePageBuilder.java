@@ -55,7 +55,7 @@ public final class StackTracePageBuilder {
       pageBuilder
           .append("<div style='display: flex; justify-content: center; align-items: center; ");
       pageBuilder.append("height: 100vh; flex-direction: column;'>");
-      pageBuilder.append("<h1> <strong>500.</strong> Thats an error </h1>");
+      pageBuilder.append("<h1> <strong>500.</strong> That's an error </h1>");
       pageBuilder
           .append("<p> The server encountered an error and could not complete your request. </p>");
       pageBuilder.append(
