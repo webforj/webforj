@@ -125,6 +125,13 @@ public class ColumnsLayout extends HtmlComponentContainer<ColumnsLayout> {
       PropertyDescriptor.property("breakpoints", DEFAULT_BREAKPOINTS);
 
   /**
+   * Creates a new columns layout with default settings.
+   */
+  public ColumnsLayout() {
+    super();
+  }
+
+  /**
    * Creates a new columns layout.
    *
    * @param components the components to add to the layout
@@ -132,7 +139,6 @@ public class ColumnsLayout extends HtmlComponentContainer<ColumnsLayout> {
   public ColumnsLayout(Component... components) {
     super(components);
   }
-
 
   /**
    * Creates a new columns layout.
