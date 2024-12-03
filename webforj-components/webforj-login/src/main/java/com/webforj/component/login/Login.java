@@ -33,9 +33,19 @@ public class Login extends ElementCompositeContainer
     /*
      * The user will not be asked to authenticate. The user agent will automatically reauthenticate
      * the user and log them in if possible.
+     *
+     * @deprecated Since 24.21. For removal in 25.00. Use {@link #SILENT} instead.
      */
+    @Deprecated(since = "24.21", forRemoval = true)
     @SerializedName("silent")
     SILIENT,
+
+    /*
+     * The user will not be asked to authenticate. The user agent will automatically reauthenticate
+     * the user and log them in if possible.
+     */
+    @SerializedName("silent")
+    SILENT,
 
     /* The user will always be asked to authenticate, */
     @SerializedName("required")
