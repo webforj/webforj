@@ -56,6 +56,11 @@
       </dependency>
       <dependency>
         <groupId>com.webforj</groupId>
+        <artifactId>webforj-googlecharts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.webforj</groupId>
         <artifactId>webforj-html-elements</artifactId>
         <version>${project.version}</version>
       </dependency>
