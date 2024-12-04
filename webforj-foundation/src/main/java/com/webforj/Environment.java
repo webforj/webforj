@@ -242,7 +242,7 @@ public final class Environment {
    */
   @Deprecated(since = "24.12", forRemoval = true)
   public WebforjBBjBridge getWebforjHelper() {
-    return bridge;
+    return getBridge();
   }
 
   /*
