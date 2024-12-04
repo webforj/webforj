@@ -62,6 +62,20 @@ public class CompositeComparator<T> implements Comparator<T> {
   @SuppressWarnings({"rawtypes", "unchecked"})
   protected Comparator<T> createComparator(OrderCriteria<T, ?> criterion) {
     return (o1, o2) -> {
+      OrderCriteria.Direction direction = criterion.getDirection();
+
+      if (o1 == null && o2 == null) {
+        return 0;
+      }
+
+      if (o1 == null) {
+        return direction == OrderCriteria.Direction.ASC ? -1 : 1;
+      }
+
+      if (o2 == null) {
+        return direction == OrderCriteria.Direction.ASC ? 1 : -1;
+      }
+
       try {
         if (criterion.getComparator() != null) {
           // Use the custom comparator if provided
@@ -77,7 +91,7 @@ public class CompositeComparator<T> implements Comparator<T> {
           Comparable value1 = (Comparable) criterion.getValueProvider().apply(o1);
           Comparable value2 = (Comparable) criterion.getValueProvider().apply(o2);
 
-          return compareWithDirection(value1, value2, criterion.getDirection());
+          return compareWithDirection(value1, value2, direction);
         }
       } catch (ClassCastException e) {
         if (fallbackToStringComparison) {
@@ -85,7 +99,7 @@ public class CompositeComparator<T> implements Comparator<T> {
           String value1Str = String.valueOf(criterion.getValueProvider().apply(o1));
           String value2Str = String.valueOf(criterion.getValueProvider().apply(o2));
 
-          return compareWithDirection(value1Str, value2Str, criterion.getDirection());
+          return compareWithDirection(value1Str, value2Str, direction);
         } else {
           throw new IllegalArgumentException("Values are not comparable", e);
         }

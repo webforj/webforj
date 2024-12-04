@@ -139,6 +139,39 @@ class CompositeComparatorTest {
     assertTrue(comparator.compare(person2, person3) < 0);
   }
 
+  @Test
+  void shouldHandleNullValuesInComparison() {
+    Function<String, Integer> lengthProvider = String::length;
+    OrderCriteria<String, Integer> lengthCriteria =
+        new OrderCriteria<>(lengthProvider, OrderCriteria.Direction.ASC);
+    CompositeComparator<String> comparator =
+        new CompositeComparator<>(new OrderCriteriaList<>(lengthCriteria));
+
+    assertTrue(comparator.compare(null, "abc") < 0);
+    assertTrue(comparator.compare("abc", null) > 0);
+    assertEquals(0, comparator.compare(null, null));
+  }
+
+  @Test
+  void shouldHandleNullValuesWithCustomComparator() {
+    Function<Person, String> nameProvider = Person::getName;
+    Comparator<Person> customNameLengthComparator =
+        Comparator.comparingInt(person -> person.getName() != null ? person.getName().length() : 0);
+
+    OrderCriteria<Person, String> customNameCriteria =
+        new OrderCriteria<>(nameProvider, OrderCriteria.Direction.ASC, customNameLengthComparator);
+
+    CompositeComparator<Person> comparator =
+        new CompositeComparator<>(new OrderCriteriaList<>(customNameCriteria));
+
+    Person person1 = new Person("Bob");
+    Person person2 = new Person("Charlotte");
+
+    assertTrue(comparator.compare(null, person1) < 0);
+    assertTrue(comparator.compare(person2, null) > 0);
+    assertEquals(0, comparator.compare(person1, person1));
+  }
+
   class NonComparableClass {
     private String value;
 
