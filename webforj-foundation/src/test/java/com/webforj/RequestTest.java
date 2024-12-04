@@ -39,7 +39,7 @@ class RequestTest {
     when(api.getThinClient()).thenReturn(thinClient);
     when(api.getWebManager()).thenReturn(webManager);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getWebforjHelper()).thenReturn(bridge);
+    when(environment.getBridge()).thenReturn(bridge);
 
     request = spy(Request.class);
     when(request.getEnvironment()).thenReturn(environment);

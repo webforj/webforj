@@ -32,7 +32,7 @@ public final class PageExecuteJsAsyncHandler {
       return;
     }
 
-    CustomObject handler = env.getWebforjHelper().getEventProxy(this, "handleEvent");
+    CustomObject handler = env.getBridge().getEventProxy(this, "handleEvent");
     try {
       env.getBBjAPI().getWebManager().setCallback(SysGuiEventConstants.ON_EXECUTE_SCRIPT, handler,
           "onEvent");

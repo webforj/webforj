@@ -47,7 +47,7 @@ class AppTest {
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getWebforjHelper()).thenReturn(bridge);
+    when(environment.getBridge()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
     when(webManager.getBusyIndicator()).thenReturn(busyIndicator);
 

@@ -43,7 +43,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
     this.eventType = eventType;
 
     if (Environment.getCurrent() != null) {
-      setWebforjHelper(Environment.getCurrent().getWebforjHelper());
+      setWebforjHelper(Environment.getCurrent().getBridge());
     }
   }
 

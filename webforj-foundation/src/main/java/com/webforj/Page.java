@@ -1010,7 +1010,7 @@ public final class Page implements HasJsExecution {
 
       try {
         BBjWebManager webManager = getEnvironment().getBBjAPI().getWebManager();
-        CustomObject handler = getEnvironment().getWebforjHelper()
+        CustomObject handler = getEnvironment().getBridge()
             .getEventProxy(new PageUnloadEventHandler(this, dispatcher), "handleEvent");
         webManager.setCallback(SysGuiEventConstants.ON_BROWSER_CLOSE, handler, "onEvent");
       } catch (BBjException e) {

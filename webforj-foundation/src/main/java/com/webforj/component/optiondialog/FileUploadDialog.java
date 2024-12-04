@@ -203,7 +203,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    * @return the result of the FileUpload dialog
    */
   public UploadedFile show() {
-    String result = Environment.getCurrent().getWebforjHelper().fileUpload(this);
+    String result = Environment.getCurrent().getBridge().fileUpload(this);
     if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
       return null;
     }

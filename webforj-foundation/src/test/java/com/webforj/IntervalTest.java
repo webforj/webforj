@@ -39,7 +39,7 @@ class IntervalTest {
     listener = mock(EventListener.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
-    when(environment.getWebforjHelper()).thenReturn(bridge);
+    when(environment.getBridge()).thenReturn(bridge);
 
     interval = spy(new Interval(1.0f, listener));
     doReturn(environment).when(interval).getEnvironment();

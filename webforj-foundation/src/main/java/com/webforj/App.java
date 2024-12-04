@@ -403,7 +403,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert) {
-    return Environment.getCurrent().getWebforjHelper().msgbox(alert, 0, "");
+    return Environment.getCurrent().getBridge().msgbox(alert, 0, "");
   }
 
   /**
@@ -417,7 +417,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options) {
-    return Environment.getCurrent().getWebforjHelper().msgbox(alert, options, "");
+    return Environment.getCurrent().getBridge().msgbox(alert, options, "");
   }
 
   /**
@@ -432,7 +432,7 @@ public abstract class App {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static int msgbox(String alert, int options, String title) {
-    return Environment.getCurrent().getWebforjHelper().msgbox(alert, options, title);
+    return Environment.getCurrent().getBridge().msgbox(alert, options, title);
   }
 
   /**

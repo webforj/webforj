@@ -24,8 +24,7 @@ public class TreeEditStopEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_EDIT_STOP,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "editStopEvent"),
-          "onEvent");
+          Environment.getCurrent().getBridge().getEventProxy(this, "editStopEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

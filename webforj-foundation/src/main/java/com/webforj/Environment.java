@@ -16,31 +16,69 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
+/**
+ * The Environment class represents the runtime environment for the webforj application. It provides
+ * methods to initialize, configure, and manage the environment, including handling errors, managing
+ * debug mode, and accessing configuration settings.
+ *
+ * <p>
+ * This class is designed to be used in a multi-threaded context, with each thread having its own
+ * instance of the Environment.
+ * </p>
+ *
+ * @author Stephan Wald
+ * @author Hyyan Abo Fakher
+ * @since 0.001
+ */
 public final class Environment {
 
   private static final String RESOURCE_PREFIX = "!!";
   private static final HashMap<Object, Environment> instanceMap = new HashMap<>();
   private final BBjAPI api;
   private final BBjSysGui sysgui;
-  private final WebforjBBjBridge helper;
+  private final WebforjBBjBridge bridge;
   private boolean debug = false;
 
-  private Environment(BBjAPI api, WebforjBBjBridge helper, boolean debug) throws BBjException {
+  /**
+   * Creates a new environment.
+   *
+   * @param api the BBjAPI instance.
+   * @param bridge the WebforjBBjBridge instance.
+   * @param debug {@code true} if debug mode is enabled, {@code false} otherwise.
+   * @throws BBjException if an error occurs while creating the environment.
+   */
+  private Environment(BBjAPI api, WebforjBBjBridge bridge, boolean debug) throws BBjException {
     this.api = api;
     this.sysgui = api.openSysGui("X0");
-    this.helper = helper;
+    this.bridge = bridge;
     this.debug = debug;
   }
 
+  /**
+   * Initializes the environment for the current thread.
+   *
+   * @param api the BBjAPI instance.
+   * @param helper the WebforjBBjBridge instance.
+   * @param debug {@code 1} if debug mode is enabled, {@code 0} otherwise.
+   * @throws BBjException if an error occurs while initializing the environment.
+   */
   public static void init(BBjAPI api, WebforjBBjBridge helper, int debug) throws BBjException {
     Environment env = new Environment(api, helper, debug > 0);
     Environment.instanceMap.put(Thread.currentThread().getId(), env);
   }
 
+  /**
+   * Cleans up the environment for the current thread.
+   */
   public static void cleanup() {
     Environment.instanceMap.remove(Thread.currentThread().getId());
   }
 
+  /**
+   * Returns the environment for the current thread.
+   *
+   * @return the environment for the current thread.
+   */
   public static Environment getCurrent() {
     return Environment.instanceMap.get(Thread.currentThread().getId());
   }
@@ -87,7 +125,7 @@ public final class Environment {
    *        255. (Some systems may allow waits longer than 255 seconds.)
    */
   public void sleep(int seconds) {
-    getWebforjHelper().sleep(seconds);
+    getBridge().sleep(seconds);
   }
 
   /**
@@ -187,8 +225,24 @@ public final class Environment {
     return this.sysgui;
   }
 
+  /**
+   * Returns the WebforjBBjBridge instance.
+   *
+   * @return the WebforjBBjBridge instance.
+   */
+  public WebforjBBjBridge getBridge() {
+    return bridge;
+  }
+
+  /**
+   * Returns the WebforjBBjBridge instance.
+   *
+   * @return the WebforjBBjBridge instance.
+   * @deprecated since 24.12 for removal in 25.0. Use {@link #getBridge()} instead.
+   */
+  @Deprecated(since = "24.12", forRemoval = true)
   public WebforjBBjBridge getWebforjHelper() {
-    return helper;
+    return bridge;
   }
 
   /*
