@@ -9,7 +9,7 @@ import com.webforj.component.window.Window;
  * BBjWindow into an AbstractDwcPanel so that DWCJ Controls can be added to code that is written in
  * the BBj language.
  */
-public class BBjWindowAdapter extends Window {
+public final class BBjWindowAdapter extends Window {
 
   public BBjWindowAdapter(BBjWindow w) {
     setBbjWindow(w);
