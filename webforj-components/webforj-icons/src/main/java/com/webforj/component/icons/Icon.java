@@ -8,6 +8,7 @@ import com.webforj.component.element.concern.HasElementClickListener;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasLabel;
+import com.webforj.concern.HasSize;
 import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasTooltip;
 import com.webforj.concern.HasVisibility;
@@ -34,7 +35,7 @@ import com.webforj.concern.HasVisibility;
 @NodeName("dwc-icon")
 public class Icon extends ElementComposite
     implements HasStyle<Icon>, HasClassName<Icon>, HasVisibility<Icon>, HasLabel<Icon>,
-    HasElementClickListener<Icon>, HasAttribute<Icon>, HasTooltip<Icon> {
+    HasElementClickListener<Icon>, HasAttribute<Icon>, HasTooltip<Icon>, HasSize<Icon> {
 
   // Properties
   private final PropertyDescriptor<String> nameProp = PropertyDescriptor.property("name", "");
