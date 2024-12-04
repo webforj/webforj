@@ -60,11 +60,6 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-code</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
       <artifactId>webforj-columnslayout</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -115,11 +110,6 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-markdown</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
       <artifactId>webforj-spinner</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -141,11 +131,6 @@
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-terminal</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
-      <artifactId>webforj-youtube</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

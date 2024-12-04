@@ -17,12 +17,10 @@
   <modules>
     <module>webforj-applayout</module>
     <module>webforj-appnav</module>
-    <module>webforj-code</module>
     <module>webforj-columnslayout</module>
     <module>webforj-dialog</module>
     <module>webforj-drawer</module>
     <module>webforj-flexlayout</module>
-    <module>webforj-markdown</module>
     <module>webforj-spinner</module>
     <module>webforj-splitter</module>
     <module>webforj-terminal</module>
@@ -33,7 +31,6 @@
     <module>webforj-loading</module>
     <module>webforj-login</module>
     <module>webforj-toolbar</module>
-    <module>webforj-youtube</module>
     <module>webforj-table</module>
   </modules>
 
