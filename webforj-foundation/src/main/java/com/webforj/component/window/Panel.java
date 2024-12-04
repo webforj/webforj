@@ -12,7 +12,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public class Panel extends Window {
+public final class Panel extends Window {
 
   /**
    * Constructs a new Panel window.
