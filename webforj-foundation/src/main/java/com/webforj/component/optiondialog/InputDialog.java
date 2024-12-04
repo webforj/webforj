@@ -436,7 +436,7 @@ public final class InputDialog extends DwcPromptMsgBox<InputDialog> {
    * @return the result of the input dialog
    */
   public String show() {
-    String result = Environment.getCurrent().getWebforjHelper().prompt(this);
+    String result = Environment.getCurrent().getBridge().prompt(this);
     if (!"::CANCEL::".equals(result)) {
       return result;
     }

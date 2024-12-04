@@ -49,7 +49,7 @@ public final class Request {
    */
   @Deprecated(since = "24.02", forRemoval = true)
   public static String getQueryParam(String key) {
-    return Environment.getCurrent().getWebforjHelper().getQueryParam(key);
+    return Environment.getCurrent().getBridge().getQueryParam(key);
   }
 
   /**
@@ -136,7 +136,7 @@ public final class Request {
    * @since 24.02
    */
   public String getQueryParameter(String key) {
-    return getEnvironment().getWebforjHelper().getQueryParam(key);
+    return getEnvironment().getBridge().getQueryParam(key);
   }
 
   /**

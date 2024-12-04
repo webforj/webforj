@@ -30,7 +30,7 @@ class MaskDecoratorTest {
   void shouldMaskString() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
 
       String input = "qw12";
       String mask = "AA-00";
@@ -48,7 +48,7 @@ class MaskDecoratorTest {
   void shouldMaskNumber() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
       float input = 12345;
       String mask = "##,###,###.00";
       String expected = "12,345.00";
@@ -65,7 +65,7 @@ class MaskDecoratorTest {
   void shouldMaskDate() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
 
       LocalDate input = LocalDate.now();
       String mask = "%Dz-%Mz-%Yl";
@@ -84,7 +84,7 @@ class MaskDecoratorTest {
   void shouldMaskTime() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
 
       LocalTime input = LocalTime.of(14, 30, 15);
       String mask = "%Hz:%mz:%sz";
@@ -103,7 +103,7 @@ class MaskDecoratorTest {
   void shouldMaskDateTime() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
 
       LocalDateTime input = LocalDateTime.of(2023, 6, 12, 14, 30, 15);
       String mask = "%Dz-%Mz-%Yl %Hz:%mz:%s";
@@ -125,7 +125,7 @@ class MaskDecoratorTest {
   void shouldParseDate() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
 
       String input = "12";
       String mask = "%Dz-%Mz-%Yz";
@@ -145,7 +145,7 @@ class MaskDecoratorTest {
   void shouldParseTime() {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getWebforjHelper()).thenReturn(bridge);
+      when(env.getBridge()).thenReturn(bridge);
 
       String input = "9pm";
       String mask = "%Hz:%Mz:%S";

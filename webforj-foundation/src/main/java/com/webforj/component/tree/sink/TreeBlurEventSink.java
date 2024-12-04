@@ -25,8 +25,7 @@ public class TreeBlurEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_LOST_FOCUS,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "lostFocusEvent"),
-          "onEvent");
+          Environment.getCurrent().getBridge().getEventProxy(this, "lostFocusEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

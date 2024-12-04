@@ -128,7 +128,7 @@ class MaskedTimeFieldTest {
 
       try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
         mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-        when(env.getWebforjHelper()).thenReturn(bridge);
+        when(env.getBridge()).thenReturn(bridge);
 
         LocalTime value = LocalTime.of(12, 30);
         String mask = MaskedTimeField.DEFAULT_MASK;
@@ -212,7 +212,7 @@ class MaskedTimeFieldTest {
 
       try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
         mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-        when(env.getWebforjHelper()).thenReturn(bridge);
+        when(env.getBridge()).thenReturn(bridge);
 
         LocalTime expectedValue = LocalTime.of(12, 30);
         String mask = MaskedTimeField.DEFAULT_MASK;
@@ -235,7 +235,7 @@ class MaskedTimeFieldTest {
 
       try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
         mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-        when(env.getWebforjHelper()).thenReturn(bridge);
+        when(env.getBridge()).thenReturn(bridge);
 
         String mask = MaskedTimeField.DEFAULT_MASK;
         String expected = "2020-10-01";

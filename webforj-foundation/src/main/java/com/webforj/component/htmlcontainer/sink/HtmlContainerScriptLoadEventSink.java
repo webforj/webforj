@@ -28,8 +28,7 @@ public class HtmlContainerScriptLoadEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(container);
       bbjctrl.setCallback(SysGuiEventConstants.ON_SCRIPT_LOADED,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "scriptLoadedEvent"),
-          "onEvent");
+          Environment.getCurrent().getBridge().getEventProxy(this, "scriptLoadedEvent"), "onEvent");
 
     } catch (Exception e) {
       Environment.logError(e);

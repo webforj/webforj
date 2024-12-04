@@ -24,8 +24,7 @@ public final class TreeDeselectEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_DESELECT,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "deselectEvent"),
-          "onEvent");
+          Environment.getCurrent().getBridge().getEventProxy(this, "deselectEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }

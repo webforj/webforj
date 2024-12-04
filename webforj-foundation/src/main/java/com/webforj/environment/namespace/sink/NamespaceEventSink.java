@@ -43,8 +43,7 @@ public final class NamespaceEventSink {
         if (Boolean.TRUE.equals(fChangeOnly)) {
           try {
             ns.setCallbackForNamespaceChange(
-                Environment.getCurrent().getWebforjHelper().getEventProxy(this, "onNsChange"),
-                ON_EVENT);
+                Environment.getCurrent().getBridge().getEventProxy(this, "onNsChange"), ON_EVENT);
             ArrayList<Consumer<NamespaceEvent>> consumerlist =
                 namespaceChangeTargets.computeIfAbsent(nsname, k -> new ArrayList<>());
             consumerlist.add(consumer);
@@ -54,8 +53,7 @@ public final class NamespaceEventSink {
         } else {
           try {
             ns.setCallbackForNamespace(
-                Environment.getCurrent().getWebforjHelper().getEventProxy(this, "onNsAccess"),
-                ON_EVENT);
+                Environment.getCurrent().getBridge().getEventProxy(this, "onNsAccess"), ON_EVENT);
             ArrayList<Consumer<NamespaceEvent>> consumerlist =
                 namespaceAccessTargets.computeIfAbsent(nsname, k -> new ArrayList<>());
             consumerlist.add(consumer);
@@ -70,8 +68,7 @@ public final class NamespaceEventSink {
         if (Boolean.TRUE.equals(fChangeOnly)) {
           try {
             ns.setCallbackForVariableChange(key,
-                Environment.getCurrent().getWebforjHelper().getEventProxy(this, "onVarChange"),
-                ON_EVENT);
+                Environment.getCurrent().getBridge().getEventProxy(this, "onVarChange"), ON_EVENT);
             ArrayList<Consumer<NamespaceEvent>> consumerlist =
                 variableChangeTargets.computeIfAbsent(nsname + "\0" + key, k -> new ArrayList<>());
             consumerlist.add(consumer);
@@ -81,8 +78,7 @@ public final class NamespaceEventSink {
         } else {
           try {
             ns.setCallbackForVariable(key,
-                Environment.getCurrent().getWebforjHelper().getEventProxy(this, "onVarAccess"),
-                ON_EVENT);
+                Environment.getCurrent().getBridge().getEventProxy(this, "onVarAccess"), ON_EVENT);
             ArrayList<Consumer<NamespaceEvent>> consumerlist =
                 variableAccessTargets.computeIfAbsent(nsname + "\0" + key, k -> new ArrayList<>());
             consumerlist.add(consumer);

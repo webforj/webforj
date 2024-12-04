@@ -58,7 +58,7 @@ class PageEventSinkTest {
     webManager = mock(BBjWebManager.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
-    when(environment.getWebforjHelper()).thenReturn(mock(WebforjBBjBridge.class));
+    when(environment.getBridge()).thenReturn(mock(WebforjBBjBridge.class));
     when(api.getWebManager()).thenReturn(webManager);
 
     page = spy(Page.class);
@@ -92,7 +92,7 @@ class PageEventSinkTest {
   void shouldProcessPayload() throws BBjException {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
-      when(environment.getWebforjHelper()).thenReturn(mock(WebforjBBjBridge.class));
+      when(environment.getBridge()).thenReturn(mock(WebforjBBjBridge.class));
 
       BBjWebEventOptions optionsMock = mock(BBjWebEventOptions.class);
       when(webManager.newEventOptions()).thenReturn(optionsMock);

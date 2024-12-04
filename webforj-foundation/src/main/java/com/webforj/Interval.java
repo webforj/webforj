@@ -97,7 +97,7 @@ public final class Interval {
     BBjAPI api = getEnvironment().getBBjAPI();
 
     try {
-      CustomObject handler = getEnvironment().getWebforjHelper().getEventProxy(this, "handleEvent");
+      CustomObject handler = getEnvironment().getBridge().getEventProxy(this, "handleEvent");
       api.createTimer(key, BasisNumber.createBasisNumber(getDelay()), handler, "onEvent");
       running = true;
     } catch (NumberFormatException | BBjException e) {

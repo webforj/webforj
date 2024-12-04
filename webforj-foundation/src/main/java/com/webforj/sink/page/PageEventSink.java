@@ -54,7 +54,7 @@ public class PageEventSink implements DwcEventSink<Page> {
   public String setCallback(Object options) {
     if (isConnected()) {
       try {
-        WebforjBBjBridge bridge = getEnvironment().getWebforjHelper();
+        WebforjBBjBridge bridge = getEnvironment().getBridge();
         CustomObject handler = bridge.getEventProxy(this, "handleEvent");
         return doSetCallback(getBbjWebManager(), options, handler, "onEvent");
       } catch (BBjException e) {

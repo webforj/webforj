@@ -74,7 +74,7 @@ public final class MaskDecorator {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
     Environment env = Environment.getCurrent();
-    return env.getWebforjHelper().maskString(input, mask);
+    return env.getBridge().maskString(input, mask);
   }
 
   /**
@@ -171,7 +171,7 @@ public final class MaskDecorator {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
     Environment env = Environment.getCurrent();
-    return env.getWebforjHelper().maskNumber(input, mask);
+    return env.getBridge().maskNumber(input, mask);
   }
 
   /**
@@ -247,7 +247,7 @@ public final class MaskDecorator {
     JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
     int julian = transformer.transformToComponent(input);
 
-    return env.getWebforjHelper().maskDateTime(julian, null, mask);
+    return env.getBridge().maskDateTime(julian, null, mask);
   }
 
   /**
@@ -331,7 +331,7 @@ public final class MaskDecorator {
     HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
     double hms = transformer.transformToComponent(input);
 
-    return env.getWebforjHelper().maskDateTime(0, hms, mask);
+    return env.getBridge().maskDateTime(0, hms, mask);
   }
 
   /**
@@ -429,7 +429,7 @@ public final class MaskDecorator {
     int julian = dateTransformer.transformToComponent(input.toLocalDate());
     double hms = timeTransformer.transformToComponent(input.toLocalTime());
 
-    return env.getWebforjHelper().maskDateTime(julian, hms, mask);
+    return env.getBridge().maskDateTime(julian, hms, mask);
   }
 
   /**
@@ -504,8 +504,7 @@ public final class MaskDecorator {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
     Environment env = Environment.getCurrent();
-    int julian =
-        env.getWebforjHelper().parseDate(input, mask, locale == null ? App.getLocale() : locale);
+    int julian = env.getBridge().parseDate(input, mask, locale == null ? App.getLocale() : locale);
     JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
 
     return transformer.transformToModel(julian);
@@ -661,8 +660,7 @@ public final class MaskDecorator {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
     Environment env = Environment.getCurrent();
-    double hms =
-        env.getWebforjHelper().parseTime(input, mask, locale == null ? App.getLocale() : locale);
+    double hms = env.getBridge().parseTime(input, mask, locale == null ? App.getLocale() : locale);
     HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
 
     return transformer.transformToModel(hms);

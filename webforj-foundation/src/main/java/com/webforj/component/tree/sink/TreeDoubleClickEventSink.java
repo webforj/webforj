@@ -25,8 +25,7 @@ public class TreeDoubleClickEventSink {
     try {
       bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_DOUBLE_CLICK,
-          Environment.getCurrent().getWebforjHelper().getEventProxy(this, "doubleClickEvent"),
-          "onEvent");
+          Environment.getCurrent().getBridge().getEventProxy(this, "doubleClickEvent"), "onEvent");
     } catch (Exception e) {
       Environment.logError(e);
     }
