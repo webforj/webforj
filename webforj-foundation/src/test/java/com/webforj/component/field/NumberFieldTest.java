@@ -2,6 +2,7 @@ package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -150,6 +151,13 @@ class NumberFieldTest {
       doReturn("").when(control).getText();
 
       assertEquals(null, component.getValue());
+    }
+
+    @Test
+    void shouldSetValueAsInt() {
+      NumberField spy = spy(component);
+      spy.setValue(10.0);
+      verify(spy, times(1)).setText("10");
     }
   }
 }
