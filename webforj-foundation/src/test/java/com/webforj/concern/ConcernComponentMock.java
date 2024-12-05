@@ -28,7 +28,8 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     HasHelperText<ConcernComponentMock>, HasMask<ConcernComponentMock>,
     HasRestoreValue<ConcernComponentMock, Double>, HasLocale<ConcernComponentMock>,
     HasStep<ConcernComponentMock, Double>, HasPredictedText<ConcernComponentMock>,
-    HasSize<ConcernComponentMock>, HasPrefixAndSuffix<ConcernComponentMock> {
+    HasSize<ConcernComponentMock>, HasPrefixAndSuffix<ConcernComponentMock>,
+    HasAutoFocus<ConcernComponentMock> {
 
   private Map<String, String> attributes = new HashMap<>();
   private Map<String, Object> properties = new HashMap<>();
@@ -72,6 +73,7 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
   private String maxHeight;
   private Component prefixComponent;
   private Component suffixComponent;
+  private boolean autofocus = false;
 
   @Override
   public String getAttribute(String attribute) {
@@ -605,6 +607,16 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     return this.prefixComponent;
   }
 
+  @Override
+  public ConcernComponentMock setAutoFocus(boolean autofocus) {
+    this.autofocus = autofocus;
+    return this;
+  }
+
+  @Override
+  public boolean isAutoFocus() {
+    return this.autofocus;
+  }
 
   @Override
   protected void onCreate(Window window) {

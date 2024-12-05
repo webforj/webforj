@@ -9,6 +9,7 @@ import com.webforj.component.event.KeypressEvent;
 import com.webforj.component.event.ModifyEvent;
 import com.webforj.component.event.sink.KeypressEventSink;
 import com.webforj.component.event.sink.ModifyEventSink;
+import com.webforj.concern.HasAutoFocus;
 import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasFocusStatus;
 import com.webforj.concern.HasHelperText;
@@ -40,8 +41,8 @@ import com.webforj.dispatcher.ListenerRegistration;
  */
 public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasReadOnly<T>, V>
     extends DwcValidatableComponent<T, V> implements HasLabel<T>, HasReadOnly<T>, HasRequired<T>,
-    HasExpanse<T, Expanse>, HasFocusStatus, HasHighlightOnFocus<T>, HasPlaceholder<T>,
-    ValueChangeModeAware<T>, HasHelperText<T>, HasPrefixAndSuffix<T> {
+    HasExpanse<T, Expanse>, HasFocusStatus, HasHighlightOnFocus<T>, HasAutoFocus<T>,
+    HasPlaceholder<T>, ValueChangeModeAware<T>, HasHelperText<T>, HasPrefixAndSuffix<T> {
   private final ComponentEventSinkRegistry<ModifyEvent> modifyEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new ModifyEventSink(this, getEventDispatcher()),
           ModifyEvent.class);
@@ -244,11 +245,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
-   * When true, the component should automatically have focus when the app has finished loading.
-   *
-   * @param autofocus true to automatically have focus when the app has finished loading.
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public T setAutoFocus(boolean autofocus) {
     this.autoFocus = autofocus;
     setUnrestrictedProperty("autofocus", autofocus);
@@ -256,11 +255,9 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
-   * Checks if the component should automatically have focus when the app has finished loading.
-   *
-   * @return true if the component should automatically have focus when the app has finished
-   *         loading.
+   * {@inheritDoc}
    */
+  @Override
   public boolean isAutoFocus() {
     return this.autoFocus;
   }
