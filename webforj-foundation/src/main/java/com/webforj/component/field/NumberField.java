@@ -119,6 +119,10 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
    */
   @Override
   public NumberField setValue(Double value) {
+    if (value != null && value % 1 == 0) {
+      return setText(String.valueOf(value.intValue()));
+    }
+
     return setText(String.valueOf(value));
   }
 
@@ -224,7 +228,11 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
   @Override
   protected Double convertValue(String value) {
     try {
-      return Double.valueOf(value);
+      if (value.contains(".")) {
+        return Double.valueOf(value);
+      } else {
+        return Double.valueOf(Integer.valueOf(value));
+      }
     } catch (NumberFormatException e) {
       return null;
     }
