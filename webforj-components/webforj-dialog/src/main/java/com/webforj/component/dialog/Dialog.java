@@ -1,6 +1,7 @@
 package com.webforj.component.dialog;
 
 import com.google.gson.annotations.SerializedName;
+import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.Theme;
 import com.webforj.component.dialog.event.DialogCloseEvent;
@@ -9,6 +10,8 @@ import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementCompositeContainer;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
+import com.webforj.component.element.annotation.PropertyMethods;
+import com.webforj.concern.HasAutoFocus;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasStyle;
 import com.webforj.dispatcher.EventListener;
@@ -22,7 +25,7 @@ import com.webforj.dispatcher.ListenerRegistration;
  */
 @NodeName("dwc-dialog")
 public class Dialog extends ElementCompositeContainer
-    implements HasClassName<Dialog>, HasStyle<Dialog> {
+    implements HasClassName<Dialog>, HasStyle<Dialog>, HasAutoFocus<Dialog> {
 
   /**
    * The dialog alignments.
@@ -49,6 +52,7 @@ public class Dialog extends ElementCompositeContainer
   // Properties
   private final PropertyDescriptor<Alignment> alignmentProp =
       PropertyDescriptor.property("alignment", Alignment.CENTER);
+  @PropertyMethods(setter = "setAutoFocus", getter = "isAutoFocus")
   private final PropertyDescriptor<Boolean> autoFocusProp =
       PropertyDescriptor.property("autofocus", false);
   private final PropertyDescriptor<Boolean> backdropProp =
@@ -170,18 +174,51 @@ public class Dialog extends ElementCompositeContainer
    *
    * @param autofocus the autofocus
    * @return the component itself
+   *
+   * @deprecated Use {@link #setAutoFocus(boolean)} instead.
    */
+  @ExcludeFromJacocoGeneratedReport
+  @Deprecated(since = "24.21", forRemoval = true)
   public Dialog setAutofocus(boolean autofocus) {
-    set(autoFocusProp, autofocus);
-    return this;
+    return setAutoFocus(autofocus);
   }
 
   /**
    * Gets the dialog autofocus.
    *
    * @return the autofocus
+   *
+   * @deprecated Use {@link #isAutoFocus()} instead.
    */
+  @ExcludeFromJacocoGeneratedReport
+  @Deprecated(since = "24.21", forRemoval = true)
   public boolean isAutofocus() {
+    return isAutoFocus();
+  }
+
+  /**
+   * Auto focus the dialog when it is opened.
+   *
+   * <p>
+   * When true then automatically focus the first focusable element in the dialog.
+   * </p>
+   *
+   * @param autofocus the autofocus
+   * @return the component itself
+   */
+  @Override
+  public Dialog setAutoFocus(boolean autofocus) {
+    set(autoFocusProp, autofocus);
+    return this;
+  }
+
+  /**
+   * Checks if the dialog should be auto focused when it is opened.
+   *
+   * @return the autofocus
+   */
+  @Override
+  public boolean isAutoFocus() {
     return get(autoFocusProp);
   }
 

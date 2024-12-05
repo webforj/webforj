@@ -1,6 +1,7 @@
 package com.webforj.component.drawer;
 
 import com.google.gson.annotations.SerializedName;
+import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.drawer.Drawer;
 import com.webforj.component.drawer.event.DrawerCloseEvent;
@@ -9,6 +10,8 @@ import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementCompositeContainer;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
+import com.webforj.component.element.annotation.PropertyMethods;
+import com.webforj.concern.HasAutoFocus;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasStyle;
 import com.webforj.dispatcher.EventListener;
@@ -23,7 +26,7 @@ import com.webforj.dispatcher.ListenerRegistration;
  */
 @NodeName("dwc-drawer")
 public class Drawer extends ElementCompositeContainer
-    implements HasClassName<Drawer>, HasStyle<Drawer> {
+    implements HasClassName<Drawer>, HasStyle<Drawer>, HasAutoFocus<Drawer> {
 
   /**
    * The drawer placement.
@@ -60,6 +63,7 @@ public class Drawer extends ElementCompositeContainer
   private static final String FOOTER_SLOT = "footer";
 
   // Property descriptors
+  @PropertyMethods(setter = "setAutoFocus", getter = "isAutoFocus")
   private final PropertyDescriptor<Boolean> autoFocusProp =
       PropertyDescriptor.property("autofocus", false);
   private final PropertyDescriptor<String> labelProp =
@@ -119,18 +123,51 @@ public class Drawer extends ElementCompositeContainer
    *
    * @param autoFocus When true then automatically focus the first focusable element in the drawer.
    * @return the drawer
+   *
+   * @deprecated Use {@link #setAutoFocus(boolean)} instead.
    */
+  @ExcludeFromJacocoGeneratedReport
+  @Deprecated(since = "24.21", forRemoval = true)
   public Drawer setAutofocus(boolean autoFocus) {
-    set(autoFocusProp, autoFocus);
-    return this;
+    return setAutoFocus(autoFocus);
   }
 
   /**
    * Gets Drawer auto focus.
    *
    * @return the drawer auto focus
+   *
+   * @deprecated Use {@link #isAutoFocus()} instead.
    */
+  @ExcludeFromJacocoGeneratedReport
+  @Deprecated(since = "24.21", forRemoval = true)
   public boolean isAutofocus() {
+    return isAutoFocus();
+  }
+
+  /**
+   * Auto focus the drawer when it is opened.
+   *
+   * <p>
+   * When true then automatically focus the first focusable element in the drawer.
+   * </p>
+   *
+   * @param autoFocus When true then automatically focus the first focusable element in the drawer.
+   * @return the drawer
+   */
+  @Override
+  public Drawer setAutoFocus(boolean autoFocus) {
+    set(autoFocusProp, autoFocus);
+    return this;
+  }
+
+  /**
+   * Checks if the drawer should be auto focused when it is opened.
+   *
+   * @return the drawer auto focus
+   */
+  @Override
+  public boolean isAutoFocus() {
     return get(autoFocusProp);
   }
 
