@@ -5,7 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this feature request!
+        Thanks for taking the time to fill out this feature request!. Before submitting, please search for similar feature requests
+        in the issues section to avoid duplicates.
   - type: textarea
     id: feature-description
     attributes:
