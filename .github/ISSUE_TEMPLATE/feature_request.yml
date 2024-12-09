@@ -5,31 +5,30 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this feature request!. Before submitting, please search for similar feature requests
-        in the issues section to avoid duplicates.
+        Thanks for taking the time to fill out this feature request! Before submitting, please search for similar feature requests in the issues section to avoid duplicates.
   - type: textarea
     id: feature-description
     attributes:
       label: Describe your motivation
-      description: Please provide a clear and concise description of what the feature is.
-      placeholder: "for instance: I would like to have a button to export the data to a CSV file from the table."
+      description: Please explain why this feature is needed and how it will benefit your application or workflow.
+      placeholder: "E.g., I need a feature to export table data to CSV for easier reporting and analysis."
     validations:
       required: true
   - type: textarea
     id: expected-solution
     attributes:
       label: Describe the solution you'd like
-      description: Please provide a clear and concise description of what you want to happen.
-      placeholder: "for instance: I would like to have a context menu on the table to export the data to a CSV file."
+      description: Provide a clear and concise description of the desired functionality or enhancement.
+      placeholder: "E.g., Add an 'Export to CSV' option to the table's context menu or toolbar."
   - type: textarea
     id: alternatives
     attributes:
       label: Describe alternatives you've considered
-      description: Have you considered any alternative solutions or workarounds?
-      placeholder: "for instance: I could use the browser's print functionality to save the data to a PDF file."
+      description: Share any alternative solutions or workarounds you've tried or considered.
+      placeholder: "E.g., I could manually copy the table data into a spreadsheet, but this is time-consuming."
   - type: textarea
     id: additional
     attributes:
       label: Additional context
-      description: Please provide any additional context or screenshots about the feature request here.
-      placeholder: Additional context
+      description: Provide any additional details or examples to support your feature request.
+      placeholder: "E.g., Screenshots, mockups, or specific use cases where this feature would help."

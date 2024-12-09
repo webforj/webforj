@@ -11,7 +11,7 @@ body:
     attributes:
       label: Describe the bug
       description: Please provide a clear and concise description of what the bug is.
-      placeholder: "For instance: When I start my application, the browser only shows a blank screen. After refreshing the application is shown."
+      placeholder: "E.g., Clicking on a button in the sidebar does not load the associated page component."
     validations:
       required: true
   - type: textarea
@@ -19,7 +19,7 @@ body:
     attributes:
       label: Reproduction
       description: Please tell us how to reproduce the bug.
-      placeholder: Expected behavior and actual behavior.
+      placeholder: "E.g., Start the application, open the sidebar, click on the 'Settings' button, and observe that no page is loaded."
     validations:
       required: true
   - type: textarea
@@ -27,7 +27,7 @@ body:
     attributes:
       label: Expected behavior
       description: Please provide a clear and concise description of what you expected to happen.
-      placeholder: "for instance: The application should show the login screen after starting."
+      placeholder: "E.g., Clicking on the 'Settings' button should load the settings page component in the main view."
     validations:
       required: false
   - type: dropdown
@@ -46,6 +46,6 @@ body:
     attributes:
       label: System Info
       description: Please let us know your environment when reproducing the issue.
-      placeholder: Operating System, webforJ version, Java version, Browser, etc.
+      placeholder: "E.g., Windows 11, webforJ v24.20, Java 11, Firefox 118."
     validations:
       required: true
