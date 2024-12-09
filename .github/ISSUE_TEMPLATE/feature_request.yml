@@ -1,5 +1,5 @@
 name: "🚀 Feature Request"
-description: Asking for a new feature or enhancement
+description: Asking for a new feature or enhancement in webforJ
 labels: ["Type: Feature"]
 body:
   - type: markdown

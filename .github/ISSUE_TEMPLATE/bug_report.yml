@@ -1,5 +1,5 @@
 name: "🐞 Bug report"
-description: File a bug report
+description: Report a bug in webforJ
 labels: ["Type: Bug"]
 body:
   - type: markdown
