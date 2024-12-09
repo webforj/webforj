@@ -1,0 +1,71 @@
+name: "🐞 Bug report"
+description: File a bug report
+labels: ["Type: Bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is. If you intend to submit a PR for this issue later, please let us know here.
+      placeholder: "For instance: When I start my application, the browser only shows a blank screen. After refreshing the application is shown."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Please tell us how to reproduce this issue step by step. If you have an example project to show, please provide us the link.
+      placeholder: >
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: >
+        for instance: The application should show the login screen after starting.
+    validations:
+      required: false
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment
+      description: Please let us know if you are deploying the application as WAR or running with BBj Services.
+      options:
+        - WAR (Default)
+        - BBj Services
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: system-info
+    attributes:
+      label: System Info
+      description: Please let us know your environment when reproducing the issue.
+      placeholder: >
+        **Software Versions (please complete the following information)**
+        - Java Version:
+        - webforJ version: [e.g 24.20]
+        - BBj Version: [e.g 24.20]
+
+        **Desktop (please complete the following information):**
+        - OS: [e.g. iOS]
+        - Browser [e.g. chrome, safari]
+        - Version [e.g. 22]
+
+        **Smartphone (please complete the following information):**
+        - Device: [e.g. iPhone6]
+        - OS: [e.g. iOS8.1]
+        - Browser [e.g. stock browser, safari]
+        - Version [e.g. 22]
+    validations:
+      required: true
