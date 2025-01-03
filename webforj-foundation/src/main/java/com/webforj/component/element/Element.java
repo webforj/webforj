@@ -73,6 +73,7 @@ public final class Element extends DwcContainer<Element>
   private final List<PendingResult<Element>> whenDefinedResults = new ArrayList<>();
   private boolean isDefined = false;
   private String html;
+  private boolean definedEventRegistered;
 
   /**
    * Constructs an HTML Element with the given tag name.
@@ -102,7 +103,6 @@ public final class Element extends DwcContainer<Element>
 
     this.nodeName = node;
     scriptEventSinkListenerRegistry.addEventListener(this::onExecuteAsyncScriptEvent);
-    definedEventSinkListenerRegistry.addEventListener(this::onDefinedEventEvent);
   }
 
   /**
@@ -138,6 +138,11 @@ public final class Element extends DwcContainer<Element>
    *         immediately complete.
    */
   public PendingResult<Element> whenDefined() {
+    if (!definedEventRegistered) {
+      definedEventSinkListenerRegistry.addEventListener(this::onDefinedEventEvent);
+      definedEventRegistered = true;
+    }
+
     if (isDefined()) {
       return PendingResult.completedWith(this);
     }
