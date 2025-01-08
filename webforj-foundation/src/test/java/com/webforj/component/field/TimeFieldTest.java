@@ -200,4 +200,24 @@ class TimeFieldTest {
     assertEquals(validMin, component.getMin());
     assertEquals(validMax, component.getMax());
   }
+
+  @Test
+  void shouldIgnoresSeconds() {
+    TimeField timeField = new TimeField();
+
+    LocalTime timeWithSeconds = LocalTime.of(10, 30, 45);
+    timeField.setValue(timeWithSeconds);
+    assertEquals(LocalTime.of(10, 30), timeField.getValue());
+
+    timeField.setText("12:45:30");
+    assertEquals("12:45", timeField.getText());
+
+    LocalTime minWithSeconds = LocalTime.of(8, 15, 30);
+    timeField.setMin(minWithSeconds);
+    assertEquals("08:15", timeField.getProperty("min"));
+
+    LocalTime maxWithSeconds = LocalTime.of(18, 45, 30);
+    timeField.setMax(maxWithSeconds);
+    assertEquals("18:45", timeField.getProperty("max"));
+  }
 }

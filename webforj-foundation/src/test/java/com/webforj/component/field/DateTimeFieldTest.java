@@ -205,4 +205,24 @@ class DateTimeFieldTest {
     assertEquals(validMin, component.getMin());
     assertEquals(validMax, component.getMax());
   }
+
+  @Test
+  void shouldIgnoresSeconds() {
+    DateTimeField dateTimeField = new DateTimeField();
+
+    LocalDateTime dateTimeWithSeconds = LocalDateTime.of(2020, 1, 1, 10, 30, 45);
+    dateTimeField.setValue(dateTimeWithSeconds);
+    assertEquals(LocalDateTime.of(2020, 1, 1, 10, 30), dateTimeField.getValue());
+
+    dateTimeField.setText("2020-01-01T12:45:30");
+    assertEquals("2020-01-01T12:45", dateTimeField.getText());
+
+    LocalDateTime minWithSeconds = LocalDateTime.of(2020, 1, 1, 8, 15, 30);
+    dateTimeField.setMin(minWithSeconds);
+    assertEquals("2020-01-01T08:15", dateTimeField.getProperty("min"));
+
+    LocalDateTime maxWithSeconds = LocalDateTime.of(2020, 1, 1, 18, 45, 30);
+    dateTimeField.setMax(maxWithSeconds);
+    assertEquals("2020-01-01T18:45", dateTimeField.getProperty("max"));
+  }
 }

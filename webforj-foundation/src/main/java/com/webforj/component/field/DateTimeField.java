@@ -5,6 +5,7 @@ import com.webforj.concern.HasMin;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 /**
@@ -149,8 +150,7 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
     }
 
     this.max = max;
-    setUnrestrictedProperty("max",
-        max == null ? null : DateTimeField.toDateTime(max.truncatedTo(ChronoUnit.SECONDS)));
+    setUnrestrictedProperty("max", max == null ? null : DateTimeField.toDateTime(max));
     return this;
   }
 
@@ -190,8 +190,7 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
     }
 
     this.min = min;
-    setUnrestrictedProperty("min",
-        min == null ? null : DateTimeField.toDateTime(min.truncatedTo(ChronoUnit.SECONDS)));
+    setUnrestrictedProperty("min", min == null ? null : DateTimeField.toDateTime(min));
     return this;
   }
 
@@ -225,7 +224,9 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
           "Date and time must be earlier than or equal to the maximum date and time");
     }
 
-    super.setText(text);
+    super.setText(
+        text != null && !text.isEmpty() ? DateTimeField.toDateTime(DateTimeField.fromDateTime(text))
+            : "");
     return this;
   }
 
@@ -234,7 +235,7 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
    */
   @Override
   public DateTimeField setValue(LocalDateTime value) {
-    setText(value == null ? null : DateTimeField.toDateTime(value.truncatedTo(ChronoUnit.SECONDS)));
+    setText(value == null ? null : DateTimeField.toDateTime(value));
     return this;
   }
 
@@ -244,8 +245,7 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
   @Override
   public LocalDateTime getValue() {
     String text = getText();
-    return text == null || text.isEmpty() ? null
-        : LocalDateTime.parse(text).truncatedTo(ChronoUnit.SECONDS);
+    return text == null || text.isEmpty() ? null : DateTimeField.fromDateTime(text);
   }
 
   /**
@@ -255,7 +255,7 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
    * @return the LocalDateTime
    */
   public static LocalDateTime fromDateTime(String dateTimeAsString) {
-    return LocalDateTime.parse(dateTimeAsString);
+    return LocalDateTime.parse(dateTimeAsString).truncatedTo(ChronoUnit.MINUTES);
   }
 
   /**
@@ -265,7 +265,8 @@ public final class DateTimeField extends DwcFieldInitializer<DateTimeField, Loca
    * @return the date and time string in yyyy-MM-ddTHH:mm:ss format
    */
   public static String toDateTime(LocalDateTime dateTime) {
-    return dateTime.toString();
+    return dateTime.truncatedTo(ChronoUnit.MINUTES)
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
   }
 
   /**
