@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.webforj</groupId>
@@ -10,11 +10,9 @@
   </parent>
 
   <properties>
-    <webforj.version>24.20-SNAPSHOT</webforj.version>
-    <webforj.engine.version>24.20-SNAPSHOT</webforj.engine.version>
+    <webforj.version>${project.version}</webforj.version>
+    <webforj.engine.version>${project.version}</webforj.engine.version>
   </properties>
-
-
 
   <artifactId>webforj-install-bbj-plugin</artifactId>
   <packaging>jar</packaging>
