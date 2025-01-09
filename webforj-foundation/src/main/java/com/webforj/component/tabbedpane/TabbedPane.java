@@ -1010,7 +1010,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
 
     if (tabCtrl != null) {
       try {
-        tabCtrl.setSelectedIndex(index);
+        tabCtrl.setSelectedIndex(index, false);
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
