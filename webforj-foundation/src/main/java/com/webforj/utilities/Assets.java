@@ -1,5 +1,6 @@
 package com.webforj.utilities;
 
+import com.basis.util.common.ServerConstants;
 import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
@@ -87,7 +88,7 @@ public class Assets {
     boolean withBBjService = Environment.isRunningWithBBjServices();
 
     if (!withBBjService) {
-      url = "/static/";
+      url = "static/";
       Config config = Environment.getCurrent().getConfig();
       String assetsDirProp = "webforj.assetsDir";
       String assetsDir = config.hasPath(assetsDirProp) && !config.getIsNull(assetsDirProp)
@@ -98,7 +99,9 @@ public class Assets {
       }
     }
 
-    return url;
+    String context = System.getProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP, "/");
+    String fullUrl = context + "/" + url;
+    return RouterUtils.normalizePath(fullUrl);
   }
 
   /**
