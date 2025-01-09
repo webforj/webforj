@@ -511,14 +511,14 @@ class TabbedPaneTest {
       assertEquals(addedTab, component.getSelected());
 
       int times = controlDefined ? 1 : 0;
-      verify(control, times(times)).setSelectedIndex(0);
+      verify(control, times(times)).setSelectedIndex(0, false);
     }
 
     @Test
     void selectedShouldThrowDwcjRuntimeException() throws BBjException {
       component.addTab("Tab1", new DwcComponentMock());
 
-      doThrow(BBjException.class).when(control).setSelectedIndex(anyInt());
+      doThrow(BBjException.class).when(control).setSelectedIndex(anyInt(), eq(false));
       assertThrows(WebforjRuntimeException.class, () -> component.select(0));
     }
 
@@ -538,12 +538,12 @@ class TabbedPaneTest {
 
       component.select(1);
 
-      verify(control, times(0)).setSelectedIndex(0);
+      verify(control, times(0)).setSelectedIndex(0, false);
 
       ReflectionUtils.unNullifyControl(component, control);
       component.onAttach();
 
-      verify(control, times(1)).setSelectedIndex(1);
+      verify(control, times(1)).setSelectedIndex(1, false);
     }
   }
 
