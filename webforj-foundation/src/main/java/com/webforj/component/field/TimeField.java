@@ -1,12 +1,12 @@
 package com.webforj.component.field;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.time.format.DateTimeFormatter;
 
 /**
  * The TimeField provides a user interface component that designed to let the user easily enter a
