@@ -1,11 +1,12 @@
 package com.webforj.component.field;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 
 /**
  * The TimeField provides a user interface component that designed to let the user easily enter a
@@ -131,8 +132,7 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
     }
 
     this.max = max;
-    setUnrestrictedProperty("max",
-        max == null ? null : TimeField.toTime(max.truncatedTo(ChronoUnit.SECONDS)));
+    setUnrestrictedProperty("max", max == null ? null : TimeField.toTime(max));
     return this;
   }
 
@@ -162,8 +162,7 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
     }
 
     this.min = min;
-    setUnrestrictedProperty("min",
-        min == null ? null : TimeField.toTime(min.truncatedTo(ChronoUnit.SECONDS)));
+    setUnrestrictedProperty("min", min == null ? null : TimeField.toTime(min));
     return this;
   }
 
@@ -192,7 +191,8 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
       throw new IllegalArgumentException("Time must be earlier than or equal to the maximum time");
     }
 
-    super.setText(text);
+    super.setText(
+        text != null && !text.isEmpty() ? TimeField.toTime(TimeField.fromTime(text)) : "");
     return this;
   }
 
@@ -201,7 +201,7 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
    */
   @Override
   public TimeField setValue(LocalTime value) {
-    setText(value == null ? null : TimeField.toTime(value.truncatedTo(ChronoUnit.SECONDS)));
+    setText(value == null ? null : TimeField.toTime(value));
     return this;
   }
 
@@ -221,17 +221,17 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
    * @return the LocalTime
    */
   public static LocalTime fromTime(String timeAsString) {
-    return LocalTime.parse(timeAsString);
+    return LocalTime.parse(timeAsString).truncatedTo(ChronoUnit.MINUTES);
   }
 
   /**
-   * Convert a LocalTime to a time string in HH:mm:ss format.
+   * Convert a LocalTime to a time string in HH:mm format.
    *
    * @param time the LocalTime
-   * @return the time string in HH:mm:ss format
+   * @return the time string in HH:mm format
    */
   public static String toTime(LocalTime time) {
-    return time.toString();
+    return time.truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ofPattern("HH:mm"));
   }
 
   /**
@@ -258,16 +258,6 @@ public final class TimeField extends DwcFieldInitializer<TimeField, LocalTime>
   }
 
   private int compareTime(LocalTime time1, LocalTime time2) {
-    int hourComparison = Integer.compare(time1.getHour(), time2.getHour());
-    if (hourComparison != 0) {
-      return hourComparison;
-    }
-
-    int minuteComparison = Integer.compare(time1.getMinute(), time2.getMinute());
-    if (minuteComparison != 0) {
-      return minuteComparison;
-    }
-
-    return Integer.compare(time1.getSecond(), time2.getSecond());
+    return time1.compareTo(time2);
   }
 }
