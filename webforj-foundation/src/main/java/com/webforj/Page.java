@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public final class Page implements HasJsExecution {
   public static final String DEFAULT_TITLE_FORMAT =
-      "{WindowTitle} {BrowserTitle  ? (WindowTitle ? '- ' : '') + BrowserTitle : ''}";
+      "{WindowTitle ?? ''} {BrowserTitle ? ((WindowTitle ? '- ' : '') + BrowserTitle) : ''}";
   private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
