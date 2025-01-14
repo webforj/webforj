@@ -1,6 +1,5 @@
 package com.webforj.utilities;
 
-import com.basis.util.common.ServerConstants;
 import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
@@ -99,7 +98,7 @@ public class Assets {
       }
     }
 
-    String context = System.getProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP, "/");
+    String context = System.getProperty("webforj.context", "/");
     String fullUrl = context + "/" + url;
     return RouterUtils.normalizePath(fullUrl);
   }
