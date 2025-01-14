@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.basis.util.common.ServerConstants;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.Routify;
 import com.webforj.component.optiondialog.OptionDialog;
@@ -738,7 +737,7 @@ public abstract class App {
     String root = "webapp/" + getApplicationName();
     String isBbjService = System.getProperty("com.basis.noBBjServices", "");
     if (isBbjService.equals("true")) {
-      root = System.getProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP, "");
+      root = System.getProperty("webforj.context", "");
       root = root.isBlank() ? "/" : root;
     }
 

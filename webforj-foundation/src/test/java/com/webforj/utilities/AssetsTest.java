@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
-import com.basis.util.common.ServerConstants;
 import com.webforj.App;
 import com.webforj.Environment;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,7 @@ class AssetsTest {
 
   @BeforeEach
   void setUp() {
-    System.clearProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP);
+    System.clearProperty("webforj.context");
   }
 
   @Test
@@ -34,7 +33,7 @@ class AssetsTest {
 
   @Test
   void shouldReturnFilesUrlWithContextProperty() {
-    System.setProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP, "/customContext");
+    System.setProperty("webforj.context", "/customContext");
     try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
         MockedStatic<App> appMock = mockStatic(App.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
@@ -43,7 +42,7 @@ class AssetsTest {
       String result = Assets.getWebServerFilesUrl();
       assertEquals("/customContext/files/myApp/", result);
     } finally {
-      System.clearProperty(ServerConstants.WEB_BUIRES_CONTEXT_PROP);
+      System.clearProperty("webforj.context");
     }
   }
 
