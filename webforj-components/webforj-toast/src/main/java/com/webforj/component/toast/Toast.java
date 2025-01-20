@@ -40,7 +40,7 @@ public class Toast extends ElementCompositeContainer
 
   static final Placement DEFAULT_PLACEMENT = Placement.BOTTOM;
   static final Theme DEFAULT_THEME = Theme.DEFAULT;
-  static final int DEFAULT_DURATION = 3000;
+  static final int DEFAULT_DURATION = 5000;
 
   /**
    * Describes the placement of the toast.
