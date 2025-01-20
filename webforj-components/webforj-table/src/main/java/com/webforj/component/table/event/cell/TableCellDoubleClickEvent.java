@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@EventName("dwc-cell-clicked")
+@EventName("dwc-cell-dbclicked")
 public class TableCellDoubleClickEvent<T> extends TableCellEvent<T> {
 
   /**
