@@ -221,4 +221,30 @@ class DwcTextFieldTest {
       assertEquals("", component.getSelectedText());
     }
   }
+
+  @Nested
+  @DisplayName("AutoComplete API")
+  class AutoCompleteApi {
+
+    @Test
+    @DisplayName("setting/getting autocomplete when control is null")
+    void settingGettingAutoCompleteWhenControlIsNull() throws IllegalAccessException, BBjException {
+      ReflectionUtils.nullifyControl(component);
+      component.setAutoComplete("on");
+      assertEquals("on", component.getAutoComplete());
+
+      verify(control, times(0)).setProperty("autocomplete", "on");
+      verify(control, times(0)).getProperty("autocomplete");
+    }
+
+    @Test
+    @DisplayName("setting/getting autocomplete when control is not null")
+    void settingGettingAutoCompleteWhenControlIsNotNull() throws BBjException {
+      component.setAutoComplete("on");
+      assertEquals("on", component.getAutoComplete());
+
+      verify(control, times(1)).setProperty("autocomplete", "on");
+      verify(control, times(0)).getProperty("autocomplete");
+    }
+  }
 }
