@@ -49,6 +49,7 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
   private int maxLength = 524288;
   private SelectionRange range = null;
   private String pattern = null;
+  private String autocomplete = "off";
 
   /**
    * Constructs a new field with a label, value, and placeholder.
@@ -197,6 +198,40 @@ abstract class DwcTextField<T extends DwcTextField<T>> extends DwcFieldInitializ
   @Override
   public String getPattern() {
     return pattern;
+  }
+
+  /**
+   * Specify what if any permission the user agent has to provide automated assistance in filling
+   * out form field values, as well as guidance to the browser as to the type of information
+   * expected in the field.
+   *
+   * <p>
+   * The value is either the keyword <code>off</code> or <code>on</code>, or a space-separated <a
+   * href=https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete#values>token-list</a>
+   * that describes the meaning of the autocompletion value.
+   *
+   * For example, a value of "off" means that the browser should not automatically complete the
+   * input. A value of "username" means that the browser should automatically complete the input
+   * with the user's username.
+   * </p>
+   *
+   * @param autocomplete the autocomplete value
+   * @return the component itself
+   */
+  public T setAutoComplete(String autocomplete) {
+    this.autocomplete = autocomplete;
+    setUnrestrictedProperty("autocomplete", this.autocomplete);
+
+    return getSelf();
+  }
+
+  /**
+   * Get the autocomplete value.
+   *
+   * @return the autocomplete value
+   */
+  public String getAutoComplete() {
+    return this.autocomplete;
   }
 
   /**
