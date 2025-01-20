@@ -7,6 +7,7 @@ import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.concern.HasElementClickListener;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
+import com.webforj.concern.HasExpanse;
 import com.webforj.concern.HasLabel;
 import com.webforj.concern.HasSize;
 import com.webforj.concern.HasStyle;
@@ -33,15 +34,17 @@ import com.webforj.concern.HasVisibility;
  * @see TablerIcon
  */
 @NodeName("dwc-icon")
-public class Icon extends ElementComposite
-    implements HasStyle<Icon>, HasClassName<Icon>, HasVisibility<Icon>, HasLabel<Icon>,
-    HasElementClickListener<Icon>, HasAttribute<Icon>, HasTooltip<Icon>, HasSize<Icon> {
+public class Icon extends ElementComposite implements HasStyle<Icon>, HasClassName<Icon>,
+    HasVisibility<Icon>, HasLabel<Icon>, HasElementClickListener<Icon>, HasAttribute<Icon>,
+    HasTooltip<Icon>, HasSize<Icon>, HasExpanse<Icon, IconExpanse> {
 
   // Properties
   private final PropertyDescriptor<String> nameProp = PropertyDescriptor.property("name", "");
   private final PropertyDescriptor<String> poolProp = PropertyDescriptor.property("pool", "");
   private final PropertyDescriptor<Theme> themeProp =
       PropertyDescriptor.property("theme", Theme.DEFAULT);
+  private final PropertyDescriptor<IconExpanse> expanseProp =
+      PropertyDescriptor.property("expanse", IconExpanse.XSMALL);
   private final PropertyDescriptor<String> labelProp = PropertyDescriptor.property("label", "");
 
   /**
@@ -116,6 +119,23 @@ public class Icon extends ElementComposite
    */
   public Theme getTheme() {
     return get(themeProp);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Icon setExpanse(IconExpanse expanse) {
+    set(expanseProp, expanse);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public IconExpanse getExpanse() {
+    return get(expanseProp);
   }
 
   /**
