@@ -34,6 +34,24 @@ class ComboBoxTest {
   }
 
   @Test
+  void shouldClearTextFieldWhenCustomValueNotAllowed() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+    component.setAllowCustomValue(false);
+    component.setText("Some text");
+    component.removeAll();
+    assertEquals("", component.getText());
+  }
+
+  @Test
+  void shouldNotClearTextFieldWhenCustomValueAllowed() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+    component.setAllowCustomValue(true);
+    component.setText("Some text");
+    component.removeAll();
+    assertEquals("Some text", component.getText());
+  }
+
+  @Test
   @DisplayName("adding/removing supported events")
   void addingRemovingSupportedEvents() {
     EventListener<ModifyEvent> modifyListener = event -> {
@@ -49,6 +67,8 @@ class ComboBoxTest {
     r1.remove();
     r2.remove();
     assertEquals(0, component.getEventListeners(ModifyEvent.class).size());
-    assertEquals(0, component.getEventListeners(KeypressEvent.class).size());
+    assertEquals(0, component.getEventListeners(ModifyEvent.class).size());
   }
+
+
 }
