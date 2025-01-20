@@ -170,6 +170,20 @@ public final class ComboBox extends DwcSelectDropdown<ComboBox>
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ComboBox removeAll() {
+    // If custom value is not allowed, clear the text field
+    // to have a consistent behavior with the ChoiceBox
+    if (!isAllowCustomValue()) {
+      setText("");
+    }
+
+    return super.removeAll();
+  }
+
+  /**
    * Adds a {@link ModifyEvent} listener for the component.
    *
    * @param listener the event listener to be added
