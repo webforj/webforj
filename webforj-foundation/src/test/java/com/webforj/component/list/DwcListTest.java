@@ -21,7 +21,6 @@ import com.webforj.component.list.event.ListSelectEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
