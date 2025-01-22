@@ -1,10 +1,19 @@
 package com.webforj.annotation;
 
+import com.basis.util.common.ServerConstants;
 import com.webforj.App;
 import com.webforj.Page;
+import com.webforj.ProfileDescriptor;
+import com.webforj.ProfileDescriptor.ProfileDescriptorBuilder;
+import com.webforj.Request;
 import com.webforj.component.Component;
 import com.webforj.environment.ObjectTable;
 import com.webforj.environment.StringTable;
+import com.webforj.exceptions.WebforjRuntimeException;
+import com.webforj.utilities.Assets;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -26,7 +35,6 @@ public final class AnnotationProcessor {
    */
   public void processAppAnnotations(App app) {
     processConfiguration(app);
-    processAppTitle(app);
     processAppAttribute(app);
     processAppMeta(app);
     processLink(app);
@@ -37,6 +45,8 @@ public final class AnnotationProcessor {
     processAppDarkTheme(app);
     processAppLightTheme(app);
     processAppTheme(app);
+    processAppProfile(app);
+    processAppTitle(app);
   }
 
   /**
@@ -317,5 +327,208 @@ public final class AnnotationProcessor {
         StringTable.put(key, configuration.value());
       }
     }
+  }
+
+  /**
+   * Process the AppProfile annotation.
+   *
+   * @param clazz The class to process
+   */
+  ProfileDescriptor processAppProfile(Object clazz) {
+    AppProfile appProfile = clazz.getClass().getAnnotation(AppProfile.class);
+    if (appProfile == null) {
+      return null;
+    }
+
+    String base = getBaseUrl();
+    ProfileDescriptorBuilder builder = initializeProfileDescriptorBuilder(appProfile, base);
+
+    processDefaultIcon(appProfile, builder, base);
+    processIcons(appProfile, builder, base);
+    processScreenshots(appProfile, builder, base);
+
+    ProfileDescriptor profileDescriptor = builder.build();
+    setManifest(profileDescriptor);
+    setMetaTags(appProfile, base);
+
+    return profileDescriptor;
+  }
+
+  private String getBaseUrl() {
+    try {
+      return new URI(Request.getCurrent().getUrl()).resolve(".").toString();
+    } catch (URISyntaxException e) {
+      throw new WebforjRuntimeException(
+          "Failed to process the AppProfile annotation. The base URL is invalid.", e);
+    }
+  }
+
+  private ProfileDescriptorBuilder initializeProfileDescriptorBuilder(AppProfile appProfile,
+      String base) {
+    // @formatter:off
+    return ProfileDescriptor.create()
+        .setBase(base)
+        .setId(appProfile.id().isEmpty() ? base : appProfile.id())
+        .setShortName(appProfile.shortName())
+        .setName(appProfile.name())
+        .setDescription(appProfile.description())
+        .setStartUrl(appProfile.startUrl())
+        .setDisplay(appProfile.display())
+        .setThemeColor(appProfile.themeColor())
+        .setBackgroundColor(appProfile.backgroundColor())
+        .setOrientation(appProfile.orientation())
+        .setCategories(Arrays.asList(appProfile.categories()));
+    // @formatter:on
+  }
+
+  private void processDefaultIcon(AppProfile appProfile, ProfileDescriptorBuilder builder,
+      String base) {
+    AppProfile.DefaultIcon defaultIcon = appProfile.defaultIcon();
+    if (defaultIcon == null) {
+      return;
+    }
+
+    String iconFilename = Paths.get(defaultIcon.value()).getFileName().toString();
+    String iconBaseName = iconFilename.substring(0, iconFilename.lastIndexOf('.'));
+    String iconExtension = iconFilename.substring(iconFilename.lastIndexOf('.'));
+
+    for (int size : defaultIcon.sizes()) {
+      String src = defaultIcon.value().replace(iconFilename,
+          iconBaseName + "-" + size + "x" + size + iconExtension);
+      // @formatter:off
+      ProfileDescriptor.Image image = new ProfileDescriptor.Image.ImageBuilder()
+          .setSrc(resolveUrl(src, base))
+          .setSizes(size + "x" + size)
+          .build();
+      // @formatter:on
+
+      builder.addIcon(image);
+    }
+  }
+
+  private void processIcons(AppProfile appProfile, ProfileDescriptorBuilder builder, String base) {
+    for (AppProfile.Icon icon : appProfile.icons()) {
+      // @formatter:off
+      ProfileDescriptor.Image.ImageBuilder imageBuilder = new ProfileDescriptor.Image.ImageBuilder()
+          .setSrc(resolveUrl(icon.src(), base))
+          .setSizes(icon.sizes())
+          .setPurpose(icon.purpose());
+      // @formatter:on
+
+      // allow to detect the icon type based on the file extension
+      if (!icon.type().isEmpty()) {
+        imageBuilder.setType(icon.type());
+      }
+
+      builder.addIcon(imageBuilder.build());
+    }
+  }
+
+  private void processScreenshots(AppProfile appProfile, ProfileDescriptorBuilder builder,
+      String base) {
+    for (AppProfile.Screenshot screenshot : appProfile.screenshots()) {
+      // @formatter:off
+      ProfileDescriptor.Image.ImageBuilder imageBuilder = new ProfileDescriptor.Image.ImageBuilder()
+          .setSrc(resolveUrl(screenshot.src(), base))
+          .setSizes(screenshot.sizes())
+          .setLabel(screenshot.label())
+          .setFormFactor(screenshot.formFactor())
+          .setPlatform(screenshot.platform());
+      // @formatter:on
+
+      if (!screenshot.type().isEmpty()) {
+        imageBuilder.setType(screenshot.type());
+      }
+
+      builder.addScreenshot(imageBuilder.build());
+    }
+  }
+
+  private void setManifest(ProfileDescriptor profileDescriptor) {
+    String registerManifest = "let element = document.createElement('link');"
+        + "let encoded = encodeURIComponent(JSON.stringify(" + profileDescriptor.toString() + "));"
+        + "element.setAttribute('rel', 'manifest');"
+        + "element.setAttribute('href', 'data:application/manifest+json,' + encoded);"
+        + "document.querySelector('head').appendChild(element);";
+
+    getPage().executeJsVoidAsync(registerManifest);
+  }
+
+  private void setMetaTags(AppProfile appProfile, String base) {
+    Page page = getPage();
+
+    page.setMeta("msapplication-tap-highlight", "no");
+    page.setMeta("apple-mobile-web-app-capable", "yes");
+    page.setMeta("mobile-web-app-capable", "yes");
+    page.setMeta("apple-touch-fullscreen", "yes");
+    page.setMeta("msapplication-tap-highlight", "no");
+
+    String name = appProfile.name();
+    if (name != null && !name.isEmpty()) {
+      page.setTitle(appProfile.name());
+      page.setMeta("apple-mobile-web-app-title", appProfile.name());
+    }
+
+    String description = appProfile.description();
+    if (description != null && !description.isEmpty()) {
+      page.setMeta("description", description);
+    }
+
+    String viewport = appProfile.viewport();
+    if (viewport != null && !viewport.isEmpty()) {
+      page.setMeta("viewport", viewport);
+    }
+
+    String themeColor = appProfile.themeColor();
+    if (themeColor != null && !themeColor.isEmpty()) {
+      page.setMeta("theme-color", themeColor);
+    }
+
+    String backgroundColor = appProfile.backgroundColor();
+    if (backgroundColor != null && !backgroundColor.isEmpty()) {
+      page.setMeta("background-color", backgroundColor);
+    }
+
+    AppProfile.DefaultIcon defaultIcon = appProfile.defaultIcon();
+    if (defaultIcon != null) {
+      // @formatter:off
+      ProfileDescriptor.Image image = new ProfileDescriptor.Image.ImageBuilder()
+          .setSrc(resolveUrl(defaultIcon.value(), base))
+          .build();
+      // @formatter:on
+
+      HashMap<String, String> attributes = new HashMap<>();
+      attributes.put("rel", "shortcut icon");
+      attributes.put("type", image.getType());
+      page.addLink(image.getSrc(), true, attributes);
+    }
+  }
+
+  private String resolveUrl(String src, String base) {
+    String resolved = src;
+    boolean isContext = Assets.isContextUrl(src);
+    if (isContext) {
+      throw new IllegalArgumentException(
+          "The src attribute for App Icons and Screenshots must be a URL, not a context path.");
+    }
+
+    boolean isWs = Assets.isWebServerUrl(src);
+    if (isWs) {
+      resolved = Assets.resolveWebServerUrl(src);
+    }
+
+    // If resolved is not a fully qualified URL, resolve it with the base URL
+    try {
+      URI uri = new URI(resolved);
+      if (!uri.isAbsolute()) {
+        // If not absolute, combine with the base URL
+        URI baseUri = new URI(base);
+        resolved = baseUri.resolve(uri).toString();
+      }
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Invalid URL format: " + resolved, e);
+    }
+
+    return resolved;
   }
 }
