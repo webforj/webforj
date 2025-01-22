@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a component that displays a list of objects and allows users to select single or
@@ -309,6 +310,54 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
   @Override
   public List<Object> getValue() {
     return getSelectedKeys();
+  }
+
+  /**
+   * Selects the items with the given text.
+   *
+   * <p>
+   * Selects one or more items with the given text. For multiple selection mode, the text should be
+   * separated by a comma. If the text is not found in the list, it will be ignored.
+   * </p>
+   *
+   * @return the component itself
+   */
+  @Override
+  public ListBox setText(String text) {
+    Objects.requireNonNull(text, "The text cannot be null");
+
+    List<String> items = Arrays.asList(text.trim().split(",\\s*"));
+
+    // find all items with the given text
+    Stream<ListItem> matched = getItems().stream().filter(i -> items.contains(i.getText()));
+    SelectionMode mode = getSelectionMode();
+
+    if (mode.equals(SelectionMode.SINGLE)) {
+      matched.findFirst().ifPresent(this::select);
+    } else if (mode.equals(SelectionMode.MULTIPLE)) {
+      select(matched.toArray(ListItem[]::new));
+    }
+
+    return this;
+  }
+
+  /**
+   * Returns the text of the selected items separated by a comma.
+   *
+   * <p>
+   * If no item is selected, then null is returned.
+   * </p>
+   *
+   * @return the text of the selected items
+   */
+  @Override
+  public String getText() {
+    List<ListItem> items = getSelectedItems();
+    if (items.isEmpty()) {
+      return null;
+    }
+
+    return items.stream().map(ListItem::getText).collect(Collectors.joining(","));
   }
 
   /**

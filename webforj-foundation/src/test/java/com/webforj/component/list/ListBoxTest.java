@@ -1,6 +1,7 @@
 package com.webforj.component.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -256,6 +257,55 @@ class ListBoxTest {
         throws BBjException {
       doThrow(BBjException.class).when(control).getSelectedIndices();
       assertThrows(WebforjRuntimeException.class, () -> component.getSelectedIndices());
+    }
+  }
+
+  @Nested
+  @DisplayName("Text API")
+  class TextApi {
+
+    @Test
+    @DisplayName("should set text and get text")
+    void shouldSetTextAndGetText() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.add("key-3", "value-3");
+
+      component.setText("   value-2,    value-3");
+
+      assertEquals("value-2,value-3", component.getText());
+    }
+
+    @Test
+    @DisplayName("should return empty text when no items are selected")
+    void shouldReturnEmptyTextWhenNoItemsAreSelected() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setSelectionMode(SelectionMode.MULTIPLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.add("key-3", "value-3");
+
+      assertNull(component.getText());
+    }
+
+    @Test
+    @DisplayName("should set text and get text in single selection mode")
+    void shouldSetTextAndGetTextInSingleSelectionMode()
+        throws BBjException, IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+
+      component.setSelectionMode(SelectionMode.SINGLE);
+      component.add("key-1", "value-1");
+      component.add("key-2", "value-2");
+      component.add("key-3", "value-3");
+
+      component.setText("   value-2,    value-3");
+
+      assertEquals("value-2", component.getText());
     }
   }
 

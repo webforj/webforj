@@ -12,6 +12,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Represents a ChoiceBox component that provides users with a list of options for selection.
@@ -92,6 +94,32 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
   @ExcludeFromJacocoGeneratedReport
   public ButtonTheme getTheme() {
     return super.<ButtonTheme>getComponentTheme();
+  }
+
+  /**
+   * Selects the item with the given text.
+   *
+   * @return the component itself
+   */
+  @Override
+  public ChoiceBox setText(String text) {
+    Objects.requireNonNull(text, "The text cannot be null");
+
+    String needle = text.trim();
+    getItems().stream().filter(item -> item.getText().equals(needle)).findFirst()
+        .ifPresent(this::select);
+
+    return this;
+  }
+
+  /**
+   * Selects an item with the given key.
+   *
+   * @return the component itself
+   */
+  @Override
+  public String getText() {
+    return Optional.ofNullable(getSelectedItem()).map(ListItem::getText).orElse(null);
   }
 
   /**

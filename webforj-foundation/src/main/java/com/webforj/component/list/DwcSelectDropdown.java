@@ -2,7 +2,6 @@ package com.webforj.component.list;
 
 import com.basis.bbj.proxies.sysgui.BBjComboBox;
 import com.basis.startup.type.BBjException;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.Component;
 import com.webforj.component.event.ComponentEventSinkRegistry;
