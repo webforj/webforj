@@ -6,6 +6,7 @@ import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.component.optiondialog.ConfirmDialog;
 import com.webforj.component.optiondialog.FileChooserDialog;
+import com.webforj.component.optiondialog.FileSaveDialog;
 import com.webforj.component.optiondialog.FileUploadDialog;
 import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
@@ -96,6 +97,15 @@ public interface WebforjBBjBridge {
    * @since 24.02
    */
   String fileUpload(FileUploadDialog options);
+
+  /**
+   * invoke the BBj-side FILESAVE(server) function with the given options.
+   *
+   * @param options the options
+   * @return the result of the FILESAVE function
+   * @since 24.21
+   */
+  String fileSave(FileSaveDialog options);
 
   /**
    * invoke the BBj-side WAIT function.

@@ -7,6 +7,7 @@ import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.optiondialog.ConfirmDialog;
 import com.webforj.component.optiondialog.FileChooserDialog;
+import com.webforj.component.optiondialog.FileSaveDialog;
 import com.webforj.component.optiondialog.FileUploadDialog;
 import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
@@ -77,6 +78,12 @@ public class WebforjHelperMock implements WebforjBBjBridge {
 
   @Override
   public String fileUpload(FileUploadDialog options) {
+    return "";
+  }
+
+
+  @Override
+  public String fileSave(FileSaveDialog options) {
     return "";
   }
 

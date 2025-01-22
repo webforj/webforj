@@ -3,6 +3,7 @@ use com.webforj.component.optiondialog.ConfirmDialog
 use com.webforj.component.optiondialog.InputDialog
 use com.webforj.component.optiondialog.FileChooserDialog
 use com.webforj.component.optiondialog.FileUploadDialog
+use com.webforj.component.optiondialog.FileSaveDialog
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
 use java.util.Locale
@@ -207,6 +208,35 @@ class public WebforjHelper implements WebforjBBjBridge
       mode$ = mode$ + options!.getAttributesAsString()
 
       result! = fileopen(prompt!,"","","",filter$,mode=mode$)
+      methodret result!
+    methodend
+
+    method public String fileSave(FileSaveDialog options!)
+      REM FILESAVE(prompt,path,name,ext[,filters[,mode[,MODE="CLIENT,STYLE=name,EXISTS=option"]])
+
+      prompt! = String.valueOf(options!.getTitle())
+      path! = String.valueOf(options!.getInitialPath())
+      name! = String.valueOf(options!.getName())
+
+      filterList! = options!.getFilters()
+      it! = filterList!.iterator()
+      filter$ = ""
+      while it!.hasNext()
+        entry! = it!.next()
+        filter$ = filter$ + String.valueOf(entry!.getDescription()) + $0a$ + String.valueOf(entry!.getPattern()) + $0a$
+      wend
+
+      selectionMode! = options!.getSelectionMode().getValue()
+      mode$ = ""
+      if(options!.isRestricted()) then
+        mode$ = "RESTRICTED,"
+      fi
+      mode$ = mode$ + options!.getAttributesAsString()
+
+      REM EXISTS action
+      mode$ = mode$ + ",EXISTS=" + str(options!.getExistsAction().getValue())
+
+      result! = filesave(prompt!,path!,name!,"",filter$,selectionMode!,mode=mode$)
       methodret result!
     methodend
 
