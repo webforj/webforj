@@ -453,4 +453,177 @@ public final class OptionDialog {
   public static UploadedFile showFileUploadDialog() {
     return new FileUploadDialog().show();
   }
+
+  /**
+   * Shows a new instance of the file save dialog.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param filters the filters of the file save dialog
+   * @param activeFilter the active filter of the file save dialog
+   * @param restricted whether the file save dialog is restricted to the current directory
+   * @param selectionMode the selection mode of the file save dialog
+   *
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      List<FileChooserFilter> filters, String activeFilter, boolean restricted,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileSaveDialog(title, initialPath, name, filters, activeFilter, restricted,
+        selectionMode).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, name, and filters.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param filters the filters of the file save dialog
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      List<FileChooserFilter> filters) {
+    return new FileSaveDialog(title, initialPath, name, filters).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, name, and selectionMode.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param selectionMode the selection mode of the file save dialog
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileSaveDialog(title, initialPath, name, selectionMode).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, name, filters, and
+   * activeFilter.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param filters the filters of the file save dialog
+   * @param activeFilter the active filter of the file save dialog
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      List<FileChooserFilter> filters, String activeFilter) {
+    return new FileSaveDialog(title, initialPath, name, filters, activeFilter).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, name, filters, and
+   * restricted.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param filters the filters of the file save dialog
+   * @param restricted whether the file save dialog is restricted to the current directory
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      List<FileChooserFilter> filters, boolean restricted) {
+    return new FileSaveDialog(title, initialPath, name, filters, restricted).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, name, and restricted.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param restricted whether the file save dialog is restricted to the current directory
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      boolean restricted) {
+    return new FileSaveDialog(title, initialPath, name, restricted).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, name, filters,
+   * restricted, and selectionMode.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   * @param filters the filters of the file save dialog
+   * @param restricted whether the file save dialog is restricted to the current directory
+   * @param selectionMode the selection mode of the file save dialog
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name,
+      List<FileChooserFilter> filters, boolean restricted,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileSaveDialog(title, initialPath, name, filters, restricted, selectionMode).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title, initialPath, and name.
+   *
+   * @param title the title of the file save dialog
+   * @param initialPath the initial path of the file save dialog
+   * @param name the default name for the file to be saved
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String initialPath, String name) {
+    return new FileSaveDialog(title, initialPath, name).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with title and name.
+   *
+   * @param title the title of the file save dialog
+   * @param name the default name for the file to be saved
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String title, String name) {
+    return new FileSaveDialog(title, name).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with default title and name.
+   *
+   * @param name the default name for the file to be saved
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog(String name) {
+    return new FileSaveDialog(name).show();
+  }
+
+  /**
+   * Shows a new instance of the file save dialog with default title.
+   *
+   * @return the path of the file to be saved
+   * @since 24.21
+   */
+  public static String showFileSaveDialog() {
+    return new FileSaveDialog().show();
+  }
 }

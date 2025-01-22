@@ -13,10 +13,16 @@ import java.util.List;
  * until the user perform selection or dismisses the dialog.
  * </p>
  *
+ * @see FileUploadDialog
+ * @see FileSaveDialog
+ *
  * @author Hyyan Abo Fakher
  * @since 24.02
  */
-public final class FileChooserDialog extends DwcFileOpen<FileChooserDialog> {
+// @formatter:off
+public sealed class FileChooserDialog extends DwcFileOpen<FileChooserDialog>
+    permits FileSaveDialog {
+// @formatter:on
   static final String DEFAULT_TITLE = "Select a file";
 
   /**
