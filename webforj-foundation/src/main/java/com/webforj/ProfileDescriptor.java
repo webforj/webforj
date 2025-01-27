@@ -3,7 +3,6 @@ package com.webforj;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.webforj.utilities.Assets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
