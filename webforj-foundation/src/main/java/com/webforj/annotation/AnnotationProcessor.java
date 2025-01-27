@@ -1,6 +1,5 @@
 package com.webforj.annotation;
 
-import com.basis.util.common.ServerConstants;
 import com.webforj.App;
 import com.webforj.Page;
 import com.webforj.ProfileDescriptor;
@@ -13,7 +12,6 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.Assets;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -388,9 +386,9 @@ public final class AnnotationProcessor {
       return;
     }
 
-    String iconFilename = Paths.get(defaultIcon.value()).getFileName().toString();
+    String iconFilename = Assets.getFileName(defaultIcon.value());
     String iconBaseName = iconFilename.substring(0, iconFilename.lastIndexOf('.'));
-    String iconExtension = iconFilename.substring(iconFilename.lastIndexOf('.'));
+    String iconExtension = Assets.getFileExtension(iconFilename);
 
     for (int size : defaultIcon.sizes()) {
       String src = defaultIcon.value().replace(iconFilename,
