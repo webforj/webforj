@@ -76,4 +76,26 @@ class AssetsTest {
     assertThrows(IllegalArgumentException.class,
         () -> Assets.resolveContextUrl("http://example.com/path"));
   }
+
+  @Test
+  void shouldReturnFileNameForValidPath() {
+    assertEquals("foo.css", Assets.getFileName("ws://static/css/foo.css"));
+    assertEquals("foo.css", Assets.getFileName("/static/css/foo.css"));
+    assertEquals("foo.css", Assets.getFileName("static/css/foo.css"));
+    assertEquals("foo.css", Assets.getFileName("ws://foo.css"));
+    assertEquals("foo.css", Assets.getFileName("foo.css"));
+    assertEquals("foo", Assets.getFileName("ws://foo"));
+    assertEquals("", Assets.getFileName(""));
+    assertEquals("", Assets.getFileName(null));
+  }
+
+  @Test
+  void shouldReturnFileExtensionForValidFileName() {
+    assertEquals(".css", Assets.getFileExtension("foo.css"));
+    assertEquals(".css", Assets.getFileExtension("/static/css/foo.css"));
+    assertEquals(".css", Assets.getFileExtension("static/css/foo.css"));
+    assertEquals("", Assets.getFileExtension("foo"));
+    assertEquals("", Assets.getFileExtension(""));
+    assertEquals("", Assets.getFileExtension(null));
+  }
 }

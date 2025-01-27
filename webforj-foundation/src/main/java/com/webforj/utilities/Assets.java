@@ -167,4 +167,34 @@ public class Assets {
 
     return url.replaceAll("(?i)context://", "").trim();
   }
+
+  /**
+   * Get the file name from a given path.
+   *
+   * @param path The path to extract the file name from
+   * @return The file name
+   */
+  public static String getFileName(String path) {
+    if (path == null || path.isEmpty()) {
+      return "";
+    }
+
+    int lastSlashIndex = path.lastIndexOf('/');
+    return lastSlashIndex == -1 ? path : path.substring(lastSlashIndex + 1);
+  }
+
+  /**
+   * Get the file extension from a given file name.
+   *
+   * @param fileName The file name to extract the extension from
+   * @return The file extension
+   */
+  public static String getFileExtension(String fileName) {
+    if (fileName == null || fileName.isEmpty() || !fileName.contains(".")) {
+      return "";
+    }
+
+    int lastDotIndex = fileName.lastIndexOf('.');
+    return lastDotIndex == -1 ? "" : fileName.substring(lastDotIndex);
+  }
 }

@@ -2,7 +2,7 @@ package com.webforj;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.nio.file.Paths;
+import com.webforj.utilities.Assets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -737,14 +737,14 @@ public class ProfileDescriptor {
 
         if (this.type == null || this.type.isEmpty()) {
           // support detection for SVG, png, jpg, jpeg, webp
-          String ext = Paths.get(src).getFileName().toString().toLowerCase();
-          if (ext.endsWith(".svg")) {
+          String ext = Assets.getFileExtension(Assets.getFileName(src)).toLowerCase();
+          if (ext.equals(".svg")) {
             this.type = "image/svg+xml";
-          } else if (ext.endsWith(".png")) {
+          } else if (ext.equals(".png")) {
             this.type = "image/png";
-          } else if (ext.endsWith(".jpg") || ext.endsWith(".jpeg")) {
+          } else if (ext.equals(".jpg") || ext.equals(".jpeg")) {
             this.type = "image/jpeg";
-          } else if (ext.endsWith(".webp")) {
+          } else if (ext.equals(".webp")) {
             this.type = "image/webp";
           }
         }
