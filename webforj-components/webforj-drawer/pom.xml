@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-components</artifactId>
-    <version>24.21</version>
+    <version>24.22-SNAPSHOT</version>
   </parent>
 
   <artifactId>webforj-drawer</artifactId>
