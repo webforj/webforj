@@ -386,13 +386,23 @@ public final class AnnotationProcessor {
       return;
     }
 
-    String iconFilename = Assets.getFileName(defaultIcon.value());
+    String iconValue = defaultIcon.value();
+    String queryParams = "";
+
+    int queryIndex = iconValue.indexOf('?');
+    if (queryIndex != -1) {
+      queryParams = iconValue.substring(queryIndex);
+      iconValue = iconValue.substring(0, queryIndex);
+    }
+
+    String iconFilename = Assets.getFileName(iconValue);
     String iconBaseName = iconFilename.substring(0, iconFilename.lastIndexOf('.'));
     String iconExtension = Assets.getFileExtension(iconFilename);
 
     for (int size : defaultIcon.sizes()) {
-      String src = defaultIcon.value().replace(iconFilename,
-          iconBaseName + "-" + size + "x" + size + iconExtension);
+      String src =
+          iconValue.replace(iconFilename, iconBaseName + "-" + size + "x" + size + iconExtension)
+              + queryParams;
       // @formatter:off
       ProfileDescriptor.Image image = new ProfileDescriptor.Image.ImageBuilder()
           .setSrc(resolveUrl(src, base))
@@ -513,6 +523,11 @@ public final class AnnotationProcessor {
     boolean isWs = Assets.isWebServerUrl(src);
     if (isWs) {
       resolved = Assets.resolveWebServerUrl(src);
+    }
+
+    boolean isIcons = Assets.isIconsUrl(src);
+    if (isIcons) {
+      resolved = Assets.resolveIconsUrl(src);
     }
 
     // If resolved is not a fully qualified URL, resolve it with the base URL

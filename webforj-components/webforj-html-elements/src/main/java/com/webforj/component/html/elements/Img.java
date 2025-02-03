@@ -66,6 +66,8 @@ public class Img extends HtmlComponent<Img> {
 
     if (Assets.isWebServerUrl(src)) {
       url = Assets.resolveWebServerUrl(src);
+    } else if (Assets.isIconsUrl(src)) {
+      url = Assets.resolveIconsUrl(src);
     } else if (Assets.isContextUrl(src)) {
       String resolvedUrl = Assets.resolveContextUrl(src);
       String content = Assets.contentOf(resolvedUrl, Assets.ContentFormat.BASE64);

@@ -28,7 +28,7 @@ public @interface AppProfile {
   String DEFAULT_START_URL = ".";
   String DEFAULT_VIEWPORT =
       "viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
-  String DEFAULT_ICON_SRC = "ws://icons/icon.png";
+  String DEFAULT_ICON_SRC = "icons://icon.png";
 
   /**
    * The id of the application.
@@ -158,12 +158,10 @@ public @interface AppProfile {
    * The default icon of the application.
    *
    * <p>
-   * The default icon is used to specify the default icon for the app. By default, the icons should
-   * be placed in <code>static/icons</code> directory. and named <code>icon.png</code>. And the
-   * sizes should be <code>144x144</code>, <code>192x192</code>, and <code>512x512</code> variants
-   * of the icon should be placed in the same directory. for example:
-   * <code>static/icons/icon-144x144.png</code>
+   * The icon path can be be a <code>webserver://</code> or <code>icons://</code> URL.
    * </p>
+   *
+   * @return the default icon
    */
   DefaultIcon defaultIcon() default @DefaultIcon(DEFAULT_ICON_SRC);
 
