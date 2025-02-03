@@ -1,6 +1,9 @@
 package com.webforj.component.optiondialog;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * The file upload translation object.
@@ -371,5 +374,15 @@ public class FileUploadI18n {
    */
   public void setErrorForbidden(String errorForbidden) {
     this.errorForbidden = errorForbidden;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    byte[] bytes = new Gson().toJson(this).getBytes(StandardCharsets.UTF_8);
+    bytes = Base64.getEncoder().encode(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
   }
 }

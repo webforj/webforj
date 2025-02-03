@@ -187,6 +187,9 @@ class public WebforjHelper implements WebforjBBjBridge
       fi
       mode$ = mode$ + options!.getAttributesAsString()
 
+      REM i18n
+      mode$ = mode$ + ",i18n=" + options!.getI18n().toString()
+
       result! = fileopen(prompt!,path!,"","",filter$,selectionMode!,mode=mode$)
       methodret result!
     methodend
@@ -206,6 +209,9 @@ class public WebforjHelper implements WebforjBBjBridge
 
       mode$ = "CLIENT,"
       mode$ = mode$ + options!.getAttributesAsString()
+
+      REM i18n
+      mode$ = mode$ + ",i18n=" + options!.getI18n().toString()
 
       result! = fileopen(prompt!,"","","",filter$,mode=mode$)
       methodret result!
@@ -235,6 +241,9 @@ class public WebforjHelper implements WebforjBBjBridge
 
       REM EXISTS action
       mode$ = mode$ + ",EXISTS=" + str(options!.getExistsAction().getValue())
+
+      REM i18n
+      mode$ = mode$ + ",i18n=" + options!.getI18n().toString()
 
       result! = filesave(prompt!,path!,name!,"",filter$,selectionMode!,mode=mode$)
       methodret result!

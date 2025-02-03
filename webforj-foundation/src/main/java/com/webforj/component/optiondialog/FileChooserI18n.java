@@ -1,6 +1,9 @@
 package com.webforj.component.optiondialog;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * The file chooser translation object.
@@ -27,6 +30,26 @@ public final class FileChooserI18n {
   private String cancel = "Cancel";
   private String search = "Search files ...";
   private String filters = "Filter files by type";
+
+  // FILESAVE
+  @SerializedName("dialog.overwrite")
+  private String overwrite =
+      "This file already exists. Would you like to overwrite the existing file?";
+  @SerializedName("dialog.overwrite.title")
+  private String overwriteTitle = "File already exists";
+
+  @SerializedName("dialog.exists")
+  private String exists = "This file already exists.";
+
+  @SerializedName("dialog.exists.title")
+  private String existsTitle = "File already exists";
+
+  // FILEOPEN
+  @SerializedName("error.destination")
+  private String errorDestination = "Invalid filename; please try again.";
+
+  @SerializedName("error.destination.title")
+  private String errorDestinationTitle = "Invalid filename";
 
   /**
    * Gets the back text.
@@ -332,5 +355,123 @@ public final class FileChooserI18n {
    */
   public void setFilters(String filters) {
     this.filters = filters;
+  }
+
+  /**
+   * Gets the overwrite text.
+   *
+   * @return the overwrite text.
+   */
+  public String getOverwrite() {
+    return overwrite;
+  }
+
+  /**
+   * Sets the overwrite text.
+   *
+   * @param overwrite the overwrite text to set.
+   */
+  public void setOverwrite(String overwrite) {
+    this.overwrite = overwrite;
+  }
+
+  /**
+   * Gets the overwriteTitle text.
+   *
+   * @return the overwriteTitle text.
+   */
+  public String getOverwriteTitle() {
+    return overwriteTitle;
+  }
+
+  /**
+   * Sets the overwriteTitle text.
+   *
+   * @param overwriteTitle the overwriteTitle text to set.
+   */
+  public void setOverwriteTitle(String overwriteTitle) {
+    this.overwriteTitle = overwriteTitle;
+  }
+
+  /**
+   * Gets the exists text.
+   *
+   * @return the exists text.
+   */
+  public String getExists() {
+    return exists;
+  }
+
+  /**
+   * Sets the exists text.
+   *
+   * @param exists the exists text to set.
+   */
+  public void setExists(String exists) {
+    this.exists = exists;
+  }
+
+  /**
+   * Gets the existsTitle text.
+   *
+   * @return the existsTitle text.
+   */
+  public String getExistsTitle() {
+    return existsTitle;
+  }
+
+  /**
+   * Sets the existsTitle text.
+   *
+   * @param existsTitle the existsTitle text to set.
+   */
+  public void setExistsTitle(String existsTitle) {
+    this.existsTitle = existsTitle;
+  }
+
+  /**
+   * Gets the errorDestination text.
+   *
+   * @return the errorDestination text.
+   */
+  public String getErrorDestination() {
+    return errorDestination;
+  }
+
+  /**
+   * Sets the errorDestination text.
+   *
+   * @param errorDestination the errorDestination text to set.
+   */
+  public void setErrorDestination(String errorDestination) {
+    this.errorDestination = errorDestination;
+  }
+
+  /**
+   * Gets the errorDestinationTitle text.
+   *
+   * @return the errorDestinationTitle text.
+   */
+  public String getErrorDestinationTitle() {
+    return errorDestinationTitle;
+  }
+
+  /**
+   * Sets the errorDestinationTitle text.
+   *
+   * @param errorDestinationTitle the errorDestinationTitle text to set.
+   */
+  public void setErrorDestinationTitle(String errorDestinationTitle) {
+    this.errorDestinationTitle = errorDestinationTitle;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    byte[] bytes = new Gson().toJson(this).getBytes(StandardCharsets.UTF_8);
+    bytes = Base64.getEncoder().encode(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
   }
 }
