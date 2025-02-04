@@ -4,10 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
+import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
+import com.webforj.exceptions.WebforjRuntimeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -97,5 +101,42 @@ class AssetsTest {
     assertEquals("", Assets.getFileExtension("foo"));
     assertEquals("", Assets.getFileExtension(""));
     assertEquals("", Assets.getFileExtension(null));
+  }
+
+  @Test
+  void shouldIdentifyIconsUrlCorrectly() {
+    assertTrue(Assets.isIconsUrl("icons://icon/path"));
+    assertFalse(Assets.isIconsUrl("http://example.com/icon/path"));
+  }
+
+  @Test
+  void shouldResolveIconsUrlForValidInput() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(false);
+      Environment mockEnvironment = mock(Environment.class);
+      Config mockConfig = mock(Config.class);
+      environmentMock.when(Environment::getCurrent).thenReturn(mockEnvironment);
+      when(mockEnvironment.getConfig()).thenReturn(mockConfig);
+      when(mockConfig.hasPath("webforj.iconsDir")).thenReturn(false);
+
+      String result = Assets.resolveIconsUrl("icons://icon/path");
+      assertEquals("/icons/icon/path", result);
+    }
+  }
+
+  @Test
+  void shouldThrowExceptionForNonIconsUrlInResolveIconsUrl() {
+    assertThrows(IllegalArgumentException.class,
+        () -> Assets.resolveIconsUrl("http://example.com/icon/path"));
+  }
+
+  @Test
+  void shouldThrowExceptionForIconsUrlWhenBBjServicesEnabled() {
+    try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
+      environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+
+      assertThrows(WebforjRuntimeException.class,
+          () -> Assets.resolveIconsUrl("icons://icon/path"));
+    }
   }
 }

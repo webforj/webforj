@@ -169,6 +169,97 @@ public class Assets {
   }
 
   /**
+   * Retrieves the URL for the icons endpoint, which is used to serve icons.
+   *
+   * <p>
+   * By default, webforj serves icons from the <code>resources/icons/</code> directory. You can
+   * change the endpoint name by setting the <code>webforj.iconsDir</code> property in the webforj
+   * configuration file. The default endpoint is <code>icons/</code>.
+   * </p>
+   *
+   * <p>
+   * The icons endpoint accepts the icon file name as a path parameter with a specified size. For
+   * example, <code>icons://icon-144x144.png</code> will return the icon with a size of 144x144. The
+   * base image should be placed in the <code>resources/icons/</code> directory and named
+   * <code>icon.png</code>.
+   * </p>
+   *
+   * <p>
+   * Additionally, you can add padding or a background color to the icon using the following query
+   * parameters:
+   * <ul>
+   * <li><code>padding</code>: The padding around the icon, specified as a number between 0 and 1.
+   * For example, <code>icons://icon-144x144.png?padding=.3</code> adds a 30% padding around the
+   * icon.</li>
+   * <li><code>background</code>: The background color of the icon, specified as a valid hex color.
+   * For example, <code>icons://icon-144x144.png?background=ffffff</code> adds a white background to
+   * the icon.</li>
+   * </ul>
+   * </p>
+   *
+   * @return The URL of the icons endpoint.
+   * @since 24.22
+   */
+  public static String getIconsEndpoint() {
+    boolean withBbjService = Environment.isRunningWithBBjServices();
+    if (withBbjService) {
+      return "";
+    }
+
+    String url = "icons/";
+    Config config = Environment.getCurrent().getConfig();
+    String assetsDirProp = "webforj.iconsDir";
+    String assetsDir = config.hasPath(assetsDirProp) && !config.getIsNull(assetsDirProp)
+        ? config.getString(assetsDirProp)
+        : null;
+    if (assetsDir != null && !assetsDir.isEmpty()) {
+      url = RouterUtils.normalizePath(assetsDir);
+    }
+
+    String context = System.getProperty("webforj.context", "/");
+    String fullUrl = context + "/" + url;
+    return RouterUtils.normalizePath(fullUrl);
+  }
+
+  /**
+   * Check if the given url is an icons url or not.
+   *
+   * @param url The url
+   * @return true if the url is an icons url, false otherwise
+   *
+   * @see #getIconsEndpoint()
+   * @since 24.22
+   */
+  public static boolean isIconsUrl(String url) {
+    return url.toLowerCase().startsWith("icons://");
+  }
+
+  /**
+   * Get the url from the given icons url.
+   *
+   * @param url The url
+   *
+   * @return The url
+   * @throws IllegalArgumentException if the url is not an icons url
+   *
+   * @see #getIconsEndpoint()
+   * @since 24.22
+   */
+  public static String resolveIconsUrl(String url) {
+    if (!isIconsUrl(url)) {
+      throw new IllegalArgumentException("URL does not being the \"icons://\" protocol: " + url);
+    }
+
+    boolean withBbjService = Environment.isRunningWithBBjServices();
+    if (withBbjService) {
+      throw new WebforjRuntimeException(
+          "Icons protocol is not supported when running with BBj Services");
+    }
+
+    return getIconsEndpoint() + url.replaceAll("(?i)icons://", "").trim();
+  }
+
+  /**
    * Get the file name from a given path.
    *
    * @param path The path to extract the file name from
@@ -177,6 +268,11 @@ public class Assets {
   public static String getFileName(String path) {
     if (path == null || path.isEmpty()) {
       return "";
+    }
+
+    int queryIndex = path.indexOf('?');
+    if (queryIndex != -1) {
+      path = path.substring(0, queryIndex);
     }
 
     int lastSlashIndex = path.lastIndexOf('/');
@@ -192,6 +288,11 @@ public class Assets {
   public static String getFileExtension(String fileName) {
     if (fileName == null || fileName.isEmpty() || !fileName.contains(".")) {
       return "";
+    }
+
+    int queryIndex = fileName.indexOf('?');
+    if (queryIndex != -1) {
+      fileName = fileName.substring(0, queryIndex);
     }
 
     int lastDotIndex = fileName.lastIndexOf('.');
