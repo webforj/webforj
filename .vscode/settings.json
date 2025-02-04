@@ -4,17 +4,31 @@
   "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
   "java.format.settings.profile": "GoogleStyle",
   "java.checkstyle.configuration": "/google_checks.xml",
-  "cSpell.words": [
-    "BUIRES",
-    "radiobutton"
-  ],
   "java.checkstyle.version": "10.12.0",
   "sonarlint.connectedMode.project": {
     "connectionId": "vscode",
     "projectKey": "webforj"
   },
   "java.completion.favoriteStaticMembers": [
+    "org.junit.Assert.*",
+    "org.junit.Assume.*",
+    "org.junit.jupiter.api.Assertions.*",
+    "org.junit.jupiter.api.Assumptions.*",
+    "org.junit.jupiter.api.DynamicContainer.*",
+    "org.junit.jupiter.api.DynamicTest.*",
+    "org.mockito.Mockito.*",
+    "org.mockito.ArgumentMatchers.*",
+    "org.mockito.Answers.*",
     "com.webforj.component.optiondialog.OptionDialog.*",
-    "com.webforj.App.console"
-]
+    "com.webforj.App.console",
+  ],
+  "java.completion.filteredTypes": [
+    "java.awt.*",
+    "com.sun.*",
+    "sun.*",
+    "jdk.*",
+    "org.graalvm.*",
+    "io.micrometer.shaded.*",
+    "javax.swing.*",
+  ],
 }
