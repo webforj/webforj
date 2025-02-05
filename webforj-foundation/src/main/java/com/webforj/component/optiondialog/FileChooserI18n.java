@@ -51,6 +51,16 @@ public final class FileChooserI18n {
   @SerializedName("error.destination.title")
   private String errorDestinationTitle = "Invalid filename";
 
+  @SerializedName("button.yes")
+  private String yes = "Yes";
+
+  @SerializedName("button.no")
+  private String no = "No";
+
+  @SerializedName("button.ok")
+  private String ok = "Ok";
+
+
   /**
    * Gets the back text.
    *
@@ -463,6 +473,60 @@ public final class FileChooserI18n {
    */
   public void setErrorDestinationTitle(String errorDestinationTitle) {
     this.errorDestinationTitle = errorDestinationTitle;
+  }
+
+  /**
+   * Gets the yes text.
+   *
+   * @return the yes text.
+   */
+  public String getYes() {
+    return yes;
+  }
+
+  /**
+   * Sets the yes text.
+   *
+   * @param yes the yes text to set.
+   */
+  public void setYes(String yes) {
+    this.yes = yes;
+  }
+
+  /**
+   * Gets the no text.
+   *
+   * @return the no text.
+   */
+  public String getNo() {
+    return no;
+  }
+
+  /**
+   * Sets the no text.
+   *
+   * @param no the no text to set.
+   */
+  public void setNo(String no) {
+    this.no = no;
+  }
+
+  /**
+   * Gets the ok text.
+   *
+   * @return the ok text.
+   */
+  public String getOk() {
+    return ok;
+  }
+
+  /**
+   * Sets the ok text.
+   *
+   * @param ok the ok text to set.
+   */
+  public void setOk(String ok) {
+    this.ok = ok;
   }
 
   /**
