@@ -1,6 +1,5 @@
 package com.webforj.component.optiondialog;
 
-import com.google.gson.Gson;
 import com.webforj.Environment;
 import java.util.List;
 
@@ -354,9 +353,6 @@ public sealed class FileChooserDialog extends DwcFileOpen<FileChooserDialog>
    */
   public FileChooserDialog setI18n(FileChooserI18n i18n) {
     this.i18n = i18n;
-    // BBj mode parser requires the quotes and the "," to be escaped.
-    setAttribute("i18n",
-        "\"" + new Gson().toJson(i18n).replace("\"", "\\\"").replace(",", "\\,") + "\"");
     return getSelf();
   }
 
