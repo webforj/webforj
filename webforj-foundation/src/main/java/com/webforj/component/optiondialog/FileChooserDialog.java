@@ -1,6 +1,5 @@
 package com.webforj.component.optiondialog;
 
-import com.google.gson.Gson;
 import com.webforj.Environment;
 import java.util.List;
 
