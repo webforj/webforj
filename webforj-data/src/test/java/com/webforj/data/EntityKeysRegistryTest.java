@@ -70,4 +70,19 @@ class EntityKeysRegistryTest {
   void shouldThrowNullPointerExceptionWhenEntityIsNullInRefreshKey() {
     assertThrows(NullPointerException.class, () -> registry.refreshKey(null));
   }
+
+  @Test
+  void shouldRemoveEntityAndItsKey() {
+    registry.removeEntity(testEntity);
+    assertNull(registry.getEntity(testEntityKey));
+  }
+
+  @Test
+  void shouldCleanUpStaleEntries() {
+    Object entity2 = new Object();
+    String key2 = registry.getKey(entity2);
+    registry.removeEntity(entity2); // Simulate stale entry
+    registry.cleanUp();
+    assertNull(registry.getEntity(key2));
+  }
 }

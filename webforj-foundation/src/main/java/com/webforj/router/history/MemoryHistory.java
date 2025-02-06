@@ -153,6 +153,15 @@ public class MemoryHistory implements History {
    * {@inheritDoc}
    */
   @Override
+  public History removeAllListeners() {
+    dispatcher.removeAllListeners();
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public ListenerRegistration<HistoryStateChangeEvent> addHistoryStateChangeListener(
       EventListener<HistoryStateChangeEvent> listener) {
     return getDispatcher().addListener(HistoryStateChangeEvent.class, listener);

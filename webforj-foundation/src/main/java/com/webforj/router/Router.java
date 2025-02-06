@@ -616,6 +616,15 @@ public class Router {
   }
 
   /**
+   * Remove All listeners.
+   */
+  public void removeAllListeners() {
+    removeHistoryStateListener();
+    getEventDispatcher().removeAllListeners();
+    getHistory().removeAllListeners();
+  }
+
+  /**
    * Retrieves the event dispatcher.
    *
    * @return the event dispatcher

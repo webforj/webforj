@@ -312,6 +312,20 @@ public abstract class ElementComposite extends Composite<Element> {
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDidDestroy() {
+    super.onDidDestroy();
+    attributes.clear();
+    attributeTypes.clear();
+    properties.clear();
+    propertyTypes.clear();
+    eventNameToClassMap.clear();
+    dispatcher.removeAllListeners();
+  }
+
+  /**
    * Gets the value of a property of the element.
    *
    * @param <V> the type of the property

@@ -101,4 +101,25 @@ public class EntityKeysRegistry {
 
     return getKey(entity);
   }
+
+  /**
+   * Removes the specified entity and its associated key from the registry.
+   *
+   * @param entity the entity to be removed. Must not be null.
+   */
+  public void removeEntity(Object entity) {
+    Objects.requireNonNull(entity, "Entity cannot be null");
+
+    String key = entityToKeyMap.remove(entity);
+    if (key != null) {
+      keyToEntityMap.remove(key);
+    }
+  }
+
+  /**
+   * Cleans up the stale entries in the registry.
+   */
+  public void cleanUp() {
+    keyToEntityMap.keySet().removeIf(key -> !entityToKeyMap.containsValue(key));
+  }
 }

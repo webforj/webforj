@@ -603,7 +603,8 @@ public final class BrowserConsole {
 
   private BrowserConsole print(Object message, String level, boolean forced) {
     if (!forced) {
-      boolean isDebug = Environment.getCurrent().isDebug();
+      Environment env = Environment.getCurrent();
+      boolean isDebug = env != null && env.isDebug();
       if (!isDebug) {
         return this;
       }
@@ -622,7 +623,7 @@ public final class BrowserConsole {
     message = Base64.getEncoder().encodeToString(theMessage.getBytes());
     String code = String.format("console.%s('%%c ' + atob('%s'), '%s')", level, message,
         buildComputedStyles());
-    Page.getCurrent().executeJsAsync(code);
+    Page.ifPresent(page -> page.executeJsAsync(code));
     styles.clear();
     return this;
   }

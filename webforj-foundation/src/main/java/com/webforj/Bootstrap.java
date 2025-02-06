@@ -62,23 +62,28 @@ public final class Bootstrap {
    * @param className the fully qualified class name of the application to launch, or {@code null}
    *        to automatically detect it.
    *
+   * @return the application instance.
+   *
    * @throws BBjException if there is an error initializing the environment.
    * @throws WebforjException if there is an error initializing the application, such as if no valid
    *         application class is found or if multiple annotated application classes are detected.
    */
-  public static void init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
+  public static App init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
       throws BBjException, WebforjException {
     Environment.init(api, bridge, debug);
     processConfig();
-    initApplication(className);
+    return initApplication(className);
   }
 
   /**
    * Launches the main application.
    *
    * @param className the fully qualified class name of the application to launch, or {@code null}
+   * @return the application instance.
+   *
+   * @throws WebforjException if there is an error initializing the application.
    */
-  private static void initApplication(String className) throws WebforjException {
+  private static App initApplication(String className) throws WebforjException {
     String selectedClassName = detectClassName(className);
 
     if (selectedClassName == null || selectedClassName.isEmpty()) {
@@ -91,6 +96,7 @@ public final class Bootstrap {
       App app = ConceiverProvider.getCurrent()
           .getApplication((Class<? extends App>) Class.forName(selectedClassName));
       app.initialize();
+      return app;
     } catch (ClassNotFoundException e) {
       throw new WebforjAppInitializeException("Failed to find application class '"
           + selectedClassName + "'." + " Ensure the class is in the classpath.", e);

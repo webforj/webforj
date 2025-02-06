@@ -1,8 +1,8 @@
 package com.webforj.environment;
 
 import com.basis.startup.type.BBjException;
-import java.util.NoSuchElementException;
 import com.webforj.Environment;
+import java.util.NoSuchElementException;
 
 /**
  * Provides access to the STBL String Table.
@@ -54,7 +54,12 @@ public final class StringTable {
    */
   public static String get(String key) {
     try {
-      return Environment.getCurrent().getBBjAPI().getStbl(key);
+      Environment env = Environment.getCurrent();
+      if (env == null) {
+        throw new NoSuchElementException("Element " + key + " does not exist!");
+      }
+
+      return env.getBBjAPI().getStbl(key);
     } catch (BBjException e) {
       throw new NoSuchElementException("Element " + key + " does not exist!");
     }
@@ -66,14 +71,17 @@ public final class StringTable {
    * @param key the key of the variable to access
    * @param value the contents to set in the field
    *
-   * @return the value just set
+   * @return the value that was set
    */
   public static String put(String key, String value) {
-    try {
-      Environment.getCurrent().getBBjAPI().setStbl(key, value);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+    Environment.ifPresent(env -> {
+      try {
+        env.getBBjAPI().setStbl(key, value);
+      } catch (BBjException e) {
+        // pass
+      }
+    });
+
     return value;
   }
 
@@ -83,10 +91,12 @@ public final class StringTable {
    * @param key the key of the variable to remove
    */
   public static void clear(String key) {
-    try {
-      Environment.getCurrent().getBBjAPI().setStbl("!CLEAR", key);
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
+    Environment.ifPresent(env -> {
+      try {
+        env.getBBjAPI().setStbl("!CLEAR", key);
+      } catch (BBjException e) {
+        // pass
+      }
+    });
   }
 }

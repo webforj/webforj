@@ -7,7 +7,7 @@ package com.webforj.exceptions;
  * @author Hyyan Abo Fakher
  * @since 24.20
  */
-public class WebforjWebManagerException extends RuntimeException {
+public class WebforjWebManagerException extends WebforjRuntimeException {
 
   /**
    * Constructs a new exception with the specified detail message. The cause is not initialized, and

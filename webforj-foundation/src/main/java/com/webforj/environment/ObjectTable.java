@@ -1,8 +1,8 @@
 package com.webforj.environment;
 
 import com.basis.startup.type.BBjException;
-import java.util.NoSuchElementException;
 import com.webforj.Environment;
+import java.util.NoSuchElementException;
 
 /**
  * Provides access to a map of key value pairs that is accessible at all program levels.
@@ -21,9 +21,12 @@ public final class ObjectTable {
    *
    * @param key the key of the variable to access
    * @param value the contents to set in the field
+   *
+   * @return the value that was set
    */
-  public static void put(String key, Object value) {
-    Environment.getCurrent().getBBjAPI().getObjectTable().put(key, value);
+  public static Object put(String key, Object value) {
+    Environment.ifPresent(env -> env.getBBjAPI().getObjectTable().put(key, value));
+    return value;
   }
 
   /**
@@ -35,7 +38,12 @@ public final class ObjectTable {
    */
   public static Object get(String key) {
     try {
-      return Environment.getCurrent().getBBjAPI().getObjectTable().get(key);
+      Environment env = Environment.getCurrent();
+      if (env == null) {
+        throw new NoSuchElementException("Element " + key + " does not exist!");
+      }
+
+      return env.getBBjAPI().getObjectTable().get(key);
     } catch (BBjException e) {
       throw new NoSuchElementException("Element " + key + " does not exist!");
     }
@@ -62,7 +70,7 @@ public final class ObjectTable {
    * @param key the key of the variable to remove
    */
   public static void clear(String key) {
-    Environment.getCurrent().getBBjAPI().getObjectTable().remove(key);
+    Environment.ifPresent(env -> env.getBBjAPI().getObjectTable().remove(key));
   }
 
   /**
@@ -71,6 +79,11 @@ public final class ObjectTable {
    * @return the number of key-value mappings in this map
    */
   public static int size() {
-    return Environment.getCurrent().getBBjAPI().getObjectTable().size();
+    Environment env = Environment.getCurrent();
+    if (env == null) {
+      return 0;
+    }
+
+    return env.getBBjAPI().getObjectTable().size();
   }
 }

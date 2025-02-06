@@ -1,6 +1,7 @@
 package com.webforj.component.window;
 
 import com.basis.bbj.proxies.sysgui.BBjWindow;
+import com.basis.startup.type.BBjException;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.bridge.WindowAccessor;
 import com.webforj.component.Component;
@@ -91,6 +92,19 @@ public abstract class Window extends DwcContainer<Window> {
   @Override
   protected void onCreate(Window window) {
     // pass
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    try {
+      getBbjWindow().destroy();
+    } catch (BBjException e) {
+      // pass
+    } finally {
+      setBbjWindow(null);
+    }
   }
 
   /**

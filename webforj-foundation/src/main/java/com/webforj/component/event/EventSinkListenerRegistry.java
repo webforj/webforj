@@ -73,6 +73,7 @@ public class EventSinkListenerRegistry<E extends EventObject, T> {
    */
   public void attach() {
     registrations.forEach(DwcListenerRegistration::connect);
+    registrations.clear();
   }
 
   /**

@@ -109,6 +109,11 @@ public interface History {
   }
 
   /**
+   * Remove all registered listeners.
+   */
+  History removeAllListeners();
+
+  /**
    * Adds a listener to be notified when the history state changes.
    *
    * @param listener the listener

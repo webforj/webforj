@@ -991,6 +991,19 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     return addSortChangeListener(listener);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDidDestroy() {
+    super.onDidDestroy();
+    getItemKeysRegistry().cleanUp();
+    columns.clear();
+    selectedKeys.clear();
+    orderCriteriaList.clear();
+    repository = null;
+  }
+
   void onInit(Element el) {
     this.refresh();
     set(selectedProp, selectedKeys);

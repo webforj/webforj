@@ -31,7 +31,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 
 /**
  * This is the central class representing an app. In order to implement an app, extend this class
@@ -40,8 +39,6 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
-  private static final Logger log = Logger.getLogger("com.webforj.App");
-
   /**
    * A default app action is to clear the browser and display a localized message of "Click to
    * reload application", with a link to the application when the application is terminated or error
@@ -90,8 +87,10 @@ public abstract class App {
       resolveFirstRoute();
       isInitialized = true;
       onDidRun();
-    } catch (WebforjWebManagerException ex) {
-      log.severe("Failed to initialize the app. Web Manager API are not available.");
+    } catch (Exception e) {
+      if (!isCausedByChannelTermination(e)) {
+        throw e;
+      }
     }
   }
 
@@ -488,7 +487,27 @@ public abstract class App {
    */
   public final void terminate() {
     onWillTerminate();
+
+    // dispose the page
+    Page page = Page.getCurrent();
+    if (page != null) {
+      page.destroy();
+    }
+
+    // dispose the router
+    Router router = Router.getCurrent();
+    if (router != null) {
+      router.removeAllListeners();
+    }
+
+    // dispose the frames
+    List<Frame> frames = getFrames();
+    for (Frame frame : frames) {
+      frame.destroy();
+    }
+
     Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("webforjTerminateSignal", null);
+
     onDidTerminate();
   }
 
@@ -865,6 +884,25 @@ public abstract class App {
    */
   private boolean isRoutable() {
     return getClass().isAnnotationPresent(Routify.class);
+  }
+
+  /**
+   * Checks if the given exception is caused by a channel termination.
+   *
+   * @param e The exception to check
+   * @return {@code true} if the exception is caused by a channel termination, {@code false}
+   *         otherwise
+   */
+  private static boolean isCausedByChannelTermination(Throwable e) {
+    while (e != null) {
+      if (e instanceof BBjException && "Channel has been terminated".equals(e.getMessage())) {
+        return true;
+      }
+
+      e = e.getCause();
+    }
+
+    return false;
   }
 
   Environment getEnvironment() {

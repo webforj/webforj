@@ -32,5 +32,7 @@ public final class PageUnloadEventHandler {
    */
   public void handleEvent(BBjEvent ev) {
     dispatcher.dispatchEvent(new PageUnloadEvent(page));
+    // cleanup everything related to the page
+    dispatcher.removeAllListeners();
   }
 }
