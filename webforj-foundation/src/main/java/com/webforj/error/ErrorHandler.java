@@ -4,7 +4,6 @@ import com.webforj.NoneAction;
 import com.webforj.Page;
 import com.webforj.exceptions.WebforjWebManagerException;
 import java.util.Base64;
-import java.util.logging.Logger;
 
 /**
  * The {@code ErrorHandler} interface is designed to handle errors that occur during the execution
@@ -50,17 +49,17 @@ public interface ErrorHandler {
    * @param content The content of the error page.
    */
   default void showErrorPage(String title, String content) {
-    try {
-      Base64.Encoder encoder = Base64.getEncoder();
-      String encodedHtml = encoder.encodeToString(content.getBytes());
+    Page.ifPresent(page -> {
+      try {
+        Base64.Encoder encoder = Base64.getEncoder();
+        String encodedHtml = encoder.encodeToString(content.getBytes());
 
-      String js = "document.body.innerHTML = atob('" + encodedHtml + "');";
-      Page.getCurrent().executeJs(js);
-      Page.getCurrent().setTitle(title);
-    } catch (WebforjWebManagerException ex) {
-      final Logger log = Logger.getLogger("com.webforj.error.ErrorHandler");
-      log.severe(
-          "Failed to display the error page in the browser. Web Manager API are not available.");
-    }
+        String js = "document.body.innerHTML = atob('" + encodedHtml + "');";
+        page.executeJs(js);
+        page.setTitle(title);
+      } catch (WebforjWebManagerException ex) {
+        // pass
+      }
+    });
   }
 }

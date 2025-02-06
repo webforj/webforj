@@ -8,7 +8,7 @@ use ::admin.bbj::UserCredentials
 use ::!!bbj/WebforjHelper.bbj::WebforjHelper
 
 SETESC EscTrap
-SETERR _error
+SETERR ErrTrap
 
 BBJAPI().getConfig().releaseOnLostConnection(0)
 BBjAPI().setCustomEventCallback("webforjTerminateSignal","terminate")
@@ -55,12 +55,8 @@ web!.setEndAction(noneAction!)
 web!.setEndAction(noneAction!)
 
 REM launch the app
-Bootstrap.init(BBjAPI(), new WebforjHelper(), DEBUG, class$)
-process_events,err=_error
-
-terminate:
-  Environment.cleanup()
-release
+app! = Bootstrap.init(BBjAPI(), new WebforjHelper(), DEBUG, class$)
+process_events,err=ErrTrap
 
 determineClasspathEntries:
   pw$="admin123"
@@ -108,25 +104,25 @@ onHotReload:
   release
 return
 
-EscTrap:
-  REM IF AND(CHR(TCB(19)),$08$)=$08$ THEN
-  REM     System.out.println("Client Died")
-  REM ELSE
-  REM     System.out.println("ESCAPE")
-  REM FI
+terminate:
+  Environment.cleanup()
   if app! <> null() then
-      app!.cleanup()
+      app! = null()
+      app!.terminate()
   fi
+release
+
+EscTrap:
+  IF AND(CHR(TCB(19)),$08$)=$08$ THEN
+      System.out.println("Client connection lost. Terminating.")
+  ELSE
+      System.out.println("An ESCAPE was requested. Terminating.")
+  FI
+
+  gosub terminate
 release
 
 ErrTrap:
-  System.out.println("Error Caught: "+str(err)+" "+errmes(-1))
-  if app! <> null() then
-      app!.cleanup()
-  fi
-release
-
-_error:
   lastJavaException! = bbjapi().getLastJavaException()
   if lastJavaException! <> null() then
     debugMode = DEBUG
@@ -135,7 +131,8 @@ _error:
     fi
     Environment.handleError(lastJavaException!, debugMode)
   else
-    System.err.println("Fatal Error: ")
-    System.err.println(lastJavaException!)
+    System.err.println("Fatal Error with no Java Exception caught.")
   fi
+
+  gosub terminate
 release

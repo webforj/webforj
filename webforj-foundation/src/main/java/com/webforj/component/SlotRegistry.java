@@ -194,6 +194,14 @@ public class SlotRegistry {
   }
 
   /**
+   * Disposes of all components in all slots and clears the slots.
+   */
+  public void dispose() {
+    slots.values().forEach(components -> components.forEach(Component::destroy));
+    slots.clear();
+  }
+
+  /**
    * Resolves the slot name, returning the default slot if the given slot name is null or empty.
    *
    * @param slot the slot name to resolve.

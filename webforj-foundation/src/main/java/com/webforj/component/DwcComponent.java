@@ -1156,10 +1156,19 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     try {
       if (control != null && !control.isDestroyed()) {
         control.destroy();
-        control = null;
       }
     } catch (BBjException e) {
-      throw new WebforjRuntimeException(e);
+      // pass
+    } finally {
+      setControl(null);
+      attributes.clear();
+      styles.clear();
+      properties.clear();
+      classNames.clear();
+      removedClassNames.clear();
+      removedStyles.clear();
+      slotAssigner.getSlotRegistry().dispose();
+      dispatcher.removeAllListeners();
     }
   }
 

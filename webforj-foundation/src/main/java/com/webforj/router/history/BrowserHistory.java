@@ -6,6 +6,7 @@ import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.event.page.PageEventOptions;
+import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.router.history.event.HistoryStateChangeEvent;
 import java.util.Base64;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class BrowserHistory implements History {
    */
   @Override
   public History back() {
-    Page.getCurrent().executeJsVoidAsync("window.history.back()");
+    Page.ifPresent(page -> page.executeJsVoidAsync("window.history.back()"));
     return this;
   }
 
@@ -37,7 +38,7 @@ public class BrowserHistory implements History {
    */
   @Override
   public History forward() {
-    Page.getCurrent().executeJsVoidAsync("window.history.forward()");
+    Page.ifPresent(page -> page.executeJsVoidAsync("window.history.forward()"));
     return this;
   }
 
@@ -46,7 +47,7 @@ public class BrowserHistory implements History {
    */
   @Override
   public History go(int index) {
-    Page.getCurrent().executeJsVoidAsync("window.history.go(" + index + ")");
+    Page.ifPresent(page -> page.executeJsVoidAsync("window.history.go(" + index + ")"));
     return this;
   }
 
@@ -55,6 +56,10 @@ public class BrowserHistory implements History {
    */
   @Override
   public int size() {
+    if (!Page.isPresent()) {
+      return 0;
+    }
+
     Object result = Page.getCurrent().executeJs("window.history.length");
     if (result instanceof Integer) {
       return (int) result;
@@ -68,6 +73,10 @@ public class BrowserHistory implements History {
    */
   @Override
   public Optional<Location> getLocation() {
+    if (!Page.isPresent()) {
+      return Optional.empty();
+    }
+
     Object result =
         Page.getCurrent().executeJs("window.location.href.replace(window.location.origin, '')");
     if (result instanceof String stringResult) {
@@ -82,12 +91,14 @@ public class BrowserHistory implements History {
    */
   @Override
   public History pushState(Object state, Location location) {
-    String path = location.getFullURI();
-    String stringifiedState = gson.toJson(state == null ? new Object() : state);
-    String encodedState = Base64.getEncoder().encodeToString(stringifiedState.getBytes());
+    Page.ifPresent(page -> {
+      String path = location.getFullURI();
+      String stringifiedState = gson.toJson(state == null ? new Object() : state);
+      String encodedState = Base64.getEncoder().encodeToString(stringifiedState.getBytes());
 
-    Page.getCurrent().executeJsVoidAsync(
-        "window.history.pushState(JSON.parse(atob('" + encodedState + "')), '', '" + path + "')");
+      page.executeJsVoidAsync(
+          "window.history.pushState(JSON.parse(atob('" + encodedState + "')), '', '" + path + "')");
+    });
 
     return this;
   }
@@ -97,12 +108,14 @@ public class BrowserHistory implements History {
    */
   @Override
   public History replaceState(Object state, Location location) {
-    String path = location.getFullURI();
-    String stringifiedState = gson.toJson(state == null ? new Object() : state);
-    String encodedState = Base64.getEncoder().encodeToString(stringifiedState.getBytes());
+    Page.ifPresent(page -> {
+      String path = location.getFullURI();
+      String stringifiedState = gson.toJson(state == null ? new Object() : state);
+      String encodedState = Base64.getEncoder().encodeToString(stringifiedState.getBytes());
 
-    Page.getCurrent().executeJsVoidAsync("window.history.replaceState(JSON.parse(atob('"
-        + encodedState + "')), '', '" + path + "')");
+      page.executeJsVoidAsync("window.history.replaceState(JSON.parse(atob('" + encodedState
+          + "')), '', '" + path + "')");
+    });
 
     return this;
   }
@@ -112,6 +125,10 @@ public class BrowserHistory implements History {
    */
   @Override
   public <T> Optional<T> getState(Class<T> classOfT) {
+    if (!Page.isPresent()) {
+      return Optional.empty();
+    }
+
     Object result = Page.getCurrent().executeJs("btoa(JSON.stringify(window.history.state))");
 
     if (result != null) {
@@ -130,6 +147,15 @@ public class BrowserHistory implements History {
    * {@inheritDoc}
    */
   @Override
+  public History removeAllListeners() {
+    dispatcher.removeAllListeners();
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public ListenerRegistration<HistoryStateChangeEvent> addHistoryStateChangeListener(
       EventListener<HistoryStateChangeEvent> listener) {
     if (!isPopStateListenerRegistered) {
@@ -141,23 +167,32 @@ public class BrowserHistory implements History {
   }
 
   private void registerPopStateListener() {
-    PageEventOptions options = new PageEventOptions();
-    options.addData("state", "btoa(JSON.stringify(event.state))");
-    options.addData("path", "window.location.href.replace(window.location.origin, '')");
+    Page.ifPresent(page -> { // NOSONAR
+      PageEventOptions options = new PageEventOptions();
+      options.addData("state", "btoa(JSON.stringify(event.state))");
+      options.addData("path", "window.location.href.replace(window.location.origin, '')");
 
-    Page.getCurrent().addEventListener("popstate", ev -> {
-      String state = (String) ev.getData().get("state");
-      String path = (String) ev.getData().get("path");
+      try {
+        Page.getCurrent().addEventListener("popstate", ev -> {
+          String state = (String) ev.getData().get("state");
+          String path = (String) ev.getData().get("path");
 
-      Object decodedState = null;
-      if (state != null) {
-        decodedState = gson.fromJson(new String(Base64.getDecoder().decode(state)), Object.class);
+          Object decodedState = null;
+          if (state != null) {
+            decodedState =
+                gson.fromJson(new String(Base64.getDecoder().decode(state)), Object.class);
+          }
+
+          HistoryStateChangeEvent event =
+              new HistoryStateChangeEvent(this, new Location(path), decodedState);
+
+          dispatcher.dispatchEvent(event);
+        }, options);
+      } catch (WebforjRuntimeException e) {
+        // pass
+        // Technically, this could happen with a headless browser, but we don't want to throw an
+        // exception in that case.
       }
-
-      HistoryStateChangeEvent event =
-          new HistoryStateChangeEvent(this, new Location(path), decodedState);
-
-      dispatcher.dispatchEvent(event);
-    }, options);
+    });
   }
 }

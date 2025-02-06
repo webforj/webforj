@@ -25,12 +25,14 @@ import com.webforj.utilities.Assets;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Represents the web page open in the browser where the app is running and provides methods to
@@ -40,12 +42,12 @@ import java.util.Map;
  * @since 23.00
  */
 public final class Page implements HasJsExecution {
+  private static Logger logger = System.getLogger(Page.class.getName());
   public static final String DEFAULT_TITLE_FORMAT =
       "{WindowTitle ?? ''} {BrowserTitle ? ((WindowTitle ? '- ' : '') + BrowserTitle) : ''}";
   private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
-  private EventDispatcher dispatcher = new EventDispatcher();
   private boolean isBrowserCloseEventRegistered = false;
   private final Map<String, PageEventSinkRegistry> registries = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
@@ -58,7 +60,7 @@ public final class Page implements HasJsExecution {
    * @return the current page instance
    */
   public static Page getCurrent() {
-    String key = ".page.instance";
+    String key = Page.class.getName();
     if (ObjectTable.contains(key)) {
       return (Page) ObjectTable.get(key);
     }
@@ -67,6 +69,27 @@ public final class Page implements HasJsExecution {
     ObjectTable.put(key, instance);
 
     return instance;
+  }
+
+  /**
+   * Check if the page is present.
+   *
+   * @return true if the page is present
+   */
+  public static boolean isPresent() {
+    return getCurrent() != null;
+  }
+
+  /**
+   * Executes the given consumer with the page is present.
+   *
+   * @param consumer the consumer to execute
+   * @since 24.22
+   */
+  public static void ifPresent(Consumer<Page> consumer) {
+    if (Page.isPresent()) {
+      consumer.accept(Page.getCurrent());
+    }
   }
 
   /**
@@ -85,7 +108,11 @@ public final class Page implements HasJsExecution {
    * @throws BBjException if failed to get the web manager
    */
   BBjWebManager getWebManager() throws BBjException {
-    return getEnvironment().getBBjAPI().getWebManager();
+    try {
+      return getEnvironment().getBBjAPI().getWebManager();
+    } catch (NullPointerException e) {
+      throw new BBjException(e, 0);
+    }
   }
 
   /**
@@ -1011,14 +1038,14 @@ public final class Page implements HasJsExecution {
       try {
         BBjWebManager webManager = getEnvironment().getBBjAPI().getWebManager();
         CustomObject handler = getEnvironment().getBridge()
-            .getEventProxy(new PageUnloadEventHandler(this, dispatcher), "handleEvent");
+            .getEventProxy(new PageUnloadEventHandler(this, getEventDispatcher()), "handleEvent");
         webManager.setCallback(SysGuiEventConstants.ON_BROWSER_CLOSE, handler, "onEvent");
       } catch (BBjException e) {
         throw new WebforjWebManagerException("Failed to register browser close event.", e);
       }
     }
 
-    return dispatcher.addListener(PageUnloadEvent.class, listener);
+    return getEventDispatcher().addListener(PageUnloadEvent.class, listener);
   }
 
   /**
@@ -1030,10 +1057,6 @@ public final class Page implements HasJsExecution {
    */
   public ListenerRegistration<PageUnloadEvent> onUnload(EventListener<PageUnloadEvent> listener) {
     return addUnloadListener(listener);
-  }
-
-  private EventDispatcher getEventDispatcher() {
-    return eventDispatcher;
   }
 
   private void performDownload(String sourceFilePath, String fileName) throws BBjException {
@@ -1048,8 +1071,18 @@ public final class Page implements HasJsExecution {
       try {
         Files.delete(tempFilePath);
       } catch (IOException e) {
-        Environment.logError("Failed to delete temp file: " + tempFilePath, e);
+        logger.log(Logger.Level.WARNING, "Failed to delete temp file: " + tempFilePath, e);
       }
     }
+  }
+
+  private EventDispatcher getEventDispatcher() {
+    return eventDispatcher;
+  }
+
+  void destroy() {
+    ObjectTable.put(Page.class.getName(), null);
+    getEventDispatcher().removeAllListeners();
+    registries.clear();
   }
 }

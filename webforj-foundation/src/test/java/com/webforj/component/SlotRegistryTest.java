@@ -170,6 +170,21 @@ class SlotRegistryTest {
     assertTrue(slots.contains("footer"));
   }
 
+  @Test
+  void shouldDisposeAllComponentsAndClearSlots() {
+    slotRegistry.addComponentsToSlot("header", component1);
+    slotRegistry.addComponentsToSlot("footer", component2);
+
+    slotRegistry.dispose();
+
+    assertTrue(slotRegistry.getComponentsInSlot("header").isEmpty());
+    assertTrue(slotRegistry.getComponentsInSlot("footer").isEmpty());
+    assertTrue(slotRegistry.getSlots().isEmpty());
+
+    verify(component1).destroy();
+    verify(component2).destroy();
+  }
+
   static class TestComponent extends Component {
 
     @Override

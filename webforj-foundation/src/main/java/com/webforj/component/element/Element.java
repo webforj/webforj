@@ -693,6 +693,18 @@ public final class Element extends DwcContainer<Element>
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    isDefined = false;
+    properties.clear();
+    whenDefinedResults.clear();
+    slotRegistry.dispose();
+  }
+
+  /**
    * Find the control associated with this component.
    *
    * @return the control associated with this component

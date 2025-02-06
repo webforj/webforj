@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ServiceLoader;
+import java.util.function.Consumer;
 
 /**
  * The Environment class represents the runtime environment for the webforj application. It provides
@@ -81,6 +82,27 @@ public final class Environment {
    */
   public static Environment getCurrent() {
     return Environment.instanceMap.get(Thread.currentThread().getId());
+  }
+
+  /**
+   * Check if the environment is present.
+   *
+   * @return true if the environment is present
+   */
+  public static boolean isPresent() {
+    return getCurrent() != null;
+  }
+
+  /**
+   * Executes the given consumer with the environment for the current thread when it is available.
+   *
+   * @param consumer the consumer to execute
+   * @since 24.22
+   */
+  public static void ifPresent(Consumer<Environment> consumer) {
+    if (isPresent()) {
+      consumer.accept(getCurrent());
+    }
   }
 
   /**
