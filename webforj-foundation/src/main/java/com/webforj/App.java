@@ -762,8 +762,7 @@ public abstract class App {
 
     RouteRegistry registry = RouteRegistry.ofPackage(packages);
     Router router = new Router(root, registry);
-    String key = "com.webforj.router.Router.instance";
-    ObjectTable.put(key, router);
+    ObjectTable.put(Router.class.getName(), router);
 
     if (getClass().getAnnotation(Routify.class).manageFramesVisibility()) {
       router.onNavigate(this::handleFramesVisibility);
@@ -839,11 +838,13 @@ public abstract class App {
     }
 
     Router router = Router.getCurrent();
-    router.getHistory().getLocation().ifPresent(location -> {
-      NavigationOptions options = new NavigationOptions();
-      options.setUpdateHistory(false);
-      Router.getCurrent().navigate(location, options);
-    });
+    if (router != null) {
+      router.getHistory().getLocation().ifPresent(location -> {
+        NavigationOptions options = new NavigationOptions();
+        options.setUpdateHistory(false);
+        Router.getCurrent().navigate(location, options);
+      });
+    }
   }
 
   /**
