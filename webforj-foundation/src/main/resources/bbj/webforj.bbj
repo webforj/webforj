@@ -105,20 +105,20 @@ onHotReload:
 return
 
 terminate:
-  Environment.cleanup()
   if app! <> null() then
-      app! = null()
-      app!.terminate()
+    app!.terminate()
+    app! = null()
   fi
+
+  Environment.cleanup()
 release
 
 EscTrap:
-  IF AND(CHR(TCB(19)),$08$)=$08$ THEN
-      System.out.println("Client connection lost. Terminating.")
-  ELSE
-      System.out.println("An ESCAPE was requested. Terminating.")
-  FI
-
+  REM IF AND(CHR(TCB(19)),$08$)=$08$ THEN
+  REM     System.out.println("Client connection lost. Terminating.")
+  REM ELSE
+  REM     System.out.println("An ESCAPE was requested. Terminating.")
+  REM FI
   gosub terminate
 release
 
@@ -130,8 +130,6 @@ ErrTrap:
       debugMode = num(Environment.getCurrent().isDebug())
     fi
     Environment.handleError(lastJavaException!, debugMode)
-  else
-    System.err.println("Fatal Error with no Java Exception caught.")
   fi
 
   gosub terminate
