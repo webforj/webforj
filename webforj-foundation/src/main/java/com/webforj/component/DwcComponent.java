@@ -1160,7 +1160,6 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     } catch (BBjException e) {
       // pass
     } finally {
-      setControl(null);
       attributes.clear();
       styles.clear();
       properties.clear();
