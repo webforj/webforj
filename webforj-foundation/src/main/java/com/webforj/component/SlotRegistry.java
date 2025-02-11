@@ -197,7 +197,10 @@ public class SlotRegistry {
    * Disposes of all components in all slots and clears the slots.
    */
   public void dispose() {
-    slots.values().forEach(components -> components.forEach(Component::destroy));
+    List<Component> allComponents = new ArrayList<>();
+    slots.values().forEach(allComponents::addAll);
+
+    allComponents.forEach(Component::destroy);
     slots.clear();
   }
 
