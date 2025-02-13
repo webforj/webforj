@@ -11,10 +11,6 @@ import com.webforj.component.optiondialog.OptionDialog;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
 import com.webforj.environment.StringTable;
-import com.webforj.environment.namespace.GlobalNamespace;
-import com.webforj.environment.namespace.GroupNamespace;
-import com.webforj.environment.namespace.Namespace;
-import com.webforj.environment.namespace.PrivateNamespace;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -578,29 +574,6 @@ public abstract class App {
    */
   public void run() throws WebforjException {
     // no-op
-  }
-
-  public static Namespace getNamespace(Namespace.NamespaceType namespaceType) {
-    switch (namespaceType) {
-      case PRIVATE:
-        throw new IllegalArgumentException("PRIVATE namespaces have a prefix and a name!");
-      case GROUP:
-        return new GroupNamespace();
-      case GLOBAL:
-        return new GlobalNamespace();
-      default:
-        throw new IllegalArgumentException("Illegal Type!");
-
-    }
-  }
-
-  public static Namespace getNamespace(String prefix, String name, Boolean fCreateIfMissing) {
-    if (prefix.isBlank() || name.isBlank()) {
-      throw new IllegalArgumentException("You need a prefix and a name here");
-    }
-
-    return new PrivateNamespace(prefix, name, fCreateIfMissing);
-
   }
 
   /**
