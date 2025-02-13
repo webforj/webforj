@@ -225,8 +225,7 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
    * Sets the icon of the button.
    *
    * <p>
-   * Setting the icon will remove the text label of the button and only show the icon. Additionally,
-   * the icon the button expands will be set to {@link Expanse#NONE}.
+   * The button expanse will be set to {@link Expanse#NONE}.
    * </p>
    *
    * @param icon the icon of the button
