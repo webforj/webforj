@@ -4,10 +4,16 @@ import com.webforj.Environment;
 
 /**
  * A Group Namespace is shared between all application server threads started from the same parent.
+ *
+ * @since 24.22
+ * @author Stephen Wald
  */
-public final class GroupNamespace extends StandardNamespace implements Namespace {
+public final class GroupNamespace extends Namespace {
 
+  /**
+   * Retrieves a Group Namespace.
+   */
   public GroupNamespace() {
-    ns = Environment.getCurrent().getBBjAPI().getGroupNamespace();
+    setBbjNamespace(Environment.getCurrent().getBBjAPI().getGroupNamespace());
   }
 }
