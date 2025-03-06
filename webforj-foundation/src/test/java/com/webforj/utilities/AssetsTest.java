@@ -12,22 +12,17 @@ import com.typesafe.config.Config;
 import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.exceptions.WebforjRuntimeException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 class AssetsTest {
-
-  @BeforeEach
-  void setUp() {
-    System.clearProperty("webforj.context");
-  }
 
   @Test
   void shouldReturnFilesUrlWhenBBjServicesEnabled() {
     try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
         MockedStatic<App> appMock = mockStatic(App.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
       appMock.when(App::getApplicationName).thenReturn("myApp");
 
       String result = Assets.getWebServerFilesUrl();
@@ -37,16 +32,14 @@ class AssetsTest {
 
   @Test
   void shouldReturnFilesUrlWithContextProperty() {
-    System.setProperty("webforj.context", "/customContext");
     try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class);
         MockedStatic<App> appMock = mockStatic(App.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(true);
+      environmentMock.when(Environment::getContextPath).thenReturn("/customContext");
       appMock.when(App::getApplicationName).thenReturn("myApp");
 
       String result = Assets.getWebServerFilesUrl();
       assertEquals("/customContext/files/myApp/", result);
-    } finally {
-      System.clearProperty("webforj.context");
     }
   }
 
@@ -113,6 +106,7 @@ class AssetsTest {
   void shouldResolveIconsUrlForValidInput() {
     try (MockedStatic<Environment> environmentMock = mockStatic(Environment.class)) {
       environmentMock.when(Environment::isRunningWithBBjServices).thenReturn(false);
+      environmentMock.when(Environment::getContextPath).thenReturn("/");
       Environment mockEnvironment = mock(Environment.class);
       Config mockConfig = mock(Config.class);
       environmentMock.when(Environment::getCurrent).thenReturn(mockEnvironment);

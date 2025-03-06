@@ -727,9 +727,9 @@ public abstract class App {
     }
 
     String root = "webapp/" + getApplicationName();
-    String isBbjService = System.getProperty("com.basis.noBBjServices", "");
-    if (isBbjService.equals("true")) {
-      root = System.getProperty("webforj.context", "");
+    boolean isBbjService = Environment.isRunningWithBBjServices();
+    if (!isBbjService) {
+      root = Environment.getContextPath();
       root = root.isBlank() ? "/" : root;
     }
 
