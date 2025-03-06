@@ -98,7 +98,7 @@ public class Assets {
       }
     }
 
-    String context = System.getProperty("webforj.context", "/");
+    String context = Environment.getContextPath();
     String fullUrl = context + "/" + url;
     return RouterUtils.normalizePath(fullUrl);
   }
@@ -216,7 +216,7 @@ public class Assets {
       url = RouterUtils.normalizePath(assetsDir);
     }
 
-    String context = System.getProperty("webforj.context", "/");
+    String context = Environment.getContextPath();
     String fullUrl = context + "/" + url;
     return RouterUtils.normalizePath(fullUrl);
   }

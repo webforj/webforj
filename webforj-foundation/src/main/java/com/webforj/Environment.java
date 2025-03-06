@@ -3,6 +3,7 @@ package com.webforj;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
+import com.basis.util.common.Util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.bridge.WebforjBBjBridge;
@@ -129,10 +130,26 @@ public final class Environment {
    * Checks if webforj is running inside BBj Services.
    *
    * @return true if webforj is running inside BBj Services, false otherwise.
+   * @since 24.20
    */
   public static boolean isRunningWithBBjServices() {
-    String isNoBbjService = System.getProperty("com.basis.noBBjServices", "");
-    return !isNoBbjService.equals("true");
+    String isNoBbjService = Util.getProperty("com.basis.noBBjServices", "");
+    return !isNoBbjService.equalsIgnoreCase("true");
+  }
+
+  /**
+   * Returns the context path for the current environment.
+   *
+   * <p>
+   * The context path is the base path for the web application. It is used to resolve relative URLs
+   * and to determine the root path for the application.
+   * </p>
+   *
+   * @return the context path for the current environment.
+   * @since 25.00
+   */
+  public static String getContextPath() {
+    return Util.getProperty("webforj.context", "/");
   }
 
   /**
@@ -167,7 +184,7 @@ public final class Environment {
       return (Config) ObjectTable.get(lookupKey);
     }
 
-    String pathProp = System.getProperty("webforj.conf", "!!webforj.conf");
+    String pathProp = Util.getProperty("webforj.conf", "!!webforj.conf");
     Config config;
 
     if (pathProp.isEmpty()) {
