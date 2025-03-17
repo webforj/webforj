@@ -288,22 +288,6 @@ public abstract class App {
   }
 
   /**
-   * Log a String to the browser console (console.log)
-   *
-   * @param output The message to log
-   * @deprecated since 24.10, for removal in 25.00. Use {@link BrowserConsole#log(String)} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static void consoleLog(String output) {
-    try {
-
-      Environment.getCurrent().getSysGui().executeScript("console.log(\"" + output + "\")");
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  /**
    * Log a String to the browser console (console.error)
    *
    * @param output The message to log
