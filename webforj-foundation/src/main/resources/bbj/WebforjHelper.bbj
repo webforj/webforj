@@ -63,10 +63,6 @@ class public WebforjHelper implements WebforjBBjBridge
         methodret ep!
     methodend
 
-    method public int msgbox(String msg!, int options!, String title!)
-        methodret msgbox(msg!,options!,title!)
-    methodend
-
     method public int msgbox(ConfirmDialog options!)
       REM MSGBOX(str1{,expr{,str2{,button1{,button2{,button3}}}}}{,MODE="options"}{,TIM=int}{,ERR=lineref})
       Title$ = String.valueOf(options!.getTitle())
