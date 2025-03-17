@@ -119,33 +119,6 @@ public class Drawer extends ElementCompositeContainer
   }
 
   /**
-   * Sets Drawer auto focus.
-   *
-   * @param autoFocus When true then automatically focus the first focusable element in the drawer.
-   * @return the drawer
-   *
-   * @deprecated Use {@link #setAutoFocus(boolean)} instead.
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Deprecated(since = "24.21", forRemoval = true)
-  public Drawer setAutofocus(boolean autoFocus) {
-    return setAutoFocus(autoFocus);
-  }
-
-  /**
-   * Gets Drawer auto focus.
-   *
-   * @return the drawer auto focus
-   *
-   * @deprecated Use {@link #isAutoFocus()} instead.
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Deprecated(since = "24.21", forRemoval = true)
-  public boolean isAutofocus() {
-    return isAutoFocus();
-  }
-
-  /**
    * Auto focus the drawer when it is opened.
    *
    * <p>
