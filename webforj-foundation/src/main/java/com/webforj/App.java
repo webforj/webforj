@@ -219,17 +219,6 @@ public abstract class App {
   }
 
   /**
-   * Get the application host.
-   *
-   * @return The application host
-   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getHost()} instead
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getHost() {
-    return Request.getCurrent().getHost();
-  }
-
-  /**
    * Get the application port.
    *
    * @return The application port
