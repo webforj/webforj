@@ -273,17 +273,6 @@ public final class Environment {
     return bridge;
   }
 
-  /**
-   * Returns the WebforjBBjBridge instance.
-   *
-   * @return the WebforjBBjBridge instance.
-   * @deprecated since 24.12 for removal in 25.0. Use {@link #getBridge()} instead.
-   */
-  @Deprecated(since = "24.12", forRemoval = true)
-  public WebforjBBjBridge getWebforjHelper() {
-    return getBridge();
-  }
-
   /*
    * LOGGING: for now we rely on BBj's redirection of err and out into its own logging. In the
    * future we will definitely want to allow more granular debug options and the use of custom
