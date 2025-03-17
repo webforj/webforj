@@ -1,6 +1,7 @@
 package com.webforj.conceiver;
 
 import com.webforj.environment.ObjectTable;
+import java.lang.System.Logger;
 import java.util.ServiceLoader;
 
 /**
@@ -16,6 +17,7 @@ import java.util.ServiceLoader;
  */
 public final class ConceiverProvider {
   public static final String LOOKUP_KEY = "com.webforj.conceiver.Conceiver.instance";
+  static Logger logger = System.getLogger(ConceiverProvider.class.getName());
 
   private ConceiverProvider() {}
 
@@ -25,11 +27,15 @@ public final class ConceiverProvider {
    * @return the current {@link Conceiver}.
    */
   public static Conceiver getCurrent() {
+    logger.log(Logger.Level.DEBUG, "Getting the current Conceiver.");
     if (!ObjectTable.contains(LOOKUP_KEY)) {
       ServiceLoader<Conceiver> loader = ServiceLoader.load(Conceiver.class);
       ObjectTable.put(LOOKUP_KEY, loader.findFirst().orElse(new DefaultConceiver()));
     }
 
-    return (Conceiver) ObjectTable.get(LOOKUP_KEY);
+    Conceiver conceiver = (Conceiver) ObjectTable.get(LOOKUP_KEY);
+    logger.log(Logger.Level.DEBUG, "Using the Conceiver {0}.", conceiver.getClass().getName());
+
+    return conceiver;
   }
 }
