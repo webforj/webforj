@@ -31,7 +31,7 @@ public final class HtmlContainerNativeJavascriptEventSink {
       bbjctrl.setCallback(SysGuiEventConstants.ON_NATIVE_JAVASCRIPT,
           Environment.getCurrent().getBridge().getEventProxy(this, "onEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 
@@ -41,7 +41,7 @@ public final class HtmlContainerNativeJavascriptEventSink {
       dwcEv = new HtmlContainerJavascriptEvent(container, ev.getEventMap());
     } catch (BBjException e) {
       dwcEv = new HtmlContainerJavascriptEvent(container, null);
-      App.consoleError("Error: could not determine JS event map!");
+      // App.consoleError("Error: could not determine JS event map!");
     }
     Iterator<Consumer<HtmlContainerJavascriptEvent>> it = targets.iterator();
     while (it.hasNext())

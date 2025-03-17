@@ -28,7 +28,7 @@ public final class HtmlContainerPageLoadEventSink {
       bbjctrl.setCallback(SysGuiEventConstants.ON_PAGE_LOADED,
           Environment.getCurrent().getBridge().getEventProxy(this, "onEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
 
   }

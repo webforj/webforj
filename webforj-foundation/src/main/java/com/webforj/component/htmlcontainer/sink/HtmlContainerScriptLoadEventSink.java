@@ -31,7 +31,7 @@ public class HtmlContainerScriptLoadEventSink {
           Environment.getCurrent().getBridge().getEventProxy(this, "scriptLoadedEvent"), "onEvent");
 
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 

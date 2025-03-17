@@ -80,7 +80,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       bbjHtmlView = (BBjHtmlView) control;
       onAttach();
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 
@@ -127,7 +127,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.executeAsyncScript(script, true);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
 
@@ -152,7 +152,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.executeScript(script, true);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
 
@@ -165,7 +165,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.getAutoNavigate();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return this.autoNavigate;
@@ -176,7 +176,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.getClientType();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return null;
@@ -187,7 +187,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.getClientVersion();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return null;
@@ -198,7 +198,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return (Image) bbjHtmlView.getImage();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return null;
@@ -210,7 +210,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.getText();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return super.getText();
@@ -221,7 +221,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.getUrl();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return this.url;
@@ -232,7 +232,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.getUserAgent();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return this.userAgent;
@@ -243,7 +243,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.injectScript(script);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.injectScript = script;
@@ -255,7 +255,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.injectScript(script, top);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.injectScript = script;
@@ -268,7 +268,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.injectUrl(url);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.injectURL = url;
@@ -280,7 +280,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.injectUrl(url, top);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.injectURL = url;
@@ -293,7 +293,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         return bbjHtmlView.print();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return false;
@@ -304,7 +304,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.setAutoNavigate(autoNavigate);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.autoNavigate = autoNavigate;
@@ -324,7 +324,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.setUrl(url);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.url = url;
@@ -336,7 +336,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.setUrl(url, reload);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.url = url;
@@ -402,7 +402,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.isTabTraversable();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return this.tabTraversable;
@@ -414,7 +414,7 @@ public final class HtmlContainer extends LegacyDwcComponent
       try {
         bbjHtmlView.setTabTraversable(traversable);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.tabTraversable = traversable;

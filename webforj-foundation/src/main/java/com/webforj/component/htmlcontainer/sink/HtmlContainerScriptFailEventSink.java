@@ -33,7 +33,7 @@ public class HtmlContainerScriptFailEventSink {
           Environment.getCurrent().getBridge().getEventProxy(this, "scriptFailedEvent"), "onEvent");
 
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 

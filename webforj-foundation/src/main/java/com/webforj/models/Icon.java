@@ -29,7 +29,7 @@ public class Icon {
     try {
       this.file = new File(new URL(url).toURI());
     } catch (URISyntaxException | MalformedURLException e) {
-      Environment.logError(e);
+      // Environment.logError(e);
     }
     return this;
   }
@@ -40,7 +40,7 @@ public class Icon {
     try (OutputStream outputStream = new FileOutputStream(this.file)) {
       // IOUtils.copy(inputStream, outputStream);
     } catch (IOException e) {
-      Environment.logError(e);
+      // Environment.logError(e);
     }
     return this;
   }

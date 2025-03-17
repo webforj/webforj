@@ -27,7 +27,7 @@ public class TreeExpandEventSink {
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_EXPAND,
           Environment.getCurrent().getBridge().getEventProxy(this, "expandEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 

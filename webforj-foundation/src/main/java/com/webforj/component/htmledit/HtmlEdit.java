@@ -37,7 +37,7 @@ public final class HtmlEdit extends LegacyDwcComponent
       bbjHtmlEdit = (BBjHtmlEdit) control;
       onAttach();
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 
@@ -51,7 +51,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getAllToolbarStyles();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return new ArrayList<>();
     }
   }
@@ -65,7 +65,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getAvailableSpellCheckLanguages();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return new ArrayList<>();
     }
   }
@@ -81,7 +81,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getAvailableStates();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return new ArrayList<>();
     }
   }
@@ -98,7 +98,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getBasicToolbar();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return false;
     }
   }
@@ -114,7 +114,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getBasicToolbarStyles();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return new ArrayList<>();
     }
   }
@@ -129,7 +129,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getClientType();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return null;
     }
   }
@@ -144,7 +144,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getClientVersion();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return null;
     }
   }
@@ -167,7 +167,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getLocales();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return new ArrayList<>();
     }
   }
@@ -181,7 +181,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getPlainText();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return null;
     }
   }
@@ -195,7 +195,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getSpellCheckLanguage();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return null;
     }
   }
@@ -210,7 +210,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.getState(state);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return false;
     }
   }
@@ -225,7 +225,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       return bbjHtmlEdit.isSpellChecked();
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
       return false;
     }
   }
@@ -241,7 +241,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       bbjHtmlEdit.setBasicToolbar(basicToolbar);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
     return this;
   }
@@ -257,7 +257,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       bbjHtmlEdit.setBasicToolbarStyles((BBjVector) styles);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
     return this;
   }
@@ -283,7 +283,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       bbjHtmlEdit.setPlainText(text);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
     return this;
   }
@@ -300,7 +300,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       bbjHtmlEdit.setState(state, value);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
     return this;
   }
@@ -315,7 +315,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       bbjHtmlEdit.setSpellChecked(spellChecked);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
     return this;
   }
@@ -330,7 +330,7 @@ public final class HtmlEdit extends LegacyDwcComponent
     try {
       bbjHtmlEdit.setSpellCheckLanguage(language);
     } catch (BBjException e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
     return this;
   }
@@ -347,7 +347,7 @@ public final class HtmlEdit extends LegacyDwcComponent
       try {
         return bbjHtmlEdit.isTabTraversable();
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     return this.tabTraversable;
@@ -359,7 +359,7 @@ public final class HtmlEdit extends LegacyDwcComponent
       try {
         bbjHtmlEdit.setTabTraversable(traversable);
       } catch (BBjException e) {
-        Environment.logError(e);
+       //Environment.logError(e);;
       }
     }
     this.tabTraversable = traversable;

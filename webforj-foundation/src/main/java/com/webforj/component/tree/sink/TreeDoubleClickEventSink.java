@@ -27,7 +27,7 @@ public class TreeDoubleClickEventSink {
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_DOUBLE_CLICK,
           Environment.getCurrent().getBridge().getEventProxy(this, "doubleClickEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 

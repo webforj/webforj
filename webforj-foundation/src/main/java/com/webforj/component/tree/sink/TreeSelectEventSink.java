@@ -27,7 +27,7 @@ public final class TreeSelectEventSink {
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_SELECT,
           Environment.getCurrent().getBridge().getEventProxy(this, "selectEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+     //Environment.logError(e);;
     }
   }
 
