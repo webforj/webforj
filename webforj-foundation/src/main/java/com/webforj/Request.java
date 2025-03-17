@@ -41,18 +41,6 @@ public final class Request {
   }
 
   /**
-   * Returns the value of the provided query parameter if present.
-   *
-   * @param key Key of the desired query parameter from the incoming request.
-   * @return The value of the query parameter with the provided key, null if not present.
-   * @deprecated Use {@link #getQueryParameter(String)} instead.
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getQueryParam(String key) {
-    return Environment.getCurrent().getBridge().getQueryParam(key);
-  }
-
-  /**
    * Returns the value of the stored cookie.
    *
    * @param key the key of the cookie
