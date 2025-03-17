@@ -219,17 +219,6 @@ public abstract class App {
   }
 
   /**
-   * Get the application protocol.
-   *
-   * @return The application protocol
-   * @deprecated since 24.02, for removal in 25.00. Use {@link Request#getProtocol()} instead
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getProtocol() {
-    return Request.getCurrent().getProtocol();
-  }
-
-  /**
    * Get the application host.
    *
    * @return The application host
