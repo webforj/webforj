@@ -366,17 +366,6 @@ public abstract class App {
   }
 
   /**
-   * Gets the CookieStorage.
-   *
-   * @return the CookieStorage instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link CookieStorage#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static CookieStorage getCookieStorage() {
-    return CookieStorage.getCurrent();
-  }
-
-  /**
    * Gets the SessionStorage.
    *
    * @return the SessionStorage instance
