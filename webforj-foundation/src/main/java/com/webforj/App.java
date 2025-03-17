@@ -288,48 +288,6 @@ public abstract class App {
   }
 
   /**
-   * Shows a message box
-   *
-   * @param alert The message to show
-   * @return
-   *
-   * @deprecated since 24.02, for removal in 25.00
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static int msgbox(String alert) {
-    return Environment.getCurrent().getBridge().msgbox(alert, 0, "");
-  }
-
-  /**
-   *
-   * @param alert The message to show
-   * @param options
-   * @return
-   *
-   * @deprecated since 24.02, for removal in 25.00. Use
-   *             {@link OptionDialog#showMessageDialog(Object)}
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static int msgbox(String alert, int options) {
-    return Environment.getCurrent().getBridge().msgbox(alert, options, "");
-  }
-
-  /**
-   *
-   * @param alert The message to show
-   * @param options
-   * @param title
-   * @return
-   *
-   * @deprecated since 24.02, for removal in 25.00. Use
-   *             {@link OptionDialog#showMessageDialog(Object)}
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static int msgbox(String alert, int options, String title) {
-    return Environment.getCurrent().getBridge().msgbox(alert, options, title);
-  }
-
-  /**
    * Get the list of all created frames in the application.
    *
    * @return the list of all frames in the application
