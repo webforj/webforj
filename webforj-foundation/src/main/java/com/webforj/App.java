@@ -366,17 +366,6 @@ public abstract class App {
   }
 
   /**
-   * Gets the SessionStorage.
-   *
-   * @return the SessionStorage instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link SessionStorage#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static SessionStorage getSessionStorage() {
-    return SessionStorage.getCurrent();
-  }
-
-  /**
    * Gets the LocalStorage.
    *
    * @return the LocalStorage instance
