@@ -219,17 +219,6 @@ public abstract class App {
   }
 
   /**
-   * Get the application port.
-   *
-   * @return The application port
-   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getPort()} instead
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getPort() {
-    return Request.getCurrent().getPort();
-  }
-
-  /**
    * Get the application URL.
    *
    * @return The application URL
