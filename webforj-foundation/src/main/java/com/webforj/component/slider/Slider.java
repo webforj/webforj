@@ -631,7 +631,7 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
     this.tooltipText = text;
     setUnrestrictedProperty(PROP_TOOLTIP, text);
 
-    if (text.trim().length() > 0 && !isTooltipVisible()) {
+    if (!text.trim().isEmpty() && !isTooltipVisible()) {
       setTooltipVisible(true);
     }
 

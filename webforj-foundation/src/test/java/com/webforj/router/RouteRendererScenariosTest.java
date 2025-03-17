@@ -68,7 +68,7 @@ class RouteRendererScenariosTest {
   }
 
   @AfterEach
-  public void teardown() {
+  void teardown() {
     mockedEnvironment.close();
     mockedConceiverProvider.close();
   }

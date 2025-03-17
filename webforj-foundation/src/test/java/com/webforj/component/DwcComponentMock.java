@@ -22,6 +22,7 @@ public class DwcComponentMock extends DwcComponent<DwcComponentMock>
     setControl(mock(BBjControl.class));
   }
 
+  @Override
   public BBjControl getControl() {
     return super.getControl();
   }

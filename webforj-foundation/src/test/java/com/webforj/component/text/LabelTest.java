@@ -13,7 +13,6 @@ import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.lang.reflect.InvocationTargetException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,9 +41,9 @@ class LabelTest {
     @Test
     @DisplayName("Constructor with text and wrap")
     void textAndWrapConstructor() {
-      Label component = new Label("text", false);
-      assertEquals("text", component.getText());
-      assertFalse(component.isWrap());
+      Label localComponent = new Label("text", false);
+      assertEquals("text", localComponent.getText());
+      assertFalse(localComponent.isWrap());
     }
   }
 
@@ -54,8 +53,7 @@ class LabelTest {
 
     @Test
     @DisplayName("OnAttach method")
-    void catchup() throws BBjException, NoSuchMethodException, IllegalAccessException,
-        InvocationTargetException {
+    void catchup() throws BBjException, IllegalAccessException {
 
       ReflectionUtils.nullifyControl(component);
       component.setWrap(false);
@@ -82,7 +80,7 @@ class LabelTest {
 
     @Test
     @DisplayName("When control is null")
-    void whenControlIsNull() throws BBjException, IllegalAccessException {
+    void whenControlIsNull() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
       component.setWrap(false);
       assertFalse(component.isWrap());

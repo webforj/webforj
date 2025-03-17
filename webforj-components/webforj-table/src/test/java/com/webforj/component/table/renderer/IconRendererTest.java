@@ -3,7 +3,6 @@ package com.webforj.component.table.renderer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import com.webforj.component.table.renderer.IconRenderer;
 
 class IconRendererTest {
 

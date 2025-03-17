@@ -236,6 +236,7 @@ class TabbedPaneTest {
     }
 
     @Test
+    @SuppressWarnings("squid:S5778")
     void shouldThrowDwcjRuntimeException() throws BBjException {
       doThrow(BBjException.class).when(control).addTab(anyString(), any(BBjControl.class));
       assertThrows(WebforjRuntimeException.class,
@@ -243,12 +244,14 @@ class TabbedPaneTest {
     }
 
     @Test
+    @SuppressWarnings("squid:S5778")
     void shouldThrowsNullPointerException() {
       assertThrows(NullPointerException.class,
           () -> component.addTab((Tab) null, new DwcComponentMock()));
     }
 
     @Test
+    @SuppressWarnings("squid:S5778")
     void shouldThrowIllegalArgumentException() {
       Tab tab = new Tab("Tab1");
       component.addTab(tab);
@@ -366,6 +369,7 @@ class TabbedPaneTest {
     }
 
     @Test
+    @SuppressWarnings("squid:S5778")
     void shouldThrowDwcjRuntimeException() throws BBjException {
       component.addTab("Tab1", new DwcComponentMock());
 

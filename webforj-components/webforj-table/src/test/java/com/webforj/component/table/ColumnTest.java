@@ -8,8 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.google.gson.Gson;
-import com.webforj.component.table.Column;
-import com.webforj.component.table.Table;
 import com.webforj.component.table.Column.PinDirection;
 import com.webforj.component.table.Column.SortDirection;
 import com.webforj.component.table.Column.Type;
@@ -100,7 +98,7 @@ class ColumnTest {
 
   @Test
   void shouldGetValue() {
-    column.setValueProvider(value -> value.toUpperCase());
+    column.setValueProvider(String::toUpperCase);
     assertEquals("HELLO", column.getValue("Hello"));
   }
 
@@ -164,8 +162,8 @@ class ColumnTest {
   @ParameterizedTest
   @MethodSource("provideTypesForTest")
   void shouldFigureClientType(Class<?> inputType, Type expectedType) {
-    Column<String, String> column = new Column<>(new Table<>(), "test");
-    column.figureClientType(inputType);
-    assertEquals(expectedType, column.getClientType());
+    Column<String, String> localColumn = new Column<>(new Table<>(), "test");
+    localColumn.figureClientType(inputType);
+    assertEquals(expectedType, localColumn.getClientType());
   }
 }

@@ -164,6 +164,8 @@ class EventDispatcherTest {
   }
 
   private class ClickEvent extends EventObject {
+
+    @SuppressWarnings("unused")
     public ClickEvent(Object source, Map<String, Object> data) {
       super(source);
     }

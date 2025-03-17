@@ -49,7 +49,7 @@ class RequestTest {
   void shouldGetUrl() throws BBjException {
     String url = "http://localhost:8080";
     when(webManager.getUrl()).thenReturn(url);
-    assertEquals(url, request.getUrl().toString());
+    assertEquals(url, request.getUrl());
   }
 
   @Test

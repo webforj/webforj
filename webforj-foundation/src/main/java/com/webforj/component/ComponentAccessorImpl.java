@@ -60,8 +60,8 @@ final class ComponentAccessorImpl extends ComponentAccessor {
     }
 
     try {
-      if (component instanceof LegacyDwcComponent) {
-        return ((LegacyDwcComponent) component).getControl();
+      if (component instanceof LegacyDwcComponent lc) {
+        return lc.getControl();
       } else if (component instanceof DwcComponent) {
         return ((DwcComponent<?>) component).getControl();
       } else if (component instanceof Composite) {

@@ -3,8 +3,8 @@ package com.webforj.component.table.event.selection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.Mockito.mock;
+
 import com.webforj.component.table.Table;
-import com.webforj.component.table.event.selection.TableItemSelectionChange;
 import com.webforj.component.window.Frame;
 import com.webforj.data.EntityKeysRegistry;
 import java.util.Arrays;

@@ -241,6 +241,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param readOnly The read-only state.
    * @return this binding itself.
    */
+  @SuppressWarnings("squid:S3740")
   public Binding<C, CV, B, BV> setReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
     if (component instanceof ReadOnlyAware readonlyAware) {
@@ -272,6 +273,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @param required The required state.
    * @return this binding itself.
    */
+  @SuppressWarnings("squid:S3740")
   public Binding<C, CV, B, BV> setRequired(boolean required) {
     this.required = required;
     updateClientAutoValidation(!required);

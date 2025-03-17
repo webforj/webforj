@@ -98,7 +98,7 @@ class RouterTest {
   }
 
   @AfterEach
-  public void teardown() {
+  void teardown() {
     mockedEnvironment.close();
     mockedPage.close();
     mockedConceiverProvider.close();
@@ -107,6 +107,7 @@ class RouterTest {
   @Nested
   class LocationNavigation {
     @Test
+    @SuppressWarnings("squid:S5778")
     void shouldThrowExceptionWhenNavigateToInvalidLocation() {
       assertThrows(NotFoundException.class, () -> router.navigate(new Location("/invalidPath")));
     }

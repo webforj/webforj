@@ -205,8 +205,7 @@ public abstract class Composite<T extends Component> extends Component {
     while (currentClass.getSuperclass() != null) {
       Type genericSuperclass = currentClass.getGenericSuperclass();
 
-      if (genericSuperclass instanceof ParameterizedType) {
-        ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
+      if (genericSuperclass instanceof ParameterizedType parameterizedType) {
         Type[] typeArguments = parameterizedType.getActualTypeArguments();
         if (typeArguments.length > 0) {
           @SuppressWarnings("unchecked")

@@ -1,7 +1,6 @@
 package com.webforj.component.dialog;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.Theme;
 import com.webforj.component.dialog.event.DialogCloseEvent;

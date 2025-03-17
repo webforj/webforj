@@ -23,7 +23,9 @@ public class EventSinkMock extends AbstractDwcEventSink {
   }
 
   @Override
-  public void handleEvent(BBjEvent ev) {}
+  public void handleEvent(BBjEvent ev) {
+    // no-op
+  }
 
   @Override
   protected BBjControl getControl() {

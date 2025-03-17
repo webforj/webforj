@@ -9,6 +9,7 @@ public class DwcOptionInputMock extends DwcOptionInput<DwcOptionInputMock> {
   }
 
   @Override
-  protected void onCreate(Window panel) {}
-
+  protected void onCreate(Window panel) {
+    // no-op
+  }
 }

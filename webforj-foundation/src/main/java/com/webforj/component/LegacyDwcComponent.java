@@ -7,7 +7,6 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import com.webforj.Environment;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;

@@ -8,7 +8,9 @@ import com.webforj.dispatcher.ListenerRegistration;
 class DwcListMock extends DwcList<DwcListMock, ListItem> {
 
   @Override
-  protected void onCreate(Window window) {}
+  protected void onCreate(Window window) {
+    // no-op
+  }
 
   @Override
   public DwcListMock deselect() {

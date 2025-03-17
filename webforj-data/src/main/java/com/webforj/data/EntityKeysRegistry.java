@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 24.00
  */
 public class EntityKeysRegistry {
+  private static final String ENTITY_CANNOT_BE_NULL = "Entity cannot be null";
   private final ConcurrentHashMap<Object, String> entityToKeyMap = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, Object> keyToEntityMap = new ConcurrentHashMap<>();
 
@@ -46,12 +47,12 @@ public class EntityKeysRegistry {
    * @throws NullPointerException if the entity is null.
    */
   public String getKey(Object entity) {
-    Objects.requireNonNull(entity, "Entity cannot be null");
+    Objects.requireNonNull(entity, ENTITY_CANNOT_BE_NULL);
 
     return entityToKeyMap.computeIfAbsent(entity, k -> {
-      String id =
-          (entity instanceof HasEntityKey) ? String.valueOf(((HasEntityKey) entity).getEntityKey())
-              : UUID.randomUUID().toString().substring(0, 8);
+      String id = (entity instanceof HasEntityKey hasEntityKey)
+          ? String.valueOf(hasEntityKey.getEntityKey())
+          : UUID.randomUUID().toString().substring(0, 8);
 
       keyToEntityMap.put(id, entity);
       return id;
@@ -92,7 +93,7 @@ public class EntityKeysRegistry {
    * @throws NullPointerException if the entity is null.
    */
   public String refreshKey(Object entity) {
-    Objects.requireNonNull(entity, "Entity cannot be null");
+    Objects.requireNonNull(entity, ENTITY_CANNOT_BE_NULL);
 
     String oldKey = entityToKeyMap.remove(entity);
     if (oldKey != null) {
@@ -108,7 +109,7 @@ public class EntityKeysRegistry {
    * @param entity the entity to be removed. Must not be null.
    */
   public void removeEntity(Object entity) {
-    Objects.requireNonNull(entity, "Entity cannot be null");
+    Objects.requireNonNull(entity, ENTITY_CANNOT_BE_NULL);
 
     String key = entityToKeyMap.remove(entity);
     if (key != null) {

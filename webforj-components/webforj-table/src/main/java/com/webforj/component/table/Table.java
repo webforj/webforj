@@ -235,6 +235,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    *
    * @return the column with the given id
    */
+  @SuppressWarnings("squid:S1452")
   public Column<T, ?> getColumnById(String id) {
     return columns.stream().filter(column -> column.getId().equals(id)).findFirst().orElse(null);
   }
@@ -279,6 +280,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    *
    * @return the columns
    */
+  @SuppressWarnings("squid:S1452")
   public List<Column<T, ?>> getColumns() {
     return Collections.unmodifiableList(columns);
   }

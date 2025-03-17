@@ -23,7 +23,6 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,21 +42,21 @@ class DwcSelectDropdownTest {
 
   @Test
   @DisplayName("open should open the list")
-  void shouldOpenList() throws IllegalAccessException, BBjException {
+  void shouldOpenList() throws BBjException {
     component.open();
     verify(control, times(1)).openList();
   }
 
   @Test
   @DisplayName("close should close the list")
-  void shouldCloseList() throws IllegalAccessException, BBjException {
+  void shouldCloseList() throws BBjException {
     component.close();
     verify(control, times(1)).closeList();
   }
 
   @Test
   @DisplayName("open/close should throw DwcjRuntimeException if BBjException is thrown")
-  void shouldThrowDwcjRuntimeException() throws IllegalAccessException, BBjException {
+  void shouldThrowDwcjRuntimeException() throws BBjException {
     doThrow(BBjException.class).when(control).openList();
     assertThrows(WebforjRuntimeException.class, () -> component.open());
 
@@ -164,7 +163,7 @@ class DwcSelectDropdownTest {
 
       assertEquals(2, component.size());
       verify(control, times(1)).insertItems(0,
-          new BBjVector(items.stream().map(ListItem::getText).collect(Collectors.toList())));
+          new BBjVector(items.stream().map(ListItem::getText).toList()));
     }
 
     @Test

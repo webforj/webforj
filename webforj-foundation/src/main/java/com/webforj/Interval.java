@@ -173,6 +173,7 @@ public final class Interval {
     return dispatcher.getListeners(ElapsedEvent.class);
   }
 
+  @SuppressWarnings("unused")
   public void handleEvent(BBjEvent ev) {
     dispatcher.dispatchEvent(new ElapsedEvent(this));
   }

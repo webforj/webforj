@@ -48,6 +48,7 @@ public abstract class TableCellEvent<T> extends TableEvent<T> {
    *
    * @return the clicked cell's column
    */
+  @SuppressWarnings("squid:S1452")
   public Column<T, ?> getColumn() {
     return getComponent().getColumnById(getColumnKey());
   }

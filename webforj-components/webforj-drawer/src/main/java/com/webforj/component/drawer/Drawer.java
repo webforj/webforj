@@ -1,7 +1,6 @@
 package com.webforj.component.drawer;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.drawer.Drawer;
 import com.webforj.component.drawer.event.DrawerCloseEvent;

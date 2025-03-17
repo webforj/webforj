@@ -35,17 +35,17 @@ import org.junit.jupiter.api.Test;
 
 class TableTest {
 
-  private Table<String> table;
+  private Table<String> component;
 
   @BeforeEach
   void setUp() {
-    table = new Table<>();
+    component = new Table<>();
   }
 
   @Test
   void shouldSetGetProperties() {
     try {
-      PropertyDescriptorTester.run(Table.class, table, descriptor -> {
+      PropertyDescriptorTester.run(Table.class, component, descriptor -> {
         return !Arrays.asList("columnDefinitions", "data", "getRowId", "selected")
             .contains(descriptor.getName());
       });
@@ -60,7 +60,7 @@ class TableTest {
     void shouldAddColumnWithSpecificId() {
       String columnId = "testColumn";
       Function<String, String> provider = Function.identity();
-      Column<String, String> column = table.addColumn(columnId, provider);
+      Column<String, String> column = component.addColumn(columnId, provider);
 
       assertNotNull(column);
       assertEquals(columnId, column.getId());
@@ -70,7 +70,7 @@ class TableTest {
     @Test
     void shouldAddColumnWithOnlyValueProvider() {
       Function<String, String> provider = Function.identity();
-      Column<String, String> column = table.addColumn(provider);
+      Column<String, String> column = component.addColumn(provider);
 
       assertNotNull(column);
       assertNotNull(column.getId());
@@ -80,7 +80,7 @@ class TableTest {
     @Test
     void shouldAddColumnWithRenderer() {
       Renderer<String> renderer = spy(Renderer.class);
-      Column<String, String> column = table.addColumn(renderer);
+      Column<String, String> column = component.addColumn(renderer);
 
       assertNotNull(column);
       assertNotNull(column.getId());
@@ -92,8 +92,8 @@ class TableTest {
     @Test
     void shouldGetColumnById() {
       String columnId = "testColumn";
-      table.addColumn(columnId, Function.identity());
-      Column<String, ?> foundColumn = table.getColumnById(columnId);
+      component.addColumn(columnId, Function.identity());
+      Column<String, ?> foundColumn = component.getColumnById(columnId);
 
       assertNotNull(foundColumn);
       assertEquals(columnId, foundColumn.getId());
@@ -102,7 +102,7 @@ class TableTest {
     @Test
     void getColumnByIdShouldReturnNullIfColumnDoesNotExist() {
       String nonexistentId = "nonexistentId";
-      Column<String, ?> foundColumn = table.getColumnById(nonexistentId);
+      Column<String, ?> foundColumn = component.getColumnById(nonexistentId);
 
       assertNull(foundColumn);
     }
@@ -110,18 +110,18 @@ class TableTest {
     @Test
     void shouldCheckIfColumnExists() {
       String columnId = "testColumn";
-      table.addColumn(columnId, Function.identity());
+      component.addColumn(columnId, Function.identity());
 
-      assertTrue(table.hasColumn(columnId));
-      assertFalse(table.hasColumn("nonexistentId"));
+      assertTrue(component.hasColumn(columnId));
+      assertFalse(component.hasColumn("nonexistentId"));
     }
 
     @Test
     void shouldGetUnmodifiableColumns() {
       String columnId = "testColumn";
-      table.addColumn(columnId, Function.identity());
+      component.addColumn(columnId, Function.identity());
 
-      List<Column<String, ?>> columns = table.getColumns();
+      List<Column<String, ?>> columns = component.getColumns();
 
       assertThrows(UnsupportedOperationException.class, () -> columns.add(null));
     }
@@ -129,10 +129,10 @@ class TableTest {
     @Test
     void shouldRemoveColumn() {
       String columnId = "testColumn";
-      Column<String, ?> c = table.addColumn(columnId, Function.identity());
-      table.removeColumn(c);
+      Column<String, ?> c = component.addColumn(columnId, Function.identity());
+      component.removeColumn(c);
 
-      assertFalse(table.hasColumn(columnId));
+      assertFalse(component.hasColumn(columnId));
     }
   }
 
@@ -141,9 +141,9 @@ class TableTest {
     @Test
     void shouldSetItems() {
       List<String> items = Arrays.asList("item1", "item2");
-      table.setItems(items);
+      component.setItems(items);
 
-      assertIterableEquals(items, table.getItems());
+      assertIterableEquals(items, component.getItems());
     }
   }
 
@@ -259,10 +259,10 @@ class TableTest {
     void shouldGetCellValueWithRowAndColumn() {
       String columnId = "testColumn";
       Function<String, String> provider = Function.identity();
-      Column<String, String> column = table.addColumn(columnId, provider);
-      table.setItems(Arrays.asList("testRow"));
+      Column<String, String> column = component.addColumn(columnId, provider);
+      component.setItems(Arrays.asList("testRow"));
 
-      Object cellValue = table.getCellValue("testRow", column);
+      Object cellValue = component.getCellValue("testRow", column);
 
       assertNotNull(cellValue);
       assertEquals("testRow", cellValue);
@@ -271,15 +271,16 @@ class TableTest {
 
   @Nested
   @DisplayName("Events API")
+  @SuppressWarnings("rawtypes")
   class EventsApi {
 
     @Test
     void shouldAddRowClickListener() {
-      table.onItemClick(event -> {
+      component.onItemClick(event -> {
       });
 
       List<EventListener<TableItemClickEvent>> listeners =
-          table.getEventListeners(TableItemClickEvent.class);
+          component.getEventListeners(TableItemClickEvent.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableItemClickEvent>);
@@ -287,11 +288,11 @@ class TableTest {
 
     @Test
     void shouldAddRowDoubleClickListener() {
-      table.onItemDoubleClick(event -> {
+      component.onItemDoubleClick(event -> {
       });
 
       List<EventListener<TableItemDoubleClickEvent>> listeners =
-          table.getEventListeners(TableItemDoubleClickEvent.class);
+          component.getEventListeners(TableItemDoubleClickEvent.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableItemDoubleClickEvent>);
@@ -299,11 +300,11 @@ class TableTest {
 
     @Test
     void shouldAddCellClickListener() {
-      table.onCellClick(event -> {
+      component.onCellClick(event -> {
       });
 
       List<EventListener<TableCellClickEvent>> listeners =
-          table.getEventListeners(TableCellClickEvent.class);
+          component.getEventListeners(TableCellClickEvent.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableCellClickEvent>);
@@ -311,11 +312,11 @@ class TableTest {
 
     @Test
     void shouldAddCellDoubleClickListener() {
-      table.onCellDoubleClick(event -> {
+      component.onCellDoubleClick(event -> {
       });
 
       List<EventListener<TableCellDoubleClickEvent>> listeners =
-          table.getEventListeners(TableCellDoubleClickEvent.class);
+          component.getEventListeners(TableCellDoubleClickEvent.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableCellDoubleClickEvent>);
@@ -323,11 +324,11 @@ class TableTest {
 
     @Test
     void shouldAddRowSelectListener() {
-      table.onItemSelect(event -> {
+      component.onItemSelect(event -> {
       });
 
       List<EventListener<TableItemSelectEvent>> listeners =
-          table.getEventListeners(TableItemSelectEvent.class);
+          component.getEventListeners(TableItemSelectEvent.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableItemSelectEvent>);
@@ -335,11 +336,11 @@ class TableTest {
 
     @Test
     void shouldAddRowDeselectListener() {
-      table.onItemDeselect(event -> {
+      component.onItemDeselect(event -> {
       });
 
       List<EventListener<TableItemDeselectEvent>> listeners =
-          table.getEventListeners(TableItemDeselectEvent.class);
+          component.getEventListeners(TableItemDeselectEvent.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableItemDeselectEvent>);
@@ -347,11 +348,11 @@ class TableTest {
 
     @Test
     void shouldAddSelectionChangeListener() {
-      table.onItemSelectionChange(event -> {
+      component.onItemSelectionChange(event -> {
       });
 
       List<EventListener<TableItemSelectionChange>> listeners =
-          table.getEventListeners(TableItemSelectionChange.class);
+          component.getEventListeners(TableItemSelectionChange.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableItemSelectionChange>);
@@ -359,11 +360,11 @@ class TableTest {
 
     @Test
     void shouldAddValueChangeListener() {
-      table.onValueChange(event -> {
+      component.onValueChange(event -> {
       });
 
       List<EventListener<TableItemSelectionChange>> listeners =
-          table.getEventListeners(TableItemSelectionChange.class);
+          component.getEventListeners(TableItemSelectionChange.class);
 
       assertEquals(1, listeners.size());
       assertTrue(listeners.get(0) instanceof EventListener<TableItemSelectionChange>);
@@ -371,11 +372,11 @@ class TableTest {
 
     @Test
     void shouldAddSortChangeListener() {
-      table.onSortChange(event -> {
+      component.onSortChange(event -> {
       });
 
       List<EventListener<TableSortChangeEvent>> listeners =
-          table.getEventListeners(TableSortChangeEvent.class);
+          component.getEventListeners(TableSortChangeEvent.class);
 
       assertTrue(listeners.size() > 0);
       assertTrue(listeners.get(0) instanceof EventListener<TableSortChangeEvent>);
@@ -387,9 +388,9 @@ class TableTest {
 
     @Test
     void shouldHandleSortChangeEvent() {
-      table.addColumn("col1", Function.identity());
-      table.addColumn("col2", Function.identity());
-      table.addColumn("col3", Function.identity()).setSortDirection(Column.SortDirection.DESC);
+      component.addColumn("col1", Function.identity());
+      component.addColumn("col2", Function.identity());
+      component.addColumn("col3", Function.identity()).setSortDirection(Column.SortDirection.DESC);
 
       Map<String, Object> payload = new HashMap<>();
       payload.put("criteria", new HashMap<>() {
@@ -398,14 +399,14 @@ class TableTest {
           put("col2", "desc");
         }
       });
-      TableSortChangeEvent<String> event = new TableSortChangeEvent<>(table, payload);
+      TableSortChangeEvent<String> event = new TableSortChangeEvent<>(component, payload);
 
-      table.handleSortChanged(event);
+      component.handleSortChanged(event);
 
       // check columns directions are updated
-      assertEquals(Column.SortDirection.ASC, table.getColumnById("col1").getSortDirection());
-      assertEquals(Column.SortDirection.DESC, table.getColumnById("col2").getSortDirection());
-      assertEquals(Column.SortDirection.NONE, table.getColumnById("col3").getSortDirection());
+      assertEquals(Column.SortDirection.ASC, component.getColumnById("col1").getSortDirection());
+      assertEquals(Column.SortDirection.DESC, component.getColumnById("col2").getSortDirection());
+      assertEquals(Column.SortDirection.NONE, component.getColumnById("col3").getSortDirection());
     }
   }
 

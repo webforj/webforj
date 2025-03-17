@@ -800,9 +800,9 @@ public final class Element extends DwcContainer<Element>
     Gson gson = new Gson();
     JsonArray jsonArgsArray = new JsonArray();
     for (Object arg : arguments) {
-      if (arg instanceof Component) {
+      if (arg instanceof Component component) {
         // For Component instances, get the client component ID
-        String clientComponentId = ((Component) arg).getClientComponentId();
+        String clientComponentId = component.getClientComponentId();
         jsonArgsArray.add("objects.get('" + clientComponentId + "')");
       } else {
         // For other arguments, serialize them

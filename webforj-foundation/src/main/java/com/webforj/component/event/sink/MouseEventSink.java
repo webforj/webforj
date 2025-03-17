@@ -2,7 +2,6 @@ package com.webforj.component.event.sink;
 
 import com.basis.bbj.proxies.event.BBjMouseEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.basis.startup.type.BBjException;
 import com.webforj.component.Component;
 import com.webforj.component.DwcComponent;
 import com.webforj.dispatcher.EventDispatcher;
@@ -39,16 +38,14 @@ public abstract class MouseEventSink extends AbstractDwcEventSink {
 
     BBjControl originalControl = ev.getOriginalControl();
     Object userData = null;
-    Component component = null;
 
     // Set default value
     map.put("originalComponent", null);
 
     try {
       userData = originalControl.getUserData();
-      if (userData instanceof Component) {
-        component = (Component) userData;
-        map.put("originalComponent", component);
+      if (userData instanceof Component c) {
+        map.put("originalComponent", c);
       }
     } catch (Exception e) {
       // Ignore

@@ -27,8 +27,8 @@ public interface Repository<T> extends RetrievalCriteria<T> {
   default Object getKey(T entity) {
     Objects.requireNonNull(entity, "entity cannot be null");
 
-    if (entity instanceof HasEntityKey) {
-      return ((HasEntityKey) entity).getEntityKey();
+    if (entity instanceof HasEntityKey hasEntityKey) {
+      return hasEntityKey.getEntityKey();
     } else {
       return entity;
     }

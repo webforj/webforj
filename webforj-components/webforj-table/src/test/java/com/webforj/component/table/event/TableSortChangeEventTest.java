@@ -1,9 +1,8 @@
 package com.webforj.component.table.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
+
 import com.webforj.component.table.Table;
-import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.data.repository.OrderCriteria;
 import com.webforj.data.repository.OrderCriteriaList;
 import java.util.HashMap;

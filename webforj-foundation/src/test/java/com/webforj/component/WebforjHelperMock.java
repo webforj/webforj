@@ -84,7 +84,7 @@ public class WebforjHelperMock implements WebforjBBjBridge {
 
   @Override
   public void sleep(int seconds) {
-
+    // no-op
   }
 
   @Override
