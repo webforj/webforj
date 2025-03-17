@@ -366,15 +366,6 @@ public abstract class App {
   }
 
   /**
-   * Override this method to implement custom cleanup e.g. kill all background threads that may
-   * still run
-   *
-   * @deprecated since 24.10, for removal in 25.00. Use {@link #onWillTerminate()} and
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public void cleanup() {}
-
-  /**
    * Gets the CookieStorage.
    *
    * @return the CookieStorage instance
