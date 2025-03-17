@@ -366,17 +366,6 @@ public abstract class App {
   }
 
   /**
-   * Gets the LocalStorage.
-   *
-   * @return the LocalStorage instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link LocalStorage#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static LocalStorage getLocalStorage() {
-    return LocalStorage.getCurrent();
-  }
-
-  /**
    * The main entry point to implement custom application logic.
    *
    * <p>
