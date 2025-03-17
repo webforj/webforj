@@ -91,17 +91,6 @@ public abstract class App {
   }
 
   /**
-   * Get the current request instance.
-   *
-   * @return the current request instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link Request#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static Request getRequest() {
-    return Request.getCurrent();
-  }
-
-  /**
    * Sets the locale used by the application.
    *
    * @param locale The locale to use
