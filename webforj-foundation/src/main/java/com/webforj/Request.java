@@ -41,18 +41,6 @@ public final class Request {
   }
 
   /**
-   * Returns the value of the stored cookie.
-   *
-   * @param key the key of the cookie
-   * @return the value for the given key, null if key is not found
-   * @deprecated Use {@link CookieStorage} instead.
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getCookie(String key) {
-    return CookieStorage.getCurrent().get(key);
-  }
-
-  /**
    * Gets the request URL.
    *
    * @return The request URL
