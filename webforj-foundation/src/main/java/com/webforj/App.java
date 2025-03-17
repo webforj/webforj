@@ -219,19 +219,6 @@ public abstract class App {
   }
 
   /**
-   * Get the application URL.
-   *
-   * @return The application URL
-   * @throws WebforjRuntimeException if failed to get the application URL
-   *
-   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getUrl()} instead.
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getUrl() {
-    return Request.getCurrent().getUrl();
-  }
-
-  /**
    * Get the console instance.
    *
    * @return the console instance
