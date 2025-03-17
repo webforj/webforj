@@ -274,47 +274,6 @@ public final class Environment {
   }
 
   /**
-   * Returns the WebforjBBjBridge instance.
-   *
-   * @return the WebforjBBjBridge instance.
-   * @deprecated since 24.12 for removal in 25.0. Use {@link #getBridge()} instead.
-   */
-  @Deprecated(since = "24.12", forRemoval = true)
-  public WebforjBBjBridge getWebforjHelper() {
-    return getBridge();
-  }
-
-  /*
-   * LOGGING: for now we rely on BBj's redirection of err and out into its own logging. In the
-   * future we will definitely want to allow more granular debug options and the use of custom
-   * loggers that fit a customer's environment Bear with us and consider this a basic solution for
-   * the time being. WIP
-   *
-   * @deprecated since 24.12 for removal in 25.0
-   */
-  @Deprecated(since = "24.12", forRemoval = true)
-  public static void logError(String message, Exception e) {
-    System.err.println(message); // NOSONAR
-    e.printStackTrace(); // NOSONAR
-  }
-
-  /**
-   * @deprecated since 24.12 for removal in 25.0
-   */
-  @Deprecated(since = "24.12", forRemoval = true)
-  public static void logError(Exception e) {
-    e.printStackTrace(); // NOSONAR
-  }
-
-  /**
-   * @deprecated since 24.12 for removal in 25.0
-   */
-  @Deprecated(since = "24.12", forRemoval = true)
-  public static void logError(String message) {
-    System.err.println(message); // NOSONAR
-  }
-
-  /**
    * Finds the appropriate error handler for the given exception.
    *
    * @param exception the exception for which to find an error handler.

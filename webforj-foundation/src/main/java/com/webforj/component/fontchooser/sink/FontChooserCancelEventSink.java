@@ -28,7 +28,7 @@ public final class FontChooserCancelEventSink {
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_FILECHOOSER_CANCEL,
           Environment.getCurrent().getBridge().getEventProxy(this, "cancelEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
 
   }

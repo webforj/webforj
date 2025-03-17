@@ -26,7 +26,7 @@ public class TreeCollapseEventSink {
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_COLLAPSE,
           Environment.getCurrent().getBridge().getEventProxy(this, "collapseEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 

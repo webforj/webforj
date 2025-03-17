@@ -39,7 +39,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
       bbjFontChooser = (BBjFontChooser) control;
       onAttach();
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -47,7 +47,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.approveSelection();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -56,7 +56,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.cancelSelection();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -65,7 +65,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       return bbjFontChooser.getApproveButtonText();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
       return "";
     }
   }
@@ -74,7 +74,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       return bbjFontChooser.getCancelButtonText();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
       return "";
     }
   }
@@ -83,7 +83,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       return bbjFontChooser.getControlButtonsAreShown();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
       return false;
     }
   }
@@ -92,7 +92,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       return bbjFontChooser.getFontsScaled();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
       return false;
     }
   }
@@ -101,7 +101,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       return bbjFontChooser.getPreviewMessage();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
       return "";
     }
   }
@@ -110,7 +110,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       return (Font) bbjFontChooser.getSelectedFont();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
       return null;
     }
   }
@@ -119,7 +119,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.setApproveButtonText(text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -128,7 +128,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.setCancelButtonText(text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -137,7 +137,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.setControlButtonsAreShown(show);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -146,7 +146,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.setFontsScaled(scale);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -155,7 +155,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.setPreviewMessage(message);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }
@@ -164,7 +164,7 @@ public final class FontChooser extends LegacyDwcComponent implements LegacyHasEn
     try {
       bbjFontChooser.setSelectedFont((BBjFont) font);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return this;
   }

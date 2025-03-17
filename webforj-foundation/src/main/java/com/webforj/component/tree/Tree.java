@@ -26,7 +26,7 @@ import com.webforj.component.tree.sink.TreeBlurEventSink;
 import com.webforj.component.tree.sink.TreeSelectEventSink;
 import com.webforj.component.window.Window;
 import com.webforj.concern.legacy.LegacyHasEnable;
-import com.webforj.models.Icon;
+// import com.webforj.models.Icon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
       tree = (BBjTree) control;
       onAttach();
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -59,7 +59,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.addExpandableNode(childID, parentID, text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -67,7 +67,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.addNode(childID, parentID, text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -75,7 +75,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.clearImageSize();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -83,7 +83,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getChildAt(parentID, index);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -92,7 +92,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getIndexOfChild(parentID);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -101,7 +101,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getParentNode(childID);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -110,7 +110,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getRoot();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -119,7 +119,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.insertExpandableNode(childID, parentID, text, index);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -127,7 +127,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.insertNode(childID, parentID, text, index);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -135,7 +135,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.isNodeLeaf(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return false;
   }
@@ -144,7 +144,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.removeDescendants(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -152,7 +152,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.removeNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -160,7 +160,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setRoot(id, text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -168,7 +168,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.collapseNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -176,7 +176,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.collapseTreeFromNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -184,7 +184,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.expandNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -192,7 +192,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.expandTreeFromNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -200,7 +200,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getCollapsedNode();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -209,7 +209,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getExpandedNode();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -218,7 +218,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return (List) tree.getExpandedNodes();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return new ArrayList<>();
   }
@@ -227,7 +227,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.isNodeExpandable(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return false;
   }
@@ -236,7 +236,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.isNodeExpanded(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return false;
   }
@@ -245,7 +245,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getNodeText(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return "";
   }
@@ -254,7 +254,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setNodeText(id, text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -262,7 +262,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.editNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -270,7 +270,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.endEdit();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -278,7 +278,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.isNodeEditable(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return false;
   }
@@ -287,7 +287,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.isTreeEditable();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return false;
   }
@@ -296,7 +296,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setNodeEditable(id, editable);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -304,7 +304,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setTreeEditable(editable);
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -312,7 +312,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.clearNodeIcon(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -320,63 +320,63 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.clearNodeSelectedIcon(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
-  public void setCollapsedIcon(Icon icon) {
-    try {
-      tree.setCollapsedIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
+  // public void setCollapsedIcon(Icon icon) {
+  // try {
+  // tree.setCollapsedIcon((BBjImage) icon.getFile());
+  // } catch (BBjException e) {
+  // // Environment.logError(e);;
+  // }
+  // }
 
-  public void setExpandedIcon(Icon icon) {
-    try {
-      tree.setExpandedIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
+  // public void setExpandedIcon(Icon icon) {
+  // try {
+  // tree.setExpandedIcon((BBjImage) icon.getFile());
+  // } catch (BBjException e) {
+  // // Environment.logError(e);;
+  // }
+  // }
 
-  public void setLeafIcon(Icon icon) {
-    try {
-      tree.setLeafIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
+  // public void setLeafIcon(Icon icon) {
+  // try {
+  // tree.setLeafIcon((BBjImage) icon.getFile());
+  // } catch (BBjException e) {
+  // // Environment.logError(e);;
+  // }
+  // }
 
-  public void setNodeIcon(int id, Icon icon) {
-    try {
-      tree.setNodeIcon(id, (BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
+  // public void setNodeIcon(int id, Icon icon) {
+  // try {
+  // tree.setNodeIcon(id, (BBjImage) icon.getFile());
+  // } catch (BBjException e) {
+  // // Environment.logError(e);;
+  // }
+  // }
 
-  public void setNodeSelectedIcon(int id, Icon icon) {
-    try {
-      tree.setNodeSelectedIcon(id, (BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
+  // public void setNodeSelectedIcon(int id, Icon icon) {
+  // try {
+  // tree.setNodeSelectedIcon(id, (BBjImage) icon.getFile());
+  // } catch (BBjException e) {
+  // // Environment.logError(e);;
+  // }
+  // }
 
-  public void setSelectedIcon(Icon icon) {
-    try {
-      tree.setSelectedIcon((BBjImage) icon.getFile());
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
+  // public void setSelectedIcon(Icon icon) {
+  // try {
+  // tree.setSelectedIcon((BBjImage) icon.getFile());
+  // } catch (BBjException e) {
+  // // Environment.logError(e);;
+  // }
+  // }
 
   public void deselectAll() {
     try {
       tree.deselectAll();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -384,7 +384,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.deselectChildren(parentID);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -392,7 +392,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.deselectNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -400,7 +400,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getSelectedNode();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return 0;
   }
@@ -409,7 +409,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getSelectedNodes();
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return new ArrayList<>();
   }
@@ -422,7 +422,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.isNodeSelected(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return false;
   }
@@ -435,7 +435,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.selectChildren(parentID);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -443,7 +443,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.selectNode(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -451,7 +451,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setNodeVisible(id);
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -467,7 +467,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getToolTipText(id);
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return "";
   }
@@ -476,7 +476,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setToolTipText(id, text);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -488,7 +488,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getDragType(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return "";
   }
@@ -497,7 +497,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       return tree.getDropTypes(id);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
     return new ArrayList<>();
   }
@@ -510,7 +510,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setDragType(id, type);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
@@ -518,7 +518,7 @@ public final class Tree extends LegacyDwcComponent implements LegacyHasEnable {
     try {
       tree.setDropTypes(id, (BBjVector) types);
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
   }
 
