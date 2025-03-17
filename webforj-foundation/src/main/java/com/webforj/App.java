@@ -91,17 +91,6 @@ public abstract class App {
   }
 
   /**
-   * Get the current page instance.
-   *
-   * @return the current page instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link Page#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static Page getPage() {
-    return Page.getCurrent();
-  }
-
-  /**
    * Get the current request instance.
    *
    * @return the current request instance
