@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
+import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.component.table.event.cell.TableCellClickEvent;
@@ -407,6 +410,25 @@ class TableTest {
       assertEquals(Column.SortDirection.ASC, component.getColumnById("col1").getSortDirection());
       assertEquals(Column.SortDirection.DESC, component.getColumnById("col2").getSortDirection());
       assertEquals(Column.SortDirection.NONE, component.getColumnById("col3").getSortDirection());
+    }
+
+    @Test
+    void shouldSortDataOnServer() {
+      Table<Person> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.isDestroyed()).thenReturn(true);
+      when(elMock.isDefined()).thenReturn(true);
+
+      table.addColumn("name", Person::getName).setSortDirection(Column.SortDirection.ASC);
+      table.setItems(Arrays.asList(new Person("John"), new Person("Jane")));
+
+      List<Person> sortedData = table.getRepository().findAll().toList();
+
+      assertNotNull(sortedData);
+      assertEquals(2, sortedData.size());
+      assertEquals("Jane", sortedData.get(0).getName());
+      assertEquals("John", sortedData.get(1).getName());
     }
   }
 
