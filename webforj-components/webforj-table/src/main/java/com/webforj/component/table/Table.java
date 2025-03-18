@@ -22,6 +22,7 @@ import com.webforj.data.concern.ValueAware;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.HasRepository;
+import com.webforj.data.repository.OrderCriteria;
 import com.webforj.data.repository.OrderCriteriaList;
 import com.webforj.data.repository.Repository;
 import com.webforj.data.repository.event.RepositoryCommitEvent;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +111,6 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private Repository<T> repository = new CollectionRepository<>(Collections.emptyList());
   private List<Column<T, ?>> columns = new ArrayList<>();
   private Set<String> selectedKeys = new HashSet<>();
-  private OrderCriteriaList<T> orderCriteriaList = new OrderCriteriaList<>();
   private EventListener<TableSortChangeEvent<T>> handleSortChangedListener =
       this::handleSortChanged;
   private ListenerRegistration<TableSortChangeEvent<T>> handleSortChangedListenerRegistration =
@@ -151,7 +152,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   public Table() {
     super();
     set(getRowIdProp, getRowIdProp.getDefaultValue());
-    getElement().whenDefined().thenAccept(this::onInit).exceptionally(this::onInitFailed);
+    el().whenDefined().thenAccept(this::onInit).exceptionally(this::onInitFailed);
   }
 
   /**
@@ -319,7 +320,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   public Table<T> setItems(Collection<T> rows) {
     this.setRepository(new CollectionRepository<>(rows));
-    if (getElement().isDefined()) {
+    if (el().isDefined()) {
       refreshItems();
     }
 
@@ -359,7 +360,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> refreshColumns() {
-    if (getElement().isDefined()) {
+    if (el().isDefined()) {
       set(columnDefinitionsProp, columns);
     }
 
@@ -372,7 +373,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> refreshItems() {
-    if (getElement().isDefined()) {
+    if (el().isDefined()) {
       set(dataProp, buildData());
     }
 
@@ -397,8 +398,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> selectAll() {
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("selectAll");
+    if (el().isDefined()) {
+      el().callJsFunction("selectAll");
     } else {
       Set<String> appKeys = getRepository().findAll().map(x -> getItemKeysRegistry().getKey(x))
           .collect(Collectors.toSet());
@@ -417,8 +418,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   public Table<T> selectKey(Object... keys) {
     selectedKeys.addAll(new HashSet<>(Arrays.asList(mapKeys(keys))));
 
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("select", selectedKeys);
+    if (el().isDefined()) {
+      el().callJsFunction("select", selectedKeys);
     } else {
       set(selectedProp, selectedKeys);
     }
@@ -463,8 +464,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   public Table<T> deselectAll() {
     selectedKeys.clear();
 
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("deselectAll");
+    if (el().isDefined()) {
+      el().callJsFunction("deselectAll");
     } else {
       set(selectedProp, selectedKeys);
     }
@@ -480,8 +481,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     Set<Object> idsSet = new HashSet<>(Arrays.asList(mapKeys(key)));
     selectedKeys.removeAll(idsSet);
 
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("deselect", idsSet);
+    if (el().isDefined()) {
+      el().callJsFunction("deselect", idsSet);
     } else {
       set(selectedProp, selectedKeys);
     }
@@ -1002,7 +1003,6 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     getItemKeysRegistry().cleanUp();
     columns.clear();
     selectedKeys.clear();
-    orderCriteriaList.clear();
     repository = null;
   }
 
@@ -1021,7 +1021,38 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     return null;
   }
 
+  /**
+   * Gets the order criteria list for the table.
+   *
+   * @return the order criteria list
+   */
+  OrderCriteriaList<T> getOrderCriteriaList() {
+    OrderCriteriaList<T> criterion = new OrderCriteriaList<>();
+
+    for (Column<T, ?> column : columns) {
+      if (column.getSortDirection().equals(Column.SortDirection.NONE)) {
+        continue;
+      }
+
+      OrderCriteria.Direction direction =
+          column.getSortDirection().equals(Column.SortDirection.ASC) ? OrderCriteria.Direction.ASC
+              : OrderCriteria.Direction.DESC;
+      Function<T, ?> valueProvider = column.getValueProvider();
+      Comparator<T> comparator = column.getComparator();
+      OrderCriteria<T, ?> serverCriteria =
+          new OrderCriteria<>(valueProvider, direction, comparator);
+
+      criterion.add(serverCriteria);
+    }
+
+    return criterion;
+  }
+
   JsonArray buildData() {
+    if (!isClientSorting()) {
+      repository.getOrderCriteriaList().set(getOrderCriteriaList());
+    }
+
     Stream<T> data = repository.findAll();
     JsonArray populated = new JsonArray();
 
@@ -1058,7 +1089,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   void handleRepositoryCommit(RepositoryCommitEvent<T> ev) {
     if (ev.isSingleCommit()) {
       // update a single item
-      Element el = getElement();
+      Element el = el();
       if (el.isDefined()) {
         T commit = ev.getFirstCommit();
         Object key = getRepository().getKey(commit);
@@ -1087,12 +1118,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
       }
     }
 
-    orderCriteriaList.set(e.getOrderCriteriaList());
-
-    Repository<T> repo = getRepository();
-    repo.getOrderCriteriaList().set(e.getOrderCriteriaList());
-
-    repo.commit();
+    getRepository().commit();
   }
 
   String[] mapKeys(Object... keys) {
@@ -1113,5 +1139,9 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     }
 
     return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
+
+  Element el() {
+    return getElement();
   }
 }
