@@ -4,6 +4,7 @@ import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.concern.HasHorizontalAlignment;
 import com.webforj.concern.HasMax;
 import com.webforj.concern.HasMin;
+import com.webforj.concern.HasPattern;
 import com.webforj.concern.HasStep;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
@@ -29,11 +30,12 @@ import com.webforj.dispatcher.EventListener;
 @SuppressWarnings("squid:S110")
 public final class NumberField extends DwcFieldInitializer<NumberField, Double>
     implements HasMin<NumberField, Double>, HasMax<NumberField, Double>,
-    HasStep<NumberField, Double>, HasHorizontalAlignment<NumberField> {
+    HasStep<NumberField, Double>, HasHorizontalAlignment<NumberField>, HasPattern<NumberField> {
 
   private Double min = null;
   private Double max = null;
   private Double step = null;
+  private String pattern = null;
 
   /**
    * Constructs a new NumberField with a label, value, and placeholder.
@@ -201,6 +203,24 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
   @Override
   public Double getStep() {
     return step;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public NumberField setPattern(String pattern) {
+    this.pattern = pattern;
+    setUnrestrictedProperty("pattern", pattern);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getPattern() {
+    return pattern;
   }
 
   /**
