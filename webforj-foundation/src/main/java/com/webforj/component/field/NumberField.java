@@ -207,6 +207,8 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
 
   /**
    * {@inheritDoc}
+   *
+   * @since 25.00
    */
   @Override
   public NumberField setPattern(String pattern) {
@@ -217,6 +219,8 @@ public final class NumberField extends DwcFieldInitializer<NumberField, Double>
 
   /**
    * {@inheritDoc}
+   *
+   * @since 25.00
    */
   @Override
   public String getPattern() {
