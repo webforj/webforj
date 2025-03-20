@@ -160,4 +160,14 @@ class NumberFieldTest {
       verify(spy, times(1)).setText("10");
     }
   }
+
+  @Test
+  void shouldSetGetPattern() throws BBjException {
+    String expectedPattern = "[0-9]{3}";
+    component.setPattern(expectedPattern);
+    assertEquals(expectedPattern, component.getPattern());
+
+    verify(control, times(1)).setProperty("pattern", expectedPattern);
+    verify(control, times(0)).getProperty("pattern");
+  }
 }
