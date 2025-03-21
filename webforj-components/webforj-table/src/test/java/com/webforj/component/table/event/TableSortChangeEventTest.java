@@ -13,26 +13,56 @@ import org.junit.jupiter.api.Test;
 
 class TableSortChangeEventTest {
 
-  Table<String> table = null;
+  Table<Person> table = null;
 
   @BeforeEach
   void setup() {
-    table = new Table<String>();
-    table.addColumn("item", String::valueOf).setLabel("Items");
-    table.setItems(List.of("Item 0"));
+    table = new Table<Person>();
+    table.addColumn("name", Person::name);
+    table.addColumn("city", Person::city);
+    table.addColumn("age", Person::age);
+
+    table.setItems(List.of(new Person("Hyyan", "Syria", 30), new Person("Stephen", "DE", 25),
+        new Person("John", "US", 35), new Person("Jane", "UK", 28)));
   }
 
   @Test
   void shouldReturnSortCriteria() {
     Map<String, Object> eventMap = new HashMap<>();
-    eventMap.put("criteria", Map.of("item", "desc"));
+    eventMap.put("criteria", """
+        [
+          {
+            "id": "name",
+            "sort": "asc",
+            "sortIndex": 1
+          },
+          {
+            "id": "city",
+            "sort": "asc",
+            "sortIndex": 2
+          },
+          {
+            "id": "age",
+            "sort": "desc",
+            "sortIndex": 3
+          }
+        ]
+        """);
 
-    TableSortChangeEvent<String> event = new TableSortChangeEvent<>(table, eventMap);
+    TableSortChangeEvent<Person> event = new TableSortChangeEvent<>(table, eventMap);
 
-    OrderCriteriaList<String> criterion = event.getOrderCriteriaList();
-    assertEquals(1, criterion.size());
+    OrderCriteriaList<Person> criterion = event.getOrderCriteriaList();
+    assertEquals(3, criterion.size());
 
-    OrderCriteria<String, ?> criteria = criterion.iterator().next();
-    assertEquals(OrderCriteria.Direction.DESC, criteria.getDirection());
+    OrderCriteria<Person, ?> criteria = criterion.iterator().next();
+    assertEquals(OrderCriteria.Direction.ASC, criteria.getDirection());
+  }
+
+  static record Person(String name, String city, int age) {
+    public Person(String name, String city, int age) {
+      this.name = name;
+      this.city = city;
+      this.age = age;
+    }
   }
 }

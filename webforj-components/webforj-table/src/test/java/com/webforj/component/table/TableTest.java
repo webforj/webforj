@@ -396,20 +396,33 @@ class TableTest {
       component.addColumn("col3", Function.identity()).setSortDirection(Column.SortDirection.DESC);
 
       Map<String, Object> payload = new HashMap<>();
-      payload.put("criteria", new HashMap<>() {
-        {
-          put("col1", "asc");
-          put("col2", "desc");
-        }
-      });
+      payload.put("criteria", """
+          [
+            {
+              "id": "col1",
+              "sort": "asc",
+              "sortIndex": 1
+            },
+            {
+              "id": "col2",
+              "sort": "asc",
+              "sortIndex": 2
+            },
+            {
+              "id": "col3",
+              "sort": "desc",
+              "sortIndex": 3
+            }
+          ]
+          """);
       TableSortChangeEvent<String> event = new TableSortChangeEvent<>(component, payload);
 
       component.handleSortChanged(event);
 
       // check columns directions are updated
       assertEquals(Column.SortDirection.ASC, component.getColumnById("col1").getSortDirection());
-      assertEquals(Column.SortDirection.DESC, component.getColumnById("col2").getSortDirection());
-      assertEquals(Column.SortDirection.NONE, component.getColumnById("col3").getSortDirection());
+      assertEquals(Column.SortDirection.ASC, component.getColumnById("col2").getSortDirection());
+      assertEquals(Column.SortDirection.DESC, component.getColumnById("col3").getSortDirection());
     }
 
     @Test
