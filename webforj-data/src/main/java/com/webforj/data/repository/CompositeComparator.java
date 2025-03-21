@@ -68,12 +68,8 @@ public class CompositeComparator<T> implements Comparator<T> {
         return 0;
       }
 
-      if (o1 == null) {
+      if (o1 == null || o2 == null) {
         return direction == OrderCriteria.Direction.ASC ? -1 : 1;
-      }
-
-      if (o2 == null) {
-        return direction == OrderCriteria.Direction.ASC ? 1 : -1;
       }
 
       try {
@@ -120,6 +116,11 @@ public class CompositeComparator<T> implements Comparator<T> {
    */
   protected <V extends Comparable<V>> int compareWithDirection(V value1, V value2,
       OrderCriteria.Direction direction) {
+
+    if (value1 == null || value2 == null) {
+      return direction == OrderCriteria.Direction.ASC ? -1 : 1;
+    }
+
     int comparison = value1.compareTo(value2);
     return direction == OrderCriteria.Direction.ASC ? comparison : -comparison;
   }

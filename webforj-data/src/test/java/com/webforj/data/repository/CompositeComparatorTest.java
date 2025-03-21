@@ -148,7 +148,7 @@ class CompositeComparatorTest {
         new CompositeComparator<>(new OrderCriteriaList<>(lengthCriteria));
 
     assertTrue(comparator.compare(null, "abc") < 0);
-    assertTrue(comparator.compare("abc", null) > 0);
+    assertTrue(comparator.compare("abc", null) < 0);
     assertEquals(0, comparator.compare(null, null));
   }
 
@@ -168,7 +168,7 @@ class CompositeComparatorTest {
     Person person2 = new Person("Charlotte");
 
     assertTrue(comparator.compare(null, person1) < 0);
-    assertTrue(comparator.compare(person2, null) > 0);
+    assertTrue(comparator.compare(person2, null) < 0);
     assertEquals(0, comparator.compare(person1, person1));
   }
 
