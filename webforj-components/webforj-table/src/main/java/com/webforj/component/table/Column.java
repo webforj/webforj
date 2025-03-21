@@ -127,6 +127,7 @@ public final class Column<T, V> implements Serializable {
   private PinDirection pinned = PinDirection.AUTO;
   private boolean sortable = false;
   private SortDirection sort = SortDirection.NONE;
+  private int sortIndex = 0;
   private boolean suppressNavigable = false;
   private Float minWidth = null;
   @SuppressWarnings("unused")
@@ -375,6 +376,35 @@ public final class Column<T, V> implements Serializable {
    */
   public SortDirection getSortDirection() {
     return sort;
+  }
+
+  /**
+   * Sets the sort index of the column.
+   *
+   * @param sortIndex the new sort index
+   * @return the column itself
+   *
+   * @throws IllegalArgumentException if the sort index is negative
+   */
+  public Column<T, V> setSortIndex(int sortIndex) {
+    int oldSortIndex = this.sortIndex;
+    if (sortIndex < 0) {
+      throw new IllegalArgumentException("Sort index cannot be negative");
+    }
+
+    this.sortIndex = sortIndex;
+    changeSupport.firePropertyChange("sortIndex", oldSortIndex, sortIndex);
+
+    return this;
+  }
+
+  /**
+   * Returns the sort index of the column.
+   *
+   * @return the sort index
+   */
+  public int getSortIndex() {
+    return sortIndex;
   }
 
   /**
