@@ -111,10 +111,6 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private Repository<T> repository = new CollectionRepository<>(Collections.emptyList());
   private List<Column<T, ?>> columns = new ArrayList<>();
   private Set<String> selectedKeys = new HashSet<>();
-  private EventListener<TableSortChangeEvent<T>> handleSortChangedListener =
-      this::handleSortChanged;
-  private ListenerRegistration<TableSortChangeEvent<T>> handleSortChangedListenerRegistration =
-      null;
   private boolean registeredValueChangeListener = false;
 
   // Internal properties
@@ -145,6 +141,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private final PropertyDescriptor<Double> overscan = PropertyDescriptor.property("overscan", 35d);
   private final PropertyDescriptor<Boolean> clientSorting =
       PropertyDescriptor.property("clientSorting", false);
+  private final PropertyDescriptor<Boolean> multiSorting =
+      PropertyDescriptor.property("multiSorting", true);
 
   /**
    * Construct a new Table.
@@ -655,20 +653,34 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> setClientSorting(boolean enabled) {
-    // enable or disable server sorting listener
-    if (enabled) {
-      if (handleSortChangedListenerRegistration != null) {
-        handleSortChangedListenerRegistration.remove();
-        handleSortChangedListenerRegistration = null;
-      }
-    } else {
-      if (handleSortChangedListenerRegistration == null) {
-        handleSortChangedListenerRegistration = addSortChangeListener(handleSortChangedListener);
-      }
-    }
-
     set(clientSorting, enabled);
     return this;
+  }
+
+  /**
+   * Enables or disables multi-column sorting.
+   *
+   * <p>
+   * By default, only one column can be sorted at a time. Clicking on a column header will sort the
+   * column and remove the sorting from the other columns. Setting this property to {@code true}
+   * allows multiple columns to be sorted at once.
+   * </p>
+   *
+   * @param value {@code false} to disable multi-column sorting, {@code true} to enable
+   * @return the component itself
+   */
+  public Table<T> setMultiSorting(boolean value) {
+    set(multiSorting, value);
+    return this;
+  }
+
+  /**
+   * Checks if multiple columns can be sorted at once.
+   *
+   * @return {@code false} if only one column can be sorted at a time, {@code true} otherwise
+   */
+  public boolean isMultiSorting() {
+    return get(multiSorting);
   }
 
   /**
@@ -1009,10 +1021,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   void onInit(Element el) {
     this.refresh();
     set(selectedProp, selectedKeys);
-
-    if (!isClientSorting()) {
-      handleSortChangedListenerRegistration = addSortChangeListener(handleSortChangedListener);
-    }
+    addSortChangeListener(this::handleSortChanged);
   }
 
   Void onInitFailed(Throwable e) {
@@ -1028,8 +1037,12 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   OrderCriteriaList<T> getOrderCriteriaList() {
     OrderCriteriaList<T> criterion = new OrderCriteriaList<>();
+    // create a copy of columns sorted based on the sortIndex
+    List<Column<T, ?>> sortedColumns = new ArrayList<>(columns);
+    sortedColumns.sort(Comparator.comparingInt(Column::getSortIndex));
 
-    for (Column<T, ?> column : columns) {
+    // iterate over the sorted columns and add the order criteria
+    for (Column<T, ?> column : sortedColumns) {
       if (column.getSortDirection().equals(Column.SortDirection.NONE)) {
         continue;
       }
@@ -1104,8 +1117,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   void handleSortChanged(TableSortChangeEvent<T> e) {
     Map<String, String> clientCriterion = e.getClientCriterion();
+    List<String> sortedColumnIds = new ArrayList<>(clientCriterion.keySet());
 
-    // update the columns with the new sort directions
     for (Column<T, ?> column : getColumns()) {
       String id = column.getId();
       String direction = clientCriterion.get(id);
@@ -1113,12 +1126,22 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
       if (direction != null) {
         column.setSortDirection("asc".equalsIgnoreCase(direction) ? Column.SortDirection.ASC
             : Column.SortDirection.DESC);
+
+        int index = sortedColumnIds.indexOf(id);
+        if (index == -1) {
+          throw new IllegalStateException("The column " + id + " is not in the sorted columns");
+        }
+
+        column.setSortIndex(index + 1);
       } else {
         column.setSortDirection(Column.SortDirection.NONE);
+        column.setSortIndex(0);
       }
     }
 
-    getRepository().commit();
+    if (!isClientSorting()) {
+      getRepository().commit();
+    }
   }
 
   String[] mapKeys(Object... keys) {
