@@ -115,6 +115,11 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-refresher</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-toolbar</artifactId>
       <version>${project.version}</version>
     </dependency>

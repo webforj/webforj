@@ -32,6 +32,7 @@
     <module>webforj-infinite-scroll</module>
     <module>webforj-loading</module>
     <module>webforj-login</module>
+    <module>webforj-refresher</module>
     <module>webforj-toolbar</module>
     <module>webforj-table</module>
   </modules>
