@@ -72,6 +72,10 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-infinite-scroll</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-loading</artifactId>
     </dependency>
     <dependency>

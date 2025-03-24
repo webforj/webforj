@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.stream.Collectors;
 
@@ -257,6 +260,48 @@ public class Assets {
     }
 
     return getIconsEndpoint() + url.replaceAll("(?i)icons://", "").trim();
+  }
+
+  /**
+   * Resolves the image source URL.
+   *
+   * @param src The URL of the image. If a URL is provided and begins with {@code context://}, it
+   *        will be resolved as a context URL, pointing to the root of your application's resources
+   *        folder, and the image URL will be a base64-encoded string of the image. If a URL is
+   *        provided and starts with {@code webserver://}, it will be resolved as a web server URL,
+   *        pointing to the root of the web server, and the image URL will be a fully qualified URL.
+   *        if a URL is provided and starts with {@code icons://}, it will be resolved as an icons
+   *        URL.
+   *
+   * @return The resolved image source URL
+   */
+  public static String resolveImageSource(String src) {
+    String url = src.trim();
+
+    if (Assets.isWebServerUrl(src)) {
+      url = Assets.resolveWebServerUrl(src);
+    } else if (Assets.isIconsUrl(src)) {
+      url = Assets.resolveIconsUrl(src);
+    } else if (Assets.isContextUrl(src)) {
+      String resolvedUrl = Assets.resolveContextUrl(src);
+      String content = Assets.contentOf(resolvedUrl, Assets.ContentFormat.BASE64);
+
+      // Determine the MIME type dynamically
+      String mimeType;
+      try {
+        Path path = Paths.get(resolvedUrl);
+        mimeType = Files.probeContentType(path);
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+          throw new IllegalArgumentException("The provided file is not a valid image type.");
+        }
+      } catch (IOException e) {
+        throw new IllegalArgumentException("Failed to determine the MIME type of the file.", e);
+      }
+
+      url = "data:" + mimeType + ";base64," + content;
+    }
+
+    return url;
   }
 
   /**

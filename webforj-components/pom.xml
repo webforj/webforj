@@ -29,6 +29,7 @@
     <module>webforj-googlecharts</module>
     <module>webforj-html-elements</module>
     <module>webforj-icons</module>
+    <module>webforj-infinite-scroll</module>
     <module>webforj-loading</module>
     <module>webforj-login</module>
     <module>webforj-toolbar</module>
