@@ -4,12 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
-import java.util.List;
+
 import com.webforj.component.Component;
 import com.webforj.component.Theme;
 import com.webforj.component.alert.event.AlertCloseEvent;
 import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.dispatcher.EventListener;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
