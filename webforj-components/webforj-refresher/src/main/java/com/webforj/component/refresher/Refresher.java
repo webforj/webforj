@@ -49,7 +49,7 @@ public class Refresher extends ElementCompositeContainer
       PropertyDescriptor.property("thresholdMax", Double.POSITIVE_INFINITY);
 
   private final PropertyDescriptor<Theme> themeProp =
-      PropertyDescriptor.property("theme", Theme.DEFAULT);
+      PropertyDescriptor.property("theme", Theme.PRIMARY);
 
   @PropertyExclude
   private final PropertyDescriptor<String> textPullProp =
