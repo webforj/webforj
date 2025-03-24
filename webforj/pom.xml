@@ -36,6 +36,10 @@
     <!-- Extensions -->
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-alert</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-applayout</artifactId>
     </dependency>
     <dependency>

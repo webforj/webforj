@@ -15,6 +15,7 @@
   <description>${project.name}</description>
 
   <modules>
+    <module>webforj-alert</module>
     <module>webforj-applayout</module>
     <module>webforj-appnav</module>
     <module>webforj-columnslayout</module>
