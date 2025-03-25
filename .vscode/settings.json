@@ -9,6 +9,9 @@
     "connectionId": "vscode",
     "projectKey": "webforj"
   },
+  "cSpell.words": [
+    "infinitescroll"
+  ],
   "java.completion.favoriteStaticMembers": [
     "org.junit.Assert.*",
     "org.junit.Assume.*",
@@ -30,5 +33,5 @@
     "org.graalvm.*",
     "io.micrometer.shaded.*",
     "javax.swing.*",
-  ],
+  ]
 }
