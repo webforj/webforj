@@ -67,7 +67,7 @@ public class Refresher extends ElementCompositeContainer
    * @param src The URL of the image. If a URL is provided and begins with {@code context://}, it
    *        will be resolved as a context URL, pointing to the root of your application's resources
    *        folder, and the image URL will be a base64-encoded string of the image. If a URL is
-   *        provided and starts with {@code webserver://}, it will be resolved as a web server URL,
+   *        provided and starts with {@code ws://}, it will be resolved as a web server URL,
    *        pointing to the root of the web server, and the image URL will be a fully qualified URL.
    *        if a URL is provided and starts with {@code icons://}, it will be resolved as an icons
    *        URL.
@@ -109,7 +109,7 @@ public class Refresher extends ElementCompositeContainer
    * @param src The URL of the image. If a URL is provided and begins with {@code context://}, it
    *        will be resolved as a context URL, pointing to the root of your application's resources
    *        folder, and the image URL will be a base64-encoded string of the image. If a URL is
-   *        provided and starts with {@code webserver://}, it will be resolved as a web server URL,
+   *        provided and starts with {@code ws://}, it will be resolved as a web server URL,
    *        pointing to the root of the web server, and the image URL will be a fully qualified URL.
    *        if a URL is provided and starts with {@code icons://}, it will be resolved as an icons
    *        URL.

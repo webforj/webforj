@@ -64,7 +64,7 @@ public class InfiniteScroll extends ElementCompositeContainer
    * Note that the {@code content} slot is different from the The default slot
    * {@link #add(Component...)}. The named slot {@code content} is specifically intended for the
    * loading indicator. By default, if no custom content is provided in this slot, the component
-   * renders its fallback markup—a loading icon and text (e.g., "Loading data"). However, if you
+   * renders its fallback markup — a loading icon and text (e.g., "Loading data"). However, if you
    * need to customize the appearance or behavior of the loading indicator, you can supply your own
    * markup in this slot, and it will override the default content.
    * </p>
@@ -83,7 +83,7 @@ public class InfiniteScroll extends ElementCompositeContainer
    * @param src The URL of the image. If a URL is provided and begins with {@code context://}, it
    *        will be resolved as a context URL, pointing to the root of your application's resources
    *        folder, and the image URL will be a base64-encoded string of the image. If a URL is
-   *        provided and starts with {@code webserver://}, it will be resolved as a web server URL,
+   *        provided and starts with {@code ws://}, it will be resolved as a web server URL,
    *        pointing to the root of the web server, and the image URL will be a fully qualified URL.
    *        if a URL is provided and starts with {@code icons://}, it will be resolved as an icons
    *        URL.
