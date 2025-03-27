@@ -14,7 +14,27 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * The Notification component is used to configure and display desktop notifications to the user.
+ * The {@code Notification} component enables applications to configure and display native desktop
+ * notifications to users.
+ *
+ * <p>
+ * Desktop notifications allow an application to alert users about new messages or updates while the
+ * browser is open. Once permission is granted, the browser can display notifications on the user's
+ * screen. However, notifications are only shown after the user interacts with the application—such
+ * as by pressing a key or clicking/tapping within the app. Without user interaction, only a
+ * notification icon appears in the browser’s address bar, and no visible notification is displayed.
+ * </p>
+ *
+ * <p>
+ * To successfully display desktop notifications, the following conditions must be met:
+ * <ul>
+ * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+ * <li>The application must not be in incognito/private browsing mode.</li>
+ * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+ * input.</li>
+ * <li>The user must have granted permission to display notifications.</li>
+ * </ul>
+ * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 25.00
@@ -58,7 +78,7 @@ public class DesktopNotification {
    * @return The component itself.
    */
   public DesktopNotification setTitle(String title) {
-    Objects.requireNonNull(title, "The title can not be null");
+    Objects.requireNonNull(title, "The notification's title can not be null");
     this.title = title;
     return this;
   }
@@ -79,7 +99,7 @@ public class DesktopNotification {
    * @return The component itself.
    */
   public DesktopNotification setBody(String body) {
-    Objects.requireNonNull(body, "The body can not be null");
+    Objects.requireNonNull(body, "The notification's body can not be null");
     this.body = body;
     return this;
   }
@@ -96,12 +116,24 @@ public class DesktopNotification {
   /**
    * Sets The icon of the notification.
    *
-   * @param icon The icon of the notification.
+   * <p>
+   * <b> This feature will not work on all browsers. For example, it will not work on Safari but
+   * will work on Chrome and Firefox. </b>
+   * </p>
+   *
+   * @param src The URL of the image. If a URL is provided and begins with {@code context://}, it
+   *        will be resolved as a context URL, pointing to the root of your application's resources
+   *        folder, and the image URL will be a base64-encoded string of the image. If a URL is
+   *        provided and starts with {@code ws://}, it will be resolved as a web server URL,
+   *        pointing to the root of the web server, and the image URL will be a fully qualified URL.
+   *        if a URL is provided and starts with {@code icons://}, it will be resolved as an icons
+   *        URL.
+   *
    * @return The component itself.
    */
-  public DesktopNotification setIcon(String icon) {
-    Objects.requireNonNull(icon, "The icon can not be null");
-    this.icon = icon;
+  public DesktopNotification setIcon(String src) {
+    Objects.requireNonNull(src, "The icon can not be null");
+    this.icon = src;
     return this;
   }
 
@@ -109,6 +141,7 @@ public class DesktopNotification {
    * Gets The icon of the notification.
    *
    * @return The icon of the notification.
+   * @see #setIcon(String)
    */
   public String getIcon() {
     return icon;
@@ -144,7 +177,8 @@ public class DesktopNotification {
           }
           if(granted) show();
         })()
-      }""";
+      }
+        """;
     // @formatter:on
 
     Page.ifPresent(page -> {
@@ -179,7 +213,32 @@ public class DesktopNotification {
   }
 
   /**
-   * Shows a notification with the given title and body.
+   * Shows a notification with the given title and body and icon.
+   *
+   * <p>
+   * Desktop notifications allow an application to alert users about new messages or updates while
+   * the browser is open. Once permission is granted, the browser can display notifications on the
+   * user's screen. However, notifications are only shown after the user interacts with the
+   * application—such as by pressing a key or clicking/tapping within the app. Without user
+   * interaction, only a notification icon appears in the browser’s address bar, and no visible
+   * notification is displayed.
+   * </p>
+   *
+   * <p>
+   * To successfully display desktop notifications, the following conditions must be met:
+   * <ul>
+   * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+   * <li>The application must not be in incognito/private browsing mode.</li>
+   * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+   * input.</li>
+   * <li>The user must have granted permission to display notifications.</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * Note that icons are not supported in all browsers. For example, it will not work on Safari but
+   * will work on Chrome and Firefox.
+   * </p>
    *
    * @param title The title of the notification.
    * @param body The body of the notification.
@@ -194,6 +253,26 @@ public class DesktopNotification {
   /**
    * Shows a notification with the given title and body.
    *
+   * <p>
+   * Desktop notifications allow an application to alert users about new messages or updates while
+   * the browser is open. Once permission is granted, the browser can display notifications on the
+   * user's screen. However, notifications are only shown after the user interacts with the
+   * application—such as by pressing a key or clicking/tapping within the app. Without user
+   * interaction, only a notification icon appears in the browser’s address bar, and no visible
+   * notification is displayed.
+   * </p>
+   *
+   * <p>
+   * To successfully display desktop notifications, the following conditions must be met:
+   * <ul>
+   * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+   * <li>The application must not be in incognito/private browsing mode.</li>
+   * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+   * input.</li>
+   * <li>The user must have granted permission to display notifications.</li>
+   * </ul>
+   * </p>
+   *
    * @param title The title of the notification.
    * @param body The body of the notification.
    *
@@ -205,6 +284,26 @@ public class DesktopNotification {
 
   /**
    * Shows a notification with the given body.
+   *
+   * <p>
+   * Desktop notifications allow an application to alert users about new messages or updates while
+   * the browser is open. Once permission is granted, the browser can display notifications on the
+   * user's screen. However, notifications are only shown after the user interacts with the
+   * application—such as by pressing a key or clicking/tapping within the app. Without user
+   * interaction, only a notification icon appears in the browser’s address bar, and no visible
+   * notification is displayed.
+   * </p>
+   *
+   * <p>
+   * To successfully display desktop notifications, the following conditions must be met:
+   * <ul>
+   * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+   * <li>The application must not be in incognito/private browsing mode.</li>
+   * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+   * input.</li>
+   * <li>The user must have granted permission to display notifications.</li>
+   * </ul>
+   * </p>
    *
    * @param body The body of the notification.
    *
