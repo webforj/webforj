@@ -111,8 +111,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   private static final record ClientItem(String id, JsonObject data, JsonArray rowParts,
-      JsonObject cellParts) {
-  }
+      JsonObject cellParts) {}
 
   private static final String GET_ROW_ID_EXP = "row.data.__APPID__";
   private static final String GET_ROW_PART_EXP = """
@@ -133,9 +132,9 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   private final Gson gson = new Gson();
   private final EntityKeysRegistry keyRegistry = new EntityKeysRegistry();
+  private final List<Column<T, ?>> columns = new ArrayList<>();
+  private final Set<String> selectedKeys = new HashSet<>();
   private Repository<T> repository = new CollectionRepository<>(Collections.emptyList());
-  private List<Column<T, ?>> columns = new ArrayList<>();
-  private Set<String> selectedKeys = new HashSet<>();
   private boolean registeredValueChangeListener = false;
   private Function<T, List<String>> rowPartProvider = item -> Collections.emptyList();
   private BiFunction<T, Column<T, ?>, List<String>> cellPartProvider =
@@ -892,8 +891,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * <p>
    * The cell part provider is a function that takes an item and a column and returns a list of
    * strings representing the CSS parts of the cell. This is useful for customizing the appearance
-   * of individual cells based on their data. Cell parts are refreshed when the table is
-   * refreshed or a specific cell is updated.
+   * of individual cells based on their data. Cell parts are refreshed when the table is refreshed
+   * or a specific cell is updated.
    * </p>
    *
    * @param provider the cell part provider
