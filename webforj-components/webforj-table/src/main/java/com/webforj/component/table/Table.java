@@ -1,12 +1,15 @@
 package com.webforj.component.table;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
+import com.webforj.component.element.annotation.PropertyExclude;
 import com.webforj.component.html.HtmlComponent;
 import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.component.table.event.cell.TableCellClickEvent;
@@ -39,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,7 +87,6 @@ import java.util.stream.Stream;
 @NodeName("dwc-table")
 public final class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T>,
     MultipleSelectableRepository<Table<T>, T>, ValueAware<Table<T>, List<T>> {
-
   /**
    * The selection mode for the table.
    */
@@ -107,11 +110,35 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     NONE
   }
 
+  private static final record ClientItem(String id, JsonObject data, JsonArray rowParts,
+      JsonObject cellParts) {}
+
+  private static final String GET_ROW_ID_EXP = "row.data.__APPID__";
+  private static final String GET_ROW_PART_EXP = """
+      table.__rowPart__ = table.__rowPart__ || {};
+      if(table.__rowPart__[row.id] !== undefined) {
+        return table.__rowPart__[row.id];
+      }
+
+      return undefined;
+      """;
+  private static final String GET_CELL_PART_EXP = """
+      table.__cellPart__ = table.__cellPart__ || {};
+      table.__cellPart__[cell.row.id] = table.__cellPart__[cell.row.id] || {};
+      if(table.__cellPart__[cell.row.id][cell.id] !== undefined) {
+        return table.__cellPart__[cell.row.id][cell.id];
+      }
+      """;
+
+  private final Gson gson = new Gson();
   private final EntityKeysRegistry keyRegistry = new EntityKeysRegistry();
+  private final List<Column<T, ?>> columns = new ArrayList<>();
+  private final Set<String> selectedKeys = new HashSet<>();
   private Repository<T> repository = new CollectionRepository<>(Collections.emptyList());
-  private List<Column<T, ?>> columns = new ArrayList<>();
-  private Set<String> selectedKeys = new HashSet<>();
   private boolean registeredValueChangeListener = false;
+  private Function<T, List<String>> rowPartProvider = item -> Collections.emptyList();
+  private BiFunction<T, Column<T, ?>, List<String>> cellPartProvider =
+      (item, column) -> Collections.emptyList();
 
   // Internal properties
   private final PropertyDescriptor<List<Column<T, ?>>> columnDefinitionsProp =
@@ -119,7 +146,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private final PropertyDescriptor<JsonArray> dataProp =
       PropertyDescriptor.property("data", new JsonArray());
   private final PropertyDescriptor<String> getRowIdProp =
-      PropertyDescriptor.property("getRowId", "row.data.__APPID__");
+      PropertyDescriptor.property("getRowId", "");
   private final PropertyDescriptor<Set<String>> selectedProp =
       PropertyDescriptor.property("selected", Collections.emptySet());
 
@@ -143,13 +170,21 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
       PropertyDescriptor.property("clientSorting", false);
   private final PropertyDescriptor<Boolean> multiSorting =
       PropertyDescriptor.property("multiSorting", true);
+  @PropertyExclude
+  private final PropertyDescriptor<String> getRowPart =
+      PropertyDescriptor.property("getRowPart", "");
+  @PropertyExclude
+  private final PropertyDescriptor<String> getCellPart =
+      PropertyDescriptor.property("getCellPart", "");
 
   /**
    * Construct a new Table.
    */
   public Table() {
     super();
-    set(getRowIdProp, getRowIdProp.getDefaultValue());
+    set(getRowIdProp, GET_ROW_ID_EXP);
+    set(getRowPart, GET_ROW_PART_EXP);
+    set(getCellPart, GET_CELL_PART_EXP);
     el().whenDefined().thenAccept(this::onInit).exceptionally(this::onInitFailed);
   }
 
@@ -372,7 +407,21 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   public Table<T> refreshItems() {
     if (el().isDefined()) {
-      set(dataProp, buildData());
+      List<ClientItem> clientData = buildData();
+      JsonArray data = new JsonArray();
+      JsonObject rowParts = new JsonObject();
+      JsonObject cellParts = new JsonObject();
+
+      clientData.forEach(item -> {
+        JsonObject row = item.data();
+        data.add(row);
+        rowParts.add(item.id(), item.rowParts());
+        cellParts.add(item.id(), item.cellParts());
+      });
+
+      getElement().setProperty("__rowPart__", rowParts);
+      getElement().setProperty("__cellPart__", cellParts);
+      set(dataProp, data);
     }
 
     return this;
@@ -809,6 +858,63 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   /**
+   * Sets the row part provider.
+   *
+   * <p>
+   * The row part provider is a function that takes an item and returns a list of strings
+   * representing the CSS parts of the row. This is useful for customizing the appearance of
+   * individual rows based on their data. Row parts are refreshed when the table is refreshed or a
+   * specific row is updated.
+   * </p>
+   *
+   * @param provider the row part provider
+   * @return the component itself
+   */
+  public Table<T> setRowPartProvider(Function<T, List<String>> provider) {
+    this.rowPartProvider = provider;
+    return this;
+  }
+
+  /**
+   * Gets the row part provider.
+   *
+   * @return the row part provider
+   * @see #setRowPartProvider(Function)
+   */
+  public Function<T, List<String>> getRowPartProvider() {
+    return rowPartProvider;
+  }
+
+  /**
+   * Sets the cell part provider.
+   *
+   * <p>
+   * The cell part provider is a function that takes an item and a column and returns a list of
+   * strings representing the CSS parts of the cell. This is useful for customizing the appearance
+   * of individual cells based on their data. Cell parts are refreshed when the table is refreshed
+   * or a specific cell is updated.
+   * </p>
+   *
+   * @param provider the cell part provider
+   * @return the component itself
+   */
+  public Table<T> setCellPartProvider(BiFunction<T, Column<T, ?>, List<String>> provider) {
+    this.cellPartProvider = provider;
+    return this;
+  }
+
+  /**
+   * Gets the cell part provider.
+   *
+   * @return the cell part provider
+   * @see #setCellPartProvider(BiFunction)
+   */
+  @SuppressWarnings("squid:S1452")
+  public BiFunction<T, Column<T, ?>, List<String>> getCellPartProvider() {
+    return cellPartProvider;
+  }
+
+  /**
    * Adds a listener for the row click event.
    *
    * @param listener the listener
@@ -1061,28 +1167,31 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     return criterion;
   }
 
-  JsonArray buildData() {
+  List<ClientItem> buildData() {
     if (!isClientSorting()) {
       repository.getOrderCriteriaList().set(getOrderCriteriaList());
     }
 
     Stream<T> data = repository.findAll();
-    JsonArray populated = new JsonArray();
+    List<ClientItem> items = new ArrayList<>();
+    data.forEach(row -> items.add(buildItem(row)));
 
-    data.forEach(row -> {
-      JsonObject rowJson = buildItem(row);
-      populated.add(rowJson);
-    });
-
-    return populated;
+    return items;
   }
 
-  JsonObject buildItem(T item) {
-    JsonObject rowJson = new JsonObject();
+  ClientItem buildItem(T item) {
+    String id = getItemKeysRegistry().getKey(item);
+    JsonObject data = new JsonObject();
+    JsonArray rowParts = new JsonArray();
+    JsonObject cellParts = new JsonObject();
+
+    data.addProperty("__APPID__", id);
 
     for (Column<T, ?> column : columns) {
-      String id = column.getId();
+      String columnId = column.getId();
       Object value = column.getValue(item);
+
+      data.addProperty(columnId, String.valueOf(value));
 
       if (column.getClientType() == null && value != null) {
         // try to determine the type of the column
@@ -1090,29 +1199,65 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
         column.figureClientType(type);
       }
 
-      rowJson.addProperty(id, String.valueOf(value));
+      // populate the cell parts
+      List<String> cellPartsList = cellPartProvider.apply(item, column);
+      if (cellPartsList != null && !cellPartsList.isEmpty()) {
+        JsonElement cellPartsJson = gson
+            .toJsonTree(cellPartsList, new TypeToken<List<String>>() {}.getType()).getAsJsonArray();
+        String cellId = String.format("%s-%s", id, columnId);
+        cellParts.add(cellId, cellPartsJson);
+      }
     }
 
-    // add __APPID__ to the row
-    rowJson.addProperty("__APPID__", getItemKeysRegistry().getKey(item));
+    // Populate rowParts
+    List<String> parts = rowPartProvider.apply(item);
+    if (parts != null && !parts.isEmpty()) {
+      rowParts =
+          gson.toJsonTree(parts, new TypeToken<List<String>>() {}.getType()).getAsJsonArray();
+    }
 
-    return rowJson;
+    return new ClientItem(id, data, rowParts, cellParts);
   }
 
   void handleRepositoryCommit(RepositoryCommitEvent<T> ev) {
-    if (ev.isSingleCommit()) {
-      // update a single item
-      Element el = el();
-      if (el.isDefined()) {
-        T commit = ev.getFirstCommit();
-        Object key = getRepository().getKey(commit);
-        String[] keys = mapKeys(key);
-
-        el.callJsFunctionAsync("updateRow", keys[0], buildItem(commit));
-      }
-    } else {
+    if (!ev.isSingleCommit()) {
       refresh();
+      return;
     }
+
+    Element el = el();
+    if (!el.isDefined()) {
+      return;
+    }
+
+    // update a single item
+    T commit = ev.getFirstCommit();
+    Object key = getRepository().getKey(commit);
+    String[] keys = mapKeys(key);
+
+    ClientItem clientItem = buildItem(commit);
+
+    // refresh row parts
+    JsonArray rowParts = clientItem.rowParts();
+    if (rowParts != null && !rowParts.isEmpty()) {
+      String script = String.format("""
+          component.__rowPart__ = component.__rowPart__ || {};
+          component.__rowPart__['%s'] = %s;
+          """, keys[0], rowParts.toString());
+      el.executeJsVoidAsync(script);
+    }
+
+    // refresh cell parts
+    JsonObject cellParts = clientItem.cellParts();
+    if (cellParts != null && !cellParts.isEmpty()) {
+      String script = String.format("""
+          component.__cellPart__ = component.__cellPart__ || {};
+          component.__cellPart__['%s'] = %s;
+          """, keys[0], cellParts);
+      el.executeJsVoidAsync(script);
+    }
+
+    el.callJsFunctionVoidAsync("updateRow", keys[0], clientItem.data());
   }
 
   void handleSortChanged(TableSortChangeEvent<T> e) {

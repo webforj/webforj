@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -442,6 +443,27 @@ class TableTest {
       assertEquals(2, sortedData.size());
       assertEquals("Jane", sortedData.get(0).getName());
       assertEquals("John", sortedData.get(1).getName());
+    }
+  }
+
+  @Nested
+  class RowAndCellPartsApi {
+
+    @Test
+    void shouldSetAndGetRowPartProvider() {
+      Function<String, List<String>> rowPartProvider = row -> List.of("part1", "part2");
+      component.setRowPartProvider(rowPartProvider);
+
+      assertEquals(rowPartProvider, component.getRowPartProvider());
+    }
+
+    @Test
+    void shouldSetAndGetCellPartProvider() {
+      BiFunction<String, Column<String, ?>, List<String>> cellPartProvider =
+          (row, column) -> List.of("cellPart1", "cellPart2");
+      component.setCellPartProvider(cellPartProvider);
+
+      assertEquals(cellPartProvider, component.getCellPartProvider());
     }
   }
 
