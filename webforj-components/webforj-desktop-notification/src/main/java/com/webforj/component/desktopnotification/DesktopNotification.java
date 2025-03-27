@@ -1,6 +1,5 @@
 package com.webforj.component.desktopnotification;
 
-import com.basis.bbj.iris.bdt.gbf.profile.Event;
 import com.webforj.Page;
 import com.webforj.annotation.Experimental;
 import com.webforj.component.desktopnotification.event.DesktopNotificationClickEvent;
