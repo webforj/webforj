@@ -412,8 +412,23 @@ public class DesktopNotification {
   /**
    * Adds a listener for the notification click event.
    *
-   * @param listener the listener
-   * @return A registration object for removing the event listener
+   * <p>
+   * The listener is triggered when the user clicks on a desktop notification created by this API.
+   * <strong>Note:</strong> the click event is used solely for notification purposes and does not
+   * automatically bring the application tab or window into focus. Due to browser security and UX
+   * policies, the focus behavior must be handled separately by the application and cannot be
+   * guaranteed by this event.
+   * <p>
+   * Limitations include:
+   * <ul>
+   * <li>The click event is dispatched only when a user actively clicks the notification.</li>
+   * <li>Browsers do not permit forcing focus to the app tab solely from a notification click.</li>
+   * <li>Any logic to refocus the app must be implemented by the application, keeping in mind that
+   * user gestures or additional browser-specific allowances are required.</li>
+   * </ul>
+   *
+   * @param listener the listener to be notified when the notification is clicked
+   * @return a registration object for removing the event listener
    */
   public ListenerRegistration<DesktopNotificationClickEvent> addClickListener(
       EventListener<DesktopNotificationClickEvent> listener) {
