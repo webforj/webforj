@@ -52,10 +52,6 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-desktop-notification</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
       <artifactId>webforj-dialog</artifactId>
     </dependency>
     <dependency>
