@@ -1,5 +1,6 @@
 package com.webforj.component.desktopnotification;
 
+import com.basis.bbj.iris.bdt.gbf.profile.Event;
 import com.webforj.Page;
 import com.webforj.annotation.Experimental;
 import com.webforj.component.desktopnotification.event.DesktopNotificationClickEvent;
@@ -41,8 +42,8 @@ import java.util.UUID;
  */
 @Experimental(since = "25.00")
 public class DesktopNotification {
-  private final String id = UUID.randomUUID().toString();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
+  private final String id = UUID.randomUUID().toString();
   private boolean openListenerRegistered = false;
   private boolean closeListenerRegistered = false;
   private boolean errorListenerRegistered = false;
@@ -52,14 +53,41 @@ public class DesktopNotification {
   private String icon = "icons://icon-32x32.png";
 
   /**
-   * Creates a new instance of the DesktopNotification.
+   * Creates a new instance of the DesktopNotification with the given title and body and error
+   * listener.
+   *
+   * @param title The title of the notification.
+   * @param body The body of the notification.
+   * @param errorListener The error listener.
+   */
+  public DesktopNotification(String title, String body,
+      EventListener<DesktopNotificationErrorEvent> errorListener) {
+    setTitle(title);
+    setBody(body);
+    if (errorListener != null) {
+      addErrorListener(errorListener);
+    }
+  }
+
+  /**
+   * Creates a new instance of the DesktopNotification with the given title and body.
    *
    * @param title The title of the notification.
    * @param body The body of the notification.
    */
   public DesktopNotification(String title, String body) {
-    setTitle(title);
-    setBody(body);
+    this(title, body, null);
+  }
+
+  /**
+   * Creates a new instance of the DesktopNotification with the given body and error listener.
+   *
+   * @param body The body of the notification.
+   * @param errorListener The error listener.
+   */
+  public DesktopNotification(String body,
+      EventListener<DesktopNotificationErrorEvent> errorListener) {
+    this("", body, errorListener);
   }
 
   /**
@@ -68,7 +96,7 @@ public class DesktopNotification {
    * @param body The body of the notification.
    */
   public DesktopNotification(String body) {
-    setBody(body);
+    this("", body, null);
   }
 
   /**
@@ -175,7 +203,9 @@ public class DesktopNotification {
             let permission = await Notification.requestPermission();
             granted = permission === 'granted' ? true : false;
           }
+
           if(granted) show();
+          else window.dispatchEvent(new CustomEvent('%4$s-errored'));
         })()
       }
         """;
@@ -201,7 +231,8 @@ public class DesktopNotification {
     String scriptTemplate = """
     if(window.__desktop__notifications && window.__desktop__notifications['%1$s']) {
       window.__desktop__notifications['%1$s'].close();
-    }""";
+      }
+        """;
     // @formatter:on
 
     Page.ifPresent(page -> {
@@ -210,6 +241,46 @@ public class DesktopNotification {
     });
 
     return this;
+  }
+
+  /**
+   * Shows a notification with the given title and body and icon and error listener.
+   *
+   * <p>
+   * Desktop notifications allow an application to alert users about new messages or updates while
+   * the browser is open. Once permission is granted, the browser can display notifications on the
+   * user's screen. However, notifications are only shown after the user interacts with the
+   * application—such as by pressing a key or clicking/tapping within the app. Without user
+   * interaction, only a notification icon appears in the browser’s address bar, and no visible
+   * notification is displayed.
+   * </p>
+   *
+   * <p>
+   * To successfully display desktop notifications, the following conditions must be met:
+   * <ul>
+   * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+   * <li>The application must not be in incognito/private browsing mode.</li>
+   * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+   * input.</li>
+   * <li>The user must have granted permission to display notifications.</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * Note that icons are not supported in all browsers. For example, it will not work on Safari but
+   * will work on Chrome and Firefox.
+   * </p>
+   *
+   * @param title The title of the notification.
+   * @param body The body of the notification.
+   * @param icon The icon of the notification.
+   * @param errorListener The error listener.
+   *
+   * @return The created notification.
+   */
+  public static DesktopNotification show(String title, String body, String icon,
+      EventListener<DesktopNotificationErrorEvent> errorListener) {
+    return new DesktopNotification(title, body, errorListener).setIcon(icon).open();
   }
 
   /**
@@ -251,6 +322,40 @@ public class DesktopNotification {
   }
 
   /**
+   * Shows a notification with the given title and body and error listener.
+   *
+   * <p>
+   * Desktop notifications allow an application to alert users about new messages or updates while
+   * the browser is open. Once permission is granted, the browser can display notifications on the
+   * user's screen. However, notifications are only shown after the user interacts with the
+   * application—such as by pressing a key or clicking/tapping within the app. Without user
+   * interaction, only a notification icon appears in the browser’s address bar, and no visible
+   * notification is displayed.
+   * </p>
+   *
+   * <p>
+   * To successfully display desktop notifications, the following conditions must be met:
+   * <ul>
+   * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+   * <li>The application must not be in incognito/private browsing mode.</li>
+   * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+   * input.</li>
+   * <li>The user must have granted permission to display notifications.</li>
+   * </ul>
+   * </p>
+   *
+   * @param title The title of the notification.
+   * @param body The body of the notification.
+   * @param errorListener The error listener.
+   *
+   * @return The created notification.
+   */
+  public static DesktopNotification show(String title, String body,
+      EventListener<DesktopNotificationErrorEvent> errorListener) {
+    return new DesktopNotification(title, body, errorListener).open();
+  }
+
+  /**
    * Shows a notification with the given title and body.
    *
    * <p>
@@ -280,6 +385,39 @@ public class DesktopNotification {
    */
   public static DesktopNotification show(String title, String body) {
     return new DesktopNotification(title, body).open();
+  }
+
+  /**
+   * Shows a notification with the given body and error listener.
+   *
+   * <p>
+   * Desktop notifications allow an application to alert users about new messages or updates while
+   * the browser is open. Once permission is granted, the browser can display notifications on the
+   * user's screen. However, notifications are only shown after the user interacts with the
+   * application—such as by pressing a key or clicking/tapping within the app. Without user
+   * interaction, only a notification icon appears in the browser’s address bar, and no visible
+   * notification is displayed.
+   * </p>
+   *
+   * <p>
+   * To successfully display desktop notifications, the following conditions must be met:
+   * <ul>
+   * <li>The application must run in a secure context (e.g., over HTTPS).</li>
+   * <li>The application must not be in incognito/private browsing mode.</li>
+   * <li>The notification must be triggered by a user gesture, such as a button click or keyboard
+   * input.</li>
+   * <li>The user must have granted permission to display notifications.</li>
+   * </ul>
+   * </p>
+   *
+   * @param body The body of the notification.
+   * @param errorListener The error listener.
+   *
+   * @return The created notification.
+   */
+  public static DesktopNotification show(String body,
+      EventListener<DesktopNotificationErrorEvent> errorListener) {
+    return new DesktopNotification(body, errorListener).open();
   }
 
   /**
@@ -323,11 +461,8 @@ public class DesktopNotification {
       EventListener<DesktopNotificationOpenEvent> listener) {
 
     if (!openListenerRegistered) {
-      Page.ifPresent(page -> {
-        page.addEventListener(id + "-opened", event -> { // NOSONAR
-          eventDispatcher.dispatchEvent(new DesktopNotificationOpenEvent(this));
-        });
-      });
+      Page.ifPresent(page -> page.addEventListener(id + "-opened",
+          event -> eventDispatcher.dispatchEvent(new DesktopNotificationOpenEvent(this))));
       openListenerRegistered = true;
     }
 
@@ -355,11 +490,8 @@ public class DesktopNotification {
       EventListener<DesktopNotificationCloseEvent> listener) {
 
     if (!closeListenerRegistered) {
-      Page.ifPresent(page -> {
-        page.addEventListener(id + "-closed", event -> { // NOSONAR
-          eventDispatcher.dispatchEvent(new DesktopNotificationCloseEvent(this));
-        });
-      });
+      Page.ifPresent(page -> page.addEventListener(id + "-closed",
+          event -> eventDispatcher.dispatchEvent(new DesktopNotificationCloseEvent(this))));
       closeListenerRegistered = true;
     }
 
@@ -387,11 +519,8 @@ public class DesktopNotification {
       EventListener<DesktopNotificationErrorEvent> listener) {
 
     if (!errorListenerRegistered) {
-      Page.ifPresent(page -> {
-        page.addEventListener(id + "-errored", event -> { // NOSONAR
-          eventDispatcher.dispatchEvent(new DesktopNotificationErrorEvent(this));
-        });
-      });
+      Page.ifPresent(page -> page.addEventListener(id + "-errored",
+          event -> eventDispatcher.dispatchEvent(new DesktopNotificationErrorEvent(this))));
       errorListenerRegistered = true;
     }
 
@@ -418,6 +547,8 @@ public class DesktopNotification {
    * automatically bring the application tab or window into focus. Due to browser security and UX
    * policies, the focus behavior must be handled separately by the application and cannot be
    * guaranteed by this event.
+   * </p>
+   *
    * <p>
    * Limitations include:
    * <ul>
@@ -426,6 +557,7 @@ public class DesktopNotification {
    * <li>Any logic to refocus the app must be implemented by the application, keeping in mind that
    * user gestures or additional browser-specific allowances are required.</li>
    * </ul>
+   * </p>
    *
    * @param listener the listener to be notified when the notification is clicked
    * @return a registration object for removing the event listener
@@ -434,11 +566,8 @@ public class DesktopNotification {
       EventListener<DesktopNotificationClickEvent> listener) {
 
     if (!clickListenerRegistered) {
-      Page.ifPresent(page -> {
-        page.addEventListener(id + "-clicked", event -> { // NOSONAR
-          eventDispatcher.dispatchEvent(new DesktopNotificationClickEvent(this));
-        });
-      });
+      Page.ifPresent(page -> page.addEventListener(id + "-clicked",
+          event -> eventDispatcher.dispatchEvent(new DesktopNotificationClickEvent(this))));
       clickListenerRegistered = true;
     }
 
@@ -454,5 +583,9 @@ public class DesktopNotification {
   public ListenerRegistration<DesktopNotificationClickEvent> onClick(
       EventListener<DesktopNotificationClickEvent> listener) {
     return addClickListener(listener);
+  }
+
+  EventDispatcher getEventDispatcher() {
+    return eventDispatcher;
   }
 }
