@@ -46,6 +46,11 @@
       </dependency>
       <dependency>
         <groupId>com.webforj</groupId>
+        <artifactId>webforj-desktop-notification</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.webforj</groupId>
         <artifactId>webforj-dialog</artifactId>
         <version>${project.version}</version>
       </dependency>
