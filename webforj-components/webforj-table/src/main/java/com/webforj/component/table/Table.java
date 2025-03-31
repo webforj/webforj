@@ -973,7 +973,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   /**
-   * Sets Wether a background is provided for every other row.
+   * Sets Whether a background is provided for every other row.
    *
    * <p>
    * The striped property is used to apply a background color to every other row in the table,
