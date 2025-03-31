@@ -64,14 +64,14 @@ class TableTest {
     @Test
     void shouldSetGetBorders() {
       var borders = EnumSet.of(Table.Border.AROUND, Table.Border.ROWS, Table.Border.COLUMNS);
-      component.setVisibleBorders(borders);
+      component.setBordersVisible(borders);
 
-      assertEquals(borders, component.getVisibleBorders());
+      assertEquals(borders, component.getBordersVisible());
       assertTrue(component.getProperty("border", Boolean.class));
       assertTrue(component.getProperty("columnsBorder", Boolean.class));
       assertTrue(component.getProperty("rowsBorder", Boolean.class));
 
-      component.setVisibleBorders(EnumSet.noneOf(Table.Border.class));
+      component.setBordersVisible(EnumSet.noneOf(Table.Border.class));
 
       assertFalse(component.getProperty("border", Boolean.class));
       assertFalse(component.getProperty("columnsBorder", Boolean.class));

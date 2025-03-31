@@ -954,7 +954,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @param value A set of borders to be drawn.
    * @return the component itself
    */
-  public Table<T> setVisibleBorders(Set<Border> value) {
+  public Table<T> setBordersVisible(Set<Border> value) {
     this.visibleBorders = value;
     set(border, value.contains(Border.AROUND));
     set(columnsBorder, value.contains(Border.COLUMNS));
@@ -968,7 +968,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    *
    * @return A set of borders to be drawn.
    */
-  public Set<Border> getVisibleBorders() {
+  public Set<Border> getBordersVisible() {
     return visibleBorders;
   }
 
