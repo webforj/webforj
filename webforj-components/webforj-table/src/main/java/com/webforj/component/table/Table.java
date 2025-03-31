@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,24 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     NONE
   }
 
+  /**
+   * The supported border types for the table.
+   */
+  public enum Border {
+    /**
+     * Draw border between columns.
+     */
+    COLUMNS,
+    /**
+     * Draw border between rows.
+     */
+    ROWS,
+    /**
+     * Draw border around the table.
+     */
+    AROUND
+  }
+
   private static final record ClientItem(String id, JsonObject data, JsonArray rowParts,
       JsonObject cellParts) {}
 
@@ -139,6 +158,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private Function<T, List<String>> rowPartProvider = item -> Collections.emptyList();
   private BiFunction<T, Column<T, ?>, List<String>> cellPartProvider =
       (item, column) -> Collections.emptyList();
+  private Set<Border> visibleBorders = EnumSet.of(Border.ROWS, Border.AROUND);
 
   // Internal properties
   private final PropertyDescriptor<List<Column<T, ?>>> columnDefinitionsProp =
@@ -176,6 +196,15 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   @PropertyExclude
   private final PropertyDescriptor<String> getCellPart =
       PropertyDescriptor.property("getCellPart", "");
+  @PropertyExclude
+  private final PropertyDescriptor<Boolean> border = PropertyDescriptor.property("border", true);
+  @PropertyExclude
+  private final PropertyDescriptor<Boolean> columnsBorder =
+      PropertyDescriptor.property("columnsBorder", false);
+  @PropertyExclude
+  private final PropertyDescriptor<Boolean> rowsBorder =
+      PropertyDescriptor.property("rowsBorder", true);
+  private final PropertyDescriptor<Boolean> striped = PropertyDescriptor.property("striped", false);
 
   /**
    * Construct a new Table.
@@ -915,6 +944,61 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   /**
+   * Sets the visible borders of the table.
+   *
+   * <p>
+   * The visible borders are the borders that are drawn around the table and between the rows and
+   * columns. The default value is {@link Border#ROWS} and {@link Border#AROUND}.
+   * </p>
+   *
+   * @param value A set of borders to be drawn.
+   * @return the component itself
+   */
+  public Table<T> setVisibleBorders(Set<Border> value) {
+    this.visibleBorders = value;
+    set(border, value.contains(Border.AROUND));
+    set(columnsBorder, value.contains(Border.COLUMNS));
+    set(rowsBorder, value.contains(Border.ROWS));
+
+    return this;
+  }
+
+  /**
+   * Gets the visible borders of the table.
+   *
+   * @return A set of borders to be drawn.
+   */
+  public Set<Border> getVisibleBorders() {
+    return visibleBorders;
+  }
+
+  /**
+   * Sets Wether a background is provided for every other row.
+   *
+   * <p>
+   * The striped property is used to apply a background color to every other row in the table,
+   * creating a striped effect. This can improve readability by making it easier to distinguish
+   * between adjacent rows of data.
+   * </p>
+   *
+   * @param value {@code true} to enable striped rows, {@code false} to disable
+   * @return the component itself
+   */
+  public Table<T> setStriped(boolean value) {
+    set(striped, value);
+    return this;
+  }
+
+  /**
+   * Checks if the striped rows are enabled.
+   *
+   * @return {@code true} if the striped rows are enabled, {@code false} otherwise
+   */
+  public boolean isStriped() {
+    return get(striped);
+  }
+
+  /**
    * Adds a listener for the row click event.
    *
    * @param listener the listener
@@ -1217,6 +1301,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     }
 
     return new ClientItem(id, data, rowParts, cellParts);
+
   }
 
   void handleRepositoryCommit(RepositoryCommitEvent<T> ev) {
