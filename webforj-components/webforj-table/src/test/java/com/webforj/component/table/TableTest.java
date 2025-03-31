@@ -26,6 +26,7 @@ import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.HasEntityKey;
 import com.webforj.dispatcher.EventListener;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,15 +47,35 @@ class TableTest {
     component = new Table<>();
   }
 
-  @Test
-  void shouldSetGetProperties() {
-    try {
-      PropertyDescriptorTester.run(Table.class, component, descriptor -> {
-        return !Arrays.asList("columnDefinitions", "data", "getRowId", "selected")
-            .contains(descriptor.getName());
-      });
-    } catch (Exception e) {
-      fail("PropertyDescriptor test failed: " + e.getMessage());
+  @Nested
+  class Properties {
+    @Test
+    void shouldSetGetProperties() {
+      try {
+        PropertyDescriptorTester.run(Table.class, component, descriptor -> {
+          return !Arrays.asList("columnDefinitions", "data", "getRowId", "selected")
+              .contains(descriptor.getName());
+        });
+      } catch (Exception e) {
+        fail("PropertyDescriptor test failed: " + e.getMessage());
+      }
+    }
+
+    @Test
+    void shouldSetGetBorders() {
+      var borders = EnumSet.of(Table.Border.AROUND, Table.Border.ROWS, Table.Border.COLUMNS);
+      component.setBordersVisible(borders);
+
+      assertEquals(borders, component.getBordersVisible());
+      assertTrue(component.getProperty("border", Boolean.class));
+      assertTrue(component.getProperty("columnsBorder", Boolean.class));
+      assertTrue(component.getProperty("rowsBorder", Boolean.class));
+
+      component.setBordersVisible(EnumSet.noneOf(Table.Border.class));
+
+      assertFalse(component.getProperty("border", Boolean.class));
+      assertFalse(component.getProperty("columnsBorder", Boolean.class));
+      assertFalse(component.getProperty("rowsBorder", Boolean.class));
     }
   }
 
