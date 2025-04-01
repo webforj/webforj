@@ -19,6 +19,7 @@
     <module>webforj-applayout</module>
     <module>webforj-appnav</module>
     <module>webforj-columnslayout</module>
+    <module>webforj-desktop-notification</module>
     <module>webforj-dialog</module>
     <module>webforj-drawer</module>
     <module>webforj-flexlayout</module>
