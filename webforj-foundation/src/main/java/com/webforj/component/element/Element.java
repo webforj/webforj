@@ -33,6 +33,8 @@ import com.webforj.component.window.Window;
 import com.webforj.concern.HasEnablement;
 import com.webforj.concern.HasFocus;
 import com.webforj.concern.HasJsExecution;
+import com.webforj.concern.HasStyle;
+import com.webforj.concern.HasVisibility;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -674,7 +676,11 @@ public final class Element extends DwcContainer<Element>
   @Override
   protected void doAdd(Component component) {
     try {
-      // create the component
+      if (component instanceof HasStyle<?> vc) {
+        // temporarily hide the component
+        vc.setStyle("content-visibility", "hidden");
+      }
+
       ComponentAccessor.getDefault().create(component, getWindow());
 
       // add the component to the slot
@@ -682,6 +688,11 @@ public final class Element extends DwcContainer<Element>
         String slot = findComponentSlot(component);
         BBjControl control = ComponentAccessor.getDefault().getControl(component);
         inferControl().setSlot(Optional.ofNullable(slot).orElse(""), control);
+      }
+
+      if (component instanceof HasStyle<?> vc) {
+        // restore the visibility
+        vc.removeStyle("content-visibility");
       }
     } catch (IllegalAccessException | BBjException e) {
       throw new IllegalArgumentException(
