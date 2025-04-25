@@ -219,6 +219,58 @@ class AppNavItemTest {
     }
   }
 
+  @Nested
+  @DisplayName("Absolute URL Tests")
+  class AbsoluteUrlTests {
+
+    @Test
+    void shouldHandleAbsoluteUrlWithoutQueryParams() {
+      String absoluteUrl = "https://example.com/path";
+
+      component.setPath(absoluteUrl);
+
+      assertEquals(absoluteUrl, component.getFullPath());
+      assertTrue(component.isRouterIgnore());
+    }
+
+    @Test
+    void shouldHandleAbsoluteUrlWithQueryParams() {
+      String absoluteUrl = "https://example.com/path";
+      Map<String, String> queryParams = Map.of("key", "value");
+
+      component.setPath(absoluteUrl);
+      component.setQueryParameters(ParametersBag.of(queryParams));
+
+      assertEquals("https://example.com/path?key=value", component.getFullPath());
+      assertTrue(component.isRouterIgnore());
+    }
+
+    @Test
+    void shouldMergeQueryParamsWithAbsoluteUrl() {
+      String absoluteUrl = "https://example.com/path?existingKey=existingValue";
+      Map<String, String> queryParams = Map.of("newKey", "newValue");
+
+      component.setPath(absoluteUrl);
+      component.setQueryParameters(ParametersBag.of(queryParams));
+
+      assertEquals("https://example.com/path?newKey=newValue&existingKey=existingValue",
+          component.getFullPath());
+      assertTrue(component.isRouterIgnore());
+    }
+
+    @Test
+    void shouldPreserveFragmentInAbsoluteUrl() {
+      String absoluteUrl = "https://example.com/path#fragment";
+      Map<String, String> queryParams = Map.of("key", "value");
+
+      component.setPath(absoluteUrl);
+      component.setQueryParameters(ParametersBag.of(queryParams));
+
+      assertEquals("https://example.com/path?key=value#fragment", component.getFullPath());
+      assertTrue(component.isRouterIgnore());
+    }
+  }
+
   @Route("/test/:id")
   static final class ParameterizedView extends ElementComposite {
   }
