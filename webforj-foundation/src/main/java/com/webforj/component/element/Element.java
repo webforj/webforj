@@ -39,6 +39,8 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import static com.webforj.App.console;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -850,9 +852,9 @@ public final class Element extends DwcContainer<Element>
     sb.append("  return null;");
     sb.append("}");
 
-    // Deserialize arguments on the client side and call the function
-    sb.append("const rawArgs = JSON.parse(atob(`")
-        .append(Base64.getEncoder().encodeToString(jsonArgs.getBytes())).append("`));");
+    sb.append("const rawArgs = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(`")
+        .append(Base64.getEncoder().encodeToString(jsonArgs.getBytes(StandardCharsets.UTF_8)))
+        .append("`), c => c.charCodeAt(0))));");
 
     // Resolve the special arguments
     sb.append("const args = rawArgs.map(arg => {");
@@ -878,7 +880,7 @@ public final class Element extends DwcContainer<Element>
     sb.append("  return null;");
     sb.append("}");
 
-    sb.append("})();"); // end of async function
+    sb.append("})();");
 
     return sb.toString();
   }
