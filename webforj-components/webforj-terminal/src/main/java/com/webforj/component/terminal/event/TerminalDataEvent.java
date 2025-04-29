@@ -17,8 +17,8 @@ import java.util.Map;
  * @since 24.10
  */
 @EventName(value = "dwc-data")
-@EventOptions(filter = "event.target.isSameNode(component)",
-    data = {@EventData(key = "value", exp = "btoa(event.detail)")})
+@EventOptions(filter = "event.target.isSameNode(component)", data = {@EventData(key = "value",
+    exp = "(str => btoa(String.fromCharCode(...new TextEncoder().encode(str))))(event.detail)")})
 public final class TerminalDataEvent extends ComponentEvent<Terminal> {
 
   /**
@@ -38,6 +38,10 @@ public final class TerminalDataEvent extends ComponentEvent<Terminal> {
    */
   public String getValue() {
     String value = (String) this.getEventMap().get("value");
+    if (value == null) {
+      return null;
+    }
+
     return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
   }
 
