@@ -99,4 +99,22 @@ class NamespaceEventSinkTest {
 
     verify(dispatcher, times(1)).dispatchEvent(any(NamespaceEvent.class));
   }
+
+  @Test
+  void shouldNotRemoveCallbackWhenListenersExist() throws BBjException {
+    when(dispatcher.getCount(NamespaceEvent.class)).thenReturn(1);
+
+    eventSink.removeCallback(null);
+
+    verify(bbjNamespace, times(0)).removeCallbackForNamespace();
+  }
+
+  @Test
+  void shouldRemoveCallbackWhenNoListenersExist() throws BBjException {
+    when(dispatcher.getCount(NamespaceEvent.class)).thenReturn(0);
+
+    eventSink.removeCallback(null);
+
+    verify(bbjNamespace, times(1)).removeCallbackForNamespace();
+  }
 }
