@@ -14,7 +14,7 @@ public interface ItemMultiSelectable<T, V> extends ItemMultiSelectionAware<V> {
    * Selects multiple items in the list.
    *
    * <p>
-   * <strong>Note:</strong> Components implanting this method should ensure type safety for
+   * <strong>Note:</strong> Components implementing this method should ensure type safety for
    * potential heap pollution via varargs parameter.
    * </p>
    *
