@@ -1,21 +1,27 @@
 package com.webforj.component.tree.event;
 
-import com.webforj.component.ControlEvent;
 import com.webforj.component.tree.Tree;
+import java.util.Map;
 
-public class TreeCollapseEvent implements ControlEvent {
-  private final Tree control;
+/**
+ * An event which is fired when a tree node is collapsed.
+ *
+ * <p>
+ * This event can be fired when a node is collapsed via user interaction.
+ * </p>
+ *
+ * @author Hyyan Abo Fakher
+ * @since 25.01
+ */
+public class TreeCollapseEvent extends TreeEvent {
 
-  public TreeCollapseEvent(Tree cTree) {
-    this.control = cTree;
-  }
-
-  @Override
-  public Tree getControl() {
-    return control;
-  }
-
-  public String toString() {
-    return "Event: TreeCollapsed";
+  /**
+   * Creates a new tree collapse event.
+   *
+   * @param component the component
+   * @param eventMap the event map
+   */
+  public TreeCollapseEvent(Tree component, Map<String, Object> eventMap) {
+    super(component, eventMap);
   }
 }
