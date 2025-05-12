@@ -21,8 +21,6 @@ class TreeCollapseEventTest {
     // Capture the dispatched event
     TreeCollapseEvent[] dispatchedEvent = new TreeCollapseEvent[1];
 
-    when(eventMock.getNodeID()).thenReturn(1);
-
     // Add event listener
     dispatcher.addListener(TreeCollapseEvent.class, e -> {
       dispatchedEvent[0] = e;
@@ -30,6 +28,7 @@ class TreeCollapseEventTest {
 
     Tree tree = new Tree();
     TreeNode node1 = tree.add("Node 1");
+    when(eventMock.getNodeID()).thenReturn(node1.getUniqueId());
 
     TreeCollapseEventSink sink = new TreeCollapseEventSink(tree, dispatcher);
     // Invoke the event handler

@@ -21,7 +21,15 @@ class TreeMouseEventTest {
     // Capture the dispatched event
     TreeDoubleClickEvent[] dispatchedEvent = new TreeDoubleClickEvent[1];
 
-    when(eventMock.getExactNodeID()).thenReturn(1);
+    // Add event listener
+    dispatcher.addListener(TreeDoubleClickEvent.class, e -> {
+      dispatchedEvent[0] = e;
+    });
+
+    Tree tree = new Tree();
+    TreeNode node1 = tree.add("Node 1");
+
+    when(eventMock.getExactNodeID()).thenReturn(node1.getUniqueId());
     when(eventMock.getX()).thenReturn(10);
     when(eventMock.getY()).thenReturn(20);
     when(eventMock.getMouseButton()).thenReturn(1);
@@ -30,13 +38,6 @@ class TreeMouseEventTest {
     when(eventMock.isControlDown()).thenReturn(true);
     when(eventMock.isShiftDown()).thenReturn(false);
 
-    // Add event listener
-    dispatcher.addListener(TreeDoubleClickEvent.class, e -> {
-      dispatchedEvent[0] = e;
-    });
-
-    Tree tree = new Tree();
-    TreeNode node1 = tree.add("Node 1");
 
     TreeDoubleClickEventSink sink = new TreeDoubleClickEventSink(tree, dispatcher);
     // Invoke the event handler

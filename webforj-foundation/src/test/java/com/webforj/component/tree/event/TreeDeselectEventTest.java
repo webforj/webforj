@@ -21,8 +21,6 @@ class TreeDeselectEventTest {
     // Capture the dispatched event
     TreeDeselectEvent[] dispatchedEvent = new TreeDeselectEvent[1];
 
-    when(eventMock.getNodeID()).thenReturn(1);
-
     // Add event listener
     dispatcher.addListener(TreeDeselectEvent.class, e -> {
       dispatchedEvent[0] = e;
@@ -30,6 +28,7 @@ class TreeDeselectEventTest {
 
     Tree tree = new Tree();
     TreeNode node1 = tree.add("Node 1");
+    when(eventMock.getNodeID()).thenReturn(node1.getUniqueId());
 
     TreeDeselectEventSink sink = new TreeDeselectEventSink(tree, dispatcher);
     // Invoke the event handler

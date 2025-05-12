@@ -21,8 +21,6 @@ class TreeExpandEventTest {
     // Capture the dispatched event
     TreeExpandEvent[] dispatchedEvent = new TreeExpandEvent[1];
 
-    when(eventMock.getNodeID()).thenReturn(1);
-
     // Add event listener
     dispatcher.addListener(TreeExpandEvent.class, e -> {
       dispatchedEvent[0] = e;
@@ -30,6 +28,7 @@ class TreeExpandEventTest {
 
     Tree tree = new Tree();
     TreeNode node1 = tree.add("Node 1");
+    when(eventMock.getNodeID()).thenReturn(node1.getUniqueId());
 
     TreeExpandEventSink sink = new TreeExpandEventSink(tree, dispatcher);
     // Invoke the event handler
