@@ -2,13 +2,14 @@ package com.webforj.component.tree.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import com.basis.bbj.proxies.event.BBjTreeMouseDoubleClickEvent;
 import com.webforj.component.tree.Tree;
 import com.webforj.component.tree.TreeNode;
 import com.webforj.component.tree.sink.TreeDoubleClickEventSink;
 import com.webforj.dispatcher.EventDispatcher;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class TreeMouseEventTest {
 

@@ -11,6 +11,16 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import com.basis.bbj.proxies.SysGuiProxyConstants;
 import com.basis.bbj.proxies.sysgui.BBjTree;
 import com.basis.startup.type.BBjException;
@@ -22,15 +32,7 @@ import com.webforj.component.tree.event.TreeDeselectEvent;
 import com.webforj.component.tree.event.TreeDoubleClickEvent;
 import com.webforj.component.tree.event.TreeExpandEvent;
 import com.webforj.component.tree.event.TreeSelectEvent;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import java.util.List;
-import java.util.Optional;
+
 
 class TreeTest {
 

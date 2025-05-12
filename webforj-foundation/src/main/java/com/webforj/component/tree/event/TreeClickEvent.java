@@ -12,7 +12,7 @@ import java.util.Map;
 public class TreeClickEvent extends TreeMouseEvent {
 
   /**
-   * Creates a new tree double-click event.
+   * Creates a new tree click event.
    *
    * @param component the component
    * @param eventMap the event map
