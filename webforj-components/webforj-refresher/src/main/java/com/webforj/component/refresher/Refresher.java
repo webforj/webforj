@@ -7,7 +7,7 @@ import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyExclude;
 import com.webforj.component.element.annotation.PropertyMethods;
-import com.webforj.component.icons.Icon;
+import com.webforj.component.icons.IconDefinition;
 import com.webforj.component.refresher.event.RefresherRefreshEvent;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
@@ -89,7 +89,7 @@ public class Refresher extends ElementCompositeContainer
    * @param icon the icon
    * @return the component itself
    */
-  public Refresher setArrowIcon(Icon icon) {
+  public Refresher setArrowIcon(IconDefinition<?> icon) {
     set(iconArrowProp, String.format("%s:%s", icon.getPool(), icon.getName()));
     return this;
   }
@@ -131,7 +131,7 @@ public class Refresher extends ElementCompositeContainer
    * @param icon the icon
    * @return the component itself
    */
-  public Refresher setRefreshIcon(Icon icon) {
+  public Refresher setRefreshIcon(IconDefinition<?> icon) {
     set(iconRefreshProp, String.format("%s:%s", icon.getPool(), icon.getName()));
     return this;
   }
