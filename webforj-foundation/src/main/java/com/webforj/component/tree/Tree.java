@@ -774,7 +774,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    */
   public Tree setCollapsedIcon(IconDefinition<?> icon) {
     collapsedIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
-    collapsedIcon = String.format("%s:%s", icon.getPool(), icon.getName());
+    collapsedIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     doSetCollapsedIcon();
     return this;
   }
@@ -825,7 +825,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    */
   public Tree setExpandedIcon(IconDefinition<?> icon) {
     expandedIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
-    expandedIcon = String.format("%s:%s", icon.getPool(), icon.getName());
+    expandedIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     doSetExpandedIcon();
     return this;
   }
@@ -862,7 +862,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    */
   public Tree setLeafIcon(IconDefinition<?> icon) {
     leafIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
-    leafIcon = String.format("%s:%s", icon.getPool(), icon.getName());
+    leafIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     doSetLeafIcon();
     return this;
   }
@@ -898,7 +898,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    */
   public Tree setLeafSelectedIcon(IconDefinition<?> icon) {
     selectedLeafIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
-    selectedLeafIcon = String.format("%s:%s", icon.getPool(), icon.getName());
+    selectedLeafIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     doSetLeafSelectedIcon();
     return this;
   }
