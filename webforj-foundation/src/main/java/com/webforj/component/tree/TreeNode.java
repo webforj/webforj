@@ -1,12 +1,15 @@
 package com.webforj.component.tree;
 
 import com.webforj.Environment;
+import com.webforj.component.Component;
 import com.webforj.component.icons.IconDefinition;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +27,7 @@ import java.util.function.Consumer;
  * @since 25.01
  */
 public final class TreeNode implements TreeNodeDelegate {
+  private final Map<Object, Object> userData = new HashMap<>();
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
   static final String LOOKUP_KEY = "com.webforj.component.tree.TreeNode.ID_SEQ";
   private static final String NULL_ICON_MESSAGE = "Icon cannot be null";
@@ -360,6 +364,34 @@ public final class TreeNode implements TreeNodeDelegate {
   }
 
   /**
+   * Allows users to include additional information within the node.
+   *
+   * <p>
+   * Added information is available only on the server side of the node and is not sent to the
+   * client.
+   * </p>
+   *
+   * @param key Key of the data
+   * @param data Desired piece of information
+   *
+   * @return The node itself
+   */
+  public TreeNode setUserData(Object key, Object data) {
+    userData.put(key, data);
+    return this;
+  }
+
+  /**
+   * Retrieves user-included information from the node.
+   *
+   * @param key Key of the data
+   * @return Desired piece of user data
+   */
+  public Object getUserData(Object key) {
+    return userData.get(key);
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -391,6 +423,7 @@ public final class TreeNode implements TreeNodeDelegate {
 
   void destroy() {
     removeAll();
+    userData.clear();
     ID_GENERATOR.set(0);
   }
 }
