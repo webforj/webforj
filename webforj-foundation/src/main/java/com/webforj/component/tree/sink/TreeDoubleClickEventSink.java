@@ -1,10 +1,10 @@
 package com.webforj.component.tree.sink;
 
-import java.util.Map;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.tree.Tree;
 import com.webforj.component.tree.event.TreeDoubleClickEvent;
 import com.webforj.dispatcher.EventDispatcher;
+import java.util.Map;
 
 /**
  * This class will map the BBjTreeMouseDoubleClickEvent event to a {@link TreeDoubleClickEvent}.

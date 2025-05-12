@@ -12,15 +12,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import com.basis.bbj.proxies.SysGuiProxyConstants;
 import com.basis.bbj.proxies.sysgui.BBjTree;
 import com.basis.startup.type.BBjException;
@@ -32,25 +23,34 @@ import com.webforj.component.tree.event.TreeDeselectEvent;
 import com.webforj.component.tree.event.TreeDoubleClickEvent;
 import com.webforj.component.tree.event.TreeExpandEvent;
 import com.webforj.component.tree.event.TreeSelectEvent;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 
 class TreeTest {
 
   private Tree tree;
-  private BBjTree mockBBjTree;
+  private BBjTree mockBbjTree;
 
   @BeforeEach
   void setUp() {
     tree = spy(new Tree());
-    mockBBjTree = mock(BBjTree.class);
+    mockBbjTree = mock(BBjTree.class);
 
-    doReturn(mockBBjTree).when(tree).inferControl();
+    doReturn(mockBbjTree).when(tree).inferControl();
   }
 
   @AfterEach
   void tearDown() {
     tree.destroy();
-    mockBBjTree = null;
+    mockBbjTree = null;
   }
 
   @Nested
@@ -209,9 +209,9 @@ class TreeTest {
       tree.select(node);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).selectNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).selectNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).selectNode(anyInt());
+        verify(mockBbjTree, never()).selectNode(anyInt());
       }
     }
 
@@ -225,10 +225,10 @@ class TreeTest {
       tree.select(node1, node2);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).selectNode(node1.getUniqueId());
-        verify(mockBBjTree, times(1)).selectNode(node2.getUniqueId());
+        verify(mockBbjTree, times(1)).selectNode(node1.getUniqueId());
+        verify(mockBbjTree, times(1)).selectNode(node2.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).selectNode(anyInt());
+        verify(mockBbjTree, never()).selectNode(anyInt());
       }
     }
 
@@ -266,9 +266,9 @@ class TreeTest {
       tree.selectChildren(parent);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).selectChildren(parent.getUniqueId());
+        verify(mockBbjTree, times(1)).selectChildren(parent.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).selectChildren(anyInt());
+        verify(mockBbjTree, never()).selectChildren(anyInt());
       }
     }
   }
@@ -284,7 +284,7 @@ class TreeTest {
 
       doReturn(isAttached).when(tree).isAttached();
       BBjVector mockVector = mock(BBjVector.class);
-      doReturn(mockVector).when(mockBBjTree).getSelectedNodes();
+      doReturn(mockVector).when(mockBbjTree).getSelectedNodes();
       doReturn(List.of(BasisNumber.createBasisNumber(node.getUniqueId())).iterator())
           .when(mockVector).iterator();
 
@@ -292,10 +292,10 @@ class TreeTest {
       tree.deselect();
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).deselectNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).deselectNode(node.getUniqueId());
       } else {
         assertTrue(tree.getSelectedItems().isEmpty());
-        verify(mockBBjTree, never()).deselectNode(anyInt());
+        verify(mockBbjTree, never()).deselectNode(anyInt());
       }
     }
 
@@ -310,11 +310,11 @@ class TreeTest {
       tree.deselect(node1, node2);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).deselectNode(node1.getUniqueId());
-        verify(mockBBjTree, times(1)).deselectNode(node2.getUniqueId());
+        verify(mockBbjTree, times(1)).deselectNode(node1.getUniqueId());
+        verify(mockBbjTree, times(1)).deselectNode(node2.getUniqueId());
       } else {
         assertTrue(tree.getSelectedItems().isEmpty());
-        verify(mockBBjTree, never()).deselectNode(anyInt());
+        verify(mockBbjTree, never()).deselectNode(anyInt());
       }
     }
 
@@ -353,10 +353,10 @@ class TreeTest {
       tree.deselectChildren(parent);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).deselectChildren(parent.getUniqueId());
+        verify(mockBbjTree, times(1)).deselectChildren(parent.getUniqueId());
       } else {
         assertTrue(tree.getSelectedItems().isEmpty());
-        verify(mockBBjTree, never()).deselectChildren(anyInt());
+        verify(mockBbjTree, never()).deselectChildren(anyInt());
       }
     }
 
@@ -372,10 +372,10 @@ class TreeTest {
 
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).deselectAll();
+        verify(mockBbjTree, times(1)).deselectAll();
       } else {
         assertTrue(tree.getSelectedItems().isEmpty());
-        verify(mockBBjTree, never()).deselectAll();
+        verify(mockBbjTree, never()).deselectAll();
       }
     }
   }
@@ -413,12 +413,12 @@ class TreeTest {
       tree.select(node);
 
       if (isAttached) {
-        doReturn(node.getUniqueId()).when(mockBBjTree).getSelectedNode();
+        doReturn(node.getUniqueId()).when(mockBbjTree).getSelectedNode();
         assertEquals(node, tree.getSelected());
-        verify(mockBBjTree, times(1)).getSelectedNode();
+        verify(mockBbjTree, times(1)).getSelectedNode();
       } else {
         assertEquals(node, tree.getSelected());
-        verify(mockBBjTree, never()).getSelectedNode();
+        verify(mockBbjTree, never()).getSelectedNode();
       }
     }
 
@@ -433,7 +433,7 @@ class TreeTest {
 
       if (isAttached) {
         BBjVector mockVector = mock(BBjVector.class);
-        doReturn(mockVector).when(mockBBjTree).getSelectedNodes();
+        doReturn(mockVector).when(mockBbjTree).getSelectedNodes();
         doReturn(List.of(BasisNumber.createBasisNumber(node1.getUniqueId()),
             BasisNumber.createBasisNumber(node2.getUniqueId())).iterator()).when(mockVector)
             .iterator();
@@ -442,13 +442,13 @@ class TreeTest {
         assertEquals(2, selectedItems.size());
         assertTrue(selectedItems.contains(node1));
         assertTrue(selectedItems.contains(node2));
-        verify(mockBBjTree, times(1)).getSelectedNodes();
+        verify(mockBbjTree, times(1)).getSelectedNodes();
       } else {
         List<TreeNode> selectedItems = tree.getSelectedItems();
         assertEquals(2, selectedItems.size());
         assertTrue(selectedItems.contains(node1));
         assertTrue(selectedItems.contains(node2));
-        verify(mockBBjTree, never()).getSelectedNodes();
+        verify(mockBbjTree, never()).getSelectedNodes();
       }
     }
 
@@ -461,12 +461,12 @@ class TreeTest {
       tree.select(node);
 
       if (isAttached) {
-        doReturn(node.getUniqueId()).when(mockBBjTree).getSelectedNode();
+        doReturn(node.getUniqueId()).when(mockBbjTree).getSelectedNode();
         assertEquals("key", tree.getSelectedKey());
-        verify(mockBBjTree, times(1)).getSelectedNode();
+        verify(mockBbjTree, times(1)).getSelectedNode();
       } else {
         assertEquals("key", tree.getSelectedKey());
-        verify(mockBBjTree, never()).getSelectedNode();
+        verify(mockBbjTree, never()).getSelectedNode();
       }
     }
 
@@ -481,7 +481,7 @@ class TreeTest {
 
       if (isAttached) {
         BBjVector mockVector = mock(BBjVector.class);
-        doReturn(mockVector).when(mockBBjTree).getSelectedNodes();
+        doReturn(mockVector).when(mockBbjTree).getSelectedNodes();
         doReturn(List.of(BasisNumber.createBasisNumber(node1.getUniqueId()),
             BasisNumber.createBasisNumber(node2.getUniqueId())).iterator()).when(mockVector)
             .iterator();
@@ -490,13 +490,13 @@ class TreeTest {
         assertEquals(2, selectedKeys.size());
         assertTrue(selectedKeys.contains("key1"));
         assertTrue(selectedKeys.contains("key2"));
-        verify(mockBBjTree, times(1)).getSelectedNodes();
+        verify(mockBbjTree, times(1)).getSelectedNodes();
       } else {
         List<Object> selectedKeys = tree.getSelectedKeys();
         assertEquals(2, selectedKeys.size());
         assertTrue(selectedKeys.contains("key1"));
         assertTrue(selectedKeys.contains("key2"));
-        verify(mockBBjTree, never()).getSelectedNodes();
+        verify(mockBbjTree, never()).getSelectedNodes();
       }
     }
   }
@@ -514,9 +514,9 @@ class TreeTest {
       tree.collapse(node);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).collapseNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).collapseNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).collapseNode(anyInt());
+        verify(mockBbjTree, never()).collapseNode(anyInt());
       }
     }
 
@@ -530,9 +530,9 @@ class TreeTest {
       tree.collapse("key");
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).collapseNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).collapseNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).collapseNode(anyInt());
+        verify(mockBbjTree, never()).collapseNode(anyInt());
       }
     }
 
@@ -546,9 +546,9 @@ class TreeTest {
       tree.collapseFrom(node);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).collapseTreeFromNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).collapseTreeFromNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).collapseTreeFromNode(anyInt());
+        verify(mockBbjTree, never()).collapseTreeFromNode(anyInt());
       }
     }
 
@@ -562,9 +562,9 @@ class TreeTest {
       tree.collapseFrom("key");
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).collapseTreeFromNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).collapseTreeFromNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).collapseTreeFromNode(anyInt());
+        verify(mockBbjTree, never()).collapseTreeFromNode(anyInt());
       }
     }
 
@@ -578,9 +578,9 @@ class TreeTest {
       tree.expand(node);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).expandNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).expandNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).expandNode(anyInt());
+        verify(mockBbjTree, never()).expandNode(anyInt());
       }
     }
 
@@ -594,9 +594,9 @@ class TreeTest {
       tree.expand("key");
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).expandNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).expandNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).expandNode(anyInt());
+        verify(mockBbjTree, never()).expandNode(anyInt());
       }
     }
 
@@ -610,9 +610,9 @@ class TreeTest {
       tree.expandFrom(node);
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).expandTreeFromNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).expandTreeFromNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).expandTreeFromNode(anyInt());
+        verify(mockBbjTree, never()).expandTreeFromNode(anyInt());
       }
     }
 
@@ -626,9 +626,9 @@ class TreeTest {
       tree.expandFrom("key");
 
       if (isAttached) {
-        verify(mockBBjTree, times(1)).expandTreeFromNode(node.getUniqueId());
+        verify(mockBbjTree, times(1)).expandTreeFromNode(node.getUniqueId());
       } else {
-        verify(mockBBjTree, never()).expandTreeFromNode(anyInt());
+        verify(mockBbjTree, never()).expandTreeFromNode(anyInt());
       }
     }
 
@@ -640,13 +640,13 @@ class TreeTest {
       tree.add(node);
 
       if (isAttached) {
-        doReturn(true).when(mockBBjTree).isNodeExpanded(node.getUniqueId());
+        doReturn(true).when(mockBbjTree).isNodeExpanded(node.getUniqueId());
         assertTrue(tree.isExpanded(node));
-        verify(mockBBjTree, times(1)).isNodeExpanded(node.getUniqueId());
+        verify(mockBbjTree, times(1)).isNodeExpanded(node.getUniqueId());
       } else {
         tree.expand(node);
         assertTrue(tree.isExpanded(node));
-        verify(mockBBjTree, never()).isNodeExpanded(anyInt());
+        verify(mockBbjTree, never()).isNodeExpanded(anyInt());
       }
     }
 
@@ -658,13 +658,13 @@ class TreeTest {
       tree.add(node);
 
       if (isAttached) {
-        doReturn(false).when(mockBBjTree).isNodeExpanded(node.getUniqueId());
+        doReturn(false).when(mockBbjTree).isNodeExpanded(node.getUniqueId());
         assertTrue(tree.isCollapsed(node));
-        verify(mockBBjTree, times(1)).isNodeExpanded(node.getUniqueId());
+        verify(mockBbjTree, times(1)).isNodeExpanded(node.getUniqueId());
       } else {
         tree.collapse(node);
         assertTrue(tree.isCollapsed(node));
-        verify(mockBBjTree, never()).isNodeExpanded(anyInt());
+        verify(mockBbjTree, never()).isNodeExpanded(anyInt());
       }
     }
 
@@ -824,9 +824,9 @@ class TreeTest {
       doReturn(true).when(tree).isAttached();
       tree.onAttach();
 
-      verify(mockBBjTree, times(1)).addNode(node1.getUniqueId(), tree.getUniqueId(),
+      verify(mockBbjTree, times(1)).addNode(node1.getUniqueId(), tree.getUniqueId(),
           node1.getText());
-      verify(mockBBjTree, times(1)).addNode(node2.getUniqueId(), node1.getUniqueId(),
+      verify(mockBbjTree, times(1)).addNode(node2.getUniqueId(), node1.getUniqueId(),
           node2.getText());
     }
 
@@ -837,7 +837,7 @@ class TreeTest {
       doReturn(true).when(tree).isAttached();
       tree.onAttach();
 
-      verify(mockBBjTree, times(1))
+      verify(mockBbjTree, times(1))
           .setSelectionMode(SysGuiProxyConstants.SINGLE_TREE_SELECTION.intValue());
     }
 
@@ -852,8 +852,8 @@ class TreeTest {
       doReturn(true).when(tree).isAttached();
       tree.onAttach();
 
-      verify(mockBBjTree, times(1)).selectNode(node1.getUniqueId());
-      verify(mockBBjTree, times(1)).selectNode(node2.getUniqueId());
+      verify(mockBbjTree, times(1)).selectNode(node1.getUniqueId());
+      verify(mockBbjTree, times(1)).selectNode(node2.getUniqueId());
     }
 
     @Test
@@ -867,8 +867,8 @@ class TreeTest {
       doReturn(true).when(tree).isAttached();
       tree.onAttach();
 
-      verify(mockBBjTree, times(1)).expandNode(node1.getUniqueId());
-      verify(mockBBjTree, times(1)).expandNode(node2.getUniqueId());
+      verify(mockBbjTree, times(1)).expandNode(node1.getUniqueId());
+      verify(mockBbjTree, times(1)).expandNode(node2.getUniqueId());
     }
 
     @Test
@@ -882,8 +882,8 @@ class TreeTest {
       doReturn(true).when(tree).isAttached();
       tree.onAttach();
 
-      verify(mockBBjTree, times(1)).expandTreeFromNode(node1.getUniqueId());
-      verify(mockBBjTree, times(1)).expandTreeFromNode(node2.getUniqueId());
+      verify(mockBbjTree, times(1)).expandTreeFromNode(node1.getUniqueId());
+      verify(mockBbjTree, times(1)).expandTreeFromNode(node2.getUniqueId());
     }
 
     @Test

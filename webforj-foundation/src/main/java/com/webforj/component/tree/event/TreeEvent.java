@@ -1,10 +1,10 @@
 package com.webforj.component.tree.event;
 
-import java.util.Map;
-import java.util.Optional;
 import com.webforj.component.event.ComponentEvent;
 import com.webforj.component.tree.Tree;
 import com.webforj.component.tree.TreeNode;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * An event which is fired when the user interacts with a tree node.

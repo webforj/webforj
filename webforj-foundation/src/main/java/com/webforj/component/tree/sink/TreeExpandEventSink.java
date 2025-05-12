@@ -1,6 +1,5 @@
 package com.webforj.component.tree.sink;
 
-import java.util.HashMap;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjTreeNodeExpandedEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
@@ -8,6 +7,7 @@ import com.webforj.component.event.sink.AbstractDwcEventSink;
 import com.webforj.component.tree.Tree;
 import com.webforj.component.tree.event.TreeExpandEvent;
 import com.webforj.dispatcher.EventDispatcher;
+import java.util.HashMap;
 
 /**
  * This class will map the BBjTreeNodeExpandedEvent event to a {@link TreeExpandEvent}.

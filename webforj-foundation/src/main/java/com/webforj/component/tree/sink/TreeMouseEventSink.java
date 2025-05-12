@@ -1,12 +1,12 @@
 package com.webforj.component.tree.sink;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjTreeMouseEvent;
 import com.webforj.component.event.sink.AbstractDwcEventSink;
 import com.webforj.component.tree.Tree;
 import com.webforj.dispatcher.EventDispatcher;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The base class for all tree mouse event sinks.

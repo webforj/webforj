@@ -63,7 +63,6 @@ public final class TreeNode implements TreeNodeDelegate {
    * the {@code text} value.
    *
    * @param text the non-null display text and key for this node
-   * @param expandable if {@code true}, the node is always shown expandable
    */
   public TreeNode(String text) {
     this(text, text);
@@ -104,7 +103,7 @@ public final class TreeNode implements TreeNodeDelegate {
   }
 
   /**
-   * Retrieves the tooltip text of the node
+   * Retrieves the tooltip text of the node.
    *
    * @return the tooltip text of the node
    */
@@ -115,7 +114,7 @@ public final class TreeNode implements TreeNodeDelegate {
   /**
    * Sets the tooltip text of the node.
    *
-   * @param tooltipText the tooltip text to set.
+   * @param text the tooltip text to set.
    * @return the node itself.
    */
   public TreeNode setTooltipText(String text) {

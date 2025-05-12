@@ -16,9 +16,9 @@ import com.webforj.component.icons.IconDefinition;
 import com.webforj.component.tree.event.TreeClickEvent;
 import com.webforj.component.tree.event.TreeCollapseEvent;
 import com.webforj.component.tree.event.TreeDeselectEvent;
+import com.webforj.component.tree.event.TreeDoubleClickEvent;
 import com.webforj.component.tree.event.TreeExpandEvent;
 import com.webforj.component.tree.event.TreeSelectEvent;
-import com.webforj.component.tree.event.TreeDoubleClickEvent;
 import com.webforj.component.tree.sink.TreeClickEventSink;
 import com.webforj.component.tree.sink.TreeCollapseEventSink;
 import com.webforj.component.tree.sink.TreeDeselectEventSink;
@@ -42,10 +42,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Objects;
 
 /**
  * A UI component for displaying and interacting with hierarchical data.
@@ -73,6 +73,7 @@ public class Tree extends DwcFocusableComponent<Tree>
   private static final String NULL_LEAF_ICON_MESSAGE = "Icon for leaf nodes cannot be null";
   private static final String NULL_LEAF_SELECTED_ICON_MESSAGE =
       "Icon for selected leaf nodes cannot be null";
+  private static final String ICON_FORMAT = "%s:%s";
 
   private final String uuid = UUID.randomUUID().toString();
   private final TreeNode root = new TreeNode(this);
@@ -410,6 +411,21 @@ public class Tree extends DwcFocusableComponent<Tree>
 
   /**
    * {@inheritDoc}
+   */
+  @Override
+  public Tree deselect() {
+    List<TreeNode> nodes = getSelectedItems();
+    if (!nodes.isEmpty()) {
+      TreeNode first = nodes.iterator().next();
+      selectedNodes.remove(first);
+      doDeselect(first);
+    }
+
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
    *
    * @throws NullPointerException if {@code items} is null
    */
@@ -525,21 +541,6 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Tree deselect() {
-    List<TreeNode> nodes = getSelectedItems();
-    if (!nodes.isEmpty()) {
-      TreeNode first = nodes.iterator().next();
-      selectedNodes.remove(first);
-      doDeselect(first);
-    }
-
-    return this;
-  }
-
-  /**
    * Collapses the given node.
    *
    * @param node the node to collapse
@@ -575,7 +576,7 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   /**
-   * Collapses a node and all of its descendant's nodes
+   * Collapses a node and all of its descendant's nodes.
    *
    * @param node the node to collapse
    * @return the component itself
@@ -591,7 +592,7 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   /**
-   * Collapses a node and all of its descendant's nodes
+   * Collapses a node and all of its descendant's nodes.
    *
    * @param key the key of the node to collapse
    * @return the component itself
@@ -645,7 +646,7 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   /**
-   * Expands a node and all of its descendant's nodes
+   * Expands a node and all of its descendant's nodes.
    *
    * @param node the node to expand
    * @return the component itself
@@ -661,7 +662,7 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   /**
-   * Expands a node and all of its descendant's nodes
+   * Expands a node and all of its descendant's nodes.
    *
    * @param key the key of the node to expand
    * @return the component itself
@@ -772,7 +773,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    * @throws NullPointerException if {@code icon} is null
    */
   public Tree setCollapsedIcon(IconDefinition<?> icon) {
-    Objects.requireNonNull(icon, NULL_COLLAPSED_ICON_MESSAGE);
+    collapsedIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     collapsedIcon = String.format("%s:%s", icon.getPool(), icon.getName());
     doSetCollapsedIcon();
     return this;
@@ -823,7 +824,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    * @throws NullPointerException if {@code icon} is null
    */
   public Tree setExpandedIcon(IconDefinition<?> icon) {
-    Objects.requireNonNull(icon, NULL_EXPANDED_ICON_MESSAGE);
+    expandedIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     expandedIcon = String.format("%s:%s", icon.getPool(), icon.getName());
     doSetExpandedIcon();
     return this;
@@ -860,7 +861,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    * @return the component itself
    */
   public Tree setLeafIcon(IconDefinition<?> icon) {
-    Objects.requireNonNull(icon, NULL_LEAF_ICON_MESSAGE);
+    leafIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     leafIcon = String.format("%s:%s", icon.getPool(), icon.getName());
     doSetLeafIcon();
     return this;
@@ -896,7 +897,7 @@ public class Tree extends DwcFocusableComponent<Tree>
    * @return the component itself
    */
   public Tree setLeafSelectedIcon(IconDefinition<?> icon) {
-    Objects.requireNonNull(icon, NULL_LEAF_SELECTED_ICON_MESSAGE);
+    selectedLeafIcon = String.format(ICON_FORMAT, icon.getPool(), icon.getName());
     selectedLeafIcon = String.format("%s:%s", icon.getPool(), icon.getName());
     doSetLeafSelectedIcon();
     return this;
@@ -1239,8 +1240,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doSetText(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().setNodeText(node.getUniqueId(), node.getText());
@@ -1250,8 +1252,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doSetTooltipText(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().setToolTipText(node.getUniqueId(), node.getTooltipText());
@@ -1262,8 +1265,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doInsert(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     TreeNode parent = node.getParent().orElse(root);
 
@@ -1283,8 +1287,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doRemove(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
     try {
       inferControl().removeNode(node.getUniqueId());
     } catch (BBjException e) {
@@ -1293,8 +1298,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doRemoveAll(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
     BBjTree tree = inferControl();
     try {
       tree.removeDescendants(node.getUniqueId());
@@ -1305,8 +1311,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doSetSelectionMode(SelectionMode mode) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     inferControl().setSelectionMode(
         mode == SelectionMode.SINGLE ? SysGuiProxyConstants.SINGLE_TREE_SELECTION.intValue()
@@ -1314,8 +1321,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doSelect(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
     try {
       inferControl().selectNode(node.getUniqueId());
     } catch (BBjException e) {
@@ -1324,8 +1332,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doDeselect(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().deselectNode(node.getUniqueId());
@@ -1335,8 +1344,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doSelectChildren(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().selectChildren(node.getUniqueId());
@@ -1347,8 +1357,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doDeselectChildren(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().deselectChildren(node.getUniqueId());
@@ -1359,8 +1370,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doDeselectAll() {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().deselectAll();
@@ -1370,8 +1382,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   TreeNode doGetSelected() {
-    if (!isAttached())
+    if (!isAttached()) {
       return null;
+    }
 
     try {
       int id = inferControl().getSelectedNode();
@@ -1383,8 +1396,9 @@ public class Tree extends DwcFocusableComponent<Tree>
 
   @SuppressWarnings("unchecked")
   List<TreeNode> doGetSelectedItems() {
-    if (!isAttached())
+    if (!isAttached()) {
       return Collections.emptyList();
+    }
 
     try {
       List<TreeNode> selected = new ArrayList<>();
@@ -1405,8 +1419,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doCollapse(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().collapseNode(node.getUniqueId());
@@ -1416,8 +1431,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doCollapseFromNode(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().collapseTreeFromNode(node.getUniqueId());
@@ -1434,8 +1450,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doExpand(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().expandNode(node.getUniqueId());
@@ -1445,8 +1462,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   void doExpandFromNode(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return;
+    }
 
     try {
       inferControl().expandTreeFromNode(node.getUniqueId());
@@ -1457,8 +1475,9 @@ public class Tree extends DwcFocusableComponent<Tree>
   }
 
   boolean doIsExpanded(TreeNode node) {
-    if (!isAttached())
+    if (!isAttached()) {
       return false;
+    }
 
     try {
       return inferControl().isNodeExpanded(node.getUniqueId());
