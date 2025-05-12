@@ -34,9 +34,9 @@ import com.webforj.concern.HasVisibility;
  * @see TablerIcon
  */
 @NodeName("dwc-icon")
-public class Icon extends ElementComposite implements HasStyle<Icon>, HasClassName<Icon>,
-    HasVisibility<Icon>, HasLabel<Icon>, HasElementClickListener<Icon>, HasAttribute<Icon>,
-    HasTooltip<Icon>, HasSize<Icon>, HasExpanse<Icon, IconExpanse> {
+public class Icon extends ElementComposite implements IconDefinition<Icon>, HasStyle<Icon>,
+    HasClassName<Icon>, HasVisibility<Icon>, HasLabel<Icon>, HasElementClickListener<Icon>,
+    HasAttribute<Icon>, HasTooltip<Icon>, HasSize<Icon>, HasExpanse<Icon, IconExpanse> {
 
   // Properties
   private final PropertyDescriptor<String> nameProp = PropertyDescriptor.property("name", "");

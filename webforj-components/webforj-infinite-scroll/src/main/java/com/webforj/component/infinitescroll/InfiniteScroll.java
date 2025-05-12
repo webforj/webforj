@@ -6,7 +6,7 @@ import com.webforj.component.element.ElementCompositeContainer;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyMethods;
-import com.webforj.component.icons.Icon;
+import com.webforj.component.icons.IconDefinition;
 import com.webforj.component.infinitescroll.event.InfiniteScrollEvent;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
@@ -105,7 +105,7 @@ public class InfiniteScroll extends ElementCompositeContainer
    * @param icon the icon
    * @return the component itself
    */
-  public InfiniteScroll setIcon(Icon icon) {
+  public InfiniteScroll setIcon(IconDefinition<?> icon) {
     set(iconProp, String.format("%s:%s", icon.getPool(), icon.getName()));
     return this;
   }

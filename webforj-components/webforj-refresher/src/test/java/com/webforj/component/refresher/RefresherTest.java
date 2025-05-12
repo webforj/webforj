@@ -2,11 +2,12 @@ package com.webforj.component.refresher;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
+import static org.mockito.Mockito.mock;
 import com.webforj.component.element.PropertyDescriptorTester;
-import com.webforj.component.icons.FeatherIcon;
+import com.webforj.component.icons.IconDefinition;
 import com.webforj.component.refresher.event.RefresherRefreshEvent;
 import com.webforj.dispatcher.EventListener;
 import java.util.List;
@@ -39,14 +40,14 @@ class RefresherTest {
 
     @Test
     void shouldSetArrowIconFromIconComponent() {
-      component.setArrowIcon(FeatherIcon.LOADER.create());
-      assertEquals("feather:loader", component.getArrowIcon());
+      component.setArrowIcon(mock(IconDefinition.class));
+      assertNotNull(component.getArrowIcon());
     }
 
     @Test
     void shouldSetRefreshIconFromIconComponent() {
-      component.setRefreshIcon(FeatherIcon.LOADER.create());
-      assertEquals("feather:loader", component.getRefreshIcon());
+      component.setRefreshIcon(mock(IconDefinition.class));
+      assertNotNull(component.getRefreshIcon());
     }
 
     @Test

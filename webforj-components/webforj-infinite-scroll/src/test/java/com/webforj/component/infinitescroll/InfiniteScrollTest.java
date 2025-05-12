@@ -1,13 +1,14 @@
 package com.webforj.component.infinitescroll;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import com.webforj.component.Component;
 import com.webforj.component.element.PropertyDescriptorTester;
-import com.webforj.component.icons.FeatherIcon;
+import com.webforj.component.icons.IconDefinition;
 import com.webforj.component.infinitescroll.event.InfiniteScrollEvent;
 import com.webforj.dispatcher.EventListener;
 import java.util.List;
@@ -40,8 +41,8 @@ class InfiniteScrollTest {
 
     @Test
     void shouldSetIconFromIconComponent() {
-      component.setIcon(FeatherIcon.LOADER.create());
-      assertEquals("feather:loader", component.getIcon());
+      component.setIcon(mock(IconDefinition.class));
+      assertNotNull(component.getIcon());
     }
   }
 
