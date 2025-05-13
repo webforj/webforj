@@ -62,6 +62,7 @@ import java.util.UUID;
 public class Tree extends DwcFocusableComponent<Tree>
     implements TreeNodeDelegate, ItemSingleSelectable<Tree, TreeNode>, KeySingleSelectable<Tree>,
     ItemMultiSelectable<Tree, TreeNode>, KeyMultiSelectable<Tree> {
+  static final String PROP_CONNECT = "connect";
   private static final String NULL_KEY_MESSAGE = "Key cannot be null";
   private static final String NULL_TEXT_MESSAGE = "Text cannot be null";
   private static final String NULL_ITEM_MESSAGE = "Item cannot be null";
@@ -90,6 +91,7 @@ public class Tree extends DwcFocusableComponent<Tree>
   private Map<TreeNode, String> nodeSelectedIcons = new HashMap<>();
   private boolean groupIconsVisible = true;
   private boolean leafIconsVisible = true;
+  private boolean connect = true;
 
   private final ComponentEventSinkRegistry<TreeSelectEvent> selectEventSinkListenerRegistry =
       new ComponentEventSinkRegistry<>(new TreeSelectEventSink(this, getEventDispatcher()),
@@ -953,6 +955,27 @@ public class Tree extends DwcFocusableComponent<Tree>
    */
   public boolean isLeafIconsVisible() {
     return leafIconsVisible;
+  }
+
+  /**
+   * When set to {@code true}, the tree will show a connection line between the nodes.
+   *
+   * @param connect {@code true} to show connection lines, {@code false} to hide them
+   * @return the component itself
+   */
+  public Tree setConnected(boolean connect) {
+    this.connect = connect;
+    setUnrestrictedProperty(PROP_CONNECT, connect);
+    return this;
+  }
+
+  /**
+   * Checks if connection lines are shown between nodes.
+   *
+   * @return {@code true} if connection lines are shown, {@code false} otherwise
+   */
+  public boolean isConnected() {
+    return connect;
   }
 
   /**

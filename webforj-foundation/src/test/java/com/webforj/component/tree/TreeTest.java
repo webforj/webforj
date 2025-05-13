@@ -904,6 +904,22 @@ class TreeTest {
   }
 
   @Nested
+  class ConnectTests {
+
+    @Test
+    void shouldUpdateConnectProperty() {
+      tree.setConnected(true);
+      assertTrue(tree.isConnected());
+
+      assertTrue(tree.getProperty(Tree.PROP_CONNECT, Boolean.class));
+
+      tree.setConnected(false);
+      assertFalse(tree.isConnected());
+      assertFalse(tree.getProperty(Tree.PROP_CONNECT, Boolean.class));
+    }
+  }
+
+  @Nested
   @DisplayName("Events API")
   class EventsApi {
 
