@@ -1,7 +1,6 @@
 package com.webforj.component.tree;
 
 import com.webforj.Environment;
-import com.webforj.component.Component;
 import com.webforj.component.icons.IconDefinition;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
