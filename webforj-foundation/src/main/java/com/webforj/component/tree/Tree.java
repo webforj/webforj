@@ -36,6 +36,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.Assets;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1127,6 +1128,20 @@ public class Tree extends DwcFocusableComponent<Tree>
   public ListenerRegistration<TreeDoubleClickEvent> onDoubleClick(
       EventListener<TreeDoubleClickEvent> listener) {
     return addDoubleClickListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getRestrictedProperties() {
+    List<String> properties = super.getRestrictedProperties();
+    properties.addAll(Arrays.asList("allowDeselectionByClick", "connect", "contiguousSelection",
+        "disabled", "editable", "expanse", "iconCollapsed", "iconExpanded", "iconLeaf",
+        "iconLeafSelected", "label", "multiSelection", "multiSelectionByClick", "nodata",
+        "noGroupIcons", "noLeafIcons", "readonly", "searchCaseSensitive", "searchInput",
+        "searchNodata", "searchPlaceholder", "searchTerm", "suppressExpandAll"));
+    return properties;
   }
 
   /**
