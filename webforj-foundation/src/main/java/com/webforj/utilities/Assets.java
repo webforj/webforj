@@ -101,7 +101,7 @@ public class Assets {
       }
     }
 
-    String context = Environment.getContextPath();
+    String context = getFullContextPath();
     String fullUrl = context + "/" + url;
     return RouterUtils.normalizePath(fullUrl);
   }
@@ -219,7 +219,7 @@ public class Assets {
       url = RouterUtils.normalizePath(assetsDir);
     }
 
-    String context = Environment.getContextPath();
+    String context = getFullContextPath();
     String fullUrl = context + "/" + url;
     return RouterUtils.normalizePath(fullUrl);
   }
@@ -342,5 +342,24 @@ public class Assets {
 
     int lastDotIndex = fileName.lastIndexOf('.');
     return lastDotIndex == -1 ? "" : fileName.substring(lastDotIndex);
+  }
+
+  private static String getFullContextPath() {
+    String result = Environment.getContextPath();
+    if (Environment.isPresent()) {
+      Config config = Environment.getCurrent().getConfig();
+      String assetsDirProp = "webforj.assetsDir";
+      String assetsDir = config.hasPath(assetsDirProp) && !config.getIsNull(assetsDirProp)
+          ? config.getString(assetsDirProp)
+          : null;
+
+      if ("/".equals(assetsDir)) {
+        // remove the "/webforj" hardcoded part.
+        result = result.replace("/webforj", "");
+        result = RouterUtils.normalizePath(result + "/");
+      }
+    }
+
+    return result;
   }
 }
