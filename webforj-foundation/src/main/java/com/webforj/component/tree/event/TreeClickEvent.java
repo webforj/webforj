@@ -4,20 +4,20 @@ import com.webforj.component.tree.Tree;
 import java.util.Map;
 
 /**
- * An event which is fired when a tree node is double-clicked.
+ * An event which is fired when a tree node is clicked.
  *
  * @author Hyyan Abo Fakher
  * @since 25.01
  */
-public class TreeDoubleClickEvent extends TreeMouseEvent {
+public class TreeClickEvent extends TreeMouseEvent {
 
   /**
-   * Creates a new tree double-click event.
+   * Creates a new tree click event.
    *
    * @param component the component
    * @param eventMap the event map
    */
-  public TreeDoubleClickEvent(Tree component, Map<String, Object> eventMap) {
+  public TreeClickEvent(Tree component, Map<String, Object> eventMap) {
     super(component, eventMap);
   }
 }

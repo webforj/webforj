@@ -2,17 +2,17 @@ package com.webforj.component.tree.sink;
 
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.tree.Tree;
-import com.webforj.component.tree.event.TreeDoubleClickEvent;
+import com.webforj.component.tree.event.TreeClickEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import java.util.Map;
 
 /**
- * This class will map the BBjTreeMouseDoubleClickEvent event to a {@link TreeDoubleClickEvent}.
+ * This class will map the BBjTreeMouseUpEvent event to a {@link TreeClickEvent}.
  *
  * @author Hyyan Abo Fakher
  * @since 25.01
  */
-public class TreeDoubleClickEventSink extends TreeMouseEventSink {
+public class TreeClickEventSink extends TreeMouseEventSink {
 
   /**
    * Constructs a new {@code TreeClickEventSink}.
@@ -20,13 +20,13 @@ public class TreeDoubleClickEventSink extends TreeMouseEventSink {
    * @param component the Tree component
    * @param dispatcher the EventDispatcher
    */
-  public TreeDoubleClickEventSink(Tree component, EventDispatcher dispatcher) {
-    super(component, dispatcher, SysGuiEventConstants.ON_TREE_DOUBLE_CLICK);
+  public TreeClickEventSink(Tree component, EventDispatcher dispatcher) {
+    super(component, dispatcher, SysGuiEventConstants.ON_TREE_MOUSE_UP);
   }
 
   @Override
   void doHandleEvent(Map<String, Object> eventMap) {
-    TreeDoubleClickEvent javaEv = new TreeDoubleClickEvent((Tree) getComponent(), eventMap);
+    TreeClickEvent javaEv = new TreeClickEvent((Tree) getComponent(), eventMap);
     getEventDispatcher().dispatchEvent(javaEv);
   }
 }
