@@ -158,9 +158,9 @@ class TreeNodeTest {
       root.add(child);
 
       if (isAttached) {
-        verify(mockTree, times(1)).doInsert(child);
+        verify(mockTree, times(1)).doInsert(child, 0);
       } else {
-        verify(mockTree, never()).doInsert(child);
+        verify(mockTree, never()).doInsert(child, 0);
       }
     }
 

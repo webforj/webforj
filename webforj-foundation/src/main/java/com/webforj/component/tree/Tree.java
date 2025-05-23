@@ -1210,13 +1210,11 @@ public class Tree extends DwcFocusableComponent<Tree>
       doSetLeafSelectedIcon();
     }
 
-    root.getChildren().forEach(node -> {
-      try {
-        doInsert(node);
-      } catch (Exception e) {
-        throw new WebforjRuntimeException("Failed to build first rendering of the tree", e);
-      }
-    });
+    var children = root.getChildren();
+    for (int i = 0; i < children.size(); i++) {
+      TreeNode node = children.get(i);
+      doInsert(node, i);
+    }
 
     if (!selectedNodes.isEmpty()) {
       select(selectedNodes.toArray(new TreeNode[0]));
@@ -1302,7 +1300,7 @@ public class Tree extends DwcFocusableComponent<Tree>
     }
   }
 
-  void doInsert(TreeNode node) {
+  void doInsert(TreeNode node, int index) {
     if (!isAttached()) {
       return;
     }
@@ -1310,15 +1308,18 @@ public class Tree extends DwcFocusableComponent<Tree>
     TreeNode parent = node.getParent().orElse(root);
 
     try {
-      inferControl().addNode(node.getUniqueId(), parent.getUniqueId(), node.getText());
+      inferControl().insertNode(node.getUniqueId(), parent.getUniqueId(), node.getText(), index);
       doSetText(node);
       doSetTooltipText(node);
       doSetIcon(node);
       doSetSelectedIcon(node);
 
-      for (TreeNode child : node.getChildren()) {
-        doInsert(child);
+      var children = node.getChildren();
+      for (int i = 0; i < children.size(); i++) {
+        TreeNode child = children.get(i);
+        doInsert(child, i);
       }
+
     } catch (BBjException e) {
       throw new WebforjRuntimeException(formatNodeErrorMessage(node, "Failed to render node"), e);
     }
