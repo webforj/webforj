@@ -14,7 +14,7 @@
 
   <properties>
     <httpcore5.version>5.3.4</httpcore5.version>
-    <httpclient5.version>5.4.4</httpclient5.version>
+    <httpclient5.version>5.5</httpclient5.version>
     <arguments/>
   </properties>
   <dependencies>
