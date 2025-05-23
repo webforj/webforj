@@ -25,9 +25,22 @@ public final class ConceiverProvider {
    * @return the current {@link Conceiver}.
    */
   public static Conceiver getCurrent() {
+    ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+
+    if (tccl != null) {
+      ServiceLoader<Conceiver> tcclLoader = ServiceLoader.load(Conceiver.class, tccl);
+      Conceiver tcclConceiver = tcclLoader.findFirst().orElse(null);
+      if (tcclConceiver != null) {
+        return tcclConceiver;
+      }
+    }
+
+    // Fallback to ObjectTable caching mechanism
     if (!ObjectTable.contains(LOOKUP_KEY)) {
-      ServiceLoader<Conceiver> loader = ServiceLoader.load(Conceiver.class);
-      ObjectTable.put(LOOKUP_KEY, loader.findFirst().orElse(new DefaultConceiver()));
+      ServiceLoader<Conceiver> appClassLoaderLoader =
+          ServiceLoader.load(Conceiver.class, ConceiverProvider.class.getClassLoader());
+      ObjectTable.put(LOOKUP_KEY,
+          appClassLoaderLoader.findFirst().orElse(new DefaultConceiver()));
     }
 
     return (Conceiver) ObjectTable.get(LOOKUP_KEY);
