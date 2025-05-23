@@ -243,7 +243,7 @@ public final class TreeNode implements TreeNodeDelegate {
     children.add(index, child);
     child.parent = this;
     child.setTree(tree);
-    withTree(t -> t.doInsert(child));
+    withTree(t -> t.doInsert(child, index));
 
     return this;
   }

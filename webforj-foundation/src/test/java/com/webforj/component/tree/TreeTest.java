@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -824,10 +825,10 @@ class TreeTest {
       doReturn(true).when(tree).isAttached();
       tree.onAttach();
 
-      verify(mockBbjTree, times(1)).addNode(node1.getUniqueId(), tree.getUniqueId(),
-          node1.getText());
-      verify(mockBbjTree, times(1)).addNode(node2.getUniqueId(), node1.getUniqueId(),
-          node2.getText());
+      verify(mockBbjTree, times(1)).insertNode(node1.getUniqueId(), tree.getUniqueId(),
+          node1.getText(), 0);
+      verify(mockBbjTree, times(1)).insertNode(node2.getUniqueId(), node1.getUniqueId(),
+          node2.getText(), 0);
     }
 
     @Test
@@ -944,6 +945,148 @@ class TreeTest {
       assertEquals(1, tree.getEventListeners(TreeExpandEvent.class).size());
       assertEquals(1, tree.getEventListeners(TreeClickEvent.class).size());
       assertEquals(1, tree.getEventListeners(TreeDoubleClickEvent.class).size());
+    }
+  }
+
+  @Nested
+  class InsertionOrderTests {
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldPreserveInsertionOrderForAdd(boolean isAttached) throws Exception {
+      doReturn(isAttached).when(tree).isAttached();
+      TreeNode n1 = tree.add("A");
+      TreeNode n2 = tree.add("B");
+      TreeNode n3 = tree.add("C");
+      List<TreeNode> children = tree.getChildren();
+
+      assertEquals(3, children.size());
+      assertEquals(List.of(n1, n2, n3), children);
+      assertEquals("A", children.get(0).getText());
+      assertEquals("B", children.get(1).getText());
+      assertEquals("C", children.get(2).getText());
+
+      if (isAttached) {
+        tree.onAttach();
+        for (int i = 0; i < children.size(); i++) {
+          TreeNode node = children.get(i);
+          verify(mockBbjTree, times(1)).insertNode(node.getUniqueId(), tree.getUniqueId(),
+              node.getText(), i);
+        }
+      } else {
+        verify(mockBbjTree, never()).insertNode(anyInt(), anyInt(), any(), anyInt());
+      }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldPreserveInsertionOrderForInsert(boolean isAttached) throws Exception {
+      doReturn(isAttached).when(tree).isAttached();
+      TreeNode n1 = tree.add("A");
+      TreeNode n2 = tree.add("B");
+      TreeNode n3 = tree.insert(1, "X");
+      List<TreeNode> children = tree.getChildren();
+
+      assertEquals(3, children.size());
+      assertEquals(List.of(n1, n3, n2), children);
+      assertEquals("A", children.get(0).getText());
+      assertEquals("X", children.get(1).getText());
+      assertEquals("B", children.get(2).getText());
+
+      if (isAttached) {
+        tree.onAttach();
+        for (int i = 0; i < children.size(); i++) {
+          TreeNode node = children.get(i);
+          verify(mockBbjTree, times(1)).insertNode(node.getUniqueId(), tree.getUniqueId(),
+              node.getText(), i);
+        }
+      } else {
+        verify(mockBbjTree, never()).insertNode(anyInt(), anyInt(),
+            org.mockito.ArgumentMatchers.any(), anyInt());
+      }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldPreserveOrderWhenAddingMultipleNodes(boolean isAttached) throws Exception {
+      doReturn(isAttached).when(tree).isAttached();
+      TreeNode n1 = Tree.node("A");
+      TreeNode n2 = Tree.node("B");
+      TreeNode n3 = Tree.node("C");
+      tree.add(n1, n2, n3);
+      List<TreeNode> children = tree.getChildren();
+
+      assertEquals(3, children.size());
+      assertEquals(List.of(n1, n2, n3), children);
+      assertEquals("A", children.get(0).getText());
+      assertEquals("B", children.get(1).getText());
+      assertEquals("C", children.get(2).getText());
+
+      if (isAttached) {
+        tree.onAttach();
+        for (int i = 0; i < children.size(); i++) {
+          TreeNode node = children.get(i);
+          verify(mockBbjTree, times(1)).insertNode(node.getUniqueId(), tree.getUniqueId(),
+              node.getText(), i);
+        }
+      } else {
+        verify(mockBbjTree, never()).insertNode(anyInt(), anyInt(),
+            org.mockito.ArgumentMatchers.any(), anyInt());
+      }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldPreserveOrderWhenInsertingMultipleNodes(boolean isAttached) throws Exception {
+      doReturn(isAttached).when(tree).isAttached();
+      TreeNode n1 = Tree.node("A");
+      TreeNode n2 = Tree.node("B");
+      TreeNode n3 = Tree.node("C");
+      tree.add(n1);
+      tree.insert(0, n2, n3);
+      List<TreeNode> children = tree.getChildren();
+
+      assertEquals(3, children.size());
+      assertEquals(List.of(n2, n3, n1), children);
+      assertEquals("B", children.get(0).getText());
+      assertEquals("C", children.get(1).getText());
+      assertEquals("A", children.get(2).getText());
+
+      if (isAttached) {
+        tree.onAttach();
+        for (int i = 0; i < children.size(); i++) {
+          TreeNode node = children.get(i);
+          verify(mockBbjTree, times(1)).insertNode(node.getUniqueId(), tree.getUniqueId(),
+              node.getText(), i);
+        }
+      } else {
+        verify(mockBbjTree, never()).insertNode(anyInt(), anyInt(),
+            org.mockito.ArgumentMatchers.any(), anyInt());
+      }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldCallInsertNodeForNestedNodesInOrder(boolean isAttached) throws Exception {
+      doReturn(isAttached).when(tree).isAttached();
+      TreeNode parent = tree.add("Parent");
+      TreeNode child1 = parent.add("Child1");
+      TreeNode child2 = parent.add("Child2");
+      List<TreeNode> children = List.of(child1, child2);
+
+      if (isAttached) {
+        tree.onAttach();
+        verify(mockBbjTree, times(1)).insertNode(parent.getUniqueId(), tree.getUniqueId(),
+            parent.getText(), 0);
+        for (int childIndex = 0; childIndex < 2; childIndex++) {
+          TreeNode node = children.get(childIndex);
+          verify(mockBbjTree, times(1)).insertNode(node.getUniqueId(), parent.getUniqueId(),
+              node.getText(), childIndex);
+        }
+      } else {
+        verify(mockBbjTree, never()).insertNode(anyInt(), anyInt(),
+            org.mockito.ArgumentMatchers.any(), anyInt());
+      }
     }
   }
 }
