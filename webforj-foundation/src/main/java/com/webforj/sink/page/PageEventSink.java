@@ -1,6 +1,5 @@
 package com.webforj.sink.page;
 
-
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjWebEvent;
@@ -119,15 +118,11 @@ public class PageEventSink implements DwcEventSink<Page> {
   public void handleEvent(BBjEvent bbjEvent) {
     BBjWebEvent bbjWebEvent = (BBjWebEvent) bbjEvent;
     PageEvent event;
-    try {
-      int id = bbjWebEvent.getCallbackID();
-      PageEventOptions options = callbackOptionsMap.get(id);
+    int id = bbjWebEvent.getCallbackID();
+    PageEventOptions options = callbackOptionsMap.get(id);
 
-      event = new PageEvent(getComponent(), bbjWebEvent.getEventMap(), type, id, options);
-      getEventDispatcher().dispatchEvent(event);
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to dispatch PageEvent '" + type + "'", e);
-    }
+    event = new PageEvent(getComponent(), bbjWebEvent.getEventMap(), type, id, options);
+    getEventDispatcher().dispatchEvent(event);
   }
 
   /**
