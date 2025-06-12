@@ -13,7 +13,6 @@ import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.event.sink.AbstractDwcEventSink;
 import com.webforj.dispatcher.EventDispatcher;
-import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,16 +54,12 @@ public final class ElementEventSink extends AbstractDwcEventSink {
   public void handleEvent(BBjEvent bbjEvent) {
     BBjWebEvent bbjWebEvent = (BBjWebEvent) bbjEvent;
     ElementEvent event;
-    try {
-      int id = bbjWebEvent.getCallbackID();
-      ElementEventOptions options = callbackOptionsMap.get(id);
+    int id = bbjWebEvent.getCallbackID();
+    ElementEventOptions options = callbackOptionsMap.get(id);
 
-      event =
-          new ElementEvent((Element) getComponent(), bbjWebEvent.getEventMap(), type, id, options);
-      getEventDispatcher().dispatchEvent(event);
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException("Failed to dispatch WrappedElementEvent '" + type + "'", e);
-    }
+    event =
+        new ElementEvent((Element) getComponent(), bbjWebEvent.getEventMap(), type, id, options);
+    getEventDispatcher().dispatchEvent(event);
   }
 
   /**
