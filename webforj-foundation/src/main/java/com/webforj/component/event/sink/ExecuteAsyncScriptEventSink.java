@@ -3,11 +3,9 @@ package com.webforj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjExecuteScriptEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
-import com.basis.startup.type.BBjException;
 import com.webforj.component.DwcComponent;
 import com.webforj.component.event.ExecuteAsyncScriptEvent;
 import com.webforj.dispatcher.EventDispatcher;
-import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.HashMap;
 
 /**
@@ -32,14 +30,10 @@ public final class ExecuteAsyncScriptEventSink extends AbstractDwcEventSink {
     BBjExecuteScriptEvent event = (BBjExecuteScriptEvent) ev;
     HashMap<String, Object> map = new HashMap<>();
 
-    try {
-      map.put("index", event.getIndex());
-      map.put("result", event.getResult());
+    map.put("index", event.getIndex());
+    map.put("result", event.getResult());
 
-      ExecuteAsyncScriptEvent dwcEv = new ExecuteAsyncScriptEvent(getComponent(), map);
-      getEventDispatcher().dispatchEvent(dwcEv);
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException(e);
-    }
+    ExecuteAsyncScriptEvent dwcEv = new ExecuteAsyncScriptEvent(getComponent(), map);
+    getEventDispatcher().dispatchEvent(dwcEv);
   }
 }
