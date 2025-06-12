@@ -31,8 +31,8 @@ public class MavenBinaryInstaller {
   }
 
   static final String MVN_URL =
-      "https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.zip";
-  static final String BINDIR = "apache-maven-3.9.8";
+      "https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.zip";
+  static final String BINDIR = "apache-maven-3.9.10";
 
   /**
    * Fetches a copy of maven and installs it under the directory.
