@@ -22,19 +22,19 @@ public class SpringConceiver extends DefaultConceiver {
   public <T> T get(Class<T> classOfT) {
     ApplicationContext context = getApplicationContext();
 
-    logger.log(Logger.Level.DEBUG, "Getting bean of type {0} using SpringConceiver",
+    logger.log(Logger.Level.DEBUG, "Resolving instance of {0} via SpringConceiver",
         classOfT.getName());
 
     try {
       String[] beanNames = context.getBeanNamesForType(classOfT);
 
       if (beanNames.length == 1) {
-        logger.log(Logger.Level.DEBUG, "Found exactly one bean of type {0} in context",
-            classOfT.getName());
+        logger.log(Logger.Level.DEBUG,
+            "Located single bean of type {0}, returning existing instance", classOfT.getName());
         return context.getBean(classOfT);
       } else if (beanNames.length > 1) {
         logger.log(Logger.Level.DEBUG,
-            "Found {0} beans of type {1} in context, creating new instance", beanNames.length,
+            "Multiple beans ({0}) of type {1} detected, instantiating new object", beanNames.length,
             classOfT.getName());
         try {
           return context.getAutowireCapableBeanFactory().createBean(classOfT);
@@ -47,7 +47,7 @@ public class SpringConceiver extends DefaultConceiver {
         }
       } else {
         logger.log(Logger.Level.DEBUG,
-            "No bean of type {0} found in context, creating new instance", classOfT.getName());
+            "No existing bean of type {0} available, creating new instance", classOfT.getName());
         return context.getAutowireCapableBeanFactory().createBean(classOfT);
       }
     } catch (ConceiverException e) {
