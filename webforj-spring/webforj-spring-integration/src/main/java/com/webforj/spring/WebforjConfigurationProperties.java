@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Webforj boot configuration properties.
  *
  * @author Hyyan Abo Fakher
- * @since 25.00
+ * @since 25.02
  */
 @ConfigurationProperties(prefix = "webforj")
 public class WebforjConfigurationProperties {

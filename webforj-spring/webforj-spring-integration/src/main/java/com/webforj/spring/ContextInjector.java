@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * Injects the {@link ApplicationContext} into the {@link ContextHolder}.
  *
  * @author Hyyan Abo Fakher
- * @since 25.00
+ * @since 25.02
  */
 @Component
 public class ContextInjector implements ApplicationContextAware {

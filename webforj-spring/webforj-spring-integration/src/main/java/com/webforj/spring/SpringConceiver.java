@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
  * A spring conceiver that uses Spring to provide beans.
  *
  * @author Hyyan Abo Fakher
- * @since 25.00
+ * @since 25.02
  */
 public class SpringConceiver extends DefaultConceiver {
   Logger logger = System.getLogger(SpringConceiver.class.getName());

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * {@link com.webforj.component.Component}.
  *
  * @author Hyyan Abo Fakher
- * @since 25.00
+ * @since 25.02
  */
 @Target(java.lang.annotation.ElementType.TYPE)
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)

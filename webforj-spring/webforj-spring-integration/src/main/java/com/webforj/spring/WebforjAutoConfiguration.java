@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.00
+ * @since 25.02
  */
 @Configuration
 @ConditionalOnClass(ServletContextInitializer.class)

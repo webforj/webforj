@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Holds the {@link ApplicationContext} for the application.
  *
- * @since 25.00
+ * @since 25.02
  * @author Hyyan Abo Fakher
  */
 public class ContextHolder {
