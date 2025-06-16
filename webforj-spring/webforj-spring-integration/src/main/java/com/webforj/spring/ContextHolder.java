@@ -9,8 +9,6 @@ import org.springframework.context.ApplicationContext;
  * @author Hyyan Abo Fakher
  */
 public class ContextHolder {
-  // is this thread-safe ?
-  // adding "volatile" is not enough to make this field thread-safe.sonarqube(java:S3077)
   private static volatile ApplicationContext context;
 
   /**
@@ -18,7 +16,7 @@ public class ContextHolder {
    *
    * @param ctx the {@link ApplicationContext}.
    */
-  public static void setContext(ApplicationContext ctx) {
+  static void setContext(ApplicationContext ctx) {
     context = ctx;
   }
 
