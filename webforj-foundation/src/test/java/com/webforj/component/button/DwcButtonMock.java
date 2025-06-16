@@ -5,5 +5,7 @@ import com.webforj.component.window.Window;
 public class DwcButtonMock extends DwcButton<DwcButtonMock> {
 
   @Override
-  protected void onCreate(Window panel) {}
+  protected void onCreate(Window panel) {
+    // no-op
+  }
 }

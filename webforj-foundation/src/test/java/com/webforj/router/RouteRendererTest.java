@@ -76,7 +76,7 @@ class RouteRendererTest {
   }
 
   @AfterEach
-  public void teardown() {
+  void teardown() {
     mockedEnvironment.close();
     mockedConceiverProvider.close();
   }
@@ -253,7 +253,7 @@ class RouteRendererTest {
         assertTrue(result.isPresent());
         Set<Component> components = context.getAllComponents();
         HasComponentsParentView parent = (HasComponentsParentView) components.stream()
-            .filter(c -> c instanceof HasComponentsParentView).findFirst().get();
+            .filter(HasComponentsParentView.class::isInstance).findFirst().get();
 
         routeRenderer.render(ContactView.class, compositeResult -> {
           assertFalse(parent.hasComponent(result.get()));
@@ -273,7 +273,7 @@ class RouteRendererTest {
         assertTrue(result.isPresent());
         Set<Component> components = context.getAllComponents();
         CompositeParentView parent = (CompositeParentView) components.stream()
-            .filter(c -> c instanceof CompositeParentView).findFirst().get();
+            .filter(CompositeParentView.class::isInstance).findFirst().get();
 
         routeRenderer.render(ContactView.class, compositeResult -> {
           assertFalse(parent.hasComponent(result.get()));

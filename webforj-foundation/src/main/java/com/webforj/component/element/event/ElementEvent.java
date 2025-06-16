@@ -1,6 +1,5 @@
 package com.webforj.component.element.event;
 
-import com.webforj.component.Component;
 import com.webforj.component.element.Element;
 import com.webforj.component.event.ComponentEvent;
 import java.util.Map;

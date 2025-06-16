@@ -96,6 +96,7 @@ class ElementTest {
 
     @Test
     @DisplayName("Add Throws IllegalArgumentException for Component Without Control")
+    @SuppressWarnings("squid:S5778")
     void addThrowsExceptionIfNoControl() {
       ComponentMock child = new ComponentMock();
 

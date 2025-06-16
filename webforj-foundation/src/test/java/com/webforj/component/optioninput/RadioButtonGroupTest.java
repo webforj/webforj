@@ -249,15 +249,13 @@ class RadioButtonGroupTest {
           {new RadioButton("Option 1", false), new RadioButton("Options 2", true)};
       component.add(buttons);
 
-      RadioButton checked = component.getChecked();
+      component.getChecked();
       verify(bbjGroup, times(1)).getSelected();
     }
 
     @Test
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
     void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
-      RadioButton[] buttons =
-          {new RadioButton("Option 1", false), new RadioButton("Options 2", true)};
       doThrow(BBjException.class).when(bbjGroup).getSelected();
 
       assertThrows(WebforjRuntimeException.class, () -> component.getChecked());

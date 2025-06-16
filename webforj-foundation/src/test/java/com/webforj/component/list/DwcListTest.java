@@ -23,7 +23,6 @@ import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -124,7 +123,7 @@ class DwcListTest {
       assertTrue(component.containsKey("key-2"));
 
       verify(control, times(1)).insertItems(0,
-          new BBjVector(items.stream().map(ListItem::getText).collect(Collectors.toList())));
+          new BBjVector(items.stream().map(ListItem::getText).toList()));
 
       List<ListItem> newItems =
           List.of(new ListItem("key-3", "value-3"), new ListItem("key-4", "value-4"));
@@ -137,11 +136,12 @@ class DwcListTest {
       assertEquals("value-2", component.getByIndex(3).getText());
 
       verify(control, times(1)).insertItems(1,
-          new BBjVector(newItems.stream().map(ListItem::getText).collect(Collectors.toList())));
+          new BBjVector(newItems.stream().map(ListItem::getText).toList()));
     }
 
     @Test
     @DisplayName("should throw DwcjRuntimeException when BBjException is thrown")
+    @SuppressWarnings("squid:S5778")
     void shouldThrowDwcjRuntimeExceptionOnBBjException() throws BBjException {
       doThrow(BBjException.class).when(control).insertItems(anyInt(), any(BBjVector.class));
 
@@ -150,6 +150,7 @@ class DwcListTest {
 
     @Test
     @DisplayName("should throw IndexOutOfBoundsException when index is out of bounds")
+    @SuppressWarnings("squid:S5778")
     void shouldThrowIndexOutOfBoundsExceptionOnInvalidIndex() {
       assertThrows(IndexOutOfBoundsException.class, () -> component.insert(-1, new ArrayList<>()));
     }
@@ -162,6 +163,7 @@ class DwcListTest {
 
     @Test
     @DisplayName("should throw NullPointerException when items list contains a null item")
+    @SuppressWarnings("squid:S5778")
     void shouldThrowNullPointerExceptionOnNullItemInItemList() {
       assertThrows(NullPointerException.class,
           () -> component.insert(0, List.of(new ListItem("key", "value"), null)));
@@ -173,7 +175,7 @@ class DwcListTest {
   class GetApi {
     @Test
     @DisplayName("should get item by key")
-    void shouldGetItemByKey() throws BBjException {
+    void shouldGetItemByKey() {
       component.add("key", "value");
 
       assertEquals("value", component.get("key").getText());
@@ -181,7 +183,7 @@ class DwcListTest {
 
     @Test
     @DisplayName("should get item by index")
-    void shouldGetItemByIndex() throws BBjException {
+    void shouldGetItemByIndex() {
       component.add("key", "value");
 
       assertEquals("value", component.getByIndex(0).getText());
@@ -207,6 +209,7 @@ class DwcListTest {
 
     @Test
     @DisplayName("iterator should be Unmodifiable")
+    @SuppressWarnings("squid:S5778")
     void iteratorShouldBeUnmodifiable() {
       component.add("key-1", "value-1");
       component.add("key-2", "value-2");
@@ -217,6 +220,7 @@ class DwcListTest {
 
     @Test
     @DisplayName("getItems should return unmodifiable list")
+    @SuppressWarnings("squid:S5778")
     void getItemsShouldReturnUnmodifiableList() {
       component.add("key", "value");
 
@@ -245,7 +249,7 @@ class DwcListTest {
 
     @Test
     @DisplayName("should remove item by key")
-    void shouldRemoveItemByKey() throws BBjException {
+    void shouldRemoveItemByKey() {
       DwcListMock spy = spy(component);
       spy.add("key-1", "value-1");
       spy.add("key-2", "value-2");
@@ -357,7 +361,7 @@ class DwcListTest {
 
   @Test
   @DisplayName("should get selected item when control is not defined")
-  void shouldGetSelectedItemWhenControlIsNotDefined() throws BBjException, IllegalAccessException {
+  void shouldGetSelectedItemWhenControlIsNotDefined() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
     component.add("key-1", "value-1");
     component.add("key-2", "value-2");

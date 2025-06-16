@@ -1,12 +1,15 @@
 package com.webforj.component.table;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
+import com.webforj.component.element.annotation.PropertyExclude;
 import com.webforj.component.html.HtmlComponent;
 import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.component.table.event.cell.TableCellClickEvent;
@@ -22,6 +25,7 @@ import com.webforj.data.concern.ValueAware;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.HasRepository;
+import com.webforj.data.repository.OrderCriteria;
 import com.webforj.data.repository.OrderCriteriaList;
 import com.webforj.data.repository.Repository;
 import com.webforj.data.repository.event.RepositoryCommitEvent;
@@ -32,11 +36,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,7 +88,6 @@ import java.util.stream.Stream;
 @NodeName("dwc-table")
 public final class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T>,
     MultipleSelectableRepository<Table<T>, T>, ValueAware<Table<T>, List<T>> {
-
   /**
    * The selection mode for the table.
    */
@@ -105,16 +111,54 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     NONE
   }
 
+  /**
+   * The supported border types for the table.
+   */
+  public enum Border {
+    /**
+     * Draw border between columns.
+     */
+    COLUMNS,
+    /**
+     * Draw border between rows.
+     */
+    ROWS,
+    /**
+     * Draw border around the table.
+     */
+    AROUND
+  }
+
+  private static final record ClientItem(String id, JsonObject data, JsonArray rowParts,
+      JsonObject cellParts) {}
+
+  private static final String GET_ROW_ID_EXP = "row.data.__APPID__";
+  private static final String GET_ROW_PART_EXP = """
+      table.__rowPart__ = table.__rowPart__ || {};
+      if(table.__rowPart__[row.id] !== undefined) {
+        return table.__rowPart__[row.id];
+      }
+
+      return undefined;
+      """;
+  private static final String GET_CELL_PART_EXP = """
+      table.__cellPart__ = table.__cellPart__ || {};
+      table.__cellPart__[cell.row.id] = table.__cellPart__[cell.row.id] || {};
+      if(table.__cellPart__[cell.row.id][cell.id] !== undefined) {
+        return table.__cellPart__[cell.row.id][cell.id];
+      }
+      """;
+
+  private final Gson gson = new Gson();
   private final EntityKeysRegistry keyRegistry = new EntityKeysRegistry();
+  private final List<Column<T, ?>> columns = new ArrayList<>();
+  private final Set<String> selectedKeys = new HashSet<>();
   private Repository<T> repository = new CollectionRepository<>(Collections.emptyList());
-  private List<Column<T, ?>> columns = new ArrayList<>();
-  private Set<String> selectedKeys = new HashSet<>();
-  private OrderCriteriaList<T> orderCriteriaList = new OrderCriteriaList<>();
-  private EventListener<TableSortChangeEvent<T>> handleSortChangedListener =
-      this::handleSortChanged;
-  private ListenerRegistration<TableSortChangeEvent<T>> handleSortChangedListenerRegistration =
-      null;
   private boolean registeredValueChangeListener = false;
+  private Function<T, List<String>> rowPartProvider = item -> Collections.emptyList();
+  private BiFunction<T, Column<T, ?>, List<String>> cellPartProvider =
+      (item, column) -> Collections.emptyList();
+  private Set<Border> visibleBorders = EnumSet.of(Border.ROWS, Border.AROUND);
 
   // Internal properties
   private final PropertyDescriptor<List<Column<T, ?>>> columnDefinitionsProp =
@@ -122,7 +166,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private final PropertyDescriptor<JsonArray> dataProp =
       PropertyDescriptor.property("data", new JsonArray());
   private final PropertyDescriptor<String> getRowIdProp =
-      PropertyDescriptor.property("getRowId", "row.data.__APPID__");
+      PropertyDescriptor.property("getRowId", "");
   private final PropertyDescriptor<Set<String>> selectedProp =
       PropertyDescriptor.property("selected", Collections.emptySet());
 
@@ -144,14 +188,33 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   private final PropertyDescriptor<Double> overscan = PropertyDescriptor.property("overscan", 35d);
   private final PropertyDescriptor<Boolean> clientSorting =
       PropertyDescriptor.property("clientSorting", false);
+  private final PropertyDescriptor<Boolean> multiSorting =
+      PropertyDescriptor.property("multiSorting", true);
+  @PropertyExclude
+  private final PropertyDescriptor<String> getRowPart =
+      PropertyDescriptor.property("getRowPart", "");
+  @PropertyExclude
+  private final PropertyDescriptor<String> getCellPart =
+      PropertyDescriptor.property("getCellPart", "");
+  @PropertyExclude
+  private final PropertyDescriptor<Boolean> border = PropertyDescriptor.property("border", true);
+  @PropertyExclude
+  private final PropertyDescriptor<Boolean> columnsBorder =
+      PropertyDescriptor.property("columnsBorder", false);
+  @PropertyExclude
+  private final PropertyDescriptor<Boolean> rowsBorder =
+      PropertyDescriptor.property("rowsBorder", true);
+  private final PropertyDescriptor<Boolean> striped = PropertyDescriptor.property("striped", false);
 
   /**
    * Construct a new Table.
    */
   public Table() {
     super();
-    set(getRowIdProp, getRowIdProp.getDefaultValue());
-    getElement().whenDefined().thenAccept(this::onInit).exceptionally(this::onInitFailed);
+    set(getRowIdProp, GET_ROW_ID_EXP);
+    set(getRowPart, GET_ROW_PART_EXP);
+    set(getCellPart, GET_CELL_PART_EXP);
+    el().whenDefined().thenAccept(this::onInit).exceptionally(this::onInitFailed);
   }
 
   /**
@@ -235,6 +298,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    *
    * @return the column with the given id
    */
+  @SuppressWarnings("squid:S1452")
   public Column<T, ?> getColumnById(String id) {
     return columns.stream().filter(column -> column.getId().equals(id)).findFirst().orElse(null);
   }
@@ -279,6 +343,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    *
    * @return the columns
    */
+  @SuppressWarnings("squid:S1452")
   public List<Column<T, ?>> getColumns() {
     return Collections.unmodifiableList(columns);
   }
@@ -317,7 +382,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   public Table<T> setItems(Collection<T> rows) {
     this.setRepository(new CollectionRepository<>(rows));
-    if (getElement().isDefined()) {
+    if (el().isDefined()) {
       refreshItems();
     }
 
@@ -357,7 +422,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> refreshColumns() {
-    if (getElement().isDefined()) {
+    if (el().isDefined()) {
       set(columnDefinitionsProp, columns);
     }
 
@@ -370,8 +435,22 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> refreshItems() {
-    if (getElement().isDefined()) {
-      set(dataProp, buildData());
+    if (el().isDefined()) {
+      List<ClientItem> clientData = buildData();
+      JsonArray data = new JsonArray();
+      JsonObject rowParts = new JsonObject();
+      JsonObject cellParts = new JsonObject();
+
+      clientData.forEach(item -> {
+        JsonObject row = item.data();
+        data.add(row);
+        rowParts.add(item.id(), item.rowParts());
+        cellParts.add(item.id(), item.cellParts());
+      });
+
+      getElement().setProperty("__rowPart__", rowParts);
+      getElement().setProperty("__cellPart__", cellParts);
+      set(dataProp, data);
     }
 
     return this;
@@ -395,8 +474,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> selectAll() {
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("selectAll");
+    if (el().isDefined()) {
+      el().callJsFunction("selectAll");
     } else {
       Set<String> appKeys = getRepository().findAll().map(x -> getItemKeysRegistry().getKey(x))
           .collect(Collectors.toSet());
@@ -415,8 +494,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   public Table<T> selectKey(Object... keys) {
     selectedKeys.addAll(new HashSet<>(Arrays.asList(mapKeys(keys))));
 
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("select", selectedKeys);
+    if (el().isDefined()) {
+      el().callJsFunction("select", selectedKeys);
     } else {
       set(selectedProp, selectedKeys);
     }
@@ -461,8 +540,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   public Table<T> deselectAll() {
     selectedKeys.clear();
 
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("deselectAll");
+    if (el().isDefined()) {
+      el().callJsFunction("deselectAll");
     } else {
       set(selectedProp, selectedKeys);
     }
@@ -478,8 +557,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     Set<Object> idsSet = new HashSet<>(Arrays.asList(mapKeys(key)));
     selectedKeys.removeAll(idsSet);
 
-    if (getElement().isDefined()) {
-      getElement().callJsFunction("deselect", idsSet);
+    if (el().isDefined()) {
+      el().callJsFunction("deselect", idsSet);
     } else {
       set(selectedProp, selectedKeys);
     }
@@ -652,20 +731,34 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    * @return the component itself
    */
   public Table<T> setClientSorting(boolean enabled) {
-    // enable or disable server sorting listener
-    if (enabled) {
-      if (handleSortChangedListenerRegistration != null) {
-        handleSortChangedListenerRegistration.remove();
-        handleSortChangedListenerRegistration = null;
-      }
-    } else {
-      if (handleSortChangedListenerRegistration == null) {
-        handleSortChangedListenerRegistration = addSortChangeListener(handleSortChangedListener);
-      }
-    }
-
     set(clientSorting, enabled);
     return this;
+  }
+
+  /**
+   * Enables or disables multi-column sorting.
+   *
+   * <p>
+   * By default, only one column can be sorted at a time. Clicking on a column header will sort the
+   * column and remove the sorting from the other columns. Setting this property to {@code true}
+   * allows multiple columns to be sorted at once.
+   * </p>
+   *
+   * @param value {@code false} to disable multi-column sorting, {@code true} to enable
+   * @return the component itself
+   */
+  public Table<T> setMultiSorting(boolean value) {
+    set(multiSorting, value);
+    return this;
+  }
+
+  /**
+   * Checks if multiple columns can be sorted at once.
+   *
+   * @return {@code false} if only one column can be sorted at a time, {@code true} otherwise
+   */
+  public boolean isMultiSorting() {
+    return get(multiSorting);
   }
 
   /**
@@ -791,6 +884,118 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   public boolean isMultiSelectWithClick() {
     return get(multiSelectWithClickProp);
+  }
+
+  /**
+   * Sets the row part provider.
+   *
+   * <p>
+   * The row part provider is a function that takes an item and returns a list of strings
+   * representing the CSS parts of the row. This is useful for customizing the appearance of
+   * individual rows based on their data. Row parts are refreshed when the table is refreshed or a
+   * specific row is updated.
+   * </p>
+   *
+   * @param provider the row part provider
+   * @return the component itself
+   */
+  public Table<T> setRowPartProvider(Function<T, List<String>> provider) {
+    this.rowPartProvider = provider;
+    return this;
+  }
+
+  /**
+   * Gets the row part provider.
+   *
+   * @return the row part provider
+   * @see #setRowPartProvider(Function)
+   */
+  public Function<T, List<String>> getRowPartProvider() {
+    return rowPartProvider;
+  }
+
+  /**
+   * Sets the cell part provider.
+   *
+   * <p>
+   * The cell part provider is a function that takes an item and a column and returns a list of
+   * strings representing the CSS parts of the cell. This is useful for customizing the appearance
+   * of individual cells based on their data. Cell parts are refreshed when the table is refreshed
+   * or a specific cell is updated.
+   * </p>
+   *
+   * @param provider the cell part provider
+   * @return the component itself
+   */
+  public Table<T> setCellPartProvider(BiFunction<T, Column<T, ?>, List<String>> provider) {
+    this.cellPartProvider = provider;
+    return this;
+  }
+
+  /**
+   * Gets the cell part provider.
+   *
+   * @return the cell part provider
+   * @see #setCellPartProvider(BiFunction)
+   */
+  @SuppressWarnings("squid:S1452")
+  public BiFunction<T, Column<T, ?>, List<String>> getCellPartProvider() {
+    return cellPartProvider;
+  }
+
+  /**
+   * Sets the visible borders of the table.
+   *
+   * <p>
+   * The visible borders are the borders that are drawn around the table and between the rows and
+   * columns. The default value is {@link Border#ROWS} and {@link Border#AROUND}.
+   * </p>
+   *
+   * @param value A set of borders to be drawn.
+   * @return the component itself
+   */
+  public Table<T> setBordersVisible(Set<Border> value) {
+    this.visibleBorders = value;
+    set(border, value.contains(Border.AROUND));
+    set(columnsBorder, value.contains(Border.COLUMNS));
+    set(rowsBorder, value.contains(Border.ROWS));
+
+    return this;
+  }
+
+  /**
+   * Gets the visible borders of the table.
+   *
+   * @return A set of borders to be drawn.
+   */
+  public Set<Border> getBordersVisible() {
+    return visibleBorders;
+  }
+
+  /**
+   * Sets Whether a background is provided for every other row.
+   *
+   * <p>
+   * The striped property is used to apply a background color to every other row in the table,
+   * creating a striped effect. This can improve readability by making it easier to distinguish
+   * between adjacent rows of data.
+   * </p>
+   *
+   * @param value {@code true} to enable striped rows, {@code false} to disable
+   * @return the component itself
+   */
+  public Table<T> setStriped(boolean value) {
+    set(striped, value);
+    return this;
+  }
+
+  /**
+   * Checks if the striped rows are enabled.
+   *
+   * @return {@code true} if the striped rows are enabled, {@code false} otherwise
+   */
+  public boolean isStriped() {
+    return get(striped);
   }
 
   /**
@@ -1000,17 +1205,13 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     getItemKeysRegistry().cleanUp();
     columns.clear();
     selectedKeys.clear();
-    orderCriteriaList.clear();
     repository = null;
   }
 
   void onInit(Element el) {
     this.refresh();
     set(selectedProp, selectedKeys);
-
-    if (!isClientSorting()) {
-      handleSortChangedListenerRegistration = addSortChangeListener(handleSortChangedListener);
-    }
+    addSortChangeListener(this::handleSortChanged);
   }
 
   Void onInitFailed(Throwable e) {
@@ -1019,24 +1220,62 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     return null;
   }
 
-  JsonArray buildData() {
-    Stream<T> data = repository.findAll();
-    JsonArray populated = new JsonArray();
+  /**
+   * Gets the order criteria list for the table.
+   *
+   * @return the order criteria list
+   */
+  OrderCriteriaList<T> getOrderCriteriaList() {
+    OrderCriteriaList<T> criterion = new OrderCriteriaList<>();
+    // create a copy of columns sorted based on the sortIndex
+    List<Column<T, ?>> sortedColumns = new ArrayList<>(columns);
+    sortedColumns.sort(Comparator.comparingInt(Column::getSortIndex));
 
-    data.forEach(row -> {
-      JsonObject rowJson = buildItem(row);
-      populated.add(rowJson);
-    });
+    // iterate over the sorted columns and add the order criteria
+    for (Column<T, ?> column : sortedColumns) {
+      if (column.getSortDirection().equals(Column.SortDirection.NONE)) {
+        continue;
+      }
 
-    return populated;
+      OrderCriteria.Direction direction =
+          column.getSortDirection().equals(Column.SortDirection.ASC) ? OrderCriteria.Direction.ASC
+              : OrderCriteria.Direction.DESC;
+      Function<T, ?> valueProvider = column.getValueProvider();
+      Comparator<T> comparator = column.getComparator();
+      OrderCriteria<T, ?> serverCriteria =
+          new OrderCriteria<>(valueProvider, direction, comparator);
+
+      criterion.add(serverCriteria);
+    }
+
+    return criterion;
   }
 
-  JsonObject buildItem(T item) {
-    JsonObject rowJson = new JsonObject();
+  List<ClientItem> buildData() {
+    if (!isClientSorting()) {
+      repository.getOrderCriteriaList().set(getOrderCriteriaList());
+    }
+
+    Stream<T> data = repository.findAll();
+    List<ClientItem> items = new ArrayList<>();
+    data.forEach(row -> items.add(buildItem(row)));
+
+    return items;
+  }
+
+  ClientItem buildItem(T item) {
+    String id = getItemKeysRegistry().getKey(item);
+    JsonObject data = new JsonObject();
+    JsonArray rowParts = new JsonArray();
+    JsonObject cellParts = new JsonObject();
+
+    data.addProperty("__APPID__", id);
 
     for (Column<T, ?> column : columns) {
-      String id = column.getId();
+      String columnId = column.getId();
       Object value = column.getValue(item);
+
+      data.addProperty(columnId, String.valueOf(value));
 
       if (column.getClientType() == null && value != null) {
         // try to determine the type of the column
@@ -1044,35 +1283,72 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
         column.figureClientType(type);
       }
 
-      rowJson.addProperty(id, String.valueOf(value));
+      // populate the cell parts
+      List<String> cellPartsList = cellPartProvider.apply(item, column);
+      if (cellPartsList != null && !cellPartsList.isEmpty()) {
+        JsonElement cellPartsJson = gson
+            .toJsonTree(cellPartsList, new TypeToken<List<String>>() {}.getType()).getAsJsonArray();
+        String cellId = String.format("%s-%s", id, columnId);
+        cellParts.add(cellId, cellPartsJson);
+      }
     }
 
-    // add __APPID__ to the row
-    rowJson.addProperty("__APPID__", getItemKeysRegistry().getKey(item));
+    // Populate rowParts
+    List<String> parts = rowPartProvider.apply(item);
+    if (parts != null && !parts.isEmpty()) {
+      rowParts =
+          gson.toJsonTree(parts, new TypeToken<List<String>>() {}.getType()).getAsJsonArray();
+    }
 
-    return rowJson;
+    return new ClientItem(id, data, rowParts, cellParts);
+
   }
 
   void handleRepositoryCommit(RepositoryCommitEvent<T> ev) {
-    if (ev.isSingleCommit()) {
-      // update a single item
-      Element el = getElement();
-      if (el.isDefined()) {
-        T commit = ev.getFirstCommit();
-        Object key = getRepository().getKey(commit);
-        String[] keys = mapKeys(key);
-
-        el.callJsFunctionAsync("updateRow", keys[0], buildItem(commit));
-      }
-    } else {
+    if (!ev.isSingleCommit()) {
       refresh();
+      return;
     }
+
+    Element el = el();
+    if (!el.isDefined()) {
+      return;
+    }
+
+    // update a single item
+    T commit = ev.getFirstCommit();
+    Object key = getRepository().getKey(commit);
+    String[] keys = mapKeys(key);
+
+    ClientItem clientItem = buildItem(commit);
+
+    // refresh row parts
+    JsonArray rowParts = clientItem.rowParts();
+    if (rowParts != null && !rowParts.isEmpty()) {
+      String script = String.format("""
+          component.__rowPart__ = component.__rowPart__ || {};
+          component.__rowPart__['%s'] = %s;
+          """, keys[0], rowParts.toString());
+      el.executeJsVoidAsync(script);
+    }
+
+    // refresh cell parts
+    JsonObject cellParts = clientItem.cellParts();
+    if (cellParts != null && !cellParts.isEmpty()) {
+      String script = String.format("""
+          component.__cellPart__ = component.__cellPart__ || {};
+          component.__cellPart__['%s'] = %s;
+          """, keys[0], cellParts);
+      el.executeJsVoidAsync(script);
+    }
+
+    el.callJsFunctionVoidAsync("updateRow", keys[0], clientItem.data());
   }
 
   void handleSortChanged(TableSortChangeEvent<T> e) {
     Map<String, String> clientCriterion = e.getClientCriterion();
+    List<String> sortedColumnIds = new ArrayList<>(clientCriterion.keySet());
 
-    // update the columns with the new sort directions
     for (Column<T, ?> column : getColumns()) {
       String id = column.getId();
       String direction = clientCriterion.get(id);
@@ -1080,17 +1356,22 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
       if (direction != null) {
         column.setSortDirection("asc".equalsIgnoreCase(direction) ? Column.SortDirection.ASC
             : Column.SortDirection.DESC);
+
+        int index = sortedColumnIds.indexOf(id);
+        if (index == -1) {
+          throw new IllegalStateException("The column " + id + " is not in the sorted columns");
+        }
+
+        column.setSortIndex(index + 1);
       } else {
         column.setSortDirection(Column.SortDirection.NONE);
+        column.setSortIndex(0);
       }
     }
 
-    orderCriteriaList.set(e.getOrderCriteriaList());
-
-    Repository<T> repo = getRepository();
-    repo.getOrderCriteriaList().set(e.getOrderCriteriaList());
-
-    repo.commit();
+    if (!isClientSorting()) {
+      getRepository().commit();
+    }
   }
 
   String[] mapKeys(Object... keys) {
@@ -1111,5 +1392,9 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     }
 
     return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
+
+  Element el() {
+    return getElement();
   }
 }

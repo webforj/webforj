@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+
 import com.webforj.component.table.Table;
 import com.webforj.component.table.event.renderer.RendererChangeEvent;
 import com.webforj.component.table.event.renderer.RendererClickEvent;
-import com.webforj.component.table.renderer.AbstractVoidElementRenderer;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;

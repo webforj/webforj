@@ -60,7 +60,11 @@ public abstract class NamespaceEventSink implements DwcEventSink<Namespace> {
   public final void removeCallback(String id) {
     if (isConnected()) {
       try {
-        doRemoveCallback(namespace.getBbjNamespace());
+        // check the event dispatcher has zero listeners left
+        // before removing the callback
+        if (getEventDispatcher().getCount(NamespaceEvent.class) == 0) {
+          doRemoveCallback(namespace.getBbjNamespace());
+        }
       } catch (BBjException e) {
         throw new WebforjRuntimeException("Failed to remove BBjNamespace callback.", e);
       }

@@ -17,5 +17,7 @@ public class RadioButtonEventSinkMock extends AbstractRadioButtonEventSink {
   }
 
   @Override
-  public void handleEvent(BBjEvent ev) {}
+  public void handleEvent(BBjEvent ev) {
+    // no-op
+  }
 }

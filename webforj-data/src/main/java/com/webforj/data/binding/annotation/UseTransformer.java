@@ -20,6 +20,7 @@ public @interface UseTransformer {
    * The transformer class to use for transforming the value. The transformer class must implement
    * the {@link Transformer} interface.
    */
+  @SuppressWarnings("squid:S1452")
   Class<? extends Transformer<?, ?>> value();
 
   /**

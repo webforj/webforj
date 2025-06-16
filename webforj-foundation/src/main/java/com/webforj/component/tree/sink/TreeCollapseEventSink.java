@@ -1,37 +1,42 @@
 package com.webforj.component.tree.sink;
 
+import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjTreeNodeCollapsedEvent;
-import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.webforj.Environment;
-import com.webforj.bridge.ComponentAccessor;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
+import com.webforj.component.event.sink.AbstractDwcEventSink;
 import com.webforj.component.tree.Tree;
 import com.webforj.component.tree.event.TreeCollapseEvent;
+import com.webforj.dispatcher.EventDispatcher;
+import java.util.HashMap;
 
-import java.util.function.Consumer;
+/**
+ * This class will map the BBjTreeNodeCollapsedEvent event to a {@link TreeCollapseEvent}.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 25.01
+ */
+public class TreeCollapseEventSink extends AbstractDwcEventSink {
 
-public class TreeCollapseEventSink {
-
-  private final Consumer<TreeCollapseEvent> target;
-
-  private final Tree tree;
-
-  @SuppressWarnings({"static-access"})
-  public TreeCollapseEventSink(Tree tree, Consumer<TreeCollapseEvent> target) {
-    this.target = target;
-    this.tree = tree;
-
-    BBjControl bbjctrl = null;
-    try {
-      bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_COLLAPSE,
-          Environment.getCurrent().getBridge().getEventProxy(this, "collapseEvent"), "onEvent");
-    } catch (Exception e) {
-      Environment.logError(e);
-    }
+  /**
+   * Constructs a new TreeCollapseEventSink with the given component and dispatcher.
+   *
+   * @param component the Tree component
+   * @param dispatcher the EventDispatcher
+   */
+  public TreeCollapseEventSink(Tree component, EventDispatcher dispatcher) {
+    super(component, dispatcher, SysGuiEventConstants.ON_TREE_COLLAPSE);
   }
 
-  public void collapseEvent(BBjTreeNodeCollapsedEvent ev) { // NOSONAR
-    TreeCollapseEvent dwcEv = new TreeCollapseEvent(this.tree);
-    target.accept(dwcEv);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void handleEvent(BBjEvent ev) {
+    BBjTreeNodeCollapsedEvent event = (BBjTreeNodeCollapsedEvent) ev;
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("id", event.getNodeID());
+
+    TreeCollapseEvent javaEv = new TreeCollapseEvent((Tree) getComponent(), map);
+    getEventDispatcher().dispatchEvent(javaEv);
   }
 }

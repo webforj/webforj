@@ -1,6 +1,5 @@
 package com.webforj.component.button.event;
 
-import com.webforj.component.Component;
 import com.webforj.component.button.DwcButton;
 import com.webforj.component.event.ComponentEvent;
 import java.util.Map;

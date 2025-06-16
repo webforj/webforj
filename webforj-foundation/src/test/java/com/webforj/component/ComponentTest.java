@@ -62,7 +62,7 @@ class ComponentTest {
 
   @Test
   @DisplayName("Test isAttached")
-  void testIsAttached() throws IllegalAccessException {
+  void testIsAttached() {
     assertFalse(component.isAttached());
 
     component.create(mock(Window.class));
@@ -71,7 +71,7 @@ class ComponentTest {
 
   @Test
   @DisplayName("Test getWindow")
-  void testGetWindow() throws IllegalAccessException {
+  void testGetWindow() {
     assertNull(component.getWindow());
 
     component.create(mock(Window.class));
@@ -80,7 +80,7 @@ class ComponentTest {
 
   @Test
   @DisplayName("If a component is destroyed, it cannot be created again")
-  void testComponentCreateThrowsIllegalAccessExceptionIfDestroyed() throws IllegalAccessException {
+  void testComponentCreateThrowsIllegalAccessExceptionIfDestroyed() {
     Window window = mock(Window.class);
 
     component.create(window);
@@ -92,7 +92,7 @@ class ComponentTest {
 
   @Test
   @DisplayName("Test component lifecycle methods")
-  void testComponentLifecycleMethods() throws IllegalAccessException {
+  void testComponentLifecycleMethods() {
     ComponentMock spy = spy(ComponentMock.class);
     Window window = mock(Window.class);
 
@@ -107,7 +107,7 @@ class ComponentTest {
 
   @Test
   @DisplayName("Test Lifecycle observers")
-  void testNotifyLifecycleObservers() throws IllegalAccessException {
+  void testNotifyLifecycleObservers() {
     ComponentLifecycleObserver observer = mock(ComponentLifecycleObserver.class);
 
     component.addLifecycleObserver(observer);
@@ -130,7 +130,7 @@ class ComponentTest {
 
   @Test
   @DisplayName("whenAttached should complete when component is attached")
-  void testWhenAttachedCompletesUponAttachment() throws InterruptedException {
+  void testWhenAttachedCompletesUponAttachment() {
     PendingResult<Component> result = component.whenAttached();
 
     assertFalse(result.isDone());

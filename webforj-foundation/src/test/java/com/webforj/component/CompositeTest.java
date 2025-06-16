@@ -87,6 +87,7 @@ class CompositeTest {
 
   private static class NoArgConstructorComponent extends Composite<Element> {
 
+    @SuppressWarnings("unused")
     public NoArgConstructorComponent(String arg) {
       // pass
     }

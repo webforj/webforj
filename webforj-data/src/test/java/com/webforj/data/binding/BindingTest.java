@@ -276,12 +276,12 @@ class BindingTest {
 
   @Nested
   class AutoValidateAutoWriteApi {
-    final String NAME_SHORT = "Name is too short";
+    static final String NAME_SHORT = "Name is too short";
 
     @BeforeEach
     void setup() {
       fieldBinding.setReporter(new DefaultBindingReporter<>());
-      fieldBinding.setAutoValidate(true);;
+      fieldBinding.setAutoValidate(true);
       fieldBinding.addValidator(Validator.of(value -> value.length() > 5, NAME_SHORT));
     }
 
@@ -297,28 +297,28 @@ class BindingTest {
 
     @Test
     void shouldAutoWrite() {
-      PersonBean bean = new PersonBean();
-      fieldBinding.setAutoWrite(bean);
+      PersonBean localBean = new PersonBean();
+      fieldBinding.setAutoWrite(localBean);
 
       mockComponent.setValue("Foo bar");
-      assertEquals("Foo bar", bean.getName());
+      assertEquals("Foo bar", localBean.getName());
 
       mockComponent.setValue("Foo");
-      assertEquals("Foo bar", bean.getName());
+      assertEquals("Foo bar", localBean.getName());
     }
 
     @Test
     void shouldAlwaysValidateWhenAutoWrite() {
       fieldBinding.setAutoValidate(false);
 
-      PersonBean bean = new PersonBean();
-      fieldBinding.setAutoWrite(bean);
+      PersonBean localBean = new PersonBean();
+      fieldBinding.setAutoWrite(localBean);
 
       mockComponent.setValue("Foo bar");
-      assertEquals("Foo bar", bean.getName());
+      assertEquals("Foo bar", localBean.getName());
 
       mockComponent.setValue("Foo");
-      assertEquals("Foo bar", bean.getName());
+      assertEquals("Foo bar", localBean.getName());
     }
   }
 }

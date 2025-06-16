@@ -291,7 +291,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
       return restrictedProperties.stream().map(property -> {
         String[] words = property.split("(?=\\p{Upper})");
         return Arrays.stream(words).map(String::toLowerCase).collect(Collectors.joining("-"));
-      }).collect(Collectors.toList());
+      }).toList();
     }
 
     return new ArrayList<>();
@@ -895,9 +895,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return the component itself.
    */
   protected T setComponentReadOnly(boolean readOnly) {
-    if (control instanceof Editable) {
+    if (control instanceof Editable editable) {
       try {
-        ((Editable) control).setEditable(!readOnly);
+        editable.setEditable(!readOnly);
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
@@ -913,9 +913,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return true if the user cannot edit the component, false if editing is allowed.
    */
   protected boolean isComponentReadOnly() {
-    if (control instanceof Editable) {
+    if (control instanceof Editable editable) {
       try {
-        return !((Editable) control).isEditable();
+        return !editable.isEditable();
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
@@ -954,8 +954,8 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   protected T setComponentHighlightOnFocus(HasHighlightOnFocus.Behavior behavior) {
     if (control != null) {
       try {
-        if (control instanceof TextControl) {
-          ((TextControl) control).setHighlightOnFocus(behavior.getValue());
+        if (control instanceof TextControl textControl) {
+          textControl.setHighlightOnFocus(behavior.getValue());
         }
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
@@ -996,9 +996,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
   protected T setComponentHorizontalAlignment(HasHorizontalAlignment.Alignment alignment) {
     this.horizontalAlignment = alignment;
 
-    if (control instanceof TextAlignable) {
+    if (control instanceof TextAlignable textAlignable) {
       try {
-        ((TextAlignable) control).setAlignment(alignment.getValue());
+        textAlignable.setAlignment(alignment.getValue());
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
@@ -1013,9 +1013,9 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @return the component's horizontal alignment
    */
   protected HasHorizontalAlignment.Alignment getComponentHorizontalAlignment() {
-    if (control instanceof TextAlignable) {
+    if (control instanceof TextAlignable textAlignable) {
       try {
-        return HasHorizontalAlignment.Alignment.fromValue(((TextAlignable) control).getAlignment());
+        return HasHorizontalAlignment.Alignment.fromValue(textAlignable.getAlignment());
       } catch (BBjException e) {
         throw new WebforjRuntimeException(e);
       }
@@ -1190,6 +1190,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings("squid:S3776")
   protected void onAttach() {
     super.onAttach();
     attachControlCallbacks();

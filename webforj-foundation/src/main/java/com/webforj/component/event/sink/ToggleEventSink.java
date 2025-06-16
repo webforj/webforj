@@ -3,11 +3,9 @@ package com.webforj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjCheckChangeEvent;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
-import com.basis.startup.type.BBjException;
 import com.webforj.component.DwcComponent;
 import com.webforj.component.event.ToggleEvent;
 import com.webforj.dispatcher.EventDispatcher;
-import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.HashMap;
 
 /**
@@ -25,14 +23,10 @@ public class ToggleEventSink extends AbstractDwcEventSink {
    * @param ev A BBj check off event
    */
   public void handleEvent(BBjEvent ev) {
-    try {
-      BBjCheckChangeEvent event = (BBjCheckChangeEvent) ev;
-      HashMap<String, Object> map = new HashMap<>();
-      map.put("toggled", event.isChecked());
-      ToggleEvent dwcEv = new ToggleEvent(this.getComponent(), map);
-      this.getEventDispatcher().dispatchEvent(dwcEv);
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException(e);
-    }
+    BBjCheckChangeEvent event = (BBjCheckChangeEvent) ev;
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("toggled", event.isChecked());
+    ToggleEvent dwcEv = new ToggleEvent(this.getComponent(), map);
+    this.getEventDispatcher().dispatchEvent(dwcEv);
   }
 }

@@ -275,11 +275,13 @@ class ConcernComponentMock extends Component implements HasAttribute<ConcernComp
     return this;
   }
 
+  @Override
   public ConcernComponentMock setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
     return this;
   }
 
+  @Override
   public String getPlaceholder() {
     return this.placeholder;
   }

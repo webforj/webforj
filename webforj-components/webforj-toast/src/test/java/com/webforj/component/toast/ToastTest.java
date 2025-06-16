@@ -39,7 +39,7 @@ class ToastTest {
     Frame mockFrame;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
       mockFrame = mock(Frame.class);
     }
 

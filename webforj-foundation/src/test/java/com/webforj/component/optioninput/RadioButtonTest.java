@@ -186,7 +186,7 @@ class RadioButtonTest {
 
   @Test
   @DisplayName("setSwitch Factory construction")
-  void setSwitchStyleFactory() throws BBjException {
+  void setSwitchStyleFactory() {
     RadioButton button = spy(RadioButton.Switch());
     assertTrue(button.isSwitch());
   }

@@ -176,7 +176,7 @@ class BindingContextTest {
     void shouldValidate() {
       // @formatter:off
       context.bind(nameComponent, "name")
-          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> !value.isEmpty(), "Name is required")
           .useValidator(value -> value.length() < 10, "Name is too long")
           .add();
       context.bind(ageComponent, "age")
@@ -199,7 +199,7 @@ class BindingContextTest {
     void shouldValidateByComponent() {
       // @formatter:off
       context.bind(nameComponent, "name")
-          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> !value.isEmpty(), "Name is required")
           .useValidator(value -> value.length() < 10, "Name is too long")
           .add();
       BindingBuilder<AgeComponentMock, Integer, PersonBean, Integer> ageBinding = context.bind(
@@ -223,7 +223,7 @@ class BindingContextTest {
     void shouldValidateByProperty() {
       // @formatter:off
       context.bind(nameComponent, "name")
-          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> !value.isEmpty(), "Name is required")
           .useValidator(value -> value.length() < 10, "Name is too long")
           .add();
       context.bind(ageComponent, "age")
@@ -247,7 +247,7 @@ class BindingContextTest {
 
       // @formatter:off
       context.bind(nameComponent, "name")
-          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> !value.isEmpty(), "Name is required")
           .autoValidate()
           .add();
       context.bind(ageComponent, "age")
@@ -284,7 +284,7 @@ class BindingContextTest {
     void shouldWriteValidated() {
       // @formatter:off
       context.bind(nameComponent, "name")
-          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> !value.isEmpty(), "Name is required")
           .useValidator(value -> value.length() < 10, "Name is too long")
           .add();
       context.bind(ageComponent, "age")
@@ -306,7 +306,7 @@ class BindingContextTest {
     void shouldAutoUpdateTheBean() {
       // @formatter:off
       context.bind(nameComponent, "name")
-          .useValidator(value -> value.length() > 0, "Name is required")
+          .useValidator(value -> !value.isEmpty(), "Name is required")
           .useValidator(value -> value.length() < 10, "Name is too long")
           .add();
       context.bind(ageComponent, "age")
@@ -350,11 +350,11 @@ class BindingContextTest {
       assertFalse(context.isBound(container.lastName));
       assertTrue(context.isBound(container.ageComponent));
 
-      PersonBean bean = new PersonBean();
-      context.write(bean);
+      PersonBean localBean = new PersonBean();
+      context.write(localBean);
 
-      assertEquals("John", bean.getName());
-      assertEquals(30, bean.getAge());
+      assertEquals("John", localBean.getName());
+      assertEquals(30, localBean.getAge());
     }
 
     @Test
@@ -367,10 +367,10 @@ class BindingContextTest {
       Container container = new Container();
       BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
 
-      PersonBean bean = new PersonBean();
-      context.write(bean);
+      PersonBean localBean = new PersonBean();
+      context.write(localBean);
 
-      assertEquals("JOHN", bean.getName());
+      assertEquals("JOHN", localBean.getName());
     }
 
     @Test
@@ -386,8 +386,8 @@ class BindingContextTest {
 
       container.ageComponent.setValue(10);
 
-      PersonBean bean = new PersonBean();
-      ValidationResult result = context.write(bean);
+      PersonBean localBean = new PersonBean();
+      ValidationResult result = context.write(localBean);
 
       assertFalse(result.isValid());
       assertTrue(result.getMessages().contains("Check the Age is > 18"));
@@ -425,10 +425,10 @@ class BindingContextTest {
           .add();
       // @formatter:on
 
-      PersonBean bean = new PersonBean();
-      assertTrue(context.write(bean).isValid());
+      PersonBean localBean = new PersonBean();
+      assertTrue(context.write(localBean).isValid());
 
-      assertEquals(30, bean.getAge());
+      assertEquals(30, localBean.getAge());
     }
 
     @Test
@@ -443,10 +443,10 @@ class BindingContextTest {
       Container container = new Container();
       BindingContext<PersonBean> context = BindingContext.of(container, PersonBean.class);
 
-      PersonBean bean = new PersonBean();
-      assertTrue(context.write(bean).isValid());
+      PersonBean localBean = new PersonBean();
+      assertTrue(context.write(localBean).isValid());
 
-      assertEquals(30, bean.getAge());
+      assertEquals(30, localBean.getAge());
     }
   }
 }

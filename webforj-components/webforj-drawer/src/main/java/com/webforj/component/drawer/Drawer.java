@@ -1,7 +1,6 @@
 package com.webforj.component.drawer;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.drawer.Drawer;
 import com.webforj.component.drawer.event.DrawerCloseEvent;
@@ -116,33 +115,6 @@ public class Drawer extends ElementCompositeContainer
   public Drawer addToFooter(Component... component) {
     getElement().add(FOOTER_SLOT, component);
     return this;
-  }
-
-  /**
-   * Sets Drawer auto focus.
-   *
-   * @param autoFocus When true then automatically focus the first focusable element in the drawer.
-   * @return the drawer
-   *
-   * @deprecated Use {@link #setAutoFocus(boolean)} instead.
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Deprecated(since = "24.21", forRemoval = true)
-  public Drawer setAutofocus(boolean autoFocus) {
-    return setAutoFocus(autoFocus);
-  }
-
-  /**
-   * Gets Drawer auto focus.
-   *
-   * @return the drawer auto focus
-   *
-   * @deprecated Use {@link #isAutoFocus()} instead.
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Deprecated(since = "24.21", forRemoval = true)
-  public boolean isAutofocus() {
-    return isAutoFocus();
   }
 
   /**

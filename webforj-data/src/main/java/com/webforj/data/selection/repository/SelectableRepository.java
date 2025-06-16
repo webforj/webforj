@@ -15,6 +15,7 @@ import com.webforj.data.selection.Selectable;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
+@SuppressWarnings("unused")
 public interface SelectableRepository<T extends HasRepository<V>, V> extends Selectable<V> {
 
   /**

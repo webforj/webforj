@@ -84,7 +84,7 @@ class ComponentAccessorImplTest {
 
   @Test
   @DisplayName("Should throw exception when there are no underlying control")
-  void shouldThrowExceptionWhenNoControl() throws IllegalAccessException {
+  void shouldThrowExceptionWhenNoControl() {
     Component component = mock(Component.class);
     assertThrows(IllegalAccessException.class, () -> componentAccessor.getControl(component));
   }

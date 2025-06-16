@@ -7,7 +7,6 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.Routify;
-import com.webforj.component.optiondialog.OptionDialog;
 import com.webforj.component.window.Frame;
 import com.webforj.environment.ObjectTable;
 import com.webforj.environment.StringTable;
@@ -20,9 +19,6 @@ import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.RouterDevUtils;
 import com.webforj.router.event.NavigateEvent;
-import com.webforj.webstorage.CookieStorage;
-import com.webforj.webstorage.LocalStorage;
-import com.webforj.webstorage.SessionStorage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,28 +84,6 @@ public abstract class App {
         throw e;
       }
     }
-  }
-
-  /**
-   * Get the current page instance.
-   *
-   * @return the current page instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link Page#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static Page getPage() {
-    return Page.getCurrent();
-  }
-
-  /**
-   * Get the current request instance.
-   *
-   * @return the current request instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link Request#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static Request getRequest() {
-    return Request.getCurrent();
   }
 
   /**
@@ -241,52 +215,6 @@ public abstract class App {
   }
 
   /**
-   * Get the application protocol.
-   *
-   * @return The application protocol
-   * @deprecated since 24.02, for removal in 25.00. Use {@link Request#getProtocol()} instead
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getProtocol() {
-    return Request.getCurrent().getProtocol();
-  }
-
-  /**
-   * Get the application host.
-   *
-   * @return The application host
-   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getHost()} instead
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getHost() {
-    return Request.getCurrent().getHost();
-  }
-
-  /**
-   * Get the application port.
-   *
-   * @return The application port
-   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getPort()} instead
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getPort() {
-    return Request.getCurrent().getPort();
-  }
-
-  /**
-   * Get the application URL.
-   *
-   * @return The application URL
-   * @throws WebforjRuntimeException if failed to get the application URL
-   *
-   * @deprecated Since 24.02, for removal in 25.00. Use {@link Request#getUrl()} instead.
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static String getUrl() {
-    return Request.getCurrent().getUrl();
-  }
-
-  /**
    * Get the console instance.
    *
    * @return the console instance
@@ -353,80 +281,6 @@ public abstract class App {
    */
   public static BusyIndicator busy(String text) {
     return busy(text, false);
-  }
-
-  /**
-   * Log a String to the browser console (console.log)
-   *
-   * @param output The message to log
-   * @deprecated since 24.10, for removal in 25.00. Use {@link BrowserConsole#log(String)} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static void consoleLog(String output) {
-    try {
-
-      Environment.getCurrent().getSysGui().executeScript("console.log(\"" + output + "\")");
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  /**
-   * Log a String to the browser console (console.error)
-   *
-   * @param output The message to log
-   * @deprecated since 24.10, for removal in 25.00. Use {@link BrowserConsole#error(String)} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static void consoleError(String output) {
-    try {
-
-      Environment.getCurrent().getSysGui().executeScript("console.error(\"" + output + "\")");
-    } catch (BBjException e) {
-      Environment.logError(e);
-    }
-  }
-
-  /**
-   * Shows a message box
-   *
-   * @param alert The message to show
-   * @return
-   *
-   * @deprecated since 24.02, for removal in 25.00
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static int msgbox(String alert) {
-    return Environment.getCurrent().getBridge().msgbox(alert, 0, "");
-  }
-
-  /**
-   *
-   * @param alert The message to show
-   * @param options
-   * @return
-   *
-   * @deprecated since 24.02, for removal in 25.00. Use
-   *             {@link OptionDialog#showMessageDialog(Object)}
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static int msgbox(String alert, int options) {
-    return Environment.getCurrent().getBridge().msgbox(alert, options, "");
-  }
-
-  /**
-   *
-   * @param alert The message to show
-   * @param options
-   * @param title
-   * @return
-   *
-   * @deprecated since 24.02, for removal in 25.00. Use
-   *             {@link OptionDialog#showMessageDialog(Object)}
-   */
-  @Deprecated(since = "24.02", forRemoval = true)
-  public static int msgbox(String alert, int options, String title) {
-    return Environment.getCurrent().getBridge().msgbox(alert, options, title);
   }
 
   /**
@@ -505,48 +359,6 @@ public abstract class App {
     Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("webforjTerminateSignal", null);
 
     onDidTerminate();
-  }
-
-  /**
-   * Override this method to implement custom cleanup e.g. kill all background threads that may
-   * still run
-   *
-   * @deprecated since 24.10, for removal in 25.00. Use {@link #onWillTerminate()} and
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public void cleanup() {}
-
-  /**
-   * Gets the CookieStorage.
-   *
-   * @return the CookieStorage instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link CookieStorage#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static CookieStorage getCookieStorage() {
-    return CookieStorage.getCurrent();
-  }
-
-  /**
-   * Gets the SessionStorage.
-   *
-   * @return the SessionStorage instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link SessionStorage#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static SessionStorage getSessionStorage() {
-    return SessionStorage.getCurrent();
-  }
-
-  /**
-   * Gets the LocalStorage.
-   *
-   * @return the LocalStorage instance
-   * @deprecated since 24.10, for removal in 25.00. Use {@link LocalStorage#getCurrent()} instead
-   */
-  @Deprecated(since = "24.10", forRemoval = true)
-  public static LocalStorage getLocalStorage() {
-    return LocalStorage.getCurrent();
   }
 
   /**

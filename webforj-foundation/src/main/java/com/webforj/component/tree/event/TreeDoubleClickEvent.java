@@ -1,21 +1,23 @@
 package com.webforj.component.tree.event;
 
-import com.webforj.component.ControlEvent;
 import com.webforj.component.tree.Tree;
+import java.util.Map;
 
-public class TreeDoubleClickEvent implements ControlEvent {
-  private final Tree control;
+/**
+ * An event which is fired when a tree node is double-clicked.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 25.01
+ */
+public class TreeDoubleClickEvent extends TreeMouseEvent {
 
-  public TreeDoubleClickEvent(Tree cTree) {
-    this.control = cTree;
-  }
-
-  @Override
-  public Tree getControl() {
-    return control;
-  }
-
-  public String toString() {
-    return "Event: TreeDoubleClicked";
+  /**
+   * Creates a new tree double-click event.
+   *
+   * @param component the component
+   * @param eventMap the event map
+   */
+  public TreeDoubleClickEvent(Tree component, Map<String, Object> eventMap) {
+    super(component, eventMap);
   }
 }

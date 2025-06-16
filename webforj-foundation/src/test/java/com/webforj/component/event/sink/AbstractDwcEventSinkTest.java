@@ -57,14 +57,14 @@ class AbstractDwcEventSinkTest {
   @DisplayName("removeCallback")
   class RemoveCallback {
     @Test
-    void callClearCallbackOnUnderlyingControl() throws IllegalAccessException, BBjException {
+    void callClearCallbackOnUnderlyingControl() throws BBjException {
       sink.removeCallback(anyString());
       verify(sink.getControl(), times(1)).clearCallback(0);
     }
 
     @Test
-    void throwDwcjRuntimeExceptionWhenClearCallbackFails()
-        throws IllegalAccessException, BBjException {
+    @SuppressWarnings("squid:S5778")
+    void throwDwcjRuntimeExceptionWhenClearCallbackFails() throws BBjException {
       BBjControl control = sink.getControl();
       doThrow(BBjException.class).when(control).clearCallback(anyInt());
       assertThrows(WebforjRuntimeException.class, () -> sink.removeCallback(anyString()));

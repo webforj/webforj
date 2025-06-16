@@ -3,8 +3,8 @@ package com.webforj.component.table.renderer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.webforj.component.table.event.renderer.RendererClickEvent;
-import com.webforj.component.table.renderer.NativeButtonRenderer;
 import com.webforj.dispatcher.EventListener;
 import org.junit.jupiter.api.Test;
 

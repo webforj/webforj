@@ -7,6 +7,7 @@ package com.webforj;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
+@SuppressWarnings("squid:S6206")
 public final class MessageAction implements AppCloseAction {
   private final String message;
 

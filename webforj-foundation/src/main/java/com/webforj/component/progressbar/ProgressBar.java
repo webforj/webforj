@@ -203,6 +203,28 @@ public final class ProgressBar extends DwcComponent<ProgressBar>
     return value;
   }
 
+  /**
+   * Sets the text of the progress bar.
+   *
+   * <p>
+   * The text of the progress bar is displayed in the center of the progress bar. If the passed text
+   * is empty, the component will call internally {@link #setTextVisible(boolean)} with
+   * {@code false} to hide the text.
+   * </p>
+   *
+   * @param text The text of the progress bar.
+   * @return The component itself.
+   */
+  @Override
+  public ProgressBar setText(String text) {
+    Objects.requireNonNull(text, "Text cannot be null");
+    super.setText(text);
+
+    setTextVisible(!text.isEmpty());
+
+    return this;
+  }
+
   @Override
   public ListenerRegistration<ValueChangeEvent<Integer>> addValueChangeListener(
       EventListener<ValueChangeEvent<Integer>> listener) {

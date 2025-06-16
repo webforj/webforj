@@ -1,38 +1,32 @@
 package com.webforj.component.tree.sink;
 
-import com.basis.bbj.proxies.event.BBjTreeMouseDoubleClickEvent;
-import com.basis.bbj.proxies.sysgui.BBjControl;
-import com.webforj.Environment;
-import com.webforj.bridge.ComponentAccessor;
+import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.webforj.component.tree.Tree;
 import com.webforj.component.tree.event.TreeDoubleClickEvent;
+import com.webforj.dispatcher.EventDispatcher;
+import java.util.Map;
 
-import java.util.function.Consumer;
+/**
+ * This class will map the BBjTreeMouseDoubleClickEvent event to a {@link TreeDoubleClickEvent}.
+ *
+ * @author Hyyan Abo Fakher
+ * @since 25.01
+ */
+public class TreeDoubleClickEventSink extends TreeMouseEventSink {
 
-public class TreeDoubleClickEventSink {
-
-  private final Consumer<TreeDoubleClickEvent> target;
-
-  private final Tree tree;
-
-
-  @SuppressWarnings({"static-access"})
-  public TreeDoubleClickEventSink(Tree tree, Consumer<TreeDoubleClickEvent> target) {
-    this.target = target;
-    this.tree = tree;
-
-    BBjControl bbjctrl = null;
-    try {
-      bbjctrl = ComponentAccessor.getDefault().getBBjControl(tree);
-      bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_TREE_DOUBLE_CLICK,
-          Environment.getCurrent().getBridge().getEventProxy(this, "doubleClickEvent"), "onEvent");
-    } catch (Exception e) {
-      Environment.logError(e);
-    }
+  /**
+   * Constructs a new {@code TreeClickEventSink}.
+   *
+   * @param component the Tree component
+   * @param dispatcher the EventDispatcher
+   */
+  public TreeDoubleClickEventSink(Tree component, EventDispatcher dispatcher) {
+    super(component, dispatcher, SysGuiEventConstants.ON_TREE_DOUBLE_CLICK);
   }
 
-  public void doubleClickEvent(BBjTreeMouseDoubleClickEvent ev) { // NOSONAR
-    TreeDoubleClickEvent dwcEv = new TreeDoubleClickEvent(this.tree);
-    target.accept(dwcEv);
+  @Override
+  void doHandleEvent(Map<String, Object> eventMap) {
+    TreeDoubleClickEvent javaEv = new TreeDoubleClickEvent((Tree) getComponent(), eventMap);
+    getEventDispatcher().dispatchEvent(javaEv);
   }
 }

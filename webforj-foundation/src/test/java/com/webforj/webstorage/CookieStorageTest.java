@@ -57,6 +57,7 @@ class CookieStorageTest {
     }
 
     @Test
+    @SuppressWarnings("squid:S5778")
     void addMapOfItemsShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(thinClient).setUserProperties(anyLong(), anyString(),
           any(Map.class));

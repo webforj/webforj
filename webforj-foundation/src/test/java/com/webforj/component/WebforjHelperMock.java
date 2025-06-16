@@ -32,11 +32,6 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   }
 
   @Override
-  public int msgbox(String msg, int options, String title) {
-    throw new UnsupportedOperationException("Unimplemented method 'msgbox'");
-  }
-
-  @Override
   public Object invokeMethod(Object object, String method, ArrayList args) {
     throw new UnsupportedOperationException("Unimplemented method 'invokeMethod'");
   }
@@ -89,7 +84,7 @@ public class WebforjHelperMock implements WebforjBBjBridge {
 
   @Override
   public void sleep(int seconds) {
-
+    // no-op
   }
 
   @Override

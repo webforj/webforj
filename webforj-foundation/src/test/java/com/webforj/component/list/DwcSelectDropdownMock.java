@@ -5,5 +5,7 @@ import com.webforj.component.window.Window;
 class DwcSelectDropdownMock extends DwcSelectDropdown<DwcSelectDropdownMock> {
 
   @Override
-  protected void onCreate(Window window) {}
+  protected void onCreate(Window window) {
+    // no-op
+  }
 }

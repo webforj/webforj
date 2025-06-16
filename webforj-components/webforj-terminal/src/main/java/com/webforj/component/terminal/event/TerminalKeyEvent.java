@@ -16,13 +16,14 @@ import java.util.Map;
  * @since 24.10
  */
 @EventName(value = "dwc-key")
-@EventOptions(filter = "event.target.isSameNode(component)",
-    data = {@EventData(key = "code", exp = "event.detail.event.code"),
-        @EventData(key = "key", exp = "event.detail.event.key"),
-        @EventData(key = "value", exp = "btoa(event.detail.value)"),
-        @EventData(key = "altKey", exp = "event.detail.event.altKey"),
-        @EventData(key = "controlKey", exp = "event.detail.event.ctrlKey"),
-        @EventData(key = "shiftKey", exp = "event.detail.event.shiftKey")})
+@EventOptions(filter = "event.target.isSameNode(component)", data = {
+    @EventData(key = "code", exp = "event.detail.event.code"),
+    @EventData(key = "key", exp = "event.detail.event.key"),
+    @EventData(key = "value",
+        exp = "(str => btoa(String.fromCharCode(...new TextEncoder().encode(str))))(event.detail.value)"),
+    @EventData(key = "altKey", exp = "event.detail.event.altKey"),
+    @EventData(key = "controlKey", exp = "event.detail.event.ctrlKey"),
+    @EventData(key = "shiftKey", exp = "event.detail.event.shiftKey")})
 public final class TerminalKeyEvent extends ComponentEvent<Terminal> {
 
   /**
@@ -60,6 +61,10 @@ public final class TerminalKeyEvent extends ComponentEvent<Terminal> {
    */
   public String getValue() {
     String value = (String) this.getEventMap().get("value");
+    if (value == null) {
+      return null;
+    }
+
     return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
   }
 

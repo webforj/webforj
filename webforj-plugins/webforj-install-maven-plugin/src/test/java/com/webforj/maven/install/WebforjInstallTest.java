@@ -42,13 +42,13 @@ class WebforjInstallTest {
   private String defaultDeployurl;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     webforjInstall = new WebforjInstall();
     defaultDeployurl = "http://localhost:9191/webforj-install";
   }
 
   @AfterEach
-  public void tearDown() {}
+  void tearDown() {}
 
   @Test
   void test_null_deployurl_throws_IllegalArgumentException() {

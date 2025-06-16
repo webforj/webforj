@@ -110,8 +110,7 @@ public class SelectionRange {
    */
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof SelectionRange) {
-      SelectionRange other = (SelectionRange) obj;
+    if (obj instanceof SelectionRange other) {
       return startParagraph == other.startParagraph && startOffset == other.startOffset
           && endParagraph == other.endParagraph && endOffset == other.endOffset;
     }

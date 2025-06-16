@@ -158,8 +158,8 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    */
   public Optional<List<String>> getList(String key, String regex) {
     String escapedDelimiter = Pattern.quote(regex);
-    return get(key).map(value -> Arrays.stream(value.split(escapedDelimiter)).map(String::trim)
-        .collect(Collectors.toList()));
+    return get(key)
+        .map(value -> Arrays.stream(value.split(escapedDelimiter)).map(String::trim).toList());
   }
 
   /**

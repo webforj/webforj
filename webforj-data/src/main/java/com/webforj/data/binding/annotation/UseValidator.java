@@ -22,6 +22,7 @@ public @interface UseValidator {
    * The validator class to use for validating the value. The validator class must implement the
    * {@link Validator} interface.
    */
+  @SuppressWarnings("squid:S1452")
   Class<? extends Validator<?>> value();
 
   /**

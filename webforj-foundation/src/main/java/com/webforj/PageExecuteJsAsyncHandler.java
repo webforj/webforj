@@ -50,16 +50,12 @@ public final class PageExecuteJsAsyncHandler {
   public void handleEvent(BBjEvent ev) {
     BBjExecuteScriptEvent event = (BBjExecuteScriptEvent) ev;
 
-    try {
-      int index = Integer.parseInt(event.getIndex() + "");
-      Object result = event.getResult();
-      PendingResult<Object> pending = pendingResults.remove(index);
+    int index = Integer.parseInt(event.getIndex() + "");
+    Object result = event.getResult();
+    PendingResult<Object> pending = pendingResults.remove(index);
 
-      if (pending != null) {
-        pending.complete(result);
-      }
-    } catch (BBjException e) {
-      throw new WebforjRuntimeException(e);
+    if (pending != null) {
+      pending.complete(result);
     }
   }
 

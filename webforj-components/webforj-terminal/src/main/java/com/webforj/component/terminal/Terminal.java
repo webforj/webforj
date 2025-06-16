@@ -7,7 +7,10 @@ import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.terminal.event.TerminalDataEvent;
 import com.webforj.component.terminal.event.TerminalKeyEvent;
+import com.webforj.concern.HasAttribute;
+import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasSize;
+import com.webforj.concern.HasStyle;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.function.Consumer;
@@ -19,7 +22,9 @@ import java.util.function.Consumer;
  * @since 24.10
  */
 @NodeName("dwc-terminal")
-public class Terminal extends ElementComposite implements HasSize<Terminal> {
+public class Terminal extends ElementComposite implements HasSize<Terminal>, HasStyle<Terminal>,
+    HasClassName<Terminal>, HasAttribute<Terminal> {
+
   private int rows;
   private int cols;
   private boolean autoFit;

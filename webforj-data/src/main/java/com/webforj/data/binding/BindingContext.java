@@ -109,7 +109,7 @@ public class BindingContext<B> {
    *
    * @return a new {@code BindingContext} instance
    */
-  @SuppressWarnings({"unchecked"})
+  @SuppressWarnings({"unchecked", "squid:S3740"})
   public static <B> BindingContext<B> of(Object object, Class<B> beanClass,
       boolean useJakartaValidator) {
     BindingContext<B> context = new BindingContext<>(beanClass, useJakartaValidator);
@@ -296,6 +296,7 @@ public class BindingContext<B> {
    * @param property The bean property to bind
    * @return the binding associated with the specified property.
    */
+  @SuppressWarnings("squid:S1452")
   public Binding<?, ?, B, ?> getBinding(String property) {
     return bindings.get(property);
   }
@@ -308,6 +309,7 @@ public class BindingContext<B> {
    * @param component The UI component to bind
    * @return the binding associated with the specified component.
    */
+  @SuppressWarnings("squid:S1452")
   public <C extends ValueAware<C, V>, V> Binding<?, ?, B, ?> getBinding(C component) {
     return bindings.values().stream().filter(b -> b.getComponent().equals(component)).findFirst()
         .orElse(null);
@@ -319,6 +321,7 @@ public class BindingContext<B> {
    * @param report whether to report the validation result using the {@link BindingReporter}
    * @return the validation result.
    */
+  @SuppressWarnings("squid:S3740")
   public ValidationResult validate(boolean report) {
     List<String> messages = new ArrayList<>();
     boolean isValid = true;

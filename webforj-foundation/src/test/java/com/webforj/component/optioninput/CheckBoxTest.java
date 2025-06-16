@@ -102,7 +102,7 @@ class CheckBoxTest {
 
     @Test
     @DisplayName("When Control is null")
-    void whenControlIsNull() throws BBjException, IllegalAccessException {
+    void whenControlIsNull() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
       component.setIndeterminate(true);
       assertTrue(component.isIndeterminate());

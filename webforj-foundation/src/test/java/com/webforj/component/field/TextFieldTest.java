@@ -124,7 +124,7 @@ class TextFieldTest {
   @ParameterizedTest
   @EnumSource(TextField.Type.class)
   @DisplayName("setting/getting type when control is not null")
-  void settingGettingTypeWhenControlIsNotNull(TextField.Type type) throws IllegalAccessException {
+  void settingGettingTypeWhenControlIsNotNull(TextField.Type type) {
     component.setType(type);
     assertEquals(component.getType(), type);
   }

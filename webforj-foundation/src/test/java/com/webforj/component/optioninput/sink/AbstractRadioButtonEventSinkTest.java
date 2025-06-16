@@ -46,14 +46,13 @@ class AbstractRadioButtonEventSinkTest {
   @DisplayName("setCallback")
   class SetCallback {
     @Test
-    void callSetCallbackOnUnderlyingControl() throws IllegalAccessException, BBjException {
+    void callSetCallbackOnUnderlyingControl() throws BBjException {
       sink.setCallback();
       verify(control, times(1)).setCallback(eq(0), any(), eq("onEvent"));
     }
 
     @Test
-    void throwDwcjRuntimeExceptionWhenSetCallbackFails()
-        throws IllegalAccessException, BBjException {
+    void throwDwcjRuntimeExceptionWhenSetCallbackFails() throws BBjException {
       doThrow(BBjException.class).when(control).setCallback(eq(0), any(), eq("onEvent"));
       assertThrows(WebforjRuntimeException.class, () -> sink.setCallback());
     }
@@ -63,14 +62,14 @@ class AbstractRadioButtonEventSinkTest {
   @DisplayName("removeCallback")
   class RemoveCallback {
     @Test
-    void callClearCallbackOnUnderlyingControl() throws IllegalAccessException, BBjException {
-      sink.removeCallback(anyString());;
+    void callClearCallbackOnUnderlyingControl() throws BBjException {
+      sink.removeCallback(anyString());
       verify(control, times(1)).clearCallback(0);
     }
 
     @Test
-    void throwDwcjRuntimeExceptionWhenClearCallbackFails()
-        throws IllegalAccessException, BBjException {
+    @SuppressWarnings("squid:S5778")
+    void throwDwcjRuntimeExceptionWhenClearCallbackFails() throws BBjException {
       doThrow(BBjException.class).when(control).clearCallback(0);
       assertThrows(WebforjRuntimeException.class, () -> sink.removeCallback(anyString()));
     }

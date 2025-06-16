@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-parent</artifactId>
-    <version>25.00-SNAPSHOT</version>
+    <version>25.02-SNAPSHOT</version>
   </parent>
   <packaging>jar</packaging>
 
@@ -34,6 +34,10 @@
     </dependency>
 
     <!-- Extensions -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-alert</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-applayout</artifactId>
@@ -68,11 +72,19 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-infinite-scroll</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-loading</artifactId>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-login</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-refresher</artifactId>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>

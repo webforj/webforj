@@ -16,6 +16,9 @@ import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import com.webforj.router.history.ParametersBag;
 import com.webforj.router.history.SegmentsBag;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -373,9 +376,31 @@ public class AppNavItem extends NavigationContainer<AppNavItem> implements HasSt
   private void updatePath(String path, ParametersBag queryParameters) {
     Objects.requireNonNull(path, "Path cannot be null");
 
+    try {
+      URI uri = new URI(path);
 
-    Location location = new Location(SegmentsBag.of(path),
-        queryParameters == null ? new ParametersBag() : queryParameters, "");
-    set(pathProp, location.toString());
+      // Extract existing query parameters
+      ParametersBag existingParams = ParametersBag.of(uri.getQuery());
+
+      // Merge existing parameters with the new ones
+      if (queryParameters != null) {
+        existingParams.putAll(queryParameters.all());
+      }
+
+      // Construct the merged query string
+      String mergedQuery = existingParams.size() > 0 ? existingParams.getQueryString() : null;
+
+      URI updatedUri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), mergedQuery,
+          uri.getFragment());
+
+      if (updatedUri.isAbsolute()) {
+        setRouterIgnore(true);
+      }
+
+      set(pathProp, updatedUri.toString());
+    } catch (Exception e) {
+      // set the path as it is
+      set(pathProp, path);
+    }
   }
 }

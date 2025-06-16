@@ -94,7 +94,7 @@ class ListBoxTest {
     @Test
     @DisplayName("should throw BBjException as DwcjRuntimeException")
     void shouldThrowBBjExceptionAsDwcjRuntimeExceptionWhenBBjExceptionIsThrown()
-        throws BBjException, IllegalAccessException {
+        throws BBjException {
       doThrow(BBjException.class).when(control).deselectIndex(0);
       component.setSelectionMode(SelectionMode.MULTIPLE);
       component.add("key", "value");
@@ -105,6 +105,7 @@ class ListBoxTest {
 
     @Test
     @DisplayName("should throw IllegalArgumentException when item not found during deselect")
+    @SuppressWarnings("squid:S5778")
     void shouldThrowIllegalArgumentExceptionWhenItemNotFoundDuringDeselect() {
       component.setSelectionMode(SelectionMode.MULTIPLE);
       assertThrows(IllegalArgumentException.class,
@@ -236,7 +237,7 @@ class ListBoxTest {
 
     @Test
     @DisplayName("should return selected keys")
-    void shouldReturnSelectedKeys() throws BBjException, IllegalAccessException {
+    void shouldReturnSelectedKeys() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
       component.setSelectionMode(SelectionMode.MULTIPLE);
@@ -294,8 +295,7 @@ class ListBoxTest {
 
     @Test
     @DisplayName("should set text and get text in single selection mode")
-    void shouldSetTextAndGetTextInSingleSelectionMode()
-        throws BBjException, IllegalAccessException {
+    void shouldSetTextAndGetTextInSingleSelectionMode() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
 
       component.setSelectionMode(SelectionMode.SINGLE);
@@ -328,7 +328,7 @@ class ListBoxTest {
 
       assertEquals(2, component.size());
       verify(control, times(1)).insertItems(0,
-          new BBjVector(items.stream().map(ListItem::getText).collect(Collectors.toList())));
+          new BBjVector(items.stream().map(ListItem::getText).toList()));
     }
 
     @Test

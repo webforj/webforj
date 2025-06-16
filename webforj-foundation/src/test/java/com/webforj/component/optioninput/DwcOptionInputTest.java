@@ -170,7 +170,7 @@ class DwcOptionInputTest {
 
     @Test
     void shouldConfigureValueChangeEvent() {
-      ListenerRegistration<ValueChangeEvent<Boolean>> r1 = component.onValueChange(e -> {
+      component.onValueChange(e -> {
       });
       assertEquals(1, component.getEventListeners(ToggleEvent.class).size());
     }

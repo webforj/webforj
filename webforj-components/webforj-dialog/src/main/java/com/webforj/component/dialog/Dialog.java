@@ -1,7 +1,6 @@
 package com.webforj.component.dialog;
 
 import com.google.gson.annotations.SerializedName;
-import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.component.Component;
 import com.webforj.component.Theme;
 import com.webforj.component.dialog.event.DialogCloseEvent;
@@ -163,37 +162,6 @@ public class Dialog extends ElementCompositeContainer
    */
   public Alignment getAlignment() {
     return get(alignmentProp);
-  }
-
-  /**
-   * Sets the dialog autofocus.
-   *
-   * <p>
-   * When true then automatically focus the first focusable element in the dialog.
-   * </p>
-   *
-   * @param autofocus the autofocus
-   * @return the component itself
-   *
-   * @deprecated Use {@link #setAutoFocus(boolean)} instead.
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Deprecated(since = "24.21", forRemoval = true)
-  public Dialog setAutofocus(boolean autofocus) {
-    return setAutoFocus(autofocus);
-  }
-
-  /**
-   * Gets the dialog autofocus.
-   *
-   * @return the autofocus
-   *
-   * @deprecated Use {@link #isAutoFocus()} instead.
-   */
-  @ExcludeFromJacocoGeneratedReport
-  @Deprecated(since = "24.21", forRemoval = true)
-  public boolean isAutofocus() {
-    return isAutoFocus();
   }
 
   /**

@@ -7,7 +7,6 @@ import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import com.webforj.Environment;
 import com.webforj.annotation.ExcludeFromJacocoGeneratedReport;
 import com.webforj.concern.HasHighlightOnFocus;
 import com.webforj.concern.HasHorizontalAlignment;
@@ -282,7 +281,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.setStyle(property, value);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     } else {
       this.styles.put(property, value);
@@ -300,7 +299,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         return control.getStyle(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     // fall back to the internal list - will not return styles that are added by
@@ -317,7 +316,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         return control.getComputedStyle(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     // fall back to the internal list - will not return styles that are added by
@@ -335,7 +334,7 @@ public abstract class LegacyDwcComponent extends Component
         // Current BBj implementation does not have a remove style method
         control.unsetStyle(property);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     } else {
       this.styles.remove(property);
@@ -356,7 +355,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.addClass(selector);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     } else {
       this.cssClasses.add(selector);
@@ -377,7 +376,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.removeClass(selector);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     } else {
       this.removeCssClasses.add(selector);
@@ -398,7 +397,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.setToolTipText(text);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     this.tooltipText = text;
@@ -416,7 +415,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         return control.getToolTipText();
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     return tooltipText;
@@ -435,7 +434,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.setVisible(visible);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     this.visible = visible;
@@ -453,7 +452,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         return control.isVisible();
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     return visible;
@@ -538,7 +537,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.setEnabled(enabled);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     this.enabled = enabled;
@@ -555,7 +554,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         return control.isEnabled();
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     return enabled;
@@ -790,7 +789,7 @@ public abstract class LegacyDwcComponent extends Component
             // noop
         }
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     this.expanse = expanse;
@@ -877,7 +876,7 @@ public abstract class LegacyDwcComponent extends Component
             // noop
         }
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
     this.theme = theme;
@@ -893,7 +892,7 @@ public abstract class LegacyDwcComponent extends Component
         control.destroy();
       }
     } catch (BBjException e) {
-      Environment.logError(e);
+      // Environment.logError(e);
     }
   }
 
@@ -930,7 +929,7 @@ public abstract class LegacyDwcComponent extends Component
       try {
         control.setToolTipText(this.tooltipText);
       } catch (BBjException e) {
-        Environment.logError(e);
+        // Environment.logError(e);
       }
     }
 

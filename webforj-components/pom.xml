@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-parent</artifactId>
-    <version>25.00-SNAPSHOT</version>
+    <version>25.02-SNAPSHOT</version>
   </parent>
 
   <artifactId>webforj-components</artifactId>
@@ -15,9 +15,11 @@
   <description>${project.name}</description>
 
   <modules>
+    <module>webforj-alert</module>
     <module>webforj-applayout</module>
     <module>webforj-appnav</module>
     <module>webforj-columnslayout</module>
+    <module>webforj-desktop-notification</module>
     <module>webforj-dialog</module>
     <module>webforj-drawer</module>
     <module>webforj-flexlayout</module>
@@ -28,8 +30,10 @@
     <module>webforj-googlecharts</module>
     <module>webforj-html-elements</module>
     <module>webforj-icons</module>
+    <module>webforj-infinite-scroll</module>
     <module>webforj-loading</module>
     <module>webforj-login</module>
+    <module>webforj-refresher</module>
     <module>webforj-toolbar</module>
     <module>webforj-table</module>
   </modules>

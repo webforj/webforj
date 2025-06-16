@@ -33,10 +33,12 @@ import com.webforj.component.window.Window;
 import com.webforj.concern.HasEnablement;
 import com.webforj.concern.HasFocus;
 import com.webforj.concern.HasJsExecution;
+import com.webforj.concern.HasStyle;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -674,7 +676,11 @@ public final class Element extends DwcContainer<Element>
   @Override
   protected void doAdd(Component component) {
     try {
-      // create the component
+      if (component instanceof HasStyle<?> vc) {
+        // temporarily hide the component
+        vc.setStyle("content-visibility", "hidden");
+      }
+
       ComponentAccessor.getDefault().create(component, getWindow());
 
       // add the component to the slot
@@ -682,6 +688,11 @@ public final class Element extends DwcContainer<Element>
         String slot = findComponentSlot(component);
         BBjControl control = ComponentAccessor.getDefault().getControl(component);
         inferControl().setSlot(Optional.ofNullable(slot).orElse(""), control);
+      }
+
+      if (component instanceof HasStyle<?> vc) {
+        // restore the visibility
+        vc.removeStyle("content-visibility");
       }
     } catch (IllegalAccessException | BBjException e) {
       throw new IllegalArgumentException(
@@ -800,9 +811,9 @@ public final class Element extends DwcContainer<Element>
     Gson gson = new Gson();
     JsonArray jsonArgsArray = new JsonArray();
     for (Object arg : arguments) {
-      if (arg instanceof Component) {
+      if (arg instanceof Component component) {
         // For Component instances, get the client component ID
-        String clientComponentId = ((Component) arg).getClientComponentId();
+        String clientComponentId = component.getClientComponentId();
         jsonArgsArray.add("objects.get('" + clientComponentId + "')");
       } else {
         // For other arguments, serialize them
@@ -839,9 +850,9 @@ public final class Element extends DwcContainer<Element>
     sb.append("  return null;");
     sb.append("}");
 
-    // Deserialize arguments on the client side and call the function
-    sb.append("const rawArgs = JSON.parse(atob(`")
-        .append(Base64.getEncoder().encodeToString(jsonArgs.getBytes())).append("`));");
+    sb.append("const rawArgs = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(`")
+        .append(Base64.getEncoder().encodeToString(jsonArgs.getBytes(StandardCharsets.UTF_8)))
+        .append("`), c => c.charCodeAt(0))));");
 
     // Resolve the special arguments
     sb.append("const args = rawArgs.map(arg => {");
@@ -867,7 +878,7 @@ public final class Element extends DwcContainer<Element>
     sb.append("  return null;");
     sb.append("}");
 
-    sb.append("})();"); // end of async function
+    sb.append("})();");
 
     return sb.toString();
   }

@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class UploadedFileTest {
-  static String FILE_NAME = "example.txt";
-  static String SERVER_FILE = "new/path/newfile.txt";
+  static final String FILE_NAME = "example.txt";
+  static final String SERVER_FILE = "new/path/newfile.txt";
 
   Environment environment;
   BBjAPI api;

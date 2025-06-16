@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-components</artifactId>
-    <version>25.00-SNAPSHOT</version>
+    <version>25.02-SNAPSHOT</version>
   </parent>
 
   <artifactId>webforj-html-elements</artifactId>
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>5.15.2</version>
+      <version>5.18.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

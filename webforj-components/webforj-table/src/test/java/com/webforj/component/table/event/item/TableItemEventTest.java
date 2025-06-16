@@ -2,8 +2,8 @@ package com.webforj.component.table.event.item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+
 import com.webforj.component.table.Table;
-import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.window.Frame;
 import com.webforj.data.EntityKeysRegistry;
 import java.util.HashMap;

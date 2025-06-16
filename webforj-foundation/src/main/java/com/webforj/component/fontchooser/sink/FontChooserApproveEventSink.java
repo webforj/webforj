@@ -28,7 +28,7 @@ public final class FontChooserApproveEventSink {
       bbjctrl.setCallback(Environment.getCurrent().getBBjAPI().ON_FILECHOOSER_APPROVE,
           Environment.getCurrent().getBridge().getEventProxy(this, "changeEvent"), "onEvent");
     } catch (Exception e) {
-      Environment.logError(e);
+      // Environment.logError(e);;
     }
 
   }
