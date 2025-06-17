@@ -11,6 +11,10 @@ import org.springframework.context.ApplicationContext;
 public class ContextHolder {
   private static volatile ApplicationContext context;
 
+  private ContextHolder() {
+    // Prevent instantiation
+  }
+
   /**
    * Set the {@link ApplicationContext}.
    *

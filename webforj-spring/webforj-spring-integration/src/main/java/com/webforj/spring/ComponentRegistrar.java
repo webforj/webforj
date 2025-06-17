@@ -57,7 +57,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
   private final Logger logger = System.getLogger(ComponentRegistrar.class.getName());
-  private final BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
+  private static final BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
 
   /**
    * {@inheritDoc}
@@ -66,13 +66,12 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
       throws BeansException {
 
-    ClassPathScanningCandidateComponentProvider scanner = createScanner();
-
     // First check if @Routify is defined to determine packages to scan
-    Set<String> packagesToScan = getPackagesToScan(scanner, registry);
+    Set<String> packagesToScan = getPackagesToScan(registry);
 
     // Only register components if @Routify is defined
     if (!packagesToScan.isEmpty()) {
+      ClassPathScanningCandidateComponentProvider scanner = createScanner();
       registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan);
       registerWebforjComponents(scanner, registry, Routify.class, false, packagesToScan);
     }
@@ -97,13 +96,11 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
    * route scanning.
    * </p>
    *
-   * @param scanner the component scanner
    * @param registry the bean definition registry
    *
    * @return set of package names to scan, or empty set if {@code @Routify} is not present
    */
-  private Set<String> getPackagesToScan(ClassPathScanningCandidateComponentProvider scanner,
-      BeanDefinitionRegistry registry) {
+  private Set<String> getPackagesToScan(BeanDefinitionRegistry registry) {
     Set<String> packagesToScan = new HashSet<>();
 
     try {
