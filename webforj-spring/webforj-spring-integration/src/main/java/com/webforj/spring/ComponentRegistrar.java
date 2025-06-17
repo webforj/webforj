@@ -283,21 +283,10 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
    * @return true if the class has Spring management annotations
    */
   boolean isSpringManagedComponent(Class<?> clazz) {
-    // Check for @Component and its stereotypes (@Service, @Repository, @Controller, etc.)
-    if (AnnotationUtils.findAnnotation(clazz, Component.class) != null) {
-      return true;
-    }
-
-    // Check for @Configuration classes
-    if (AnnotationUtils.findAnnotation(clazz, Configuration.class) != null) {
-      return true;
-    }
-
-    // Check for @SpringBootApplication classes
-    if (AnnotationUtils.findAnnotation(clazz, SpringBootApplication.class) != null) {
-      return true;
-    }
-
-    return false;
+    // Check for @Component and its stereotypes (@Service, @Repository, @Controller, etc.),
+    // @Configuration classes, and @SpringBootApplication classes
+    return AnnotationUtils.findAnnotation(clazz, Component.class) != null
+        || AnnotationUtils.findAnnotation(clazz, Configuration.class) != null
+        || AnnotationUtils.findAnnotation(clazz, SpringBootApplication.class) != null;
   }
 }
