@@ -1,5 +1,6 @@
 package com.webforj.spring;
 
+import com.webforj.annotation.Routify;
 import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.conceiver.exception.ConceiverException;
 import java.lang.System.Logger;
@@ -26,16 +27,23 @@ public class SpringConceiver extends DefaultConceiver {
         classOfT.getName());
 
     try {
+      // @Routify classes ALWAYS get fresh instances - never use Spring beans
+      if (classOfT.isAnnotationPresent(Routify.class)) {
+        logger.log(Logger.Level.DEBUG,
+            "Class {0} has @Routify, creating fresh instance with DI (ignoring Spring beans)",
+            classOfT.getName());
+        return context.getAutowireCapableBeanFactory().createBean(classOfT);
+      }
+
       String[] beanNames = context.getBeanNamesForType(classOfT);
 
       if (beanNames.length == 1) {
-        logger.log(Logger.Level.DEBUG,
-            "Located single bean of type {0}, returning existing instance", classOfT.getName());
+        logger.log(Logger.Level.DEBUG, "Using Spring bean for {0} (respects scope automatically)",
+            classOfT.getName());
         return context.getBean(classOfT);
       } else if (beanNames.length > 1) {
         logger.log(Logger.Level.DEBUG,
-            "Multiple beans ({0}) of type {1} detected, instantiating new object", beanNames.length,
-            classOfT.getName());
+            "Multiple beans of type {0} found, creating new instance with DI", classOfT.getName());
         try {
           return context.getAutowireCapableBeanFactory().createBean(classOfT);
         } catch (BeanInstantiationException e) {
@@ -46,8 +54,8 @@ public class SpringConceiver extends DefaultConceiver {
               classOfT.getName(), beanNames.length), e);
         }
       } else {
-        logger.log(Logger.Level.DEBUG,
-            "No existing bean of type {0} available, creating new instance", classOfT.getName());
+        logger.log(Logger.Level.DEBUG, "No bean of type {0} found, creating new instance with DI",
+            classOfT.getName());
         return context.getAutowireCapableBeanFactory().createBean(classOfT);
       }
     } catch (ConceiverException e) {

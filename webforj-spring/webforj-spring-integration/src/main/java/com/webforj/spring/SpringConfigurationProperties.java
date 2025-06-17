@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 25.02
  */
 @ConfigurationProperties(prefix = "webforj")
-public class WebforjConfigurationProperties {
+public class SpringConfigurationProperties {
 
   /**
    * The URL mapping for the Webforj servlet.
@@ -19,6 +19,7 @@ public class WebforjConfigurationProperties {
    * </p>
    */
   private String servletMapping = "/*";
+
 
   /**
    * Sets the URL mapping for the Webforj servlet.
@@ -30,7 +31,7 @@ public class WebforjConfigurationProperties {
   }
 
   /**
-   * Sets the URL mapping for the Webforj servlet.
+   * Gets the URL mapping for the Webforj servlet.
    *
    * @return the URL mapping for the Webforj servlet
    */

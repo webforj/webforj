@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.webforj.annotation.Routify;
 import com.webforj.conceiver.exception.ConceiverException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -15,21 +18,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
-
+import org.springframework.context.ConfigurableApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
 class SpringConceiverTest {
 
   @Mock
-  private ApplicationContext applicationContext;
+  private ConfigurableApplicationContext applicationContext;
 
   @Mock
   private AutowireCapableBeanFactory beanFactory;
 
   private SpringConceiver conceiver;
 
-  static class TestService {
+  public static class TestService {
+  }
+
+  @Routify
+  public static class RoutifyTestApp {
   }
 
   @BeforeEach
@@ -83,6 +89,22 @@ class SpringConceiverTest {
 
       assertNotNull(result);
       assertEquals(expectedService, result);
+    }
+
+    @Test
+    void shouldBypassSpringBeanLookupForRoutifyClasses() {
+      RoutifyTestApp freshInstance = new RoutifyTestApp();
+
+      when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(beanFactory);
+      when(beanFactory.createBean(RoutifyTestApp.class)).thenReturn(freshInstance);
+
+      RoutifyTestApp result = conceiver.get(RoutifyTestApp.class);
+
+      assertNotNull(result);
+      assertEquals(freshInstance, result);
+
+      verify(applicationContext, never()).getBeanNamesForType(RoutifyTestApp.class);
+      verify(applicationContext, never()).getBean(RoutifyTestApp.class);
     }
   }
 

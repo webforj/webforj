@@ -27,31 +27,28 @@ class ContextHolderTest {
   class ContextManagement {
 
     @Test
-    void shouldReturnSameContextWhenSet() {
+    void shouldSetAndGetContext() {
       ContextHolder.setContext(applicationContext);
       assertEquals(applicationContext, ContextHolder.getContext());
     }
 
     @Test
-    void shouldReturnNullWhenContextNotSet() {
-      ApplicationContext result = ContextHolder.getContext();
-      assertNull(result);
-    }
+    void shouldReturnNullWhenContextNotSetOrClearedBySettingNull() {
+      // Initially null
+      assertNull(ContextHolder.getContext());
 
-    @Test
-    void shouldReturnNullWhenContextSetToNull() {
+      // Set context then clear with null
       ContextHolder.setContext(applicationContext);
       ContextHolder.setContext(null);
       assertNull(ContextHolder.getContext());
     }
 
     @Test
-    void shouldReturnNewContextWhenOverwritten() {
+    void shouldOverwriteExistingContext() {
       ApplicationContext firstContext = mock(ApplicationContext.class);
       ApplicationContext secondContext = mock(ApplicationContext.class);
 
       ContextHolder.setContext(firstContext);
-      assertEquals(firstContext, ContextHolder.getContext());
       ContextHolder.setContext(secondContext);
       assertEquals(secondContext, ContextHolder.getContext());
     }

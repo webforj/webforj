@@ -14,21 +14,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 
 /**
- * Unit tests for {@link WebforjAutoConfiguration}.
+ * Unit tests for {@link SpringAutoConfiguration}.
  *
  * @author Hyyan Abo Fakher
  */
 @ExtendWith(MockitoExtension.class)
-class WebforjAutoConfigurationTest {
+class SpringAutoConfigurationTest {
 
   @Mock
-  private WebforjConfigurationProperties properties;
+  private SpringConfigurationProperties properties;
 
-  private WebforjAutoConfiguration autoConfiguration;
+  private SpringAutoConfiguration autoConfiguration;
 
   @BeforeEach
   void setUp() {
-    autoConfiguration = new WebforjAutoConfiguration();
+    autoConfiguration = new SpringAutoConfiguration();
   }
 
   @Nested
@@ -57,14 +57,6 @@ class WebforjAutoConfigurationTest {
       assertNotNull(registrationBean);
       assertNotNull(registrationBean.getServlet());
       assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
-    }
-
-    @Test
-    void shouldSetLoadOnStartupToOne() {
-      when(properties.getServletMapping()).thenReturn("/*");
-
-      ServletRegistrationBean<WebforjServlet> registrationBean =
-          autoConfiguration.webforjServletRegistration(properties);
     }
 
     @Test
@@ -101,6 +93,28 @@ class WebforjAutoConfigurationTest {
       assertNotNull(contextInjector1);
       assertNotNull(contextInjector2);
       assert contextInjector1 != contextInjector2;
+    }
+  }
+
+  @Nested
+  class ComponentRegistrarBean {
+
+    @Test
+    void shouldCreateComponentRegistrarBean() {
+      ComponentRegistrar registrar = autoConfiguration.webforjComponentRegistrar();
+
+      assertNotNull(registrar);
+      assertEquals(ComponentRegistrar.class, registrar.getClass());
+    }
+
+    @Test
+    void shouldCreateNewComponentRegistrarInstanceEachTime() {
+      ComponentRegistrar registrar1 = autoConfiguration.webforjComponentRegistrar();
+      ComponentRegistrar registrar2 = autoConfiguration.webforjComponentRegistrar();
+
+      assertNotNull(registrar1);
+      assertNotNull(registrar2);
+      assert registrar1 != registrar2;
     }
   }
 }

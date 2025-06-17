@@ -14,27 +14,21 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Auto-configuration for the Webforj servlet.
  *
- * <p>
- * This configuration registers the {@link WebforjServlet} with the embedded servlet container. By
- * default, the servlet is mapped to "/" (the root), but this can be overridden by setting the
- * property {@code webforj.servlet.mapping} in the application configuration.
- * </p>
- *
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
 @Configuration
 @ConditionalOnClass(ServletContextInitializer.class)
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(WebforjConfigurationProperties.class)
-public class WebforjAutoConfiguration {
-  Logger logger = System.getLogger(WebforjAutoConfiguration.class.getName());
+@EnableConfigurationProperties(SpringConfigurationProperties.class)
+public class SpringAutoConfiguration {
+  Logger logger = System.getLogger(SpringAutoConfiguration.class.getName());
 
   /**
-   * Registers the {@link WebforjServlet} with the Spring Boot embedded container.
+   * Registers the {@link WebforjServlet}.
    *
    * <p>
-   * The servlet is mapped based on the {@code webforj.servlet.mapping} property. By default, this
+   * The servlet is mapped based on the {@code webforj.servletMapping} property. By default, this
    * is "/", but users can change it via their application configuration.
    * </p>
    *
@@ -42,7 +36,7 @@ public class WebforjAutoConfiguration {
    */
   @Bean
   public ServletRegistrationBean<WebforjServlet> webforjServletRegistration(
-      WebforjConfigurationProperties properties) {
+      SpringConfigurationProperties properties) {
     logger.log(Logger.Level.DEBUG,
         "Registering WebforjServlet with mapping " + properties.getServletMapping());
 
@@ -56,6 +50,27 @@ public class WebforjAutoConfiguration {
     registrationBean.setLoadOnStartup(1);
     logger.log(Logger.Level.DEBUG, "Setting load-on-startup to 1.");
     return registrationBean;
+  }
+
+  /**
+   * Creates the component registrar that automatically registers webforj components as Spring
+   * beans.
+   *
+   * <p>
+   * This registrar will:
+   * </p>
+   * <ul>
+   * <li>Scan for classes annotated with {@code @Route}</li>
+   * <li>Register {@code @Route} classes as PROTOTYPE and LAZY Spring beans</li>
+   * <li>Skip classes already managed by Spring (e.g., {@code @Component}, {@code @Service})</li>
+   * <li>Only scan packages specified in {@code @Routify.packages()} or the application package</li>
+   * </ul>
+   *
+   * @return the {@link ComponentRegistrar}
+   */
+  @Bean
+  public ComponentRegistrar webforjComponentRegistrar() {
+    return new ComponentRegistrar();
   }
 
   /**

@@ -6,13 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class WebforjConfigurationPropertiesTest {
+class SpringConfigurationPropertiesTest {
 
-  private WebforjConfigurationProperties properties;
+  private SpringConfigurationProperties properties;
 
   @BeforeEach
   void setUp() {
-    properties = new WebforjConfigurationProperties();
+    properties = new SpringConfigurationProperties();
   }
 
   @ParameterizedTest
