@@ -28,8 +28,8 @@ public class SpringAutoConfiguration {
    * Registers the {@link WebforjServlet}.
    *
    * <p>
-   * The servlet is mapped based on the {@code webforj.servletMapping} property. By default, this
-   * is "/", but users can change it via their application configuration.
+   * The servlet is mapped based on the {@code webforj.servletMapping} property. By default, this is
+   * "/", but users can change it via their application configuration.
    * </p>
    *
    * @return the {@link ServletRegistrationBean} for the {@link WebforjServlet}
