@@ -28,6 +28,7 @@ replay_pid*
 *.iml
 /.project
 /.classpath
+/.claude
 **/sample/
 
 /.settings/org.eclipse.core.resources.prefs
