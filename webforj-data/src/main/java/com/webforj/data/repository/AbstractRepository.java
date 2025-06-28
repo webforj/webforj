@@ -20,14 +20,19 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractRepository<T> implements Repository<T> {
   private final EventDispatcher eventDispatcher = new EventDispatcher();
-  private final RetrievalBuilder<T> defaultCriteria = new RetrievalBuilder<>();
+  private int offset = 0;
+  private int limit = Integer.MAX_VALUE;
+  private Comparator<T> orderBy = null;
+  private Predicate<T> filter = null;
+  private final OrderCriteriaList<T> orderCriteriaList = new OrderCriteriaList<>();
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public AbstractRepository<T> setFilter(Predicate<T> filter) {
-    defaultCriteria.setFilter(filter);
+    this.filter = filter;
     return this;
   }
 
@@ -35,8 +40,28 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    * {@inheritDoc}
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public Predicate<T> getFilter() {
-    return defaultCriteria.getFilter();
+    return filter;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Deprecated(since = "25.02", forRemoval = true)
+  public AbstractRepository<T> setOrderBy(Comparator<T> orderBy) {
+    this.orderBy = orderBy;
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Deprecated(since = "25.02", forRemoval = true)
+  public Comparator<T> getOrderBy() {
+    return orderBy;
   }
 
   /**
@@ -44,7 +69,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public AbstractRepository<T> setLimit(int limit) {
-    defaultCriteria.setLimit(limit);
+    this.limit = limit;
     return this;
   }
 
@@ -53,7 +78,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public int getLimit() {
-    return defaultCriteria.getLimit();
+    return limit;
   }
 
   /**
@@ -61,7 +86,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public AbstractRepository<T> setOffset(int offset) {
-    defaultCriteria.setOffset(offset);
+    this.offset = offset;
     return this;
   }
 
@@ -70,24 +95,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public int getOffset() {
-    return defaultCriteria.getOffset();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public AbstractRepository<T> setOrderBy(Comparator<T> orderBy) {
-    defaultCriteria.setOrderBy(orderBy);
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Comparator<T> getOrderBy() {
-    return defaultCriteria.getOrderBy();
+    return offset;
   }
 
   /**
@@ -95,7 +103,7 @@ public abstract class AbstractRepository<T> implements Repository<T> {
    */
   @Override
   public OrderCriteriaList<T> getOrderCriteriaList() {
-    return defaultCriteria.getOrderCriteriaList();
+    return orderCriteriaList;
   }
 
   /**

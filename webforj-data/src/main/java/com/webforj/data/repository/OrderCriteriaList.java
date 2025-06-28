@@ -110,9 +110,9 @@ public class OrderCriteriaList<T> implements Iterable<OrderCriteria<T, ?>> {
   }
 
   /**
-   * Returns the list of OrderCriteria.
+   * Returns the size of the list.
    *
-   * @return the list of OrderCriteria.
+   * @return the size of the list.
    */
   public int size() {
     return list.size();

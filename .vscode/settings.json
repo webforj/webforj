@@ -34,5 +34,6 @@
     "org.graalvm.*",
     "io.micrometer.shaded.*",
     "javax.swing.*",
-  ]
+  ],
+  "java.jdt.ls.vmargs": "--add-opens=java.base/java.io=ALL-UNNAMED --add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED -XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
 }

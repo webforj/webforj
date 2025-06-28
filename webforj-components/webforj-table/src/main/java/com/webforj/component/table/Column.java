@@ -134,6 +134,7 @@ public final class Column<T, V> implements Serializable {
   private String cellRenderer = null;
   private Alignment align = Alignment.LEFT;
   private Type type = null;
+  private String propertyName = null;
 
   /**
    * Constructs a column with the given id.
@@ -474,6 +475,34 @@ public final class Column<T, V> implements Serializable {
    */
   public Alignment getAlignment() {
     return align;
+  }
+
+  /**
+   * Sets the property name/path for this column. This is used by backend repositories that need
+   * property names for SQL/REST queries. If not set, backend repositories may use the column ID as
+   * a fallback.
+   *
+   * @param propertyName the property name/path (e.g., "name", "address.city, address.country")
+   * @return the column itself
+   * @since 25.02
+   */
+  public Column<T, V> setPropertyName(String propertyName) {
+    String oldPropertyName = this.propertyName;
+    this.propertyName = propertyName;
+    changeSupport.firePropertyChange("propertyName", oldPropertyName, propertyName);
+
+    return this;
+  }
+
+  /**
+   * Returns the property name/path for this column. If not explicitly set, returns the column ID as
+   * a fallback.
+   *
+   * @return the property name
+   * @since 25.02
+   */
+  public String getPropertyName() {
+    return propertyName != null ? propertyName : getId();
   }
 
   /**
