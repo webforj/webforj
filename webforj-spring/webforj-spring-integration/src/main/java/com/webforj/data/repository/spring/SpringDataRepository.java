@@ -2,6 +2,7 @@ package com.webforj.data.repository.spring;
 
 import com.webforj.data.repository.AbstractQueryableRepository;
 import com.webforj.data.repository.OrderCriteria;
+import com.webforj.data.repository.OrderCriteriaList;
 import com.webforj.data.repository.RepositoryCriteria;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,8 +167,7 @@ import org.springframework.data.repository.Repository;
  *
  * <pre>{@code
  * // Table shows full name but needs to sort by firstName, lastName
- * table.addColumn("fullName", Customer::getFullName)
- *     .setPropertyName("firstName,lastName");
+ * table.addColumn("fullName", Customer::getFullName).setPropertyName("firstName,lastName");
  *
  * // The repository will automatically create multiple sort orders:
  * // ORDER BY firstName ASC, lastName ASC
@@ -310,101 +310,52 @@ public class SpringDataRepository<T, K> extends AbstractQueryableRepository<T, S
     int limit = query.getLimit();
 
     // Convert OrderCriteria to Spring Data Sort
-    Sort sort = Sort.unsorted();
-    if (query.getOrderCriteria() != null && query.getOrderCriteria().size() > 0) {
-      List<Sort.Order> orders = new ArrayList<>();
-      for (OrderCriteria<T, ?> criteria : query.getOrderCriteria()) {
-        String propertyName = criteria.getPropertyName();
-        if (propertyName != null) {
-          // Handle composite properties separated by commas
-          if (propertyName.contains(",")) {
-            String[] properties = propertyName.split(",");
-            for (String property : properties) {
-              String trimmedProperty = property.trim();
-              if (!trimmedProperty.isEmpty()) {
-                Sort.Order order = criteria.getDirection() == OrderCriteria.Direction.ASC
-                    ? Sort.Order.asc(trimmedProperty)
-                    : Sort.Order.desc(trimmedProperty);
-                orders.add(order);
-              }
-            }
-          } else {
-            // Single property
-            Sort.Order order = criteria.getDirection() == OrderCriteria.Direction.ASC
-                ? Sort.Order.asc(propertyName)
-                : Sort.Order.desc(propertyName);
-            orders.add(order);
-          }
-        }
-      }
-
-      if (!orders.isEmpty()) {
-        sort = Sort.by(orders);
-      }
-    }
+    Sort sort = convertToSpringSort(query.getOrderCriteria());
 
     // Optimized pagination handling
-    Page<T> result = null;
-    Stream<T> stream = null;
+    Page<T> result;
+    PageRequest pageRequest;
+    boolean needsSkipAndLimit = false;
 
     // Check if offset aligns with limit (common case)
     if (offset % limit == 0) {
       // Aligned case: can fetch exact page
       int page = offset / limit;
-      PageRequest pageRequest = PageRequest.of(page, limit, sort);
-
-      if (spec != null) {
-        // We have a specification, need JpaSpecificationExecutor
-        if (specificationExecutor != null) {
-          result = specificationExecutor.findAll(spec, pageRequest);
-        }
-      } else {
-        // No specification - try paging repository first, then specification executor
-        if (pagingRepository != null) {
-          result = pagingRepository.findAll(pageRequest);
-        } else if (specificationExecutor != null) {
-          result = specificationExecutor.findAll(null, pageRequest);
-        }
-      }
-
-      if (result == null) {
-        // No suitable repository interface available
-        throw new UnsupportedOperationException(
-            "Repository must implement PagingAndSortingRepository or JpaSpecificationExecutor "
-                + "for pagination support");
-      }
-
-      // No need to skip/limit for aligned pages
-      stream = result.stream();
+      pageRequest = PageRequest.of(page, limit, sort);
     } else {
       // Non-aligned case: Spring Data's page-based API doesn't map cleanly to offset/limit
       // The simplest correct approach is to fetch offset+limit items and skip offset
-      PageRequest pageRequest = PageRequest.of(0, offset + limit, sort);
+      pageRequest = PageRequest.of(0, offset + limit, sort);
+      needsSkipAndLimit = true;
+    }
 
-      if (spec != null) {
-        if (specificationExecutor != null) {
-          result = specificationExecutor.findAll(spec, pageRequest);
-        }
-      } else {
-        if (pagingRepository != null) {
-          result = pagingRepository.findAll(pageRequest);
-        } else if (specificationExecutor != null) {
-          result = specificationExecutor.findAll(null, pageRequest);
-        }
+    // Execute the query based on available interfaces
+    if (spec != null) {
+      // We have a specification, need JpaSpecificationExecutor
+      if (specificationExecutor == null) {
+        throw new UnsupportedOperationException(
+            "Repository must implement JpaSpecificationExecutor to use Specification filters");
       }
-
-      if (result == null) {
-        // No suitable repository interface available
+      result = specificationExecutor.findAll(spec, pageRequest);
+    } else {
+      // No specification - try paging repository first, then specification executor
+      if (pagingRepository != null) {
+        result = pagingRepository.findAll(pageRequest);
+      } else if (specificationExecutor != null) {
+        result = specificationExecutor.findAll(null, pageRequest);
+      } else {
         throw new UnsupportedOperationException(
             "Repository must implement PagingAndSortingRepository or JpaSpecificationExecutor "
                 + "for pagination support");
       }
-
-      // Skip offset items and take only limit items
-      stream = result.stream().skip(offset).limit(limit);
     }
 
-    return stream;
+    // Apply skip and limit for non-aligned cases
+    if (needsSkipAndLimit) {
+      return result.stream().skip(offset).limit(limit);
+    } else {
+      return result.stream();
+    }
   }
 
   /**
@@ -444,5 +395,50 @@ public class SpringDataRepository<T, K> extends AbstractQueryableRepository<T, S
     }
 
     return (int) specificationExecutor.count(spec);
+  }
+
+  /**
+   * Converts webforj OrderCriteria to Spring Data Sort.
+   *
+   * <p>
+   * This method handles both simple and composite property names. Composite properties (separated
+   * by commas) are expanded into multiple sort orders.
+   * </p>
+   *
+   * @param orderCriteriaList List of order criteria to convert
+   * @return Spring Data Sort object, or Sort.unsorted() if the list is empty
+   */
+  private Sort convertToSpringSort(OrderCriteriaList<T> orderCriteriaList) {
+    if (orderCriteriaList.size() == 0) {
+      return Sort.unsorted();
+    }
+
+    List<Sort.Order> orders = new ArrayList<>();
+    for (OrderCriteria<T, ?> criteria : orderCriteriaList) {
+      String propertyName = criteria.getPropertyName();
+      if (propertyName != null) {
+        // Handle composite properties separated by commas
+        if (propertyName.contains(",")) {
+          String[] properties = propertyName.split(",");
+          for (String property : properties) {
+            String trimmedProperty = property.trim();
+            if (!trimmedProperty.isEmpty()) {
+              Sort.Order order = criteria.getDirection() == OrderCriteria.Direction.ASC
+                  ? Sort.Order.asc(trimmedProperty)
+                  : Sort.Order.desc(trimmedProperty);
+              orders.add(order);
+            }
+          }
+        } else {
+          // Single property
+          Sort.Order order =
+              criteria.getDirection() == OrderCriteria.Direction.ASC ? Sort.Order.asc(propertyName)
+                  : Sort.Order.desc(propertyName);
+          orders.add(order);
+        }
+      }
+    }
+
+    return orders.isEmpty() ? Sort.unsorted() : Sort.by(orders);
   }
 }
