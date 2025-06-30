@@ -48,6 +48,8 @@ public class TableItemSelectionChange<T> extends TableEvent<T> implements Select
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -68,6 +70,8 @@ public class TableItemSelectionChange<T> extends TableEvent<T> implements Select
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)

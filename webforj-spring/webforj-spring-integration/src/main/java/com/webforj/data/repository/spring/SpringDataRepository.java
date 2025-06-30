@@ -306,8 +306,8 @@ public class SpringDataRepository<T, K> extends AbstractQueryableRepository<T, S
     }
 
     // Get offset and limit from query
-    int offset = (int) query.getOffset();
-    int limit = (int) query.getLimit();
+    int offset = query.getOffset();
+    int limit = query.getLimit();
 
     // Convert OrderCriteria to Spring Data Sort
     Sort sort = Sort.unsorted();

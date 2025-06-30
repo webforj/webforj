@@ -28,6 +28,8 @@ public abstract class AbstractRepository<T> implements Repository<T> {
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #setBaseFilter(Predicate)} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -38,6 +40,8 @@ public abstract class AbstractRepository<T> implements Repository<T> {
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getBaseFilter()} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -47,6 +51,8 @@ public abstract class AbstractRepository<T> implements Repository<T> {
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -57,6 +63,8 @@ public abstract class AbstractRepository<T> implements Repository<T> {
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getOrderCriteriaList()} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)

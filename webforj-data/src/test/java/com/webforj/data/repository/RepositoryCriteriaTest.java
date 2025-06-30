@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
 
-class RepositoryQueryTest {
+class RepositoryCriteriaTest {
 
   @Test
   void shouldCreateQueryWithAllParameters() {
@@ -81,7 +81,7 @@ class RepositoryQueryTest {
 
   @Test
   void shouldImplementEqualsAndHashCode() {
-    Predicate<String> filter = s -> s.length() > 0;
+    Predicate<String> filter = s -> s.isEmpty();
     var orderCriteria =
         new OrderCriteriaList<>(new OrderCriteria<>(String::length, OrderCriteria.Direction.ASC));
 

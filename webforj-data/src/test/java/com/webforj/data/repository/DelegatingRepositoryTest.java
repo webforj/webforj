@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,7 +123,7 @@ class DelegatingRepositoryTest {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query =
         new RepositoryCriteria<>(1, 3, null, entity -> entity.getValue() >= 30);
 
-    List<TestEntity> result = delegatingRepo.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = delegatingRepo.findBy(query).toList();
     assertEquals(2, result.size());
     assertEquals("Delta", result.get(0).getName());
     assertEquals("Epsilon", result.get(1).getName());
@@ -228,7 +227,7 @@ class DelegatingRepositoryTest {
     delegatingRepo.getOrderCriteriaList()
         .add(new OrderCriteria<>(TestEntity::getName, OrderCriteria.Direction.DESC));
 
-    List<TestEntity> result = delegatingRepo.findAll().collect(Collectors.toList());
+    List<TestEntity> result = delegatingRepo.findAll().toList();
 
     // With filter (>=20): Beta(20), Gamma(30), Delta(40), Epsilon(50)
     // Sorted DESC by name: Gamma, Epsilon, Delta, Beta

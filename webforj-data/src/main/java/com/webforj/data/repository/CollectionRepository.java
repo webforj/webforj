@@ -33,6 +33,8 @@ public class CollectionRepository<T> extends AbstractRepository<T>
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #setBaseFilter(Predicate)} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -61,6 +63,8 @@ public class CollectionRepository<T> extends AbstractRepository<T>
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -70,6 +74,8 @@ public class CollectionRepository<T> extends AbstractRepository<T>
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -85,6 +91,8 @@ public class CollectionRepository<T> extends AbstractRepository<T>
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02. Use {@link #findBy(RepositoryCriteria)} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
