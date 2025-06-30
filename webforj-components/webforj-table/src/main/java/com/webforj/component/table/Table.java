@@ -130,7 +130,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   private static final record ClientItem(String id, JsonObject data, JsonArray rowParts,
-      JsonObject cellParts) {}
+      JsonObject cellParts) {
+  }
 
   private static final String GET_ROW_ID_EXP = "row.data.__APPID__";
   private static final String GET_ROW_PART_EXP = """
@@ -529,6 +530,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #selectKey(Object...)} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -579,6 +582,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #deselectKey(Object...)} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -606,6 +611,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
@@ -616,6 +623,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedKeys()} instead.
    */
   @Override
   @Deprecated(since = "25.02", forRemoval = true)
