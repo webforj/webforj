@@ -1,6 +1,9 @@
 package com.webforj.data.repository.spring;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.data.repository.OrderCriteria;
 import com.webforj.data.repository.OrderCriteriaList;
