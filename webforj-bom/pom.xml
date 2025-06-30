@@ -19,6 +19,12 @@
     <dependencies>
       <dependency>
         <groupId>com.webforj</groupId>
+        <artifactId>webforj</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.webforj</groupId>
         <artifactId>webforj-foundation</artifactId>
         <version>${project.version}</version>
       </dependency>
