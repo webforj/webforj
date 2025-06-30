@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,7 @@ class QueryableRepositoryTest {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query =
         new RepositoryCriteria<>(0, Integer.MAX_VALUE, null, filter);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(3, result.size());
     assertEquals("Charlie", result.get(0).getName());
@@ -41,7 +40,7 @@ class QueryableRepositoryTest {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query =
         new RepositoryCriteria<>(1, 2, null, null);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(2, result.size());
     assertEquals("Bob", result.get(0).getName());
@@ -56,7 +55,7 @@ class QueryableRepositoryTest {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query =
         new RepositoryCriteria<>(0, Integer.MAX_VALUE, orderCriteriaList, null);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(5, result.size());
     assertEquals("Eve", result.get(0).getName());
@@ -85,7 +84,7 @@ class QueryableRepositoryTest {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query =
         new RepositoryCriteria<>(1, 2, orderCriteriaList, filter);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(2, result.size());
     assertEquals("Charlie", result.get(0).getName());
@@ -97,7 +96,7 @@ class QueryableRepositoryTest {
     Predicate<TestEntity> filter = e -> e.getAge() > 35;
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query = new RepositoryCriteria<>(filter);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(2, result.size());
     assertEquals("David", result.get(0).getName());
@@ -108,7 +107,7 @@ class QueryableRepositoryTest {
   void shouldFindAllWithPaginationOnlyConstructor() {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query = new RepositoryCriteria<>(2, 2);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(2, result.size());
     assertEquals("Charlie", result.get(0).getName());
@@ -121,7 +120,7 @@ class QueryableRepositoryTest {
     RepositoryCriteria<TestEntity, Predicate<TestEntity>> query =
         new RepositoryCriteria<>(0, 2, filter);
 
-    List<TestEntity> result = repository.findBy(query).collect(Collectors.toList());
+    List<TestEntity> result = repository.findBy(query).toList();
 
     assertEquals(2, result.size());
     assertEquals("Bob", result.get(0).getName());
