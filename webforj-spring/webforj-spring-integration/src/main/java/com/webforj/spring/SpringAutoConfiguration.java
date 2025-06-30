@@ -69,7 +69,7 @@ public class SpringAutoConfiguration {
    * @return the {@link ComponentRegistrar}
    */
   @Bean
-  public ComponentRegistrar webforjComponentRegistrar() {
+  public static ComponentRegistrar webforjComponentRegistrar() {
     return new ComponentRegistrar();
   }
 
