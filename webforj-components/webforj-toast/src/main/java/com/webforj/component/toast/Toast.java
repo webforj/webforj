@@ -2,6 +2,7 @@ package com.webforj.component.toast;
 
 import com.google.gson.annotations.SerializedName;
 import com.webforj.App;
+import com.webforj.component.Component;
 import com.webforj.component.ComponentLifecycleObserver;
 import com.webforj.component.Theme;
 import com.webforj.component.element.ElementCompositeContainer;
@@ -199,6 +200,16 @@ public class Toast extends ElementCompositeContainer
    */
   public Toast() {
     this("");
+  }
+
+  /**
+   * Adds components to the message slot of the toast.
+   *
+   * @return the component itself.
+   */
+  public Toast addToMessage(Component... components) {
+    getElement().add("message", components);
+    return this;
   }
 
   /**
