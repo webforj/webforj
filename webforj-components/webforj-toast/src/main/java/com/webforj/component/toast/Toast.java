@@ -205,6 +205,7 @@ public class Toast extends ElementCompositeContainer
   /**
    * Adds components to the message slot of the toast.
    *
+   * @param components the components to add to the message.
    * @return the component itself.
    */
   public Toast addToMessage(Component... components) {
