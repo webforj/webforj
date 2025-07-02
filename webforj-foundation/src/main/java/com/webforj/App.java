@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -141,7 +142,7 @@ public abstract class App {
    */
   public static final AppCloseAction NONE_ACTION = new NoneAction();
 
-  private static int appCounter = 0;
+  private static final AtomicInteger appCounter = new AtomicInteger(0);
   private final String appId;
   private boolean isInitialized = false;
 
@@ -149,7 +150,7 @@ public abstract class App {
    * Creates a new App instance with a unique ID.
    */
   protected App() {
-    this.appId = String.format("%s-%d", getClass().getSimpleName(), ++appCounter);
+    this.appId = String.format("%s-%d", getClass().getSimpleName(), appCounter.incrementAndGet());
   }
 
   /**
