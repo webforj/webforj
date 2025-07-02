@@ -496,14 +496,14 @@ public abstract class App {
       frame.destroy();
     }
 
-    Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("webforjTerminateSignal", null);
-
     // Notify listeners after termination but before onDidTerminate hook
     notifyListeners(listener -> listener.onDidTerminate(this));
     onDidTerminate();
 
     // Clean up listeners
     AppLifecycleListenerRegistry.unregisterListeners(this);
+
+    Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("webforjTerminateSignal", null);
   }
 
   /**
