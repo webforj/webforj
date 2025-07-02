@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public final class AppLifecycleListenerRegistry {
+final class AppLifecycleListenerRegistry {
   private static final Logger logger =
       System.getLogger(AppLifecycleListenerRegistry.class.getName());
 
@@ -56,7 +56,7 @@ public final class AppLifecycleListenerRegistry {
    *
    * @param app the App instance to register listeners for
    */
-  public static void registerListeners(App app) {
+  static void registerListeners(App app) {
     if (app == null) {
       return;
     }
@@ -102,7 +102,7 @@ public final class AppLifecycleListenerRegistry {
    * @param app the App instance
    * @return a collection of listeners, or an empty collection if none are registered
    */
-  public static Collection<AppLifecycleListener> getListeners(App app) {
+  static Collection<AppLifecycleListener> getListeners(App app) {
     if (app == null) {
       return Collections.emptyList();
     }
@@ -119,7 +119,7 @@ public final class AppLifecycleListenerRegistry {
    *
    * @param app the App instance to unregister listeners for
    */
-  public static void unregisterListeners(App app) {
+  static void unregisterListeners(App app) {
     List<AppLifecycleListener> removed = appListeners.remove(app);
     if (removed != null && !removed.isEmpty()) {
       logger.log(Level.INFO,
