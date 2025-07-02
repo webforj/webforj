@@ -19,18 +19,113 @@ import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.RouterDevUtils;
 import com.webforj.router.event.NavigateEvent;
+import java.lang.System.Logger;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
- * This is the central class representing an app. In order to implement an app, extend this class
- * and override the run() method.
+ * The central foundation class for all webforJ applications.
  *
+ * <p>
+ * The {@code App} class serves as the core framework for building webforJ applications, providing
+ * essential lifecycle management, configuration capabilities, and runtime utilities. Every webforJ
+ * application must extend this abstract class to define its behavior.
+ * </p>
+ *
+ * <h2>Basic Usage</h2>
+ * <p>
+ * To create a webforJ application, extend this class and override the {@link #run()} method:
+ * </p>
+ *
+ * <pre>{@code
+ * public class MyApplication extends App {
+ *   &#64;Override
+ *   public void run() throws WebforjException {
+ *     Frame frame = new Frame();
+ *     Button button = new Button("Hello World!");
+ *     frame.add(button);
+ *   }
+ * }
+ * }</pre>
+ *
+ * <h2>Application Entry Point</h2>
+ * <p>
+ * The framework automatically discovers and initializes the App subclass through classpath
+ * scanning. If multiple App subclasses exist, use the {@link com.webforj.annotation.AppEntry}
+ * annotation to designate the main entry point, or specify it in webforj configuration file.
+ * </p>
+ *
+ * <h2>Routing Support</h2>
+ * <p>
+ * For applications using routing, annotate the App class with {@link Routify}:
+ * </p>
+ *
+ * <pre>{@code
+ * &#64;Routify(packages = "com.myapp.views", debug = true)
+ * &#64;AppTitle("My Routed Application")
+ * public class MyRoutedApp extends App {
+ *   // No need to override run() - routing handles initialization
+ * }
+ * }</pre>
+ *
+ * <h2>Lifecycle Management</h2>
+ * <p>
+ * The App class provides a lifecycle with the following phases:
+ * </p>
+ * <ol>
+ * <li><b>Initialization</b> - Framework initializes the application</li>
+ * <li><b>Pre-execution</b> - {@link #onWillRun()} hook and lifecycle listeners notified</li>
+ * <li><b>Execution</b> - {@link #run()} method executes</li>
+ * <li><b>Post-execution</b> - Lifecycle listeners notified, then {@link #onDidRun()} hook</li>
+ * <li><b>Pre-termination</b> - Lifecycle listeners notified, then {@link #onWillTerminate()}
+ * hook</li>
+ * <li><b>Termination</b> - Resources cleaned up</li>
+ * <li><b>Post-termination</b> - Lifecycle listeners notified, then {@link #onDidTerminate()}
+ * hook</li>
+ * </ol>
+ *
+ * <h2>Lifecycle Listeners</h2>
+ * <p>
+ * External components can observe App lifecycle events by implementing {@link AppLifecycleListener}
+ * and registering via ServiceLoader:
+ * </p>
+ *
+ * <pre>{@code
+ * &#64;AppListenerPriority(5)
+ * public class MyLifecycleListener implements AppLifecycleListener {
+ *   &#64;Override
+ *   public void onDidRun(App app) {
+ *     // Perform initialization after app runs
+ *   }
+ * }
+ * }</pre>
+ *
+ * <h2>Termination Handling</h2>
+ * <p>
+ * Applications can customize termination and error behavior using:
+ * </p>
+ *
+ * <pre>{@code
+ * public class MyApp extends App {
+ *   &#64;Override
+ *   public void run() {
+ *     setTerminateAction(new MessageAction("Thank you!"));
+ *     setErrorAction(new RedirectAction("https://support.example.com"));
+ *   }
+ * }
+ * }</pre>
+ *
+ * @author Stephan Wald
+ * @author Hyyan Abo Fakher
+ * @since 0.001
  */
-@SuppressWarnings("java:S1610") // we want this to be abstract class, not interface
 public abstract class App {
+  private static final Logger logger = System.getLogger(App.class.getName());
+
   /**
    * A default app action is to clear the browser and display a localized message of "Click to
    * reload application", with a link to the application when the application is terminated or error
@@ -46,7 +141,25 @@ public abstract class App {
    */
   public static final AppCloseAction NONE_ACTION = new NoneAction();
 
+  private static int appCounter = 0;
+  private final String appId;
   private boolean isInitialized = false;
+
+  /**
+   * Creates a new App instance with a unique ID.
+   */
+  protected App() {
+    this.appId = String.format("%s-%d", getClass().getSimpleName(), ++appCounter);
+  }
+
+  /**
+   * Gets the unique identifier for this App instance.
+   *
+   * @return the app instance ID
+   */
+  public String getId() {
+    return appId;
+  }
 
   /**
    * This is the main entry point for the application. It is called by the framework to initialize
@@ -58,6 +171,19 @@ public abstract class App {
     if (isInitialized) {
       throw new WebforjAppInitializeException("App is already initialized.");
     }
+
+    String mode = Environment.isRunningWithBBjServices() ? "BBjServices" : "Standalone";
+    boolean routingEnabled = isRoutable();
+
+    // @formatter:off
+    logger.log(Logger.Level.INFO, String.format(
+        "Starting %s [Mode: %s, Routing: %s, Java: %s, Locale: %s]",
+        appId,
+        mode,
+        routingEnabled ? "enabled" : "disabled",
+        System.getProperty("java.version"),
+        getLocale()));
+    // @formatter:on
 
     try {
       String key = "PARSE_REQUEST_THEME";
@@ -71,13 +197,21 @@ public abstract class App {
       Page.getCurrent().onUnload(ev -> terminate());
 
       initializeRouter();
+      initializeLifecycleListeners();
+
+      // Notify listeners before onWillRun
+      notifyListeners(listener -> listener.onWillRun(this));
       onWillRun();
+
       AnnotationProcessor processor = new AnnotationProcessor();
       processor.processAppAnnotations(this);
       createFirstFrame();
       run();
       resolveFirstRoute();
       isInitialized = true;
+
+      // Notify listeners after run() but before onDidRun hook
+      notifyListeners(listener -> listener.onDidRun(this));
       onDidRun();
     } catch (Exception e) {
       if (!isCausedByChannelTermination(e)) {
@@ -336,6 +470,10 @@ public abstract class App {
    * Terminate the application.
    */
   public final void terminate() {
+    logger.log(Logger.Level.INFO, String.format("Terminating %s", appId));
+
+    // Notify listeners before onWillTerminate
+    notifyListeners(listener -> listener.onWillTerminate(this));
     onWillTerminate();
 
     // dispose the page
@@ -358,7 +496,12 @@ public abstract class App {
 
     Environment.getCurrent().getBBjAPI().postPriorityCustomEvent("webforjTerminateSignal", null);
 
+    // Notify listeners after termination but before onDidTerminate hook
+    notifyListeners(listener -> listener.onDidTerminate(this));
     onDidTerminate();
+
+    // Clean up listeners
+    AppLifecycleListenerRegistry.unregisterListeners(this);
   }
 
   /**
@@ -693,5 +836,35 @@ public abstract class App {
 
   Environment getEnvironment() {
     return Environment.getCurrent();
+  }
+
+
+  /**
+   * Initializes lifecycle listeners for the application.
+   */
+  private void initializeLifecycleListeners() {
+    AppLifecycleListenerRegistry.registerListeners(this);
+
+    logger.log(java.lang.System.Logger.Level.DEBUG,
+        "Initialized lifecycle listeners using ServiceLoader");
+  }
+
+  /**
+   * Notifies all registered lifecycle listeners.
+   *
+   * @param action the action to perform on each listener
+   */
+  private void notifyListeners(Consumer<AppLifecycleListener> action) {
+    Collection<AppLifecycleListener> listeners = AppLifecycleListenerRegistry.getListeners(this);
+
+    for (AppLifecycleListener listener : listeners) {
+      try {
+        action.accept(listener);
+      } catch (Exception e) {
+        logger.log(Logger.Level.ERROR,
+            "Error in lifecycle listener: " + listener.getClass().getName(), e);
+        // Continue with other listeners even if one fails
+      }
+    }
   }
 }
