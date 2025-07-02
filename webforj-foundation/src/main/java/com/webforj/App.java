@@ -199,9 +199,9 @@ public abstract class App {
       initializeRouter();
       initializeLifecycleListeners();
 
-      // Notify listeners before onWillRun
-      notifyListeners(listener -> listener.onWillRun(this));
+      // Notify listeners after onWillRun
       onWillRun();
+      notifyListeners(listener -> listener.onWillRun(this));
 
       AnnotationProcessor processor = new AnnotationProcessor();
       processor.processAppAnnotations(this);
