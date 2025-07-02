@@ -472,9 +472,10 @@ public abstract class App {
   public final void terminate() {
     logger.log(Logger.Level.INFO, String.format("Terminating %s", appId));
 
-    // Notify listeners before onWillTerminate
-    notifyListeners(listener -> listener.onWillTerminate(this));
+    // Invoke onWillTerminate hook
     onWillTerminate();
+    // Notify listeners after onWillTerminate
+    notifyListeners(listener -> listener.onWillTerminate(this));
 
     // dispose the page
     Page page = Page.getCurrent();
