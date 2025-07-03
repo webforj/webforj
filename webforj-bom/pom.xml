@@ -41,6 +41,12 @@
         <artifactId>webforj-spring-boot-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-spring-devtools</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- End Spring -->
 
       <!-- Extensions -->

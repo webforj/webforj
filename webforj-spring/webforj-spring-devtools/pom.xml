@@ -10,33 +10,28 @@
     <version>25.02-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-spring-integration</artifactId>
+  <artifactId>webforj-spring-devtools</artifactId>
   <name>${project.artifactId}</name>
-  <description>webforJ spring integration.</description>
+  <description>webforJ Spring DevTools server.</description>
 
   <dependencies>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-foundation</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.webforj</groupId>
-      <artifactId>webforj-data</artifactId>
+      <artifactId>webforj-spring-integration</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <artifactId>spring-boot-devtools</artifactId>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
@@ -51,22 +46,16 @@
       <optional>true</optional>
     </dependency>
 
-    <!-- Test dependencies -->
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+      <version>1.5.4</version>
     </dependency>
 
+    <!-- Test dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-devtools</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -83,9 +72,10 @@
     </dependency>
 
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 </project>
