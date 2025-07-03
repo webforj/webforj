@@ -44,20 +44,20 @@ jobs:
           servers: >
             [
               {
-                "id": "ossrh",
-                "username": "${{secrets.OSSRH_USERNAME}}",
-                "password": "${{secrets.OSSRH_TOKEN}}"
+                "id": "central",
+                "username": "${{secrets.CENTRAL_USERNAME}}",
+                "password": "${{secrets.CENTRAL_TOKEN}}"
               }
             ]
           profiles: >
             [
               {
-                "id": "ossrh",
+                "id": "central",
                 "activation": {
                   "activeByDefault": true
                 }
               }
             ]
 
-      - name: Publish to Nexus
+      - name: Publish to Central
         run: mvn clean deploy -DskipTests -P perform-release
