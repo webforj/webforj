@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish to Nexus
+    name: Publish to Central
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
