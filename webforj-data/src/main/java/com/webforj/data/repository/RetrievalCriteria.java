@@ -10,7 +10,10 @@ import java.util.function.Predicate;
  *
  * @author Hyyan Abo Fakher
  * @since 24.00
+ * @deprecated This interface will be removed in version 26.00. Use {@link RepositoryCriteria} with
+ *             the new {@link QueryableRepository} interface instead.
  */
+@Deprecated(since = "25.02", forRemoval = true)
 public interface RetrievalCriteria<T> {
 
   /**

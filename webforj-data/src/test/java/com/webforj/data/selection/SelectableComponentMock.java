@@ -21,8 +21,30 @@ class SelectableComponentMock
   }
 
   @Override
+  public SelectableComponentMock select(String item) {
+    if (item != null) {
+      int index = items.indexOf(item);
+      if (index >= 0) {
+        selectedIndices.clear();
+        selectedIndices.add(index);
+      }
+    }
+    return this;
+  }
+
+  @Override
+  public SelectableComponentMock selectKey(Object key) {
+    if (key != null) {
+      String item = repository.find(key).orElse(null);
+      return select(item);
+    }
+    return this;
+  }
+
+  @Override
   public SelectableComponentMock selectIndex(int index) {
     if (index >= 0 && index < items.size()) {
+      selectedIndices.clear();
       selectedIndices.add(index);
     }
 
@@ -32,6 +54,15 @@ class SelectableComponentMock
   @Override
   public int getSelectedIndex() {
     return selectedIndices.isEmpty() ? -1 : selectedIndices.get(0);
+  }
+
+  @Override
+  public Object getSelectedKey() {
+    int index = getSelectedIndex();
+    if (index >= 0 && index < items.size()) {
+      return repository.getKey(items.get(index));
+    }
+    return null;
   }
 
   @Override

@@ -27,21 +27,16 @@ public interface SingleSelectableRepository<T extends HasRepository<V>, V>
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings({"unchecked"})
   default T select(V item) {
-    HasRepository<V> self = (HasRepository<V>) this;
-    int index = self.getRepository().getIndex(item);
+    if (item == null) {
+      return selectKey(null);
+    }
 
-    return selectIndex(index);
+    HasRepository<V> self = (HasRepository<V>) this;
+    Object key = self.getRepository().getKey(item);
+
+    return selectKey(key);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  default T selectKey(Object key) {
-    HasRepository<V> self = (HasRepository<V>) this;
-    V item = self.getRepository().find(key).orElse(null);
-
-    return select(item);
-  }
 }

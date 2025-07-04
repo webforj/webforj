@@ -35,6 +35,19 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj-spring -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-spring-integration</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-spring-devtools</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- webforj-plugins -->
     <dependency>
       <groupId>com.webforj</groupId>

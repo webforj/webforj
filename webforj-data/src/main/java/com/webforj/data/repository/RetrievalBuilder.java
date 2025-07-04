@@ -11,7 +11,9 @@ import java.util.function.Predicate;
  *
  * @author Hyyan Abo Fakher
  * @since 24.00
+ * @deprecated This class will be removed in version 26.00.
  */
+@Deprecated(since = "25.02", forRemoval = true)
 public class RetrievalBuilder<T> implements RetrievalCriteria<T> {
   private int offset;
   private int limit;

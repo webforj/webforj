@@ -32,80 +32,56 @@ public interface MultipleSelectableRepository<T extends HasRepository<V>, V>
   @Override
   @SuppressWarnings("unchecked")
   default T select(V... items) {
+    Object[] keys = new Object[items.length];
     HasRepository<V> self = (HasRepository<V>) this;
 
-    for (V i : items) {
-      int index = self.getRepository().getIndex(i);
-      selectIndex(index);
+    for (int i = 0; i < items.length; i++) {
+      if (items[i] != null) {
+        keys[i] = self.getRepository().getKey(items[i]);
+      }
     }
 
-    return (T) this;
+    return selectKey(keys);
   }
+
 
   /**
    * {@inheritDoc}
    */
   @Override
   @SuppressWarnings("unchecked")
-  default T selectKey(Object... keys) {
+  default T deselect(V... items) {
+    Object[] keys = new Object[items.length];
     HasRepository<V> self = (HasRepository<V>) this;
 
-    for (Object k : keys) {
-      V item = self.getRepository().find(k).orElse(null);
-      select(item);
+    for (int i = 0; i < items.length; i++) {
+      if (items[i] != null) {
+        keys[i] = self.getRepository().getKey(items[i]);
+      }
     }
 
-    return (T) this;
+    return deselectKey(keys);
   }
+
 
   /**
    * {@inheritDoc}
    */
   @Override
-  @SuppressWarnings("unchecked")
-  default T deselect(V... item) {
-    HasRepository<V> self = (HasRepository<V>) this;
-
-    for (V i : item) {
-      int index = self.getRepository().getIndex(i);
-      deselectIndex(index);
-    }
-
-    return (T) this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @SuppressWarnings("unchecked")
-  default T deselectKey(Object... key) {
-    HasRepository<V> self = (HasRepository<V>) this;
-
-    for (Object k : key) {
-      V item = self.getRepository().find(k).orElse(null);
-      deselect(item);
-    }
-
-    return (T) this;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
+  @SuppressWarnings({"unchecked"})
   default List<V> getSelectedItems() {
     HasRepository<V> self = (HasRepository<V>) this;
-    List<Integer> selected = getSelectedIndices();
+    List<Object> keys = getSelectedKeys();
 
-    return selected.stream().map(index -> self.getRepository().findByIndex(index).orElse(null))
-        .toList();
+    return keys.stream().map(key -> self.getRepository().find(key).orElse(null))
+        .filter(item -> item != null).toList();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings({"unchecked"})
   default List<Object> getSelectedKeys() {
     HasRepository<V> self = (HasRepository<V>) this;
     List<V> items = getSelectedItems();
