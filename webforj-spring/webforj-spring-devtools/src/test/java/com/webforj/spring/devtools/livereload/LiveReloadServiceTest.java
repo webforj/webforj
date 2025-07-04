@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class DevToolsReloadServiceTest {
+class LiveReloadServiceTest {
 
-  private DevToolsReloadService reloadService;
+  private LiveReloadService reloadService;
 
   @Mock
-  private DevToolsServer mockWebSocketServer;
+  private LiveReloadServer mockWebSocketServer;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    reloadService = new DevToolsReloadService();
+    reloadService = new LiveReloadService();
   }
 
   @Test
@@ -46,7 +46,7 @@ class DevToolsReloadServiceTest {
 
   @Test
   void shouldUpdateWebSocketServerReference() {
-    DevToolsServer firstServer = org.mockito.Mockito.mock(DevToolsServer.class);
+    LiveReloadServer firstServer = org.mockito.Mockito.mock(LiveReloadServer.class);
     reloadService.setWebSocketServer(firstServer);
     reloadService.setWebSocketServer(mockWebSocketServer);
     reloadService.triggerReload();

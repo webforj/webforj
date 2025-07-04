@@ -1,10 +1,10 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import com.google.gson.Gson;
-import com.webforj.spring.devtools.message.ConnectedMessage;
-import com.webforj.spring.devtools.message.HeartbeatAckMessage;
-import com.webforj.spring.devtools.message.ReloadMessage;
-import com.webforj.spring.devtools.message.ResourceUpdateMessage;
+import com.webforj.spring.devtools.livereload.message.ConnectedMessage;
+import com.webforj.spring.devtools.livereload.message.HeartbeatAckMessage;
+import com.webforj.spring.devtools.livereload.message.ReloadMessage;
+import com.webforj.spring.devtools.livereload.message.ResourceUpdateMessage;
 import java.net.InetSocketAddress;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +25,8 @@ import org.java_websocket.server.WebSocketServer;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class DevToolsServer extends WebSocketServer {
-  private static final System.Logger logger = System.getLogger(DevToolsServer.class.getName());
+public class LiveReloadServer extends WebSocketServer {
+  private static final System.Logger logger = System.getLogger(LiveReloadServer.class.getName());
   private final Set<WebSocket> connections = ConcurrentHashMap.newKeySet();
   private volatile boolean serverClosed = false;
   private final Gson gson = new Gson();
@@ -36,7 +36,7 @@ public class DevToolsServer extends WebSocketServer {
    *
    * @param port the port number to listen on (typically 35730)
    */
-  public DevToolsServer(int port) {
+  public LiveReloadServer(int port) {
     super(new InetSocketAddress(port));
     setReuseAddr(true);
   }
@@ -48,7 +48,7 @@ public class DevToolsServer extends WebSocketServer {
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
     connections.add(conn);
     logger.log(System.Logger.Level.INFO,
-        "WebSocket client connected. Total connections: " + connections.size());
+        "webforJ livereload client connected. Total connections: " + connections.size());
 
     // Send initial handshake confirmation
     conn.send(gson.toJson(new ConnectedMessage()));
@@ -60,7 +60,7 @@ public class DevToolsServer extends WebSocketServer {
   @Override
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
     connections.remove(conn);
-    logger.log(System.Logger.Level.INFO, "WebSocket client disconnected. Reason: " + reason
+    logger.log(System.Logger.Level.INFO, "webforJ livereload client disconnected. Reason: " + reason
         + ", Total connections: " + connections.size());
   }
 
@@ -81,7 +81,7 @@ public class DevToolsServer extends WebSocketServer {
    */
   @Override
   public void onError(WebSocket conn, Exception ex) {
-    logger.log(System.Logger.Level.ERROR, "WebSocket error", ex);
+    logger.log(System.Logger.Level.ERROR, "webforJ livereload socket error", ex);
     if (conn != null) {
       connections.remove(conn);
     }
@@ -93,8 +93,7 @@ public class DevToolsServer extends WebSocketServer {
   @Override
   public void onStart() {
     serverClosed = false;
-    logger.log(System.Logger.Level.INFO,
-        "webforJ DevTools server started on port " + getPort());
+    logger.log(System.Logger.Level.INFO, "webforJ livereload server started on port " + getPort());
   }
 
   /**

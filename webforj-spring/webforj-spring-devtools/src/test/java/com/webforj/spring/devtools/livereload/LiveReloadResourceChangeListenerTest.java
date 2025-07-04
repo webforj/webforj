@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,16 +24,16 @@ import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 
-class DevToolsResourceChangeListenerTest {
+class LiveReloadResourceChangeListenerTest {
 
-  private DevToolsResourceChangeListener listener;
-  private DevToolsServer mockServer;
+  private LiveReloadResourceChangeListener listener;
+  private LiveReloadServer mockServer;
   private ClassPathChangedEvent mockEvent;
 
   @BeforeEach
   void setUp() {
-    listener = new DevToolsResourceChangeListener();
-    mockServer = mock(DevToolsServer.class);
+    listener = new LiveReloadResourceChangeListener();
+    mockServer = mock(LiveReloadServer.class);
     mockEvent = mock(ClassPathChangedEvent.class);
   }
 
@@ -41,8 +41,8 @@ class DevToolsResourceChangeListenerTest {
   @MethodSource("fileChangeScenarios")
   void shouldProcessFileChangesInStaticDirectory(String filePath, String expectedType,
       String expectedPath, ChangedFile.Type changeType) {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(true);
 
       File file = new File(filePath);
@@ -60,8 +60,8 @@ class DevToolsResourceChangeListenerTest {
 
   @Test
   void shouldProcessMultipleFileChangesInSingleEvent() {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(true);
 
       File pngFile = new File("/build/resources/main/static/images/logo.png");
@@ -88,8 +88,8 @@ class DevToolsResourceChangeListenerTest {
   @ParameterizedTest
   @MethodSource("nonStaticFileScenarios")
   void shouldIgnoreNonStaticFileChanges(String filePath, ChangedFile.Type changeType) {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(true);
 
       File file = new File(filePath);
@@ -108,8 +108,8 @@ class DevToolsResourceChangeListenerTest {
   @ParameterizedTest
   @EnumSource(ChangedFile.Type.class)
   void shouldProcessAllChangeTypesForStaticFiles(ChangedFile.Type changeType) {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(true);
 
       File file = new File("/static/test.css");
@@ -127,8 +127,8 @@ class DevToolsResourceChangeListenerTest {
 
   @Test
   void shouldSkipProcessingWhenWebSocketServerNotAvailable() {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(null);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(null);
       File file = new File("/static/style.css");
       ChangedFile changedFile = mock(ChangedFile.class);
       when(changedFile.getFile()).thenReturn(file);
@@ -144,8 +144,8 @@ class DevToolsResourceChangeListenerTest {
 
   @Test
   void shouldSkipProcessingWhenWebSocketServerClosed() {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(false);
       File file = new File("/static/app.js");
       ChangedFile changedFile = mock(ChangedFile.class);
@@ -162,8 +162,8 @@ class DevToolsResourceChangeListenerTest {
 
   @Test
   void shouldExtractCorrectPathFromNestedStaticDirectories() {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(true);
       File file = new File("/project/static-assets/build/static/css/main.css");
       ChangedFile changedFile = mock(ChangedFile.class);
@@ -180,8 +180,8 @@ class DevToolsResourceChangeListenerTest {
 
   @Test
   void shouldHandleEmptyChangeSet() {
-    try (MockedStatic<DevToolsState> mockedState = Mockito.mockStatic(DevToolsState.class)) {
-      mockedState.when(DevToolsState::getWebSocketServer).thenReturn(mockServer);
+    try (MockedStatic<LiveReloadState> mockedState = Mockito.mockStatic(LiveReloadState.class)) {
+      mockedState.when(LiveReloadState::getWebSocketServer).thenReturn(mockServer);
       when(mockServer.isOpen()).thenReturn(true);
       when(mockEvent.getChangeSet()).thenReturn(Collections.emptySet());
 

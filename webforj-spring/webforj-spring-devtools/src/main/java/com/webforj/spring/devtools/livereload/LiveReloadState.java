@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 /**
  * Static holder for DevTools state that persists across Spring DevTools restarts.
@@ -12,8 +12,8 @@ package com.webforj.spring.devtools;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class DevToolsState {
-  private static DevToolsServer webSocketServer;
+public class LiveReloadState {
+  private static LiveReloadServer webSocketServer;
   private static volatile boolean hasStartedOnce = false;
 
   /**
@@ -21,7 +21,7 @@ public class DevToolsState {
    *
    * @return the WebSocket server instance, or null if not yet initialized
    */
-  public static DevToolsServer getWebSocketServer() {
+  public static LiveReloadServer getWebSocketServer() {
     return webSocketServer;
   }
 
@@ -30,7 +30,7 @@ public class DevToolsState {
    *
    * @param server the WebSocket server to persist
    */
-  public static void setWebSocketServer(DevToolsServer server) {
+  public static void setWebSocketServer(LiveReloadServer server) {
     webSocketServer = server;
   }
 

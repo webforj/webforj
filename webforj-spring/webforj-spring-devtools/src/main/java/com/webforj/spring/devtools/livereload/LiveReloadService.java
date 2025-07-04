@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 /**
  * Service responsible for triggering browser reloads through the WebSocket server.
@@ -12,18 +12,17 @@ package com.webforj.spring.devtools;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class DevToolsReloadService {
+public class LiveReloadService {
 
-  private static final System.Logger logger =
-      System.getLogger(DevToolsReloadService.class.getName());
-  private DevToolsServer webSocketServer;
+  private static final System.Logger logger = System.getLogger(LiveReloadService.class.getName());
+  private LiveReloadServer webSocketServer;
 
   /**
    * Configures the WebSocket server to be used for reload operations.
    *
    * @param server the WebSocket server instance that manages browser connections
    */
-  public void setWebSocketServer(DevToolsServer server) {
+  public void setWebSocketServer(LiveReloadServer server) {
     this.webSocketServer = server;
   }
 
@@ -40,7 +39,7 @@ public class DevToolsReloadService {
       webSocketServer.sendReloadMessage();
     } else {
       logger.log(System.Logger.Level.WARNING,
-          "WebSocket server not initialized, cannot trigger reload");
+          "webforJ livereload server not initialized, cannot trigger reload");
     }
   }
 }

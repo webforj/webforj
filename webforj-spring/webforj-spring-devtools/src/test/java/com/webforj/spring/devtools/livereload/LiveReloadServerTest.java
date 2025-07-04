@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,9 +14,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.gson.Gson;
-import com.webforj.spring.devtools.message.ConnectedMessage;
-import com.webforj.spring.devtools.message.HeartbeatAckMessage;
-import com.webforj.spring.devtools.message.ReloadMessage;
+import com.webforj.spring.devtools.livereload.message.ConnectedMessage;
+import com.webforj.spring.devtools.livereload.message.HeartbeatAckMessage;
+import com.webforj.spring.devtools.livereload.message.ReloadMessage;
 import java.io.IOException;
 import java.net.ServerSocket;
 import org.java_websocket.WebSocket;
@@ -25,9 +25,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class DevToolsServerTest {
+class LiveReloadServerTest {
 
-  private DevToolsServer server;
+  private LiveReloadServer server;
   private WebSocket mockConnection;
   private ClientHandshake mockHandshake;
   private Gson gson = new Gson();
@@ -36,7 +36,7 @@ class DevToolsServerTest {
   @BeforeEach
   void setUp() throws IOException {
     port = findAvailablePort();
-    server = new DevToolsServer(port);
+    server = new LiveReloadServer(port);
     mockConnection = mock(WebSocket.class);
     mockHandshake = mock(ClientHandshake.class);
     when(mockConnection.isOpen()).thenReturn(true);

@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,7 +22,7 @@ import org.springframework.core.env.Environment;
 
 class DevToolsScriptInjectorTest {
 
-  private DevToolsScriptInjector injector;
+  private LiveReloadScriptInjector injector;
   private App mockApp;
   private Page mockPage;
   private Request mockRequest;
@@ -31,7 +31,7 @@ class DevToolsScriptInjectorTest {
 
   @BeforeEach
   void setUp() {
-    injector = new DevToolsScriptInjector();
+    injector = new LiveReloadScriptInjector();
     mockApp = mock(App.class);
     mockPage = mock(Page.class);
     mockRequest = mock(Request.class);
@@ -49,7 +49,7 @@ class DevToolsScriptInjectorTest {
         MockedStatic<ContextHolder> contextMock = mockStatic(ContextHolder.class)) {
 
       contextMock.when(ContextHolder::getContext).thenReturn(mockContext);
-      when(mockEnvironment.getProperty("webforj.devtools.reload.enabled")).thenReturn("true");
+      when(mockEnvironment.getProperty("webforj.devtools.livereload.enabled")).thenReturn("true");
 
       pageMock.when(Page::getCurrent).thenReturn(mockPage);
       requestMock.when(Request::getCurrent).thenReturn(mockRequest);
@@ -66,7 +66,7 @@ class DevToolsScriptInjectorTest {
   void shouldNotInjectScriptWhenDevToolsDisabled() {
     try (MockedStatic<ContextHolder> contextMock = mockStatic(ContextHolder.class)) {
       contextMock.when(ContextHolder::getContext).thenReturn(mockContext);
-      when(mockEnvironment.getProperty("webforj.devtools.reload.enabled")).thenReturn("false");
+      when(mockEnvironment.getProperty("webforj.devtools.livereload.enabled")).thenReturn("false");
 
       injector.onDidRun(mockApp);
       verify(mockPage, never()).addInlineJavaScript(anyString(), anyBoolean());
@@ -80,7 +80,7 @@ class DevToolsScriptInjectorTest {
         MockedStatic<ContextHolder> contextMock = mockStatic(ContextHolder.class)) {
 
       contextMock.when(ContextHolder::getContext).thenReturn(mockContext);
-      when(mockEnvironment.getProperty("webforj.devtools.reload.enabled")).thenReturn("true");
+      when(mockEnvironment.getProperty("webforj.devtools.livereload.enabled")).thenReturn("true");
 
       pageMock.when(Page::getCurrent).thenReturn(mockPage);
       requestMock.when(Request::getCurrent).thenReturn(mockRequest);
@@ -100,8 +100,8 @@ class DevToolsScriptInjectorTest {
         MockedStatic<ContextHolder> contextMock = mockStatic(ContextHolder.class)) {
 
       contextMock.when(ContextHolder::getContext).thenReturn(mockContext);
-      when(mockEnvironment.getProperty("webforj.devtools.reload.enabled")).thenReturn("true");
-      when(mockEnvironment.getProperty("webforj.devtools.reload.websocketPort"))
+      when(mockEnvironment.getProperty("webforj.devtools.livereload.enabled")).thenReturn("true");
+      when(mockEnvironment.getProperty("webforj.devtools.livereload.websocketPort"))
           .thenReturn("12345");
 
       pageMock.when(Page::getCurrent).thenReturn(mockPage);
@@ -122,7 +122,7 @@ class DevToolsScriptInjectorTest {
         MockedStatic<ContextHolder> contextMock = mockStatic(ContextHolder.class)) {
 
       contextMock.when(ContextHolder::getContext).thenReturn(null);
-      System.setProperty("webforj.devtools.reload.enabled", "true");
+      System.setProperty("webforj.devtools.livereload.enabled", "true");
 
       pageMock.when(Page::getCurrent).thenReturn(mockPage);
       requestMock.when(Request::getCurrent).thenReturn(mockRequest);
@@ -134,7 +134,7 @@ class DevToolsScriptInjectorTest {
         injector.onDidRun(mockApp);
         verify(mockPage).addInlineJavaScript(contains("webforjDevToolsConfig"), eq(true));
       } finally {
-        System.clearProperty("webforj.devtools.reload.enabled");
+        System.clearProperty("webforj.devtools.livereload.enabled");
       }
     }
   }
@@ -146,7 +146,7 @@ class DevToolsScriptInjectorTest {
         MockedStatic<ContextHolder> contextMock = mockStatic(ContextHolder.class)) {
 
       contextMock.when(ContextHolder::getContext).thenReturn(mockContext);
-      when(mockEnvironment.getProperty("webforj.devtools.reload.enabled")).thenReturn("true");
+      when(mockEnvironment.getProperty("webforj.devtools.livereload.enabled")).thenReturn("true");
 
       pageMock.when(Page::getCurrent).thenReturn(mockPage);
       requestMock.when(Request::getCurrent).thenReturn(mockRequest);

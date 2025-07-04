@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.context.ApplicationEvent;
@@ -11,26 +11,25 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * <p>
  * This listener monitors Spring context refresh events to distinguish between initial application
  * startup and subsequent DevTools restarts. On restart, it triggers a browser reload through the
- * {@code DevToolsReloadService} to refresh connected clients.
+ * {@code LiveReloadService} to refresh connected clients.
  * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
 @RestartScope
-public class DevToolsReloadListener implements ApplicationListener<ApplicationEvent> {
+public class LiveReloadListener implements ApplicationListener<ApplicationEvent> {
 
-  private static final System.Logger logger =
-      System.getLogger(DevToolsReloadListener.class.getName());
+  private static final System.Logger logger = System.getLogger(LiveReloadListener.class.getName());
 
-  private final DevToolsReloadService reloadService;
+  private final LiveReloadService reloadService;
 
   /**
    * Creates a new DevTools reload listener.
    *
    * @param reloadService the service to use for triggering browser reloads
    */
-  public DevToolsReloadListener(DevToolsReloadService reloadService) {
+  public LiveReloadListener(LiveReloadService reloadService) {
     this.reloadService = reloadService;
   }
 
@@ -50,12 +49,12 @@ public class DevToolsReloadListener implements ApplicationListener<ApplicationEv
   @Override
   public void onApplicationEvent(ApplicationEvent event) {
     if (event instanceof ContextRefreshedEvent) {
-      if (DevToolsState.hasStartedOnce()) {
+      if (LiveReloadState.hasStartedOnce()) {
         logger.log(System.Logger.Level.INFO,
             "DevTools restart detected, triggering browser reload");
         reloadService.triggerReload();
       } else {
-        DevToolsState.markStarted();
+        LiveReloadState.markStarted();
         logger.log(System.Logger.Level.INFO, "Initial application start detected");
       }
     }

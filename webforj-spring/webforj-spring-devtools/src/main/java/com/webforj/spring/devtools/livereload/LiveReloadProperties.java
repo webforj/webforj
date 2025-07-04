@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -8,14 +8,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <p>
  * These properties control the behavior of the automatic browser reload feature that integrates
  * with Spring Boot DevTools. Properties can be configured in {@code application.properties} or
- * {@code application.yml} under the "webforj.devtools.reload" prefix.
+ * {@code application.yml} under the "webforj.devtools.livereload" prefix.
  * </p>
  *
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-@ConfigurationProperties(prefix = "webforj.devtools.reload")
-public class DevToolsReloadProperties {
+@ConfigurationProperties(prefix = "webforj.devtools.livereload")
+public class LiveReloadProperties {
   /**
    * Enable webforJ DevTools browser auto-reload feature.
    */

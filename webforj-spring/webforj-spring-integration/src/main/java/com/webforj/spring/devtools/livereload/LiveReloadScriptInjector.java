@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
@@ -24,10 +24,10 @@ import org.springframework.context.ApplicationContext;
  * @since 25.02
  */
 @AppListenerPriority(0)
-public class DevToolsScriptInjector implements AppLifecycleListener {
+public class LiveReloadScriptInjector implements AppLifecycleListener {
 
   private static final System.Logger logger =
-      System.getLogger(DevToolsScriptInjector.class.getName());
+      System.getLogger(LiveReloadScriptInjector.class.getName());
   private static final String SCRIPT_RESOURCE = "/META-INF/resources/devtools-reload-client.js";
   private String cachedScript;
 
@@ -37,11 +37,11 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
   @Override
   public void onWillRun(App app) {
     logger.log(System.Logger.Level.DEBUG,
-        "DevToolsScriptInjector.onWillRun called for app: " + app.getId());
+        "LiveReloadScriptInjector.onWillRun called for app: " + app.getId());
 
     // Check if DevTools reload is enabled
     if (!isDevToolsReloadEnabled()) {
-      logger.log(System.Logger.Level.DEBUG, "webforJ DevTools reload is not enabled");
+      logger.log(System.Logger.Level.DEBUG, "webforJ livereload is not enabled");
       return;
     }
 
@@ -60,7 +60,7 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
   @Override
   public void onDidRun(App app) {
     logger.log(System.Logger.Level.DEBUG,
-        "DevToolsScriptInjector.onDidRun called for app: " + app.getId());
+        "LiveReloadScriptInjector.onDidRun called for app: " + app.getId());
 
     if (!isDevToolsReloadEnabled() || !isSpringDevToolsPresent()) {
       return;
@@ -69,7 +69,7 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
     try {
       injectReloadScript(app);
     } catch (Exception e) {
-      logger.log(System.Logger.Level.WARNING, "Failed to inject webforJ DevTools reload script", e);
+      logger.log(System.Logger.Level.WARNING, "Failed to inject webforJ livereload script", e);
     }
   }
 
@@ -99,7 +99,7 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
    * <li>Environment variables (with dot-to-underscore conversion)</li>
    * </ol>
    *
-   * @param key the property key (e.g., "webforj.devtools.reload.enabled")
+   * @param key the property key (e.g., "webforj.devtools.livereload.enabled")
    * @param defaultValue value to return if property is not found
    * @return the property value or default
    */
@@ -135,10 +135,10 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
   /**
    * Checks if DevTools reload functionality is enabled in configuration.
    *
-   * @return true if webforj.devtools.reload.enabled=true, false otherwise
+   * @return true if webforj.devtools.livereload.enabled=true, false otherwise
    */
   private boolean isDevToolsReloadEnabled() {
-    return Boolean.parseBoolean(getProperty("webforj.devtools.reload.enabled", "false"));
+    return Boolean.parseBoolean(getProperty("webforj.devtools.livereload.enabled", "false"));
   }
 
   /**
@@ -176,10 +176,10 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
     }
 
     String websocketPath =
-        getProperty("webforj.devtools.reload.websocketPath", "/webforj-devtools-ws");
+        getProperty("webforj.devtools.livereload.websocketPath", "/webforj-devtools-ws");
 
     // Get the WebSocket port from configuration
-    String websocketPort = getProperty("webforj.devtools.reload.websocketPort", "35730");
+    String websocketPort = getProperty("webforj.devtools.livereload.websocketPort", "35730");
 
     // Build WebSocket URL using the separate port
     String wsUrl = String.format("%s://%s:%s%s", wsProtocol, host, websocketPort, websocketPath);
@@ -187,7 +187,8 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
     logger.log(System.Logger.Level.DEBUG, "Request URL: " + request.getUrl());
 
     // Get heartbeat interval
-    String heartbeatInterval = getProperty("webforj.devtools.reload.heartbeatInterval", "30000");
+    String heartbeatInterval =
+        getProperty("webforj.devtools.livereload.heartbeatInterval", "30000");
 
     // Build the complete script with configuration and reload logic
     String config = String.format("window.webforjDevToolsConfig = {" + "  enabled: true,"
@@ -223,13 +224,13 @@ public class DevToolsScriptInjector implements AppLifecycleListener {
     try (InputStream is = getClass().getResourceAsStream(SCRIPT_RESOURCE)) {
       if (is == null) {
         logger.log(System.Logger.Level.ERROR,
-            "DevTools reload script not found at: " + SCRIPT_RESOURCE);
+            "webforJ livereload script not found at: " + SCRIPT_RESOURCE);
         return null;
       }
       cachedScript = new String(is.readAllBytes(), StandardCharsets.UTF_8);
       return cachedScript;
     } catch (Exception e) {
-      logger.log(System.Logger.Level.ERROR, "Failed to load webforJ DevTools reload script", e);
+      logger.log(System.Logger.Level.ERROR, "Failed to load webforJ livereload script", e);
     }
 
     return null;

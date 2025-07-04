@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools.message;
+package com.webforj.spring.devtools.livereload.message;
 
 /**
  * Message sent to trigger a browser reload.
@@ -6,7 +6,7 @@ package com.webforj.spring.devtools.message;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class ReloadMessage extends DevToolsMessage {
+public class ReloadMessage extends LiveReloadMessage {
 
   /**
    * Creates a new reload message.

@@ -11,7 +11,10 @@
   },
   "cSpell.words": [
     "desktopnotification",
-    "infinitescroll"
+    "infinitescroll",
+    "livereload",
+    "Restarter",
+    "springframework"
   ],
   "java.completion.favoriteStaticMembers": [
     "org.junit.Assert.*",

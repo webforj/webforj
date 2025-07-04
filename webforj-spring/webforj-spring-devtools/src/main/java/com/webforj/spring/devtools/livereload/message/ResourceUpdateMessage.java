@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools.message;
+package com.webforj.spring.devtools.livereload.message;
 
 /**
  * Message sent when a static resource is updated.
@@ -11,7 +11,7 @@ package com.webforj.spring.devtools.message;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class ResourceUpdateMessage extends DevToolsMessage {
+public class ResourceUpdateMessage extends LiveReloadMessage {
   private final String resourceType;
   private final String path;
   private final String content;

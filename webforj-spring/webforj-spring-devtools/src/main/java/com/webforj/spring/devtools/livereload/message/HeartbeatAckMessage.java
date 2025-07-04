@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools.message;
+package com.webforj.spring.devtools.livereload.message;
 
 /**
  * Message sent in response to heartbeat ping.
@@ -6,7 +6,7 @@ package com.webforj.spring.devtools.message;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class HeartbeatAckMessage extends DevToolsMessage {
+public class HeartbeatAckMessage extends LiveReloadMessage {
 
   /**
    * Creates a new heartbeat acknowledgment message.

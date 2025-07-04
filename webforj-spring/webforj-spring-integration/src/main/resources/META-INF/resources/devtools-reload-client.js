@@ -179,6 +179,11 @@
     startHeartbeat();
   }
 
+  function normalizePath(path) {
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    return path ? path.split('\\').join('/') : '';
+  }
+
   function showProgressBar() {
     // Remove any existing progress bar
     const existing = document.getElementById('webforj-devtools-progressbar');
@@ -245,7 +250,7 @@
 
   function handleResourceUpdate(message) {
     // The path comes from the server as the resource path (e.g., "css/style.css")
-    const resourcePath = message.path;
+    const resourcePath = normalizePath(message.path);
 
     switch(message.resourceType) {
       case 'css':
@@ -278,8 +283,8 @@
 
     links.forEach(function(link) {
       // Check if href contains the resource path
-      const href = link.href;
-      const originalHref = link.getAttribute('href') || '';
+      const href = normalizePath(link.href);
+      const originalHref = normalizePath(link.getAttribute('href'));
 
       // Check if the URL contains the resource path
       if (href.indexOf(resourcePath) !== -1 || originalHref.indexOf(resourcePath) !== -1) {
@@ -304,8 +309,8 @@
     let updatedCount = 0;
 
     images.forEach(function(img) {
-      const src = img.src;
-      const originalSrc = img.getAttribute('src') || '';
+      const src = normalizePath(img.src);
+      const originalSrc = normalizePath(img.getAttribute('src'));
 
       if (src.indexOf(resourcePath) !== -1 || originalSrc.indexOf(resourcePath) !== -1) {
         const newSrc = src.split('?')[0] + '?webforj-dev=' + timestamp;

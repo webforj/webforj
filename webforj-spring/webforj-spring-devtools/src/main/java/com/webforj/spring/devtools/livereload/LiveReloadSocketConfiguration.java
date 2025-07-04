@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * </p>
  * <ul>
  * <li>Spring DevTools is on the classpath</li>
- * <li>webforj.devtools.reload.enabled=true</li>
+ * <li>webforj.devtools.livereload.enabled=true</li>
  * </ul>
  *
  * @author Hyyan Abo Fakher
@@ -22,16 +22,16 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnClass(name = "org.springframework.boot.devtools.restart.Restarter")
-@ConditionalOnProperty(prefix = "webforj.devtools.reload", name = "enabled", havingValue = "true",
-    matchIfMissing = false)
-@EnableConfigurationProperties(DevToolsReloadProperties.class)
-public class DevToolsWebSocketConfiguration {
+@ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "enabled",
+    havingValue = "true", matchIfMissing = false)
+@EnableConfigurationProperties(LiveReloadProperties.class)
+public class LiveReloadSocketConfiguration {
 
   private static final System.Logger logger =
-      System.getLogger(DevToolsWebSocketConfiguration.class.getName());
+      System.getLogger(LiveReloadSocketConfiguration.class.getName());
 
   /**
-   * Creates and configures the DevTools reload service.
+   * Creates and configures the live reload service.
    *
    * <p>
    * This bean manages the WebSocket server lifecycle:
@@ -45,30 +45,30 @@ public class DevToolsWebSocketConfiguration {
    * @return configured DevTools reload service
    */
   @Bean
-  public DevToolsReloadService devToolsReloadService(DevToolsReloadProperties properties) {
-    DevToolsReloadService service = new DevToolsReloadService();
+  public LiveReloadService liveReloadService(LiveReloadProperties properties) {
+    LiveReloadService service = new LiveReloadService();
 
     // Start the WebSocket server if not already started
-    DevToolsServer existingServer = DevToolsState.getWebSocketServer();
+    LiveReloadServer existingServer = LiveReloadState.getWebSocketServer();
     if (existingServer == null || !existingServer.isOpen()) {
       int port = properties.getWebsocketPort();
       try {
-        DevToolsServer server = new DevToolsServer(port);
+        LiveReloadServer server = new LiveReloadServer(port);
         server.start();
-        DevToolsState.setWebSocketServer(server);
-        logger.log(System.Logger.Level.INFO, "Started webforJ DevTools server on port " + port);
+        LiveReloadState.setWebSocketServer(server);
+        logger.log(System.Logger.Level.INFO, "Started webforJ livereload server on port " + port);
       } catch (Exception e) {
         logger.log(System.Logger.Level.ERROR,
-            "Failed to start webforJ DevTools server on port " + port, e);
+            "Failed to start webforJ livereload server on port " + port, e);
       }
     } else {
       logger.log(System.Logger.Level.INFO,
-          "webforJ DevTools server already running on port " + existingServer.getPort() + " with "
+          "webforJ livereload server already running on port " + existingServer.getPort() + " with "
               + existingServer.getConnectionCount() + " connections");
     }
 
-    if (DevToolsState.getWebSocketServer() != null) {
-      service.setWebSocketServer(DevToolsState.getWebSocketServer());
+    if (LiveReloadState.getWebSocketServer() != null) {
+      service.setWebSocketServer(LiveReloadState.getWebSocketServer());
     }
 
     return service;
@@ -86,8 +86,8 @@ public class DevToolsWebSocketConfiguration {
    * @return configured DevTools reload listener
    */
   @Bean
-  public DevToolsReloadListener devToolsReloadListener(DevToolsReloadService reloadService) {
-    return new DevToolsReloadListener(reloadService);
+  public LiveReloadListener liveReloadListener(LiveReloadService reloadService) {
+    return new LiveReloadListener(reloadService);
   }
 
   /**
@@ -101,9 +101,9 @@ public class DevToolsWebSocketConfiguration {
    * @return configured resource change listener
    */
   @Bean
-  @ConditionalOnProperty(prefix = "webforj.devtools.reload", name = "static-resources-enabled",
+  @ConditionalOnProperty(prefix = "webforj.devtools.livereload", name = "static-resources-enabled",
       havingValue = "true", matchIfMissing = true)
-  public DevToolsResourceChangeListener devToolsResourceChangeListener() {
-    return new DevToolsResourceChangeListener();
+  public LiveReloadResourceChangeListener liveReloadResourceChangeListener() {
+    return new LiveReloadResourceChangeListener();
   }
 }

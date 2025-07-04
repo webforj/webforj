@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(SpringConfigurationProperties.class)
 public class SpringAutoConfiguration {
-  Logger logger = System.getLogger(SpringAutoConfiguration.class.getName());
+  private static Logger logger = System.getLogger(SpringAutoConfiguration.class.getName());
 
   /**
    * Registers the {@link WebforjServlet}.

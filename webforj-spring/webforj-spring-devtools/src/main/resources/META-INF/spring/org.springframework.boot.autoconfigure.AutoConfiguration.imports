@@ -1,1 +1,1 @@
-com.webforj.spring.devtools.DevToolsWebSocketConfiguration
+com.webforj.spring.devtools.livereload.LiveReloadSocketConfiguration

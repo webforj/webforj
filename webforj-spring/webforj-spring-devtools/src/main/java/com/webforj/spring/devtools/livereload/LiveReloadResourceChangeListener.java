@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools;
+package com.webforj.spring.devtools.livereload;
 
 import java.util.Set;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
@@ -19,10 +19,11 @@ import org.springframework.context.ApplicationListener;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class DevToolsResourceChangeListener implements ApplicationListener<ClassPathChangedEvent> {
+public class LiveReloadResourceChangeListener
+    implements ApplicationListener<ClassPathChangedEvent> {
 
   private static final System.Logger logger =
-      System.getLogger(DevToolsResourceChangeListener.class.getName());
+      System.getLogger(LiveReloadResourceChangeListener.class.getName());
 
   private static final Set<String> CSS_EXTENSIONS = Set.of(".css");
   private static final Set<String> JS_EXTENSIONS = Set.of(".js");
@@ -32,9 +33,9 @@ public class DevToolsResourceChangeListener implements ApplicationListener<Class
   /**
    * Creates a new DevTools resource change listener.
    */
-  public DevToolsResourceChangeListener() {
+  public LiveReloadResourceChangeListener() {
     logger.log(System.Logger.Level.INFO,
-        "DevToolsResourceChangeListener created - ready to monitor static resource changes");
+        "LiveReloadResourceChangeListener created - ready to monitor static resource changes");
   }
 
   /**
@@ -46,10 +47,10 @@ public class DevToolsResourceChangeListener implements ApplicationListener<Class
   public void onApplicationEvent(ClassPathChangedEvent event) {
     logger.log(System.Logger.Level.INFO, "ClassPathChangedEvent received");
 
-    DevToolsServer server = DevToolsState.getWebSocketServer();
+    LiveReloadServer server = LiveReloadState.getWebSocketServer();
     if (server == null || !server.isOpen()) {
       logger.log(System.Logger.Level.WARNING,
-          "DevTools WebSocket server not available, skipping resource update");
+          "webforJ livereload server not available, skipping resource update");
       return;
     }
 
@@ -90,7 +91,7 @@ public class DevToolsResourceChangeListener implements ApplicationListener<Class
    * @param file the changed file
    * @param server the DevTools WebSocket server
    */
-  private void handleResourceChange(ChangedFile file, DevToolsServer server) {
+  private void handleResourceChange(ChangedFile file, LiveReloadServer server) {
     String resourceType = getResourceType(file);
     String resourcePath = getResourcePath(file);
 

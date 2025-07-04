@@ -1,4 +1,4 @@
-package com.webforj.spring.devtools.message;
+package com.webforj.spring.devtools.livereload.message;
 
 /**
  * Base class for all DevTools WebSocket messages.
@@ -6,7 +6,7 @@ package com.webforj.spring.devtools.message;
  * @author Hyyan Abo Fakher
  * @since 25.02
  */
-public class DevToolsMessage {
+public class LiveReloadMessage {
   private final String type;
 
   /**
@@ -14,7 +14,7 @@ public class DevToolsMessage {
    *
    * @param type the message type
    */
-  public DevToolsMessage(String type) {
+  public LiveReloadMessage(String type) {
     this.type = type;
   }
 
