@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -50,7 +51,8 @@ public final class Environment {
   private final BBjSysGui sysgui;
   private final WebforjBBjBridge bridge;
   private final Queue<EnvironmentAccessRequest> accessQueue = new ConcurrentLinkedQueue<>();
-  private final HashMap<Integer, PendingResult<Object>> pendingResults = new HashMap<>();
+  private final ConcurrentHashMap<Integer, PendingResult<Object>> pendingResults =
+      new ConcurrentHashMap<>();
   private Interval laterQueueTimer;
   private boolean debug = false;
 
