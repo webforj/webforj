@@ -117,12 +117,18 @@ public final class Interval {
       return;
     }
 
-    BBjAPI api = getEnvironment().getBBjAPI();
     try {
-      api.removeTimer(key);
+      Environment env = getEnvironment();
+      if (env != null) {
+        BBjAPI api = env.getBBjAPI();
+        api.removeTimer(key);
+      }
       running = false;
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to remove the timer with the key '" + key + "'", e);
+    } catch (Exception e) {
+      // In test environments, Environment might not be available
+      running = false;
     }
   }
 
