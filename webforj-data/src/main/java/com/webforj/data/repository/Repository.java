@@ -19,6 +19,48 @@ import java.util.stream.Stream;
 public interface Repository<T> extends RetrievalCriteria<T> {
 
   /**
+   * Gets the starting position of records to retrieve.
+   *
+   * @return The starting position.
+   */
+
+  int getOffset();
+
+  /**
+   * Sets the starting position of records to retrieve and returns the Criteria instance.
+   *
+   * @param offset The starting position.
+   * @return The Criteria instance.
+   */
+  @Override
+  Repository<T> setOffset(int offset);
+
+  /**
+   * Gets the maximum number of records to retrieve.
+   *
+   * @return The maximum number of records.
+   */
+  @Override
+  int getLimit();
+
+  /**
+   * Sets the maximum number of records to retrieve and returns the Criteria instance.
+   *
+   * @param limit The maximum number of records.
+   * @return The Criteria instance.
+   */
+  @Override
+  Repository<T> setLimit(int limit);
+
+  /**
+   * Gets the sorting criteria for the result.
+   *
+   * @return The order criteria list.
+   */
+  @Override
+  OrderCriteriaList<T> getOrderCriteriaList();
+
+  /**
    * Gets the id/key of the provided entity.
    *
    * @param entity The entity for which to get the id.
@@ -39,11 +81,19 @@ public interface Repository<T> extends RetrievalCriteria<T> {
    *
    * @param entity The entity for which to get the index.
    * @return The index of the entity or -1 if the entity is not found.
+   * @deprecated This method is designed for in-memory repositories only and will be removed in
+   *             version 26.00.
    */
+  @Deprecated(since = "25.02", forRemoval = true)
   int getIndex(T entity);
 
   /**
    * Retrieves a stream of all entities.
+   *
+   * <p>
+   * This method is used to retrieve all entities from the repository after applying any filters,
+   * sorting, or pagination criteria that may have been set.
+   * </p>
    *
    * @return A stream of all entities.
    */
@@ -82,7 +132,10 @@ public interface Repository<T> extends RetrievalCriteria<T> {
    *
    * @param index The index of the entity to retrieve.
    * @return An Optional containing the found entity or empty if no entity found.
+   * @deprecated This method is designed for in-memory repositories only and will be removed in
+   *             version 26.00.
    */
+  @Deprecated(since = "25.02", forRemoval = true)
   Optional<T> findByIndex(int index);
 
   /**
@@ -90,7 +143,10 @@ public interface Repository<T> extends RetrievalCriteria<T> {
    *
    * @param criteria The criteria to use to find the entities.
    * @return A stream of entities that match the criteria.
+   * @deprecated This method is designed for in-memory repositories only and will be removed in
+   *             version 26.00.
    */
+  @Deprecated(since = "25.02", forRemoval = true)
   Stream<T> findBy(RetrievalCriteria<T> criteria);
 
   /**
@@ -98,7 +154,10 @@ public interface Repository<T> extends RetrievalCriteria<T> {
    *
    * @param criteria The criteria to use to find the entity.
    * @return An Optional containing the found entity or empty if no entity found.
+   * @deprecated This method is designed for in-memory repositories only and will be removed in
+   *             version 26.00.
    */
+  @Deprecated(since = "25.02", forRemoval = true)
   default Optional<T> findOneBy(RetrievalCriteria<T> criteria) {
     return findBy(criteria).findFirst();
   }
@@ -108,7 +167,10 @@ public interface Repository<T> extends RetrievalCriteria<T> {
    *
    * @param criteria The criteria for counting data.
    * @return The count of entities that match the criteria.
+   * @deprecated This method is designed for in-memory repositories only and will be removed in
+   *             version 26.00.
    */
+  @Deprecated(since = "25.02", forRemoval = true)
   default int size(RetrievalCriteria<T> criteria) {
     return (int) findBy(criteria).count();
   }

@@ -31,6 +31,23 @@ public class OrderCriteria<T, V> {
   private final Function<T, V> valueProvider;
   private final Direction direction;
   private final Comparator<T> comparator;
+  private final String propertyName;
+
+  /**
+   * Creates a new instance of OrderCriteria with the specified value provider and direction.
+   *
+   * @param valueProvider The function to provide the value to be sorted.
+   * @param direction The direction of the sort order.
+   * @param comparator The comparator to be used for sorting.
+   * @param propertyName The property name for backend sorting (optional).
+   */
+  public OrderCriteria(Function<T, V> valueProvider, Direction direction, Comparator<T> comparator,
+      String propertyName) {
+    this.valueProvider = valueProvider;
+    this.direction = direction;
+    this.comparator = comparator;
+    this.propertyName = propertyName;
+  }
 
   /**
    * Creates a new instance of OrderCriteria with the specified value provider and direction.
@@ -41,9 +58,7 @@ public class OrderCriteria<T, V> {
    */
   public OrderCriteria(Function<T, V> valueProvider, Direction direction,
       Comparator<T> comparator) {
-    this.valueProvider = valueProvider;
-    this.direction = direction;
-    this.comparator = comparator;
+    this(valueProvider, direction, comparator, null);
   }
 
   /**
@@ -53,7 +68,7 @@ public class OrderCriteria<T, V> {
    * @param direction The direction of the sort order.
    */
   public OrderCriteria(Function<T, V> valueProvider, Direction direction) {
-    this(valueProvider, direction, null);
+    this(valueProvider, direction, null, null);
   }
 
   /**
@@ -81,5 +96,14 @@ public class OrderCriteria<T, V> {
    */
   public Comparator<T> getComparator() {
     return comparator;
+  }
+
+  /**
+   * Gets the property name for backend sorting.
+   *
+   * @return The property name, or null if not specified.
+   */
+  public String getPropertyName() {
+    return propertyName;
   }
 }

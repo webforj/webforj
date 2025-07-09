@@ -15,29 +15,20 @@ import com.webforj.data.selection.Selectable;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-@SuppressWarnings("unused")
 public interface SelectableRepository<T extends HasRepository<V>, V> extends Selectable<V> {
 
   /**
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings({"unchecked"})
   default V getSelected() {
-    HasRepository<V> self = (HasRepository<V>) this;
-    return self.getRepository().findByIndex(getSelectedIndex()).orElse(null);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  default Object getSelectedKey() {
-    V selected = getSelected();
-    if (selected == null) {
+    Object key = getSelectedKey();
+    if (key == null) {
       return null;
     }
 
     HasRepository<V> self = (HasRepository<V>) this;
-    return self.getRepository().getKey(selected);
+    return self.getRepository().find(key).orElse(null);
   }
 }

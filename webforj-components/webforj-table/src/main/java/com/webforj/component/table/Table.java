@@ -376,6 +376,11 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   /**
    * Sets the rows of the table.
    *
+   * <p>
+   * The method internally will create {@link CollectionRepository} with the given collection of
+   * items and set it as the repository of the table.
+   * </p>
+   *
    * @param rows the items
    *
    * @return the component itself.
@@ -431,6 +436,11 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * Refresh the items of the table.
+   *
+   * <p>
+   * The method will rebuild the data for the table based on the current state after fetching all
+   * items from the repository again and rerender the table with the new data.
+   * </p>
    *
    * @return the component itself
    */
@@ -519,8 +529,11 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #selectKey(Object...)} instead.
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public Table<T> selectIndex(int... indices) {
     Object[] keys = new Object[indices.length];
     for (int i = 0; i < indices.length; i++) {
@@ -568,8 +581,11 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #deselectKey(Object...)} instead.
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public Table<T> deselectIndex(int... index) {
     Object[] keys = new Object[index.length];
     for (int i = 0; i < index.length; i++) {
@@ -587,16 +603,18 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   @Override
   public List<T> getSelectedItems() {
-    TypeToken<Set<String>> typeToken = new TypeToken<>() {};
-    Set<String> keys = get(selectedProp, isAttached(), typeToken.getType());
-
-    return keys.stream().map(key -> (T) getItemKeysRegistry().getEntity(key)).toList();
+    return getSelectedKeys().stream()
+        .map(key -> (T) getItemKeysRegistry().getEntity(String.valueOf(key)))
+        .filter(Objects::nonNull).toList();
   }
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public List<Integer> getSelectedIndices() {
     List<T> items = getSelectedItems();
     return items.stream().map(item -> getRepository().getIndex(item)).toList();
@@ -604,10 +622,36 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedKeys()} instead.
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public int getSelectedIndex() {
     return getSelectedIndices().stream().findFirst().orElse(-1);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object getSelectedKey() {
+    return getSelectedKeys().stream().findFirst().orElse(null);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<Object> getSelectedKeys() {
+    if (!isAttached()) {
+      return new ArrayList<>(selectedKeys);
+    }
+
+    TypeToken<Set<String>> typeToken = new TypeToken<>() {};
+    Set<String> keys = get(selectedProp, true, typeToken.getType());
+
+    return keys.stream().map(getItemKeysRegistry()::getKey).collect(Collectors.toList());
   }
 
   /**
@@ -623,8 +667,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   @Override
   public Table<T> setValue(List<T> value) {
-    int[] indices = value.stream().mapToInt(item -> getRepository().getIndex(item)).toArray();
-    selectIndex(indices);
+    Object[] keys = value.stream().map(item -> getRepository().getKey(item)).toArray();
+    selectKey(keys);
     return this;
   }
 
@@ -1242,8 +1286,9 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
               : OrderCriteria.Direction.DESC;
       Function<T, ?> valueProvider = column.getValueProvider();
       Comparator<T> comparator = column.getComparator();
+      String propertyName = column.getPropertyName();
       OrderCriteria<T, ?> serverCriteria =
-          new OrderCriteria<>(valueProvider, direction, comparator);
+          new OrderCriteria<>(valueProvider, direction, comparator, propertyName);
 
       criterion.add(serverCriteria);
     }

@@ -12,9 +12,25 @@ import java.util.List;
 public class MultipleSelectableComponentMock extends Component implements HasRepository<String>,
     MultipleSelectableRepository<MultipleSelectableComponentMock, String> {
 
-  private List<String> items = List.of("item1", "item2", "item3");
+  private List<String> items = new ArrayList<>(List.of("item1", "item2", "item3"));
   private List<Integer> selectedIndices = new ArrayList<>();
   private Repository<String> repository = new CollectionRepository<>(items);
+
+  @Override
+  public MultipleSelectableComponentMock selectKey(Object... keys) {
+    for (Object key : keys) {
+      if (key != null) {
+        String item = repository.find(key).orElse(null);
+        if (item != null) {
+          int index = items.indexOf(item);
+          if (index >= 0 && !selectedIndices.contains(index)) {
+            selectedIndices.add(index);
+          }
+        }
+      }
+    }
+    return this;
+  }
 
   @Override
   public MultipleSelectableComponentMock selectIndex(int... index) {
@@ -30,6 +46,42 @@ public class MultipleSelectableComponentMock extends Component implements HasRep
   @Override
   public int getSelectedIndex() {
     return selectedIndices.isEmpty() ? -1 : selectedIndices.get(0);
+  }
+
+  @Override
+  public Object getSelectedKey() {
+    int index = getSelectedIndex();
+    if (index >= 0 && index < items.size()) {
+      return repository.getKey(items.get(index));
+    }
+    return null;
+  }
+
+  @Override
+  public List<Object> getSelectedKeys() {
+    List<Object> keys = new ArrayList<>();
+    for (int index : selectedIndices) {
+      if (index >= 0 && index < items.size()) {
+        keys.add(repository.getKey(items.get(index)));
+      }
+    }
+    return keys;
+  }
+
+  @Override
+  public MultipleSelectableComponentMock deselectKey(Object... keys) {
+    for (Object key : keys) {
+      if (key != null) {
+        String item = repository.find(key).orElse(null);
+        if (item != null) {
+          int index = items.indexOf(item);
+          if (index >= 0) {
+            selectedIndices.remove(Integer.valueOf(index));
+          }
+        }
+      }
+    }
+    return this;
   }
 
   @Override

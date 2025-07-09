@@ -48,8 +48,11 @@ public class TableItemSelectionChange<T> extends TableEvent<T> implements Select
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public int getSelectedIndex() {
     T item = getSelectedItem();
 
@@ -67,8 +70,11 @@ public class TableItemSelectionChange<T> extends TableEvent<T> implements Select
 
   /**
    * {@inheritDoc}
+   *
+   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
   @Override
+  @Deprecated(since = "25.02", forRemoval = true)
   public List<Integer> getSelectedIndices() {
     List<Integer> indices = new ArrayList<>();
     for (T item : getSelectedItems()) {
