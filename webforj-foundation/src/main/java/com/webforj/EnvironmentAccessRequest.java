@@ -10,7 +10,7 @@ import java.util.function.Supplier;
  * @since 25.02
  */
 class EnvironmentAccessRequest {
-  private final int id;
+  private final String id;
   private final Supplier<Object> supplier;
   private final PendingResult<Object> pendingResult;
 
@@ -22,7 +22,7 @@ class EnvironmentAccessRequest {
    * @param pendingResult the pending result to complete when the supplier is executed
    */
   @SuppressWarnings("unchecked")
-  EnvironmentAccessRequest(int id, Supplier<?> supplier, PendingResult<?> pendingResult) {
+  EnvironmentAccessRequest(String id, Supplier<?> supplier, PendingResult<?> pendingResult) {
     this.id = id;
     this.supplier = (Supplier<Object>) supplier;
     this.pendingResult = (PendingResult<Object>) pendingResult;
@@ -33,7 +33,7 @@ class EnvironmentAccessRequest {
    *
    * @return the request ID
    */
-  int getId() {
+  String getId() {
     return id;
   }
 
