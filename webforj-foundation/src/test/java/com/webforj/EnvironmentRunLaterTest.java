@@ -254,7 +254,7 @@ class EnvironmentRunLaterTest {
         requestPosted.countDown();
         return null;
       }
-    }).when(mockApi).postCustomEvent(eq("webforj-runLater-event"), anyString());
+    }).when(mockApi).postCustomEvent(eq(Environment.RUN_LATER_EVENT), anyString());
 
     Thread backgroundThread = new Thread(() -> {
       resultRef.set(Environment.runLater(() -> {
