@@ -3,6 +3,7 @@ package com.webforj;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
+import com.basis.startup.type.CustomObject;
 import com.basis.util.common.Util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -11,6 +12,7 @@ import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.ObjectTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
+import com.webforj.exceptions.WebforjWebManagerException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.reflect.InvocationTargetException;
@@ -18,10 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Queue;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -41,19 +41,18 @@ import java.util.function.Supplier;
  * @since 0.001
  */
 public final class Environment {
+  static final String RUN_LATER_EVENT = "webforj-runLater-event";
   private static final Logger logger = System.getLogger(Environment.class.getName());
   private static final String RESOURCE_PREFIX = "!!";
   private static final HashMap<Object, Environment> instanceMap = new HashMap<>();
-  private static final AtomicInteger accessRequestCounter = new AtomicInteger(0);
+  private static final AtomicInteger runLaterCounter = new AtomicInteger(0);
   private static final InheritableThreadLocal<Environment> inheritableEnvironment =
       new InheritableThreadLocal<>();
   private final BBjAPI api;
   private final BBjSysGui sysgui;
   private final WebforjBBjBridge bridge;
-  private final Queue<EnvironmentAccessRequest> accessQueue = new ConcurrentLinkedQueue<>();
-  private final ConcurrentHashMap<Integer, PendingResult<Object>> pendingResults =
+  private final ConcurrentHashMap<String, EnvironmentAccessRequest> pendingRequests =
       new ConcurrentHashMap<>();
-  private Interval laterQueueTimer;
   private boolean debug = false;
 
   /**
@@ -88,8 +87,8 @@ public final class Environment {
     // Store in inheritable thread local so child threads can access it
     inheritableEnvironment.set(env);
 
-    // Create and start the runLater queue timer
-    env.createRunLaterQueueTimer();
+    // register the runLater callback
+    env.registerRunLaterCallback();
   }
 
   /**
@@ -98,16 +97,14 @@ public final class Environment {
   public static void cleanup() {
     Long currentThreadId = Thread.currentThread().getId();
     Environment env = Environment.instanceMap.remove(currentThreadId);
-
     if (env != null) {
-      // Stop the run later queue timer
-      var runLaterQueue = env.getLaterQueueTimer();
-      if (runLaterQueue != null && runLaterQueue.isRunning()) {
-        runLaterQueue.stop();
-      }
+      // Unregister the runLater callback
+      env.unregisterRunLaterCallback(env);
 
-      // Clear from inheritable thread local
+      // Clear the inheritable thread local
       inheritableEnvironment.remove();
+    } else {
+      logger.log(Level.WARNING, "No Environment found for thread {0} to cleanup", currentThreadId);
     }
   }
 
@@ -259,7 +256,7 @@ public final class Environment {
     // We're in a background thread, delegate.
     logger.log(Level.DEBUG, "runLater Called from background thread {0}",
         Thread.currentThread().getName());
-    return env.doRunLater(supplier);
+    return env.doRunLater(supplier, env);
   }
 
   /**
@@ -495,102 +492,114 @@ public final class Environment {
    *
    * @param <T> the type of the result
    * @param supplier the supplier to execute
+   * @param targetEnv the target Environment to post the custom event to
    *
    * @return a PendingResult that completes with the supplier's result
    */
-  private <T> PendingResult<T> doRunLater(Supplier<T> supplier) {
-    // We're in a background thread, queue the request
-    int requestId = accessRequestCounter.incrementAndGet();
+  private <T> PendingResult<T> doRunLater(Supplier<T> supplier, Environment targetEnv) {
+    // Generate unique request ID
+    String requestId = "runLater-" + runLaterCounter.incrementAndGet();
     PendingResult<T> result = new PendingResult<>();
 
+    // Store the request
     EnvironmentAccessRequest request = new EnvironmentAccessRequest(requestId, supplier, result);
-    accessQueue.offer(request);
+    pendingRequests.put(requestId, request);
 
-    // Store the pending result
-    @SuppressWarnings("unchecked")
-    PendingResult<Object> objectResult = (PendingResult<Object>) result;
-    pendingResults.put(requestId, objectResult);
-
-    logger.log(Level.DEBUG, "Queued runLater request {0} from thread {1}", requestId,
+    logger.log(Level.DEBUG, "Posting runLater request {0} from thread {1}", requestId,
         Thread.currentThread().getName());
+
+    // Post custom event with the request ID
+    try {
+      targetEnv.getBBjAPI().postCustomEvent(RUN_LATER_EVENT, requestId);
+    } catch (Exception e) {
+      pendingRequests.remove(requestId);
+      logger.log(Level.ERROR, "Failed to post custom event for request {0}: {1}", requestId,
+          e.getMessage(), e);
+      result.completeExceptionally(e);
+    }
 
     return result;
   }
 
   /**
-   * Creates and starts the runLater queue timer that processes queued requests.
+   * Registers the runLater event callback to process runLater requests.
    *
    * <p>
-   * This method initializes a timer that checks the access queue every 50 milliseconds and
-   * processes any pending requests by executing their suppliers in the Environment's thread.
+   * This method is called during Environment initialization to set up the event handler for
+   * processing runLater requests posted from background threads.
    * </p>
    */
-  private void createRunLaterQueueTimer() {
-    // Only create timer if we have a valid BBjAPI (not in test environments)
-    if (api == null) {
-      logger.log(Level.DEBUG, "Skipping timer creation in test environment");
+  private void registerRunLaterCallback() {
+    try {
+      logger.log(Level.DEBUG, "Registering runLater event callback");
+      EnvironmentRunLaterEventHandler eventHandler = new EnvironmentRunLaterEventHandler(this);
+      CustomObject handler = getBridge().getEventProxy(eventHandler, "handleEvent");
+
+      getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, handler, "onEvent");
+      logger.log(Level.DEBUG, "runLater event callback registered successfully");
+    } catch (BBjException e) {
+      logger.log(Level.ERROR, "Failed to register runLater event handler: {0}", e.getMessage(), e);
+      throw new WebforjWebManagerException("Failed to register runLater event handler.", e);
+    }
+  }
+
+  /**
+   * Unregisters the runLater event callback and clears pending requests.
+   *
+   * <p>
+   * This method is called during Environment cleanup to remove the event handler and cancel any
+   * pending requests.
+   * </p>
+   *
+   * @param env the Environment instance to unregister from
+   */
+  private void unregisterRunLaterCallback(Environment env) {
+    // Cancel all pending requests
+    env.pendingRequests.forEach((id, request) -> {
+      request.getPendingResult().cancel();
+    });
+    env.pendingRequests.clear();
+
+    // Remove the custom event callback
+    try {
+      env.getBBjAPI().clearCustomEventCallback(RUN_LATER_EVENT);
+    } catch (BBjException e) {
+      logger.log(Level.INFO, "Failed to clear runLater event callback", e);
+    }
+  }
+
+  /**
+   * Processes a single runLater request by ID.
+   *
+   * <p>
+   * This method is called by the custom event handler to process a specific request.
+   * </p>
+   *
+   * @param requestId the ID of the request to process
+   * @see EnvironmentRunLaterEventHandler
+   */
+  void processRunLaterRequest(String requestId) {
+    logger.log(Level.DEBUG, "Processing runLater request {0}", requestId);
+
+    EnvironmentAccessRequest request = pendingRequests.remove(requestId);
+    if (request == null) {
+      logger.log(Level.DEBUG, "Request {0} not found or already processed", requestId);
       return;
     }
 
-    // Create interval timer that checks every 50ms
-    laterQueueTimer = new Interval(0.05f, event -> {
-      if (!accessQueue.isEmpty()) {
-        logger.log(Level.DEBUG, "Timer tick, processing queue");
-        processRunLaterQueue();
-      }
-    });
-
-    laterQueueTimer.start();
-    logger.log(Level.DEBUG, "runLater queue timer created and started");
-  }
-
-  /**
-   * Returns the runLater queue timer.
-   *
-   * @return the runLater queue timer
-   */
-  Interval getLaterQueueTimer() {
-    return laterQueueTimer;
-  }
-
-  /**
-   * Processes the runLater queue, executing queued requests in the Environment's thread.
-   *
-   * <p>
-   * This method is called by the runLater queue timer to process any pending requests. It executes
-   * each request's supplier and completes the associated PendingResult.
-   * </p>
-   */
-  void processRunLaterQueue() {
-    int processedCount = 0;
-    int cancelledCount = 0;
-    EnvironmentAccessRequest request;
-    while ((request = accessQueue.poll()) != null) {
-      final EnvironmentAccessRequest req = request;
-
-      // Check if the PendingResult has been cancelled
-      if (req.getPendingResult().isCancelled()) {
-        cancelledCount++;
-        logger.log(Level.DEBUG, "runLater Skipping cancelled request {0}", req.getId());
-        pendingResults.remove(req.getId());
-        continue;
-      }
-
-      processedCount++;
-      logger.log(Level.DEBUG, "runLater Processing request {0}", req.getId());
-      try {
-        Object result = req.getSupplier().get();
-        req.getPendingResult().complete(result);
-      } catch (Exception e) {
-        logger.log(Level.ERROR, "runLater Request {0} failed: {1}", req.getId(), e.getMessage());
-        req.getPendingResult().completeExceptionally(e);
-      } finally {
-        pendingResults.remove(req.getId());
-      }
+    // Check if the PendingResult has been cancelled
+    if (request.getPendingResult().isCancelled()) {
+      logger.log(Level.DEBUG, "runLater Skipping cancelled request {0}", requestId);
+      return;
     }
-    if (processedCount > 0 || cancelledCount > 0) {
-      logger.log(Level.DEBUG, "runLater Processed {0} requests, skipped {1} cancelled",
-          processedCount, cancelledCount);
+
+    try {
+      Object result = request.getSupplier().get();
+      request.getPendingResult().complete(result);
+      logger.log(Level.DEBUG, "runLater Request {0} completed successfully", requestId);
+    } catch (Exception e) {
+      logger.log(Level.ERROR, "runLater Request {0} failed: {1}", requestId, e.getMessage());
+      request.getPendingResult().completeExceptionally(e);
     }
   }
 }
