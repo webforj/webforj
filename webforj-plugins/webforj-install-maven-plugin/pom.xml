@@ -10,6 +10,7 @@
   </parent>
 
   <artifactId>webforj-install-maven-plugin</artifactId>
+  <name>webforj-install-maven-plugin</name>
   <packaging>maven-plugin</packaging>
 
   <properties>

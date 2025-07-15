@@ -15,6 +15,7 @@
   </properties>
 
   <artifactId>webforj-install-bbj-plugin</artifactId>
+  <name>webforj-install-bbj-plugin</name>
   <packaging>jar</packaging>
 
   <dependencyManagement>
