@@ -38,6 +38,7 @@ body:
       options:
         - WAR (Default)
         - BBj Services
+        - Spring Boot
       default: 0
     validations:
       required: true
