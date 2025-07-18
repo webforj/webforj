@@ -5,7 +5,7 @@
 
   <groupId>com.webforj</groupId>
   <artifactId>webforj-parent</artifactId>
-  <version>25.02</version>
+  <version>25.03-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>webforj</name>
   <description>
