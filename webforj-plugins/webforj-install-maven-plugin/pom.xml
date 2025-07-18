@@ -6,10 +6,11 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-plugins</artifactId>
-    <version>25.02-SNAPSHOT</version>
+    <version>25.03-SNAPSHOT</version>
   </parent>
 
   <artifactId>webforj-install-maven-plugin</artifactId>
+  <name>webforj-install-maven-plugin</name>
   <packaging>maven-plugin</packaging>
 
   <properties>
@@ -39,7 +40,7 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.core5</groupId>
@@ -59,7 +60,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.17.0</version>
+      <version>3.18.0</version>
     </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>

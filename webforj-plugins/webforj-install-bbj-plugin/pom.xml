@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-plugins</artifactId>
-    <version>25.02-SNAPSHOT</version>
+    <version>25.03-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -15,6 +15,7 @@
   </properties>
 
   <artifactId>webforj-install-bbj-plugin</artifactId>
+  <name>webforj-install-bbj-plugin</name>
   <packaging>jar</packaging>
 
   <dependencyManagement>
@@ -22,7 +23,7 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-bom</artifactId>
-        <version>2.25.0</version>
+        <version>2.25.1</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

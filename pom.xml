@@ -5,7 +5,7 @@
 
   <groupId>com.webforj</groupId>
   <artifactId>webforj-parent</artifactId>
-  <version>25.02-SNAPSHOT</version>
+  <version>25.03-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>webforj</name>
   <description>
@@ -87,13 +87,13 @@
       <dependency>
         <groupId>com.typesafe</groupId>
         <artifactId>config</artifactId>
-        <version>1.4.3</version>
+        <version>1.4.4</version>
       </dependency>
 
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.17.0</version>
+        <version>3.18.0</version>
       </dependency>
       <dependency>
         <groupId>org.junit</groupId>
