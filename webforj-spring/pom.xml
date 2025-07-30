@@ -15,7 +15,7 @@
   <description>${project.name}</description>
 
   <properties>
-    <spring.boot.version>3.5.3</spring.boot.version>
+    <spring.boot.version>3.5.4</spring.boot.version>
   </properties>
 
   <dependencyManagement>
