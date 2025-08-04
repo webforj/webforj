@@ -559,7 +559,7 @@ public final class Column<T, V> implements Serializable {
    * @return the column itself
    *
    * @see #setWidth(Float)
-   * @see #setMinWidth(Integer)
+   * @see #setMinWidth(Float)
    *
    * @since 25.03
    */
