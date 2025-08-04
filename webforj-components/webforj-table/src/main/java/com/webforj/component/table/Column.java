@@ -10,6 +10,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -129,7 +130,12 @@ public final class Column<T, V> implements Serializable {
   private SortDirection sort = SortDirection.NONE;
   private int sortIndex = 0;
   private boolean suppressNavigable = false;
+  private Float width = null;
   private Float minWidth = null;
+  private Float maxWidth = null;
+  private float flex = 0;
+  private boolean resizable = true;
+  private boolean movable = true;
   @SuppressWarnings("unused")
   private String cellRenderer = null;
   private Alignment align = Alignment.LEFT;
@@ -432,12 +438,95 @@ public final class Column<T, V> implements Serializable {
   }
 
   /**
-   * Sets the minimum width of the column.
+   * Sets the fixed width of the column in pixels.
    *
-   * @param minWidth the new minimum width
+   * <p>
+   * The width property defines the desired/initial width for the column. How this width is used
+   * depends on other properties and column type:
+   * </p>
+   *
+   * <ul>
+   * <li><b>Regular columns:</b>
+   * <ul>
+   * <li>With only width: Column renders at specified width but can shrink proportionally when
+   * container is too small. The width acts as both desired and minimum width.</li>
+   * <li>With width + minWidth: Column renders at specified width but only shrinks down to minWidth
+   * when container is small.</li>
+   * </ul>
+   * </li>
+   * <li><b>Pinned columns (left/right):</b> Always maintain their exact width, never participating
+   * in responsive shrinking.</li>
+   * <li><b>Flex columns:</b> Setting width is incompatible with flex. Use either width (fixed) or
+   * flex (proportional), not both.</li>
+   * </ul>
+   *
+   * <p>
+   * If not specified, the column will use its estimated width based on content analysis of the
+   * first few rows.
+   * </p>
+   *
+   * @param width the desired width in pixels (must be positive)
    * @return the column itself
+   * @throws IllegalArgumentException if width is not positive
+   *
+   * @see #setMinWidth(float)
+   * @see #setMaxWidth(float)
+   * @see #setFlex(float)
+   *
+   * @since 25.03
    */
-  public Column<T, V> setMinWidth(Float minWidth) {
+  public Column<T, V> setWidth(float width) {
+    if (width <= 0) {
+      throw new IllegalArgumentException("Width must be positive, got: " + width);
+    }
+    Float oldWidth = this.width;
+    this.width = width;
+    changeSupport.firePropertyChange("width", oldWidth, width);
+    return this;
+  }
+
+  /**
+   * Returns the width of the column.
+   *
+   * @return the width in pixels, or 0 if not set
+   * @since 25.03
+   */
+  public float getWidth() {
+    return width == null ? 0 : width;
+  }
+
+  /**
+   * Sets the minimum width constraint for the column in pixels.
+   *
+   * <p>
+   * The minWidth property controls the smallest width a column can have:
+   * </p>
+   *
+   * <ul>
+   * <li><b>Regular columns:</b>
+   * <ul>
+   * <li>With only minWidth: Column uses minWidth as both desired and minimum width.</li>
+   * <li>With width + minWidth: Column can shrink from width down to minWidth but no further.</li>
+   * <li>Without minWidth: Column can shrink down to its width (or estimated width if no width
+   * set).</li>
+   * </ul>
+   * </li>
+   * <li><b>Pinned columns:</b> If only minWidth is set (no width), it becomes the fixed width.</li>
+   * <li><b>Flex columns:</b> Prevents the column from shrinking below this width even when
+   * container space is limited. Without minWidth, flex columns can collapse to 0 width.</li>
+   * </ul>
+   *
+   * @param minWidth the minimum width in pixels (must be positive)
+   * @return the column itself
+   * @throws IllegalArgumentException if minWidth is not positive
+   *
+   * @see #setWidth(float)
+   * @see #setMaxWidth(float)
+   */
+  public Column<T, V> setMinWidth(float minWidth) {
+    if (minWidth <= 0) {
+      throw new IllegalArgumentException("Minimum width must be positive, got: " + minWidth);
+    }
     Float oldMinWidth = this.minWidth;
     this.minWidth = minWidth;
     changeSupport.firePropertyChange("minWidth", oldMinWidth, minWidth);
@@ -448,10 +537,201 @@ public final class Column<T, V> implements Serializable {
   /**
    * Returns the minimum width of the column.
    *
-   * @return the minimum width
+   * @return the minimum width in pixels, or 0 if not set
    */
-  public Float getMinWidth() {
-    return minWidth;
+  public float getMinWidth() {
+    return minWidth == null ? 0 : minWidth;
+  }
+
+  /**
+   * Sets the maximum width constraint for the column in pixels.
+   *
+   * <p>
+   * The maxWidth property limits how wide a column can grow:
+   * </p>
+   *
+   * <ul>
+   * <li><b>All column types:</b> Column width will never exceed this value, regardless of content,
+   * container size, or flex settings.</li>
+   * <li><b>Regular/Pinned columns:</b> If width (or estimated width) exceeds maxWidth, the column
+   * renders at maxWidth.</li>
+   * <li><b>Flex columns:</b> Limits the maximum space a flex column can take.</li>
+   * </ul>
+   *
+   * <p>
+   * This is useful for preventing columns with long content from becoming too wide and affecting
+   * readability.
+   * </p>
+   *
+   * @param maxWidth the maximum width in pixels (must be positive)
+   * @return the column itself
+   * @throws IllegalArgumentException if maxWidth is not positive
+   *
+   * @see #setWidth(float)
+   * @see #setMinWidth(float)
+   *
+   * @since 25.03
+   */
+  public Column<T, V> setMaxWidth(float maxWidth) {
+    if (maxWidth <= 0) {
+      throw new IllegalArgumentException("Maximum width must be positive, got: " + maxWidth);
+    }
+    Float oldMaxWidth = this.maxWidth;
+    this.maxWidth = maxWidth;
+    changeSupport.firePropertyChange("maxWidth", oldMaxWidth, maxWidth);
+    return this;
+  }
+
+  /**
+   * Returns the maximum width of the column.
+   *
+   * @return the maximum width in pixels, or 0 if not set
+   * @since 25.03
+   */
+  public float getMaxWidth() {
+    return maxWidth == null ? 0 : maxWidth;
+  }
+
+  /**
+   * Sets the flex grow factor for proportional column sizing.
+   *
+   * <p>
+   * The flex property makes columns share available space proportionally after fixed-width columns
+   * are allocated. Key behaviors:
+   * </p>
+   *
+   * <ul>
+   * <li><b>Flex value:</b> Determines the proportion of available space. A column with flex=2 gets
+   * twice the space of a column with flex=1.</li>
+   * <li><b>Incompatible with width:</b> Cannot be used together with the width property. Use either
+   * fixed width or flex, not both. when flex is bigger than zero then it takes effect over the
+   * width setting.</li>
+   * <li><b>Respects constraints:</b> Works with minWidth/maxWidth. Without minWidth, flex columns
+   * can shrink to 0.</li>
+   * </ul>
+   *
+   * <p>
+   * Example scenario with 1000px table width and 3 columns:
+   * </p>
+   * <ul>
+   * <li>Column A: width=200px (fixed)</li>
+   * <li>Column B: flex=1</li>
+   * <li>Column C: flex=2</li>
+   * <li>Result: A=200px, B=267px, C=533px (B and C share remaining 800px in 1:2 ratio)</li>
+   * </ul>
+   *
+   * @param flex the flex grow factor (0 for no flex, positive values for proportional sizing)
+   * @return the column itself
+   * @throws IllegalArgumentException if flex is negative
+   *
+   * @see #setMinWidth(float)
+   * @see #setMaxWidth(float)
+   *
+   * @since 25.03
+   */
+  public Column<T, V> setFlex(float flex) {
+    if (flex < 0) {
+      throw new IllegalArgumentException("Flex must be non-negative, got: " + flex);
+    }
+    float oldFlex = this.flex;
+    this.flex = flex;
+    changeSupport.firePropertyChange("flex", oldFlex, flex);
+    return this;
+  }
+
+  /**
+   * Returns the flex grow value of the column.
+   *
+   * @return the flex grow factor (0 means no flex)
+   * @since 25.03
+   */
+  public float getFlex() {
+    return flex;
+  }
+
+  /**
+   * Sets whether the column is resizable by the user.
+   *
+   * @param resizable true to allow resizing, false to prevent it
+   * @return the column itself
+   *
+   * @since 25.03
+   */
+  public Column<T, V> setResizable(boolean resizable) {
+    boolean oldResizable = this.resizable;
+    this.resizable = resizable;
+    changeSupport.firePropertyChange("resizable", oldResizable, resizable);
+    return this;
+  }
+
+  /**
+   * Returns whether the column is resizable by the user.
+   *
+   * @return true if the column is resizable, false otherwise
+   * @since 25.03
+   */
+  public boolean isResizable() {
+    return resizable;
+  }
+
+  /**
+   * Sets whether the column can be dragged and reordered by the user.
+   *
+   * <p>
+   * When set to <code>true</code>, users can drag the column header to reposition the column within
+   * the table. When set to <code>false</code>, the column header cannot be dragged.
+   * </p>
+   *
+   * <p>
+   * Non-movable columns can still change position when other columns are moved around them. This is
+   * because columns must remain contiguous in the table. For example:
+   * <ul>
+   * <li>Given columns [A, B, C] where B is non-movable</li>
+   * <li>If user drags A to position 3, the result is [B, C, A]</li>
+   * <li>Column B has shifted position despite being non-movable</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * To prevent a column from changing position entirely, use pinning. Pinned columns remain in
+   * their section regardless of other column movements.
+   * </p>
+   *
+   * <p>
+   * <b>Dragging between pinned and unpinned sections:</b>
+   * <ul>
+   * <li>When dragging an unpinned column to a pinned section (left or right), the column
+   * automatically becomes pinned to that side</li>
+   * <li>When dragging a pinned column to the center (unpinned) area, the column loses its pinned
+   * status and becomes a regular scrollable column</li>
+   * <li>Pinned columns can be reordered within their own section (left-pinned columns stay left,
+   * right-pinned columns stay right)</li>
+   * </ul>
+   * </p>
+   *
+   * @param movable {@code true} to allow dragging and reordering, {@code false} to prevent it
+   *
+   * @return this column instance for method chaining
+   * @see #setPinDirection(PinDirection)
+   *
+   * @since 25.03
+   */
+  public Column<T, V> setMovable(boolean movable) {
+    boolean oldMovable = this.movable;
+    this.movable = movable;
+    changeSupport.firePropertyChange("movable", oldMovable, movable);
+
+    return this;
+  }
+
+  /**
+   * Returns whether the column can be moved by the user.
+   *
+   * @return true if the column is movable, false otherwise
+   * @since 25.03
+   */
+  public boolean isMovable() {
+    return movable;
   }
 
   /**
@@ -506,6 +786,50 @@ public final class Column<T, V> implements Serializable {
   }
 
   /**
+   * Get that table instance that this column belongs to.
+   *
+   * @return the table instance.
+   */
+  public Table<T> getTable() {
+    return table;
+  }
+
+  /**
+   * Adds a property change listener.
+   *
+   * @param listener the listener
+   * @return the column itself
+   */
+  public Column<T, V> addPropertyChangeListener(PropertyChangeListener listener) {
+    this.changeSupport.addPropertyChangeListener(listener);
+    return this;
+  }
+
+  /**
+   * Removes a property change listener.
+   *
+   * @param listener the listener
+   * @return the column itself
+   */
+  public Column<T, V> removePropertyChangeListener(PropertyChangeListener listener) {
+    this.changeSupport.removePropertyChangeListener(listener);
+    return this;
+  }
+
+  private void updateClientCellRenderer() {
+    this.cellRenderer = renderer.build();
+    table.refreshColumns();
+  }
+
+  private EventListener<RendererChangeEvent> handleRendererChange(Renderer<T> renderer) {
+    return event -> {
+      if (event.getSource() == renderer) {
+        this.updateClientCellRenderer();
+      }
+    };
+  }
+
+  /**
    * Returns the client type of the column.
    *
    * @return the client type
@@ -537,50 +861,6 @@ public final class Column<T, V> implements Serializable {
       this.type = Type.TIME;
     }
 
-    return this;
-  }
-
-  /**
-   * Get that table instance that this column belongs to.
-   *
-   * @return the table instance.
-   */
-  public Table<T> getTable() {
-    return table;
-  }
-
-  private void updateClientCellRenderer() {
-    this.cellRenderer = renderer.build();
-    table.refreshColumns();
-  }
-
-  private EventListener<RendererChangeEvent> handleRendererChange(Renderer<T> renderer) {
-    return event -> {
-      if (event.getSource() == renderer) {
-        this.updateClientCellRenderer();
-      }
-    };
-  }
-
-  /**
-   * Adds a property change listener.
-   *
-   * @param listener the listener
-   * @return the column itself
-   */
-  public Column<T, V> addPropertyChangeListener(PropertyChangeListener listener) {
-    this.changeSupport.addPropertyChangeListener(listener);
-    return this;
-  }
-
-  /**
-   * Removes a property change listener.
-   *
-   * @param listener the listener
-   * @return the column itself
-   */
-  public Column<T, V> removePropertyChangeListener(PropertyChangeListener listener) {
-    this.changeSupport.removePropertyChangeListener(listener);
     return this;
   }
 }

@@ -1,5 +1,6 @@
 package com.webforj.component.table;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -10,13 +11,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.webforj.PendingResult;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptorTester;
 import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.component.table.event.cell.TableCellClickEvent;
 import com.webforj.component.table.event.cell.TableCellDoubleClickEvent;
+import com.webforj.component.table.event.column.TableColumnMoveEvent;
+import com.webforj.component.table.event.column.TableColumnResizeEvent;
 import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.table.event.item.TableItemDoubleClickEvent;
 import com.webforj.component.table.event.selection.TableItemDeselectEvent;
@@ -37,6 +42,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TableTest {
 
@@ -158,6 +165,54 @@ class TableTest {
       component.removeColumn(c);
 
       assertFalse(component.hasColumn(columnId));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingNonExistentColumn() {
+      Table<String> table = new Table<>();
+
+      assertThrows(IllegalArgumentException.class, () -> table.moveColumn("nonexistent", 0),
+          "Column with id 'nonexistent' not found");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingHiddenColumn() {
+      Table<String> table = new Table<>();
+      Column<String, String> column = table.addColumn("hidden", Function.identity());
+      column.setHidden(true);
+
+      assertThrows(IllegalArgumentException.class, () -> table.moveColumn("hidden", 0),
+          "Cannot move hidden column with id 'hidden'");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingToInvalidIndex() {
+      Table<String> table = new Table<>();
+      table.addColumn("col1", Function.identity());
+      table.addColumn("col2", Function.identity());
+
+      assertThrows(IndexOutOfBoundsException.class, () -> table.moveColumn("col1", -1),
+          "Column index out of visible columns bounds: -1");
+
+      assertThrows(IndexOutOfBoundsException.class, () -> table.moveColumn("col1", 2),
+          "Column index out of visible columns bounds: 2");
+    }
+
+    @Test
+    void shouldMoveColumn() {
+      Table<String> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.callJsFunctionAsync("moveColumn", "col1", 1))
+          .thenReturn(PendingResult.completedWith(null));
+
+      table.addColumn("col1", Function.identity());
+      table.addColumn("col2", Function.identity());
+
+      PendingResult<Void> result = table.moveColumn("col1", 1);
+
+      verify(elMock).callJsFunctionAsync("moveColumn", "col1", 1);
+      assertNotNull(result);
     }
   }
 
@@ -406,6 +461,30 @@ class TableTest {
       assertTrue(listeners.size() > 0);
       assertTrue(listeners.get(0) instanceof EventListener<TableSortChangeEvent>);
     }
+
+    @Test
+    void shouldAddColumnResizeListener() {
+      component.onColumnResize(event -> {
+      });
+
+      List<EventListener<TableColumnResizeEvent>> listeners =
+          component.getEventListeners(TableColumnResizeEvent.class);
+
+      assertEquals(1, listeners.size());
+      assertTrue(listeners.get(0) instanceof EventListener<TableColumnResizeEvent>);
+    }
+
+    @Test
+    void shouldAddColumnMoveListener() {
+      component.onColumnMove(event -> {
+      });
+
+      List<EventListener<TableColumnMoveEvent>> listeners =
+          component.getEventListeners(TableColumnMoveEvent.class);
+
+      assertEquals(1, listeners.size());
+      assertTrue(listeners.get(0) instanceof EventListener<TableColumnMoveEvent>);
+    }
   }
 
   @Nested
@@ -485,6 +564,140 @@ class TableTest {
       component.setCellPartProvider(cellPartProvider);
 
       assertEquals(cellPartProvider, component.getCellPartProvider());
+    }
+  }
+
+  @Nested
+  class StateChangeHandling {
+
+    @Test
+    void shouldHandleColumnStateChange() {
+      Column<String, String> column = component.addColumn("testColumn", Function.identity());
+
+      column.setWidth(100.0f);
+      column.setFlex(2);
+
+      ColumnState state = new ColumnState();
+      state.setId("testColumn");
+      state.setWidth(250);
+      state.setFlex(5);
+
+      StateChangedDetail detail = new StateChangedDetail("user", List.of(state));
+      component.handleStateChanged(detail);
+
+      assertEquals(250.0f, column.getWidth());
+      assertEquals(5, column.getFlex());
+    }
+  }
+
+  @Nested
+  class AutoSizeApi {
+
+    @Test
+    void shouldSetColumnsToAutoSize() {
+      Table<String> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.callJsFunctionAsync("autoSize")).thenReturn(PendingResult.completedWith(null));
+
+      PendingResult<Void> result = table.setColumnsToAutoSize();
+
+      verify(elMock).callJsFunctionAsync("autoSize");
+      assertNotNull(result);
+    }
+
+    @Test
+    void shouldSetColumnToAutoSizeById() {
+      Table<String> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.callJsFunctionAsync("autoSizeColumn", "testColumn"))
+          .thenReturn(PendingResult.completedWith(null));
+
+      PendingResult<Void> result = table.setColumnToAutoSize("testColumn");
+
+      verify(elMock).callJsFunctionAsync("autoSizeColumn", "testColumn");
+      assertNotNull(result);
+    }
+
+    @Test
+    void shouldThrowNullPointerExceptionForNullColumnId() {
+      Table<String> table = new Table<>();
+
+      assertThrows(NullPointerException.class, () -> table.setColumnToAutoSize((String) null),
+          "Column id cannot be null");
+    }
+
+    @Test
+    void shouldSetColumnToAutoSizeByColumn() {
+      Table<String> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.callJsFunctionAsync("autoSizeColumn", "testColumn"))
+          .thenReturn(PendingResult.completedWith(null));
+      Column<String, String> column = table.addColumn("testColumn", Function.identity());
+
+      PendingResult<Void> result = table.setColumnToAutoSize(column);
+
+      verify(elMock).callJsFunctionAsync("autoSizeColumn", "testColumn");
+      assertNotNull(result);
+    }
+
+    @Test
+    void shouldThrowNullPointerExceptionForNullColumn() {
+      Table<String> table = new Table<>();
+
+      assertThrows(NullPointerException.class,
+          () -> table.setColumnToAutoSize((Column<String, ?>) null), "Column cannot be null");
+    }
+
+    @Test
+    void shouldSetColumnsToAutoFit() {
+      Table<String> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.callJsFunctionAsync("autoFit")).thenReturn(PendingResult.completedWith(null));
+
+      PendingResult<Void> result = table.setColumnsToAutoFit();
+
+      verify(elMock).callJsFunctionAsync("autoFit");
+      assertNotNull(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSetColumnsToResizable(boolean resizable) {
+      Table<String> table = spy(new Table<>());
+      Column<String, String> column1 = table.addColumn("col1", Function.identity());
+      Column<String, String> column2 = table.addColumn("col2", Function.identity());
+
+      column1.setResizable(!resizable);
+      column2.setResizable(!resizable);
+
+      Table<String> result = table.setColumnsToResizable(resizable);
+
+      assertEquals(resizable, column1.isResizable());
+      assertEquals(resizable, column2.isResizable());
+      assertEquals(table, result);
+      verify(table).refreshColumns();
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldSetColumnsToMovable(boolean movable) {
+      Table<String> table = spy(new Table<>());
+      Column<String, String> column1 = table.addColumn("col1", Function.identity());
+      Column<String, String> column2 = table.addColumn("col2", Function.identity());
+
+      column1.setMovable(!movable);
+      column2.setMovable(!movable);
+
+      Table<String> result = table.setColumnsToMovable(movable);
+
+      assertEquals(movable, column1.isMovable());
+      assertEquals(movable, column2.isMovable());
+      assertEquals(table, result);
+      verify(table).refreshColumns();
     }
   }
 

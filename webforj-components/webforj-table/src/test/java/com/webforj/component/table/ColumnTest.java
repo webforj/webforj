@@ -16,6 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,8 +42,12 @@ class ColumnTest {
     oldValues.put("sortable", column.isSortable());
     oldValues.put("sortDirection", column.getSortDirection());
     oldValues.put("suppressNavigable", column.isSuppressNavigable());
-    oldValues.put("minWidth", column.getMinWidth());
+    oldValues.put("minWidth", column.getMinWidth() == 0 ? null : column.getMinWidth());
+    oldValues.put("maxWidth", column.getMaxWidth() == 0 ? null : column.getMaxWidth());
     oldValues.put("alignment", column.getAlignment());
+    oldValues.put("width", column.getWidth() == 0 ? null : column.getWidth());
+    oldValues.put("flex", column.getFlex());
+    oldValues.put("resizable", column.isResizable());
 
     newValues.put("hidden", true);
     newValues.put("label", "New Label");
@@ -52,7 +57,11 @@ class ColumnTest {
     newValues.put("suppressNavigable", true);
     newValues.put("type", Type.NUMBER);
     newValues.put("minWidth", 10.0f);
+    newValues.put("maxWidth", 500.0f);
     newValues.put("alignment", Column.Alignment.RIGHT);
+    newValues.put("width", 250.0f);
+    newValues.put("flex", 3.0f);
+    newValues.put("resizable", false);
   }
 
   @Test
@@ -75,7 +84,11 @@ class ColumnTest {
     column.setSortDirection((SortDirection) newValues.get("sortDirection"));
     column.setSuppressNavigable((boolean) newValues.get("suppressNavigable"));
     column.setMinWidth((float) newValues.get("minWidth"));
+    column.setMaxWidth((float) newValues.get("maxWidth"));
     column.setAlignment((Column.Alignment) newValues.get("alignment"));
+    column.setWidth((float) newValues.get("width"));
+    column.setFlex((float) newValues.get("flex"));
+    column.setResizable((boolean) newValues.get("resizable"));
   }
 
   @Test
@@ -92,7 +105,7 @@ class ColumnTest {
     assertEquals(column.getSortDirection(), deserializedColumn.getSortDirection());
     assertEquals(column.isSuppressNavigable(), deserializedColumn.isSuppressNavigable());
     assertEquals(column.getAlignment(), deserializedColumn.getAlignment());
-    assertNull(column.getMinWidth());
+    assertEquals(0, column.getMinWidth(), 0.01);
 
   }
 
@@ -100,6 +113,31 @@ class ColumnTest {
   void shouldGetValue() {
     column.setValueProvider(String::toUpperCase);
     assertEquals("HELLO", column.getValue("Hello"));
+  }
+
+  @Test
+  void shouldValidatePositiveWidth() {
+    assertThrows(IllegalArgumentException.class, () -> column.setWidth(0));
+    assertThrows(IllegalArgumentException.class, () -> column.setWidth(-10));
+    assertThrows(IllegalArgumentException.class, () -> column.setMinWidth(0));
+    assertThrows(IllegalArgumentException.class, () -> column.setMinWidth(-5));
+    assertThrows(IllegalArgumentException.class, () -> column.setMaxWidth(0));
+    assertThrows(IllegalArgumentException.class, () -> column.setMaxWidth(-100));
+  }
+
+  @Test
+  void shouldValidateNonNegativeFlex() {
+    // 0 is valid (means no flex)
+    column.setFlex(0);
+    assertEquals(0, column.getFlex());
+
+    // Positive values are valid
+    column.setFlex(1.5f);
+    assertEquals(1.5f, column.getFlex());
+
+    // Negative values should throw
+    assertThrows(IllegalArgumentException.class, () -> column.setFlex(-1));
+    assertThrows(IllegalArgumentException.class, () -> column.setFlex(-0.5f));
   }
 
   @Nested
