@@ -17,8 +17,8 @@ import java.util.Map;
     @EventData(key = "oldWidth", exp = "event.detail.oldWidth"),
     @EventData(key = "newWidth", exp = "event.detail.newWidth")})
 public class TableColumnResizeEvent extends TableColumnEvent<Object> {
-  private final int oldWidth;
-  private final int newWidth;
+  private final double oldWidth;
+  private final double newWidth;
 
   /**
    * Creates a new column resize event.
