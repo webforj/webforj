@@ -516,7 +516,7 @@ public final class Column<T, V> implements Serializable {
    * @return the column itself
    *
    * @see #setWidth(Float)
-   * @see #setMaxWidth(Integer)
+   * @see #setMaxWidth(Float)
    */
   public Column<T, V> setMinWidth(Float minWidth) {
     Float oldMinWidth = this.minWidth;
