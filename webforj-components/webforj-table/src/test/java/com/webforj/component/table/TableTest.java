@@ -1,5 +1,6 @@
 package com.webforj.component.table;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -164,6 +165,54 @@ class TableTest {
       component.removeColumn(c);
 
       assertFalse(component.hasColumn(columnId));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingNonExistentColumn() {
+      Table<String> table = new Table<>();
+
+      assertThrows(IllegalArgumentException.class, () -> table.moveColumn("nonexistent", 0),
+          "Column with id 'nonexistent' not found");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingHiddenColumn() {
+      Table<String> table = new Table<>();
+      Column<String, String> column = table.addColumn("hidden", Function.identity());
+      column.setHidden(true);
+
+      assertThrows(IllegalArgumentException.class, () -> table.moveColumn("hidden", 0),
+          "Cannot move hidden column with id 'hidden'");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingToInvalidIndex() {
+      Table<String> table = new Table<>();
+      table.addColumn("col1", Function.identity());
+      table.addColumn("col2", Function.identity());
+
+      assertThrows(IndexOutOfBoundsException.class, () -> table.moveColumn("col1", -1),
+          "Column index out of visible columns bounds: -1");
+
+      assertThrows(IndexOutOfBoundsException.class, () -> table.moveColumn("col1", 2),
+          "Column index out of visible columns bounds: 2");
+    }
+
+    @Test
+    void shouldMoveColumn() {
+      Table<String> table = spy(new Table<>());
+      Element elMock = mock(Element.class);
+      when(table.el()).thenReturn(elMock);
+      when(elMock.callJsFunctionAsync("moveColumn", "col1", 1))
+          .thenReturn(PendingResult.completedWith(null));
+
+      table.addColumn("col1", Function.identity());
+      table.addColumn("col2", Function.identity());
+
+      PendingResult<Void> result = table.moveColumn("col1", 1);
+
+      verify(elMock).callJsFunctionAsync("moveColumn", "col1", 1);
+      assertNotNull(result);
     }
   }
 

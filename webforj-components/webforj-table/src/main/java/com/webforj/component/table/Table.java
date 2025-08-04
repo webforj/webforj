@@ -1324,9 +1324,14 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
       throw new IllegalArgumentException("Column with id '" + id + "' not found");
     }
 
-    // check if the index is valid
-    if (index < 0 || index >= columns.size()) {
-      throw new IndexOutOfBoundsException("Column index out of bounds: " + index);
+    if (column.get().isHidden()) {
+      throw new IllegalArgumentException("Cannot move hidden column with id '" + id + "'");
+    }
+
+    // check if the index is valid (among visible columns)
+    List<Column<T, ?>> visibleColumns = columns.stream().filter(c -> !c.isHidden()).toList();
+    if (index < 0 || index >= visibleColumns.size()) {
+      throw new IndexOutOfBoundsException("Column index out of visible columns bounds: " + index);
     }
 
     var result = new PendingResult<Void>();
