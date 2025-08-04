@@ -465,16 +465,16 @@ public final class Column<T, V> implements Serializable {
    * first few rows.
    * </p>
    *
-   * @param width the desired width in pixels, or null to use estimated width
+   * @param width the desired width in pixels
    * @return the column itself
    *
-   * @see #setMinWidth(Float)
-   * @see #setMaxWidth(Float)
+   * @see #setMinWidth(float)
+   * @see #setMaxWidth(float)
    * @see #setFlex(float)
    *
    * @since 25.03
    */
-  public Column<T, V> setWidth(Float width) {
+  public Column<T, V> setWidth(float width) {
     Float oldWidth = this.width;
     this.width = width;
     changeSupport.firePropertyChange("width", oldWidth, width);
@@ -484,11 +484,11 @@ public final class Column<T, V> implements Serializable {
   /**
    * Returns the width of the column.
    *
-   * @return the width in pixels
+   * @return the width in pixels, or 0 if not set
    * @since 25.03
    */
-  public Optional<Float> getWidth() {
-    return Optional.ofNullable(width);
+  public float getWidth() {
+    return width == null ? 0 : width;
   }
 
   /**
@@ -512,13 +512,13 @@ public final class Column<T, V> implements Serializable {
    * container space is limited. Without minWidth, flex columns can collapse to 0 width.</li>
    * </ul>
    *
-   * @param minWidth the minimum width in pixels, or null for no minimum constraint
+   * @param minWidth the minimum width in pixels
    * @return the column itself
    *
-   * @see #setWidth(Float)
-   * @see #setMaxWidth(Float)
+   * @see #setWidth(float)
+   * @see #setMaxWidth(float)
    */
-  public Column<T, V> setMinWidth(Float minWidth) {
+  public Column<T, V> setMinWidth(float minWidth) {
     Float oldMinWidth = this.minWidth;
     this.minWidth = minWidth;
     changeSupport.firePropertyChange("minWidth", oldMinWidth, minWidth);
@@ -529,10 +529,10 @@ public final class Column<T, V> implements Serializable {
   /**
    * Returns the minimum width of the column.
    *
-   * @return the minimum width in pixels
+   * @return the minimum width in pixels, or 0 if not set
    */
-  public Optional<Float> getMinWidth() {
-    return Optional.ofNullable(minWidth);
+  public float getMinWidth() {
+    return minWidth == null ? 0 : minWidth;
   }
 
   /**
@@ -555,15 +555,15 @@ public final class Column<T, V> implements Serializable {
    * readability.
    * </p>
    *
-   * @param maxWidth the maximum width in pixels, or null for no maximum constraint
+   * @param maxWidth the maximum width in pixels
    * @return the column itself
    *
-   * @see #setWidth(Float)
-   * @see #setMinWidth(Float)
+   * @see #setWidth(float)
+   * @see #setMinWidth(float)
    *
    * @since 25.03
    */
-  public Column<T, V> setMaxWidth(Float maxWidth) {
+  public Column<T, V> setMaxWidth(float maxWidth) {
     Float oldMaxWidth = this.maxWidth;
     this.maxWidth = maxWidth;
     changeSupport.firePropertyChange("maxWidth", oldMaxWidth, maxWidth);
@@ -573,11 +573,11 @@ public final class Column<T, V> implements Serializable {
   /**
    * Returns the maximum width of the column.
    *
-   * @return the maximum width in pixels
+   * @return the maximum width in pixels, or 0 if not set
    * @since 25.03
    */
-  public Optional<Float> getMaxWidth() {
-    return Optional.ofNullable(maxWidth);
+  public float getMaxWidth() {
+    return maxWidth == null ? 0 : maxWidth;
   }
 
   /**
@@ -611,8 +611,8 @@ public final class Column<T, V> implements Serializable {
    * @param flex the flex grow factor (0 for no flex, positive values for proportional sizing)
    * @return the column itself
    *
-   * @see #setMinWidth(Float)
-   * @see #setMaxWidth(Float)
+   * @see #setMinWidth(float)
+   * @see #setMaxWidth(float)
    *
    * @since 25.03
    */

@@ -42,10 +42,10 @@ class ColumnTest {
     oldValues.put("sortable", column.isSortable());
     oldValues.put("sortDirection", column.getSortDirection());
     oldValues.put("suppressNavigable", column.isSuppressNavigable());
-    oldValues.put("minWidth", column.getMinWidth().orElse(null));
-    oldValues.put("maxWidth", column.getMaxWidth().orElse(null));
+    oldValues.put("minWidth", column.getMinWidth() == 0 ? null : column.getMinWidth());
+    oldValues.put("maxWidth", column.getMaxWidth() == 0 ? null : column.getMaxWidth());
     oldValues.put("alignment", column.getAlignment());
-    oldValues.put("width", column.getWidth().orElse(null));
+    oldValues.put("width", column.getWidth() == 0 ? null : column.getWidth());
     oldValues.put("flex", column.getFlex());
     oldValues.put("resizable", column.isResizable());
 
@@ -83,11 +83,11 @@ class ColumnTest {
     column.setSortable((boolean) newValues.get("sortable"));
     column.setSortDirection((SortDirection) newValues.get("sortDirection"));
     column.setSuppressNavigable((boolean) newValues.get("suppressNavigable"));
-    column.setMinWidth((Float) newValues.get("minWidth"));
-    column.setMaxWidth((Float) newValues.get("maxWidth"));
+    column.setMinWidth((float) newValues.get("minWidth"));
+    column.setMaxWidth((float) newValues.get("maxWidth"));
     column.setAlignment((Column.Alignment) newValues.get("alignment"));
-    column.setWidth((Float) newValues.get("width"));
-    column.setFlex((Float) newValues.get("flex"));
+    column.setWidth((float) newValues.get("width"));
+    column.setFlex((float) newValues.get("flex"));
     column.setResizable((boolean) newValues.get("resizable"));
   }
 
@@ -105,7 +105,7 @@ class ColumnTest {
     assertEquals(column.getSortDirection(), deserializedColumn.getSortDirection());
     assertEquals(column.isSuppressNavigable(), deserializedColumn.isSuppressNavigable());
     assertEquals(column.getAlignment(), deserializedColumn.getAlignment());
-    assertEquals(Optional.empty(), column.getMinWidth());
+    assertEquals(0, column.getMinWidth(), 0.01);
 
   }
 

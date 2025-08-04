@@ -585,7 +585,7 @@ class TableTest {
       StateChangedDetail detail = new StateChangedDetail("user", List.of(state));
       component.handleStateChanged(detail);
 
-      assertEquals(250.0f, column.getWidth().orElse(0.0f));
+      assertEquals(250.0f, column.getWidth());
       assertEquals(5, column.getFlex());
     }
   }
