@@ -17,7 +17,7 @@ public abstract class TableColumnEvent<T> extends TableEvent<T> {
   private String id;
 
   /**
-   * Creates a new row event.
+   * Creates a new column event.
    *
    * @param table the table
    * @param eventMap the event map
