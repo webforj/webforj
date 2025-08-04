@@ -1321,7 +1321,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
     // check if the column exists
     var column = columns.stream().filter(c -> c.getId().equals(id)).findFirst();
     if (column.isEmpty()) {
-      throw new IllegalArgumentException("Column with id '" + id + "' not found or is hidden");
+      throw new IllegalArgumentException("Column with id '" + id + "' not found");
     }
 
     // check if the index is valid
