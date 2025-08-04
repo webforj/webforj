@@ -16,6 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,8 +42,12 @@ class ColumnTest {
     oldValues.put("sortable", column.isSortable());
     oldValues.put("sortDirection", column.getSortDirection());
     oldValues.put("suppressNavigable", column.isSuppressNavigable());
-    oldValues.put("minWidth", column.getMinWidth());
+    oldValues.put("minWidth", column.getMinWidth().orElse(null));
+    oldValues.put("maxWidth", column.getMaxWidth().orElse(null));
     oldValues.put("alignment", column.getAlignment());
+    oldValues.put("width", column.getWidth().orElse(null));
+    oldValues.put("flex", column.getFlex());
+    oldValues.put("resizable", column.isResizable());
 
     newValues.put("hidden", true);
     newValues.put("label", "New Label");
@@ -52,7 +57,11 @@ class ColumnTest {
     newValues.put("suppressNavigable", true);
     newValues.put("type", Type.NUMBER);
     newValues.put("minWidth", 10.0f);
+    newValues.put("maxWidth", 500.0f);
     newValues.put("alignment", Column.Alignment.RIGHT);
+    newValues.put("width", 250.0f);
+    newValues.put("flex", 3.0f);
+    newValues.put("resizable", false);
   }
 
   @Test
@@ -74,8 +83,12 @@ class ColumnTest {
     column.setSortable((boolean) newValues.get("sortable"));
     column.setSortDirection((SortDirection) newValues.get("sortDirection"));
     column.setSuppressNavigable((boolean) newValues.get("suppressNavigable"));
-    column.setMinWidth((float) newValues.get("minWidth"));
+    column.setMinWidth((Float) newValues.get("minWidth"));
+    column.setMaxWidth((Float) newValues.get("maxWidth"));
     column.setAlignment((Column.Alignment) newValues.get("alignment"));
+    column.setWidth((Float) newValues.get("width"));
+    column.setFlex((Float) newValues.get("flex"));
+    column.setResizable((boolean) newValues.get("resizable"));
   }
 
   @Test
@@ -92,7 +105,7 @@ class ColumnTest {
     assertEquals(column.getSortDirection(), deserializedColumn.getSortDirection());
     assertEquals(column.isSuppressNavigable(), deserializedColumn.isSuppressNavigable());
     assertEquals(column.getAlignment(), deserializedColumn.getAlignment());
-    assertNull(column.getMinWidth());
+    assertEquals(Optional.empty(), column.getMinWidth());
 
   }
 

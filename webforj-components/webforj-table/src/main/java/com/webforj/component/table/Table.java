@@ -6,14 +6,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.webforj.PendingResult;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.element.annotation.PropertyExclude;
+import com.webforj.component.element.event.ElementEventOptions;
 import com.webforj.component.html.HtmlComponent;
+import com.webforj.component.table.Column.PinDirection;
 import com.webforj.component.table.event.TableSortChangeEvent;
 import com.webforj.component.table.event.cell.TableCellClickEvent;
 import com.webforj.component.table.event.cell.TableCellDoubleClickEvent;
+import com.webforj.component.table.event.column.TableColumnMoveEvent;
+import com.webforj.component.table.event.column.TableColumnResizeEvent;
 import com.webforj.component.table.event.item.TableItemClickEvent;
 import com.webforj.component.table.event.item.TableItemDoubleClickEvent;
 import com.webforj.component.table.event.selection.TableItemDeselectEvent;
@@ -1043,6 +1048,319 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   /**
+   * Sets all columns to automatically size based on their content width.
+   *
+   * <p>
+   * This method resets the width of all columns to their estimated content width, which is
+   * calculated based on the column's data and header text. The estimated width is calculated
+   * automatically by the table component and may not perfectly fit all content in all cases. For
+   * precise control, use {@link Column#setWidth(Integer)} on individual columns.
+   * </p>
+   *
+   * <p>
+   * This operation:
+   * <ul>
+   * <li>Removes any explicit width settings from all columns</li>
+   * <li>Sets all columns to non-flex mode (flex: 0)</li>
+   * <li>Applies the estimated width based on content analysis</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * The sizing affects only columns that exist in the table at the time of invocation. Columns
+   * added subsequently will retain their individual width settings and will not automatically adopt
+   * content-based sizing unless this method is called again or their width is explicitly
+   * configured.
+   * </p>
+   *
+   * @return a pending result that completes when the operation is done
+   *
+   * @see #setColumnToAutoSize(String)
+   * @see #setColumnsToAutoFit()
+   *
+   * @since 25.03
+   */
+  public PendingResult<Void> setColumnsToAutoSize() {
+    var result = new PendingResult<Void>();
+    el().callJsFunctionAsync("autoSize").thenAccept(ignored -> {
+      result.complete(null);
+    }).exceptionally(ex -> {
+      result.completeExceptionally(ex);
+      return null;
+    });
+
+    return result;
+  }
+
+  /**
+   * Sets a specific column to automatically size based on its content width.
+   *
+   * <p>
+   * This method resets the width of the specified column to its estimated content width. The
+   * operation:
+   * <ul>
+   * <li>Removes any explicit width setting from the column</li>
+   * <li>Sets the column to non-flex mode (flex: 0)</li>
+   * <li>Applies the estimated width based on the column's content</li>
+   * </ul>
+   * </p>
+   *
+   * @param id the id of the column to auto-size
+   *
+   * @return a pending result that completes when the operation is done
+   * @throws NullPointerException if id is null
+   *
+   * @see #setColumnsToAutoSize()
+   * @see #setColumnToAutoSize(Column)
+   *
+   * @since 25.03
+   */
+  public PendingResult<Void> setColumnToAutoSize(String id) {
+    Objects.requireNonNull(id, "Column id cannot be null");
+    var result = new PendingResult<Void>();
+    el().callJsFunctionAsync("autoSizeColumn", id).thenAccept(ignored -> {
+      result.complete(null);
+    }).exceptionally(ex -> {
+      result.completeExceptionally(ex);
+      return null;
+    });
+
+    return result;
+  }
+
+  /**
+   * Sets a specific column to automatically size based on its content width.
+   *
+   * <p>
+   * This is a convenience method that delegates to {@link #setColumnToAutoSize(String)} using the
+   * column's ID.
+   * </p>
+   *
+   * @param column the column to auto-size
+   * @return a pending result that completes when the operation is done
+   *
+   * @throws NullPointerException if column is null
+   * @see #setColumnToAutoSize(String)
+   *
+   * @since 25.03
+   */
+  public PendingResult<Void> setColumnToAutoSize(Column<T, ?> column) {
+    Objects.requireNonNull(column, "Column cannot be null");
+    return setColumnToAutoSize(column.getId());
+  }
+
+  /**
+   * Sets all columns to automatically fit within the table's width.
+   *
+   * <p>
+   * This method configures all columns to use flexible sizing (flex: 1), which means:
+   * <ul>
+   * <li>All columns will expand or shrink proportionally to fill the table width</li>
+   * <li>Each column gets an equal share of the available space</li>
+   * <li>Explicit width settings are overridden</li>
+   * <li>Columns will never be smaller than their minimum width constraints</li>
+   * <li>A horizontal scrollbar will not appear unless content exceeds minimum widths</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * The flexible sizing applies only to columns present in the table at the time of invocation.
+   * Columns added after this method call will maintain their default or explicitly configured width
+   * and flex settings. To include new columns in the auto-fit layout, this method must be called
+   * again after adding them.
+   * </p>
+   *
+   * @return a pending result that completes when the operation is done
+   *
+   * @see #setColumnsToAutoSize()
+   * @see Column#setFlex(float)
+   *
+   * @since 25.03
+   */
+  public PendingResult<Void> setColumnsToAutoFit() {
+    var result = new PendingResult<Void>();
+    el().callJsFunctionAsync("autoFit").thenAccept(ignored -> {
+      result.complete(null);
+    }).exceptionally(ex -> {
+      result.completeExceptionally(ex);
+      return null;
+    });
+
+    return result;
+  }
+
+  /**
+   * Modifies the resizable property of all columns currently defined in the table.
+   *
+   * <p>
+   * This method applies the resizable setting to each column that has been added to the table at
+   * the time of invocation. The change affects only these existing columns and does not establish a
+   * default behavior for columns added subsequently. Each column added after this method call will
+   * retain its individual resizable setting unless explicitly modified.
+   * </p>
+   *
+   * <p>
+   * After updating all column properties, the method triggers a column refresh to ensure the
+   * changes are immediately reflected in the table's visual representation.
+   * </p>
+   *
+   * @param resizable {@code true} to allow users to resize columns by dragging their borders,
+   *        {@code false} to prevent column resizing
+   *
+   * @return the table instance for method chaining
+   *
+   * @see Column#setResizable(boolean)
+   * @see #refreshColumns()
+   *
+   * @since 25.03
+   */
+  public Table<T> setColumnsToResizable(boolean resizable) {
+    for (Column<T, ?> column : columns) {
+      column.setResizable(resizable);
+    }
+
+    return refreshColumns();
+  }
+
+  /**
+   * Modifies the movable property of all columns currently defined in the table.
+   *
+   * <p>
+   * This method applies the movable setting to each column that has been added to the table at the
+   * time of invocation. When a column is set as non-movable, users cannot drag it to a different
+   * position, though its position may still shift when other columns are reordered around it.
+   * </p>
+   *
+   * <p>
+   * The change affects only these existing columns and does not establish a default behavior for
+   * columns added subsequently. Each column added after this method call will retain its individual
+   * movable setting unless explicitly modified.
+   * </p>
+   *
+   * <p>
+   * After updating all column properties, the method triggers a column refresh to ensure the
+   * changes are immediately reflected in the table's visual representation.
+   * </p>
+   *
+   * @param movable {@code true} to allow users to drag and reorder columns, {@code false} to
+   *        prevent column movement
+   *
+   * @return the table instance for method chaining
+   *
+   * @see Column#setMovable(boolean)
+   * @see #refreshColumns()
+   *
+   * @since 25.03
+   */
+  public Table<T> setColumnsToMovable(boolean movable) {
+    for (Column<T, ?> column : columns) {
+      column.setMovable(movable);
+    }
+
+    return refreshColumns();
+  }
+
+
+  /**
+   * Moves a column to a new position within the table.
+   *
+   * <p>
+   * This method reorders columns among visible columns only. Hidden columns are excluded from the
+   * index calculation and maintain their positions in the column definitions.
+   * </p>
+   *
+   * <b>Index Behavior:</b>
+   * <ul>
+   * <li>The index is 0-based and refers to positions among visible columns only</li>
+   * <li>Hidden columns do not affect the index count</li>
+   * <li>Moving a column to its current position results in no operation</li>
+   * </ul>
+   *
+   * <b>Pinning Behavior:</b>
+   * <p>
+   * When a column is moved, its pinning state may change based on the target position:
+   * </p>
+   * <ul>
+   * <li><b>To left-pinned section:</b> If moved to a position within the left-pinned columns
+   * section, the column becomes left-pinned</li>
+   * <li><b>To right-pinned section:</b> If moved to a position within the right-pinned columns
+   * section, the column becomes right-pinned</li>
+   * <li><b>To unpinned section:</b> If moved to a position between pinned sections, the column
+   * becomes unpinned</li>
+   * </ul>
+   *
+   * <p>
+   * The pinning sections are determined by the existing column layout. For example, if columns 0-1
+   * are left-pinned and columns 4-5 are right-pinned, then:
+   * </p>
+   * <ul>
+   * <li>Moving any column to index 0 or 1 makes it left-pinned</li>
+   * <li>Moving any column to index 2 or 3 makes it unpinned</li>
+   * <li>Moving any column to index 4 or 5 makes it right-pinned</li>
+   * </ul>
+   *
+   * <p>
+   * <b>Note:</b> Once a column's pinning state changes through movement, it retains that new state.
+   * Moving it again will not restore its original pinning state.
+   * </p>
+   *
+   * @param id the ID of the column to move
+   * @param index the new position index among visible columns (0-based)
+   * @return a PendingResult that completes when the move operation finishes
+   *
+   * @throws NullPointerException if the column ID is null
+   * @throws IndexOutOfBoundsException if the index is negative or greater than or equal to the
+   *         number of visible columns
+   * @throws IllegalArgumentException if the column with the specified ID is not found or is hidden
+   *
+   * @since 25.03
+   */
+  public PendingResult<Void> moveColumn(String id, int index) {
+    Objects.requireNonNull(id, "Column id cannot be null");
+
+    // check if the column exists
+    var column = columns.stream().filter(c -> c.getId().equals(id)).findFirst();
+    if (column.isEmpty()) {
+      throw new IllegalArgumentException("Column with id '" + id + "' not found or is hidden");
+    }
+
+    // check if the index is valid
+    if (index < 0 || index >= columns.size()) {
+      throw new IndexOutOfBoundsException("Column index out of bounds: " + index);
+    }
+
+    var result = new PendingResult<Void>();
+    el().callJsFunctionAsync("moveColumn", id, index).thenAccept(ignored -> {
+      result.complete(null);
+    }).exceptionally(ex -> {
+      result.completeExceptionally(ex);
+      return null;
+    });
+
+    return result;
+  }
+
+  /**
+   * Moves a column to a new position within the table.
+   *
+   * <p>
+   * This is a convenience method that delegates to {@link #moveColumn(String, int)} using the
+   * column's ID.
+   * </p>
+   *
+   * @param column the column to move
+   * @param index the new position index among visible columns (0-based)
+   * @return a PendingResult that completes when the move operation finishes
+   *
+   * @throws NullPointerException if the column is null
+   * @see #moveColumn(String, int)
+   */
+  public PendingResult<Void> moveColumn(Column<T, ?> column, int index) {
+    Objects.requireNonNull(column, "Column cannot be null");
+    return moveColumn(column.getId(), index);
+  }
+
+  /**
    * Adds a listener for the row click event.
    *
    * @param listener the listener
@@ -1241,6 +1559,77 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   /**
+   * Adds a listener for the column resize event.
+   *
+   * @param listener the listener
+   * @return A registration object for removing the event listener
+   *
+   * @since 25.03
+   */
+  public ListenerRegistration<TableColumnResizeEvent> addColumnResizeListener(
+      EventListener<TableColumnResizeEvent> listener) {
+    return addEventListener(TableColumnResizeEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addColumnResizeListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return A registration object for removing the event listener
+   *
+   * @since 25.03
+   */
+  public ListenerRegistration<TableColumnResizeEvent> onColumnResize(
+      EventListener<TableColumnResizeEvent> listener) {
+    return addColumnResizeListener(listener);
+  }
+
+  /**
+   * Adds a listener for the column move event.
+   *
+   * @param listener the listener
+   * @return A registration object for removing the event listener
+   *
+   * @since 25.03
+   */
+  public ListenerRegistration<TableColumnMoveEvent> addColumnMoveListener(
+      EventListener<TableColumnMoveEvent> listener) {
+    return addEventListener(TableColumnMoveEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addColumnMoveListener(EventListener)}.
+   *
+   * @param listener the listener
+   * @return A registration object for removing the event listener
+   *
+   * @since 25.03
+   */
+  public ListenerRegistration<TableColumnMoveEvent> onColumnMove(
+      EventListener<TableColumnMoveEvent> listener) {
+    return addColumnMoveListener(listener);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void onDidCreate(Element el) {
+    // register and internal state event to sync changes
+    ElementEventOptions options = new ElementEventOptions();
+    options.addData("columns", "JSON.stringify(event.detail.columns)");
+    options.addData("source", "event.detail.source");
+    el.addEventListener("dwc-state-changed", e -> {
+      Map<String, Object> data = e.getData();
+      List<ColumnState> columnStates = gson.fromJson((String) data.get("columns"),
+          new TypeToken<List<ColumnState>>() {}.getType());
+      String source = (String) data.get("source");
+
+      handleStateChanged(new StateChangedDetail(source, columnStates));
+    }, options);
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -1253,9 +1642,9 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   void onInit(Element el) {
-    this.refresh();
     set(selectedProp, selectedKeys);
     addSortChangeListener(this::handleSortChanged);
+    refresh();
   }
 
   Void onInitFailed(Throwable e) {
@@ -1416,6 +1805,37 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
 
     if (!isClientSorting()) {
       getRepository().commit();
+    }
+  }
+
+  void handleStateChanged(StateChangedDetail detail) {
+    // sync the column states
+    for (ColumnState state : detail.getColumnStates()) {
+      String columnId = state.getId();
+      float width = state.getWidth();
+      float flex = state.getFlex();
+      PinDirection pinDirection = state.getPinDirection();
+
+      // find the column by id
+      Column<T, ?> column = columns.stream().filter(c -> c.getId().equals(columnId)).findFirst()
+          .orElseThrow(() -> new IllegalStateException(
+              "Trying to sync state of a column that is not registered: " + columnId));
+
+      column.setWidth(width);
+      column.setFlex(flex);
+      column.setPinDirection(pinDirection);
+
+      int index = state.getIndex();
+      int currentIndex = columns.indexOf(column);
+
+      if (currentIndex != index) {
+        columns.remove(currentIndex);
+        if (index < columns.size()) {
+          columns.add(index, column);
+        } else {
+          columns.add(column);
+        }
+      }
     }
   }
 
