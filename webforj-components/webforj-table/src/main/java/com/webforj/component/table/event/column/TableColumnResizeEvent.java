@@ -17,8 +17,8 @@ import java.util.Map;
     @EventData(key = "oldWidth", exp = "event.detail.oldWidth"),
     @EventData(key = "newWidth", exp = "event.detail.newWidth")})
 public class TableColumnResizeEvent extends TableColumnEvent<Object> {
-  private final double oldWidth;
-  private final double newWidth;
+  private final float oldWidth;
+  private final float newWidth;
 
   /**
    * Creates a new column resize event.
@@ -28,8 +28,8 @@ public class TableColumnResizeEvent extends TableColumnEvent<Object> {
    */
   public TableColumnResizeEvent(Table<Object> table, Map<String, Object> eventMap) {
     super(table, eventMap);
-    this.oldWidth = Integer.parseInt(String.valueOf(eventMap.get("oldWidth")));
-    this.newWidth = Integer.parseInt(String.valueOf(eventMap.get("newWidth")));
+    this.oldWidth = Float.parseFloat(String.valueOf(eventMap.get("oldWidth")));
+    this.newWidth = Float.parseFloat(String.valueOf(eventMap.get("newWidth")));
   }
 
   /**
@@ -37,7 +37,7 @@ public class TableColumnResizeEvent extends TableColumnEvent<Object> {
    *
    * @return the old width
    */
-  public int getOldWidth() {
+  public float getOldWidth() {
     return oldWidth;
   }
 
@@ -46,7 +46,7 @@ public class TableColumnResizeEvent extends TableColumnEvent<Object> {
    *
    * @return the new width
    */
-  public int getNewWidth() {
+  public float getNewWidth() {
     return newWidth;
   }
 }

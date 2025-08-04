@@ -33,7 +33,7 @@ public class TableColumnMoveEvent extends TableColumnEvent<Object> {
   }
 
   /**
-   * Gets the old order index of the column.
+   * Gets the old index of the column.
    *
    * @return the old order index
    */
@@ -42,9 +42,9 @@ public class TableColumnMoveEvent extends TableColumnEvent<Object> {
   }
 
   /**
-   * Gets the new order index of the column.
+   * Gets the new index of the column.
    *
-   * @return the new order index
+   * @return the new index
    */
   public int getNewIndex() {
     return newIndex;
