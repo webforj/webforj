@@ -115,6 +115,31 @@ class ColumnTest {
     assertEquals("HELLO", column.getValue("Hello"));
   }
 
+  @Test
+  void shouldValidatePositiveWidth() {
+    assertThrows(IllegalArgumentException.class, () -> column.setWidth(0));
+    assertThrows(IllegalArgumentException.class, () -> column.setWidth(-10));
+    assertThrows(IllegalArgumentException.class, () -> column.setMinWidth(0));
+    assertThrows(IllegalArgumentException.class, () -> column.setMinWidth(-5));
+    assertThrows(IllegalArgumentException.class, () -> column.setMaxWidth(0));
+    assertThrows(IllegalArgumentException.class, () -> column.setMaxWidth(-100));
+  }
+
+  @Test
+  void shouldValidateNonNegativeFlex() {
+    // 0 is valid (means no flex)
+    column.setFlex(0);
+    assertEquals(0, column.getFlex());
+
+    // Positive values are valid
+    column.setFlex(1.5f);
+    assertEquals(1.5f, column.getFlex());
+
+    // Negative values should throw
+    assertThrows(IllegalArgumentException.class, () -> column.setFlex(-1));
+    assertThrows(IllegalArgumentException.class, () -> column.setFlex(-0.5f));
+  }
+
   @Nested
   class RendererApi {
     Table<String> table;

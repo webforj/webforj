@@ -465,8 +465,9 @@ public final class Column<T, V> implements Serializable {
    * first few rows.
    * </p>
    *
-   * @param width the desired width in pixels
+   * @param width the desired width in pixels (must be positive)
    * @return the column itself
+   * @throws IllegalArgumentException if width is not positive
    *
    * @see #setMinWidth(float)
    * @see #setMaxWidth(float)
@@ -475,6 +476,9 @@ public final class Column<T, V> implements Serializable {
    * @since 25.03
    */
   public Column<T, V> setWidth(float width) {
+    if (width <= 0) {
+      throw new IllegalArgumentException("Width must be positive, got: " + width);
+    }
     Float oldWidth = this.width;
     this.width = width;
     changeSupport.firePropertyChange("width", oldWidth, width);
@@ -512,13 +516,17 @@ public final class Column<T, V> implements Serializable {
    * container space is limited. Without minWidth, flex columns can collapse to 0 width.</li>
    * </ul>
    *
-   * @param minWidth the minimum width in pixels
+   * @param minWidth the minimum width in pixels (must be positive)
    * @return the column itself
+   * @throws IllegalArgumentException if minWidth is not positive
    *
    * @see #setWidth(float)
    * @see #setMaxWidth(float)
    */
   public Column<T, V> setMinWidth(float minWidth) {
+    if (minWidth <= 0) {
+      throw new IllegalArgumentException("Minimum width must be positive, got: " + minWidth);
+    }
     Float oldMinWidth = this.minWidth;
     this.minWidth = minWidth;
     changeSupport.firePropertyChange("minWidth", oldMinWidth, minWidth);
@@ -555,8 +563,9 @@ public final class Column<T, V> implements Serializable {
    * readability.
    * </p>
    *
-   * @param maxWidth the maximum width in pixels
+   * @param maxWidth the maximum width in pixels (must be positive)
    * @return the column itself
+   * @throws IllegalArgumentException if maxWidth is not positive
    *
    * @see #setWidth(float)
    * @see #setMinWidth(float)
@@ -564,6 +573,9 @@ public final class Column<T, V> implements Serializable {
    * @since 25.03
    */
   public Column<T, V> setMaxWidth(float maxWidth) {
+    if (maxWidth <= 0) {
+      throw new IllegalArgumentException("Maximum width must be positive, got: " + maxWidth);
+    }
     Float oldMaxWidth = this.maxWidth;
     this.maxWidth = maxWidth;
     changeSupport.firePropertyChange("maxWidth", oldMaxWidth, maxWidth);
@@ -610,6 +622,7 @@ public final class Column<T, V> implements Serializable {
    *
    * @param flex the flex grow factor (0 for no flex, positive values for proportional sizing)
    * @return the column itself
+   * @throws IllegalArgumentException if flex is negative
    *
    * @see #setMinWidth(float)
    * @see #setMaxWidth(float)
@@ -617,6 +630,9 @@ public final class Column<T, V> implements Serializable {
    * @since 25.03
    */
   public Column<T, V> setFlex(float flex) {
+    if (flex < 0) {
+      throw new IllegalArgumentException("Flex must be non-negative, got: " + flex);
+    }
     float oldFlex = this.flex;
     this.flex = flex;
     changeSupport.firePropertyChange("flex", oldFlex, flex);
