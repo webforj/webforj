@@ -67,7 +67,7 @@ class ColumnState {
    *
    * @param flex the flex value
    */
-  void setFlex(int flex) {
+  void setFlex(float flex) {
     this.flex = flex;
   }
 
