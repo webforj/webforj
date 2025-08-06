@@ -58,8 +58,8 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   private final List<ListItem> selectedItems = new ArrayList<>();
 
   private final ComponentEventSinkRegistry<ListSelectEvent<V>> selectEventSinkListenerRegistry =
-      new ComponentEventSinkRegistry<>(new ListSelectEventSink<V>(this, getEventDispatcher()),
-          ListSelectEvent.class);
+      new ComponentEventSinkRegistry<ListSelectEvent<V>>(
+          new ListSelectEventSink<V>(this, getEventDispatcher()), ListSelectEvent.class);
 
   private String label = "";
   private String helperText = "";
