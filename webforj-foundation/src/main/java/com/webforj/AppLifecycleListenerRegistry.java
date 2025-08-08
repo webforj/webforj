@@ -76,7 +76,7 @@ final class AppLifecycleListenerRegistry {
       }
 
       entries.add(new ListenerEntry(listener, priority));
-      logger.log(Level.DEBUG, String.format("Discovered lifecycle listener: %s [Priority: %d]",
+      logger.log(Level.DEBUG, String.format("Discovered lifecycle listener: %s [Priority: %s]",
           listener.getClass().getName(), priority));
     }
 
@@ -91,7 +91,7 @@ final class AppLifecycleListenerRegistry {
 
     if (!sortedListeners.isEmpty()) {
       appListeners.put(app, sortedListeners);
-      logger.log(Level.INFO, String.format("Registered %d lifecycle listeners for %s",
+      logger.log(Level.INFO, String.format("Registered %s lifecycle listeners for %s",
           sortedListeners.size(), app.getId()));
     }
   }
@@ -123,7 +123,7 @@ final class AppLifecycleListenerRegistry {
     List<AppLifecycleListener> removed = appListeners.remove(app);
     if (removed != null && !removed.isEmpty()) {
       logger.log(Level.INFO,
-          String.format("Unregistered %d lifecycle listeners for %s", removed.size(), app.getId()));
+          String.format("Unregistered %s lifecycle listeners for %s", removed.size(), app.getId()));
     }
   }
 

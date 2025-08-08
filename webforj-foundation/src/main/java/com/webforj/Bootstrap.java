@@ -14,6 +14,7 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * The {@code Bootstrap} class is responsible for initializing and launching the main application in
@@ -34,7 +35,19 @@ import java.util.Map;
  */
 public final class Bootstrap {
 
-  private Bootstrap() {}
+  private final String id;
+  private final BootstrapContext context;
+
+  /**
+   * Constructs a new {@code Bootstrap} instance with the specified ID and context.
+   *
+   * @param id the unique identifier for this Bootstrap instance
+   * @param context the context for this Bootstrap instance
+   */
+  private Bootstrap(String id, BootstrapContext context) {
+    this.id = id;
+    this.context = context;
+  }
 
   /**
    * Initializes the environment and launches the main application.
@@ -70,21 +83,78 @@ public final class Bootstrap {
    */
   public static App init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
       throws BBjException, WebforjException {
-    Environment.init(api, bridge, debug);
-    processConfig();
-    return initApplication(className);
+    String bootstrapId = UUID.randomUUID().toString().substring(0, 8);
+    BootstrapContext context = new BootstrapContext(api, bridge, debug, className, bootstrapId);
+    Bootstrap bootstrap = new Bootstrap(bootstrapId, context);
+
+    // Register listeners for this bootstrap instance
+    BootstrapListenerRegistry.registerListeners(context);
+
+    try {
+      // Starting
+      BootstrapListenerRegistry.notifyStarting(context);
+      Environment.init(api, bridge, debug);
+      Environment.getCurrent().setBootstrap(bootstrap);
+
+      // Load configuration
+      Config config = Environment.getCurrent().getConfig();
+      context.setConfiguration(config);
+      BootstrapListenerRegistry.notifyEnvironmentPrepared(context);
+
+      // Process the configuration
+      processConfig(context.getConfiguration());
+
+      // Detect entry point
+      String entry = detectClassName(className, context.getConfiguration());
+      context.setEntry(entry);
+
+      // Context is prepared
+      BootstrapListenerRegistry.notifyContextPrepared(context);
+
+      // Create the application instance
+      App app = initApplication(entry, bootstrap.id);
+      BootstrapListenerRegistry.notifyAppCreated(context, app);
+
+      return app;
+    } catch (Throwable t) {
+      // Notify listeners of failure
+      BootstrapListenerRegistry.notifyFailed(context, t);
+      Environment.cleanup();
+
+      // Re-throw the exception
+      if (t instanceof BBjException) {
+        throw (BBjException) t;
+      } else if (t instanceof WebforjException) {
+        throw (WebforjException) t;
+      } else {
+        throw new WebforjException("Bootstrap failed", t);
+      }
+    }
+  }
+
+  /**
+   * Cleans up the bootstrap resources.
+   *
+   * @since 25.03
+   */
+  void cleanup() {
+    if (context != null) {
+      BootstrapListenerRegistry.notifyCleanup(context);
+      BootstrapListenerRegistry.unregisterListeners(context);
+    }
   }
 
   /**
    * Launches the main application.
    *
    * @param className the fully qualified class name of the application to launch, or {@code null}
+   * @param bootstrapId the unique Bootstrap instance ID
    * @return the application instance.
    *
    * @throws WebforjException if there is an error initializing the application.
    */
-  private static App initApplication(String className) throws WebforjException {
-    String selectedClassName = detectClassName(className);
+  private static App initApplication(String className, String bootstrapId) throws WebforjException {
+    String selectedClassName = className;
 
     if (selectedClassName == null || selectedClassName.isEmpty()) {
       throw new WebforjAppInitializeException("Failed to determine application entry point."
@@ -95,7 +165,7 @@ public final class Bootstrap {
       @SuppressWarnings("unchecked")
       App app = ConceiverProvider.getCurrent()
           .getApplication((Class<? extends App>) Class.forName(selectedClassName));
-      app.initialize();
+      app.initialize(bootstrapId);
       return app;
     } catch (ClassNotFoundException e) {
       throw new WebforjAppInitializeException("Failed to find application class '"
@@ -107,15 +177,16 @@ public final class Bootstrap {
    * Determines the class name of the application to launch.
    *
    * @param className the class name provided, or {@code null} to automatically detect it.
+   * @param config the configuration to check for entry point
    */
-  private static String detectClassName(String className) throws WebforjAppInitializeException {
+  private static String detectClassName(String className, Config config)
+      throws WebforjAppInitializeException {
     // if a class name is provided, use it
     if (className != null && !className.isEmpty()) {
       return className;
     }
 
     // check if the entry point is provided in the configuration
-    Config config = Environment.getCurrent().getConfig();
     String entryProp = "webforj.entry";
     if (config.hasPath(entryProp) && !config.getIsNull(entryProp)) {
       String entry = config.getString(entryProp);
@@ -203,10 +274,11 @@ public final class Bootstrap {
   }
 
   /**
-   * Processes the configuration file.
+   * Processes the configuration.
+   *
+   * @param config the configuration to process
    */
-  private static void processConfig() {
-    Config config = Environment.getCurrent().getConfig();
+  private static void processConfig(Config config) {
 
     // Set debug mode
     String debugProp = "webforj.debug";

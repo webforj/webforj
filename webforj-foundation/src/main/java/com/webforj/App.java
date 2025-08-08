@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -142,15 +141,10 @@ public abstract class App {
    */
   public static final AppCloseAction NONE_ACTION = new NoneAction();
 
-  private static final AtomicInteger appCounter = new AtomicInteger(0);
-  private final String appId;
-  private boolean isInitialized = false;
+  private String appId;
 
-  /**
-   * Creates a new App instance with a unique ID.
-   */
   protected App() {
-    this.appId = String.format("%s-%d", getClass().getSimpleName(), appCounter.incrementAndGet());
+    // no-op
   }
 
   /**
@@ -166,12 +160,11 @@ public abstract class App {
    * This is the main entry point for the application. It is called by the framework to initialize
    * and should not be called directly.
    *
+   * @param bootstrapId the unique Bootstrap instance ID
    * @throws WebforjException if the app cannot be initialized
    */
-  public final void initialize() throws WebforjException {
-    if (isInitialized) {
-      throw new WebforjAppInitializeException("App is already initialized.");
-    }
+  final void initialize(String bootstrapId) throws WebforjException {
+    this.appId = bootstrapId;
 
     String mode = Environment.isRunningWithBBjServices() ? "BBjServices" : "Standalone";
     boolean routingEnabled = isRoutable();
@@ -209,7 +202,6 @@ public abstract class App {
       createFirstFrame();
       run();
       resolveFirstRoute();
-      isInitialized = true;
 
       // Notify listeners after run() but before onDidRun hook
       notifyListeners(listener -> listener.onDidRun(this));

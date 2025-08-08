@@ -20,9 +20,9 @@ import org.mockito.MockedStatic;
 class AppLifecycleListenerTest {
 
   @BeforeAll
-  static void setupLocaleProviders() {
-    // Set locale providers to avoid CLDR issues during testing
-    System.setProperty("java.locale.providers", "COMPAT,SPI");
+  static void setupLocale() {
+    // Use COMPAT locale provider to avoid CLDR initialization issues in tests
+    System.setProperty("java.locale.providers", "COMPAT");
   }
 
   @Test
