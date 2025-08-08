@@ -29,6 +29,7 @@ import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.HasEntityKey;
+import com.webforj.data.repository.Repository;
 import com.webforj.dispatcher.EventListener;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -698,6 +699,100 @@ class TableTest {
       assertEquals(movable, column2.isMovable());
       assertEquals(table, result);
       verify(table).refreshColumns();
+    }
+  }
+
+  @Nested
+  @DisplayName("Repository Key Conversion")
+  class RepositoryKeyConversion {
+
+    @Test
+    @DisplayName("getSelectedKeys should return original repository keys, not string keys")
+    void shouldReturnOriginalRepositoryKeysNotStringKeys() {
+      // This test verifies the fix for the Spring Data issue where
+      // getSelectedKeys() was returning String keys instead of the original
+      // repository keys (e.g., Long), causing InvalidDataAccessApiUsageException
+      // https://github.com/webforj/webforj/issues/1067
+
+
+      // Create test entities with Long IDs
+      EntityWithLongId entity1 = new EntityWithLongId(123L, "Entity 1");
+      EntityWithLongId entity2 = new EntityWithLongId(456L, "Entity 2");
+
+      // Set up a mock repository
+      Repository<EntityWithLongId> repository = mock(Repository.class);
+      when(repository.getKey(entity1)).thenReturn(123L);
+      when(repository.getKey(entity2)).thenReturn(456L);
+      when(repository.find(123L)).thenReturn(java.util.Optional.of(entity1));
+      when(repository.find(456L)).thenReturn(java.util.Optional.of(entity2));
+      // Add findByKey support for mapKeys method
+      when(repository.findByKey(123L)).thenReturn(java.util.Optional.of(entity1));
+      when(repository.findByKey(456L)).thenReturn(java.util.Optional.of(entity2));
+
+      Table<EntityWithLongId> table = new Table<>();
+      table.setRepository(repository);
+
+      // Register entities in the internal registry (simulating data load)
+      table.getItemKeysRegistry().getKey(entity1);
+      table.getItemKeysRegistry().getKey(entity2);
+
+      // Select using repository keys (simulating user selection)
+      table.selectKey(123L, 456L);
+
+      // Get selected keys - should return Long keys, not String keys
+      List<Object> selectedKeys = table.getSelectedKeys();
+
+      assertNotNull(selectedKeys);
+      assertEquals(2, selectedKeys.size());
+
+      // Verify we get Long keys back, not String keys
+      assertTrue(selectedKeys.contains(123L));
+      assertTrue(selectedKeys.contains(456L));
+      assertFalse(selectedKeys.contains("123"));
+      assertFalse(selectedKeys.contains("456"));
+
+      // Verify getSelectedKey returns the correct type
+      Object firstKey = table.getSelectedKey();
+      assertNotNull(firstKey);
+      assertEquals(Long.class, firstKey.getClass());
+      assertTrue(firstKey.equals(123L) || firstKey.equals(456L));
+
+      // Verify that getSelected() works correctly with the repository
+      // This would previously fail with InvalidDataAccessApiUsageException
+      // because it was passing String "123" to repository.find() instead of Long 123L
+      EntityWithLongId selected = table.getSelected();
+      assertNotNull(selected);
+      assertTrue(selected.equals(entity1) || selected.equals(entity2));
+
+      // Verify getSelectedItems() also works correctly
+      List<EntityWithLongId> selectedItems = table.getSelectedItems();
+      assertNotNull(selectedItems);
+      assertEquals(2, selectedItems.size());
+      assertTrue(selectedItems.contains(entity1));
+      assertTrue(selectedItems.contains(entity2));
+    }
+  }
+
+  static class EntityWithLongId implements HasEntityKey {
+    private final Long id;
+    private final String name;
+
+    public EntityWithLongId(Long id, String name) {
+      this.id = id;
+      this.name = name;
+    }
+
+    public Long getId() {
+      return id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public Object getEntityKey() {
+      return id;
     }
   }
 
