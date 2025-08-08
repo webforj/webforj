@@ -54,6 +54,7 @@ public final class Environment {
   private final ConcurrentHashMap<String, EnvironmentAccessRequest> pendingRequests =
       new ConcurrentHashMap<>();
   private boolean debug = false;
+  private Bootstrap bootstrap;
 
   /**
    * Creates a new environment.
@@ -100,6 +101,12 @@ public final class Environment {
     if (env != null) {
       // Unregister the runLater callback
       env.unregisterRunLaterCallback(env);
+
+      // Clean up bootstrap
+      if (env.bootstrap != null) {
+        env.bootstrap.cleanup();
+        env.bootstrap = null;
+      }
 
       // Clear the inheritable thread local
       inheritableEnvironment.remove();
@@ -466,6 +473,16 @@ public final class Environment {
 
   static ErrorHandler getGlobalErrorHandler() {
     return new GlobalErrorHandler();
+  }
+
+  /**
+   * Sets the Bootstrap instance associated with this environment.
+   *
+   * @param bootstrap the Bootstrap instance
+   * @since 25.03
+   */
+  void setBootstrap(Bootstrap bootstrap) {
+    this.bootstrap = bootstrap;
   }
 
   /**
