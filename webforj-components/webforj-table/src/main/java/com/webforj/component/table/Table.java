@@ -608,8 +608,7 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   @Override
   public List<T> getSelectedItems() {
-    return getSelectedKeys().stream()
-        .map(key -> (T) getItemKeysRegistry().getEntity(String.valueOf(key)))
+    return getSelectedKeys().stream().map(key -> getRepository().find(key).orElse(null))
         .filter(Objects::nonNull).toList();
   }
 
@@ -649,14 +648,15 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
    */
   @Override
   public List<Object> getSelectedKeys() {
-    if (!isAttached()) {
-      return new ArrayList<>(selectedKeys);
-    }
+    // Get the String keys from either the local set or the client property
+    Set<String> stringKeys = !isAttached() ? selectedKeys
+        : get(selectedProp, true, new TypeToken<Set<String>>() {}.getType());
 
-    TypeToken<Set<String>> typeToken = new TypeToken<>() {};
-    Set<String> keys = get(selectedProp, true, typeToken.getType());
-
-    return keys.stream().map(getItemKeysRegistry()::getKey).collect(Collectors.toList());
+    // Convert String keys to repository keys
+    return stringKeys.stream().map(stringKey -> {
+      T entity = (T) getItemKeysRegistry().getEntity(stringKey);
+      return entity != null ? getRepository().getKey(entity) : null;
+    }).filter(Objects::nonNull).toList();
   }
 
   /**
