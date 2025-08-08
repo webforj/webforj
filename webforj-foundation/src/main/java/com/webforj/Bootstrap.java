@@ -83,7 +83,7 @@ public final class Bootstrap {
    */
   public static App init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
       throws BBjException, WebforjException {
-    String bootstrapId = UUID.randomUUID().toString().substring(0, 8);
+    String bootstrapId = UUID.randomUUID().toString();
     BootstrapContext context = new BootstrapContext(api, bridge, debug, className, bootstrapId);
     Bootstrap bootstrap = new Bootstrap(bootstrapId, context);
 
