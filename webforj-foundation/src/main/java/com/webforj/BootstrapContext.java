@@ -232,6 +232,6 @@ public final class BootstrapContext {
    * @return true if the attribute exists, false otherwise
    */
   public boolean hasAttribute(String key) {
-    return attributes.containsKey(key);
+    return attributes.containsKey(key) && attributes.get(key) != null;
   }
 }
