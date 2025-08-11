@@ -9,7 +9,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.annotation.Experimental;
 import com.webforj.bridge.WebforjBBjBridge;
-import com.webforj.environment.ObjectTable;
+import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import com.webforj.exceptions.WebforjWebManagerException;
@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,6 +55,7 @@ public final class Environment {
   private final ConcurrentHashMap<String, EnvironmentAccessRequest> pendingRequests =
       new ConcurrentHashMap<>();
   private boolean debug = false;
+  private Config config = null;
 
   /**
    * Creates a new environment.
@@ -86,6 +88,9 @@ public final class Environment {
 
     // Store in inheritable thread local so child threads can access it
     inheritableEnvironment.set(env);
+
+    // Load and apply initial configuration
+    env.setConfig(env.getInitialConfig());
 
     // register the runLater callback
     env.registerRunLaterCallback();
@@ -333,54 +338,38 @@ public final class Environment {
   }
 
   /**
-   * Returns the configuration for the current environment.
+   * Merges additional configuration with the current environment configuration.
    *
    * <p>
-   * The configuration is loaded from the file specified by the {@code webforj.conf}.
+   * This method merges additional configuration sources with the existing configuration. The
+   * additional config takes precedence over existing values.
    * </p>
    *
-   * @return the configuration for the current environment.
-   *
-   * @since 24.20
+   * @param additionalConfig the additional configuration to merge
+   * @return the merged configuration
+   * @since 25.03
    */
-  public Config getConfig() {
-    String lookupKey = "webforj.configuration";
-    if (ObjectTable.contains(lookupKey)) {
-      return (Config) ObjectTable.get(lookupKey);
-    }
-
-    String pathProp = Util.getProperty("webforj.conf", "!!webforj.conf");
-    Config config;
-
-    if (pathProp.isEmpty()) {
-      config = getDefaultConfig();
-    } else if (pathProp.startsWith(RESOURCE_PREFIX)) {
-      final String resourcePath =
-          pathProp.isEmpty() ? "webforj.conf" : pathProp.substring(RESOURCE_PREFIX.length());
-      final Config resourceConfig = ConfigFactory.parseResourcesAnySyntax(
-          Environment.getCurrent().getClass().getClassLoader(), resourcePath);
-      if (null == resourceConfig) {
-        config = getDefaultConfig();
-      } else {
-        config = resourceConfig.withFallback(getDefaultConfig());
-      }
+  public Config setConfig(Config additionalConfig) {
+    if (this.config == null) {
+      this.config = additionalConfig;
     } else {
-      final Path configPath = Paths.get(pathProp);
-      config = ConfigFactory.parseFile(configPath.toFile()).withFallback(getDefaultConfig());
+      this.config = additionalConfig.withFallback(this.config);
     }
 
-    return config;
+    // Apply the configuration settings
+    applyConfig(this.config);
+
+    return this.config;
   }
 
   /**
-   * Returns the default configuration for the current environment.
+   * Returns the configuration for the current environment.
    *
-   * @return the default configuration for the current environment.
+   * @return the configuration for the current environment.
    * @since 24.20
    */
-  Config getDefaultConfig() {
-    return ConfigFactory.parseResourcesAnySyntax(
-        Environment.getCurrent().getClass().getClassLoader(), "webforj-default.conf");
+  public Config getConfig() {
+    return this.config;
   }
 
   /**
@@ -600,6 +589,81 @@ public final class Environment {
     } catch (Exception e) {
       logger.log(Level.ERROR, "runLater Request {0} failed: {1}", requestId, e.getMessage());
       request.getPendingResult().completeExceptionally(e);
+    }
+  }
+
+  /**
+   * Loads the initial configuration from the file.
+   *
+   * @return the loaded configuration
+   */
+  private Config getInitialConfig() {
+    String pathProp = Util.getProperty("webforj.conf", "!!webforj.conf");
+    Config config;
+
+    if (pathProp.isEmpty()) {
+      config = getInitialDefaultConfig();
+    } else if (pathProp.startsWith(RESOURCE_PREFIX)) {
+      final String resourcePath =
+          pathProp.isEmpty() ? "webforj.conf" : pathProp.substring(RESOURCE_PREFIX.length());
+      final Config resourceConfig = ConfigFactory.parseResourcesAnySyntax(
+          Environment.getCurrent().getClass().getClassLoader(), resourcePath);
+      if (null == resourceConfig) {
+        config = getInitialDefaultConfig();
+      } else {
+        config = resourceConfig.withFallback(getInitialDefaultConfig());
+      }
+    } else {
+      final Path configPath = Paths.get(pathProp);
+      config = ConfigFactory.parseFile(configPath.toFile()).withFallback(getInitialDefaultConfig());
+    }
+
+    return config;
+  }
+
+  /**
+   * Returns the default configuration for the current environment.
+   *
+   * @return the default configuration for the current environment.
+   * @since 24.20
+   */
+  Config getInitialDefaultConfig() {
+    return ConfigFactory.parseResourcesAnySyntax(
+        Environment.getCurrent().getClass().getClassLoader(), "webforj-default.conf");
+  }
+
+  /**
+   * Applies configuration settings to the environment.
+   *
+   * @param config the configuration to apply
+   */
+  private void applyConfig(Config config) {
+    // Set debug mode
+    String debugProp = "webforj.debug";
+    Boolean isDebug =
+        config.hasPath(debugProp) && !config.getIsNull(debugProp) ? config.getBoolean(debugProp)
+            : null;
+    if (isDebug != null) {
+      this.debug = isDebug;
+    }
+
+    // Update the string table
+    String stringTableProp = "webforj.stringTable";
+    if (config.hasPath(stringTableProp) && !config.getIsNull(stringTableProp)) {
+      Map<String, Object> stringTable = config.getObject(stringTableProp).unwrapped();
+      for (Map.Entry<String, Object> entry : stringTable.entrySet()) {
+        StringTable.put(entry.getKey(), String.valueOf(entry.getValue()));
+      }
+    }
+
+    // Set the locale
+    String localeProp = "webforj.locale";
+    String locale =
+        config.hasPath(localeProp) && !config.getIsNull(localeProp) ? config.getString(localeProp)
+            : null;
+
+    if (locale != null && !locale.isEmpty()) {
+      StringTable.put("!LOCALE", locale);
     }
   }
 }

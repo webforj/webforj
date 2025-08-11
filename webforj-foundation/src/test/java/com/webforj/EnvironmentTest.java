@@ -1,6 +1,7 @@
 package com.webforj;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
@@ -14,7 +15,6 @@ import com.basis.bbj.proxies.BBjSysGui;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.bridge.WebforjBBjBridge;
-import com.webforj.environment.ObjectTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import java.nio.file.Files;
@@ -113,42 +113,35 @@ class EnvironmentTest {
 
   @Nested
   class Configuration {
-    MockedStatic<ObjectTable> mockedObjectTable;
-
-    @BeforeEach
-    void setUp() throws Exception {
-      BBjAPI mockApi = mock(BBjAPI.class);
-      WebforjBBjBridge mockBridge = mock(WebforjBBjBridge.class);
-
-      when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
-      Environment.init(mockApi, mockBridge, 0);
-
-      mockedObjectTable = mockStatic(ObjectTable.class);
-      mockedObjectTable.when(() -> ObjectTable.contains(anyString())).thenReturn(false);
-    }
 
     @AfterEach
     void teardown() {
       System.clearProperty("webforj.conf");
       Environment.cleanup();
-      mockedObjectTable.close();
     }
 
     @Test
-    void shouldLoadResourceConfigWhenPropertySetToResource() {
+    void shouldLoadResourceConfigWhenPropertySetToResource() throws Exception {
       System.setProperty("webforj.conf", "!!custom-config.conf");
 
       try (var configFactoryStatic = mockStatic(ConfigFactory.class)) {
         Config resourceConfig = mock(Config.class);
         Config defaultConfig = mock(Config.class);
-        ClassLoader classLoader = Environment.getCurrent().getClass().getClassLoader();
-        configFactoryStatic.when(
-            () -> ConfigFactory.parseResourcesAnySyntax(eq(classLoader), eq("custom-config.conf")))
-            .thenReturn(resourceConfig);
-        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(eq(classLoader),
+
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
+            eq("custom-config.conf"))).thenReturn(resourceConfig);
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
             eq("webforj-default.conf"))).thenReturn(defaultConfig);
 
         when(resourceConfig.withFallback(defaultConfig)).thenReturn(resourceConfig);
+
+        // Mock the required BBj objects
+        BBjAPI mockApi = mock(BBjAPI.class);
+        WebforjBBjBridge mockBridge = mock(WebforjBBjBridge.class);
+        when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+
+        // Initialize environment - this will load the config
+        Environment.init(mockApi, mockBridge, 0);
 
         Config config = Environment.getCurrent().getConfig();
 
@@ -165,14 +158,21 @@ class EnvironmentTest {
       try (var configFactoryStatic = mockStatic(ConfigFactory.class)) {
         Config fileConfig = mock(Config.class);
         Config defaultConfig = mock(Config.class);
-        ClassLoader classLoader = Environment.getCurrent().getClass().getClassLoader();
 
         configFactoryStatic.when(() -> ConfigFactory.parseFile(tempConfigFile.toFile()))
             .thenReturn(fileConfig);
-        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(eq(classLoader),
+        configFactoryStatic.when(() -> ConfigFactory.parseResourcesAnySyntax(any(ClassLoader.class),
             eq("webforj-default.conf"))).thenReturn(defaultConfig);
 
         when(fileConfig.withFallback(defaultConfig)).thenReturn(fileConfig);
+
+        // Mock the required BBj objects
+        BBjAPI mockApi = mock(BBjAPI.class);
+        WebforjBBjBridge mockBridge = mock(WebforjBBjBridge.class);
+        when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+
+        // Initialize environment - this will load the config
+        Environment.init(mockApi, mockBridge, 0);
 
         Config config = Environment.getCurrent().getConfig();
 
