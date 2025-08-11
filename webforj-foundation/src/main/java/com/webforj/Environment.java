@@ -599,26 +599,27 @@ public final class Environment {
    */
   private Config getInitialConfig() {
     String pathProp = Util.getProperty("webforj.conf", "!!webforj.conf");
-    Config config;
+    Config theConfig;
 
     if (pathProp.isEmpty()) {
-      config = getInitialDefaultConfig();
+      theConfig = getInitialDefaultConfig();
     } else if (pathProp.startsWith(RESOURCE_PREFIX)) {
       final String resourcePath =
           pathProp.isEmpty() ? "webforj.conf" : pathProp.substring(RESOURCE_PREFIX.length());
       final Config resourceConfig = ConfigFactory.parseResourcesAnySyntax(
           Environment.getCurrent().getClass().getClassLoader(), resourcePath);
       if (null == resourceConfig) {
-        config = getInitialDefaultConfig();
+        theConfig = getInitialDefaultConfig();
       } else {
-        config = resourceConfig.withFallback(getInitialDefaultConfig());
+        theConfig = resourceConfig.withFallback(getInitialDefaultConfig());
       }
     } else {
       final Path configPath = Paths.get(pathProp);
-      config = ConfigFactory.parseFile(configPath.toFile()).withFallback(getInitialDefaultConfig());
+      theConfig =
+          ConfigFactory.parseFile(configPath.toFile()).withFallback(getInitialDefaultConfig());
     }
 
-    return config;
+    return theConfig;
   }
 
   /**
