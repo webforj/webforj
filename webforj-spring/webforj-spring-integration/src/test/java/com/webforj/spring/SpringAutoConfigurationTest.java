@@ -2,27 +2,29 @@ package com.webforj.spring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
+import com.typesafe.config.Config;
 import com.webforj.servlet.WebforjServlet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 
-/**
- * Unit tests for {@link SpringAutoConfiguration}.
- *
- * @author Hyyan Abo Fakher
- */
 @ExtendWith(MockitoExtension.class)
 class SpringAutoConfigurationTest {
 
   @Mock
   private SpringConfigurationProperties properties;
+
+  @Mock
+  private Config config;
 
   private SpringAutoConfiguration autoConfiguration;
 
@@ -38,12 +40,17 @@ class SpringAutoConfigurationTest {
     void shouldCreateServletRegistrationBeanWithDefaultMapping() {
       when(properties.getServletMapping()).thenReturn("/*");
 
-      ServletRegistrationBean<WebforjServlet> registrationBean =
-          autoConfiguration.webforjServletRegistration(properties);
+      try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
+        ServletRegistrationBean<WebforjServlet> registrationBean =
+            autoConfiguration.webforjServletRegistration(properties, config);
 
-      assertNotNull(registrationBean);
-      assertNotNull(registrationBean.getServlet());
-      assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
+        assertNotNull(registrationBean);
+        assertNotNull(registrationBean.getServlet());
+        assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
+
+        // Verify setConfig was called with the provided config
+        mockedServlet.verify(() -> WebforjServlet.setConfig(config), times(1));
+      }
     }
 
     @Test
@@ -51,26 +58,47 @@ class SpringAutoConfigurationTest {
       String customMapping = "/webforj/*";
       when(properties.getServletMapping()).thenReturn(customMapping);
 
-      ServletRegistrationBean<WebforjServlet> registrationBean =
-          autoConfiguration.webforjServletRegistration(properties);
+      try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
+        ServletRegistrationBean<WebforjServlet> registrationBean =
+            autoConfiguration.webforjServletRegistration(properties, config);
 
-      assertNotNull(registrationBean);
-      assertNotNull(registrationBean.getServlet());
-      assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
+        assertNotNull(registrationBean);
+        assertNotNull(registrationBean.getServlet());
+        assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
+
+        // Verify setConfig was called with the provided config
+        mockedServlet.verify(() -> WebforjServlet.setConfig(config), times(1));
+      }
     }
 
     @Test
     void shouldCreateNewWebforjServletInstance() {
       when(properties.getServletMapping()).thenReturn("/*");
 
-      ServletRegistrationBean<WebforjServlet> registrationBean1 =
-          autoConfiguration.webforjServletRegistration(properties);
-      ServletRegistrationBean<WebforjServlet> registrationBean2 =
-          autoConfiguration.webforjServletRegistration(properties);
+      try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
+        ServletRegistrationBean<WebforjServlet> registrationBean1 =
+            autoConfiguration.webforjServletRegistration(properties, config);
+        ServletRegistrationBean<WebforjServlet> registrationBean2 =
+            autoConfiguration.webforjServletRegistration(properties, config);
 
-      assertNotNull(registrationBean1.getServlet());
-      assertNotNull(registrationBean2.getServlet());
-      assert registrationBean1.getServlet() != registrationBean2.getServlet();
+        assertNotNull(registrationBean1.getServlet());
+        assertNotNull(registrationBean2.getServlet());
+        assert registrationBean1.getServlet() != registrationBean2.getServlet();
+
+        // Verify setConfig was called twice (once for each registration)
+        mockedServlet.verify(() -> WebforjServlet.setConfig(config), times(2));
+      }
+    }
+  }
+
+  @Nested
+  class ConfigBean {
+
+    @Test
+    void shouldCreateWebforjConfigFromProperties() {
+      Config configResult = autoConfiguration.webforjConfig(properties);
+
+      assertNotNull(configResult);
     }
   }
 
@@ -101,7 +129,7 @@ class SpringAutoConfigurationTest {
 
     @Test
     void shouldCreateComponentRegistrarBean() {
-      ComponentRegistrar registrar = autoConfiguration.webforjComponentRegistrar();
+      ComponentRegistrar registrar = SpringAutoConfiguration.webforjComponentRegistrar();
 
       assertNotNull(registrar);
       assertEquals(ComponentRegistrar.class, registrar.getClass());
@@ -109,8 +137,8 @@ class SpringAutoConfigurationTest {
 
     @Test
     void shouldCreateNewComponentRegistrarInstanceEachTime() {
-      ComponentRegistrar registrar1 = autoConfiguration.webforjComponentRegistrar();
-      ComponentRegistrar registrar2 = autoConfiguration.webforjComponentRegistrar();
+      ComponentRegistrar registrar1 = SpringAutoConfiguration.webforjComponentRegistrar();
+      ComponentRegistrar registrar2 = SpringAutoConfiguration.webforjComponentRegistrar();
 
       assertNotNull(registrar1);
       assertNotNull(registrar2);
