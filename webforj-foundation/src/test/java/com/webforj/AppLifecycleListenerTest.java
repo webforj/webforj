@@ -3,10 +3,15 @@ package com.webforj;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.webforj.annotation.AppListenerPriority;
 import com.webforj.exceptions.WebforjException;
 import java.util.ArrayList;
@@ -14,142 +19,203 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ServiceLoader;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 import org.mockito.MockedStatic;
 
 class AppLifecycleListenerTest {
 
   @BeforeAll
   static void setupLocaleProviders() {
-    // Set locale providers to avoid CLDR issues during testing
     System.setProperty("java.locale.providers", "COMPAT,SPI");
   }
 
-  @Test
-  void shouldInvokeListenersInPriorityOrder() {
-    TestApp app = new TestApp();
+  @Nested
+  class PriorityAndRegistration {
 
-    // Create listeners with different priorities
-    HighPriorityListener highPriority = new HighPriorityListener();
-    DefaultPriorityListener defaultPriority = new DefaultPriorityListener();
-    LowPriorityListener lowPriority = new LowPriorityListener();
+    @Test
+    void shouldInvokeListenersInPriorityOrder() {
+      TestApp app = new TestApp();
 
-    // Add in random order
-    List<AppLifecycleListener> listeners = new ArrayList<>();
-    listeners.add(lowPriority);
-    listeners.add(highPriority);
-    listeners.add(defaultPriority);
+      HighPriorityListener highPriority = new HighPriorityListener();
+      DefaultPriorityListener defaultPriority = new DefaultPriorityListener();
+      LowPriorityListener lowPriority = new LowPriorityListener();
 
-    // Mock ServiceLoader to return our test listeners
-    try (@SuppressWarnings("rawtypes")
-    MockedStatic<ServiceLoader> serviceLoaderMock = mockStatic(ServiceLoader.class)) {
-      @SuppressWarnings("unchecked")
-      ServiceLoader<AppLifecycleListener> mockLoader = mock(ServiceLoader.class);
-      when(mockLoader.iterator()).thenReturn(listeners.iterator());
-      serviceLoaderMock.when(() -> ServiceLoader.load(AppLifecycleListener.class))
-          .thenReturn(mockLoader);
+      List<AppLifecycleListener> listeners = new ArrayList<>();
+      listeners.add(lowPriority);
+      listeners.add(highPriority);
+      listeners.add(defaultPriority);
+      try (@SuppressWarnings("rawtypes")
+      MockedStatic<ServiceLoader> serviceLoaderMock = mockStatic(ServiceLoader.class)) {
+        @SuppressWarnings("unchecked")
+        ServiceLoader<AppLifecycleListener> mockLoader = mock(ServiceLoader.class);
+        when(mockLoader.iterator()).thenReturn(listeners.iterator());
+        serviceLoaderMock.when(() -> ServiceLoader.load(AppLifecycleListener.class))
+            .thenReturn(mockLoader);
 
-      // Register listeners
-      AppLifecycleListenerRegistry.registerListeners(app);
+        Collection<AppLifecycleListener> discoveredListeners =
+            AppLifecycleListenerRegistry.discoverListeners();
+        AppLifecycleListenerRegistry.registerListeners(app, discoveredListeners);
 
-      // Get registered listeners
-      Collection<AppLifecycleListener> registeredListeners =
-          AppLifecycleListenerRegistry.getListeners(app);
+        Collection<AppLifecycleListener> registeredListeners =
+            AppLifecycleListenerRegistry.getListeners(app);
 
-      // Verify count
-      assertEquals(3, registeredListeners.size());
+        assertEquals(3, registeredListeners.size());
+        List<AppLifecycleListener> sortedList = new ArrayList<>(registeredListeners);
+        assertTrue(sortedList.get(0) instanceof HighPriorityListener);
+        assertTrue(sortedList.get(1) instanceof DefaultPriorityListener);
+        assertTrue(sortedList.get(2) instanceof LowPriorityListener);
+      }
+    }
 
-      // Verify order (should be sorted by priority: 5, 10, 20)
-      List<AppLifecycleListener> sortedList = new ArrayList<>(registeredListeners);
-      assertTrue(sortedList.get(0) instanceof HighPriorityListener);
-      assertTrue(sortedList.get(1) instanceof DefaultPriorityListener);
-      assertTrue(sortedList.get(2) instanceof LowPriorityListener);
+    @Test
+    void shouldHandleListenersWithoutPriorityAnnotation() {
+      TestApp app = new TestApp();
+      ListenerWithoutPriority listener = new ListenerWithoutPriority();
+
+      List<AppLifecycleListener> listeners = List.of(listener);
+
+      try (@SuppressWarnings("rawtypes")
+      MockedStatic<ServiceLoader> serviceLoaderMock = mockStatic(ServiceLoader.class)) {
+        @SuppressWarnings("unchecked")
+        ServiceLoader<AppLifecycleListener> mockLoader = mock(ServiceLoader.class);
+        when(mockLoader.iterator()).thenReturn(listeners.iterator());
+        serviceLoaderMock.when(() -> ServiceLoader.load(AppLifecycleListener.class))
+            .thenReturn(mockLoader);
+
+        Collection<AppLifecycleListener> discoveredListeners =
+            AppLifecycleListenerRegistry.discoverListeners();
+        AppLifecycleListenerRegistry.registerListeners(app, discoveredListeners);
+
+        Collection<AppLifecycleListener> registeredListeners =
+            AppLifecycleListenerRegistry.getListeners(app);
+
+        assertEquals(1, registeredListeners.size());
+        assertTrue(registeredListeners.contains(listener));
+      }
+    }
+
+    @Test
+    void shouldReturnEmptyCollectionWhenNoListenersRegistered() {
+      TestApp app = new TestApp();
+      Collection<AppLifecycleListener> listeners = AppLifecycleListenerRegistry.getListeners(app);
+
+      assertNotNull(listeners);
+      assertTrue(listeners.isEmpty());
+    }
+
+    @Test
+    void shouldUnregisterListeners() {
+      TestApp app = new TestApp();
+      TestListener listener = new TestListener(10);
+      List<AppLifecycleListener> listeners = List.of(listener);
+
+      try (@SuppressWarnings("rawtypes")
+      MockedStatic<ServiceLoader> serviceLoaderMock = mockStatic(ServiceLoader.class)) {
+        @SuppressWarnings("unchecked")
+        ServiceLoader<AppLifecycleListener> mockLoader = mock(ServiceLoader.class);
+        when(mockLoader.iterator()).thenReturn(listeners.iterator());
+        serviceLoaderMock.when(() -> ServiceLoader.load(AppLifecycleListener.class))
+            .thenReturn(mockLoader);
+
+        Collection<AppLifecycleListener> discoveredListeners =
+            AppLifecycleListenerRegistry.discoverListeners();
+        AppLifecycleListenerRegistry.registerListeners(app, discoveredListeners);
+
+        Collection<AppLifecycleListener> registeredListeners =
+            AppLifecycleListenerRegistry.getListeners(app);
+        assertEquals(1, registeredListeners.size());
+
+        AppLifecycleListenerRegistry.unregisterListeners(app);
+
+        Collection<AppLifecycleListener> afterUnregister =
+            AppLifecycleListenerRegistry.getListeners(app);
+        assertTrue(afterUnregister.isEmpty());
+      }
     }
   }
 
-  @Test
-  void shouldHandleListenersWithoutPriorityAnnotation() {
-    TestApp app = new TestApp();
-    ListenerWithoutPriority listener = new ListenerWithoutPriority();
+  @Nested
+  class CreationHooks {
 
-    List<AppLifecycleListener> listeners = List.of(listener);
+    @Test
+    void shouldAllowConfigModificationInOnWillCreate() {
+      AppLifecycleListener configModifyingListener = new AppLifecycleListener() {
+        @Override
+        public void onWillCreate(Environment env) {
+          Config additionalConfig = ConfigFactory.parseString("webforj.test.value = \"modified\"");
+          env.setConfig(additionalConfig);
+        }
+      };
 
-    try (@SuppressWarnings("rawtypes")
-    MockedStatic<ServiceLoader> serviceLoaderMock = mockStatic(ServiceLoader.class)) {
-      @SuppressWarnings("unchecked")
-      ServiceLoader<AppLifecycleListener> mockLoader = mock(ServiceLoader.class);
-      when(mockLoader.iterator()).thenReturn(listeners.iterator());
-      serviceLoaderMock.when(() -> ServiceLoader.load(AppLifecycleListener.class))
-          .thenReturn(mockLoader);
+      List<AppLifecycleListener> listeners = List.of(configModifyingListener);
 
-      AppLifecycleListenerRegistry.registerListeners(app);
+      Environment mockEnv = mock(Environment.class);
+      Config mockConfig = ConfigFactory.empty();
+      when(mockEnv.getConfig()).thenReturn(mockConfig);
 
-      Collection<AppLifecycleListener> registeredListeners =
-          AppLifecycleListenerRegistry.getListeners(app);
+      AppLifecycleListenerRegistry.notifyListeners(listeners,
+          listener -> listener.onWillCreate(mockEnv), "onWillCreate");
 
-      assertEquals(1, registeredListeners.size());
-      // Default priority should be applied
-      assertTrue(registeredListeners.contains(listener));
+      verify(mockEnv).setConfig(any(Config.class));
     }
   }
 
-  @Test
-  void shouldReturnEmptyCollectionWhenNoListenersRegistered() {
-    TestApp app = new TestApp();
-    Collection<AppLifecycleListener> listeners = AppLifecycleListenerRegistry.getListeners(app);
+  @Nested
+  class LifecycleOrdering {
 
-    assertNotNull(listeners);
-    assertTrue(listeners.isEmpty());
-  }
+    @Test
+    void shouldInvokeLifecycleHooksInCorrectOrder() {
+      TestApp app = new TestApp();
 
-  @Test
-  void shouldUnregisterListeners() {
-    TestApp app = new TestApp();
-    TestListener listener = new TestListener(10);
-    List<AppLifecycleListener> listeners = List.of(listener);
+      AppLifecycleListener mockListener = mock(AppLifecycleListener.class);
+      List<AppLifecycleListener> listeners = List.of(mockListener);
 
-    try (@SuppressWarnings("rawtypes")
-    MockedStatic<ServiceLoader> serviceLoaderMock = mockStatic(ServiceLoader.class)) {
-      @SuppressWarnings("unchecked")
-      ServiceLoader<AppLifecycleListener> mockLoader = mock(ServiceLoader.class);
-      when(mockLoader.iterator()).thenReturn(listeners.iterator());
-      serviceLoaderMock.when(() -> ServiceLoader.load(AppLifecycleListener.class))
-          .thenReturn(mockLoader);
+      Environment mockEnv = mock(Environment.class);
+      Config mockConfig = ConfigFactory.empty();
+      when(mockEnv.getConfig()).thenReturn(mockConfig);
+      AppLifecycleListenerRegistry.notifyListeners(listeners,
+          listener -> listener.onWillCreate(mockEnv), "onWillCreate");
 
-      // Register listeners
-      AppLifecycleListenerRegistry.registerListeners(app);
+      AppLifecycleListenerRegistry.notifyListeners(listeners, listener -> listener.onDidCreate(app),
+          "onDidCreate");
 
-      // Verify listener is registered
-      Collection<AppLifecycleListener> registeredListeners =
-          AppLifecycleListenerRegistry.getListeners(app);
-      assertEquals(1, registeredListeners.size());
+      AppLifecycleListenerRegistry.notifyListeners(listeners, listener -> listener.onWillRun(app),
+          "onWillRun");
 
-      // Unregister listeners
-      AppLifecycleListenerRegistry.unregisterListeners(app);
+      AppLifecycleListenerRegistry.notifyListeners(listeners, listener -> listener.onDidRun(app),
+          "onDidRun");
 
-      // Verify no listeners remain
-      Collection<AppLifecycleListener> afterUnregister =
-          AppLifecycleListenerRegistry.getListeners(app);
-      assertTrue(afterUnregister.isEmpty());
+      InOrder inOrder = inOrder(mockListener);
+      inOrder.verify(mockListener).onWillCreate(mockEnv);
+      inOrder.verify(mockListener).onDidCreate(app);
+      inOrder.verify(mockListener).onWillRun(app);
+      inOrder.verify(mockListener).onDidRun(app);
     }
   }
 
-
-  // Test implementation of App
   static class TestApp extends App {
     @Override
-    public void run() throws WebforjException {
-      // Test implementation
-    }
+    public void run() throws WebforjException {}
   }
 
-  // Test listener without priority annotation - uses priority from constructor for testing
   static class TestListener implements AppLifecycleListener {
     private final int priority;
     private final List<String> events = new ArrayList<>();
 
     TestListener(int expectedPriority) {
       this.priority = expectedPriority;
+    }
+
+    @Override
+    public void onWillCreate(Environment env) {
+      events.add("onWillCreate");
+    }
+
+    @Override
+    public void onDidCreate(App app) {
+      events.add("onDidCreate");
     }
 
     @Override
@@ -181,26 +247,18 @@ class AppLifecycleListenerTest {
     }
   }
 
-  // Test listener without priority annotation
   static class ListenerWithoutPriority implements AppLifecycleListener {
-    // Uses default priority of 10
   }
 
-  // High priority listener
   @AppListenerPriority(5)
   static class HighPriorityListener implements AppLifecycleListener {
-    // Priority 5
   }
 
-  // Default priority listener
   @AppListenerPriority(10)
   static class DefaultPriorityListener implements AppLifecycleListener {
-    // Priority 10
   }
 
-  // Low priority listener
   @AppListenerPriority(20)
   static class LowPriorityListener implements AppLifecycleListener {
-    // Priority 20
   }
 }

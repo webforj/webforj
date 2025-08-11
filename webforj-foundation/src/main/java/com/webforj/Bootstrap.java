@@ -6,14 +6,13 @@ import com.typesafe.config.Config;
 import com.webforj.annotation.AppEntry;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.conceiver.ConceiverProvider;
-import com.webforj.environment.StringTable;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The {@code Bootstrap} class is responsible for initializing and launching the main application in
@@ -71,19 +70,27 @@ public final class Bootstrap {
   public static App init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
       throws BBjException, WebforjException {
     Environment.init(api, bridge, debug);
-    processConfig();
-    return initApplication(className);
+    Environment env = Environment.getCurrent();
+
+    Collection<AppLifecycleListener> listeners = AppLifecycleListenerRegistry.discoverListeners();
+    AppLifecycleListenerRegistry.notifyListeners(listeners, listener -> listener.onWillCreate(env),
+        "onWillCreate");
+
+    // Create and initialize the app
+    return initApplication(className, listeners);
   }
 
   /**
    * Launches the main application.
    *
    * @param className the fully qualified class name of the application to launch, or {@code null}
+   * @param listeners the already discovered AppLifecycleListeners
    * @return the application instance.
    *
    * @throws WebforjException if there is an error initializing the application.
    */
-  private static App initApplication(String className) throws WebforjException {
+  private static App initApplication(String className, Collection<AppLifecycleListener> listeners)
+      throws WebforjException {
     String selectedClassName = detectClassName(className);
 
     if (selectedClassName == null || selectedClassName.isEmpty()) {
@@ -95,6 +102,13 @@ public final class Bootstrap {
       @SuppressWarnings("unchecked")
       App app = ConceiverProvider.getCurrent()
           .getApplication((Class<? extends App>) Class.forName(selectedClassName));
+
+      // Register the already-discovered listeners with the app
+      AppLifecycleListenerRegistry.registerListeners(app, listeners);
+      AppLifecycleListenerRegistry.notifyListeners(listeners, listener -> listener.onDidCreate(app),
+          "onDidCreate");
+
+      // Initialize the app
       app.initialize();
       return app;
     } catch (ClassNotFoundException e) {
@@ -202,38 +216,4 @@ public final class Bootstrap {
     return selectedClassName;
   }
 
-  /**
-   * Processes the configuration file.
-   */
-  private static void processConfig() {
-    Config config = Environment.getCurrent().getConfig();
-
-    // Set debug mode
-    String debugProp = "webforj.debug";
-    Boolean isDebug =
-        config.hasPath(debugProp) && !config.getIsNull(debugProp) ? config.getBoolean(debugProp)
-            : null;
-    if (isDebug != null) {
-      Environment.getCurrent().setDebug(isDebug);
-    }
-
-    // update the string table
-    String stringTableProp = "webforj.stringTable";
-    if (config.hasPath(stringTableProp) && !config.getIsNull(stringTableProp)) {
-      Map<String, Object> stringTable = config.getObject(stringTableProp).unwrapped();
-      for (Map.Entry<String, Object> entry : stringTable.entrySet()) {
-        StringTable.put(entry.getKey(), String.valueOf(entry.getValue()));
-      }
-    }
-
-    // Set the locale
-    String localeProp = "webforj.locale";
-    String locale =
-        config.hasPath(localeProp) && !config.getIsNull(localeProp) ? config.getString(localeProp)
-            : null;
-
-    if (locale != null && !locale.isEmpty()) {
-      StringTable.put("!LOCALE", locale);
-    }
-  }
 }

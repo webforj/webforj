@@ -43,6 +43,38 @@ package com.webforj;
 public interface AppLifecycleListener {
 
   /**
+   * Called before the app is created, after environment is initialized.
+   *
+   * <p>
+   * This method is called after the environment has been fully initialized and the configuration
+   * has been loaded, but before the app class is instantiated. This is the ideal place to merge
+   * external configuration sources or modify the configuration before the app is created.
+   * </p>
+   *
+   * @param env the initialized environment with configuration
+   * @since 25.03
+   */
+  default void onWillCreate(Environment env) {
+    // Default empty implementation
+  }
+
+  /**
+   * Called immediately after the app is created but before it runs.
+   *
+   * <p>
+   * This method is called after the app instance has been created but before {@code onWillRun()}
+   * and {@code run()} are invoked. This provides an early hook for app-level initialization that
+   * needs to happen before the normal lifecycle begins.
+   * </p>
+   *
+   * @param app the newly created app instance
+   * @since 25.03
+   */
+  default void onDidCreate(App app) {
+    // Default empty implementation
+  }
+
+  /**
    * Called before the app's {@code run()} method is invoked.
    *
    * <p>

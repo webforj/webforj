@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * Registry for App lifecycle listeners using Java ServiceLoader mechanism.
@@ -46,54 +47,19 @@ final class AppLifecycleListenerRegistry {
   }
 
   /**
-   * Discovers and registers lifecycle listeners for the given App.
-   *
-   * <p>
-   * This method uses the {@link ServiceLoader} mechanism to discover implementations of
-   * {@link AppLifecycleListener}, instantiates them, and associates them with the given App
-   * instance.
-   * </p>
+   * Registers lifecycle listeners for the given App.
    *
    * @param app the App instance to register listeners for
+   * @param listeners the pre-discovered listeners
    */
-  static void registerListeners(App app) {
-    if (app == null) {
+  static void registerListeners(App app, Collection<AppLifecycleListener> listeners) {
+    if (app == null || listeners == null || listeners.isEmpty()) {
       return;
     }
 
-    List<ListenerEntry> entries = new ArrayList<>();
-
-    // Use ServiceLoader to discover listener implementations
-    ServiceLoader<AppLifecycleListener> loader = ServiceLoader.load(AppLifecycleListener.class);
-
-    for (AppLifecycleListener listener : loader) {
-      // Check for priority annotation
-      int priority = 10; // default priority
-      AppListenerPriority priorityAnnotation =
-          listener.getClass().getAnnotation(AppListenerPriority.class);
-      if (priorityAnnotation != null) {
-        priority = priorityAnnotation.value();
-      }
-
-      entries.add(new ListenerEntry(listener, priority));
-      logger.log(Level.DEBUG, String.format("Discovered lifecycle listener: %s [Priority: %d]",
-          listener.getClass().getName(), priority));
-    }
-
-    // Sort by priority (lower values first)
-    entries.sort(Comparator.comparingInt(e -> e.priority));
-
-    // Extract sorted listeners
-    List<AppLifecycleListener> sortedListeners = new ArrayList<>();
-    for (ListenerEntry entry : entries) {
-      sortedListeners.add(entry.listener);
-    }
-
-    if (!sortedListeners.isEmpty()) {
-      appListeners.put(app, sortedListeners);
-      logger.log(Level.INFO, String.format("Registered %d lifecycle listeners for %s",
-          sortedListeners.size(), app.getId()));
-    }
+    appListeners.put(app, new ArrayList<>(listeners));
+    logger.log(Level.INFO,
+        String.format("Registered %d lifecycle listeners for %s", listeners.size(), app.getId()));
   }
 
   /**
@@ -124,6 +90,68 @@ final class AppLifecycleListenerRegistry {
     if (removed != null && !removed.isEmpty()) {
       logger.log(Level.INFO,
           String.format("Unregistered %d lifecycle listeners for %s", removed.size(), app.getId()));
+    }
+  }
+
+  /**
+   * Discovers lifecycle listeners using ServiceLoader.
+   *
+   * @return a collection of discovered and sorted listeners
+   * @since 25.03
+   */
+  static Collection<AppLifecycleListener> discoverListeners() {
+    List<ListenerEntry> entries = new ArrayList<>();
+
+    // Use ServiceLoader to discover listener implementations
+    ServiceLoader<AppLifecycleListener> loader = ServiceLoader.load(AppLifecycleListener.class);
+
+    for (AppLifecycleListener listener : loader) {
+      // Check for priority annotation
+      int priority = 10; // default priority
+      AppListenerPriority priorityAnnotation =
+          listener.getClass().getAnnotation(AppListenerPriority.class);
+      if (priorityAnnotation != null) {
+        priority = priorityAnnotation.value();
+      }
+
+      entries.add(new ListenerEntry(listener, priority));
+      logger.log(Level.DEBUG, String.format("Discovered lifecycle listener: %s [Priority: %d]",
+          listener.getClass().getName(), priority));
+    }
+
+    // Sort by priority (lower values first)
+    entries.sort(Comparator.comparingInt(e -> e.priority));
+
+    // Extract sorted listeners
+    List<AppLifecycleListener> sortedListeners = new ArrayList<>();
+    for (ListenerEntry entry : entries) {
+      sortedListeners.add(entry.listener);
+    }
+
+    logger.log(Level.INFO,
+        String.format("Discovered %d lifecycle listeners", sortedListeners.size()));
+
+    return Collections.unmodifiableList(sortedListeners);
+  }
+
+
+  /**
+   * Notifies all listeners with the given action, handling exceptions.
+   *
+   * @param listeners the collection of listeners to notify
+   * @param action the action to perform on each listener
+   * @param phase description of the current phase for error logging
+   * @since 25.03
+   */
+  static void notifyListeners(Collection<AppLifecycleListener> listeners,
+      Consumer<AppLifecycleListener> action, String phase) {
+    for (AppLifecycleListener listener : listeners) {
+      try {
+        action.accept(listener);
+      } catch (Exception e) {
+        logger.log(Level.ERROR,
+            "Error in listener " + listener.getClass().getName() + " during " + phase, e);
+      }
     }
   }
 

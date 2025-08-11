@@ -173,18 +173,7 @@ public abstract class App {
       throw new WebforjAppInitializeException("App is already initialized.");
     }
 
-    String mode = Environment.isRunningWithBBjServices() ? "BBjServices" : "Standalone";
-    boolean routingEnabled = isRoutable();
-
-    // @formatter:off
-    logger.log(Logger.Level.INFO, String.format(
-        "Starting %s [Mode: %s, Routing: %s, Java: %s, Locale: %s]",
-        appId,
-        mode,
-        routingEnabled ? "enabled" : "disabled",
-        System.getProperty("java.version"),
-        getLocale()));
-    // @formatter:on
+    logger.log(Logger.Level.INFO, String.format("Starting %s", appId));
 
     try {
       String key = "PARSE_REQUEST_THEME";
@@ -198,11 +187,10 @@ public abstract class App {
       Page.getCurrent().onUnload(ev -> terminate());
 
       initializeRouter();
-      initializeLifecycleListeners();
 
       // Notify listeners after onWillRun
       onWillRun();
-      notifyListeners(listener -> listener.onWillRun(this));
+      notifyListeners(listener -> listener.onWillRun(this), "onWillRun");
 
       AnnotationProcessor processor = new AnnotationProcessor();
       processor.processAppAnnotations(this);
@@ -212,7 +200,7 @@ public abstract class App {
       isInitialized = true;
 
       // Notify listeners after run() but before onDidRun hook
-      notifyListeners(listener -> listener.onDidRun(this));
+      notifyListeners(listener -> listener.onDidRun(this), "onDidRun");
       onDidRun();
     } catch (Exception e) {
       if (!isCausedByChannelTermination(e)) {
@@ -476,7 +464,7 @@ public abstract class App {
     // Invoke onWillTerminate hook
     onWillTerminate();
     // Notify listeners after onWillTerminate
-    notifyListeners(listener -> listener.onWillTerminate(this));
+    notifyListeners(listener -> listener.onWillTerminate(this), "onWillTerminate");
 
     // dispose the page
     Page page = Page.getCurrent();
@@ -497,7 +485,7 @@ public abstract class App {
     }
 
     // Notify listeners after termination but before onDidTerminate hook
-    notifyListeners(listener -> listener.onDidTerminate(this));
+    notifyListeners(listener -> listener.onDidTerminate(this), "onDidTerminate");
     onDidTerminate();
 
     // Clean up listeners
@@ -840,33 +828,14 @@ public abstract class App {
     return Environment.getCurrent();
   }
 
-
-  /**
-   * Initializes lifecycle listeners for the application.
-   */
-  private void initializeLifecycleListeners() {
-    AppLifecycleListenerRegistry.registerListeners(this);
-
-    logger.log(java.lang.System.Logger.Level.DEBUG,
-        "Initialized lifecycle listeners using ServiceLoader");
-  }
-
   /**
    * Notifies all registered lifecycle listeners.
    *
    * @param action the action to perform on each listener
+   * @param phase the phase name for logging
    */
-  private void notifyListeners(Consumer<AppLifecycleListener> action) {
+  private void notifyListeners(Consumer<AppLifecycleListener> action, String phase) {
     Collection<AppLifecycleListener> listeners = AppLifecycleListenerRegistry.getListeners(this);
-
-    for (AppLifecycleListener listener : listeners) {
-      try {
-        action.accept(listener);
-      } catch (Exception e) {
-        logger.log(Logger.Level.ERROR,
-            "Error in lifecycle listener: " + listener.getClass().getName(), e);
-        // Continue with other listeners even if one fails
-      }
-    }
+    AppLifecycleListenerRegistry.notifyListeners(listeners, action, phase);
   }
 }
