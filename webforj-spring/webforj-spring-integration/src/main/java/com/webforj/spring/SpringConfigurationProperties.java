@@ -168,6 +168,17 @@ public class SpringConfigurationProperties {
   private FileUpload fileUpload = new FileUpload();
 
   /**
+   * Servlet configurations for user-provided servlets.
+   *
+   * <p>
+   * Configure additional servlets that will be managed by webforJ. Each servlet can have its own
+   * class, name, and initialization parameters.
+   * </p>
+   */
+  private List<ServletConfig> servlets = new ArrayList<>();
+
+
+  /**
    * Sets the URL mapping for the Webforj servlet.
    *
    * @param servletMapping the URL mapping for the Webforj servlet
@@ -420,6 +431,25 @@ public class SpringConfigurationProperties {
   }
 
   /**
+   * Gets the servlet configurations.
+   *
+   * @return the list of servlet configurations
+   */
+  public List<ServletConfig> getServlets() {
+    return servlets;
+  }
+
+  /**
+   * Sets the servlet configurations.
+   *
+   * @param servlets the list of servlet configurations
+   */
+  public void setServlets(List<ServletConfig> servlets) {
+    this.servlets = servlets;
+  }
+
+
+  /**
    * File upload configuration properties.
    */
   public static class FileUpload {
@@ -486,6 +516,80 @@ public class SpringConfigurationProperties {
      */
     public void setMaxSize(Long maxSize) {
       this.maxSize = maxSize;
+    }
+  }
+
+  /**
+   * Servlet configuration properties.
+   */
+  public static class ServletConfig {
+    /**
+     * The fully qualified class name of the servlet.
+     */
+    private String className;
+
+    /**
+     * The name of the servlet. If not specified, the class name will be used.
+     */
+    private String name;
+
+    /**
+     * Initialization parameters for the servlet.
+     */
+    private Map<String, String> config = new HashMap<>();
+
+    /**
+     * Gets the servlet class name.
+     *
+     * @return the fully qualified class name
+     */
+    public String getClassName() {
+      return className;
+    }
+
+    /**
+     * Sets the servlet class name.
+     *
+     * @param className the fully qualified class name
+     */
+    public void setClassName(String className) {
+      this.className = className;
+    }
+
+    /**
+     * Gets the servlet name.
+     *
+     * @return the servlet name
+     */
+    public String getName() {
+      return name;
+    }
+
+    /**
+     * Sets the servlet name.
+     *
+     * @param name the servlet name
+     */
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    /**
+     * Gets the servlet initialization parameters.
+     *
+     * @return the initialization parameters map
+     */
+    public Map<String, String> getConfig() {
+      return config;
+    }
+
+    /**
+     * Sets the servlet initialization parameters.
+     *
+     * @param config the initialization parameters map
+     */
+    public void setConfig(Map<String, String> config) {
+      this.config = config;
     }
   }
 }

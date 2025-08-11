@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -156,5 +157,34 @@ class SpringConfigurationPropertiesTest {
     String iconsDir = "icons/";
     properties.setIconsDir(iconsDir);
     assertEquals(iconsDir, properties.getIconsDir());
+  }
+
+
+  @Test
+  void shouldHandleServletConfigProperty() {
+    SpringConfigurationProperties.ServletConfig servletConfig =
+        new SpringConfigurationProperties.ServletConfig();
+    servletConfig.setClassName("com.example.MyServlet");
+    servletConfig.setName("myServlet");
+
+    Map<String, String> config = new HashMap<>();
+    config.put("param1", "value1");
+    config.put("param2", "value2");
+    servletConfig.setConfig(config);
+
+    properties.setServlets(Arrays.asList(servletConfig));
+
+    assertNotNull(properties.getServlets());
+    assertEquals(1, properties.getServlets().size());
+    assertEquals("com.example.MyServlet", properties.getServlets().get(0).getClassName());
+    assertEquals("myServlet", properties.getServlets().get(0).getName());
+    assertEquals(2, properties.getServlets().get(0).getConfig().size());
+    assertEquals("value1", properties.getServlets().get(0).getConfig().get("param1"));
+  }
+
+  @Test
+  void shouldInitializeEmptyServletsList() {
+    assertNotNull(properties.getServlets());
+    assertTrue(properties.getServlets().isEmpty());
   }
 }

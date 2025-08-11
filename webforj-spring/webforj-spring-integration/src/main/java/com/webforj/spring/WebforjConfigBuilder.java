@@ -2,7 +2,10 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValueFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,10 +95,42 @@ class WebforjConfigBuilder {
       configMap.put("webforj.iconsDir", properties.getIconsDir());
     }
 
+    // Add servlet configurations
+    List<Map<String, Object>> servletConfigs = new ArrayList<>();
+
+    // Add user-defined servlet configurations
+    if (properties.getServlets() != null && !properties.getServlets().isEmpty()) {
+      for (SpringConfigurationProperties.ServletConfig servletConfig : properties.getServlets()) {
+        Map<String, Object> servlet = new HashMap<>();
+
+        if (servletConfig.getClassName() != null) {
+          servlet.put("class", servletConfig.getClassName());
+        }
+
+        if (servletConfig.getName() != null) {
+          servlet.put("name", servletConfig.getName());
+        }
+
+        if (servletConfig.getConfig() != null && !servletConfig.getConfig().isEmpty()) {
+          servlet.put("config", servletConfig.getConfig());
+        }
+
+        servletConfigs.add(servlet);
+      }
+    }
+
+    // Add servlets to config if any are defined
+    if (!servletConfigs.isEmpty()) {
+      // Add as both prefixed and non-prefixed for backwards compatibility
+      configMap.put("webforj.servlets", servletConfigs);
+      configMap.put("servlets", servletConfigs);
+    }
+
     // Add quiet mode configuration - provide default to avoid null
     configMap.put("webforj.quiet",
         properties.getQuiet() != null ? properties.getQuiet().booleanValue() : false);
 
     return ConfigFactory.parseMap(configMap);
   }
+
 }
