@@ -77,17 +77,46 @@ public class SpringConfigurationProperties {
   private String locale;
 
   /**
-   * String table for application strings.
+   * Controls whether to display the loading image.
    *
    * <p>
-   * The string table is a map of key-value pairs that can be used to store strings for use in the
-   * application.
+   * Set to {@code true} to disable the loading image during application startup.
    * </p>
-   *
-   * @see <a href=
-   *      "https://docs.webforj.com/docs/advanced/object-string-tables#stringtable">StringTable</a>
    */
-  private Map<String, String> stringTable = new HashMap<>();
+  private Boolean quiet;
+
+  /**
+   * When using hot redeploy, the whole WAR file will be swapped.
+   *
+   * <p>
+   * If the client tries to send a request to the server while it is restarting, an error occurs.
+   * This setting allows the client to attempt a page reload if the server is temporarily
+   * unavailable, hoping it will be back online shortly. This only applies to development
+   * environments and only handles errors specific to hot redeployment, not other types of errors.
+   * </p>
+   */
+  private Boolean reloadOnServerError;
+
+  /**
+   * Sets the interval at which the client pings the server to see if it's still alive.
+   *
+   * <p>
+   * This helps maintain communication. For development, set this to a shorter interval, for example
+   * {@code 8s}, to quickly detect server availability. For production environments, it's
+   * recommended to use values of 50 seconds or higher to minimize server load.
+   * </p>
+   */
+  private String clientHeartbeatRate;
+
+  /**
+   * Session timeout in seconds.
+   *
+   * <p>
+   * Sets the session timeout duration in seconds. If not specified, defaults to 60 seconds. This
+   * controls how long a session remains active without any client activity before being terminated.
+   * </p>
+   */
+  private Integer sessionTimeout;
 
   /**
    * Specifies the route name used to serve static files.
@@ -141,46 +170,17 @@ public class SpringConfigurationProperties {
   private String iconsDir;
 
   /**
-   * Controls whether to display the loading image.
+   * String table for application strings.
    *
    * <p>
-   * Set to {@code true} to disable the loading image during application startup.
+   * The string table is a map of key-value pairs that can be used to store strings for use in the
+   * application.
    * </p>
-   */
-  private Boolean quiet;
-
-  /**
-   * When using hot redeploy, the whole WAR file will be swapped.
    *
-   * <p>
-   * If the client tries to send a request to the server while it is restarting, an error occurs.
-   * This setting allows the client to attempt a page reload if the server is temporarily
-   * unavailable, hoping it will be back online shortly. This only applies to development
-   * environments and only handles errors specific to hot redeployment, not other types of errors.
-   * </p>
+   * @see <a href=
+   *      "https://docs.webforj.com/docs/advanced/object-string-tables#stringtable">StringTable</a>
    */
-  private Boolean reloadOnServerError;
-
-  /**
-   * Sets the interval at which the client pings the server to see if it's still alive.
-   *
-   * <p>
-   * This helps maintain communication. For development, set this to a shorter interval, for example
-   * {@code 8s}, to quickly detect server availability. For production environments, it's
-   * recommended to use values of 50 seconds or higher to minimize server load.
-   * </p>
-   */
-  private String clientHeartbeatRate;
-
-  /**
-   * Session timeout in seconds.
-   *
-   * <p>
-   * Sets the session timeout duration in seconds. If not specified, defaults to 60 seconds. This
-   * controls how long a session remains active without any client activity before being terminated.
-   * </p>
-   */
-  private Integer sessionTimeout;
+  private Map<String, String> stringTable = new HashMap<>();
 
   /**
    * File upload configuration.
