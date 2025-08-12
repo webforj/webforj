@@ -1,7 +1,6 @@
 package com.webforj.spring;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -82,7 +81,7 @@ class SpringConfigMergerTest {
 
       merger.onWillCreate(environment);
 
-      verify(applicationContext).getBean(eq("webforjConfig"), eq(Config.class));
+      verify(applicationContext).getBean("webforjConfig", Config.class);
       verify(environment).setConfig(config);
     }
   }
