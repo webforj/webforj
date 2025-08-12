@@ -1,5 +1,6 @@
 package com.webforj.spring;
 
+import com.typesafe.config.Config;
 import com.webforj.servlet.WebforjServlet;
 import java.lang.System.Logger;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -25,6 +26,19 @@ public class SpringAutoConfiguration {
   private static Logger logger = System.getLogger(SpringAutoConfiguration.class.getName());
 
   /**
+   * Creates the webforJ configuration from Spring properties.
+   *
+   * @param properties the Spring configuration properties
+   * @return the webforJ configuration
+   */
+  @Bean(name = "webforjConfig")
+  Config webforjConfig(SpringConfigurationProperties properties) {
+    Config config = WebforjConfigBuilder.buildConfig(properties);
+    logger.log(Logger.Level.DEBUG, "Built webforJ configuration from Spring properties");
+    return config;
+  }
+
+  /**
    * Registers the {@link WebforjServlet}.
    *
    * <p>
@@ -35,10 +49,14 @@ public class SpringAutoConfiguration {
    * @return the {@link ServletRegistrationBean} for the {@link WebforjServlet}
    */
   @Bean
-  public ServletRegistrationBean<WebforjServlet> webforjServletRegistration(
-      SpringConfigurationProperties properties) {
+  ServletRegistrationBean<WebforjServlet> webforjServletRegistration(
+      SpringConfigurationProperties properties, Config webforjConfig) {
     logger.log(Logger.Level.DEBUG,
         "Registering WebforjServlet with mapping " + properties.getServletMapping());
+
+    // Set the configuration for the servlet
+    WebforjServlet.setConfig(webforjConfig);
+    logger.log(Logger.Level.DEBUG, "Set webforj configuration for servlet");
 
     WebforjServlet webforjServlet = new WebforjServlet();
 
@@ -69,7 +87,7 @@ public class SpringAutoConfiguration {
    * @return the {@link ComponentRegistrar}
    */
   @Bean
-  public static ComponentRegistrar webforjComponentRegistrar() {
+  static ComponentRegistrar webforjComponentRegistrar() {
     return new ComponentRegistrar();
   }
 
@@ -79,7 +97,7 @@ public class SpringAutoConfiguration {
    * @return the {@link ContextInjector}
    */
   @Bean
-  public ContextInjector webforjContextInjector() {
+  ContextInjector webforjContextInjector() {
     return new ContextInjector();
   }
 }
