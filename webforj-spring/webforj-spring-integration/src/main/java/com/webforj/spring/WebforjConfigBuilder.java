@@ -2,11 +2,12 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValueFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Builder for creating Typesafe Config objects from Spring configuration properties.
@@ -16,6 +17,10 @@ import java.util.Map;
  */
 class WebforjConfigBuilder {
 
+  private WebforjConfigBuilder() {
+    // prevent instantiation
+  }
+
   /**
    * Builds a Typesafe Config object from Spring configuration properties.
    *
@@ -23,114 +28,120 @@ class WebforjConfigBuilder {
    * @return a Config object with all configured values
    */
   public static Config buildConfig(SpringConfigurationProperties properties) {
-    Map<String, Object> configMap = new HashMap<>();
+    ConfigMapBuilder builder = new ConfigMapBuilder();
 
-    // Add entry point configuration
-    if (properties.getEntry() != null) {
-      configMap.put("webforj.entry", properties.getEntry());
-    }
+    // Basic configurations
+    builder.add("webforj.entry", properties::getEntry)
+        .add("webforj.debug", properties::getDebug, false)
+        .add("webforj.components", properties::getComponents)
+        .add("webforj.locale", properties::getLocale)
+        .add("webforj.quiet", properties::getQuiet, false)
+        .add("webforj.reloadOnServerError", properties::getReloadOnServerError, false);
 
-    // Add debug configuration - always provide a value to avoid null issues
-    configMap.put("webforj.debug",
-        properties.getDebug() != null ? properties.getDebug().booleanValue() : false);
+    // Client configuration
+    builder.add("webforj.clientHeartbeatRate", properties::getClientHeartbeatRate);
 
-    // Add components configuration
-    if (properties.getComponents() != null) {
-      configMap.put("webforj.components", properties.getComponents());
-    }
+    // Assets configurations
+    builder.add("webforj.assetsDir", properties::getAssetsDir)
+        .add("webforj.assetsCacheControl", properties::getAssetsCacheControl)
+        .add("webforj.assetsExt", properties::getAssetsExt)
+        .add("webforj.assetsIndex", properties::getAssetsIndex)
+        .add("webforj.iconsDir", properties::getIconsDir);
 
-    // Add locale configuration
-    if (properties.getLocale() != null) {
-      configMap.put("webforj.locale", properties.getLocale());
-    }
+    // String table configuration
+    builder.addMap("webforj.stringTable", properties::getStringTable);
 
-    // Add string table configuration
-    if (properties.getStringTable() != null && !properties.getStringTable().isEmpty()) {
-      for (Map.Entry<String, String> entry : properties.getStringTable().entrySet()) {
-        configMap.put("webforj.stringTable." + entry.getKey(), entry.getValue());
+    // File upload configuration
+    builder.addNested(properties::getFileUpload, fileUpload -> {
+      builder.addList("webforj.fileUpload.accept", fileUpload::getAccept)
+          .add("webforj.fileUpload.maxSize", fileUpload::getMaxSize);
+    });
+
+    // License configuration
+    builder.addNested(properties::getLicense, license -> {
+      builder.add("webforj.license.cfg", license::getCfg).add("webforj.license.startupTimeout",
+          license::getStartupTimeout);
+    });
+
+    // Servlet configurations
+    builder.add("webforj.servlets", () -> {
+      if (properties.getServlets() == null || properties.getServlets().isEmpty()) {
+        return null;
       }
-    }
 
-    // Add file upload configuration
-    if (properties.getFileUpload() != null) {
-      SpringConfigurationProperties.FileUpload fileUpload = properties.getFileUpload();
-
-      if (fileUpload.getAccept() != null && !fileUpload.getAccept().isEmpty()) {
-        configMap.put("webforj.fileUpload.accept", fileUpload.getAccept());
-      }
-
-      if (fileUpload.getMaxSize() != null) {
-        configMap.put("webforj.fileUpload.maxSize", fileUpload.getMaxSize());
-      }
-    }
-
-    // Add reload on server error configuration - provide default to avoid null
-    configMap.put("webforj.reloadOnServerError",
-        properties.getReloadOnServerError() != null
-            ? properties.getReloadOnServerError().booleanValue()
-            : false);
-
-    // Add client heartbeat rate configuration
-    if (properties.getClientHeartbeatRate() != null) {
-      configMap.put("webforj.clientHeartbeatRate", properties.getClientHeartbeatRate());
-    }
-
-    // Add assets directory configuration
-    if (properties.getAssetsDir() != null) {
-      configMap.put("webforj.assetsDir", properties.getAssetsDir());
-    }
-
-    // Add assets cache control configuration
-    if (properties.getAssetsCacheControl() != null) {
-      configMap.put("webforj.assetsCacheControl", properties.getAssetsCacheControl());
-    }
-
-    // Add assets extension configuration
-    if (properties.getAssetsExt() != null) {
-      configMap.put("webforj.assetsExt", properties.getAssetsExt());
-    }
-
-    // Add icons directory configuration
-    if (properties.getIconsDir() != null) {
-      configMap.put("webforj.iconsDir", properties.getIconsDir());
-    }
-
-    // Add servlet configurations
-    List<Map<String, Object>> servletConfigs = new ArrayList<>();
-
-    // Add user-defined servlet configurations
-    if (properties.getServlets() != null && !properties.getServlets().isEmpty()) {
-      for (SpringConfigurationProperties.ServletConfig servletConfig : properties.getServlets()) {
-        Map<String, Object> servlet = new HashMap<>();
-
-        if (servletConfig.getClassName() != null) {
-          servlet.put("class", servletConfig.getClassName());
+      List<Map<String, Object>> configs = new ArrayList<>();
+      for (SpringConfigurationProperties.ServletConfig servlet : properties.getServlets()) {
+        Map<String, Object> config = new HashMap<>();
+        if (servlet.getClassName() != null) {
+          config.put("class", servlet.getClassName());
         }
 
-        if (servletConfig.getName() != null) {
-          servlet.put("name", servletConfig.getName());
+        if (servlet.getName() != null) {
+          config.put("name", servlet.getName());
         }
 
-        if (servletConfig.getConfig() != null && !servletConfig.getConfig().isEmpty()) {
-          servlet.put("config", servletConfig.getConfig());
+        if (servlet.getConfig() != null && !servlet.getConfig().isEmpty()) {
+          config.put("config", servlet.getConfig());
         }
 
-        servletConfigs.add(servlet);
+        configs.add(config);
       }
-    }
 
-    // Add servlets to config if any are defined
-    if (!servletConfigs.isEmpty()) {
-      // Add as both prefixed and non-prefixed for backwards compatibility
-      configMap.put("webforj.servlets", servletConfigs);
-      configMap.put("servlets", servletConfigs);
-    }
+      return configs;
+    });
 
-    // Add quiet mode configuration - provide default to avoid null
-    configMap.put("webforj.quiet",
-        properties.getQuiet() != null ? properties.getQuiet().booleanValue() : false);
-
-    return ConfigFactory.parseMap(configMap);
+    return ConfigFactory.parseMap(builder.build());
   }
 
+
+  /**
+   * Internal builder class for creating configuration maps.
+   */
+  private static class ConfigMapBuilder {
+    private final Map<String, Object> configMap = new HashMap<>();
+
+    <T> ConfigMapBuilder add(String key, Supplier<T> valueSupplier) {
+      T value = valueSupplier.get();
+      if (value != null) {
+        configMap.put(key, value);
+      }
+      return this;
+    }
+
+    <T> ConfigMapBuilder add(String key, Supplier<T> valueSupplier, T defaultValue) {
+      T value = valueSupplier.get();
+      configMap.put(key, value != null ? value : defaultValue);
+      return this;
+    }
+
+    ConfigMapBuilder addList(String key, Supplier<List<?>> valueSupplier) {
+      List<?> value = valueSupplier.get();
+      if (value != null && !value.isEmpty()) {
+        configMap.put(key, value);
+      }
+      return this;
+    }
+
+    ConfigMapBuilder addMap(String prefix, Supplier<Map<String, String>> valueSupplier) {
+      Map<String, String> map = valueSupplier.get();
+      if (map != null && !map.isEmpty()) {
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+          configMap.put(prefix + "." + entry.getKey(), entry.getValue());
+        }
+      }
+      return this;
+    }
+
+    <T> ConfigMapBuilder addNested(Supplier<T> nestedSupplier, Consumer<T> nestedProcessor) {
+      T nested = nestedSupplier.get();
+      if (nested != null) {
+        nestedProcessor.accept(nested);
+      }
+      return this;
+    }
+
+    Map<String, Object> build() {
+      return configMap;
+    }
+  }
 }

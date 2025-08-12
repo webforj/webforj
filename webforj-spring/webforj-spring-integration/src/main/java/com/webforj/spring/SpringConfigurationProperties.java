@@ -120,6 +120,16 @@ public class SpringConfigurationProperties {
   private String assetsExt;
 
   /**
+   * Index file for static assets.
+   *
+   * <p>
+   * The default file to serve when a directory is requested from the static assets folder. For
+   * example, {@code index.html}.
+   * </p>
+   */
+  private String assetsIndex;
+
+  /**
    * Icons directory endpoint name.
    *
    * <p>
@@ -176,6 +186,11 @@ public class SpringConfigurationProperties {
    * </p>
    */
   private List<ServletConfig> servlets = new ArrayList<>();
+
+  /**
+   * License configuration.
+   */
+  private License license = new License();
 
 
   /**
@@ -413,6 +428,24 @@ public class SpringConfigurationProperties {
   }
 
   /**
+   * Gets the assets index file.
+   *
+   * @return the index file name
+   */
+  public String getAssetsIndex() {
+    return assetsIndex;
+  }
+
+  /**
+   * Sets the assets index file.
+   *
+   * @param assetsIndex the index file name
+   */
+  public void setAssetsIndex(String assetsIndex) {
+    this.assetsIndex = assetsIndex;
+  }
+
+  /**
    * Gets the icons directory endpoint name.
    *
    * @return the icons endpoint name
@@ -448,6 +481,23 @@ public class SpringConfigurationProperties {
     this.servlets = servlets;
   }
 
+  /**
+   * Gets the license configuration.
+   *
+   * @return the license configuration
+   */
+  public License getLicense() {
+    return license;
+  }
+
+  /**
+   * Sets the license configuration.
+   *
+   * @param license the license configuration
+   */
+  public void setLicense(License license) {
+    this.license = license;
+  }
 
   /**
    * File upload configuration properties.
@@ -590,6 +640,57 @@ public class SpringConfigurationProperties {
      */
     public void setConfig(Map<String, String> config) {
       this.config = config;
+    }
+  }
+
+  /**
+   * License configuration properties.
+   */
+  public static class License {
+    /**
+     * Path to the license configuration dir.
+     */
+    private String cfg;
+
+    /**
+     * License startup timeout.
+     */
+    private Integer startupTimeout;
+
+    /**
+     * Gets the license configuration directory path.
+     *
+     * @return the license configuration directory path
+     */
+    public String getCfg() {
+      return cfg;
+    }
+
+    /**
+     * Sets the license configuration directory path.
+     *
+     * @param cfg the license configuration directory path
+     */
+    public void setCfg(String cfg) {
+      this.cfg = cfg;
+    }
+
+    /**
+     * Gets the license startup timeout.
+     *
+     * @return the startup timeout
+     */
+    public Integer getStartupTimeout() {
+      return startupTimeout;
+    }
+
+    /**
+     * Sets the license startup timeout.
+     *
+     * @param startupTimeout the startup timeout
+     */
+    public void setStartupTimeout(Integer startupTimeout) {
+      this.startupTimeout = startupTimeout;
     }
   }
 }
