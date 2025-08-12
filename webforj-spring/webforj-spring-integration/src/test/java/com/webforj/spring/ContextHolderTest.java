@@ -52,5 +52,14 @@ class ContextHolderTest {
       ContextHolder.setContext(secondContext);
       assertEquals(secondContext, ContextHolder.getContext());
     }
+
+    @Test
+    void shouldClearContext() {
+      ContextHolder.setContext(applicationContext);
+      assertEquals(applicationContext, ContextHolder.getContext());
+
+      ContextHolder.clear();
+      assertNull(ContextHolder.getContext());
+    }
   }
 }

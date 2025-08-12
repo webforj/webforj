@@ -53,4 +53,17 @@ class ContextInjectorTest {
       assertEquals(secondContext, ContextHolder.getContext());
     }
   }
+
+  @Nested
+  class Cleanup {
+
+    @Test
+    void shouldClearContextHolderOnDestroy() throws Exception {
+      contextInjector.setApplicationContext(applicationContext);
+      assertEquals(applicationContext, ContextHolder.getContext());
+
+      contextInjector.destroy();
+      assertNull(ContextHolder.getContext());
+    }
+  }
 }

@@ -32,4 +32,11 @@ public class ContextHolder {
   public static ApplicationContext getContext() {
     return context;
   }
+
+  /**
+   * Clear the {@link ApplicationContext}.
+   */
+  static void clear() {
+    context = null;
+  }
 }
