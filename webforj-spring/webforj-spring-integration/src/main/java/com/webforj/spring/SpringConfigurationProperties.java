@@ -173,6 +173,16 @@ public class SpringConfigurationProperties {
   private String clientHeartbeatRate;
 
   /**
+   * Session timeout in seconds.
+   *
+   * <p>
+   * Sets the session timeout duration in seconds. If not specified, defaults to 60 seconds. This
+   * controls how long a session remains active without any client activity before being terminated.
+   * </p>
+   */
+  private Integer sessionTimeout;
+
+  /**
    * File upload configuration.
    */
   private FileUpload fileUpload = new FileUpload();
@@ -461,6 +471,24 @@ public class SpringConfigurationProperties {
    */
   public void setIconsDir(String iconsDir) {
     this.iconsDir = iconsDir;
+  }
+
+  /**
+   * Gets the session timeout in seconds.
+   *
+   * @return the session timeout in seconds
+   */
+  public Integer getSessionTimeout() {
+    return sessionTimeout;
+  }
+
+  /**
+   * Sets the session timeout in seconds.
+   *
+   * @param sessionTimeout the session timeout in seconds
+   */
+  public void setSessionTimeout(Integer sessionTimeout) {
+    this.sessionTimeout = sessionTimeout;
   }
 
   /**

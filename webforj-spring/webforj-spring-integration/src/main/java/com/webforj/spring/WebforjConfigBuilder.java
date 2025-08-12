@@ -39,7 +39,8 @@ class WebforjConfigBuilder {
         .add("webforj.reloadOnServerError", properties::getReloadOnServerError, false);
 
     // Client configuration
-    builder.add("webforj.clientHeartbeatRate", properties::getClientHeartbeatRate);
+    builder.add("webforj.clientHeartbeatRate", properties::getClientHeartbeatRate)
+        .add("webforj.sessionTimeout", properties::getSessionTimeout, 60);
 
     // Assets configurations
     builder.add("webforj.assetsDir", properties::getAssetsDir)

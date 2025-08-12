@@ -118,6 +118,18 @@ class WebforjConfigBuilderTest {
 
       assertFalse(config.hasPath("webforj.clientHeartbeatRate"));
     }
+
+    @Test
+    void shouldSetSessionTimeoutWithDefault() {
+      // Test null (should use default 60)
+      Config config1 = WebforjConfigBuilder.buildConfig(properties);
+      assertEquals(60, config1.getInt("webforj.sessionTimeout"));
+
+      // Test explicit value
+      properties.setSessionTimeout(300);
+      Config config2 = WebforjConfigBuilder.buildConfig(properties);
+      assertEquals(300, config2.getInt("webforj.sessionTimeout"));
+    }
   }
 
   @Nested
@@ -461,6 +473,7 @@ class WebforjConfigBuilderTest {
 
       // Client
       properties.setClientHeartbeatRate("10s");
+      properties.setSessionTimeout(120);
 
       // Assets
       properties.setAssetsDir("assets");
@@ -504,6 +517,7 @@ class WebforjConfigBuilderTest {
       assertFalse(config.getBoolean("webforj.quiet"));
       assertTrue(config.getBoolean("webforj.reloadOnServerError"));
       assertEquals("10s", config.getString("webforj.clientHeartbeatRate"));
+      assertEquals(120, config.getInt("webforj.sessionTimeout"));
       assertEquals("assets", config.getString("webforj.assetsDir"));
       assertEquals("no-cache", config.getString("webforj.assetsCacheControl"));
       assertEquals(".htm", config.getString("webforj.assetsExt"));
@@ -529,6 +543,7 @@ class WebforjConfigBuilderTest {
       assertFalse(config.getBoolean("webforj.debug"));
       assertFalse(config.getBoolean("webforj.quiet"));
       assertFalse(config.getBoolean("webforj.reloadOnServerError"));
+      assertEquals(60, config.getInt("webforj.sessionTimeout"));
 
       // Everything else should be missing
       assertFalse(config.hasPath("webforj.entry"));
