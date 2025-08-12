@@ -623,7 +623,13 @@ public final class BrowserConsole {
     message = Base64.getEncoder().encodeToString(theMessage.getBytes());
     String code = String.format("console.%s('%%c ' + atob('%s'), '%s')", level, message,
         buildComputedStyles());
-    Page.ifPresent(page -> page.executeJsAsync(code));
+    Page.ifPresent(page -> {
+      try {
+        page.executeJsAsync(code);
+      } catch (Exception e) {
+        // ignore - likely during app termination when connection is closed
+      }
+    });
     styles.clear();
     return this;
   }
