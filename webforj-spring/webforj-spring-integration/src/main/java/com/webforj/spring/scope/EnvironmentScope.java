@@ -26,6 +26,9 @@ public class EnvironmentScope implements Scope {
   private static final String DESTRUCTION_CALLBACKS_KEY =
       "webforj.spring.scope.environment.callbacks";
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Object get(String name, ObjectFactory<?> objectFactory) {
     Environment env = Environment.getCurrent();
@@ -45,6 +48,9 @@ public class EnvironmentScope implements Scope {
     return bean;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Object remove(String name) {
     Map<String, Object> beans = getBeans();
@@ -68,6 +74,9 @@ public class EnvironmentScope implements Scope {
     return removed;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void registerDestructionCallback(String name, Runnable callback) {
     Map<String, Runnable> callbacks = getDestructionCallbacks();
@@ -75,6 +84,9 @@ public class EnvironmentScope implements Scope {
     logger.log(Level.DEBUG, "Registered destruction callback for bean ''{0}''", name);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Object resolveContextualObject(String key) {
     if ("environment".equals(key)) {
@@ -84,6 +96,9 @@ public class EnvironmentScope implements Scope {
     return null;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getConversationId() {
     Environment env = Environment.getCurrent();
@@ -97,6 +112,8 @@ public class EnvironmentScope implements Scope {
 
   /**
    * Get the bean storage map from ObjectTable.
+   *
+   * @return the bean storage map
    */
   @SuppressWarnings("unchecked")
   private Map<String, Object> getBeans() {
@@ -109,6 +126,8 @@ public class EnvironmentScope implements Scope {
 
   /**
    * Get the destruction callbacks map from ObjectTable.
+   *
+   * @return the destruction callbacks map
    */
   @SuppressWarnings("unchecked")
   private Map<String, Runnable> getDestructionCallbacks() {
