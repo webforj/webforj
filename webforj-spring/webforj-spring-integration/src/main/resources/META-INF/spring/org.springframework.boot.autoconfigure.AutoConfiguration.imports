@@ -1,1 +1,2 @@
 com.webforj.spring.SpringAutoConfiguration
+com.webforj.spring.scope.WebforjScopeConfiguration
