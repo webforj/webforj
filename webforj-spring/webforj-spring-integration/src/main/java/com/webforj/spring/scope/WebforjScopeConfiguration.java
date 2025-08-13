@@ -26,7 +26,7 @@ public class WebforjScopeConfiguration implements BeanFactoryPostProcessor {
   @Override
   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
     // Register Environment scope
-    EnvironmentScope environmentScope = new EnvironmentScope();
+    EnvironmentScopeProcessor environmentScope = new EnvironmentScopeProcessor();
     beanFactory.registerScope("webforj-environment", environmentScope);
     logger.log(Level.DEBUG, "Registered webforj-environment scope");
   }

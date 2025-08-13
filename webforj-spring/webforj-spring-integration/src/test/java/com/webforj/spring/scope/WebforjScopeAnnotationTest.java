@@ -118,7 +118,7 @@ class WebforjScopeAnnotationTest {
       int firstId = service1.getId();
 
       // new environment
-      EnvironmentScope.cleanup();
+      EnvironmentScopeProcessor.cleanup();
       Environment.cleanup();
       Environment.init(mockApi, mockBridge, 0);
 
@@ -142,54 +142,6 @@ class WebforjScopeAnnotationTest {
 
       assertNotNull(component1);
       assertSame(component1, component2);
-    }
-  }
-
-  @Nested
-  class RequestScopeAnnotation {
-
-    @Test
-    void shouldCreateRequestScopedBean() {
-      context = new AnnotationConfigApplicationContext();
-      context.register(WebforjScopeConfiguration.class);
-      context.register(RequestScopedConfig.class);
-      context.refresh();
-
-      RequestScopedService service1 = context.getBean(RequestScopedService.class);
-      RequestScopedService service2 = context.getBean(RequestScopedService.class);
-
-      assertNotNull(service1);
-      assertSame(service1, service2);
-      assertEquals(service1.getId(), service2.getId());
-    }
-
-    @Test
-    void shouldBehaveSameAsEnvironmentScope() throws BBjException {
-      context = new AnnotationConfigApplicationContext();
-      context.register(WebforjScopeConfiguration.class);
-      context.register(RequestScopedConfig.class);
-      context.register(EnvironmentScopedConfig.class);
-      context.refresh();
-
-      RequestScopedService requestService = context.getBean(RequestScopedService.class);
-      EnvironmentScopedService envService = context.getBean(EnvironmentScopedService.class);
-
-      int requestId1 = requestService.getId();
-      int envId1 = envService.getId();
-
-      // new environment
-      EnvironmentScope.cleanup();
-      Environment.cleanup();
-      Environment.init(mockApi, mockBridge, 0);
-
-      RequestScopedService newRequestService = context.getBean(RequestScopedService.class);
-      EnvironmentScopedService newEnvService = context.getBean(EnvironmentScopedService.class);
-
-      int requestId2 = newRequestService.getId();
-      int envId2 = newEnvService.getId();
-
-      assertTrue(requestId1 != requestId2);
-      assertTrue(envId1 != envId2);
     }
   }
 
@@ -221,18 +173,9 @@ class WebforjScopeAnnotationTest {
   @Configuration
   static class EnvironmentScopedConfig {
     @Bean
-    @WebforjEnvironmentScope
+    @EnvironmentScope
     public EnvironmentScopedService environmentScopedService() {
       return new EnvironmentScopedService();
-    }
-  }
-
-  @Configuration
-  static class RequestScopedConfig {
-    @Bean
-    @WebforjRequestScope
-    public RequestScopedService requestScopedService() {
-      return new RequestScopedService();
     }
   }
 
@@ -244,13 +187,13 @@ class WebforjScopeAnnotationTest {
     }
 
     @Bean
-    @WebforjEnvironmentScope
+    @EnvironmentScope
     public EnvironmentScopedService environmentScopedService() {
       return new EnvironmentScopedService();
     }
 
     @Bean
-    @WebforjEnvironmentScope
+    @EnvironmentScope
     public ComplexService complexService(EnvironmentScopedService environmentService,
         SingletonService singletonService) {
       return new ComplexService(environmentService, singletonService);
@@ -263,19 +206,6 @@ class WebforjScopeAnnotationTest {
     private final int id;
 
     public EnvironmentScopedService() {
-      this.id = counter.incrementAndGet();
-    }
-
-    public int getId() {
-      return id;
-    }
-  }
-
-  static class RequestScopedService {
-    private static final AtomicInteger counter = new AtomicInteger(0);
-    private final int id;
-
-    public RequestScopedService() {
       this.id = counter.incrementAndGet();
     }
 
@@ -330,7 +260,7 @@ class WebforjScopeAnnotationTest {
   }
 
   @Component
-  @WebforjEnvironmentScope
+  @EnvironmentScope
   static class EnvironmentScopedComponent {
     private static final AtomicInteger counter = new AtomicInteger(0);
     private final int id;

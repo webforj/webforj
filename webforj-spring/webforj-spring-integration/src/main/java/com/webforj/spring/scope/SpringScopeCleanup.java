@@ -26,7 +26,7 @@ public class SpringScopeCleanup implements AppLifecycleListener {
     logger.log(Level.DEBUG, "Cleaning up Spring environment scope");
 
     try {
-      EnvironmentScope.cleanup();
+      EnvironmentScopeProcessor.cleanup();
       logger.log(Level.DEBUG, "Spring environment scope cleaned up successfully");
     } catch (Exception e) {
       logger.log(Level.ERROR, "Error during Spring scope cleanup", e);

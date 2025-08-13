@@ -45,12 +45,12 @@ class EnvironmentScopeTest {
   @Mock
   private WebforjBBjBridge mockBridge;
 
-  private EnvironmentScope scope;
+  private EnvironmentScopeProcessor scope;
   private Map<String, Object> objectTableStorage;
 
   @BeforeEach
   void setUp() throws BBjException {
-    scope = new EnvironmentScope();
+    scope = new EnvironmentScopeProcessor();
     objectTableStorage = new HashMap<>();
 
     // Mock the ObjectTable behavior
@@ -177,7 +177,7 @@ class EnvironmentScopeTest {
         scope.registerDestructionCallback(beanName, callbackCount::incrementAndGet);
       }
 
-      EnvironmentScope.cleanup();
+      EnvironmentScopeProcessor.cleanup();
 
       assertEquals(5, callbackCount.get());
     }
@@ -194,7 +194,7 @@ class EnvironmentScopeTest {
       scope.registerDestructionCallback("bean2", () -> bean2CallbackExecuted.set(true));
 
       // Cleanup should continue despite failing callbacks
-      EnvironmentScope.cleanup();
+      EnvironmentScopeProcessor.cleanup();
 
       assertTrue(bean2CallbackExecuted.get(),
           "Other callbacks should still execute even if one fails");
