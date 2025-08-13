@@ -1,2 +1,3 @@
 com.webforj.spring.SpringConfigMerger
+com.webforj.spring.scope.SpringScopeCleanup
 com.webforj.spring.devtools.livereload.LiveReloadScriptInjector
