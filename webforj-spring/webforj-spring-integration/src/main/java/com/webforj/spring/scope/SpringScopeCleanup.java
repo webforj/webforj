@@ -3,6 +3,8 @@ package com.webforj.spring.scope;
 import com.webforj.App;
 import com.webforj.AppLifecycleListener;
 import com.webforj.annotation.AppListenerPriority;
+import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
+import com.webforj.spring.scope.processor.RouteScopeProcessor;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 
@@ -10,8 +12,8 @@ import java.lang.System.Logger.Level;
  * Handles cleanup of Spring scopes when the webforJ application is terminated.
  *
  * <p>
- * This listener ensures that Spring beans in the environment scope have their destruction callbacks
- * executed properly before the application is terminated.
+ * This listener ensures that Spring beans in the environment and route scopes have their
+ * destruction callbacks executed properly before the application is terminated.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -23,11 +25,14 @@ public class SpringScopeCleanup implements AppLifecycleListener {
 
   @Override
   public void onWillTerminate(App app) {
-    logger.log(Level.DEBUG, "Cleaning up Spring environment scope");
+    logger.log(Level.DEBUG, "Cleaning up Spring scopes");
 
     try {
       EnvironmentScopeProcessor.cleanup();
       logger.log(Level.DEBUG, "Spring environment scope cleaned up successfully");
+
+      RouteScopeProcessor.cleanup();
+      logger.log(Level.DEBUG, "Spring route scopes cleaned up successfully");
     } catch (Exception e) {
       logger.log(Level.ERROR, "Error during Spring scope cleanup", e);
     }

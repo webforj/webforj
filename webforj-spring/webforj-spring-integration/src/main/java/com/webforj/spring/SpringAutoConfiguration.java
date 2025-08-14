@@ -2,13 +2,18 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.webforj.servlet.WebforjServlet;
+import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
+import com.webforj.spring.scope.processor.RouteScopeProcessor;
 import java.lang.System.Logger;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -99,5 +104,33 @@ public class SpringAutoConfiguration {
   @Bean
   ContextInjector webforjContextInjector() {
     return new ContextInjector();
+  }
+
+  /**
+   * Registers webforJ custom scopes with Spring.
+   *
+   * <p>
+   * This post processor registers the following custom scopes:
+   * <ul>
+   * <li>{@code webforj-environment} - Scoped to the webforJ Environment (request) lifecycle</li>
+   * <li>{@code webforj-route} - Scoped to the webforJ route hierarchy lifecycle</li>
+   * </ul>
+   * </p>
+   *
+   * @return the {@link BeanFactoryPostProcessor} that registers the scopes
+   */
+  @Bean
+  static BeanFactoryPostProcessor webforjScopeRegistrar() {
+    return (ConfigurableListableBeanFactory beanFactory) -> {
+      // Register Environment scope
+      EnvironmentScopeProcessor environmentScope = new EnvironmentScopeProcessor();
+      beanFactory.registerScope("webforj-environment", environmentScope);
+      logger.log(Logger.Level.DEBUG, "Registered webforj-environment scope");
+
+      // Register Route scope
+      RouteScopeProcessor routeScope = new RouteScopeProcessor();
+      beanFactory.registerScope("webforj-route", routeScope);
+      logger.log(Logger.Level.DEBUG, "Registered webforj-route scope");
+    };
   }
 }

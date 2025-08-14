@@ -375,6 +375,115 @@ class RouteRendererTest {
     }
   }
 
+  @Nested
+  class GetActiveRoutePath {
+    @Test
+    void shouldReturnEmptyWhenNoRouteRendered() {
+      assertFalse(routeRenderer.getActiveRoutePath().isPresent());
+    }
+
+    @Test
+    void shouldReturnActivePathDuringAndAfterRender() {
+      routeRegistry.register("/test", TestComponent.class);
+
+      AtomicReference<RouteRelation<Class<? extends Component>>> duringRenderPath =
+          new AtomicReference<>();
+
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.BEFORE_CREATE) {
+          duringRenderPath.set(routeRenderer.getActiveRoutePath().orElse(null));
+        }
+        cb.accept(true);
+      });
+
+      routeRenderer.render(TestComponent.class, result -> {
+        assertTrue(result.isPresent());
+      });
+
+      // Verify path during rendering
+      assertNotNull(duringRenderPath.get());
+      assertEquals(Frame.class, duringRenderPath.get().getData());
+      assertEquals(TestComponent.class, duringRenderPath.get().getChildren().get(0).getData());
+
+      // Verify path after rendering
+      assertTrue(routeRenderer.getActiveRoutePath().isPresent());
+      RouteRelation<Class<? extends Component>> afterRenderPath =
+          routeRenderer.getActiveRoutePath().get();
+      assertEquals(Frame.class, afterRenderPath.getData());
+      assertEquals(TestComponent.class, afterRenderPath.getChildren().get(0).getData());
+    }
+
+    @Test
+    void shouldUpdatePathWhenNavigatingBetweenRoutes() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/about", AboutView.class);
+
+      // First render
+      routeRenderer.render(HomeView.class, result -> assertTrue(result.isPresent()));
+
+      RouteRelation<Class<? extends Component>> path = routeRenderer.getActiveRoutePath().get();
+      assertEquals(HomeView.class, path.getChildren().get(0).getData());
+
+      // Navigate to new route
+      routeRenderer.render(AboutView.class, result -> assertTrue(result.isPresent()));
+
+      path = routeRenderer.getActiveRoutePath().get();
+      assertEquals(AboutView.class, path.getChildren().get(0).getData());
+    }
+
+    @Test
+    void shouldReturnNestedRouteHierarchy() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/child", HelloWorldView.class, HomeView.class);
+
+      routeRenderer.render(HomeView.class, parentResult -> {
+        routeRenderer.render(HelloWorldView.class, childResult -> {
+          assertTrue(childResult.isPresent());
+        });
+      });
+
+      RouteRelation<Class<? extends Component>> path = routeRenderer.getActiveRoutePath().get();
+
+      // Verify hierarchy: Frame -> HomeView -> HelloWorldView
+      assertEquals(Frame.class, path.getData());
+      RouteRelation<Class<? extends Component>> homeView = path.getChildren().get(0);
+      assertEquals(HomeView.class, homeView.getData());
+      assertEquals(HelloWorldView.class, homeView.getChildren().get(0).getData());
+    }
+
+    @Test
+    void shouldMaintainPreviousPathWhenNavigationIsVetoed() {
+      routeRegistry.register("/home", HomeView.class);
+      routeRegistry.register("/about", AboutView.class);
+
+      // Render initial route
+      routeRenderer.render(HomeView.class, result -> assertTrue(result.isPresent()));
+
+      RouteRelation<Class<? extends Component>> initialPath =
+          routeRenderer.getActiveRoutePath().get();
+      assertEquals(HomeView.class, initialPath.getChildren().get(0).getData());
+
+      // Add veto observer
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.BEFORE_DESTROY
+            && component instanceof HomeView) {
+          cb.accept(false); // Veto
+        } else {
+          cb.accept(true);
+        }
+      });
+
+      // Attempt vetoed navigation
+      routeRenderer.render(AboutView.class, result -> assertFalse(result.isPresent()));
+
+      // Should still have HomeView as active
+      RouteRelation<Class<? extends Component>> currentPath =
+          routeRenderer.getActiveRoutePath().get();
+      assertEquals(HomeView.class, currentPath.getChildren().get(0).getData());
+    }
+
+  }
+
   @NodeName("test-component")
   public static class TestComponent extends ElementCompositeContainer {
   }

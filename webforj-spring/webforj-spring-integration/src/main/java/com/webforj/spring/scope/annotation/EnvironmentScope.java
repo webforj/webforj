@@ -1,4 +1,4 @@
-package com.webforj.spring.scope;
+package com.webforj.spring.scope.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
