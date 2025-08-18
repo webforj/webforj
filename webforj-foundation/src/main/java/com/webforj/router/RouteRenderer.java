@@ -16,6 +16,7 @@ import com.webforj.router.observer.RouteRendererObserver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -128,8 +129,16 @@ public class RouteRenderer {
     this.context = context;
     RouteRelationDiff<Class<? extends Component>> diff =
         new RouteRelationDiff<>(lastPath, currentPath.get());
-    Set<Class<? extends Component>> toAdd = diff.getToAdd();
+    Set<Class<? extends Component>> toAdd = new LinkedHashSet<>(diff.getToAdd());
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
+
+    // Add cached components that need activation
+    for (RouteRelation<Class<? extends Component>> node : currentPath.get()) {
+      Class<? extends Component> pathComponent = node.getData();
+      if (!toRemove.contains(pathComponent) && componentsCache.containsKey(pathComponent)) {
+        toAdd.add(pathComponent);
+      }
+    }
 
     processRemovals(toRemove, removalSuccess -> {
       if (Boolean.TRUE.equals(removalSuccess)) {
@@ -448,9 +457,11 @@ public class RouteRenderer {
             });
       });
     } else {
-      // Component already exists
+      // Component already exists - activate it
       context.addComponent(componentInstance);
-      onComplete.accept(true);
+      notify(componentInstance, RouteRendererObserver.LifecycleEvent.ACTIVATE, ignored -> {
+        onComplete.accept(true);
+      });
     }
   }
 

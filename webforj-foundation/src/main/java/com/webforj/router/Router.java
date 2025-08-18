@@ -10,6 +10,7 @@ import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.annotation.FrameTitle;
 import com.webforj.router.concern.HasFrameTitle;
+import com.webforj.router.event.ActivateEvent;
 import com.webforj.router.event.DidEnterEvent;
 import com.webforj.router.event.DidLeaveEvent;
 import com.webforj.router.event.NavigateEvent;
@@ -589,6 +590,31 @@ public class Router {
    */
   public ListenerRegistration<DidLeaveEvent> onDidLeave(EventListener<DidLeaveEvent> listener) {
     return addDidLeaveListener(listener);
+  }
+
+  /**
+   * Adds an {@link ActivateEvent} listener for the component.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   *
+   * @since 25.03
+   */
+  public ListenerRegistration<ActivateEvent> addActivateListener(
+      EventListener<ActivateEvent> listener) {
+    return getEventDispatcher().addListener(ActivateEvent.class, listener);
+  }
+
+  /**
+   * Alias for {@link #addActivateListener(EventListener)}.
+   *
+   * @param listener the event listener to be added
+   * @return A registration object for removing the event listener
+   *
+   * @since 25.03
+   */
+  public ListenerRegistration<ActivateEvent> onActivate(EventListener<ActivateEvent> listener) {
+    return addActivateListener(listener);
   }
 
   /**
