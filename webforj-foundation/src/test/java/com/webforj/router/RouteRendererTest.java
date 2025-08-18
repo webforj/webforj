@@ -373,6 +373,29 @@ class RouteRendererTest {
         });
       });
     }
+
+    @Test
+    void shouldInvokeLifecycleObserversActivate() {
+      routeRegistry.register("/test", TestComponent.class);
+      routeRegistry.register("/contact", ContactView.class);
+
+      routeRenderer.render(TestComponent.class);
+
+      AtomicBoolean observerCalled = new AtomicBoolean(false);
+      routeRenderer.addObserver((component, event, context, cb) -> {
+        if (event == RouteRendererObserver.LifecycleEvent.ACTIVATE) {
+          observerCalled.set(true);
+        }
+        cb.accept(true);
+      });
+
+      // Navigate away then back to trigger ACTIVATE
+      routeRenderer.render(ContactView.class);
+      routeRenderer.render(TestComponent.class, result -> {
+        assertTrue(observerCalled.get());
+        assertTrue(result.isPresent());
+      });
+    }
   }
 
   @Nested

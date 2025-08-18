@@ -43,7 +43,12 @@ public interface RouteRendererObserver {
     /**
      * After the component has been destroyed.
      */
-    AFTER_DESTROY
+    AFTER_DESTROY,
+
+    /**
+     * When a cached component is activated (reused).
+     */
+    ACTIVATE
   }
 
   /**
