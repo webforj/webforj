@@ -26,6 +26,7 @@ import com.webforj.component.window.Frame;
 import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.dispatcher.EventListener;
+import com.webforj.router.event.ActivateEvent;
 import com.webforj.router.event.DidEnterEvent;
 import com.webforj.router.event.DidLeaveEvent;
 import com.webforj.router.event.NavigateEvent;
@@ -36,11 +37,14 @@ import com.webforj.router.history.History;
 import com.webforj.router.history.Location;
 import com.webforj.router.history.MemoryHistory;
 import com.webforj.router.history.ParametersBag;
+import com.webforj.router.observer.ActivateObserver;
 import com.webforj.router.observer.DidEnterObserver;
 import com.webforj.router.observer.DidLeaveObserver;
 import com.webforj.router.observer.WillEnterObserver;
 import com.webforj.router.observer.WillLeaveObserver;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -304,6 +308,22 @@ class RouterTest {
     }
 
     @Test
+    void shouldHandleActivateListeners() {
+      EventListener<ActivateEvent> activateListener = mock(EventListener.class);
+      router.onActivate(activateListener);
+
+      Location location = new Location("/main");
+      Consumer<Optional<? extends Component>> onComplete = component -> {
+        // navigate now again to /main/123
+        router.navigate(new Location("/main/123"), c -> {
+          verify(activateListener, atLeast(1)).onEvent(any(ActivateEvent.class));
+        });
+      };
+
+      router.navigate(location, onComplete);
+    }
+
+    @Test
     void shouldHandleNavigateListeners() {
       EventListener<NavigateEvent> didNavigateListener = mock(EventListener.class);
       router.onNavigate(didNavigateListener);
@@ -329,6 +349,11 @@ class RouterTest {
 
         assertTrue(pageView.onWillEnterInvoked);
         assertTrue(pageView.onDidEnterInvoked);
+        assertFalse(pageViewRef.get().onActivateInvoked);
+      });
+
+      router.navigate(new Location("/main/123"), c -> {
+        assertTrue(pageViewRef.get().onActivateInvoked);
       });
 
       router.navigate(new Location("/main"), c -> {
@@ -522,17 +547,28 @@ class RouterTest {
   }
 
   @NodeName("view-main")
-  public static class MainView extends ElementCompositeContainer {
-    // Mock implementation
+  public static class MainView extends ElementCompositeContainer implements RouteOutlet {
+    private Map<Class<? extends Component>, Component> components = new HashMap<>();
+
+    @Override
+    public void showRouteContent(Component component) {
+      components.put(component.getClass(), component);
+    }
+
+    @Override
+    public void removeRouteContent(Component component) {
+      components.remove(component.getClass());
+    }
   }
 
   @NodeName("view-page")
-  public static class PageView extends ElementCompositeContainer
-      implements WillEnterObserver, DidEnterObserver, WillLeaveObserver, DidLeaveObserver {
+  public static class PageView extends ElementCompositeContainer implements WillEnterObserver,
+      DidEnterObserver, WillLeaveObserver, DidLeaveObserver, ActivateObserver {
     boolean onDidLeaveInvoked = false;
     boolean onWillLeaveInvoked = false;
     boolean onDidEnterInvoked = false;
     boolean onWillEnterInvoked = false;
+    boolean onActivateInvoked = false;
 
     @Override
     public void onDidEnter(DidEnterEvent event, ParametersBag parameters) {
@@ -543,6 +579,11 @@ class RouterTest {
     public void onWillEnter(WillEnterEvent event, ParametersBag parameters) {
       onWillEnterInvoked = true;
       event.accept();
+    }
+
+    @Override
+    public void onActivate(ActivateEvent event, ParametersBag parameters) {
+      onActivateInvoked = true;
     }
 
     @Override

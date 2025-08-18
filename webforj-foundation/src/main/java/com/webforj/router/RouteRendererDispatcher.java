@@ -2,10 +2,13 @@ package com.webforj.router;
 
 import com.webforj.component.Component;
 import com.webforj.dispatcher.EventDispatcher;
+import com.webforj.router.event.ActivateEvent;
 import com.webforj.router.event.DidEnterEvent;
 import com.webforj.router.event.DidLeaveEvent;
 import com.webforj.router.event.WillEnterEvent;
 import com.webforj.router.event.WillLeaveEvent;
+import com.webforj.router.history.ParametersBag;
+import com.webforj.router.observer.ActivateObserver;
 import com.webforj.router.observer.DidEnterObserver;
 import com.webforj.router.observer.DidLeaveObserver;
 import com.webforj.router.observer.RouteRendererObserver;
@@ -61,6 +64,10 @@ public class RouteRendererDispatcher implements RouteRendererObserver {
         break;
       case AFTER_DESTROY:
         fireDidLeaveEvent(component, context);
+        cb.accept(true);
+        break;
+      case ACTIVATE:
+        fireActivateEvent(component, context);
         cb.accept(true);
         break;
       default:
@@ -185,6 +192,33 @@ public class RouteRendererDispatcher implements RouteRendererObserver {
     if (options.isPresent() && options.get().isInvokeObservers()
         && component instanceof DidLeaveObserver observer) {
       observer.onDidLeave(event, context.getRouteParameters());
+    }
+  }
+
+  /**
+   * Fires the {@link ActivateEvent} for the specified component.
+   *
+   * <p>
+   * Notifies any registered {@link ActivateObserver} and dispatches the event through the event
+   * dispatcher. This event is fired when a cached component is activated (reused). If the component
+   * implements the {@link ActivateObserver} interface, its
+   * {@link ActivateObserver#onActivate(ActivateEvent, ParametersBag)} method is called.
+   * </p>
+   *
+   * @param component the component being activated
+   * @param context the navigation context containing the route parameters and options
+   */
+  protected void fireActivateEvent(Component component, NavigationContext context) {
+    ActivateEvent event = new ActivateEvent(context);
+    Optional<NavigationOptions> options = context.getOptions();
+
+    if (options.isPresent() && options.get().isFireEvents()) {
+      eventDispatcher.dispatchEvent(event);
+    }
+
+    if (options.isPresent() && options.get().isInvokeObservers()
+        && component instanceof ActivateObserver observer) {
+      observer.onActivate(event, context.getRouteParameters());
     }
   }
 }
