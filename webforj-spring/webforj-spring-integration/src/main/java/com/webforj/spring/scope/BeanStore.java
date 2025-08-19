@@ -8,7 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.ObjectFactory;
 
 /**
- * A store for managing scoped beans in a ObjectTable.
+ * A store for managing scoped beans in an ObjectTable.
  *
  * <p>
  * The BeanStore provides a unified approach to storing and retrieving beans for a specific scope.
