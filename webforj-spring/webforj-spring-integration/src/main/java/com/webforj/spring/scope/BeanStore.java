@@ -20,6 +20,8 @@ import org.springframework.beans.factory.ObjectFactory;
  * @since 25.03
  */
 public class BeanStore {
+  private static final String ERROR_DESTRUCTION_CALLBACK =
+      "Error executing destruction callback for bean ''{0}'' in scope ''{1}''";
   private static final Logger logger = System.getLogger(BeanStore.class.getName());
   private final Map<String, Map<String, Object>> scopedBeans = new HashMap<>();
   private final Map<String, Map<String, Runnable>> destructionCallbacks = new HashMap<>();
@@ -142,9 +144,7 @@ public class BeanStore {
           logger.log(Level.DEBUG, "Executed destruction callback for bean ''{0}'' in scope ''{1}''",
               beanName, scopeId);
         } catch (Exception e) {
-          logger.log(Level.ERROR,
-              "Error executing destruction callback for bean ''{0}'' in scope ''{1}''", beanName,
-              scopeId, e);
+          logger.log(Level.ERROR, ERROR_DESTRUCTION_CALLBACK, beanName, scopeId, e);
         }
       }
     }
@@ -193,9 +193,7 @@ public class BeanStore {
         try {
           entry.getValue().run();
         } catch (Exception e) {
-          logger.log(Level.ERROR,
-              "Error executing destruction callback for bean ''{0}'' in scope ''{1}''",
-              entry.getKey(), scopeId, e);
+          logger.log(Level.ERROR, ERROR_DESTRUCTION_CALLBACK, entry.getKey(), scopeId, e);
         }
       }
       destructionCallbacks.remove(scopeId);
@@ -225,9 +223,7 @@ public class BeanStore {
         try {
           entry.getValue().run();
         } catch (Exception e) {
-          logger.log(Level.ERROR,
-              "Error executing destruction callback for bean ''{0}'' in scope ''{1}''",
-              entry.getKey(), scopeId, e);
+          logger.log(Level.ERROR, ERROR_DESTRUCTION_CALLBACK, entry.getKey(), scopeId, e);
         }
       }
     }
