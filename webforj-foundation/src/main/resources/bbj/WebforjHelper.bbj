@@ -109,29 +109,36 @@ class public WebforjHelper implements WebforjBBjBridge
       rem timeout
       timeout = options!.getTimeout()
 
+    REM  methodret STR(input!, mask!, )
+
+    REM   failed_number_mask:
+    REM   methodret null()
       result = 0
       if custom then
         Button1$= String.valueOf(options!.getFirstButtonText())
         Button2$= String.valueOf(options!.getSecondButtonText())
         Button3$= String.valueOf(options!.getThirdButtonText())
         if Button3$ <> "" then
-          result = msgbox(Message$,expr,Title$,Button1$,Button2$,Button3$,tim=timeout,mode=mode$)
+          result = msgbox(Message$,expr,Title$,Button1$,Button2$,Button3$,tim=timeout,mode=mode$,err=failed_msgbox)
         else
           if Button2$ <> "" then
-              result = msgbox(Message$,expr,Title$,Button1$,Button2$,tim=timeout,mode=mode$)
+              result = msgbox(Message$,expr,Title$,Button1$,Button2$,tim=timeout,mode=mode$,err=failed_msgbox )
           else
               if Button1$ <> "" then
-                result = msgbox(Message$,expr,Title$,Button1$,tim=timeout,mode=mode$)
+                result = msgbox(Message$,expr,Title$,Button1$,tim=timeout,mode=mode$,err=failed_msgbox)
               else
-                result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$)
+                result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$,err=failed_msgbox)
               endif
           endif
         endif
       else
-        result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$)
+        result = msgbox(Message$,expr,Title$,tim=timeout,mode=mode$,err=failed_msgbox)
       endif
 
       methodret result
+
+      failed_msgbox:
+      methodret -1; rem timedout
     methodend
 
     method public String prompt(InputDialog options!)
