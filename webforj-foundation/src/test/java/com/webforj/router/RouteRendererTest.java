@@ -175,6 +175,26 @@ class RouteRendererTest {
     assertEquals(HelloWorldView.class, componentArray[1].getClass());
   }
 
+  @Test
+  void shouldTrackDestroyedComponents() {
+    routeRegistry.register("/home", HomeView.class);
+    routeRegistry.register("/helloworld", HelloWorldView.class, HomeView.class);
+    routeRegistry.register("/about", AboutView.class);
+
+    NavigationContext context1 = new NavigationContext();
+    routeRenderer.render(HelloWorldView.class, context1);
+
+    Set<Component> initialComponents = context1.getAllComponents();
+    assertEquals(2, initialComponents.size());
+
+    NavigationContext context2 = new NavigationContext();
+    routeRenderer.render(AboutView.class, context2);
+
+    Set<Component> destroyedComponents = context2.getDestroyedComponents();
+    assertNotNull(destroyedComponents);
+    assertEquals(2, destroyedComponents.size());
+  }
+
   @Nested
   class DestroyComponents {
 

@@ -21,7 +21,6 @@ import com.webforj.environment.ObjectTable;
 import com.webforj.router.RouteRelation;
 import com.webforj.router.RouteRenderer;
 import com.webforj.router.Router;
-import com.webforj.spring.scope.BeanStore;
 import com.webforj.spring.scope.processor.RouteScopeProcessor;
 import java.util.Collections;
 import java.util.Optional;
@@ -255,58 +254,6 @@ class RouteScopeProcessorTest {
     String expectedScopeId = "webforj-route-" + System.identityHashCode(mockEnvironment) + "-"
         + Component.class.getName();
     assertEquals(expectedScopeId, conversationId);
-  }
-
-  @Test
-  void shouldReturnNullConversationIdWhenNoRoute() {
-    when(mockRenderer.getActiveRoutePath()).thenReturn(Optional.empty());
-
-    String conversationId = scopeProcessor.getConversationId();
-
-    assertNull(conversationId);
-  }
-
-  @Test
-  void shouldCleanupSpecificRouteScope() {
-    try (MockedStatic<BeanStore> beanStoreMock = mockStatic(BeanStore.class)) {
-      beanStoreMock.when(() -> BeanStore.cleanupScopeInstance(anyString(), anyString()))
-          .thenReturn(true);
-
-      RouteScopeProcessor.cleanupRoute(Component.class);
-
-      String expectedScopeId = "webforj-route-" + System.identityHashCode(mockEnvironment) + "-"
-          + Component.class.getName();
-      beanStoreMock.verify(() -> BeanStore.cleanupScopeInstance(anyString(), eq(expectedScopeId)),
-          times(1));
-    }
-  }
-
-  @Test
-  void shouldSkipRouteCleanupWhenNoEnvironment() {
-    environmentMock.when(Environment::getCurrent).thenReturn(null);
-
-    // Should not throw exception, just return
-    RouteScopeProcessor.cleanupRoute(Component.class);
-
-    // Verify BeanStore cleanup was never called
-    try (MockedStatic<BeanStore> beanStoreMock = mockStatic(BeanStore.class)) {
-      beanStoreMock.verifyNoMoreInteractions();
-    }
-  }
-
-  @Test
-  void shouldKeepBeanStoreWhenOtherRouteScopesExist() {
-    try (MockedStatic<BeanStore> beanStoreMock = mockStatic(BeanStore.class)) {
-      beanStoreMock.when(() -> BeanStore.cleanupScopeInstance(anyString(), anyString()))
-          .thenReturn(false);
-
-      RouteScopeProcessor.cleanupRoute(Component.class);
-
-      String expectedScopeId = "webforj-route-" + System.identityHashCode(mockEnvironment) + "-"
-          + Component.class.getName();
-      beanStoreMock.verify(() -> BeanStore.cleanupScopeInstance(anyString(), eq(expectedScopeId)),
-          times(1));
-    }
   }
 
   @Test

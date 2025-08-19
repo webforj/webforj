@@ -129,7 +129,7 @@ public class SpringAutoConfiguration {
 
       // Register Route scope
       RouteScopeProcessor routeScope = new RouteScopeProcessor();
-      beanFactory.registerScope("webforj-route", routeScope);
+      routeScope.postProcessBeanFactory(beanFactory);
       logger.log(Logger.Level.DEBUG, "Registered webforj-route scope");
     };
   }

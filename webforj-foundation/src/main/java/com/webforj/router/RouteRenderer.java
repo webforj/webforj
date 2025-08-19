@@ -314,6 +314,7 @@ public class RouteRenderer {
       }
 
       detachNode(componentClass, componentInstance);
+      context.addDestroyedComponent(componentInstance);
       notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY,
           success -> onComplete.accept(true));
     });
