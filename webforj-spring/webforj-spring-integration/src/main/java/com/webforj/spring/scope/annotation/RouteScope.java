@@ -30,7 +30,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
  *
  * @author Hyyan Abo Fakher
  * @since 25.03
- * @see RouteScopeProcessor
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
