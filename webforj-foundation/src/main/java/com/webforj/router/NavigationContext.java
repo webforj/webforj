@@ -32,6 +32,7 @@ public class NavigationContext {
   private RoutePattern routePattern;
   private ParametersBag routeParameters;
   private final LinkedHashSet<Component> components = new LinkedHashSet<>();
+  private final LinkedHashSet<Component> destroyedComponents = new LinkedHashSet<>();
   private Frame activeFrame;
 
   /**
@@ -165,12 +166,42 @@ public class NavigationContext {
   }
 
   /**
+   * Alias for {@link #getAllComponents()}.
+   *
+   * @return the list of {@link Component} classes that have been created
+   * @since 25.03
+   */
+  public Set<Component> getCreatedComponents() {
+    return getAllComponents();
+  }
+
+  /**
    * Adds a component to the list of navigated components.
    *
    * @param component the {@link Component} class to add to the list
    */
   void addComponent(Component component) {
     components.add(component);
+  }
+
+  /**
+   * Returns the list of components that have been destroyed during the navigation process.
+   *
+   * @return the list of {@link Component} instances that have been destroyed
+   * @since 25.03
+   */
+  public Set<Component> getDestroyedComponents() {
+    return Collections.unmodifiableSet(destroyedComponents);
+  }
+
+  /**
+   * Adds a component to the list of destroyed components.
+   *
+   * @param component the {@link Component} instance to add to the destroyed list
+   * @since 25.03
+   */
+  void addDestroyedComponent(Component component) {
+    destroyedComponents.add(component);
   }
 
   /**

@@ -54,6 +54,7 @@ public class RouteRenderer {
   private final Map<String, Frame> frameCache = new HashMap<>();
   private final List<RouteRendererObserver> observers = new ArrayList<>();
   private RouteRelation<Class<? extends Component>> lastPath;
+  private RouteRelation<Class<? extends Component>> currentlyRenderingPath;
   private NavigationContext context;
 
   /**
@@ -127,6 +128,9 @@ public class RouteRenderer {
     }
 
     this.context = context;
+    // Set the path being rendered BEFORE creating components
+    this.currentlyRenderingPath = currentPath.get();
+
     RouteRelationDiff<Class<? extends Component>> diff =
         new RouteRelationDiff<>(lastPath, currentPath.get());
     Set<Class<? extends Component>> toAdd = new LinkedHashSet<>(diff.getToAdd());
@@ -146,6 +150,8 @@ public class RouteRenderer {
           if (Boolean.TRUE.equals(additionSuccess)) {
             lastPath = currentPath.get();
           }
+          // Clear the currently rendering path after completion
+          this.currentlyRenderingPath = null;
 
           if (onComplete != null) {
             Component componentCache = componentsCache.get(component);
@@ -156,6 +162,8 @@ public class RouteRenderer {
           }
         });
       } else {
+        // Clear on failure too
+        this.currentlyRenderingPath = null;
         if (onComplete != null) {
           onComplete.accept(Optional.empty());
         }
@@ -222,6 +230,28 @@ public class RouteRenderer {
   }
 
   /**
+   * Retrieves the currently active route hierarchy.
+   *
+   * <p>
+   * This method returns the route hierarchy that is currently active. This includes both the
+   * hierarchy being rendered (if any) and the last successfully rendered hierarchy. This is the
+   * authoritative source for determining which route is currently active in the application.
+   * </p>
+   *
+   * @return an optional containing the active route hierarchy, or empty if no route has been
+   *         rendered
+   * @since 25.03
+   */
+  public Optional<RouteRelation<Class<? extends Component>>> getActiveRoutePath() {
+    // If currently rendering, return the path being rendered
+    if (currentlyRenderingPath != null) {
+      return Optional.of(currentlyRenderingPath);
+    }
+    // Otherwise return the last successfully rendered path
+    return Optional.ofNullable(lastPath);
+  }
+
+  /**
    * Processes the removal of multiple components, ensuring lifecycle observers are notified before
    * each component is removed. The process is halted if any observer vetoes a removal.
    *
@@ -284,6 +314,7 @@ public class RouteRenderer {
       }
 
       detachNode(componentClass, componentInstance);
+      context.addDestroyedComponent(componentInstance);
       notify(componentInstance, RouteRendererObserver.LifecycleEvent.AFTER_DESTROY,
           success -> onComplete.accept(true));
     });
