@@ -11,8 +11,10 @@ import org.springframework.beans.factory.config.Scope;
  * Spring scope implementation that binds beans to the webforJ Environment lifecycle.
  *
  * <p>
- * This scope stores beans in the current Environment, which means they are created once per request
- * and destroyed when the Environment is cleaned up at the end of the environment lifecycle.
+ * This scope stores beans in the current Environment, which means they are created once per browser
+ * window or tab and destroyed when the Environment is cleaned up (when the user closes the tab or
+ * the session expires). Each browser window or tab has its own Environment with isolated bean
+ * instances.
  * </p>
  *
  * @author Hyyan Abo Fakher

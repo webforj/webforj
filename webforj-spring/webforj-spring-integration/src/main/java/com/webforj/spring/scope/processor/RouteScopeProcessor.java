@@ -28,7 +28,7 @@ import org.springframework.beans.factory.config.Scope;
  *
  * <p>
  * The root component class of the hierarchy acts as the scope identifier. Storage is
- * per-environment (per-request) since Router is created per request.
+ * per-environment (per browser window/tab) since Router is created per Environment.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -167,12 +167,12 @@ public class RouteScopeProcessor implements Scope, BeanFactoryPostProcessor {
       throw new IllegalStateException("No Environment available for route scope");
     }
 
-    // Include environment identity to make route scope per-request
+    // Include environment identity to make route scope per-environment (per browser window/tab)
     return "webforj-route-" + System.identityHashCode(env) + "-" + rootClass.getName();
   }
 
   /**
-   * Clean up all beans and callbacks for a specific route hierarchy in the current request.
+   * Clean up all beans and callbacks for a specific route hierarchy in the current environment.
    *
    * @param rootClass the root component class of the route hierarchy
    */
