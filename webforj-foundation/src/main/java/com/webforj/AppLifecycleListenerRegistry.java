@@ -128,7 +128,7 @@ final class AppLifecycleListenerRegistry {
       sortedListeners.add(entry.listener);
     }
 
-    logger.log(Level.INFO,
+    logger.log(Level.DEBUG,
         String.format("Discovered %d lifecycle listeners", sortedListeners.size()));
 
     return Collections.unmodifiableList(sortedListeners);
