@@ -1,5 +1,5 @@
 name: "🐞 MCP Server Report"
-description: Provide feedback about your experience with the webforJ MCP server.
+description: Provide feedback about your experience with the webforJ MCP server or report an issue.
 labels: ["Type: Feedback", "MCP Server"]
 body:
   - type: textarea
