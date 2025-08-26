@@ -1,5 +1,6 @@
 package com.webforj.spring;
 
+import com.webforj.App;
 import com.webforj.annotation.Routify;
 import com.webforj.conceiver.DefaultConceiver;
 import com.webforj.conceiver.exception.ConceiverException;
@@ -27,10 +28,10 @@ public class SpringConceiver extends DefaultConceiver {
         classOfT.getName());
 
     try {
-      // @Routify classes ALWAYS get fresh instances - never use Spring beans
-      if (classOfT.isAnnotationPresent(Routify.class)) {
+      // App classes ALWAYS get fresh instances - never use Spring beans
+      if (classOfT.isAnnotationPresent(Routify.class) || App.class.isAssignableFrom(classOfT)) {
         logger.log(Logger.Level.DEBUG,
-            "Class {0} has @Routify, creating fresh instance with DI (ignoring Spring beans)",
+            "Class {0} is a webforj App, creating fresh instance with DI (ignoring Spring beans)",
             classOfT.getName());
         return context.getAutowireCapableBeanFactory().createBean(classOfT);
       }
