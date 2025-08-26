@@ -1,4 +1,4 @@
-name: "MCP Server Feedback/Issue"
+name: "🐞 MCP Server Report"
 description: Provide feedback about your experience with the webforJ MCP server.
 labels: ["Type: Feedback", "MCP Server"]
 body:
