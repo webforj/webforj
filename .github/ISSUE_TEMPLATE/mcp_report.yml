@@ -1,0 +1,63 @@
+name: "MCP Server Feedback/Issue"
+description: Provide feedback about your experience with the webforJ MCP server.
+labels: ["Type: Feedback", "MCP Server"]
+body:
+  - type: textarea
+    id: prompt-used
+    attributes:
+      label: Prompt Used
+      description: Please provide the exact prompt(s) you used with the AI assistant.
+      placeholder: "E.g., 'Search the webforJ documentation for how to create a custom button with an icon'"
+    validations:
+      required: true
+  - type: textarea
+    id: actual-results
+    attributes:
+      label: Actual Results
+      description: What response or output did you receive from the AI assistant?
+      placeholder: "E.g., The AI provided generic Java Swing button code instead of using webforJ Button component"
+    validations:
+      required: true
+  - type: textarea
+    id: expected-results
+    attributes:
+      label: Expected Results
+      description: What were you hoping the AI would provide or do?
+      placeholder: "E.g., Expected the AI to search webforJ documentation and provide specific code using webforJ's Button component with icon support"
+    validations:
+      required: true
+  - type: dropdown
+    id: ai-tool
+    attributes:
+      label: AI Tool Used
+      description: Which AI assistant were you using?
+      options:
+        - Claude Desktop
+        - Claude Code (CLI)
+        - Cursor
+        - VS Code Copilot
+        - Other
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: mcp-usage
+    attributes:
+      label: MCP Server Usage
+      description: Did the AI use the MCP server for this request?
+      options:
+        - Yes - Used MCP tools
+        - No - Used general knowledge
+        - Partially - Mixed MCP and general knowledge
+        - Not sure
+      default: 3
+    validations:
+      required: true
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: Additional Notes
+      description: Any other observations, suggestions, or context you'd like to share?
+      placeholder: "E.g., The AI worked better when I specifically mentioned 'webforJ documentation' in my prompt"
+    validations:
+      required: false
