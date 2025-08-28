@@ -13,6 +13,7 @@ import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import com.webforj.exceptions.WebforjWebManagerException;
+import jakarta.servlet.http.HttpSession;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.reflect.InvocationTargetException;
@@ -389,6 +390,27 @@ public final class Environment {
    */
   public BBjSysGui getSysGui() {
     return this.sysgui;
+  }
+
+  /**
+   * Returns the HttpSession.Accessor if available.
+   *
+   * @return the HttpSession.Accessor if available, null otherwise
+   * @since 25.03
+   */
+  public HttpSession.Accessor getSessionAccessor() {
+    try {
+      Map<String, Object> channelData = api.getChannelData();
+      if (channelData != null) {
+        Object accessor = channelData.get("session.accessor");
+        if (accessor instanceof HttpSession.Accessor) {
+          return (HttpSession.Accessor) accessor;
+        }
+      }
+    } catch (BBjException e) {
+      logger.log(Level.DEBUG, "Failed to get channel data: {0}", e.getMessage());
+    }
+    return null;
   }
 
   /**
