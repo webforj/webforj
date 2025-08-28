@@ -12,8 +12,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
  * Indicates that a bean should be scoped to the webforJ Environment lifecycle.
  *
  * <p>
- * Beans with this scope will be created once per browser window or tab and destroyed when the 
- * Environment is cleaned up (when the user closes the tab or the session expires). Each browser 
+ * Beans with this scope will be created once per browser window or tab and destroyed when the
+ * Environment is cleaned up (when the user closes the tab or the session expires). Each browser
  * window or tab receives its own isolated instance of environment-scoped beans.
  * </p>
  *

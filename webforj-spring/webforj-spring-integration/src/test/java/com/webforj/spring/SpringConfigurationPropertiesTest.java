@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -185,5 +186,16 @@ class SpringConfigurationPropertiesTest {
   void shouldInitializeEmptyServletsList() {
     assertNotNull(properties.getServlets());
     assertTrue(properties.getServlets().isEmpty());
+  }
+
+  @Test
+  void shouldSetExcludeUrls() {
+    List<String> excludeUrls = Arrays.asList("/api/**", "/login");
+
+    properties.setExcludeUrls(excludeUrls);
+    assertNotNull(properties.getExcludeUrls());
+    assertEquals(2, properties.getExcludeUrls().size());
+    assertTrue(properties.getExcludeUrls().contains("/api/**"));
+    assertTrue(properties.getExcludeUrls().contains("/login"));
   }
 }
