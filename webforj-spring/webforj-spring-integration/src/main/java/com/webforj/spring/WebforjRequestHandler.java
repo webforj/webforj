@@ -33,7 +33,7 @@ class WebforjRequestHandler extends SimpleUrlHandlerMapping {
   private final List<String> excludeUrls;
   private final PathMatcher pathMatcher = new AntPathMatcher();
   private final UrlPathHelper urlPathHelper = new UrlPathHelper();
-  private static final Logger logger = System.getLogger(WebforjRequestHandler.class.getName());
+  private static final Logger LOG = System.getLogger(WebforjRequestHandler.class.getName());
 
   /**
    * Constructs a new request handler.
@@ -53,7 +53,7 @@ class WebforjRequestHandler extends SimpleUrlHandlerMapping {
     // Map all URLs to the forwarding controller by default
     setUrlMap(Collections.singletonMap("/**", forwardingController));
 
-    logger.log(Level.DEBUG, "Initialized WebforjRequestHandler with "
+    LOG.log(Level.DEBUG, "Initialized WebforjRequestHandler with "
         + (excludeUrls != null ? excludeUrls.size() : 0) + " excluded URL patterns");
   }
 
@@ -70,12 +70,12 @@ class WebforjRequestHandler extends SimpleUrlHandlerMapping {
     String requestPath = urlPathHelper.getPathWithinApplication(request);
 
     if (isPathExcluded(requestPath)) {
-      logger.log(Level.TRACE,
+      LOG.log(Level.TRACE,
           "Request to " + requestPath + " matches excluded pattern, " + "delegating to Spring MVC");
       return null; // Let Spring MVC handle it
     }
 
-    logger.log(Level.TRACE, "Request to " + requestPath + " will be forwarded to webforJ");
+    LOG.log(Level.TRACE, "Request to " + requestPath + " will be forwarded to webforJ");
 
     // Forward to webforJ servlet
     return super.getHandlerInternal(request);
@@ -92,7 +92,7 @@ class WebforjRequestHandler extends SimpleUrlHandlerMapping {
     if (excludeUrls != null && !excludeUrls.isEmpty()) {
       for (String pattern : excludeUrls) {
         if (pathMatcher.match(pattern, requestPath)) {
-          logger.log(Level.TRACE, "Path " + requestPath + " matches excluded pattern " + pattern);
+          LOG.log(Level.TRACE, "Path " + requestPath + " matches excluded pattern " + pattern);
           return true;
         }
       }
