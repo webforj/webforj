@@ -202,6 +202,26 @@ public class SpringConfigurationProperties {
    */
   private License license = new License();
 
+  /**
+   * URL patterns that should not be handled by webforJ when mapped to root.
+   *
+   * <p>
+   * When webforJ is mapped to the root context ({@code /*}), these URL patterns will be excluded
+   * from webforJ handling and can be handled by Spring MVC controllers instead. This allows REST
+   * endpoints and other Spring MVC mappings to coexist with webforJ routes.
+   * </p>
+   *
+   * <p>
+   * Example patterns:
+   * <ul>
+   * <li>{@code /api/**} - All paths under /api</li>
+   * <li>{@code /actuator/**} - Spring Boot actuator endpoints</li>
+   * </ul>
+   * </p>
+   *
+   * @since 25.03
+   */
+  private List<String> excludeUrls = new ArrayList<>();
 
   /**
    * Sets the URL mapping for the Webforj servlet.
@@ -525,6 +545,24 @@ public class SpringConfigurationProperties {
    */
   public void setLicense(License license) {
     this.license = license;
+  }
+
+  /**
+   * Gets the excluded URL patterns.
+   *
+   * @return the list of URL patterns to exclude from webforJ handling
+   */
+  public List<String> getExcludeUrls() {
+    return excludeUrls;
+  }
+
+  /**
+   * Sets the excluded URL patterns.
+   *
+   * @param excludeUrls the list of URL patterns to exclude from webforJ handling
+   */
+  public void setExcludeUrls(List<String> excludeUrls) {
+    this.excludeUrls = excludeUrls;
   }
 
   /**

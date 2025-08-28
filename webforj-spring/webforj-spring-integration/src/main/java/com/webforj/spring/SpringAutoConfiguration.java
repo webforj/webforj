@@ -16,6 +16,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * Auto-configuration for the Webforj servlet.
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(ServletContextInitializer.class)
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(SpringConfigurationProperties.class)
+@Import(WebforjServletConfiguration.class)
 public class SpringAutoConfiguration {
   private static Logger logger = System.getLogger(SpringAutoConfiguration.class.getName());
 
@@ -47,17 +49,32 @@ public class SpringAutoConfiguration {
    * Registers the {@link WebforjServlet}.
    *
    * <p>
-   * The servlet is mapped based on the {@code webforj.servletMapping} property. By default, this is
-   * "/", but users can change it via their application configuration.
+   * The servlet is mapped based on the {@code webforj.servlet-mapping} property. By default, this
+   * is "/*", but users can change it via their application configuration. When mapped to the root
+   * context ({@code /*}), the servlet is registered at an internal path and Spring's
+   * {@code DispatcherServlet} handles request routing to enable Spring MVC endpoints to coexist
+   * with webforJ routes.
    * </p>
+   *
+   * @param properties the Spring configuration properties
+   * @param webforjConfig the webforJ configuration
    *
    * @return the {@link ServletRegistrationBean} for the {@link WebforjServlet}
    */
   @Bean
   ServletRegistrationBean<WebforjServlet> webforjServletRegistration(
       SpringConfigurationProperties properties, Config webforjConfig) {
-    logger.log(Logger.Level.DEBUG,
-        "Registering WebforjServlet with mapping " + properties.getServletMapping());
+    String mapping = properties.getServletMapping();
+    boolean rootMapping = ServletMappingCondition.isRootMapping(mapping);
+
+    if (rootMapping) {
+      // When root mapped, register at internal path for MVC integration
+      mapping = WebforjServletConfiguration.WEBFORJ_SERVLET_MAPPING;
+      logger.log(Logger.Level.INFO,
+          "Root mapping detected, registering WebforjServlet at internal path: " + mapping);
+    } else {
+      logger.log(Logger.Level.DEBUG, "Registering WebforjServlet with direct mapping: " + mapping);
+    }
 
     // Set the configuration for the servlet
     WebforjServlet.setConfig(webforjConfig);
@@ -66,12 +83,15 @@ public class SpringAutoConfiguration {
     WebforjServlet webforjServlet = new WebforjServlet();
 
     ServletRegistrationBean<WebforjServlet> registrationBean =
-        new ServletRegistrationBean<>(webforjServlet, properties.getServletMapping());
-    logger.log(Logger.Level.DEBUG,
-        "Registered WebforjServlet with mapping " + properties.getServletMapping());
+        new ServletRegistrationBean<>(webforjServlet, mapping);
 
+    // Set servlet name for forwarding controller reference
+    registrationBean.setName(WebforjServletConfiguration.WEBFORJ_SERVLET_NAME);
     registrationBean.setLoadOnStartup(1);
-    logger.log(Logger.Level.DEBUG, "Setting load-on-startup to 1.");
+
+    logger.log(Logger.Level.DEBUG, "WebforjServlet registered with name '"
+        + WebforjServletConfiguration.WEBFORJ_SERVLET_NAME + "' at mapping: " + mapping);
+
     return registrationBean;
   }
 

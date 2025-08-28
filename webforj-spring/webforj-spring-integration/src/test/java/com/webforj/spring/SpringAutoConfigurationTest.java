@@ -37,7 +37,7 @@ class SpringAutoConfigurationTest {
   class ServletRegistration {
 
     @Test
-    void shouldCreateServletRegistrationBeanWithDefaultMapping() {
+    void shouldCreateServletRegistrationBeanWithRootMapping() {
       when(properties.getServletMapping()).thenReturn("/*");
 
       try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
@@ -47,6 +47,10 @@ class SpringAutoConfigurationTest {
         assertNotNull(registrationBean);
         assertNotNull(registrationBean.getServlet());
         assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
+
+        // Should use servlet name for forwarding
+        assertEquals(WebforjServletConfiguration.WEBFORJ_SERVLET_NAME,
+            registrationBean.getServletName());
 
         // Verify setConfig was called with the provided config
         mockedServlet.verify(() -> WebforjServlet.setConfig(config), times(1));
@@ -65,6 +69,10 @@ class SpringAutoConfigurationTest {
         assertNotNull(registrationBean);
         assertNotNull(registrationBean.getServlet());
         assertEquals(WebforjServlet.class, registrationBean.getServlet().getClass());
+
+        // Should still use servlet name for consistency
+        assertEquals(WebforjServletConfiguration.WEBFORJ_SERVLET_NAME,
+            registrationBean.getServletName());
 
         // Verify setConfig was called with the provided config
         mockedServlet.verify(() -> WebforjServlet.setConfig(config), times(1));
