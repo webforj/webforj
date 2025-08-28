@@ -30,10 +30,11 @@ import org.springframework.web.util.UrlPathHelper;
  * @since 25.03
  */
 class WebforjRequestHandler extends SimpleUrlHandlerMapping {
-  private final List<String> excludeUrls;
-  private final PathMatcher pathMatcher = new AntPathMatcher();
-  private final UrlPathHelper urlPathHelper = new UrlPathHelper();
   private static final Logger LOG = System.getLogger(WebforjRequestHandler.class.getName());
+  private static final PathMatcher PATH_MATCHER = new AntPathMatcher();
+  private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
+
+  private final List<String> excludeUrls;
 
   /**
    * Constructs a new request handler.
@@ -67,7 +68,7 @@ class WebforjRequestHandler extends SimpleUrlHandlerMapping {
    */
   @Override
   protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
-    String requestPath = urlPathHelper.getPathWithinApplication(request);
+    String requestPath = URL_PATH_HELPER.getPathWithinApplication(request);
 
     if (isPathExcluded(requestPath)) {
       LOG.log(Level.TRACE,
@@ -91,7 +92,7 @@ class WebforjRequestHandler extends SimpleUrlHandlerMapping {
   boolean isPathExcluded(String requestPath) {
     if (excludeUrls != null && !excludeUrls.isEmpty()) {
       for (String pattern : excludeUrls) {
-        if (pathMatcher.match(pattern, requestPath)) {
+        if (PATH_MATCHER.match(pattern, requestPath)) {
           LOG.log(Level.TRACE, "Path " + requestPath + " matches excluded pattern " + pattern);
           return true;
         }

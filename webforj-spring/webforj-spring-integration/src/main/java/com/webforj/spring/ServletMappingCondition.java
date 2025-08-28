@@ -1,5 +1,6 @@
 package com.webforj.spring;
 
+import java.util.regex.Pattern;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Condition;
@@ -21,6 +22,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @since 25.03
  */
 public class ServletMappingCondition implements Condition {
+  private static final Pattern TRAILING_PATTERN = Pattern.compile("(/\\**)?$");
 
   /**
    * {@inheritDoc}
@@ -60,6 +62,6 @@ public class ServletMappingCondition implements Condition {
 
     // Check if it's exactly "/*" or becomes empty after removing trailing slashes/wildcards
     String trimmed = mapping.trim();
-    return "/*".equals(trimmed) || trimmed.replaceAll("(/\\**)?$", "").isEmpty();
+    return "/*".equals(trimmed) || TRAILING_PATTERN.matcher(trimmed).replaceAll("").isEmpty();
   }
 }
