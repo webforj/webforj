@@ -404,8 +404,8 @@ public final class Environment {
       Map<String, Object> channelData = getBBjAPI().getChannelData();
       if (channelData != null) {
         Object accessor = channelData.get("session.accessor");
-        if (accessor instanceof HttpSession.Accessor) {
-          return Optional.of((HttpSession.Accessor) accessor);
+        if (accessor instanceof HttpSession.Accessor sessionAccessor) {
+          return Optional.of(sessionAccessor);
         }
       }
     } catch (BBjException e) {
