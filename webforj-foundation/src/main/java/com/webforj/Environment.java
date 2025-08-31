@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -393,24 +394,25 @@ public final class Environment {
   }
 
   /**
-   * Returns the HttpSession.Accessor if available.
+   * Returns the {@link HttpSession.Accessor} for the current environment, if available.
    *
-   * @return the HttpSession.Accessor if available, null otherwise
+   * @return an Optional containing the HttpSession.Accessor if available, empty otherwise
    * @since 25.03
    */
-  public HttpSession.Accessor getSessionAccessor() {
+  public Optional<HttpSession.Accessor> getSessionAccessor() {
     try {
-      Map<String, Object> channelData = api.getChannelData();
+      Map<String, Object> channelData = getBBjAPI().getChannelData();
       if (channelData != null) {
         Object accessor = channelData.get("session.accessor");
         if (accessor instanceof HttpSession.Accessor) {
-          return (HttpSession.Accessor) accessor;
+          return Optional.of((HttpSession.Accessor) accessor);
         }
       }
     } catch (BBjException e) {
       logger.log(Level.DEBUG, "Failed to get channel data: {0}", e.getMessage());
     }
-    return null;
+
+    return Optional.empty();
   }
 
   /**
