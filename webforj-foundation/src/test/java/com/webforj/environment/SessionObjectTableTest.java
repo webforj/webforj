@@ -71,6 +71,7 @@ class SessionObjectTableTest {
     assertEquals(testValue, result);
 
     // Verify the session setAttribute was called
+    @SuppressWarnings("unchecked")
     ArgumentCaptor<Consumer<HttpSession>> captor = ArgumentCaptor.forClass(Consumer.class);
     verify(mockAccessor).access(captor.capture());
     verify(mockSession).setAttribute(testKey, testValue);
@@ -122,6 +123,7 @@ class SessionObjectTableTest {
     assertFalse(SessionObjectTable.contains(testKey));
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   void shouldClearValueFromSession() {
     SessionObjectTable.clear(testKey);
@@ -151,7 +153,7 @@ class SessionObjectTableTest {
   }
 
   @Test
-  void shouldHandleBBjException() throws BBjException {
+  void shouldHandleBbjException() throws BBjException {
     when(mockApi.getChannelData()).thenThrow(new BBjException("Test exception", 0));
 
     assertThrows(IllegalStateException.class, () -> SessionObjectTable.put(testKey, testValue));
