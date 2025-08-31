@@ -2,6 +2,7 @@ package com.webforj.environment;
 
 import com.webforj.Environment;
 import jakarta.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -88,6 +89,23 @@ public final class SessionObjectTable {
   public static void clear(String key) {
     Optional<HttpSession.Accessor> accessor = getAccessor();
     accessor.ifPresent(a -> a.access(session -> session.removeAttribute(key)));
+  }
+
+  /**
+   * Returns the number of key-value mappings in the session.
+   *
+   * @return the number of key-value mappings in the session
+   */
+  public static int size() {
+    Optional<HttpSession.Accessor> accessor = getAccessor();
+    if (accessor.isEmpty()) {
+      return 0;
+    }
+
+    AtomicReference<Integer> sizeRef = new AtomicReference<>(0);
+    accessor.get()
+        .access(session -> sizeRef.set(Collections.list(session.getAttributeNames()).size()));
+    return sizeRef.get();
   }
 
   /**

@@ -16,7 +16,10 @@ import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
 import com.webforj.bridge.WebforjBBjBridge;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -150,6 +153,42 @@ class SessionObjectTableTest {
 
     // clear should not throw
     SessionObjectTable.clear(testKey);
+  }
+
+  @Test
+  void shouldReturnCorrectSize() {
+    // Setup mock attribute names
+    List<String> attributeNames = new ArrayList<>();
+    when(mockSession.getAttributeNames())
+        .thenAnswer(invocation -> Collections.enumeration(attributeNames));
+
+    // Initially empty
+    assertEquals(0, SessionObjectTable.size());
+
+    // Add some items (we need to track them in our test list)
+    doAnswer(invocation -> {
+      String key = invocation.getArgument(0);
+      if (!attributeNames.contains(key)) {
+        attributeNames.add(key);
+      }
+      return null;
+    }).when(mockSession).setAttribute(any(String.class), any());
+
+    doAnswer(invocation -> {
+      String key = invocation.getArgument(0);
+      attributeNames.remove(key);
+      return null;
+    }).when(mockSession).removeAttribute(any(String.class));
+
+    SessionObjectTable.put("key1", "value1");
+    SessionObjectTable.put("key2", "value2");
+    SessionObjectTable.put("key3", "value3");
+
+    assertEquals(3, SessionObjectTable.size());
+
+    // Clear one item
+    SessionObjectTable.clear("key2");
+    assertEquals(2, SessionObjectTable.size());
   }
 
   @Test
