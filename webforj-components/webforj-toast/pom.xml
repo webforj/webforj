@@ -36,6 +36,12 @@
       <version>5.19.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

@@ -13,6 +13,7 @@ import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import com.webforj.exceptions.WebforjWebManagerException;
+import jakarta.servlet.http.HttpSession;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -389,6 +391,28 @@ public final class Environment {
    */
   public BBjSysGui getSysGui() {
     return this.sysgui;
+  }
+
+  /**
+   * Returns the {@link HttpSession.Accessor} for the current environment, if available.
+   *
+   * @return an Optional containing the HttpSession.Accessor if available, empty otherwise
+   * @since 25.03
+   */
+  public Optional<HttpSession.Accessor> getSessionAccessor() {
+    try {
+      Map<String, Object> channelData = getBBjAPI().getChannelData();
+      if (channelData != null) {
+        Object accessor = channelData.get("session.accessor");
+        if (accessor instanceof HttpSession.Accessor sessionAccessor) {
+          return Optional.of(sessionAccessor);
+        }
+      }
+    } catch (BBjException e) {
+      logger.log(Level.DEBUG, "Failed to get channel data: {0}", e.getMessage());
+    }
+
+    return Optional.empty();
   }
 
   /**
