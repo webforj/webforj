@@ -47,7 +47,6 @@ public class EnvironmentScopeProcessor implements Scope {
 
     BeanStore store = BeanStore.getOrCreate(BEAN_STORE_KEY);
     String scopeId = getScopeId(env);
-    // BeanStore.remove() now handles destruction callback execution
     return store.remove(scopeId, name);
   }
 
@@ -92,8 +91,7 @@ public class EnvironmentScopeProcessor implements Scope {
   }
 
   /**
-   * Clean up all beans and callbacks for the current environment. This should be called when the
-   * Environment is being destroyed.
+   * Clean up all beans and callbacks for the current environment.
    */
   public static void cleanup() {
     Environment env = Environment.getCurrent();
