@@ -1,6 +1,7 @@
 package com.webforj.spring.scope;
 
 import com.webforj.environment.ObjectTable;
+import com.webforj.environment.SessionObjectTable;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.HashMap;
@@ -20,11 +21,28 @@ import org.springframework.beans.factory.ObjectFactory;
  * @since 25.03
  */
 public class BeanStore {
+  /**
+   * Defines the storage location for BeanStore instances.
+   */
+  public enum StorageType {
+    /**
+     * Store in ObjectTable (static/global storage).
+     */
+    LOCAL,
+
+    /**
+     * Store in SessionObjectTable (HTTP session storage).
+     */
+    SESSION
+  }
+
   private static final String ERROR_DESTRUCTION_CALLBACK =
       "Error executing destruction callback for bean ''{0}'' in scope ''{1}''";
   private static final Logger logger = System.getLogger(BeanStore.class.getName());
   private final Map<String, Map<String, Object>> scopedBeans = new HashMap<>();
   private final Map<String, Map<String, Runnable>> destructionCallbacks = new HashMap<>();
+  private static final LocalStorage LOCAL_STORAGE = new LocalStorage();
+  private static final SessionStorage SESSION_STORAGE = new SessionStorage();
 
   BeanStore() {
     // no instantiation
@@ -37,11 +55,24 @@ public class BeanStore {
    * @return the BeanStore instance
    */
   public static BeanStore getOrCreate(String objectTableKey) {
-    if (!ObjectTable.contains(objectTableKey)) {
-      ObjectTable.put(objectTableKey, new BeanStore());
+    return getOrCreate(objectTableKey, StorageType.LOCAL);
+  }
+
+  /**
+   * Gets or creates a BeanStore instance from the specified storage.
+   *
+   * @param key the key to use for storing the BeanStore
+   * @param storageType the storage type to use
+   *
+   * @return the BeanStore instance
+   */
+  public static BeanStore getOrCreate(String key, StorageType storageType) {
+    Storage storage = getStorage(storageType);
+    if (!storage.contains(key)) {
+      storage.put(key, new BeanStore());
     }
 
-    return (BeanStore) ObjectTable.get(objectTableKey);
+    return (BeanStore) storage.get(key);
   }
 
   /**
@@ -53,17 +84,32 @@ public class BeanStore {
    * @return true if the BeanStore was removed from ObjectTable
    */
   public static boolean cleanupScopeInstance(String objectTableKey, String scopeId) {
-    if (!ObjectTable.contains(objectTableKey)) {
+    return cleanupScopeInstance(objectTableKey, scopeId, StorageType.LOCAL);
+  }
+
+  /**
+   * Cleans up a specific scope instance and removes the BeanStore from storage if empty.
+   *
+   * @param key the key used for the BeanStore
+   * @param scopeId the scope instance to destroy
+   * @param storageType the storage type to use
+   *
+   * @return true if the BeanStore was removed from storage
+   */
+  public static boolean cleanupScopeInstance(String key, String scopeId, StorageType storageType) {
+    Storage storage = getStorage(storageType);
+    if (!storage.contains(key)) {
       return false;
     }
 
-    BeanStore store = (BeanStore) ObjectTable.get(objectTableKey);
+    BeanStore store = (BeanStore) storage.get(key);
     store.destroyScopeInstance(scopeId);
 
-    // Remove from ObjectTable if no more scopes
+    // Remove from storage if no more scopes
     if (store.getScopeCount() == 0) {
-      ObjectTable.clear(objectTableKey);
-      logger.log(Level.DEBUG, "Removed BeanStore from ObjectTable for key ''{0}''", objectTableKey);
+      storage.remove(key);
+      logger.log(Level.DEBUG, "Removed BeanStore from {0} storage for key ''{1}''", storageType,
+          key);
       return true;
     }
 
@@ -76,14 +122,25 @@ public class BeanStore {
    * @param objectTableKey the key used in ObjectTable for the BeanStore
    */
   public static void cleanupAllScopeInstances(String objectTableKey) {
-    if (!ObjectTable.contains(objectTableKey)) {
+    cleanupAllScopeInstances(objectTableKey, StorageType.LOCAL);
+  }
+
+  /**
+   * Cleans up all scope instances and removes the BeanStore from storage.
+   *
+   * @param key the key used for the BeanStore
+   * @param storageType the storage type to use
+   */
+  public static void cleanupAllScopeInstances(String key, StorageType storageType) {
+    Storage storage = getStorage(storageType);
+    if (!storage.contains(key)) {
       return;
     }
 
-    BeanStore store = (BeanStore) ObjectTable.get(objectTableKey);
+    BeanStore store = (BeanStore) storage.get(key);
     store.destroyAllScopeInstances();
-    ObjectTable.clear(objectTableKey);
-    logger.log(Level.DEBUG, "Removed BeanStore from ObjectTable for key ''{0}''", objectTableKey);
+    storage.remove(key);
+    logger.log(Level.DEBUG, "Removed BeanStore from {0} storage for key ''{1}''", storageType, key);
   }
 
   /**
@@ -263,5 +320,75 @@ public class BeanStore {
   public int getBeanCount(String scopeId) {
     Map<String, Object> beans = scopedBeans.get(scopeId);
     return beans != null ? beans.size() : 0;
+  }
+
+  /**
+   * Gets the storage implementation for the given type.
+   */
+  private static Storage getStorage(StorageType type) {
+    return type == StorageType.LOCAL ? LOCAL_STORAGE : SESSION_STORAGE;
+  }
+
+  /**
+   * Interface that defines storage operations.
+   */
+  interface Storage {
+    boolean contains(String key);
+
+    Object get(String key);
+
+    void put(String key, Object value);
+
+    void remove(String key);
+  }
+
+  /**
+   * ObjectTable Storage implementation.
+   */
+  static class LocalStorage implements Storage {
+    @Override
+    public boolean contains(String key) {
+      return ObjectTable.contains(key);
+    }
+
+    @Override
+    public Object get(String key) {
+      return ObjectTable.get(key);
+    }
+
+    @Override
+    public void put(String key, Object value) {
+      ObjectTable.put(key, value);
+    }
+
+    @Override
+    public void remove(String key) {
+      ObjectTable.clear(key);
+    }
+  }
+
+  /**
+   * SessionObjectTable Storage implementation.
+   */
+  static class SessionStorage implements Storage {
+    @Override
+    public boolean contains(String key) {
+      return SessionObjectTable.contains(key);
+    }
+
+    @Override
+    public Object get(String key) {
+      return SessionObjectTable.get(key);
+    }
+
+    @Override
+    public void put(String key, Object value) {
+      SessionObjectTable.put(key, value);
+    }
+
+    @Override
+    public void remove(String key) {
+      SessionObjectTable.clear(key);
+    }
   }
 }

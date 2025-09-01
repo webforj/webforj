@@ -2,8 +2,10 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.webforj.servlet.WebforjServlet;
+import com.webforj.spring.scope.SpringScopeCleanup;
 import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
 import com.webforj.spring.scope.processor.RouteScopeProcessor;
+import com.webforj.spring.scope.processor.SessionScopeProcessor;
 import java.lang.System.Logger;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -134,6 +136,7 @@ public class SpringAutoConfiguration {
    * <ul>
    * <li>{@code webforj-environment} - Scoped to the webforJ Environment (request) lifecycle</li>
    * <li>{@code webforj-route} - Scoped to the webforJ route hierarchy lifecycle</li>
+   * <li>{@code webforj-session} - Scoped to the webforJ session lifecycle</li>
    * </ul>
    * </p>
    *
@@ -151,6 +154,21 @@ public class SpringAutoConfiguration {
       RouteScopeProcessor routeScope = new RouteScopeProcessor();
       routeScope.postProcessBeanFactory(beanFactory);
       logger.log(Logger.Level.DEBUG, "Registered webforj-route scope");
+
+      // Register Session scope
+      SessionScopeProcessor sessionScope = new SessionScopeProcessor();
+      beanFactory.registerScope("webforj-session", sessionScope);
+      logger.log(Logger.Level.DEBUG, "Registered webforj-session scope");
     };
+  }
+
+  /**
+   * Registers the Spring scope cleanup handler for both app and session lifecycles.
+   *
+   * @return the {@link SpringScopeCleanup}
+   */
+  @Bean
+  SpringScopeCleanup webforjSpringScopeCleanup() {
+    return new SpringScopeCleanup();
   }
 }
