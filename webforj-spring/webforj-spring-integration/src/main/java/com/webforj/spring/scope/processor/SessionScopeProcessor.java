@@ -35,7 +35,7 @@ public class SessionScopeProcessor implements Scope {
     try {
       BeanStore store = BeanStore.getOrCreate(BEAN_STORE_KEY, StorageType.SESSION);
       return store.remove(SCOPE_ID, name);
-    } catch (Exception e) {
+    } catch (IllegalStateException e) {
       // Session not available
       return null;
     }
@@ -49,7 +49,7 @@ public class SessionScopeProcessor implements Scope {
     try {
       BeanStore store = BeanStore.getOrCreate(BEAN_STORE_KEY, StorageType.SESSION);
       store.registerDestructionCallback(SCOPE_ID, name, callback);
-    } catch (Exception e) {
+    } catch (IllegalStateException e) {
       // Session not available
       logger.log(Level.ERROR,
           "Could not register destruction callback - webforJ session not available");

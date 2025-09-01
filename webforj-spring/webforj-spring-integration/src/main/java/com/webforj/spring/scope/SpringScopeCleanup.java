@@ -49,10 +49,9 @@ public class SpringScopeCleanup implements AppLifecycleListener, HttpSessionList
       SessionScopeProcessor.cleanup();
       logger.log(Level.DEBUG, "Session scope cleaned up successfully for session: {0}",
           se.getSession().getId());
-    } catch (Exception e) {
-      logger.log(Level.ERROR,
-          "Could not cleanup session scope for session: {0} - session context not available",
-          se.getSession().getId());
+    } catch (IllegalStateException e) {
+      logger.log(Level.ERROR, "Could not cleanup session scope for session: {0} "
+          + "- webforJ session context not available", se.getSession().getId());
     }
   }
 }
