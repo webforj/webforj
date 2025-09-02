@@ -9,10 +9,10 @@ import com.webforj.component.ComponentUtil;
  * features or auto-complete functionality.
  *
  * <p>
- * For example, a textarea field component may uses this interface to provide auto-complete text
- * which appears when the user typing. The actual logic for generating and updating the predicted
- * value should be implemented by the developer. Whe the user press the tab key, or the ArrowRight
- * key, the predicted value will be set to the textarea.
+ * For example, a textarea field component may use this interface to provide auto-complete text
+ * which appears when the user is typing. The actual logic for generating and updating the predicted
+ * value should be implemented by the developer. When the user presses the tab key, or the
+ * ArrowRight key, the predicted value will be set to the textarea.
  * </p>
  *
  * @param <T> the type of the component that implements this interface.
