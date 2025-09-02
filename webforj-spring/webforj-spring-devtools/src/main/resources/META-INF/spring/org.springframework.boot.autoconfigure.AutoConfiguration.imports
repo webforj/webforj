@@ -1,1 +1,2 @@
 com.webforj.spring.devtools.livereload.LiveReloadSocketConfiguration
+com.webforj.spring.devtools.browser.BrowserLauncherAutoConfiguration
