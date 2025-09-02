@@ -13,11 +13,9 @@ import java.lang.annotation.Target;
  * the AppLevel or the control level.
  *
  * <pre>
- * {@code
- * &#64;InlineJavaScript(value = "alert('Hello World!');")
- * &#64;InlineJavaScript(value = "alert('Hello World!');", top = true)
- * &#64;InlineJavaScript(value = "js/script.js", local = true)
- * }
+ * {@code @InlineJavaScript(value = "alert('Hello World!');")}
+ * {@code @InlineJavaScript(value = "alert('Hello World!');", top = true)}
+ * {@code @InlineJavaScript(value = "js/script.js", local = true)}
  * </pre>
  *
  * @see JavaScript

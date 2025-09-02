@@ -17,10 +17,8 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <pre>
- * {@code
- * &#64;AppAttribute(name = "first-attr", value = "value1")
- * &#64;AppAttribute(name = "second-attr", value = "value2", selector = "body")
- * }
+ * {@code @AppAttribute(name = "first-attr", value = "value1")}
+ * {@code @AppAttribute(name = "second-attr", value = "value2", selector = "body")}
  * </pre>
  *
  * @author Hyyan Abo Fakher

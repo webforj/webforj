@@ -11,12 +11,10 @@ import java.lang.annotation.Target;
  * This annotation is used to set the attributes of the meta/styles and javascript annotations.
  *
  * <pre>
- * {@code
- * &#64;AppMeta(name = "custom name", content = "custom content", attributes = {
- *  &#64;Attribute(name = "custom-attribute", value = "custom attribute value"),
- *  &#64;Attribute(name = "custom-attribute2", value = "custom attribute value2")
+ * {@literal @}AppMeta(name = "custom name", content = "custom content", attributes = {
+ *   {@literal @}Attribute(name = "custom-attribute", value = "custom attribute value"),
+ *   {@literal @}Attribute(name = "custom-attribute2", value = "custom attribute value2")
  * })
- * }
  * </pre>
  *
  * @see AppMeta

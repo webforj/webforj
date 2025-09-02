@@ -21,14 +21,12 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <pre>
- * {@code
- * &#64;AppMeta(name = "description", content = "My App")
- * &#64;AppMeta(name = "keywords", content = "My, App, Java")
- * &#64;AppMeta(name = "theme-color", content = "#000000", attributes = {
- *  &#64;Attribute(name = "media", value = "(prefers-color-scheme: dark)"),
- *  &#64;Attribute(name = "name", value = "theme-color")
- * })
- * }
+ * {@code @AppMeta(name = "description", content = "My App")}
+ * {@code @AppMeta(name = "keywords", content = "My, App, Java")}
+ * {@code @AppMeta(name = "theme-color", content = "#000000", attributes = \{}
+ *   {@code @Attribute(name = "media", value = "(prefers-color-scheme: dark)"),}
+ *   {@code @Attribute(name = "name", value = "theme-color")}
+ * {@code \})}
  * </pre>
  *
  * @see Attribute

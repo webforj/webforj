@@ -23,9 +23,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <pre>
- * {@code
- *  &#64;Configuration(key = "DEBUG", value = "1")
- * }
+ * {@code @Configuration(key = "DEBUG", value = "1")}
  * </pre>
  *
  * @see com.webforj.environment.StringTable

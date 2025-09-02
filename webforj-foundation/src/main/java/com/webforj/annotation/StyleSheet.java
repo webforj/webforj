@@ -13,10 +13,8 @@ import java.lang.annotation.Target;
  * AppLevel or the control level.
  *
  * <pre>
- * {@code
- * &#64;StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css")
- * &#64;StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)
- * }
+ * {@code @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css")}
+ * {@code @StyleSheet(url = "https://www.w3schools.com/w3css/4/w3.css", top = true)}
  * </pre>
  *
  * @see InlineStyleSheet

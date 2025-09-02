@@ -17,10 +17,8 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <pre>
- * {@code
- * &#64;Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
- * &#64;Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)
- * }
+ * {@code @Link(url = "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")}
+ * {@code @Link(url = "https://fonts.googleapis.com/icon?family=Material+Icons", top = true)}
  * </pre>
  *
  * @see InlineStyleSheet

@@ -13,21 +13,21 @@ package com.webforj;
  * Example usage:
  * </p>
  *
- * <pre>{@code
- * &#64;AppListenerPriority(5)
+ * <pre>
+ * {@literal @}AppListenerPriority(5)
  * public class MyLifecycleListener implements AppLifecycleListener {
  *
- *   &#64;Override
+ *   {@literal @}Override
  *   public void onWillRun(App app) {
  *     // Called before app.run()
  *   }
  *
- *   &#64;Override
+ *   {@literal @}Override
  *   public void onDidRun(App app) {
  *     // Called after app.run()
  *   }
  * }
- * }</pre>
+ * </pre>
  *
  * <p>
  * All methods in this interface have default empty implementations, allowing implementations to

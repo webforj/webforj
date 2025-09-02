@@ -13,11 +13,9 @@ import java.lang.annotation.Target;
  * AppLevel or the control level.
  *
  * <pre>
- * {@code
- * &#64;InlineStyleSheet(value = "body {background-color: red;}")
- * &#64;InlineStyleSheet(value = "body {background-color: red;}", top = true)
- * &#64;InlineStyleSheet(value = "css/style.css", local = true)
- * }
+ * {@code @InlineStyleSheet(value = "body {background-color: red;}")}
+ * {@code @InlineStyleSheet(value = "body {background-color: red;}", top = true)}
+ * {@code @InlineStyleSheet(value = "css/style.css", local = true)}
  * </pre>
  *
  * @see StyleSheet

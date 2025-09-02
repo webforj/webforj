@@ -13,10 +13,8 @@ import java.lang.annotation.Target;
  * AppLevel or the control level.
  *
  * <pre>
- * {@code
- * &#64;JavaScript(url = "http://www.example.com/script.js")
- * &#64;JavaScript(url = "http://www.example.com/script.js", top = true)
- * }
+ * {@code @JavaScript(url = "http://www.example.com/script.js")}
+ * {@code @JavaScript(url = "http://www.example.com/script.js", top = true)}
  * </pre>
  *
  * @see InlineJavaScript

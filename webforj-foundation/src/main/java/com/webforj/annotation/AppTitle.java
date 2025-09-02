@@ -17,9 +17,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <pre>
- * {@code
- * &#64;AppTitle("My App")
- * }
+ * {@code @AppTitle("My App")}
  * </pre>
  *
  * @author Hyyan Abo Fakher

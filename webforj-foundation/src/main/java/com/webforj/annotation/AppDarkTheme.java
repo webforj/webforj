@@ -17,9 +17,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <pre>
- * {@code
- * &#64;AppDarkTheme("dark")
- * }
+ * {@code @AppDarkTheme("dark")}
  * </pre>
  *
  * @see AppTheme

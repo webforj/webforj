@@ -19,15 +19,16 @@ import java.lang.annotation.Target;
  * Example usage:
  * </p>
  *
- * <pre>{@code
- * &#64;AppListenerPriority(5)
+ * <pre>
+ * {@literal @}AppListenerPriority(5)
  * public class HighPriorityListener implements AppLifecycleListener {
- *   &#64;Override
+ *
+ *   {@literal @}Override
  *   public void onDidRun(App app) {
  *     // This will be called before listeners with higher priority values
  *   }
  * }
- * }</pre>
+ * </pre>
  *
  * <p>
  * Common priority values:
