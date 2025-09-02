@@ -1,10 +1,10 @@
 package com.webforj.component.layout.flexlayout;
 
-import java.util.Optional;
 import com.webforj.component.Component;
 import com.webforj.component.element.annotation.NodeName;
 import com.webforj.component.html.HtmlComponentContainer;
 import com.webforj.concern.HasStyle;
+import java.util.Optional;
 
 /**
  * A flex layout.
@@ -34,6 +34,7 @@ public class FlexLayout extends HtmlComponentContainer<FlexLayout> {
     setInline(false);
     setSpacing("1em");
     setDirection(direction);
+    setStyle("box-sizing", "border-box");
   }
 
   /**
