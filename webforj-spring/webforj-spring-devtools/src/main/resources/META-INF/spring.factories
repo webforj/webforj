@@ -1,0 +1,3 @@
+# Environment Post Processors
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.webforj.spring.devtools.browser.HeadlessModeConfigurer
