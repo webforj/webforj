@@ -5,6 +5,7 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.event.EventListener;
@@ -18,9 +19,9 @@ import org.springframework.core.env.Environment;
  */
 public class BrowserLauncher {
   private static final Logger LOG = System.getLogger(BrowserLauncher.class.getName());
+  private static final AtomicBoolean browserOpened = new AtomicBoolean(false);
   private final Environment environment;
   private Integer serverPort;
-  private static boolean browserOpened = false;
 
   BrowserLauncher(Environment environment) {
     this.environment = environment;
@@ -48,7 +49,7 @@ public class BrowserLauncher {
     }
 
     // Check if browser was already opened for this application instance
-    if (browserOpened) {
+    if (browserOpened.get()) {
       LOG.log(Level.DEBUG, "Browser already opened for this application, skipping");
       return;
     }
@@ -60,8 +61,7 @@ public class BrowserLauncher {
         Desktop desktop = Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
           desktop.browse(new URI(url));
-          browserOpened = true;
-          LOG.log(Level.INFO, "Opened browser at: {0}", url);
+          markBrowserAsOpened(url);
         }
       }
     } catch (Exception e) {
@@ -114,5 +114,10 @@ public class BrowserLauncher {
     }
 
     return String.format("%s://%s:%d%s", protocol, host, serverPort, path);
+  }
+
+  private static void markBrowserAsOpened(String url) {
+    browserOpened.set(true);
+    LOG.log(Level.INFO, "Opened browser at: {0}", url);
   }
 }
