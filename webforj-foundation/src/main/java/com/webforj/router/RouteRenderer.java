@@ -10,11 +10,13 @@ import com.webforj.conceiver.Conceiver;
 import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.concern.HasComponents;
 import com.webforj.data.WorkflowExecutor;
+import com.webforj.router.annotation.RouteRendererObserverPriority;
 import com.webforj.router.exception.NotFoundException;
 import com.webforj.router.exception.RouteRenderException;
 import com.webforj.router.observer.RouteRendererObserver;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -79,10 +81,17 @@ public class RouteRenderer {
    * Adds a lifecycle observer to the renderer. Observers can veto the creation or destruction of
    * components, thereby influencing the lifecycle management.
    *
+   * <p>
+   * Observers are automatically sorted by priority after addition. Lower priority values are
+   * executed first. The default priority is 10 if no {@link RouteRendererObserverPriority}
+   * annotation is present.
+   * </p>
+   *
    * @param observer the observer to be added.
    */
   public void addObserver(RouteRendererObserver observer) {
     observers.add(observer);
+    sortObserversByPriority();
   }
 
   /**
@@ -611,6 +620,27 @@ public class RouteRenderer {
           + "Trying to remove component '" + componentClassName + "' " + "in outlet: '"
           + outletClassName + "'");
     }
+  }
+
+  /**
+   * Sorts observers by their priority annotation value. Lower priority values are executed first.
+   * Default priority is 10 if no annotation is present.
+   */
+  private void sortObserversByPriority() {
+    observers.sort(Comparator.comparingInt(this::getObserverPriority));
+  }
+
+  /**
+   * Gets the priority value for an observer. Returns the value from @RouteRendererObserverPriority
+   * annotation if present, otherwise uses the observer's getPriority method.
+   *
+   * @param observer the observer to get priority for
+   * @return the priority value
+   */
+  private int getObserverPriority(RouteRendererObserver observer) {
+    RouteRendererObserverPriority annotation =
+        observer.getClass().getAnnotation(RouteRendererObserverPriority.class);
+    return annotation != null ? annotation.value() : observer.getPriority();
   }
 
   Conceiver getConceiver() {

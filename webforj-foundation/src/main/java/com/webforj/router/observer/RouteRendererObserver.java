@@ -3,6 +3,7 @@ package com.webforj.router.observer;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.RouteRenderer;
+import com.webforj.router.annotation.RouteRendererObserverPriority;
 import java.util.function.Consumer;
 
 /**
@@ -62,4 +63,20 @@ public interface RouteRendererObserver {
    */
   void onRouteRendererLifecycleEvent(Component component, LifecycleEvent event,
       NavigationContext context, Consumer<Boolean> continueCallback);
+
+  /**
+   * Gets the priority of this observer.
+   *
+   * <p>
+   * Lower values indicate higher priority (executed first). The default implementation returns 10.
+   * This method can be overridden to provide custom priority, or the
+   * {@link RouteRendererObserverPriority} annotation can be used.
+   * </p>
+   *
+   * @return the priority value, default is 10
+   * @since 25.04
+   */
+  default int getPriority() {
+    return 10;
+  }
 }
