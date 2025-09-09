@@ -34,6 +34,7 @@
     <module>webforj-spring-devtools</module>
     <module>webforj-spring-boot-starter</module>
     <module>webforj-spring-integration</module>
+    <module>webforj-spring-security</module>
   </modules>
 
   <dependencies>
