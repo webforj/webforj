@@ -12,9 +12,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 public class WebforjFrameworkRequestMatcher implements RequestMatcher {
 
-  // Servlet path used when root mapping is configured
-  private static final String WEBFORJ_SERVLET_PATH = "/webforjServlet";
-
   // Core framework paths that need CSRF exemption
   private static final String RPC_PATH = "/webapprmi";
   private static final String WEBAPP_LIB = "/webapp/_lib/";
@@ -24,6 +21,7 @@ public class WebforjFrameworkRequestMatcher implements RequestMatcher {
   private static final String DEFAULT_ASSETS_DIR = "static/";
 
   private final SpringConfigurationProperties properties;
+  private final String servletPrefix;
 
   /**
    * Creates a matcher with custom configuration.
@@ -32,6 +30,19 @@ public class WebforjFrameworkRequestMatcher implements RequestMatcher {
    */
   public WebforjFrameworkRequestMatcher(SpringConfigurationProperties properties) {
     this.properties = properties;
+
+    // Determine the servlet prefix based on the mapping
+    String mapping = properties.getServletMapping();
+    if ("/*".equals(mapping)) {
+      // Root mapping uses internal /webforjServlet path
+      this.servletPrefix = "/webforjServlet";
+    } else if (mapping != null && mapping.endsWith("/*")) {
+      // Extract prefix from mapping like "/app/*" -> "/app"
+      this.servletPrefix = mapping.substring(0, mapping.length() - 2);
+    } else {
+      // No prefix for other mappings
+      this.servletPrefix = "";
+    }
   }
 
   /**
@@ -58,11 +69,11 @@ public class WebforjFrameworkRequestMatcher implements RequestMatcher {
       return false;
     }
 
-    // Check if this is a forwarded request to the webforJ servlet
+    // Check if this is a request under the servlet prefix
     String pathToCheck = path;
-    if (path.startsWith(WEBFORJ_SERVLET_PATH)) {
-      // Remove the servlet path prefix to get the actual framework path
-      pathToCheck = path.substring(WEBFORJ_SERVLET_PATH.length());
+    if (!servletPrefix.isEmpty() && path.startsWith(servletPrefix)) {
+      // Remove the servlet prefix to get the actual framework path
+      pathToCheck = path.substring(servletPrefix.length());
     }
 
     // RPC endpoint - always allow

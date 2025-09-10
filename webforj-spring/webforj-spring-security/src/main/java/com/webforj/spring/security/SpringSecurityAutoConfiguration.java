@@ -1,5 +1,6 @@
 package com.webforj.spring.security;
 
+import com.webforj.spring.SpringConfigurationProperties;
 import com.webforj.spring.security.evaluator.SpringRouteAccessEvaluator;
 import java.lang.System.Logger;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -45,5 +46,13 @@ public class SpringSecurityAutoConfiguration {
   SpringRouteAccessEvaluator springRouteAccessEvaluator() {
     logger.log(Logger.Level.DEBUG, "Registering SpringRouteAccessEvaluator");
     return new SpringRouteAccessEvaluator();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  WebforjFrameworkRequestMatcher webforjFrameworkRequestMatcher(
+      SpringConfigurationProperties properties) {
+    logger.log(Logger.Level.DEBUG, "Registering WebforjFrameworkRequestMatcher");
+    return new WebforjFrameworkRequestMatcher(properties);
   }
 }
