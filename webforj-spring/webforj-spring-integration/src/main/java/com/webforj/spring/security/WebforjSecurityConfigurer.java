@@ -1,9 +1,10 @@
 package com.webforj.spring.security;
 
+import java.util.function.Consumer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 
 /**
  * Configures Spring Security for webforJ applications.
@@ -16,6 +17,9 @@ public class WebforjSecurityConfigurer
 
   private String loginPage;
   private String loginProcessingUrl;
+  private boolean enableAuthorizeRequests = true;
+  private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
+      AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
   /**
    * Creates a new instance of WebforjSecurityConfigurer.
@@ -81,6 +85,14 @@ public class WebforjSecurityConfigurer
     if (loginPage != null) {
       configureFormLogin(http);
     }
+
+    // Configure CSRF with webforJ exemptions
+    configureCsrf(http, context);
+
+    // Configure webforJ framework requests to be permitted
+    if (enableAuthorizeRequests) {
+      configureWebforjAuthorization(http, context);
+    }
   }
 
   /**
@@ -88,10 +100,13 @@ public class WebforjSecurityConfigurer
    */
   @Override
   public void configure(HttpSecurity http) throws Exception {
-    ApplicationContext context = http.getSharedObject(ApplicationContext.class);
-
-    // Configure CSRF with webforJ exemptions
-    configureCsrf(http, context);
+    // Configure the final anyRequest rule if authorization is enabled
+    // This must be done in configure() to ensure it's the last rule
+    if (enableAuthorizeRequests && anyRequestRule != null) {
+      http.authorizeHttpRequests(registry -> {
+        anyRequestRule.accept(registry.anyRequest());
+      });
+    }
   }
 
   void configureCsrf(HttpSecurity http, ApplicationContext context) throws Exception {
@@ -104,7 +119,7 @@ public class WebforjSecurityConfigurer
 
       // Exempt login page if configured
       if (loginPage != null) {
-        csrf.ignoringRequestMatchers(new AntPathRequestMatcher(loginPage));
+        csrf.ignoringRequestMatchers(loginPage);
       }
     });
   }
@@ -122,4 +137,16 @@ public class WebforjSecurityConfigurer
       form.permitAll();
     });
   }
+
+  void configureWebforjAuthorization(HttpSecurity http, ApplicationContext context)
+      throws Exception {
+    WebforjFrameworkRequestMatcher frameworkMatcher =
+        context.getBean(WebforjFrameworkRequestMatcher.class);
+
+    http.authorizeHttpRequests(registry -> {
+      // Permit all webforJ framework internal requests
+      registry.requestMatchers(frameworkMatcher).permitAll();
+    });
+  }
+
 }

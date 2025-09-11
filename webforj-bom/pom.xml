@@ -38,12 +38,6 @@
 
       <dependency>
         <groupId>com.webforj</groupId>
-        <artifactId>webforj-spring-security</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.webforj</groupId>
         <artifactId>webforj-spring-boot-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
