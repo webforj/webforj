@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 /**
  * Auto-configuration for webforJ Spring Security integration.
@@ -54,5 +55,15 @@ public class SpringSecurityAutoConfiguration {
       SpringConfigurationProperties properties) {
     logger.log(Logger.Level.DEBUG, "Registering WebforjFrameworkRequestMatcher");
     return new WebforjFrameworkRequestMatcher(properties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(SecurityContextHolderStrategy.class)
+  WebforjSecurityContextHolderStrategy webforjSecurityContextHolderStrategy() {
+    logger.log(Logger.Level.DEBUG, "Registering WebforjSecurityContextHolderStrategy");
+    WebforjSecurityContextHolderStrategy strategy = new WebforjSecurityContextHolderStrategy();
+    // Set the strategy so SecurityContextHolder uses it
+    SecurityContextHolder.setContextHolderStrategy(strategy);
+    return strategy;
   }
 }
