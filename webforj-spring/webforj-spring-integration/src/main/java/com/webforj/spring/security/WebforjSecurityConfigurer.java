@@ -69,14 +69,21 @@ public class WebforjSecurityConfigurer
   public void init(HttpSecurity http) throws Exception {
     ApplicationContext context = http.getSharedObject(ApplicationContext.class);
 
+    // Get the properties bean
+    SpringSecurityConfigurationProperties properties =
+        context.getBean(SpringSecurityConfigurationProperties.class);
+
     // If both login endpoints are null, try to read from configuration
     if (loginPage == null && loginProcessingUrl == null) {
-      SpringSecurityConfigurationProperties properties =
-          context.getBean(SpringSecurityConfigurationProperties.class);
-
       if (properties.getAuthenticationPath() != null) {
         loginPage = properties.getAuthenticationPath();
         loginProcessingUrl = properties.getAuthenticationPath();
+      }
+    } else if (loginPage != null) {
+      // If loginPage was set programmatically via formLogin(), update the properties
+      // so that SpringRouteSecurityConfiguration can use it
+      if (properties.getAuthenticationPath() == null) {
+        properties.setAuthenticationPath(loginPage);
       }
     }
 
