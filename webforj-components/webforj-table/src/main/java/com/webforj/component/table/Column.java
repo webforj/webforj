@@ -476,7 +476,7 @@ public final class Column<T, V> implements Serializable {
    * @since 25.03
    */
   public Column<T, V> setWidth(float width) {
-    if (width <= 0) {
+    if (width < 0) {
       throw new IllegalArgumentException("Width must be positive, got: " + width);
     }
     Float oldWidth = this.width;
@@ -524,7 +524,7 @@ public final class Column<T, V> implements Serializable {
    * @see #setMaxWidth(float)
    */
   public Column<T, V> setMinWidth(float minWidth) {
-    if (minWidth <= 0) {
+    if (minWidth < 0) {
       throw new IllegalArgumentException("Minimum width must be positive, got: " + minWidth);
     }
     Float oldMinWidth = this.minWidth;
@@ -573,7 +573,7 @@ public final class Column<T, V> implements Serializable {
    * @since 25.03
    */
   public Column<T, V> setMaxWidth(float maxWidth) {
-    if (maxWidth <= 0) {
+    if (maxWidth < 0) {
       throw new IllegalArgumentException("Maximum width must be positive, got: " + maxWidth);
     }
     Float oldMaxWidth = this.maxWidth;
