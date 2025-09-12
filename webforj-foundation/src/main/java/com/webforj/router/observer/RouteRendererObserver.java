@@ -74,7 +74,7 @@ public interface RouteRendererObserver {
    * </p>
    *
    * @return the priority value, default is 10
-   * @since 25.04
+   * @since 25.10
    */
   default int getPriority() {
     return 10;

@@ -17,7 +17,7 @@ import jakarta.annotation.security.PermitAll;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class PermitAllEvaluator implements RouteSecurityEvaluator {
 

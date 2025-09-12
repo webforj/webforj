@@ -9,7 +9,7 @@ package com.webforj.router.security;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public final class RouteAccessDecision {
   private final boolean granted;
@@ -31,26 +31,15 @@ public final class RouteAccessDecision {
     AUTHENTICATION_REQUIRED,
 
     /**
-     * User lacks required permissions.
+     * Access is denied.
      *
      * <p>
-     * User is authenticated but doesn't have the necessary roles or authorities. Typically results
-     * in a forbidden error page.
+     * User may be authenticated but access is denied for various reasons such as insufficient
+     * permissions, IP restrictions, geographic limitations, time-based access, etc. The specific
+     * reason is provided in the decision's reason field.
      * </p>
      */
-    INSUFFICIENT_PERMISSIONS,
-
-    /**
-     * Custom denial reason.
-     *
-     * <p>
-     * Used for application-specific access denial scenarios that don't fit the standard categories.
-     *
-     * The application should handle this denial type through custom logic, potentially showing
-     * error messages, modals, or performing custom navigation.
-     * </p>
-     */
-    CUSTOM_DENIAL
+    ACCESS_DENIED
   }
 
   private RouteAccessDecision(boolean granted, String reason, AccessDenialType denialType) {
@@ -104,23 +93,27 @@ public final class RouteAccessDecision {
   }
 
   /**
-   * Creates a decision that denies access due to insufficient permissions.
+   * Creates a decision that denies access.
    *
-   * @param reason description of missing permissions
-   * @return insufficient permissions decision
-   */
-  public static RouteAccessDecision denyPermissions(String reason) {
-    return new RouteAccessDecision(false, reason, AccessDenialType.INSUFFICIENT_PERMISSIONS);
-  }
-
-  /**
-   * Creates a decision that denies access for a custom reason.
+   * <p>
+   * Use this for any access denial that isn't authentication-related, such as:
+   * <ul>
+   * <li>Insufficient permissions or roles</li>
+   * <li>IP address restrictions</li>
+   * <li>Geographic limitations</li>
+   * <li>Time-based access restrictions</li>
+   * <li>Rate limiting</li>
+   * <li>License or subscription issues</li>
+   * </ul>
+   * The reason parameter should clearly explain why access was denied.
+   * </p>
    *
-   * @param reason custom denial reason
-   * @return custom denial decision
+   * @param reason specific reason for denial (e.g., "Insufficient permissions", "Access denied from
+   *        your location")
+   * @return access denied decision
    */
   public static RouteAccessDecision deny(String reason) {
-    return new RouteAccessDecision(false, reason, AccessDenialType.CUSTOM_DENIAL);
+    return new RouteAccessDecision(false, reason, AccessDenialType.ACCESS_DENIED);
   }
 
   /**
@@ -179,11 +172,11 @@ public final class RouteAccessDecision {
   }
 
   /**
-   * Checks if denial is due to insufficient permissions.
+   * Checks if denial is due to access denied (not authentication).
    *
-   * @return true if denial type is INSUFFICIENT_PERMISSIONS
+   * @return true if denial type is ACCESS_DENIED
    */
-  public boolean isInsufficientPermissions() {
-    return denialType == AccessDenialType.INSUFFICIENT_PERMISSIONS;
+  public boolean isAccessDenied() {
+    return denialType == AccessDenialType.ACCESS_DENIED;
   }
 }

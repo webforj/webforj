@@ -31,4 +31,16 @@ public @interface RouteAccess {
    * @return security expression
    */
   String value();
+
+  /**
+   * Error code to use when access is denied.
+   *
+   * <p>
+   * This code will be passed as the reason in the query parameter when redirecting to the access
+   * denied page. If not specified, defaults to "expression_denied".
+   * </p>
+   *
+   * @return error code for access denial
+   */
+  String code() default "expression_denied";
 }

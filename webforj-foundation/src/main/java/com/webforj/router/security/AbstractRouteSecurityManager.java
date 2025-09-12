@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public abstract class AbstractRouteSecurityManager implements RouteSecurityManager {
   /**
@@ -129,23 +129,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
       });
     }
 
-    // Handle based on denial type
-    switch (decision.getDenialType()) {
-      case AUTHENTICATION_REQUIRED:
-        onAuthenticationRequired(decision, context);
-        break;
-
-      case INSUFFICIENT_PERMISSIONS:
-        onInsufficientPermissions(decision, context);
-        break;
-
-      case CUSTOM_DENIAL:
-        onCustomDenial(decision, context);
-        break;
-
-      default:
-        logger.log(Level.WARNING, "Unknown denial type: {0}", decision.getDenialType());
-    }
+    onPostAccessDenied(decision, context);
   }
 
   /**
@@ -189,58 +173,37 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
   }
 
   /**
-   * Called when authentication is required.
+   * Handles post-access-denied actions such as redirects.
    *
    * <p>
-   * Default implementation redirects to the authentication location if configured. Subclasses can
-   * override to customize behavior, store the requested location for post-login redirect, show
-   * login modals, or handle authentication differently.
+   * This method is called after an access denial decision has been made. It performs actions based
+   * on the type of denial, such as redirecting to authentication or denial pages as configured.
    * </p>
    *
-   * @param decision the access decision with denial details
-   * @param context the navigation context
+   * @param decision the access denial decision
+   * @param context the current navigation context
    */
-  protected void onAuthenticationRequired(RouteAccessDecision decision, NavigationContext context) {
-    getConfiguration().getAuthenticationLocation().ifPresent(location -> {
-      navigateTo(location);
-    });
-  }
+  protected void onPostAccessDenied(RouteAccessDecision decision, NavigationContext context) {
+    switch (decision.getDenialType()) {
+      case AUTHENTICATION_REQUIRED:
+        getConfiguration().getAuthenticationLocation().ifPresent(location -> {
+          navigateTo(location);
+        });
+        break;
 
-  /**
-   * Called when user has insufficient permissions.
-   *
-   * <p>
-   * Default implementation redirects to the insufficient permissions location if configured.
-   * Subclasses can override to show error messages, log security violations, notify administrators,
-   * or handle authorization failures differently.
-   * </p>
-   *
-   * @param decision the access decision with denial details
-   * @param context the navigation context
-   */
-  protected void onInsufficientPermissions(RouteAccessDecision decision,
-      NavigationContext context) {
-    getConfiguration().getInsufficientPermissionsLocation().ifPresent(location -> {
-      navigateTo(location);
-    });
-  }
+      case ACCESS_DENIED:
+        getConfiguration().getDenyLocation().ifPresent(location -> {
+          // Add the reason as a query parameter if provided
+          if (decision.getReason() != null && !decision.getReason().isEmpty()) {
+            location.getQueryParameters().put("reason", decision.getReason());
+          }
+          navigateTo(location);
+        });
+        break;
 
-  /**
-   * Called when custom denial occurs.
-   *
-   * <p>
-   * Default implementation redirects to the custom denial location if configured (which defaults to
-   * the insufficient permissions location). Subclasses can override to provide different handling
-   * such as showing error dialogs or custom navigation.
-   * </p>
-   *
-   * @param decision the access decision with custom denial
-   * @param context the navigation context
-   */
-  protected void onCustomDenial(RouteAccessDecision decision, NavigationContext context) {
-    getConfiguration().getCustomDenialLocation().ifPresent(location -> {
-      navigateTo(location);
-    });
+      default:
+        break;
+    }
   }
 
   private void navigateTo(Location location) {

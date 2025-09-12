@@ -31,16 +31,10 @@ public class SpringSecurityConfigurationProperties {
   private String authenticationPath;
 
   /**
-   * The path to redirect users to when they lack sufficient permissions. This is shown when an
-   * authenticated user tries to access a resource they're not authorized for.
+   * The path to redirect users to when access is denied. This is shown when an authenticated user
+   * tries to access a resource they're not authorized for, or for any other access denial scenario.
    */
-  private String insufficientPermissionsPath;
-
-  /**
-   * The path to redirect users to for custom denial scenarios. This can be used for
-   * application-specific access denial handling.
-   */
-  private String customDenialPath;
+  private String denyPath;
 
   /**
    * Gets whether security is enabled.
@@ -97,38 +91,20 @@ public class SpringSecurityConfigurationProperties {
   }
 
   /**
-   * Gets the insufficient permissions path.
+   * Gets the deny path.
    *
-   * @return the insufficient permissions path
+   * @return the deny path
    */
-  public String getInsufficientPermissionsPath() {
-    return insufficientPermissionsPath;
+  public String getDenyPath() {
+    return denyPath;
   }
 
   /**
-   * Sets the insufficient permissions path.
+   * Sets the deny path.
    *
-   * @param insufficientPermissionsPath the insufficient permissions path
+   * @param denyPath the deny path
    */
-  public void setInsufficientPermissionsPath(String insufficientPermissionsPath) {
-    this.insufficientPermissionsPath = insufficientPermissionsPath;
-  }
-
-  /**
-   * Gets the custom denial path.
-   *
-   * @return the custom denial path
-   */
-  public String getCustomDenialPath() {
-    return customDenialPath;
-  }
-
-  /**
-   * Sets the custom denial path.
-   *
-   * @param customDenialPath the custom denial path
-   */
-  public void setCustomDenialPath(String customDenialPath) {
-    this.customDenialPath = customDenialPath;
+  public void setDenyPath(String denyPath) {
+    this.denyPath = denyPath;
   }
 }

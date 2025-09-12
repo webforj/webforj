@@ -26,7 +26,6 @@ public class RouteSecurityObserverRegistrar implements AppLifecycleListener {
   private static final Logger logger =
       System.getLogger(RouteSecurityObserverRegistrar.class.getName());
 
-
   /**
    * {@inheritDoc}
    */

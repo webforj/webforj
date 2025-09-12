@@ -282,8 +282,13 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    * @return the query string
    */
   public String getQueryString() {
-    return parameters.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
-        .collect(Collectors.joining("&"));
+    return parameters.entrySet().stream().map(entry -> {
+      String value = entry.getValue();
+      if (value == null || value.isEmpty()) {
+        return entry.getKey();
+      }
+      return entry.getKey() + "=" + value;
+    }).collect(Collectors.joining("&"));
   }
 
   /**

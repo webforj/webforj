@@ -11,7 +11,7 @@ import java.util.Optional;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public interface RouteSecurityConfiguration {
 
@@ -20,27 +20,27 @@ public interface RouteSecurityConfiguration {
    *
    * @return the authentication location, or empty to use default behavior
    */
-  Optional<Location> getAuthenticationLocation();
+  default Optional<Location> getAuthenticationLocation() {
+    return Optional.of(new Location("/login"));
+  }
 
   /**
-   * Gets the location to redirect to when user lacks permissions.
-   *
-   * @return the insufficient permissions location, or empty to use default behavior
-   */
-  Optional<Location> getInsufficientPermissionsLocation();
-
-  /**
-   * Gets the location to redirect to for custom denials.
+   * Gets the location to redirect to when access is denied.
    *
    * <p>
-   * Default implementation returns the insufficient permissions location.
+   * This is used for both insufficient permissions and custom denials.
    * </p>
    *
-   * @return the custom denial location, or empty to use default behavior
-   * @see #getInsufficientPermissionsLocation()
+   * @return the deny location, or empty to use default behavior
    */
-  default Optional<Location> getCustomDenialLocation() {
-    return getInsufficientPermissionsLocation();
+  default Optional<Location> getDenyLocation() {
+    Optional<Location> authLocation = getAuthenticationLocation();
+    if (authLocation.isPresent()) {
+      authLocation.get().getQueryParameters().put("error", "");
+      return authLocation;
+    }
+
+    return Optional.empty();
   }
 
   /**

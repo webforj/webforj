@@ -40,30 +40,19 @@ class RouteSecurityConfigurationTest {
   }
 
   @Test
-  void shouldManageInsufficientPermissionsLocation() {
-    assertFalse(configuration.getInsufficientPermissionsLocation().isPresent());
+  void shouldManageDenyLocation() {
+    assertFalse(configuration.getDenyLocation().isPresent());
 
-    Location forbiddenLocation = new Location("/forbidden");
-    configuration.setInsufficientPermissionsLocation(forbiddenLocation);
+    Location denyLocation = new Location("/access-denied");
+    configuration.setDenyLocation(denyLocation);
 
-    assertTrue(configuration.getInsufficientPermissionsLocation().isPresent());
-    assertEquals(forbiddenLocation, configuration.getInsufficientPermissionsLocation().get());
-  }
-
-  @Test
-  void shouldDelegateCustomDenialToInsufficientPermissions() {
-    assertFalse(configuration.getCustomDenialLocation().isPresent());
-
-    Location forbiddenLocation = new Location("/forbidden");
-    configuration.setInsufficientPermissionsLocation(forbiddenLocation);
-
-    assertTrue(configuration.getCustomDenialLocation().isPresent());
-    assertEquals(forbiddenLocation, configuration.getCustomDenialLocation().get());
+    assertTrue(configuration.getDenyLocation().isPresent());
+    assertEquals(denyLocation, configuration.getDenyLocation().get());
   }
 
   private static class TestSecurityConfiguration implements RouteSecurityConfiguration {
     private Location authenticationLocation;
-    private Location insufficientPermissionsLocation;
+    private Location denyLocation;
     private boolean enabled = true;
     private boolean secureByDefault = true;
 
@@ -77,12 +66,12 @@ class RouteSecurityConfigurationTest {
     }
 
     @Override
-    public Optional<Location> getInsufficientPermissionsLocation() {
-      return Optional.ofNullable(insufficientPermissionsLocation);
+    public Optional<Location> getDenyLocation() {
+      return Optional.ofNullable(denyLocation);
     }
 
-    public void setInsufficientPermissionsLocation(Location location) {
-      this.insufficientPermissionsLocation = location;
+    public void setDenyLocation(Location location) {
+      this.denyLocation = location;
     }
 
     @Override

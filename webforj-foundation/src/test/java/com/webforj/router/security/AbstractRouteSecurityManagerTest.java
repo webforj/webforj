@@ -157,11 +157,10 @@ class AbstractRouteSecurityManagerTest {
   }
 
   @Test
-  void shouldHandleInsufficientPermissionsDenial() {
-    RouteAccessDecision decision = RouteAccessDecision.denyPermissions("No access");
-    Location forbiddenLocation = new Location("/forbidden");
-    when(configuration.getInsufficientPermissionsLocation())
-        .thenReturn(Optional.of(forbiddenLocation));
+  void shouldHandleAccessDeniedWithPermissionReason() {
+    RouteAccessDecision decision = RouteAccessDecision.deny("Insufficient permissions");
+    Location forbiddenLocation = new Location("/access-denied");
+    when(configuration.getDenyLocation()).thenReturn(Optional.of(forbiddenLocation));
 
     try (MockedStatic<Router> routerMock = mockStatic(Router.class)) {
       Router router = mock(Router.class);
@@ -174,10 +173,10 @@ class AbstractRouteSecurityManagerTest {
   }
 
   @Test
-  void shouldHandleCustomDenial() {
-    RouteAccessDecision decision = RouteAccessDecision.deny("Custom reason");
-    Location customLocation = new Location("/error");
-    when(configuration.getCustomDenialLocation()).thenReturn(Optional.of(customLocation));
+  void shouldHandleAccessDeniedWithCustomReason() {
+    RouteAccessDecision decision = RouteAccessDecision.deny("Access denied from your location");
+    Location deniedLocation = new Location("/access-denied");
+    when(configuration.getDenyLocation()).thenReturn(Optional.of(deniedLocation));
 
     try (MockedStatic<Router> routerMock = mockStatic(Router.class)) {
       Router router = mock(Router.class);
@@ -185,7 +184,7 @@ class AbstractRouteSecurityManagerTest {
 
       securityManager.onAccessDenied(decision, navigationContext);
 
-      verify(router).navigate(customLocation);
+      verify(router).navigate(deniedLocation);
     }
   }
 

@@ -1,5 +1,6 @@
 package com.webforj.router.security.evaluator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -85,8 +86,8 @@ class RolesAllowedEvaluatorTest {
         evaluator.evaluate(SingleRoleRoute.class, navigationContext, securityContext, chain);
 
     assertTrue(decision.isDenied());
-    assertTrue(decision.isInsufficientPermissions());
-    assertTrue(decision.getReason().contains("ADMIN"));
+    assertTrue(decision.isAccessDenied());
+    assertEquals(RolesAllowedEvaluator.CODE, decision.getReason());
   }
 
   @Test

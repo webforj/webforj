@@ -16,9 +16,14 @@ import jakarta.annotation.security.DenyAll;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class DenyAllEvaluator implements RouteSecurityEvaluator {
+
+  /**
+   * Error code for deny all.
+   */
+  public static final String CODE = "access_forbidden";
 
   /**
    * {@inheritDoc}
@@ -35,6 +40,6 @@ public class DenyAllEvaluator implements RouteSecurityEvaluator {
   public RouteAccessDecision evaluate(Class<?> routeClass, NavigationContext context,
       RouteSecurityContext securityContext, SecurityEvaluatorChain chain) {
     // @DenyAll always denies - don't call chain
-    return RouteAccessDecision.deny("Access denied by @DenyAll annotation");
+    return RouteAccessDecision.deny(CODE);
   }
 }

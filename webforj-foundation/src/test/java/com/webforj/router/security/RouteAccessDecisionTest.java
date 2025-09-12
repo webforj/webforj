@@ -20,7 +20,7 @@ class RouteAccessDecisionTest {
     assertNull(decision.getReason());
     assertNull(decision.getDenialType());
     assertFalse(decision.isAuthenticationRequired());
-    assertFalse(decision.isInsufficientPermissions());
+    assertFalse(decision.isAccessDenied());
   }
 
   @Test
@@ -32,7 +32,7 @@ class RouteAccessDecisionTest {
     assertEquals("Authentication required", decision.getReason());
     assertEquals(AccessDenialType.AUTHENTICATION_REQUIRED, decision.getDenialType());
     assertTrue(decision.isAuthenticationRequired());
-    assertFalse(decision.isInsufficientPermissions());
+    assertFalse(decision.isAccessDenied());
   }
 
   @Test
@@ -45,33 +45,33 @@ class RouteAccessDecisionTest {
     assertEquals(customReason, decision.getReason());
     assertEquals(AccessDenialType.AUTHENTICATION_REQUIRED, decision.getDenialType());
     assertTrue(decision.isAuthenticationRequired());
-    assertFalse(decision.isInsufficientPermissions());
+    assertFalse(decision.isAccessDenied());
   }
 
   @Test
   void shouldDenyWithInsufficientPermissions() {
     String reason = "Requires ADMIN role";
-    RouteAccessDecision decision = RouteAccessDecision.denyPermissions(reason);
-
-    assertFalse(decision.isGranted());
-    assertTrue(decision.isDenied());
-    assertEquals(reason, decision.getReason());
-    assertEquals(AccessDenialType.INSUFFICIENT_PERMISSIONS, decision.getDenialType());
-    assertFalse(decision.isAuthenticationRequired());
-    assertTrue(decision.isInsufficientPermissions());
-  }
-
-  @Test
-  void shouldDenyWithCustomReason() {
-    String reason = "Maintenance mode";
     RouteAccessDecision decision = RouteAccessDecision.deny(reason);
 
     assertFalse(decision.isGranted());
     assertTrue(decision.isDenied());
     assertEquals(reason, decision.getReason());
-    assertEquals(AccessDenialType.CUSTOM_DENIAL, decision.getDenialType());
+    assertEquals(AccessDenialType.ACCESS_DENIED, decision.getDenialType());
     assertFalse(decision.isAuthenticationRequired());
-    assertFalse(decision.isInsufficientPermissions());
+    assertTrue(decision.isAccessDenied());
+  }
+
+  @Test
+  void shouldDenyWithCustomReason() {
+    String reason = "Access denied from your location";
+    RouteAccessDecision decision = RouteAccessDecision.deny(reason);
+
+    assertFalse(decision.isGranted());
+    assertTrue(decision.isDenied());
+    assertEquals(reason, decision.getReason());
+    assertEquals(AccessDenialType.ACCESS_DENIED, decision.getDenialType());
+    assertFalse(decision.isAuthenticationRequired());
+    assertTrue(decision.isAccessDenied());
   }
 
   @Test
@@ -82,14 +82,7 @@ class RouteAccessDecisionTest {
   }
 
   @Test
-  void shouldThrowWhenDenyPermissionsWithNullReason() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      RouteAccessDecision.denyPermissions(null);
-    });
-  }
-
-  @Test
-  void shouldThrowWhenDenyCustomWithNullReason() {
+  void shouldThrowWhenDenyWithNullReason() {
     assertThrows(IllegalArgumentException.class, () -> {
       RouteAccessDecision.deny(null);
     });

@@ -38,24 +38,19 @@ public class SpringRouteSecurityConfiguration implements RouteSecurityConfigurat
   @Override
   public Optional<Location> getAuthenticationLocation() {
     String path = properties.getAuthenticationPath();
-    return path != null ? Optional.of(new Location(path)) : Optional.empty();
+    return path != null ? Optional.of(new Location(path)) : Optional.of(new Location("/login"));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Optional<Location> getInsufficientPermissionsLocation() {
-    String path = properties.getInsufficientPermissionsPath();
-    return path != null ? Optional.of(new Location(path)) : Optional.empty();
-  }
+  public Optional<Location> getDenyLocation() {
+    String path = properties.getDenyPath();
+    if (path != null) {
+      return Optional.of(new Location(path));
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Optional<Location> getCustomDenialLocation() {
-    String path = properties.getCustomDenialPath();
-    return path != null ? Optional.of(new Location(path)) : Optional.empty();
+    return RouteSecurityConfiguration.super.getDenyLocation();
   }
 }

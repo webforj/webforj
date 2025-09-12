@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class RouteSecurityObserver implements RouteRendererObserver {
   private static final Logger logger = System.getLogger(RouteSecurityObserver.class.getName());

@@ -49,8 +49,8 @@ class DenyAllEvaluatorTest {
         evaluator.evaluate(DenyAllRoute.class, navigationContext, securityContext, chain);
 
     assertTrue(decision.isDenied());
-    assertNotNull(decision.getReason());
-    assertEquals(AccessDenialType.CUSTOM_DENIAL, decision.getDenialType());
+    assertEquals(DenyAllEvaluator.CODE, decision.getReason());
+    assertEquals(AccessDenialType.ACCESS_DENIED, decision.getDenialType());
     verifyNoInteractions(chain);
   }
 
@@ -63,7 +63,7 @@ class DenyAllEvaluatorTest {
         evaluator.evaluate(DenyAllRoute.class, navigationContext, securityContext, chain);
 
     assertTrue(decision.isDenied());
-    assertNotNull(decision.getReason());
+    assertEquals(DenyAllEvaluator.CODE, decision.getReason());
     verifyNoInteractions(chain);
   }
 

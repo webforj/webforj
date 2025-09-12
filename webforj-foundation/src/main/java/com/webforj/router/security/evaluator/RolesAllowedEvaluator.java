@@ -17,9 +17,14 @@ import java.util.Arrays;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class RolesAllowedEvaluator implements RouteSecurityEvaluator {
+
+  /**
+   * Error code for insufficient roles denial.
+   */
+  public static final String CODE = "insufficient_roles";
 
   /**
    * {@inheritDoc}
@@ -59,7 +64,6 @@ public class RolesAllowedEvaluator implements RouteSecurityEvaluator {
     }
 
     // User doesn't have required roles
-    return RouteAccessDecision
-        .denyPermissions("User lacks required roles: " + Arrays.toString(requiredRoles));
+    return RouteAccessDecision.deny(CODE);
   }
 }
