@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * Spring Security implementation of {@link RouteSecurityContext}.
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class SpringRouteSecurityContext implements RouteSecurityContext {
 

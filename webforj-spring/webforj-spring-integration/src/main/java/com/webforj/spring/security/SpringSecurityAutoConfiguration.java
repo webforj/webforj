@@ -21,7 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 @Configuration
 @ConditionalOnClass(SecurityContextHolder.class)

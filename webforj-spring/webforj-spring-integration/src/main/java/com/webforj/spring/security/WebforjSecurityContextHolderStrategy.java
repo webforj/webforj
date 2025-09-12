@@ -20,7 +20,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public final class WebforjSecurityContextHolderStrategy implements SecurityContextHolderStrategy {
 

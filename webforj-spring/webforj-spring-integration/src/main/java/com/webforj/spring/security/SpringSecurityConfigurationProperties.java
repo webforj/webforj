@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Spring Security configuration properties for webforJ applications.
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 @ConfigurationProperties(prefix = "webforj.security")
 public class SpringSecurityConfigurationProperties {

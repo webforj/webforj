@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationContext;
  * </p>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 @AppListenerPriority(1)
 public class RouteSecurityObserverRegistrar implements AppLifecycleListener {

@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
  * Spring Security implementation of {@link AbstractRouteSecurityManager}.
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class SpringRouteSecurityManager extends AbstractRouteSecurityManager {
   private static final Logger logger = System.getLogger(SpringRouteSecurityManager.class.getName());

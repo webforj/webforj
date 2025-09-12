@@ -8,7 +8,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * Matcher for identifying webforJ framework requests that need CSRF exemption.
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class WebforjFrameworkRequestMatcher implements RequestMatcher {
 

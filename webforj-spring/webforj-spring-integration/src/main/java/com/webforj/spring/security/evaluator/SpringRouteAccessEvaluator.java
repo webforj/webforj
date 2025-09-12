@@ -51,7 +51,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * </ul>
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
   private static final Logger logger = System.getLogger(SpringRouteAccessEvaluator.class.getName());

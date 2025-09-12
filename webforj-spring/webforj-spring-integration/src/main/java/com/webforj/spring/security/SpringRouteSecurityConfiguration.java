@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Spring Security configuration implementation of {@link RouteSecurityConfiguration}.
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class SpringRouteSecurityConfiguration implements RouteSecurityConfiguration {
 

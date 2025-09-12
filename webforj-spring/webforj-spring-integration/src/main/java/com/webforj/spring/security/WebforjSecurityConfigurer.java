@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
  * Configures Spring Security for webforJ applications.
  *
  * @author Hyyan Abo Fakher
- * @since 25.04
+ * @since 25.10
  */
 public class WebforjSecurityConfigurer
     extends AbstractHttpConfigurer<WebforjSecurityConfigurer, HttpSecurity> {
