@@ -66,4 +66,11 @@ public class SpringSecurityAutoConfiguration {
     SecurityContextHolder.setContextHolderStrategy(strategy);
     return strategy;
   }
+
+  @Bean
+  @ConditionalOnMissingBean
+  WebforjAuthenticationSuccessHandler webforjAuthenticationSuccessHandler() {
+    logger.log(Logger.Level.DEBUG, "Registering WebforjAuthenticationSuccessHandler");
+    return new WebforjAuthenticationSuccessHandler();
+  }
 }

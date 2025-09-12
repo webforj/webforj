@@ -1,9 +1,9 @@
 package com.webforj.router.security;
 
+import com.webforj.Environment;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
-import com.webforj.webstorage.SessionStorage;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract implementation of {@link RouteSecurityManager}.
@@ -25,8 +26,13 @@ import java.util.Optional;
  * @since 25.04
  */
 public abstract class AbstractRouteSecurityManager implements RouteSecurityManager {
+  /**
+   * HTTP session attribute key for storing the requested location before authentication.
+   */
+  public static final String PRE_AUTH_LOCATION_KEY = "webforj-requested-location";
   private static final Logger logger =
       System.getLogger(AbstractRouteSecurityManager.class.getName());
+
   private final List<PrioritizedEvaluator> evaluators = new ArrayList<>();
 
   /**
@@ -108,6 +114,22 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
     logger.log(Level.DEBUG, "Access denied: type={0}, reason={1}", decision.getDenialType(),
         decision.getReason());
 
+    // Store the requested location for post-login redirect
+    Router router = Router.getCurrent();
+    if (router != null && context != null && context.getLocation() != null) {
+      // Store in HTTP session instead of browser sessionStorage
+      Environment.ifPresent(env -> {
+        env.getSessionAccessor().ifPresent(accessor -> {
+          accessor.access(session -> {
+            session.setAttribute(PRE_AUTH_LOCATION_KEY, context.getLocation().getFullURI());
+            logger.log(Level.DEBUG,
+                "Stored requested location in HTTP session: " + context.getLocation().getFullURI());
+          });
+        });
+      });
+    }
+
+    // Handle based on denial type
     switch (decision.getDenialType()) {
       case AUTHENTICATION_REQUIRED:
         onAuthenticationRequired(decision, context);
@@ -127,6 +149,46 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Optional<Location> getPreAuthenticationLocation() {
+    AtomicReference<String> uriRef = new AtomicReference<>();
+    Environment.ifPresent(env -> {
+      env.getSessionAccessor().ifPresent(accessor -> {
+        accessor.access(session -> {
+          Object value = session.getAttribute(PRE_AUTH_LOCATION_KEY);
+          if (value instanceof String) {
+            uriRef.set((String) value);
+          }
+        });
+      });
+    });
+
+    String uri = uriRef.get();
+    if (uri != null && !uri.isEmpty()) {
+      return Optional.of(new Location(uri));
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void clearPreAuthenticationLocation() {
+    Environment.ifPresent(env -> {
+      env.getSessionAccessor().ifPresent(accessor -> {
+        accessor.access(session -> {
+          session.removeAttribute(PRE_AUTH_LOCATION_KEY);
+          logger.log(Level.DEBUG, "Cleared pre-authentication location from HTTP session");
+        });
+      });
+    });
+  }
+
+  /**
    * Called when authentication is required.
    *
    * <p>
@@ -139,22 +201,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
    * @param context the navigation context
    */
   protected void onAuthenticationRequired(RouteAccessDecision decision, NavigationContext context) {
-    // Store the requested location for post-login redirect
-    Router router = Router.getCurrent();
-    if (router != null && context != null && context.getLocation() != null) {
-      try {
-        SessionStorage.getCurrent().setItem("webforj-requested-location",
-            context.getLocation().getFullURI());
-      } catch (Exception e) {
-        // Log but don't fail if storage is unavailable
-        logger.log(Level.DEBUG, "Could not store requested location", e);
-      }
-    }
-
     getConfiguration().getAuthenticationLocation().ifPresent(location -> {
-      if (router != null) {
-        router.navigate(location);
-      }
+      navigateTo(location);
     });
   }
 
@@ -173,10 +221,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
   protected void onInsufficientPermissions(RouteAccessDecision decision,
       NavigationContext context) {
     getConfiguration().getInsufficientPermissionsLocation().ifPresent(location -> {
-      Router router = Router.getCurrent();
-      if (router != null) {
-        router.navigate(location);
-      }
+      navigateTo(location);
     });
   }
 
@@ -194,38 +239,14 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
    */
   protected void onCustomDenial(RouteAccessDecision decision, NavigationContext context) {
     getConfiguration().getCustomDenialLocation().ifPresent(location -> {
-      Router router = Router.getCurrent();
-      if (router != null) {
-        router.navigate(location);
-      }
+      navigateTo(location);
     });
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Optional<Location> getPreAuthenticationLocation() {
-    try {
-      String uri = SessionStorage.getCurrent().getItem("webforj-requested-location");
-      if (uri != null && !uri.isEmpty()) {
-        return Optional.of(new Location(uri));
-      }
-    } catch (Exception e) {
-      logger.log(Level.DEBUG, "Could not retrieve pre-authentication location", e);
-    }
-    return Optional.empty();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void clearPreAuthenticationLocation() {
-    try {
-      SessionStorage.getCurrent().removeItem("webforj-requested-location");
-    } catch (Exception e) {
-      logger.log(Level.DEBUG, "Could not clear pre-authentication location", e);
+  private void navigateTo(Location location) {
+    Router router = Router.getCurrent();
+    if (router != null) {
+      router.navigate(location);
     }
   }
 

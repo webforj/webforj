@@ -17,7 +17,6 @@ public class WebforjSecurityConfigurer
 
   private String loginPage;
   private String loginProcessingUrl;
-  private boolean enableAuthorizeRequests = true;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -83,16 +82,14 @@ public class WebforjSecurityConfigurer
 
     // Configure form login if specified
     if (loginPage != null) {
-      configureFormLogin(http);
+      configureFormLogin(http, context);
     }
 
     // Configure CSRF with webforJ exemptions
     configureCsrf(http, context);
 
-    // Configure webforJ framework requests to be permitted
-    if (enableAuthorizeRequests) {
-      configureWebforjAuthorization(http, context);
-    }
+    // Configure the framework requests to be permitted
+    configureWebforjAuthorization(http, context);
   }
 
   /**
@@ -102,11 +99,9 @@ public class WebforjSecurityConfigurer
   public void configure(HttpSecurity http) throws Exception {
     // Configure the final anyRequest rule if authorization is enabled
     // This must be done in configure() to ensure it's the last rule
-    if (enableAuthorizeRequests && anyRequestRule != null) {
-      http.authorizeHttpRequests(registry -> {
-        anyRequestRule.accept(registry.anyRequest());
-      });
-    }
+    http.authorizeHttpRequests(registry -> {
+      anyRequestRule.accept(registry.anyRequest());
+    });
   }
 
   void configureCsrf(HttpSecurity http, ApplicationContext context) throws Exception {
@@ -124,7 +119,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  void configureFormLogin(HttpSecurity http) throws Exception {
+  void configureFormLogin(HttpSecurity http, ApplicationContext context) throws Exception {
     http.formLogin(form -> {
       form.loginPage(loginPage);
 
@@ -132,6 +127,15 @@ public class WebforjSecurityConfigurer
         form.loginProcessingUrl(loginProcessingUrl);
       } else {
         form.loginProcessingUrl(loginPage);
+      }
+
+      // Use webforJ's authentication success handler to respect stored locations
+      try {
+        WebforjAuthenticationSuccessHandler successHandler =
+            context.getBean(WebforjAuthenticationSuccessHandler.class);
+        form.successHandler(successHandler);
+      } catch (Exception e) {
+        // pass
       }
 
       form.permitAll();
@@ -148,5 +152,4 @@ public class WebforjSecurityConfigurer
       registry.requestMatchers(frameworkMatcher).permitAll();
     });
   }
-
 }
