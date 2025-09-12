@@ -3,8 +3,8 @@ package com.webforj.router.history;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    * Constructs an empty ParametersBag object.
    */
   public ParametersBag() {
-    this.parameters = new HashMap<>();
+    this.parameters = new LinkedHashMap<>();
   }
 
   /**
@@ -34,7 +34,7 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    * @param query the query string
    */
   public ParametersBag(String query) {
-    this.parameters = new HashMap<>();
+    this.parameters = new LinkedHashMap<>();
     if (query != null && !query.isEmpty()) {
       String[] pairs = query.split("&");
       for (String pair : pairs) {
@@ -50,7 +50,7 @@ public class ParametersBag implements Serializable, Iterable<Map.Entry<String, S
    * @param parameters the map of query parameters
    */
   public ParametersBag(Map<String, String> parameters) {
-    this.parameters = new HashMap<>(parameters);
+    this.parameters = new LinkedHashMap<>(parameters);
   }
 
   /**
