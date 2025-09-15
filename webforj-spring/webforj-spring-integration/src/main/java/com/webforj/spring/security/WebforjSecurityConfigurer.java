@@ -17,6 +17,8 @@ public class WebforjSecurityConfigurer
 
   private String loginPage;
   private String loginProcessingUrl;
+  private String logoutUrl;
+  private String logoutSuccessUrl;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -63,6 +65,40 @@ public class WebforjSecurityConfigurer
   }
 
   /**
+   * Configures logout with default settings. Uses "/logout" as the logout URL and redirects to the
+   * login page with "?logout" parameter.
+   *
+   * @return this configurer for method chaining
+   */
+  public WebforjSecurityConfigurer logout() {
+    return logout("/logout", null);
+  }
+
+  /**
+   * Configures logout with a custom logout URL. Redirects to the login page with "?logout"
+   * parameter after successful logout.
+   *
+   * @param logoutUrl the URL that processes logout requests
+   * @return this configurer for method chaining
+   */
+  public WebforjSecurityConfigurer logout(String logoutUrl) {
+    return logout(logoutUrl, null);
+  }
+
+  /**
+   * Configures logout with custom URLs.
+   *
+   * @param logoutUrl the URL that processes logout requests
+   * @param logoutSuccessUrl the URL to redirect to after successful logout
+   * @return this configurer for method chaining
+   */
+  public WebforjSecurityConfigurer logout(String logoutUrl, String logoutSuccessUrl) {
+    this.logoutUrl = logoutUrl;
+    this.logoutSuccessUrl = logoutSuccessUrl;
+    return this;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -90,13 +126,30 @@ public class WebforjSecurityConfigurer
     // Configure form login if specified
     if (loginPage != null) {
       configureFormLogin(http, context);
+
+      // Auto-configure logout when form login is enabled and logout wasn't explicitly configured
+      if (logoutUrl == null) {
+        logoutUrl = "/logout";
+      }
+    }
+
+    // Configure logout if specified
+    if (logoutUrl != null) {
+      // Set default logout success URL if not specified
+      if (logoutSuccessUrl == null && loginPage != null) {
+        logoutSuccessUrl = loginPage + "?logout";
+      } else if (logoutSuccessUrl == null) {
+        logoutSuccessUrl = "/login?logout";
+      }
+
+      configureLogout(http, context);
     }
 
     // Configure CSRF with webforJ exemptions
     configureCsrf(http, context);
 
-    // Configure the framework requests to be permitted
-    configureWebforjAuthorization(http, context);
+    // Configure authorization rules
+    configureAuthorization(http, context);
   }
 
   /**
@@ -104,11 +157,7 @@ public class WebforjSecurityConfigurer
    */
   @Override
   public void configure(HttpSecurity http) throws Exception {
-    // Configure the final anyRequest rule if authorization is enabled
-    // This must be done in configure() to ensure it's the last rule
-    http.authorizeHttpRequests(registry -> {
-      anyRequestRule.accept(registry.anyRequest());
-    });
+    // All configuration is done in init() method
   }
 
   void configureCsrf(HttpSecurity http, ApplicationContext context) throws Exception {
@@ -119,10 +168,36 @@ public class WebforjSecurityConfigurer
       // Exempt webforJ framework internal requests
       csrf.ignoringRequestMatchers(frameworkMatcher);
 
-      // Exempt login page if configured
-      if (loginPage != null) {
-        csrf.ignoringRequestMatchers(loginPage);
+      // Disable CSRF for the login endpoint
+      if (loginProcessingUrl != null) {
+        csrf.ignoringRequestMatchers(loginProcessingUrl);
       }
+
+      // Disable CSRF for the logout endpoint
+      if (logoutUrl != null) {
+        csrf.ignoringRequestMatchers(logoutUrl);
+      }
+    });
+  }
+
+  void configureAuthorization(HttpSecurity http, ApplicationContext context) throws Exception {
+    WebforjFrameworkRequestMatcher frameworkMatcher =
+        context.getBean(WebforjFrameworkRequestMatcher.class);
+
+    http.authorizeHttpRequests(registry -> {
+      // Permit all webforJ framework internal requests
+      registry.requestMatchers(frameworkMatcher).permitAll();
+
+      // Permit login page if configured
+      if (loginPage != null) {
+        registry.requestMatchers(loginPage).permitAll();
+        if (loginProcessingUrl != null && !loginProcessingUrl.equals(loginPage)) {
+          registry.requestMatchers(loginProcessingUrl).permitAll();
+        }
+      }
+
+      // Configure the final anyRequest rule
+      anyRequestRule.accept(registry.anyRequest());
     });
   }
 
@@ -144,19 +219,18 @@ public class WebforjSecurityConfigurer
       } catch (Exception e) {
         // pass
       }
-
-      form.permitAll();
     });
   }
 
-  void configureWebforjAuthorization(HttpSecurity http, ApplicationContext context)
-      throws Exception {
-    WebforjFrameworkRequestMatcher frameworkMatcher =
-        context.getBean(WebforjFrameworkRequestMatcher.class);
+  void configureLogout(HttpSecurity http, ApplicationContext context) throws Exception {
+    http.logout(logout -> {
+      logout.logoutUrl(logoutUrl);
 
-    http.authorizeHttpRequests(registry -> {
-      // Permit all webforJ framework internal requests
-      registry.requestMatchers(frameworkMatcher).permitAll();
+      if (logoutSuccessUrl != null) {
+        logout.logoutSuccessUrl(logoutSuccessUrl);
+      }
+
+      logout.permitAll();
     });
   }
 }
