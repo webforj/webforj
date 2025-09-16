@@ -108,7 +108,7 @@ public interface RouteSecurityManager {
    * </p>
    *
    * @return the pre-authentication location, or empty if none was stored
-   * @since 24.12
+   * @since 25.10
    */
   Optional<Location> getPreAuthenticationLocation();
 
@@ -120,7 +120,7 @@ public interface RouteSecurityManager {
    * successfully redirecting the user to prevent stale redirects on subsequent logins.
    * </p>
    *
-   * @since 24.12
+   * @since 25.10
    */
   void clearPreAuthenticationLocation();
 
@@ -133,7 +133,7 @@ public interface RouteSecurityManager {
    * </p>
    *
    * @return the pre-authentication location, or empty if none was stored
-   * @since 24.12
+   * @since 25.10
    */
   default Optional<Location> consumePreAuthenticationLocation() {
     Optional<Location> location = getPreAuthenticationLocation();

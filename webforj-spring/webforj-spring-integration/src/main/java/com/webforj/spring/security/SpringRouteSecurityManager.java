@@ -52,7 +52,7 @@ public class SpringRouteSecurityManager extends AbstractRouteSecurityManager {
     registerEvaluator(new DenyAllEvaluator(), 0.1); // Always deny - highest priority
     registerEvaluator(new AnonymousAccessEvaluator(), 0.2); // Public routes - bypass auth
     registerEvaluator(new AuthenticationRequiredEvaluator(), 0.3); // Check auth requirement
-    registerEvaluator(new PermitAllEvaluator(), 0.4); // Allow authenticated users
+    registerEvaluator(new PermitAllEvaluator(), 0.4); // Require authentication, allow all authenticated users
     registerEvaluator(new RolesAllowedEvaluator(), 0.5); // Check specific roles
 
     // Register Spring-specific evaluators (0.6-0.9 range)

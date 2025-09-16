@@ -19,7 +19,7 @@ public class SpringSecurityConfigurationProperties {
 
   /**
    * Whether routes are secure by default. When true, routes require authentication unless
-   * explicitly marked with {@code @AnonymousAccess} or {@code @PermitAll}. When false, routes are
+   * explicitly marked with {@code @AnonymousAccess}. When false, routes are
    * open by default and must be explicitly secured.
    */
   private Boolean secureByDefault = true;
