@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates that a route allows anonymous access.
- *∏
+ *
  * <p>
  * Routes marked with this annotation do not require authentication and are accessible to all users,
  * including anonymous users. This annotation takes precedence over secure-by-default configuration.

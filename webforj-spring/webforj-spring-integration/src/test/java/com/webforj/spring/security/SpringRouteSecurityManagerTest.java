@@ -101,7 +101,7 @@ class SpringRouteSecurityManagerTest {
   }
 
   // Test evaluator classes
-  @RegisteredEvaluator(priority = 1.5)
+  @RegisteredEvaluator(priority = 15)
   static class CustomEvaluator implements RouteSecurityEvaluator {
     @Override
     public boolean supports(Class<?> target) {

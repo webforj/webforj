@@ -35,8 +35,7 @@ import org.springframework.stereotype.Component;
  * Example usage:
  * </p>
  *
- * <pre>{@code
- * @RegisteredEvaluator(priority = 10)
+ * <pre>{@code @RegisteredEvaluator(priority = 10)
  * public class CustomAccessEvaluator implements RouteSecurityEvaluator {
  *   // Implementation
  * }

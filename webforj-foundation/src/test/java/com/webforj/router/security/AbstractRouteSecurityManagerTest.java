@@ -42,7 +42,7 @@ class AbstractRouteSecurityManagerTest {
   void shouldRegisterEvaluatorWithPriority() {
     RouteSecurityEvaluator evaluator = mock(RouteSecurityEvaluator.class);
 
-    securityManager.registerEvaluator(evaluator, 10.0);
+    securityManager.registerEvaluator(evaluator, 10);
 
     List<RouteSecurityEvaluator> evaluators = securityManager.getEvaluators();
     assertEquals(1, evaluators.size());
@@ -50,13 +50,18 @@ class AbstractRouteSecurityManagerTest {
   }
 
   @Test
-  void shouldThrowForInvalidPriority() {
-    RouteSecurityEvaluator evaluator = mock(RouteSecurityEvaluator.class);
+  void shouldAcceptAnyPriorityIncludingNegative() {
+    RouteSecurityEvaluator evaluator1 = mock(RouteSecurityEvaluator.class);
+    RouteSecurityEvaluator evaluator2 = mock(RouteSecurityEvaluator.class);
+    RouteSecurityEvaluator evaluator3 = mock(RouteSecurityEvaluator.class);
 
-    assertThrows(IllegalArgumentException.class,
-        () -> securityManager.registerEvaluator(evaluator, 0.0));
-    assertThrows(IllegalArgumentException.class,
-        () -> securityManager.registerEvaluator(evaluator, -1.0));
+    // Should not throw for any int value
+    securityManager.registerEvaluator(evaluator1, 0);
+    securityManager.registerEvaluator(evaluator2, -1);
+    securityManager.registerEvaluator(evaluator3, 100);
+
+    // All evaluators should be registered
+    assertEquals(3, securityManager.getEvaluators().size());
   }
 
   @Test
@@ -65,9 +70,9 @@ class AbstractRouteSecurityManagerTest {
     RouteSecurityEvaluator evaluator2 = mock(RouteSecurityEvaluator.class);
     RouteSecurityEvaluator evaluator3 = mock(RouteSecurityEvaluator.class);
 
-    securityManager.registerEvaluator(evaluator2, 20.0);
-    securityManager.registerEvaluator(evaluator3, 30.0);
-    securityManager.registerEvaluator(evaluator1, 10.0);
+    securityManager.registerEvaluator(evaluator2, 20);
+    securityManager.registerEvaluator(evaluator3, 30);
+    securityManager.registerEvaluator(evaluator1, 10);
 
     List<RouteSecurityEvaluator> evaluators = securityManager.getEvaluators();
     assertEquals(3, evaluators.size());
@@ -81,8 +86,8 @@ class AbstractRouteSecurityManagerTest {
     RouteSecurityEvaluator evaluator1 = mock(RouteSecurityEvaluator.class);
     RouteSecurityEvaluator evaluator2 = mock(RouteSecurityEvaluator.class);
 
-    securityManager.registerEvaluator(evaluator1, 10.0);
-    securityManager.registerEvaluator(evaluator2, 20.0);
+    securityManager.registerEvaluator(evaluator1, 10);
+    securityManager.registerEvaluator(evaluator2, 20);
     assertEquals(2, securityManager.getEvaluators().size());
 
     securityManager.unregisterEvaluator(evaluator1);
@@ -110,7 +115,7 @@ class AbstractRouteSecurityManagerTest {
     when(evaluator.evaluate(eq(TestRoute.class), eq(navigationContext), eq(securityContext),
         any(SecurityEvaluatorChain.class))).thenReturn(RouteAccessDecision.grant());
 
-    securityManager.registerEvaluator(evaluator, 10.0);
+    securityManager.registerEvaluator(evaluator, 10);
 
     RouteAccessDecision decision = securityManager.evaluate(TestRoute.class, navigationContext);
 
