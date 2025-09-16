@@ -64,25 +64,22 @@ public interface RouteSecurityManager {
    * Registers a security evaluator with specified priority.
    *
    * <p>
-   * Priority must be greater than 0. Lower values execute first.
+   * Lower priority values execute first.
    * </p>
    *
    * <p>
    * Typical priority ranges:
    * </p>
    * <ul>
-   * <li>0.1 - 0.2: Security bypass evaluators (DenyAll, AnonymousAccess)</li>
-   * <li>0.3 - 0.5: Authentication and authorization evaluators</li>
-   * <li>0.6 - 0.9: Framework-specific evaluators (SpEL expressions, etc.)</li>
-   * <li>1.0+: Custom user evaluators</li>
+   * <li>0 - 9: Core framework evaluators (DenyAll, AnonymousAccess, PermitAll, RolesAllowed,
+   * SpEL)</li>
+   * <li>10+: Custom user evaluators</li>
    * </ul>
    *
    * @param evaluator the evaluator to register
-   * @param priority the priority (must be greater than 0)
-   *
-   * @throws IllegalArgumentException if priority is not greater than 0
+   * @param priority the priority value (lower values execute first)
    */
-  void registerEvaluator(RouteSecurityEvaluator evaluator, double priority);
+  void registerEvaluator(RouteSecurityEvaluator evaluator, int priority);
 
   /**
    * Unregisters a security evaluator.

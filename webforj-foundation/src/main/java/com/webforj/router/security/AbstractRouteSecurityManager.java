@@ -39,16 +39,12 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
    * {@inheritDoc}
    */
   @Override
-  public void registerEvaluator(RouteSecurityEvaluator evaluator, double priority) {
-    if (priority <= 0.0) {
-      throw new IllegalArgumentException(
-          "Evaluator priority must be greater than 0. Got: " + priority);
-    }
+  public void registerEvaluator(RouteSecurityEvaluator evaluator, int priority) {
 
     synchronized (evaluators) {
       evaluators.add(new PrioritizedEvaluator(evaluator, priority));
       // Sort by priority (lower values first)
-      evaluators.sort(Comparator.comparingDouble(e -> e.priority));
+      evaluators.sort(Comparator.comparingInt(e -> e.priority));
     }
 
     logger.log(Level.DEBUG, "Registered evaluator: {0} with priority {1}",
@@ -218,9 +214,9 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
    */
   private static class PrioritizedEvaluator {
     final RouteSecurityEvaluator evaluator;
-    final double priority;
+    final int priority;
 
-    PrioritizedEvaluator(RouteSecurityEvaluator evaluator, double priority) {
+    PrioritizedEvaluator(RouteSecurityEvaluator evaluator, int priority) {
       this.evaluator = evaluator;
       this.priority = priority;
     }

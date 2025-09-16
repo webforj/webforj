@@ -39,52 +39,54 @@ public class SpringRouteSecurityManager extends AbstractRouteSecurityManager {
    * <p>
    * Priority ranges:
    * <ul>
-   * <li>0.1-0.2: Security bypass evaluators (DenyAll, AnonymousAccess)</li>
-   * <li>0.3-0.5: Authentication/authorization evaluators</li>
-   * <li>0.6-0.9: Framework-specific evaluators (SpEL, etc.)</li>
-   * <li>1.0+: Custom user evaluators</li>
+   * <li>0 - 9: Core framework evaluators</li>
+   * <li>10+: Custom user evaluators</li>
    * </ul>
    * </p>
    */
   @PostConstruct
   public void initialize() {
     // Register built-in evaluators with default priorities
-    registerEvaluator(new DenyAllEvaluator(), 0.1); // Always deny - highest priority
-    registerEvaluator(new AnonymousAccessEvaluator(), 0.2); // Public routes - bypass auth
-    registerEvaluator(new AuthenticationRequiredEvaluator(), 0.3); // Check auth requirement
-    registerEvaluator(new PermitAllEvaluator(), 0.4); // Require authentication, allow all authenticated users
-    registerEvaluator(new RolesAllowedEvaluator(), 0.5); // Check specific roles
 
-    // Register Spring-specific evaluators (0.6-0.9 range)
+    // Always deny - highest priority
+    registerEvaluator(new DenyAllEvaluator(), 1);
+
+    // Public routes - bypass auth
+    registerEvaluator(new AnonymousAccessEvaluator(), 2);
+
+    // Check auth requirement
+    registerEvaluator(new AuthenticationRequiredEvaluator(), 3);
+
+    // Require authentication, allow all authenticated users
+    registerEvaluator(new PermitAllEvaluator(), 4);
+
+    // Check specific roles
+    registerEvaluator(new RolesAllowedEvaluator(), 5);
+
+    // Register Spring-specific evaluators
     try {
       RouteSecurityEvaluator routeAccessEvaluator =
           applicationContext.getBean("springRouteAccessEvaluator", RouteSecurityEvaluator.class);
-      registerEvaluator(routeAccessEvaluator, 0.6); // SpEL expression evaluation
+      // SpEL expression evaluation
+      registerEvaluator(routeAccessEvaluator, 6);
     } catch (Exception e) {
       logger.log(Level.DEBUG, "SpringRouteAccessEvaluator not found, skipping registration");
     }
 
     // Auto-discover and register custom evaluators annotated with @RegisteredEvaluator
-    // These typically use priorities 1.0+ to run after core evaluators
+    // These typically use priorities 10+ to run after core evaluators
     Map<String, Object> evaluators =
         applicationContext.getBeansWithAnnotation(RegisteredEvaluator.class);
     for (Map.Entry<String, Object> entry : evaluators.entrySet()) {
       Object bean = entry.getValue();
       if (bean instanceof RouteSecurityEvaluator) {
         RegisteredEvaluator annotation = bean.getClass().getAnnotation(RegisteredEvaluator.class);
-        double priority = annotation.priority();
+        int priority = annotation.priority();
 
-        if (priority <= 0.0) {
+        if (priority < 10) {
           logger.log(Level.WARNING,
-              "Skipping evaluator {0} with invalid priority {1}. Priority must be greater than 0",
-              bean.getClass().getName(), priority);
-          continue;
-        }
-
-        if (priority < 1.0) {
-          logger.log(Level.WARNING,
-              "Custom evaluator {0} uses priority {1} in core range (0.1-0.9). "
-                  + "Consider using priority >= 1.0 for custom evaluators",
+              "Custom evaluator {0} uses priority {1} in core range (0 to 9). "
+                  + "Consider using priority >= 10 for custom evaluators",
               bean.getClass().getName(), priority);
         }
 

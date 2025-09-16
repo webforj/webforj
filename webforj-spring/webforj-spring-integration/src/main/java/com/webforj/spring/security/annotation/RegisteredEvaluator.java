@@ -20,22 +20,23 @@ import org.springframework.stereotype.Component;
  *
  * <p>
  * The priority determines the order in which evaluators are executed, with lower values executing
- * first. Priority must be greater than 0.
+ * first.
  * </p>
  *
  * <p>
  * Recommended priority ranges:
  * </p>
  * <ul>
- * <li>0.1 - 0.9: Reserved for core framework evaluators</li>
- * <li>1.0+: Custom user evaluators</li>
+ * <li>0 - 9: Reserved for core framework evaluators</li>
+ * <li>10+: Custom user evaluators</li>
  * </ul>
  *
  * <p>
  * Example usage:
  * </p>
  *
- * <pre>{@code @RegisteredEvaluator(priority = 1.5)
+ * <pre>{@code
+ * @RegisteredEvaluator(priority = 10)
  * public class CustomAccessEvaluator implements RouteSecurityEvaluator {
  *   // Implementation
  * }
@@ -54,15 +55,15 @@ public @interface RegisteredEvaluator {
    * The priority of this evaluator.
    *
    * <p>
-   * Must be greater than 0. Lower values execute first.
+   * Lower values execute first.
    * </p>
    *
    * <ul>
-   * <li>Core evaluators: 0.1 to 1.0</li>
-   * <li>Custom evaluators: typically greater than 1.0</li>
+   * <li>Framework evaluators: 0 to 9</li>
+   * <li>Custom evaluators: typically 10 or higher</li>
    * </ul>
    *
    * @return the evaluator priority
    */
-  double priority();
+  int priority();
 }
