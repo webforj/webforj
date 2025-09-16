@@ -14,6 +14,8 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -56,6 +58,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
   private static final Logger logger = System.getLogger(SpringRouteAccessEvaluator.class.getName());
   private final ExpressionParser parser = new SpelExpressionParser();
+  private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
   /**
    * {@inheritDoc}
@@ -136,10 +139,12 @@ public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (authentication != null) {
+      // Create and configure SecurityExpressionRoot
       SecurityExpressionRoot root = new SecurityExpressionRoot(authentication) {};
-      evalContext.setRootObject(root);
+      root.setTrustResolver(trustResolver);
+      root.setDefaultRolePrefix("ROLE_");
 
-      // Also make authentication available as a variable for direct access
+      evalContext.setRootObject(root);
       evalContext.setVariable("authentication", authentication);
       evalContext.setVariable("principal", authentication.getPrincipal());
     }

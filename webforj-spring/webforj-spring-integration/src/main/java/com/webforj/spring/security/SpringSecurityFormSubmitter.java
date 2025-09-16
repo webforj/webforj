@@ -63,7 +63,7 @@ public final class SpringSecurityFormSubmitter {
   /**
    * Base form builder.
    */
-  private static class FormBuilder {
+  static class FormBuilder {
     protected final String action;
     protected final Map<String, String> fields = new HashMap<>();
     protected String method = "POST";
@@ -73,6 +73,55 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Gets the form action URL.
+     *
+     * @return the action URL
+     */
+    public String getAction() {
+      return action;
+    }
+
+    /**
+     * Gets the HTTP method.
+     *
+     * @return the HTTP method
+     */
+    public String getMethod() {
+      return method;
+    }
+
+    /**
+     * Gets all form fields.
+     *
+     * @return unmodifiable view of the fields map
+     */
+    public Map<String, String> getFields() {
+      return Map.copyOf(fields);
+    }
+
+    /**
+     * Gets the value of a specific field.
+     *
+     * @param name the field name
+     * @return the field value, or null if not set
+     */
+    public String getField(String name) {
+      return fields.get(name);
+    }
+
+    /**
+     * Checks if a field is present.
+     *
+     * @param name the field name
+     * @return true if the field is present
+     */
+    public boolean hasField(String name) {
+      return fields.containsKey(name);
+    }
+
+    /**
+     * Sets the HTTP method.
+     *
      * @param method the HTTP method
      * @return this builder
      */
@@ -82,6 +131,8 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Adds a field to the form.
+     *
      * @param name field name
      * @param value field value
      * @return this builder
@@ -92,6 +143,8 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Adds multiple fields to the form.
+     *
      * @param fields field map
      * @return this builder
      */
@@ -101,6 +154,8 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Removes a field from the form.
+     *
      * @param name field name
      * @return this builder
      */
@@ -110,6 +165,8 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Clears all fields from the form.
+     *
      * @return this builder
      */
     public FormBuilder clearFields() {
@@ -169,6 +226,8 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Sets the username field.
+     *
      * @param username the username
      * @return this builder
      */
@@ -178,6 +237,8 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Sets the password field.
+     *
      * @param password the password
      * @return this builder
      */
@@ -187,14 +248,45 @@ public final class SpringSecurityFormSubmitter {
     }
 
     /**
+     * Enables or disables remember-me.
+     *
      * @param rememberMe enable remember-me
      * @return this builder
      */
     public LoginFormBuilder rememberMe(boolean rememberMe) {
       if (rememberMe) {
         addField("remember-me", "on");
+      } else {
+        removeField("remember-me");
       }
       return this;
+    }
+
+    /**
+     * Gets the username field value.
+     *
+     * @return the username, or null if not set
+     */
+    public String getUsername() {
+      return getField("username");
+    }
+
+    /**
+     * Gets the password field value.
+     *
+     * @return the password, or null if not set
+     */
+    public String getPassword() {
+      return getField("password");
+    }
+
+    /**
+     * Checks if remember-me is enabled.
+     *
+     * @return true if remember-me is enabled
+     */
+    public boolean isRememberMe() {
+      return hasField("remember-me");
     }
   }
 

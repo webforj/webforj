@@ -21,7 +21,7 @@ public class SpringRouteSecurityContext implements RouteSecurityContext {
   @Override
   public boolean isAuthenticated() {
     Authentication auth = getAuthentication();
-    return auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
+    return auth != null && auth.isAuthenticated();
   }
 
   /**
