@@ -6,11 +6,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.webforj.router.NavigationContext;
-import com.webforj.router.annotation.AnonymousAccess;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.security.RouteAccessDecision;
 import com.webforj.router.security.RouteSecurityContext;
 import com.webforj.router.security.SecurityEvaluatorChain;
+import com.webforj.router.security.annotation.AnonymousAccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
