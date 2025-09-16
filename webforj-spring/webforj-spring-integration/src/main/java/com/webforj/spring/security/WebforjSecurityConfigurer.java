@@ -36,8 +36,8 @@ public class WebforjSecurityConfigurer
    *
    * @return this configurer for method chaining
    */
-  public WebforjSecurityConfigurer formLogin() {
-    return formLogin(null);
+  public WebforjSecurityConfigurer loginPage() {
+    return loginPage(null);
   }
 
   /**
@@ -46,8 +46,8 @@ public class WebforjSecurityConfigurer
    * @param loginPage the login page URL (e.g., "/login")
    * @return this configurer for method chaining
    */
-  public WebforjSecurityConfigurer formLogin(String loginPage) {
-    return formLogin(loginPage, loginPage);
+  public WebforjSecurityConfigurer loginPage(String loginPage) {
+    return loginPage(loginPage, loginPage);
   }
 
   /**
@@ -58,7 +58,7 @@ public class WebforjSecurityConfigurer
    *
    * @return this configurer for method chaining
    */
-  public WebforjSecurityConfigurer formLogin(String loginPage, String loginProcessingUrl) {
+  public WebforjSecurityConfigurer loginPage(String loginPage, String loginProcessingUrl) {
     this.loginPage = loginPage;
     this.loginProcessingUrl = loginProcessingUrl;
     return this;
