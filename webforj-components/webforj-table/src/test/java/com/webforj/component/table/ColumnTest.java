@@ -117,11 +117,8 @@ class ColumnTest {
 
   @Test
   void shouldValidatePositiveWidth() {
-    assertThrows(IllegalArgumentException.class, () -> column.setWidth(0));
     assertThrows(IllegalArgumentException.class, () -> column.setWidth(-10));
-    assertThrows(IllegalArgumentException.class, () -> column.setMinWidth(0));
     assertThrows(IllegalArgumentException.class, () -> column.setMinWidth(-5));
-    assertThrows(IllegalArgumentException.class, () -> column.setMaxWidth(0));
     assertThrows(IllegalArgumentException.class, () -> column.setMaxWidth(-100));
   }
 
