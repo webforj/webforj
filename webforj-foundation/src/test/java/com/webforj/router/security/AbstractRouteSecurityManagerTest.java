@@ -1,7 +1,6 @@
 package com.webforj.router.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.router.NavigationContext;
+import com.webforj.router.NavigationOptions;
 import com.webforj.router.Router;
 import com.webforj.router.annotation.Route;
 import com.webforj.router.history.Location;
@@ -157,7 +157,7 @@ class AbstractRouteSecurityManagerTest {
 
       securityManager.onAccessDenied(decision, navigationContext);
 
-      verify(router).navigate(authLocation);
+      verify(router).navigate(eq(authLocation), any(NavigationOptions.class));
     }
   }
 
@@ -173,7 +173,7 @@ class AbstractRouteSecurityManagerTest {
 
       securityManager.onAccessDenied(decision, navigationContext);
 
-      verify(router).navigate(forbiddenLocation);
+      verify(router).navigate(eq(forbiddenLocation), any(NavigationOptions.class));
     }
   }
 
@@ -189,7 +189,7 @@ class AbstractRouteSecurityManagerTest {
 
       securityManager.onAccessDenied(decision, navigationContext);
 
-      verify(router).navigate(deniedLocation);
+      verify(router).navigate(eq(deniedLocation), any(NavigationOptions.class));
     }
   }
 

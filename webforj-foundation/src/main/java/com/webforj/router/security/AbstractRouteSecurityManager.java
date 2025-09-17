@@ -2,6 +2,7 @@ package com.webforj.router.security;
 
 import com.webforj.Environment;
 import com.webforj.router.NavigationContext;
+import com.webforj.router.NavigationOptions;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
 import java.lang.System.Logger;
@@ -205,7 +206,10 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
   private void navigateTo(Location location) {
     Router router = Router.getCurrent();
     if (router != null) {
-      router.navigate(location);
+      NavigationOptions options = new NavigationOptions();
+      options.setNavigationType(NavigationOptions.NavigationType.REPLACE);
+      options.setUpdateHistory(false);
+      router.navigate(location, options);
     }
   }
 
