@@ -17,33 +17,26 @@ import java.util.stream.Stream;
  * <h3>Example: SQL Database</h3>
  *
  * <pre>{@code
- * DelegatingRepository<Product, ProductFilter> repo = new DelegatingRepository<>(
- *     criteria -> {
- *         String sql = "SELECT * FROM products";
- *         sql += buildWhere(criteria.getFilter());
- *         sql += buildOrderBy(criteria.getOrderCriteria());
- *         sql += " LIMIT " + criteria.getLimit() + " OFFSET " + criteria.getOffset();
- *         return jdbc.query(sql, rowMapper).stream();
- *     },
- *     criteria -> {
- *         String sql = "SELECT COUNT(*) FROM products" + buildWhere(criteria.getFilter());
- *         return jdbc.queryForObject(sql, Long.class);
- *     },
- *     key -> Optional.ofNullable(
- *         jdbc.queryForObject("SELECT * FROM products WHERE id = ?", rowMapper, key)
- *     )
- * );
+ * DelegatingRepository<Product, ProductFilter> repo = new DelegatingRepository<>(criteria -> {
+ *   String sql = "SELECT * FROM products";
+ *   sql += buildWhere(criteria.getFilter());
+ *   sql += buildOrderBy(criteria.getOrderCriteria());
+ *   sql += " LIMIT " + criteria.getLimit() + " OFFSET " + criteria.getOffset();
+ *   return jdbc.query(sql, rowMapper).stream();
+ * }, criteria -> {
+ *   String sql = "SELECT COUNT(*) FROM products" + buildWhere(criteria.getFilter());
+ *   return jdbc.queryForObject(sql, Long.class);
+ * }, key -> Optional
+ *     .ofNullable(jdbc.queryForObject("SELECT * FROM products WHERE id = ?", rowMapper, key)));
  * }</pre>
  *
  * <h3>Example: Delegating to Another Repository</h3>
  *
  * <pre>{@code
  * CollectionRepository<Entity> backing = new CollectionRepository<>(data);
- * DelegatingRepository<Entity, Predicate<Entity>> repo = new DelegatingRepository<>(
- *     criteria -> backing.findBy(criteria),
- *     criteria -> backing.size(criteria),
- *     key -> backing.find(key)
- * );
+ * DelegatingRepository<Entity, Predicate<Entity>> repo =
+ *     new DelegatingRepository<>(criteria -> backing.findBy(criteria),
+ *         criteria -> backing.size(criteria), key -> backing.find(key));
  * }</pre>
  *
  * @param <T> Entity type
