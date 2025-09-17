@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.webforj</groupId>
     <artifactId>webforj-components</artifactId>
-    <version>25.03</version>
+    <version>25.10-SNAPSHOT</version>
   </parent>
 
   <artifactId>webforj-terminal</artifactId>
