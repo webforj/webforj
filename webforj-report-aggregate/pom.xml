@@ -48,6 +48,20 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj-webswing -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-webswing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- webforj-plugins -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-webswing</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- webforj-plugins -->
     <dependency>
       <groupId>com.webforj</groupId>
