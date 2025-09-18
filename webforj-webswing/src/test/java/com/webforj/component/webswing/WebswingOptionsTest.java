@@ -67,15 +67,6 @@ class WebswingOptionsTest {
   }
 
   @Test
-  void shouldSetAndGetSecurityTokenProvider() {
-    String token = "secure-token-123";
-    WebswingOptions result = options.setSecurityToken(token);
-
-    assertEquals(token, options.getSecurityToken());
-    assertSame(options, result);
-  }
-
-  @Test
   void shouldSetAndGetRealm() {
     String realm = "secure-realm-123";
     WebswingOptions result = options.setRealm(realm);

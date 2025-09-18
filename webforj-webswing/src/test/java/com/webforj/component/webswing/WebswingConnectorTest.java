@@ -49,29 +49,29 @@ class WebswingConnectorTest {
       String url = "https://localhost:8080/webswing";
       boolean autoStart = false;
 
-      WebswingConnector connector = new WebswingConnector(url, autoStart);
+      WebswingConnector con = new WebswingConnector(url, autoStart);
 
-      assertEquals(url, connector.getUrl());
-      assertNotNull(connector.getOptions());
-      assertEquals(autoStart, connector.getOptions().isAutoStart());
+      assertEquals(url, con.getUrl());
+      assertNotNull(con.getOptions());
+      assertEquals(autoStart, con.getOptions().isAutoStart());
     }
 
     @Test
     void shouldCreateConnectorWithUrlAndDefaultAutoStart() {
       String url = "https://localhost:8080/webswing";
 
-      WebswingConnector connector = new WebswingConnector(url);
+      WebswingConnector con = new WebswingConnector(url);
 
-      assertEquals(url, connector.getUrl());
-      assertNotNull(connector.getOptions());
-      assertTrue(connector.getOptions().isAutoStart());
+      assertEquals(url, con.getUrl());
+      assertNotNull(con.getOptions());
+      assertTrue(con.getOptions().isAutoStart());
     }
 
     @Test
     void shouldCreateEmptyConnector() {
-      WebswingConnector connector = new WebswingConnector();
+      WebswingConnector con = new WebswingConnector();
 
-      assertEquals("", connector.getUrl());
+      assertEquals("", con.getUrl());
     }
   }
 
