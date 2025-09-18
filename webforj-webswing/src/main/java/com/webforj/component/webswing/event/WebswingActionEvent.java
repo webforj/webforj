@@ -67,12 +67,8 @@ public class WebswingActionEvent extends ComponentEvent<WebswingConnector> {
    * @return the binary data
    */
   public Optional<String> getActionBinaryData() {
-    if (binaryData != null) {
-      return Optional
-          .of(new String(Base64.getDecoder().decode(binaryData.getBytes(StandardCharsets.UTF_8)),
-              StandardCharsets.UTF_8));
-    }
-
-    return Optional.empty();
+    return Optional
+        .of(new String(Base64.getDecoder().decode(binaryData.getBytes(StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8));
   }
 }

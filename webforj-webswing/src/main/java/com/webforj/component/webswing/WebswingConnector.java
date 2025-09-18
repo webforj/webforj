@@ -183,7 +183,7 @@ public class WebswingConnector extends ElementComposite implements HasSize<Websw
    */
   public WebswingConnector performAction(String actionName, String data, String binaryData) {
     Objects.requireNonNull(actionName, "Action name cannot be null");
-    Objects.requireNonNull(data, "Action Date name cannot be null");
+    Objects.requireNonNull(data, "Action Data cannot be null");
     Objects.requireNonNull(actionName, "Action BinaryData cannot be null");
 
     String encodedBinaryData = binaryData;

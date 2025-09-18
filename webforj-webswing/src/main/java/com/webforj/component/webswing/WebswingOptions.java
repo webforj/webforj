@@ -325,7 +325,7 @@ public class WebswingOptions {
     }
 
     /**
-     * Sets the interval between ping attempts in milliseconds.
+     * Sets the interval between ping attempts in seconds.
      *
      * @param interval the interval between ping attempts
      * @return the options object
@@ -336,7 +336,7 @@ public class WebswingOptions {
     }
 
     /**
-     * Gets the interval between ping attempts in milliseconds.
+     * Gets the interval between ping attempts in seconds.
      *
      * @return the interval between ping attempts
      */
