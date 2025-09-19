@@ -1,5 +1,6 @@
 package com.webforj.component.webswing;
 
+import com.webforj.component.element.Element;
 import com.webforj.component.element.ElementComposite;
 import com.webforj.component.element.PropertyDescriptor;
 import com.webforj.component.element.annotation.NodeName;
@@ -322,5 +323,15 @@ public class WebswingConnector extends ElementComposite implements HasSize<Websw
     // must block the call before call destroy on super
     getElement().callJsFunction("destroy");
     super.onDestroy();
+  }
+
+  /**
+   * Gets the underlying {@link Element} instance.
+   *
+   * @return the underlying Element
+   */
+  @Override
+  public Element getElement() {
+    return super.getElement();
   }
 }
