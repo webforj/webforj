@@ -34,7 +34,7 @@ class WebswingConnectorTest {
   void setUp() {
     connector = new WebswingConnector() {
       @Override
-      protected Element getElement() {
+      public Element getElement() {
         return mockElement;
       }
     };
