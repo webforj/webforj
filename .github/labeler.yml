@@ -30,6 +30,10 @@
 - changed-files:
   - any-glob-to-any-file: 'webforj-spring/**'
 
+"module: webswing":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-webswing/**'
+
 documentation:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'
