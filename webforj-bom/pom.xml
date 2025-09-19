@@ -49,6 +49,14 @@
       </dependency>
       <!-- End Spring -->
 
+      <!-- Webswing -->
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-webswing</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Webswing -->
+
       <!-- Extensions -->
       <dependency>
         <groupId>com.webforj</groupId>

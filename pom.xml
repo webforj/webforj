@@ -63,6 +63,7 @@
     <module>webforj-plugins</module>
     <module>webforj-report-aggregate</module>
     <module>webforj-spring</module>
+    <module>webforj-webswing</module>
   </modules>
 
 

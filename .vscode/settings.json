@@ -14,7 +14,8 @@
     "infinitescroll",
     "livereload",
     "Restarter",
-    "springframework"
+    "springframework",
+    "Webswing"
   ],
   "java.completion.favoriteStaticMembers": [
     "org.junit.Assert.*",
