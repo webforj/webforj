@@ -1,5 +1,7 @@
 package com.webforj.spring.security;
 
+import com.webforj.component.Component;
+import com.webforj.router.RoutePathResolver;
 import java.util.function.Consumer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +21,7 @@ public class WebforjSecurityConfigurer
   private String loginProcessingUrl;
   private String logoutUrl;
   private String logoutSuccessUrl;
+  private String accessDeniedPage;
   private Consumer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl> anyRequestRule =
       AuthorizeHttpRequestsConfigurer.AuthorizedUrl::permitAll;
 
@@ -37,7 +40,7 @@ public class WebforjSecurityConfigurer
    * @return this configurer for method chaining
    */
   public WebforjSecurityConfigurer loginPage() {
-    return loginPage(null);
+    return loginPage((String) null);
   }
 
   /**
@@ -48,6 +51,22 @@ public class WebforjSecurityConfigurer
    */
   public WebforjSecurityConfigurer loginPage(String loginPage) {
     return loginPage(loginPage, loginPage);
+  }
+
+  /**
+   * Configures form-based authentication using a Component class.
+   *
+   * @param loginPageComponent the login page component class
+   * @return this configurer for method chaining
+   * @throws IllegalArgumentException if the component doesn't have a @Route annotation
+   */
+  public WebforjSecurityConfigurer loginPage(Class<? extends Component> loginPageComponent) {
+    String path = RoutePathResolver.resolvePath(loginPageComponent);
+    if (path == null) {
+      throw new IllegalArgumentException(
+          "Component " + loginPageComponent.getName() + " does not have a @Route annotation");
+    }
+    return loginPage(path, path);
   }
 
   /**
@@ -99,6 +118,34 @@ public class WebforjSecurityConfigurer
   }
 
   /**
+   * Configures the access denied page.
+   *
+   * @param accessDeniedPage the access denied page URL (e.g., "/access-denied")
+   * @return this configurer for method chaining
+   */
+  public WebforjSecurityConfigurer accessDeniedPage(String accessDeniedPage) {
+    this.accessDeniedPage = accessDeniedPage;
+    return this;
+  }
+
+  /**
+   * Configures the access denied page using a Component class.
+   *
+   * @param accessDeniedPageComponent the access denied page component class
+   * @return this configurer for method chaining
+   * @throws IllegalArgumentException if the component doesn't have a @Route annotation
+   */
+  public WebforjSecurityConfigurer accessDeniedPage(
+      Class<? extends Component> accessDeniedPageComponent) {
+    String path = RoutePathResolver.resolvePath(accessDeniedPageComponent);
+    if (path == null) {
+      throw new IllegalArgumentException("Component " + accessDeniedPageComponent.getName()
+          + " does not have a @Route annotation");
+    }
+    return accessDeniedPage(path);
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -143,6 +190,11 @@ public class WebforjSecurityConfigurer
       }
 
       configureLogout(http, context);
+    }
+
+    // Update properties for webforJ router access denied handling
+    if (accessDeniedPage != null && properties.getDenyPath() == null) {
+      properties.setDenyPath(accessDeniedPage);
     }
 
     // Configure CSRF with webforJ exemptions
@@ -194,6 +246,11 @@ public class WebforjSecurityConfigurer
         if (loginProcessingUrl != null && !loginProcessingUrl.equals(loginPage)) {
           registry.requestMatchers(loginProcessingUrl).permitAll();
         }
+      }
+
+      // Permit access denied page if configured
+      if (accessDeniedPage != null) {
+        registry.requestMatchers(accessDeniedPage).permitAll();
       }
 
       // Configure the final anyRequest rule
