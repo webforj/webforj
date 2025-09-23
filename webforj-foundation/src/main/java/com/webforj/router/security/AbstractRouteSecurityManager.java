@@ -184,7 +184,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
     switch (decision.getDenialType()) {
       case AUTHENTICATION_REQUIRED:
         getConfiguration().getAuthenticationLocation().ifPresent(location -> {
-          navigateTo(location, true);
+          navigateTo(location);
         });
         break;
 
@@ -194,7 +194,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
           if (decision.getReason() != null && !decision.getReason().isEmpty()) {
             location.getQueryParameters().put("reason", decision.getReason());
           }
-          navigateTo(location, false);
+          navigateTo(location);
         });
         break;
 
@@ -203,12 +203,11 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
     }
   }
 
-  private void navigateTo(Location location, boolean shouldUpdateHistory) {
+  private void navigateTo(Location location) {
     Router router = Router.getCurrent();
     if (router != null) {
       NavigationOptions options = new NavigationOptions();
       options.setNavigationType(NavigationOptions.NavigationType.REPLACE);
-      options.setUpdateHistory(shouldUpdateHistory);
       router.navigate(location, options);
     }
   }

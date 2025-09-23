@@ -2,6 +2,8 @@ package com.webforj.spring.security;
 
 import com.webforj.component.Component;
 import com.webforj.router.RoutePathResolver;
+import com.webforj.router.RoutePattern;
+import java.util.Collections;
 import java.util.function.Consumer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -66,7 +68,9 @@ public class WebforjSecurityConfigurer
       throw new IllegalArgumentException(
           "Component " + loginPageComponent.getName() + " does not have a @Route annotation");
     }
-    return loginPage(path, path);
+
+    String urlPath = patternToUrl(path);
+    return loginPage(urlPath, urlPath);
   }
 
   /**
@@ -142,7 +146,9 @@ public class WebforjSecurityConfigurer
       throw new IllegalArgumentException("Component " + accessDeniedPageComponent.getName()
           + " does not have a @Route annotation");
     }
-    return accessDeniedPage(path);
+
+    String urlPath = patternToUrl(path);
+    return accessDeniedPage(urlPath);
   }
 
   /**
@@ -289,5 +295,10 @@ public class WebforjSecurityConfigurer
 
       logout.permitAll();
     });
+  }
+
+  String patternToUrl(String pattern) {
+    RoutePattern routePattern = new RoutePattern(pattern);
+    return routePattern.generateUrl(Collections.emptyMap());
   }
 }
