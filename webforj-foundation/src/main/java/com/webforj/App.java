@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.typesafe.config.Config;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.Routify;
 import com.webforj.component.window.Frame;
@@ -665,6 +666,16 @@ public abstract class App {
       return;
     }
 
+    Config config = Environment.getCurrent().getConfig();
+    String rootProp = "webforj.router.root";
+    String context = Environment.getContextPath();
+    if (config.hasPath(rootProp) && !config.getIsNull(rootProp)) {
+      String rootFromConfig = config.getString(rootProp);
+      if (rootFromConfig != null && !rootFromConfig.isEmpty()) {
+        context = rootFromConfig;
+      }
+    }
+
     String[] packages = getClass().getAnnotation(Routify.class).packages();
     if (packages.length == 0) {
       // default package
@@ -674,7 +685,7 @@ public abstract class App {
     String root = "webapp/" + getApplicationName();
     boolean isBbjService = Environment.isRunningWithBBjServices();
     if (!isBbjService) {
-      root = Environment.getContextPath();
+      root = context;
       root = root.isBlank() ? "/" : root;
     }
 
