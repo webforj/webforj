@@ -195,7 +195,7 @@ public class WebforjSecurityConfigurer
         logoutSuccessUrl = "/login?logout";
       }
 
-      configureLogout(http, context);
+      configureLogout(http);
     }
 
     // Update properties for webforJ router access denied handling
@@ -286,7 +286,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private void configureLogout(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureLogout(HttpSecurity http) throws Exception {
     http.logout(logout -> {
       logout.logoutUrl(logoutUrl);
 
