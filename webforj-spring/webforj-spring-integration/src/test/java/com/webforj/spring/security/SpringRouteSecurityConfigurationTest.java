@@ -1,15 +1,18 @@
 package com.webforj.spring.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.webforj.router.history.Location;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,102 +29,73 @@ class SpringRouteSecurityConfigurationTest {
   @Nested
   class EnabledStatus {
 
-    @Test
-    void shouldReturnTrueWhenEnabled() {
-      when(properties.getEnabled()).thenReturn(Boolean.TRUE);
-      assertTrue(configuration.isEnabled());
+    @ParameterizedTest
+    @MethodSource("enabledStatusTestCases")
+    void shouldHandleEnabledStatus(Boolean enabled, boolean expected) {
+      when(properties.getEnabled()).thenReturn(enabled);
+      assertEquals(expected, configuration.isEnabled());
     }
 
-    @Test
-    void shouldReturnFalseWhenDisabled() {
-      when(properties.getEnabled()).thenReturn(Boolean.FALSE);
-      assertFalse(configuration.isEnabled());
-    }
-
-    @Test
-    void shouldReturnFalseWhenEnabledIsNull() {
-      when(properties.getEnabled()).thenReturn(null);
-      assertFalse(configuration.isEnabled());
+    static Stream<Arguments> enabledStatusTestCases() {
+      return Stream.of(Arguments.of(Boolean.TRUE, true), Arguments.of(Boolean.FALSE, false),
+          Arguments.of(null, false));
     }
   }
 
   @Nested
   class SecureByDefaultStatus {
 
-    @Test
-    void shouldReturnTrueWhenSecureByDefaultEnabled() {
-      when(properties.getSecureByDefault()).thenReturn(Boolean.TRUE);
-      assertTrue(configuration.isSecureByDefault());
+    @ParameterizedTest
+    @MethodSource("secureByDefaultTestCases")
+    void shouldHandleSecureByDefaultStatus(Boolean secureByDefault, boolean expected) {
+      when(properties.getSecureByDefault()).thenReturn(secureByDefault);
+      assertEquals(expected, configuration.isSecureByDefault());
     }
 
-    @Test
-    void shouldReturnFalseWhenSecureByDefaultDisabled() {
-      when(properties.getSecureByDefault()).thenReturn(Boolean.FALSE);
-      assertFalse(configuration.isSecureByDefault());
-    }
-
-    @Test
-    void shouldReturnFalseWhenSecureByDefaultIsNull() {
-      when(properties.getSecureByDefault()).thenReturn(null);
-      assertFalse(configuration.isSecureByDefault());
+    static Stream<Arguments> secureByDefaultTestCases() {
+      return Stream.of(Arguments.of(Boolean.TRUE, true), Arguments.of(Boolean.FALSE, false),
+          Arguments.of(null, false));
     }
   }
 
   @Nested
   class AuthenticationLocation {
 
-    @Test
-    void shouldReturnConfiguredAuthenticationPath() {
-      when(properties.getAuthenticationPath()).thenReturn("/signin");
+    @ParameterizedTest
+    @MethodSource("authenticationLocationTestCases")
+    void shouldHandleAuthenticationPaths(String configuredPath, String expectedPath) {
+      when(properties.getAuthenticationPath()).thenReturn(configuredPath);
 
       Optional<Location> location = configuration.getAuthenticationLocation();
 
       assertTrue(location.isPresent());
-      assertEquals("/signin", location.get().toString());
+      assertEquals(expectedPath, location.get().toString());
     }
 
-    @Test
-    void shouldReturnDefaultLoginWhenAuthenticationPathIsNull() {
-      when(properties.getAuthenticationPath()).thenReturn(null);
-
-      Optional<Location> location = configuration.getAuthenticationLocation();
-
-      assertTrue(location.isPresent());
-      assertEquals("/login", location.get().toString());
-    }
-
-    @Test
-    void shouldPreserveQueryParametersInAuthenticationPath() {
-      when(properties.getAuthenticationPath()).thenReturn("/auth?redirect=true");
-
-      Optional<Location> location = configuration.getAuthenticationLocation();
-
-      assertTrue(location.isPresent());
-      assertEquals("/auth?redirect=true", location.get().toString());
-    }
-
-    @Test
-    void shouldPreserveFragmentInAuthenticationPath() {
-      when(properties.getAuthenticationPath()).thenReturn("/auth#login-form");
-
-      Optional<Location> location = configuration.getAuthenticationLocation();
-
-      assertTrue(location.isPresent());
-      assertEquals("/auth#login-form", location.get().toString());
+    static Stream<Arguments> authenticationLocationTestCases() {
+      return Stream.of(Arguments.of("/signin", "/signin"), Arguments.of(null, "/login"),
+          Arguments.of("/auth?redirect=true", "/auth?redirect=true"),
+          Arguments.of("/auth#login-form", "/auth#login-form"));
     }
   }
 
   @Nested
   class DenyLocation {
 
-    @Test
-    void shouldReturnConfiguredDenyPath() {
-      when(properties.getDenyPath()).thenReturn("/access-denied");
+    @ParameterizedTest
+    @MethodSource("denyLocationTestCases")
+    void shouldHandleDenyPaths(String denyPath, String expectedPath) {
+      when(properties.getDenyPath()).thenReturn(denyPath);
 
       Optional<Location> location = configuration.getDenyLocation();
 
       assertTrue(location.isPresent());
-      assertEquals("/access-denied", location.get().toString());
+      assertEquals(expectedPath, location.get().toString());
+    }
+
+    static Stream<Arguments> denyLocationTestCases() {
+      return Stream.of(Arguments.of("/access-denied", "/access-denied"), Arguments.of("", "/"),
+          Arguments.of("/error/403?type=authorization", "/error/403?type=authorization"));
     }
 
     @Test
@@ -133,26 +107,6 @@ class SpringRouteSecurityConfigurationTest {
 
       assertTrue(location.isPresent());
       assertTrue(location.get().toString().contains("/login"));
-    }
-
-    @Test
-    void shouldHandleEmptyDenyPath() {
-      when(properties.getDenyPath()).thenReturn("");
-
-      Optional<Location> location = configuration.getDenyLocation();
-
-      assertTrue(location.isPresent());
-      assertEquals("/", location.get().toString());
-    }
-
-    @Test
-    void shouldPreserveComplexDenyPath() {
-      when(properties.getDenyPath()).thenReturn("/error/403?type=authorization");
-
-      Optional<Location> location = configuration.getDenyLocation();
-
-      assertTrue(location.isPresent());
-      assertEquals("/error/403?type=authorization", location.get().toString());
     }
   }
 }

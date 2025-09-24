@@ -1,15 +1,18 @@
 package com.webforj.spring.security;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.webforj.spring.SpringConfigurationProperties;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -27,26 +30,21 @@ class WebforjFrameworkRequestMatcherTest {
   @Nested
   class ServletMappingHandling {
 
-    @Test
-    void shouldHandleRootMapping() {
-      when(properties.getServletMapping()).thenReturn("/*");
+    @ParameterizedTest
+    @MethodSource("servletMappingTestCases")
+    void shouldHandleServletMappings(String servletMapping, String servletPath) {
+      when(properties.getServletMapping()).thenReturn(servletMapping);
       matcher = new WebforjFrameworkRequestMatcher(properties);
 
-      when(request.getServletPath()).thenReturn("/webforjServlet/webapprmi");
+      when(request.getServletPath()).thenReturn(servletPath);
       when(request.getPathInfo()).thenReturn(null);
 
       assertTrue(matcher.matches(request));
     }
 
-    @Test
-    void shouldHandlePrefixedMapping() {
-      when(properties.getServletMapping()).thenReturn("/myapp/*");
-      matcher = new WebforjFrameworkRequestMatcher(properties);
-
-      when(request.getServletPath()).thenReturn("/myapp/webapprmi");
-      when(request.getPathInfo()).thenReturn(null);
-
-      assertTrue(matcher.matches(request));
+    static Stream<Arguments> servletMappingTestCases() {
+      return Stream.of(Arguments.of("/*", "/webforjServlet/webapprmi"),
+          Arguments.of("/myapp/*", "/myapp/webapprmi"));
     }
   }
 
@@ -59,28 +57,18 @@ class WebforjFrameworkRequestMatcherTest {
       matcher = new WebforjFrameworkRequestMatcher(properties);
     }
 
-    @Test
-    void shouldMatchWebAppRmiEndpoint() {
-      when(request.getServletPath()).thenReturn("/webapprmi");
-      when(request.getPathInfo()).thenReturn(null);
+    @ParameterizedTest
+    @MethodSource("rpcEndpointTestCases")
+    void shouldHandleRpcEndpoints(String servletPath, String pathInfo, boolean expectedMatch) {
+      when(request.getServletPath()).thenReturn(servletPath);
+      when(request.getPathInfo()).thenReturn(pathInfo);
 
-      assertTrue(matcher.matches(request));
+      assertEquals(expectedMatch, matcher.matches(request));
     }
 
-    @Test
-    void shouldMatchWebAppRmiWithSubPath() {
-      when(request.getServletPath()).thenReturn("/webapprmi");
-      when(request.getPathInfo()).thenReturn("/something");
-
-      assertTrue(matcher.matches(request));
-    }
-
-    @Test
-    void shouldNotMatchNonRpcPath() {
-      when(request.getServletPath()).thenReturn("/api");
-      when(request.getPathInfo()).thenReturn("/users");
-
-      assertFalse(matcher.matches(request));
+    static Stream<Arguments> rpcEndpointTestCases() {
+      return Stream.of(Arguments.of("/webapprmi", null, true),
+          Arguments.of("/webapprmi", "/something", true), Arguments.of("/api", "/users", false));
     }
   }
 
@@ -93,20 +81,18 @@ class WebforjFrameworkRequestMatcherTest {
       matcher = new WebforjFrameworkRequestMatcher(properties);
     }
 
-    @Test
-    void shouldMatchWebappLibPath() {
-      when(request.getServletPath()).thenReturn("/webapp/_lib");
-      when(request.getPathInfo()).thenReturn("/script.js");
+    @ParameterizedTest
+    @MethodSource("libraryResourceTestCases")
+    void shouldHandleLibraryResources(String servletPath, String pathInfo) {
+      when(request.getServletPath()).thenReturn(servletPath);
+      when(request.getPathInfo()).thenReturn(pathInfo);
 
       assertTrue(matcher.matches(request));
     }
 
-    @Test
-    void shouldMatchWebappLibWithFiles() {
-      when(request.getServletPath()).thenReturn("/webapp/_lib/dwc-ui.min.js");
-      when(request.getPathInfo()).thenReturn(null);
-
-      assertTrue(matcher.matches(request));
+    static Stream<Arguments> libraryResourceTestCases() {
+      return Stream.of(Arguments.of("/webapp/_lib", "/script.js"),
+          Arguments.of("/webapp/_lib/dwc-ui.min.js", null));
     }
   }
 
@@ -119,31 +105,20 @@ class WebforjFrameworkRequestMatcherTest {
       matcher = new WebforjFrameworkRequestMatcher(properties);
     }
 
-    @Test
-    void shouldMatchDefaultIconsPath() {
-      when(properties.getIconsDir()).thenReturn(null);
-      when(request.getServletPath()).thenReturn("/icons/logo.png");
+    @ParameterizedTest
+    @MethodSource("iconsDirectoryTestCases")
+    void shouldHandleIconsDirectory(String iconsDir, String servletPath) {
+      when(properties.getIconsDir()).thenReturn(iconsDir);
+      when(request.getServletPath()).thenReturn(servletPath);
       when(request.getPathInfo()).thenReturn(null);
 
       assertTrue(matcher.matches(request));
     }
 
-    @Test
-    void shouldMatchCustomIconsPath() {
-      when(properties.getIconsDir()).thenReturn("custom-icons");
-      when(request.getServletPath()).thenReturn("/custom-icons/icon.svg");
-      when(request.getPathInfo()).thenReturn(null);
-
-      assertTrue(matcher.matches(request));
-    }
-
-    @Test
-    void shouldNormalizeIconsPath() {
-      when(properties.getIconsDir()).thenReturn("images");
-      when(request.getServletPath()).thenReturn("/images/pic.jpg");
-      when(request.getPathInfo()).thenReturn(null);
-
-      assertTrue(matcher.matches(request));
+    static Stream<Arguments> iconsDirectoryTestCases() {
+      return Stream.of(Arguments.of(null, "/icons/logo.png"),
+          Arguments.of("custom-icons", "/custom-icons/icon.svg"),
+          Arguments.of("images", "/images/pic.jpg"));
     }
   }
 
@@ -156,22 +131,19 @@ class WebforjFrameworkRequestMatcherTest {
       matcher = new WebforjFrameworkRequestMatcher(properties);
     }
 
-    @Test
-    void shouldMatchDefaultAssetsPath() {
-      when(properties.getAssetsDir()).thenReturn(null);
-      when(request.getServletPath()).thenReturn("/static/style.css");
+    @ParameterizedTest
+    @MethodSource("assetsDirectoryTestCases")
+    void shouldHandleAssetsDirectory(String assetsDir, String servletPath) {
+      when(properties.getAssetsDir()).thenReturn(assetsDir);
+      when(request.getServletPath()).thenReturn(servletPath);
       when(request.getPathInfo()).thenReturn(null);
 
       assertTrue(matcher.matches(request));
     }
 
-    @Test
-    void shouldMatchCustomAssetsPath() {
-      when(properties.getAssetsDir()).thenReturn("assets");
-      when(request.getServletPath()).thenReturn("/assets/app.js");
-      when(request.getPathInfo()).thenReturn(null);
-
-      assertTrue(matcher.matches(request));
+    static Stream<Arguments> assetsDirectoryTestCases() {
+      return Stream.of(Arguments.of(null, "/static/style.css"),
+          Arguments.of("assets", "/assets/app.js"));
     }
   }
 }

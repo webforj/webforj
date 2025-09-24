@@ -43,7 +43,6 @@ class SpringAutoConfigurationTest {
     void shouldCreateServletRegistrationBeanWithRootMapping() {
       when(properties.getServletMapping()).thenReturn("/*");
       when(config.withValue(eq("webforj.router.root"), any(ConfigValue.class))).thenReturn(config);
-      when(config.getString("webforj.router.root")).thenReturn("/");
 
       try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
         ServletRegistrationBean<WebforjServlet> registrationBean =
@@ -88,7 +87,6 @@ class SpringAutoConfigurationTest {
     void shouldCreateNewWebforjServletInstance() {
       when(properties.getServletMapping()).thenReturn("/*");
       when(config.withValue(eq("webforj.router.root"), any(ConfigValue.class))).thenReturn(config);
-      when(config.getString("webforj.router.root")).thenReturn("/");
 
       try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
         ServletRegistrationBean<WebforjServlet> registrationBean1 =

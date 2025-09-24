@@ -55,7 +55,7 @@ class RouteSecurityObserverTest {
   @Test
   void shouldAllowAccessWhenGranted() {
     TestComponent component = new TestComponent();
-    when(securityManager.evaluate(eq(TestComponent.class), eq(navigationContext)))
+    when(securityManager.evaluate(TestComponent.class, navigationContext))
         .thenReturn(RouteAccessDecision.grant());
 
     observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.BEFORE_CREATE,
@@ -69,8 +69,7 @@ class RouteSecurityObserverTest {
   void shouldDenyAccessWhenDenied() {
     TestComponent component = new TestComponent();
     RouteAccessDecision denial = RouteAccessDecision.denyAuthentication("Test reason");
-    when(securityManager.evaluate(eq(TestComponent.class), eq(navigationContext)))
-        .thenReturn(denial);
+    when(securityManager.evaluate(TestComponent.class, navigationContext)).thenReturn(denial);
 
     observer.onRouteRendererLifecycleEvent(component, LifecycleEvent.BEFORE_CREATE,
         navigationContext, continueCallback);
@@ -93,9 +92,13 @@ class RouteSecurityObserverTest {
 
   private static class TestComponent extends Component {
     @Override
-    protected void onCreate(com.webforj.component.window.Window window) {}
+    protected void onCreate(com.webforj.component.window.Window window) {
+      // No-op
+    }
 
     @Override
-    protected void onDestroy() {}
+    protected void onDestroy() {
+      // No-op
+    }
   }
 }

@@ -2,7 +2,6 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
-import com.webforj.Environment;
 import com.webforj.servlet.WebforjServlet;
 import com.webforj.spring.scope.SpringScopeCleanup;
 import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
@@ -82,9 +81,6 @@ public class SpringAutoConfiguration {
       // instead of the context path
       finalConfig =
           webforjConfig.withValue("webforj.router.root", ConfigValueFactory.fromAnyRef("/"));
-
-      System.out.println(
-          "Configured webforj.router.root to " + finalConfig.getString("webforj.router.root"));
     } else {
       logger.log(Logger.Level.DEBUG, "Registering WebforjServlet with direct mapping: " + mapping);
     }

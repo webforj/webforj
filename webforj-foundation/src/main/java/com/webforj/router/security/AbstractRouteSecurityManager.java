@@ -139,8 +139,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
       env.getSessionAccessor().ifPresent(accessor -> {
         accessor.access(session -> {
           Object value = session.getAttribute(PRE_AUTH_LOCATION_KEY);
-          if (value instanceof String) {
-            uriRef.set((String) value);
+          if (value instanceof String strValue) {
+            uriRef.set(strValue);
           }
         });
       });

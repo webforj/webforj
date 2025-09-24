@@ -79,7 +79,7 @@ public class SpringRouteSecurityManager extends AbstractRouteSecurityManager {
         applicationContext.getBeansWithAnnotation(RegisteredEvaluator.class);
     for (Map.Entry<String, Object> entry : evaluators.entrySet()) {
       Object bean = entry.getValue();
-      if (bean instanceof RouteSecurityEvaluator) {
+      if (bean instanceof RouteSecurityEvaluator routeSecurityEvaluator) {
         RegisteredEvaluator annotation = bean.getClass().getAnnotation(RegisteredEvaluator.class);
         int priority = annotation.priority();
 
@@ -87,12 +87,12 @@ public class SpringRouteSecurityManager extends AbstractRouteSecurityManager {
           logger.log(Level.WARNING,
               "Custom evaluator {0} uses priority {1} in core range (0 to 9). "
                   + "Consider using priority >= 10 for custom evaluators",
-              bean.getClass().getName(), priority);
+              routeSecurityEvaluator.getClass().getName(), priority);
         }
 
-        registerEvaluator((RouteSecurityEvaluator) bean, priority);
+        registerEvaluator(routeSecurityEvaluator, priority);
         logger.log(Level.INFO, "Registered custom evaluator: {0} with priority {1}",
-            bean.getClass().getName(), priority);
+            routeSecurityEvaluator.getClass().getName(), priority);
       }
     }
   }

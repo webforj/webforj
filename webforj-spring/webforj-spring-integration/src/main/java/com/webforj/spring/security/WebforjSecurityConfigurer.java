@@ -218,7 +218,7 @@ public class WebforjSecurityConfigurer
     // All configuration is done in init() method
   }
 
-  void configureCsrf(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureCsrf(HttpSecurity http, ApplicationContext context) throws Exception {
     WebforjFrameworkRequestMatcher frameworkMatcher =
         context.getBean(WebforjFrameworkRequestMatcher.class);
 
@@ -238,7 +238,8 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  void configureAuthorization(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureAuthorization(HttpSecurity http, ApplicationContext context)
+      throws Exception {
     WebforjFrameworkRequestMatcher frameworkMatcher =
         context.getBean(WebforjFrameworkRequestMatcher.class);
 
@@ -264,7 +265,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  void configureFormLogin(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureFormLogin(HttpSecurity http, ApplicationContext context) throws Exception {
     http.formLogin(form -> {
       form.loginPage(loginPage);
 
@@ -285,7 +286,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  void configureLogout(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureLogout(HttpSecurity http, ApplicationContext context) throws Exception {
     http.logout(logout -> {
       logout.logoutUrl(logoutUrl);
 
@@ -297,7 +298,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  String patternToUrl(String pattern) {
+  private String patternToUrl(String pattern) {
     RoutePattern routePattern = new RoutePattern(pattern);
     return routePattern.generateUrl(Collections.emptyMap());
   }

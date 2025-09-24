@@ -59,8 +59,8 @@ public final class WebforjSecurityContextHolderStrategy implements SecurityConte
         session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY)));
 
     Object securityContext = contextRef.get();
-    if (securityContext instanceof SecurityContext) {
-      return Optional.of((SecurityContext) securityContext);
+    if (securityContext instanceof SecurityContext theContext) {
+      return Optional.of(theContext);
     }
 
     return Optional.empty();

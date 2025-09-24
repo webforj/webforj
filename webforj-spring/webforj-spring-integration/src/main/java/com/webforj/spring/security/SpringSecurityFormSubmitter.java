@@ -220,6 +220,9 @@ public final class SpringSecurityFormSubmitter {
    * Login form builder.
    */
   public static class LoginFormBuilder extends FormBuilder {
+    private static final String USERNAME_FIELD = "username";
+    private static final String PASSWORD_FIELD = "password";
+    private static final String REMEMBER_ME_FIELD = "remember-me";
 
     LoginFormBuilder(String action) {
       super(action);
@@ -232,7 +235,7 @@ public final class SpringSecurityFormSubmitter {
      * @return this builder
      */
     public LoginFormBuilder username(String username) {
-      addField("username", username);
+      addField(USERNAME_FIELD, username);
       return this;
     }
 
@@ -243,7 +246,7 @@ public final class SpringSecurityFormSubmitter {
      * @return this builder
      */
     public LoginFormBuilder password(String password) {
-      addField("password", password);
+      addField(PASSWORD_FIELD, password);
       return this;
     }
 
@@ -255,9 +258,9 @@ public final class SpringSecurityFormSubmitter {
      */
     public LoginFormBuilder rememberMe(boolean rememberMe) {
       if (rememberMe) {
-        addField("remember-me", "on");
+        addField(REMEMBER_ME_FIELD, "on");
       } else {
-        removeField("remember-me");
+        removeField(REMEMBER_ME_FIELD);
       }
       return this;
     }
@@ -268,7 +271,7 @@ public final class SpringSecurityFormSubmitter {
      * @return the username, or null if not set
      */
     public String getUsername() {
-      return getField("username");
+      return getField(USERNAME_FIELD);
     }
 
     /**
@@ -277,7 +280,7 @@ public final class SpringSecurityFormSubmitter {
      * @return the password, or null if not set
      */
     public String getPassword() {
-      return getField("password");
+      return getField(PASSWORD_FIELD);
     }
 
     /**
@@ -286,7 +289,7 @@ public final class SpringSecurityFormSubmitter {
      * @return true if remember-me is enabled
      */
     public boolean isRememberMe() {
-      return hasField("remember-me");
+      return hasField(REMEMBER_ME_FIELD);
     }
   }
 
