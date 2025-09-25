@@ -40,6 +40,16 @@ class SpringSecurityConfigurationPropertiesTest {
     void shouldHaveNullDenyPath() {
       assertNull(properties.getDenyPath());
     }
+
+    @Test
+    void shouldHaveDefaultMaxContentLength() {
+      assertEquals(0, properties.getMaxContentLength());
+    }
+
+    @Test
+    void shouldHaveDefaultMaxInitPerMinute() {
+      assertEquals(0, properties.getMaxInitPerMinute());
+    }
   }
 
   @Nested
@@ -67,6 +77,18 @@ class SpringSecurityConfigurationPropertiesTest {
     void shouldSetDenyPath() {
       properties.setDenyPath("/access-denied");
       assertEquals("/access-denied", properties.getDenyPath());
+    }
+
+    @Test
+    void shouldSetMaxContentLength() {
+      properties.setMaxContentLength(1048576); // 1MB
+      assertEquals(1048576, properties.getMaxContentLength());
+    }
+
+    @Test
+    void shouldSetMaxInitPerMinute() {
+      properties.setMaxInitPerMinute(100);
+      assertEquals(100, properties.getMaxInitPerMinute());
     }
   }
 }

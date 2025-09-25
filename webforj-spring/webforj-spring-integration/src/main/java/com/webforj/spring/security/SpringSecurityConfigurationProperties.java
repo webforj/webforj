@@ -37,6 +37,16 @@ public class SpringSecurityConfigurationProperties {
   private String denyPath;
 
   /**
+   * Maximum allowed content length in bytes for incoming requests. Set to 0 to disable the limit.
+   */
+  private int maxContentLength = 0;
+
+  /**
+   * Maximum number of init requests allowed per minute. Set to 0 to disable rate limiting.
+   */
+  private int maxInitPerMinute = 0;
+
+  /**
    * Gets whether security is enabled.
    *
    * @return true if security is enabled, false otherwise
@@ -106,5 +116,41 @@ public class SpringSecurityConfigurationProperties {
    */
   public void setDenyPath(String denyPath) {
     this.denyPath = denyPath;
+  }
+
+  /**
+   * Gets the maximum content length.
+   *
+   * @return the maximum content length in bytes, or 0 if disabled
+   */
+  public int getMaxContentLength() {
+    return maxContentLength;
+  }
+
+  /**
+   * Sets the maximum content length.
+   *
+   * @param maxContentLength the maximum content length in bytes, or 0 to disable
+   */
+  public void setMaxContentLength(int maxContentLength) {
+    this.maxContentLength = maxContentLength;
+  }
+
+  /**
+   * Gets the maximum init requests per minute.
+   *
+   * @return the maximum init requests per minute, or 0 if disabled
+   */
+  public int getMaxInitPerMinute() {
+    return maxInitPerMinute;
+  }
+
+  /**
+   * Sets the maximum init requests per minute.
+   *
+   * @param maxInitPerMinute the maximum init requests per minute, or 0 to disable
+   */
+  public void setMaxInitPerMinute(int maxInitPerMinute) {
+    this.maxInitPerMinute = maxInitPerMinute;
   }
 }
