@@ -198,4 +198,30 @@ class SpringConfigurationPropertiesTest {
     assertTrue(properties.getExcludeUrls().contains("/api/**"));
     assertTrue(properties.getExcludeUrls().contains("/login"));
   }
+
+  @Test
+  void shouldHandleMimeConfiguration() {
+    Map<String, String> extensions = new HashMap<>();
+    extensions.put("txt", "text/plain");
+    extensions.put("foo", "foo/bar");
+    extensions.put("json", "application/json");
+
+    SpringConfigurationProperties.Mime mime = new SpringConfigurationProperties.Mime();
+    mime.setExtensions(extensions);
+
+    properties.setMime(mime);
+    assertNotNull(properties.getMime());
+    assertNotNull(properties.getMime().getExtensions());
+    assertEquals(3, properties.getMime().getExtensions().size());
+    assertEquals("text/plain", properties.getMime().getExtensions().get("txt"));
+    assertEquals("foo/bar", properties.getMime().getExtensions().get("foo"));
+    assertEquals("application/json", properties.getMime().getExtensions().get("json"));
+  }
+
+  @Test
+  void shouldInitializeMimeWithDefaults() {
+    assertNotNull(properties.getMime());
+    assertNotNull(properties.getMime().getExtensions());
+    assertTrue(properties.getMime().getExtensions().isEmpty());
+  }
 }
