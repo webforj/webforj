@@ -13,6 +13,7 @@ import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.servlet.WebforjServlet;
 import jakarta.servlet.http.HttpSession;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
@@ -641,6 +642,13 @@ public final class Environment {
       final Path configPath = Paths.get(pathProp);
       theConfig =
           ConfigFactory.parseFile(configPath.toFile()).withFallback(getInitialDefaultConfig());
+    }
+
+    // Merge with config from WebforjServlet if available (e.g., from Spring Boot)
+    // The servlet config takes precedence over file-based config
+    Config servletConfig = WebforjServlet.getInitConfig();
+    if (servletConfig != null) {
+      theConfig = servletConfig.withFallback(theConfig);
     }
 
     return theConfig;
