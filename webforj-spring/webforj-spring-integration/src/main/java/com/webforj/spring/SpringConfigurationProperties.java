@@ -224,6 +224,13 @@ public class SpringConfigurationProperties {
   private List<String> excludeUrls = new ArrayList<>();
 
   /**
+   * MIME type configuration.
+   *
+   * @since 25.10
+   */
+  private Mime mime = new Mime();
+
+  /**
    * Sets the URL mapping for the Webforj servlet.
    *
    * @param servletMapping the URL mapping for the Webforj servlet
@@ -566,6 +573,26 @@ public class SpringConfigurationProperties {
   }
 
   /**
+   * Gets the MIME type configuration.
+   *
+   * @return the MIME type configuration
+   * @since 25.10
+   */
+  public Mime getMime() {
+    return mime;
+  }
+
+  /**
+   * Sets the MIME type configuration.
+   *
+   * @param mime the MIME type configuration
+   * @since 25.10
+   */
+  public void setMime(Mime mime) {
+    this.mime = mime;
+  }
+
+  /**
    * File upload configuration properties.
    */
   public static class FileUpload {
@@ -757,6 +784,51 @@ public class SpringConfigurationProperties {
      */
     public void setStartupTimeout(Integer startupTimeout) {
       this.startupTimeout = startupTimeout;
+    }
+  }
+
+  /**
+   * MIME type configuration for static files.
+   *
+   * @since 25.10
+   */
+  public static class Mime {
+    /**
+     * Custom MIME type mappings for file extensions.
+     *
+     * <p>
+     * Maps file extensions to their corresponding MIME types. This allows overriding default MIME
+     * type mappings or adding new ones.
+     * </p>
+     *
+     * <p>
+     * Example configuration:
+     *
+     * <pre>
+     * webforj.mime.extensions.txt = text/plain
+     * webforj.mime.extensions.foo = foo/bar
+     * webforj.mime.extensions.json = application/json
+     * </pre>
+     * </p>
+     */
+    private Map<String, String> extensions = new HashMap<>();
+
+    /**
+     * Gets the extension to MIME type mappings.
+     *
+     * @return the map of file extensions to MIME types
+     */
+    public Map<String, String> getExtensions() {
+      return extensions;
+    }
+
+    /**
+     * Sets the extension to MIME type mappings.
+     *
+     * @param extensions the map of file extensions to MIME types
+     */
+    public void setExtensions(Map<String, String> extensions) {
+      this.extensions = extensions;
     }
   }
 }
