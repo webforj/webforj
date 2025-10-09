@@ -253,7 +253,7 @@ class AppNavItemTest {
       component.setPath(absoluteUrl);
       component.setQueryParameters(ParametersBag.of(queryParams));
 
-      assertEquals("https://example.com/path?newKey=newValue&existingKey=existingValue",
+      assertEquals("https://example.com/path?existingKey=existingValue&newKey=newValue",
           component.getFullPath());
       assertTrue(component.isRouterIgnore());
     }

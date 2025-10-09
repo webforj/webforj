@@ -2,11 +2,14 @@ package com.webforj.spring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValue;
 import com.webforj.servlet.WebforjServlet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +42,7 @@ class SpringAutoConfigurationTest {
     @Test
     void shouldCreateServletRegistrationBeanWithRootMapping() {
       when(properties.getServletMapping()).thenReturn("/*");
+      when(config.withValue(eq("webforj.router.root"), any(ConfigValue.class))).thenReturn(config);
 
       try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
         ServletRegistrationBean<WebforjServlet> registrationBean =
@@ -82,6 +86,7 @@ class SpringAutoConfigurationTest {
     @Test
     void shouldCreateNewWebforjServletInstance() {
       when(properties.getServletMapping()).thenReturn("/*");
+      when(config.withValue(eq("webforj.router.root"), any(ConfigValue.class))).thenReturn(config);
 
       try (MockedStatic<WebforjServlet> mockedServlet = mockStatic(WebforjServlet.class)) {
         ServletRegistrationBean<WebforjServlet> registrationBean1 =
