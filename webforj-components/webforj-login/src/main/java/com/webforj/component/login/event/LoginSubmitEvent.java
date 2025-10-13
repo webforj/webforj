@@ -58,6 +58,6 @@ public class LoginSubmitEvent extends ComponentEvent<Login> {
    * @return the remember me
    */
   public boolean isRememberMe() {
-    return getData().get("remember-me").equals("on") ? true : false;
+    return getData().get("remember-me").equals("on");
   }
 }
