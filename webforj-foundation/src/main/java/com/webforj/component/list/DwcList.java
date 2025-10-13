@@ -91,6 +91,16 @@ public abstract class DwcList<T extends DwcValidatableComponent<T, V>, V>
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setName(String name) {
+    super.setName(name);
+    setUnrestrictedAttribute("name", name);
+    return getSelf();
+  }
+
+  /**
    * Adds an item to the list.
    *
    * @param item The item to be added.

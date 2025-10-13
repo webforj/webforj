@@ -14,9 +14,7 @@ import java.util.Map;
  * @since 23.06
  */
 @EventName("dwc-login-submit")
-@EventOptions(data = {@EventData(key = "username", exp = "event.detail.username"),
-    @EventData(key = "password", exp = "event.detail.password"),
-    @EventData(key = "rememberme", exp = "event.detail.rememberme")})
+@EventOptions(data = {@EventData(key = "detail", exp = "event.detail")})
 public class LoginSubmitEvent extends ComponentEvent<Login> {
 
   /**
@@ -27,6 +25,13 @@ public class LoginSubmitEvent extends ComponentEvent<Login> {
    */
   public LoginSubmitEvent(Login login, Map<String, Object> eventMap) {
     super(login, eventMap);
+    // Extract detail map and flatten into event map
+    Object detail = eventMap.get("detail");
+    if (detail instanceof Map) {
+      eventMap.remove("detail");
+      Map<String, Object> detailMap = (Map<String, Object>) detail;
+      eventMap.putAll(detailMap);
+    }
   }
 
   /**
@@ -53,6 +58,6 @@ public class LoginSubmitEvent extends ComponentEvent<Login> {
    * @return the remember me
    */
   public boolean isRememberMe() {
-    return (boolean) getData().get("rememberme");
+    return getData().get("remember-me").equals("on") ? true : false;
   }
 }

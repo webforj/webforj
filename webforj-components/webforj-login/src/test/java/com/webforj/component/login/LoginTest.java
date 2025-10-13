@@ -151,10 +151,13 @@ class LoginTest {
 
     @Test
     void shouldReceiveSubmitPayload() {
+      Map<String, Object> detail = new HashMap<>();
+      detail.put("username", "testuser");
+      detail.put("password", "testpass");
+      detail.put("remember-me", "off");
+
       Map<String, Object> eventMap = new HashMap<>();
-      eventMap.put("username", "testuser");
-      eventMap.put("password", "testpass");
-      eventMap.put("rememberme", false);
+      eventMap.put("detail", detail);
 
       LoginSubmitEvent mockEvent = new LoginSubmitEvent(component, eventMap);
       AtomicReference<String> capturedUsername = new AtomicReference<>();
@@ -170,6 +173,57 @@ class LoginTest {
       assertEquals("testuser", capturedUsername.get());
       assertEquals("testpass", capturedPassword.get());
       assertEquals(false, mockEvent.isRememberMe());
+    }
+
+    @Test
+    void shouldHandleRememberMeOn() {
+      Map<String, Object> detail = new HashMap<>();
+      detail.put("username", "testuser");
+      detail.put("password", "testpass");
+      detail.put("remember-me", "on");
+
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("detail", detail);
+
+      LoginSubmitEvent mockEvent = new LoginSubmitEvent(component, eventMap);
+
+      assertEquals(true, mockEvent.isRememberMe());
+    }
+
+    @Test
+    void shouldHandleExtraParameters() {
+      Map<String, Object> detail = new HashMap<>();
+      detail.put("username", "testuser");
+      detail.put("password", "testpass");
+      detail.put("remember-me", "off");
+      detail.put("custom-field", "custom-value");
+
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("detail", detail);
+
+      LoginSubmitEvent mockEvent = new LoginSubmitEvent(component, eventMap);
+      AtomicReference<String> capturedCustomField = new AtomicReference<>();
+
+      component.addSubmitListener(event -> {
+        capturedCustomField.set((String) event.getData().get("custom-field"));
+      });
+
+      component.getEventListeners(LoginSubmitEvent.class).get(0).onEvent(mockEvent);
+
+      assertEquals("testuser", mockEvent.getUsername());
+      assertEquals("testpass", mockEvent.getPassword());
+      assertEquals(false, mockEvent.isRememberMe());
+      assertEquals("custom-value", capturedCustomField.get());
+    }
+
+    @Test
+    void shouldHandleEmptyDetail() {
+      Map<String, Object> eventMap = new HashMap<>();
+
+      LoginSubmitEvent mockEvent = new LoginSubmitEvent(component, eventMap);
+
+      assertEquals(null, mockEvent.getUsername());
+      assertEquals(null, mockEvent.getPassword());
     }
 
     @Test

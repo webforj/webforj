@@ -290,6 +290,16 @@ public abstract class DwcField<T extends DwcValidatableComponent<T, V> & HasRead
   }
 
   /**
+   * {@inheritDoc}
+   */
+  @Override
+  public T setName(String name) {
+    super.setName(name);
+    setUnrestrictedAttribute("name", name);
+    return getSelf();
+  }
+
+  /**
    * Set the placeholder of field.
    *
    * @param placeholder the placeholder of field

@@ -111,6 +111,16 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
    * {@inheritDoc}
    */
   @Override
+  public CheckBox setName(String name) {
+    super.setName(name);
+    setUnrestrictedAttribute("name", name);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public List<String> getRestrictedProperties() {
     List<String> properties = super.getRestrictedProperties();
     properties.addAll(Arrays.asList("autoValidate", "autoValidateOnLoad", "autoWasValidated",
