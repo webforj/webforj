@@ -14,8 +14,8 @@
   <packaging>maven-plugin</packaging>
 
   <properties>
-    <httpcore5.version>5.3.5</httpcore5.version>
-    <httpclient5.version>5.5</httpclient5.version>
+    <httpcore5.version>5.3.6</httpcore5.version>
+    <httpclient5.version>5.5.1</httpclient5.version>
     <arguments />
   </properties>
   <dependencies>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.18.0</version>
+      <version>3.19.0</version>
     </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>
@@ -93,7 +93,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>3.14.1</version>
           <configuration>
             <compilerArgs>
               <arg>--add-modules</arg>

@@ -81,6 +81,7 @@ public class Login extends ElementCompositeContainer
   private final PropertyDescriptor<Boolean> rememberme =
       PropertyDescriptor.property("rememberme", true);
   private final PropertyDescriptor<String> username = PropertyDescriptor.property("username", "");
+  private final PropertyDescriptor<String> action = PropertyDescriptor.property("action", "");
 
   /**
    * Instantiates a new Login.
@@ -500,6 +501,36 @@ public class Login extends ElementCompositeContainer
    */
   public String getUsername() {
     return get(username);
+  }
+
+  /**
+   * Sets the form action URL.
+   *
+   * <p>
+   * If set, the form will be submitted to this URL using a POST request when the user submits the
+   * form. The username and password will be sent as form parameters named "username" and
+   * "password", respectively.
+   * </p>
+   *
+   * <p>
+   * If not set, the form submission will be handled by the {@link LoginSubmitEvent} event.
+   * </p>
+   *
+   * @param action the form action URL
+   * @return the component itself
+   */
+  public Login setAction(String action) {
+    set(this.action, action);
+    return this;
+  }
+
+  /**
+   * Gets the form action URL.
+   *
+   * @return the form action URL
+   */
+  public String getAction() {
+    return get(action);
   }
 
   /**
