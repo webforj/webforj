@@ -136,12 +136,17 @@ public class RouteRenderer {
       throw new NotFoundException("No route found for component: " + component.getName());
     }
 
+    // Determine the base path for diff: use currently rendering path if a navigation is in
+    // progress, otherwise use the last successfully rendered path
+    RouteRelation<Class<? extends Component>> basePathForDiff =
+        currentlyRenderingPath != null ? currentlyRenderingPath : lastPath;
+
     this.context = context;
     // Set the path being rendered BEFORE creating components
     this.currentlyRenderingPath = currentPath.get();
 
     RouteRelationDiff<Class<? extends Component>> diff =
-        new RouteRelationDiff<>(lastPath, currentPath.get());
+        new RouteRelationDiff<>(basePathForDiff, currentPath.get());
     Set<Class<? extends Component>> toAdd = new LinkedHashSet<>(diff.getToAdd());
     Set<Class<? extends Component>> toRemove = diff.getToRemove();
 
