@@ -138,7 +138,10 @@ public class RouteRegistry {
     Route routeAnnotation = component.getAnnotation(Route.class);
     if (routeAnnotation != null) {
       // Process Route annotation
-      String routePath = buildFullRoutePath(component);
+      String routePath = RoutePathResolver.resolvePath(component);
+      if (routePath == null) {
+        throw new IllegalStateException("Unable to resolve route path for " + component.getName());
+      }
       RouteEntry entry = new RouteEntry(routePath, component, routeAnnotation.outlet(),
           routeAnnotation.frame(), routeAnnotation.priority());
       register(entry);
@@ -272,79 +275,6 @@ public class RouteRegistry {
     }
 
     return Optional.of(rootNode);
-  }
-
-  /**
-   * Builds the full route path for the given component class, respecting the hierarchy of routes.
-   *
-   * <p>
-   * If the target of a route is another route-annotated class, the path should include the parent
-   * route's path as a prefix.
-   * </p>
-   *
-   * @param componentClass the component class for which to build the full route path
-   * @return the full route path as a string
-   */
-  private String buildFullRoutePath(Class<? extends Component> componentClass) {
-    Route routeAnnotation = componentClass.getAnnotation(Route.class);
-
-    if (routeAnnotation == null) {
-      throw new IllegalArgumentException("Component class '" + componentClass.getSimpleName()
-          + "' must be annotated with @Route.");
-    }
-
-    String routePath = routeAnnotation.value();
-    Route.Type routeType = routeAnnotation.type();
-    boolean isLayout = routeType == Route.Type.LAYOUT;
-    boolean isView = routeType == Route.Type.VIEW;
-    String className = componentClass.getSimpleName();
-
-    if (routeType == Route.Type.AUTO_DETECT) {
-      isLayout = className.endsWith("Layout");
-      isView = className.endsWith("View");
-
-      if (!isLayout && !isView) {
-        throw new IllegalArgumentException("Cannot AUTO_DETECT route type for component class '"
-            + className + "': " + "component class name must end with 'Layout' or 'View'.");
-      }
-    }
-
-    if (isLayout) {
-      String name = Route.AUTO_GENERATED_NAME.equals(routePath)
-          ? className.replaceAll("Layout$", "").toLowerCase()
-          : routePath;
-
-      if (name.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Class name 'Layout' is not allowed for generating a route path.");
-      }
-
-      if (name.startsWith("@")) {
-        return name;
-      }
-      routePath = "@" + name;
-    } else if (isView) {
-      String name = Route.AUTO_GENERATED_NAME.equals(routePath)
-          ? className.replaceAll("View$", "").toLowerCase()
-          : routePath;
-      if (routePath.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Class name 'View' is not allowed for generating a route path.");
-      }
-
-      routePath = name;
-    }
-
-    Class<? extends Component> outletClass = routeAnnotation.outlet();
-    if (outletClass != Frame.class && outletClass != null) {
-      Route targetRouteAnnotation = outletClass.getAnnotation(Route.class);
-      if (targetRouteAnnotation != null) {
-        String targetPath = buildFullRoutePath(outletClass);
-        routePath = (targetPath + "/" + routePath).replaceAll("//", "/"); // NOSONAR
-      }
-    }
-
-    return routePath;
   }
 
   /**
