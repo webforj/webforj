@@ -9,12 +9,10 @@ import java.util.logging.Logger;
 /**
  * Registry for discovering and managing asset minifier implementations.
  *
- * <p>
- * Uses Java SPI (Service Provider Interface) to automatically discover minifier implementations on
- * the classpath.
+ * <p>Uses Java SPI (Service Provider Interface) to automatically discover minifier implementations
+ * on the classpath.
  *
- * <p>
- * This class is thread-safe and can be safely used in parallel processing.
+ * <p>This class is thread-safe and can be safely used in parallel processing.
  */
 public class MinifierRegistry {
   private static final Logger LOGGER = Logger.getLogger(MinifierRegistry.class.getName());
@@ -24,8 +22,7 @@ public class MinifierRegistry {
   /**
    * Registers a minifier for its supported file extensions.
    *
-   * <p>
-   * Extensions are automatically normalized (lowercased and dots removed). If multiple minifiers
+   * <p>Extensions are automatically normalized (lowercased and dots removed). If multiple minifiers
    * support the same extension, the last one registered wins.
    *
    * @param minifier the minifier to register
@@ -62,8 +59,7 @@ public class MinifierRegistry {
   /**
    * Gets the minifier for a given file extension.
    *
-   * <p>
-   * The extension is automatically normalized before lookup.
+   * <p>The extension is automatically normalized before lookup.
    *
    * @param fileExtension the file extension (with or without dot, e.g., ".css" or "css")
    * @return an Optional containing the minifier if found
@@ -75,8 +71,7 @@ public class MinifierRegistry {
   /**
    * Discovers and loads all minifier implementations using Java SPI.
    *
-   * <p>
-   * Minifiers are loaded from META-INF/services/com.webforj.minify.common.AssetMinifier. Failed
+   * <p>Minifiers are loaded from META-INF/services/com.webforj.minify.common.AssetMinifier. Failed
    * registrations are logged as warnings but do not stop the loading process.
    *
    * @param classLoader the class loader to use for discovery

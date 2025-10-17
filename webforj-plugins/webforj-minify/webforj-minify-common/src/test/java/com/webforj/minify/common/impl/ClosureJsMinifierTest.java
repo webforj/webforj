@@ -83,7 +83,7 @@ class ClosureJsMinifierTest {
   }
 
   @Test
-  void testES6Syntax() throws MinificationException {
+  void testEs6Syntax() throws MinificationException {
     String js = """
         const greet = (name) => {
           console.log(`Hello, ${name}`);

@@ -11,5 +11,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface StyleSheet {
+  /**
+   * The stylesheet URL.
+   *
+   * @return the URL
+   */
   String value();
 }

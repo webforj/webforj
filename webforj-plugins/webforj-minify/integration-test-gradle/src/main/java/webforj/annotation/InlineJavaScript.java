@@ -11,5 +11,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface InlineJavaScript {
+  /**
+   * The inline JavaScript content.
+   *
+   * @return the content
+   */
   String value();
 }

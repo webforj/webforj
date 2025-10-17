@@ -28,7 +28,7 @@ import org.apache.maven.project.MavenProject;
 /**
  * Maven Mojo that minifies webforJ assets during the build process.
  *
- * Runs in the process-classes phase (after compilation, before WAR packaging).
+ * <p>Runs in the process-classes phase (after compilation, before WAR packaging).
  */
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_CLASSES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {

@@ -53,6 +53,9 @@ public abstract class MinifyTask extends DefaultTask {
   @Optional
   public abstract Property<Boolean> getSkip();
 
+  /**
+   * Executes the minification task.
+   */
   @TaskAction
   public void minify() {
     if (Boolean.TRUE.equals(getSkip().getOrElse(false))) {
@@ -60,7 +63,7 @@ public abstract class MinifyTask extends DefaultTask {
       return;
     }
 
-    long startTime = System.currentTimeMillis();
+    final long startTime = System.currentTimeMillis();
     getLogger().info("Starting webforJ asset minification...");
 
     // Load minifiers via SPI
@@ -72,11 +75,13 @@ public abstract class MinifyTask extends DefaultTask {
       return;
     }
 
-    getLogger().info("Discovered {} minifier implementation(s) via SPI", registry.getMinifierCount());
+    getLogger().info("Discovered {} minifier implementation(s) via SPI",
+        registry.getMinifierCount());
 
     // Process manifest file
     File outputDir = getOutputDirectory().get().getAsFile();
-    Path manifestPath = Paths.get(outputDir.getAbsolutePath(), "META-INF", "webforj-resources.json");
+    Path manifestPath =
+        Paths.get(outputDir.getAbsolutePath(), "META-INF", "webforj-resources.json");
 
     if (Files.exists(manifestPath)) {
       getLogger().info("Processing manifest: {}", manifestPath);
@@ -95,7 +100,8 @@ public abstract class MinifyTask extends DefaultTask {
     }
 
     long duration = System.currentTimeMillis() - startTime;
-    getLogger().info("Minification complete. Processed {} file(s) in {} ms", processedFiles.size(), duration);
+    getLogger().info("Minification complete. Processed {} file(s) in {} ms",
+        processedFiles.size(), duration);
   }
 
   private void processManifest(Path manifestPath) {
@@ -149,7 +155,8 @@ public abstract class MinifyTask extends DefaultTask {
       getLogger().error("Failed to read manifest file: {}", e.getMessage(), e);
     } catch (Exception e) {
       getLogger().error("Malformed manifest file: {}", e.getMessage(), e);
-      throw new GradleException("Malformed manifest file - check META-INF/webforj-resources.json", e);
+      throw new GradleException(
+          "Malformed manifest file - check META-INF/webforj-resources.json", e);
     }
   }
 

@@ -11,5 +11,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface InlineStyleSheet {
+  /**
+   * The inline stylesheet content.
+   *
+   * @return the content
+   */
   String value();
 }
