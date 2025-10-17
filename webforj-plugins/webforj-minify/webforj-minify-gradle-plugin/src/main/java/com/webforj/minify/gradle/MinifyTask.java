@@ -8,12 +8,6 @@ import com.webforj.minify.common.AssetMinifier;
 import com.webforj.minify.common.MinificationException;
 import com.webforj.minify.common.MinifierRegistry;
 import com.webforj.minify.common.ResourceResolver;
-
-import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.TaskAction;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,9 +17,18 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.TaskAction;
 
 /**
- * Gradle task that minifies webforJ assets.
+ * Gradle task that minifies webforJ assets during the build process.
  */
 public abstract class MinifyTask extends DefaultTask {
 
@@ -35,53 +38,64 @@ public abstract class MinifyTask extends DefaultTask {
   private final MinifierRegistry registry = new MinifierRegistry();
   private final Set<Path> processedFiles = new HashSet<>();
 
-  @Input
-  public abstract Property<Boolean> getEnabled();
-
   public MinifyTask() {
-    getEnabled().convention(true);
+    setGroup("webforJ");
+    setDescription("Minifies webforJ assets");
   }
+
+  @InputDirectory
+  public abstract DirectoryProperty getOutputDirectory();
+
+  @InputDirectory
+  public abstract DirectoryProperty getResourcesDirectory();
+
+  @Input
+  @Optional
+  public abstract Property<Boolean> getSkip();
 
   @TaskAction
   public void minify() {
-    if (!getEnabled().get()) {
-      getLogger().info("Minification skipped");
+    if (Boolean.TRUE.equals(getSkip().getOrElse(false))) {
+      getLogger().info("Minification skipped (skip=true)");
       return;
     }
 
+    long startTime = System.currentTimeMillis();
     getLogger().info("Starting webforJ asset minification...");
 
     // Load minifiers via SPI
     registry.loadMinifiers(getClass().getClassLoader());
 
     if (registry.getMinifierCount() == 0) {
-      getLogger().warn("No minifiers registered. Skipping minification.");
+      getLogger().warn("No minifiers registered via SPI. Skipping minification.");
+      getLogger().warn("Ensure ph-css and/or closure-compiler are on the classpath.");
       return;
     }
 
-    // Get output directory
-    File outputDir = new File(getProject().getBuildDir(), "resources/main");
-    if (!outputDir.exists()) {
-      getLogger().warn("Output directory does not exist: " + outputDir);
-      return;
-    }
+    getLogger().info("Discovered {} minifier implementation(s) via SPI", registry.getMinifierCount());
 
     // Process manifest file
+    File outputDir = getOutputDirectory().get().getAsFile();
     Path manifestPath = Paths.get(outputDir.getAbsolutePath(), "META-INF", "webforj-resources.json");
+
     if (Files.exists(manifestPath)) {
+      getLogger().info("Processing manifest: {}", manifestPath);
       processManifest(manifestPath);
     } else {
-      getLogger().debug("No manifest file found at " + manifestPath);
+      getLogger().debug("No manifest file found at {}", manifestPath);
     }
 
     // Process additional configuration file
-    Path configPath = Paths.get(getProject().getProjectDir().getAbsolutePath(), "src", "main",
-                                 "resources", "META-INF", "webforj-minify.txt");
+    File resourcesDir = getResourcesDirectory().get().getAsFile();
+    Path configPath = Paths.get(resourcesDir.getAbsolutePath(), "META-INF", "webforj-minify.txt");
+
     if (Files.exists(configPath)) {
-      processConfigFile(configPath);
+      getLogger().info("Processing configuration file: {}", configPath);
+      processConfigFile(configPath, resourcesDir.toPath());
     }
 
-    getLogger().info("Minification complete. Processed " + processedFiles.size() + " file(s)");
+    long duration = System.currentTimeMillis() - startTime;
+    getLogger().info("Minification complete. Processed {} file(s) in {} ms", processedFiles.size(), duration);
   }
 
   private void processManifest(Path manifestPath) {
@@ -89,64 +103,102 @@ public abstract class MinifyTask extends DefaultTask {
       String content = Files.readString(manifestPath, StandardCharsets.UTF_8);
       JsonObject manifest = gson.fromJson(content, JsonObject.class);
 
-      if (manifest.has("resources")) {
-        JsonArray resources = manifest.getAsJsonArray("resources");
-        ResourceResolver resolver = new ResourceResolver(
-          Paths.get(getProject().getProjectDir().getAbsolutePath(), "src", "main", "resources")
-        );
+      // Check for "assets" (new format) or "resources" (legacy format)
+      JsonArray assets = null;
+      if (manifest.has("assets")) {
+        assets = manifest.getAsJsonArray("assets");
+      } else if (manifest.has("resources")) {
+        assets = manifest.getAsJsonArray("resources");
+      }
 
-        for (JsonElement element : resources) {
-          JsonObject resource = element.getAsJsonObject();
-          String url = resource.get("url").getAsString();
+      if (assets == null || assets.size() == 0) {
+        getLogger().warn("Manifest file contains no assets");
+        return;
+      }
 
+      getLogger().info("Found {} asset(s) in manifest", assets.size());
+
+      File resourcesDir = getResourcesDirectory().get().getAsFile();
+      ResourceResolver resolver = new ResourceResolver(resourcesDir.toPath());
+
+      // Collect all file paths first
+      Set<Path> filesToProcess = new HashSet<>();
+      for (JsonElement element : assets) {
+        JsonObject resource = element.getAsJsonObject();
+        String url = resource.get("url").getAsString();
+
+        try {
           Path filePath = resolver.resolve(url);
-          processFile(filePath);
+          filesToProcess.add(filePath);
+        } catch (SecurityException e) {
+          getLogger().warn("Security violation for URL '{}': {}", url, e.getMessage());
+        } catch (Exception e) {
+          getLogger().warn("Failed to resolve URL '{}': {}", url, e.getMessage());
         }
       }
+
+      // Process files (use parallel streams for >10 files)
+      if (filesToProcess.size() > 10) {
+        getLogger().info("Using parallel processing for {} files", filesToProcess.size());
+        filesToProcess.parallelStream().forEach(this::processFile);
+      } else {
+        filesToProcess.forEach(this::processFile);
+      }
+
     } catch (IOException e) {
-      getLogger().error("Failed to read manifest file: " + e.getMessage(), e);
+      getLogger().error("Failed to read manifest file: {}", e.getMessage(), e);
     } catch (Exception e) {
-      getLogger().error("Malformed manifest file: " + e.getMessage(), e);
-      throw new RuntimeException("Malformed manifest file", e);
+      getLogger().error("Malformed manifest file: {}", e.getMessage(), e);
+      throw new GradleException("Malformed manifest file - check META-INF/webforj-resources.json", e);
     }
   }
 
-  private void processConfigFile(Path configPath) {
+  private void processConfigFile(Path configPath, Path resourcesRoot) {
     try {
-      Path resourcesRoot = Paths.get(getProject().getProjectDir().getAbsolutePath(), "src", "main", "resources");
-
-      Files.lines(configPath, StandardCharsets.UTF_8)
-        .map(String::trim)
-        .filter(line -> !line.isEmpty() && !line.startsWith("#"))
-        .forEach(pattern -> {
-          if (pattern.startsWith("!")) {
-            // Exclusion pattern
-            getLogger().debug("Exclusion pattern: " + pattern);
-          } else {
-            // Inclusion pattern
-            getLogger().debug("Inclusion pattern: " + pattern);
-          }
-        });
+      Files.lines(configPath, StandardCharsets.UTF_8).map(String::trim)
+          .filter(line -> !line.isEmpty() && !line.startsWith("#")).forEach(pattern -> {
+            if (pattern.startsWith("!")) {
+              // Exclusion pattern - not yet implemented
+              getLogger().debug("Exclusion pattern: {}", pattern);
+            } else {
+              // Inclusion pattern - find matching files
+              processGlobPattern(resourcesRoot, pattern);
+            }
+          });
     } catch (IOException e) {
-      getLogger().warn("Failed to read config file: " + e.getMessage());
+      getLogger().warn("Failed to read config file: {}", e.getMessage());
     }
   }
 
-  private void processFile(Path filePath) {
-    // Skip if already processed
+  private void processGlobPattern(Path root, String pattern) {
+    try (Stream<Path> paths = Files.walk(root)) {
+      paths.filter(Files::isRegularFile).filter(p -> matchesGlob(root, p, pattern))
+          .forEach(this::processFile);
+    } catch (IOException e) {
+      getLogger().warn("Error processing glob pattern {}: {}", pattern, e.getMessage());
+    }
+  }
+
+  private boolean matchesGlob(Path root, Path file, String pattern) {
+    String relativePath = root.relativize(file).toString().replace('\\', '/');
+    return relativePath.matches(pattern.replace("*", ".*"));
+  }
+
+  private synchronized void processFile(Path filePath) {
+    // Skip if already processed (synchronized for thread safety)
     if (processedFiles.contains(filePath)) {
       return;
     }
 
     // Skip if doesn't exist
     if (!Files.exists(filePath)) {
-      getLogger().warn("File not found: " + filePath);
+      getLogger().warn("File not found: {}", filePath);
       return;
     }
 
     // Skip if already minified
     if (MIN_FILE_PATTERN.matcher(filePath.toString()).matches()) {
-      getLogger().debug("Skipping already minified file: " + filePath);
+      getLogger().debug("Skipping already minified file: {}", filePath.getFileName());
       return;
     }
 
@@ -162,25 +214,39 @@ public abstract class MinifyTask extends DefaultTask {
     // Find minifier for this extension
     AssetMinifier minifier = registry.getMinifier(extension).orElse(null);
     if (minifier == null) {
-      getLogger().debug("No minifier found for extension: " + extension);
+      getLogger().debug("No minifier found for extension .{}: {}", extension, fileName);
       return;
     }
 
     // Minify the file
     try {
+      long fileStartTime = System.currentTimeMillis();
       String content = Files.readString(filePath, StandardCharsets.UTF_8);
-      String minified = minifier.minify(content, filePath);
+      long originalSize = content.length();
 
-      // Write minified content back
-      Files.writeString(filePath, minified, StandardCharsets.UTF_8);
+      String minified = minifier.minify(content, filePath);
+      long minifiedSize = minified.length();
+
+      // Only write if content changed
+      if (!content.equals(minified)) {
+        Files.writeString(filePath, minified, StandardCharsets.UTF_8);
+        long duration = System.currentTimeMillis() - fileStartTime;
+
+        double reductionPercent = 100.0 * (originalSize - minifiedSize) / originalSize;
+        getLogger().info("Minified {}: {} → {} bytes ({}% reduction) in {} ms", fileName,
+            originalSize, minifiedSize, String.format("%.1f", reductionPercent), duration);
+      } else {
+        getLogger().debug("No changes after minification: {}", fileName);
+      }
 
       processedFiles.add(filePath);
-      getLogger().info("Minified: " + filePath);
 
     } catch (IOException e) {
-      getLogger().warn("Error reading file " + filePath + ": " + e.getMessage());
+      getLogger().warn("Error reading file {}: {}", filePath, e.getMessage());
     } catch (MinificationException e) {
-      getLogger().warn("Error minifying file " + filePath + ": " + e.getMessage());
+      getLogger().warn("Error minifying file {}: {}", filePath, e.getMessage());
+    } catch (Exception e) {
+      getLogger().warn("Unexpected error processing {}: {}", filePath, e.getMessage());
     }
   }
 }

@@ -3,26 +3,21 @@ package com.webforj.minify.gradle;
 import org.gradle.api.provider.Property;
 
 /**
- * Extension for configuring the webforJ minify plugin.
+ * Configuration extension for the webforJ minify plugin.
  *
- * Usage in build.gradle:
+ * <p>Usage in build.gradle:
  * <pre>
  * webforjMinify {
- *   enabled = true
+ *   skip = false
  * }
  * </pre>
  */
-public abstract class MinifyExtension {
+public interface MinifyExtension {
 
   /**
-   * Whether minification is enabled.
+   * Whether to skip minification.
    *
-   * @return property for enabled flag
+   * @return the skip property
    */
-  public abstract Property<Boolean> getEnabled();
-
-  public MinifyExtension() {
-    // Default to enabled
-    getEnabled().convention(true);
-  }
+  Property<Boolean> getSkip();
 }

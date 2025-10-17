@@ -1,0 +1,2 @@
+function init(){console.log("Application initialized");setupEventListeners()}function setupEventListeners(){document.querySelectorAll(".button").forEach(function(a){a.addEventListener("click",function(){console.log("Button clicked:",this.textContent);handleButtonClick(this)})})}function handleButtonClick(a){a=a.getAttribute("data-action");"submit"===a?submitForm():"cancel"===a&&cancelForm()}function submitForm(){console.log("Submitting form...")}
+function cancelForm(){console.log("Canceling form...")}document.addEventListener("DOMContentLoaded",init);

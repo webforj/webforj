@@ -20,7 +20,8 @@
     <module>webforj-minify-common</module>
     <module>webforj-minify-processor</module>
     <module>webforj-minify-maven-plugin</module>
-    <module>webforj-minify-gradle-plugin</module>
+    <!-- TODO: Gradle plugin requires Gradle build system, implement separately -->
+    <!-- <module>webforj-minify-gradle-plugin</module> -->
   </modules>
 
   <dependencyManagement>
@@ -41,10 +42,11 @@
       </dependency>
 
       <!-- JavaScript minification (optional, for default implementation) -->
+      <!-- Note: Using v20230802 - last version compatible with Java 17 -->
       <dependency>
         <groupId>com.google.javascript</groupId>
         <artifactId>closure-compiler</artifactId>
-        <version>v20250820</version>
+        <version>v20230802</version>
         <optional>true</optional>
       </dependency>
 
