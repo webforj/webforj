@@ -28,7 +28,8 @@ import javax.tools.StandardLocation;
  * Annotation processor that discovers webforJ asset annotations and generates a manifest file
  * (META-INF/webforj-resources.json) listing all discovered assets.
  *
- * <p>Supports the following annotations:
+ * <p>
+ * Supports the following annotations:
  *
  * <ul>
  * <li>@StyleSheet
@@ -37,7 +38,8 @@ import javax.tools.StandardLocation;
  * <li>@InlineJavaScript
  * </ul>
  *
- * <p>The generated manifest is used by the Maven and Gradle plugins to determine which assets need
+ * <p>
+ * The generated manifest is used by the Maven and Gradle plugins to determine which assets need
  * minification during the build process.
  */
 @SupportedAnnotationTypes({"com.webforj.annotation.StyleSheet", "com.webforj.annotation.JavaScript",
@@ -78,39 +80,48 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
 
     for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
       if (mirror.getAnnotationType().asElement().equals(annotationType)) {
-        Map<? extends ExecutableElement, ? extends AnnotationValue> values =
-            processingEnv.getElementUtils().getElementValuesWithDefaults(mirror);
-
-        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : values
-            .entrySet()) {
-          String paramName = entry.getKey().getSimpleName().toString();
-
-          // Look for 'value' or 'url' parameter
-          if ("value".equals(paramName) || "url".equals(paramName)) {
-            Object value = entry.getValue().getValue();
-
-            if (value instanceof String url) {
-              if (!url.isEmpty()) {
-                resources.add(new ResourceEntry(url, type, sourceClass));
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-                    "Discovered " + type + " asset: " + url + " in " + sourceClass);
-              }
-            } else if (value instanceof List) {
-              // Handle array of values
-              @SuppressWarnings("unchecked")
-              List<? extends AnnotationValue> list = (List<? extends AnnotationValue>) value;
-              for (AnnotationValue av : list) {
-                String url = av.getValue().toString();
-                if (!url.isEmpty()) {
-                  resources.add(new ResourceEntry(url, type, sourceClass));
-                  processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
-                      "Discovered " + type + " asset: " + url + " in " + sourceClass);
-                }
-              }
-            }
-          }
-        }
+        processAnnotationMirror(mirror, type, sourceClass);
       }
+    }
+  }
+
+  private void processAnnotationMirror(AnnotationMirror mirror, String type, String sourceClass) {
+    Map<? extends ExecutableElement, ? extends AnnotationValue> values =
+        processingEnv.getElementUtils().getElementValuesWithDefaults(mirror);
+
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : values
+        .entrySet()) {
+      String paramName = entry.getKey().getSimpleName().toString();
+
+      // Look for 'value' or 'url' parameter
+      if ("value".equals(paramName) || "url".equals(paramName)) {
+        processAnnotationValue(entry.getValue().getValue(), type, sourceClass);
+      }
+    }
+  }
+
+  private void processAnnotationValue(Object value, String type, String sourceClass) {
+    if (value instanceof String url) {
+      addResourceIfNotEmpty(url, type, sourceClass);
+    } else if (value instanceof List) {
+      processAnnotationValueList(value, type, sourceClass);
+    }
+  }
+
+  private void processAnnotationValueList(Object value, String type, String sourceClass) {
+    @SuppressWarnings("unchecked")
+    List<? extends AnnotationValue> list = (List<? extends AnnotationValue>) value;
+    for (AnnotationValue av : list) {
+      String url = av.getValue().toString();
+      addResourceIfNotEmpty(url, type, sourceClass);
+    }
+  }
+
+  private void addResourceIfNotEmpty(String url, String type, String sourceClass) {
+    if (!url.isEmpty()) {
+      resources.add(new ResourceEntry(url, type, sourceClass));
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
+          "Discovered " + type + " asset: " + url + " in " + sourceClass);
     }
   }
 

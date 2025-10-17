@@ -129,19 +129,7 @@ public abstract class MinifyTask extends DefaultTask {
 
       // Collect all file paths first
       Set<Path> filesToProcess = new HashSet<>();
-      for (JsonElement element : assets) {
-        JsonObject resource = element.getAsJsonObject();
-        String url = resource.get("url").getAsString();
-
-        try {
-          Path filePath = resolver.resolve(url);
-          filesToProcess.add(filePath);
-        } catch (SecurityException e) {
-          getLogger().warn("Security violation for URL '{}': {}", url, e.getMessage());
-        } catch (Exception e) {
-          getLogger().warn("Failed to resolve URL '{}': {}", url, e.getMessage());
-        }
-      }
+      collectFilesToProcess(assets, resolver, filesToProcess);
 
       // Process files (use parallel streams for >10 files)
       if (filesToProcess.size() > 10) {
@@ -157,6 +145,23 @@ public abstract class MinifyTask extends DefaultTask {
       getLogger().error("Malformed manifest file: {}", e.getMessage(), e);
       throw new GradleException(
           "Malformed manifest file - check META-INF/webforj-resources.json", e);
+    }
+  }
+
+  private void collectFilesToProcess(JsonArray assets, ResourceResolver resolver,
+      Set<Path> filesToProcess) {
+    for (JsonElement element : assets) {
+      JsonObject resource = element.getAsJsonObject();
+      String url = resource.get("url").getAsString();
+
+      try {
+        Path filePath = resolver.resolve(url);
+        filesToProcess.add(filePath);
+      } catch (SecurityException e) {
+        getLogger().warn("Security violation for URL '{}': {}", url, e.getMessage());
+      } catch (Exception e) {
+        getLogger().warn("Failed to resolve URL '{}': {}", url, e.getMessage());
+      }
     }
   }
 

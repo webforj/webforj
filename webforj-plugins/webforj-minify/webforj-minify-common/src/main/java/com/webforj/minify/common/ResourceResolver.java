@@ -8,7 +8,8 @@ import java.util.regex.Pattern;
 /**
  * Resolves webforJ resource protocol URLs to filesystem paths.
  *
- * <p>Supports the following protocols:
+ * <p>
+ * Supports the following protocols:
  * <ul>
  * <li>webserver://path → src/main/resources/static/path</li>
  * <li>ws://path → src/main/resources/static/path</li>
@@ -16,8 +17,9 @@ import java.util.regex.Pattern;
  * <li>No protocol → static/path</li>
  * </ul>
  *
- * <p><b>Security:</b> All resolved paths are validated to prevent directory traversal attacks.
- * Paths containing ".." that escape the resources root will throw {@link SecurityException}.
+ * <p>
+ * <b>Security:</b> All resolved paths are validated to prevent directory traversal attacks. Paths
+ * containing ".." that escape the resources root will throw {@link SecurityException}.
  *
  * @see <a href="https://docs.webforj.com/docs/managing-resources/assets-protocols">webforJ Asset
  *      Protocols</a>
@@ -46,8 +48,9 @@ public class ResourceResolver {
   /**
    * Resolves a webforJ resource URL to a filesystem path.
    *
-   * <p><b>Security:</b> The resolved path is validated to ensure it remains within the resources
-   * root directory. Paths attempting to escape via ".." will throw {@link SecurityException}.
+   * <p>
+   * <b>Security:</b> The resolved path is validated to ensure it remains within the resources root
+   * directory. Paths attempting to escape via ".." will throw {@link SecurityException}.
    *
    * @param url the resource URL (e.g., "webserver://css/app.css")
    * @return the resolved filesystem path

@@ -14,7 +14,8 @@ import java.util.logging.Logger;
 /**
  * JavaScript minifier implementation using Google Closure Compiler.
  *
- * <p>Uses SIMPLE_OPTIMIZATIONS for safe minification without symbol renaming.
+ * <p>
+ * Uses SIMPLE_OPTIMIZATIONS for safe minification without symbol renaming.
  */
 public class ClosureJsMinifier implements AssetMinifier {
   private static final Logger LOGGER = Logger.getLogger(ClosureJsMinifier.class.getName());

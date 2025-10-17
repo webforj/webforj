@@ -13,7 +13,8 @@ import java.util.logging.Logger;
 /**
  * CSS minifier implementation using the ph-css library (v8.0.0).
  *
- * <p>This implementation preserves semantic correctness and handles parse errors gracefully by
+ * <p>
+ * This implementation preserves semantic correctness and handles parse errors gracefully by
  * returning the original content when minification fails.
  */
 public class PhCssMinifier implements AssetMinifier {
@@ -27,8 +28,8 @@ public class PhCssMinifier implements AssetMinifier {
 
       if (css == null) {
         if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
-          LOGGER.warning(
-              String.format("Failed to parse CSS file %s. Returning original content.", sourceFile));
+          LOGGER.warning(String.format("Failed to parse CSS file %s. Returning original content.",
+              sourceFile));
         }
         return content;
       }

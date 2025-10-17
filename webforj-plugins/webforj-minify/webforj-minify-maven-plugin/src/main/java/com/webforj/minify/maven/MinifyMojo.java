@@ -28,7 +28,8 @@ import org.apache.maven.project.MavenProject;
 /**
  * Maven Mojo that minifies webforJ assets during the build process.
  *
- * <p>Runs in the process-classes phase (after compilation, before WAR packaging).
+ * <p>
+ * Runs in the process-classes phase (after compilation, before WAR packaging).
  */
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_CLASSES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
@@ -81,8 +82,8 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     // Process additional configuration file
-    Path configPath = Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR,
-        "META-INF", "webforj-minify.txt");
+    Path configPath = Paths.get(project.getBasedir().getAbsolutePath(), "src", "main",
+        RESOURCES_DIR, "META-INF", "webforj-minify.txt");
     if (Files.exists(configPath)) {
       getLog().info("Processing configuration file: " + configPath);
       processConfigFile(configPath);
@@ -93,7 +94,7 @@ public class MinifyMojo extends AbstractMojo {
         + duration + " ms");
   }
 
-  private void processManifest(Path manifestPath) {
+  private void processManifest(Path manifestPath) throws MojoExecutionException {
     try {
       String content = Files.readString(manifestPath, StandardCharsets.UTF_8);
       JsonObject manifest = gson.fromJson(content, JsonObject.class);
@@ -118,19 +119,7 @@ public class MinifyMojo extends AbstractMojo {
 
       // Collect all file paths first
       Set<Path> filesToProcess = new HashSet<>();
-      for (JsonElement element : assets) {
-        JsonObject resource = element.getAsJsonObject();
-        String url = resource.get("url").getAsString();
-
-        try {
-          Path filePath = resolver.resolve(url);
-          filesToProcess.add(filePath);
-        } catch (SecurityException e) {
-          getLog().warn("Security violation for URL '" + url + "': " + e.getMessage());
-        } catch (Exception e) {
-          getLog().warn("Failed to resolve URL '" + url + "': " + e.getMessage());
-        }
-      }
+      collectFilesToProcess(assets, resolver, filesToProcess);
 
       // Process files (use parallel streams for >10 files)
       if (filesToProcess.size() > 10) {
@@ -142,10 +131,27 @@ public class MinifyMojo extends AbstractMojo {
 
     } catch (IOException e) {
       getLog().error("Failed to read manifest file: " + e.getMessage(), e);
-    } catch (Exception e) {
+    } catch (com.google.gson.JsonSyntaxException e) {
       getLog().error("Malformed manifest file: " + e.getMessage(), e);
-      throw new RuntimeException("Malformed manifest file - check META-INF/webforj-resources.json",
-          e);
+      throw new MojoExecutionException(
+          "Malformed manifest file - check META-INF/webforj-resources.json", e);
+    }
+  }
+
+  private void collectFilesToProcess(JsonArray assets, ResourceResolver resolver,
+      Set<Path> filesToProcess) {
+    for (JsonElement element : assets) {
+      JsonObject resource = element.getAsJsonObject();
+      String url = resource.get("url").getAsString();
+
+      try {
+        Path filePath = resolver.resolve(url);
+        filesToProcess.add(filePath);
+      } catch (SecurityException e) {
+        getLog().warn("Security violation for URL '" + url + "': " + e.getMessage());
+      } catch (IllegalArgumentException e) {
+        getLog().warn("Failed to resolve URL '" + url + "': " + e.getMessage());
+      }
     }
   }
 
