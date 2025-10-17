@@ -1,4 +1,4 @@
-package com.webforj.annotation;
+package webforj.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -26,8 +26,10 @@ public class PhCssMinifier implements AssetMinifier {
       CascadingStyleSheet css = CSSReader.readFromString(content);
 
       if (css == null) {
-        LOGGER.warning(
-            String.format("Failed to parse CSS file %s. Returning original content.", sourceFile));
+        if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
+          LOGGER.warning(
+              String.format("Failed to parse CSS file %s. Returning original content.", sourceFile));
+        }
         return content;
       }
 
@@ -39,14 +41,18 @@ public class PhCssMinifier implements AssetMinifier {
       CSSWriter writer = new CSSWriter(settings);
       String minified = writer.getCSSAsString(css);
 
-      LOGGER.fine(String.format("Minified %s: %d bytes -> %d bytes", sourceFile.getFileName(),
-          content.length(), minified.length()));
+      if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
+        LOGGER.fine(String.format("Minified %s: %d bytes -> %d bytes", sourceFile.getFileName(),
+            content.length(), minified.length()));
+      }
 
       return minified;
 
     } catch (Exception e) {
-      LOGGER.warning(String.format("Error minifying CSS file %s: %s. Returning original content.",
-          sourceFile, e.getMessage()));
+      if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
+        LOGGER.warning(String.format("Error minifying CSS file %s: %s. Returning original content.",
+            sourceFile, e.getMessage()));
+      }
       return content;
     }
   }

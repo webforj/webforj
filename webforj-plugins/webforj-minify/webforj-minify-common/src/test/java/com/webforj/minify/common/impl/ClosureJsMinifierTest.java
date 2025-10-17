@@ -101,7 +101,7 @@ class ClosureJsMinifierTest {
     // ES6 code might be transpiled which can increase size in some cases
     // Just verify it compiles successfully
     assertTrue(!minified.isEmpty(), "Minified code should not be empty");
-    assertTrue(minified.trim().length() > 0, "Minified code should have content");
+    assertTrue(!minified.trim().isEmpty(), "Minified code should have content");
   }
 
   @Test

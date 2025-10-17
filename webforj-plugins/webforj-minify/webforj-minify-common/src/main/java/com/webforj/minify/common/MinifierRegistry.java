@@ -33,12 +33,14 @@ public class MinifierRegistry {
       String normalized = normalizeExtension(extension);
 
       AssetMinifier previous = minifiers.put(normalized, minifier);
-      if (previous != null) {
+      if (previous != null && LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
         LOGGER.warning(String.format("Extension '.%s' already registered to %s, replacing with %s",
             normalized, previous.getClass().getSimpleName(), minifier.getClass().getSimpleName()));
       }
-      LOGGER.info(String.format("Registered minifier for .%s: %s", normalized,
-          minifier.getClass().getSimpleName()));
+      if (LOGGER.isLoggable(java.util.logging.Level.INFO)) {
+        LOGGER.info(String.format("Registered minifier for .%s: %s", normalized,
+            minifier.getClass().getSimpleName()));
+      }
     }
   }
 
@@ -85,12 +87,16 @@ public class MinifierRegistry {
         register(minifier);
         loadedCount++;
       } catch (Exception e) {
-        LOGGER.warning(String.format("Failed to load minifier %s: %s",
-            minifier.getClass().getName(), e.getMessage()));
+        if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
+          LOGGER.warning(String.format("Failed to load minifier %s: %s",
+              minifier.getClass().getName(), e.getMessage()));
+        }
       }
     }
 
-    LOGGER.info(String.format("Loaded %d minifier implementation(s)", loadedCount));
+    if (LOGGER.isLoggable(java.util.logging.Level.INFO)) {
+      LOGGER.info(String.format("Loaded %d minifier implementation(s)", loadedCount));
+    }
   }
 
   /**

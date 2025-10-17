@@ -34,6 +34,7 @@ import org.apache.maven.project.MavenProject;
 public class MinifyMojo extends AbstractMojo {
 
   private static final Pattern MIN_FILE_PATTERN = Pattern.compile(".*\\.min\\.(css|js)$");
+  private static final String RESOURCES_DIR = "resources";
 
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
@@ -80,7 +81,7 @@ public class MinifyMojo extends AbstractMojo {
     }
 
     // Process additional configuration file
-    Path configPath = Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", "resources",
+    Path configPath = Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR,
         "META-INF", "webforj-minify.txt");
     if (Files.exists(configPath)) {
       getLog().info("Processing configuration file: " + configPath);
@@ -113,7 +114,7 @@ public class MinifyMojo extends AbstractMojo {
       getLog().info("Found " + assets.size() + " asset(s) in manifest");
 
       ResourceResolver resolver = new ResourceResolver(
-          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", "resources"));
+          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR));
 
       // Collect all file paths first
       Set<Path> filesToProcess = new HashSet<>();
@@ -151,7 +152,7 @@ public class MinifyMojo extends AbstractMojo {
   private void processConfigFile(Path configPath) {
     try {
       Path resourcesRoot =
-          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", "resources");
+          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR);
 
       Files.lines(configPath, StandardCharsets.UTF_8).map(String::trim)
           .filter(line -> !line.isEmpty() && !line.startsWith("#")).forEach(pattern -> {

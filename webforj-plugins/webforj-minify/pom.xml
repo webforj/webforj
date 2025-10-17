@@ -20,8 +20,6 @@
     <module>webforj-minify-common</module>
     <module>webforj-minify-processor</module>
     <module>webforj-minify-maven-plugin</module>
-    <!-- TODO: Gradle plugin requires Gradle build system, implement separately -->
-    <!-- <module>webforj-minify-gradle-plugin</module> -->
   </modules>
 
   <dependencyManagement>

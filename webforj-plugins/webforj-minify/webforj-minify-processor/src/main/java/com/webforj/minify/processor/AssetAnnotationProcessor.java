@@ -89,8 +89,7 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
           if ("value".equals(paramName) || "url".equals(paramName)) {
             Object value = entry.getValue().getValue();
 
-            if (value instanceof String) {
-              String url = (String) value;
+            if (value instanceof String url) {
               if (!url.isEmpty()) {
                 resources.add(new ResourceEntry(url, type, sourceClass));
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
@@ -190,7 +189,10 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
    */
   private static class ManifestData {
     @SuppressWarnings("unused") // Used by Gson
-    private final String version = "1.0";
+    private static final String VERSION = "1.0";
+
+    @SuppressWarnings("unused") // Used by Gson
+    private final String version = VERSION;
 
     @SuppressWarnings("unused") // Used by Gson
     private final String generatedAt = Instant.now().toString();

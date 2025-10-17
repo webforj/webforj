@@ -38,7 +38,7 @@ public abstract class MinifyTask extends DefaultTask {
   private final MinifierRegistry registry = new MinifierRegistry();
   private final Set<Path> processedFiles = new HashSet<>();
 
-  public MinifyTask() {
+  protected MinifyTask() {
     setGroup("webforJ");
     setDescription("Minifies webforJ assets");
   }
