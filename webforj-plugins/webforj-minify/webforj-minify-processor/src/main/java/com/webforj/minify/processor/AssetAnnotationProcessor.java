@@ -199,7 +199,8 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
    * Root object for the manifest JSON structure.
    */
   private static class ManifestData {
-    @SuppressWarnings("unused") // Used by Gson
+    @SuppressWarnings({"unused", "java:S1170"}) // Used by Gson, must be non-static for
+                                                // serialization
     private final String version = "1.0";
 
     @SuppressWarnings("unused") // Used by Gson
