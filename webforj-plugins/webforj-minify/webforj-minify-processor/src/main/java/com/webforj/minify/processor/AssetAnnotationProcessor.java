@@ -200,10 +200,7 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
    */
   private static class ManifestData {
     @SuppressWarnings("unused") // Used by Gson
-    private static final String VERSION = "1.0";
-
-    @SuppressWarnings("unused") // Used by Gson
-    private final String version = VERSION;
+    private final String version = "1.0";
 
     @SuppressWarnings("unused") // Used by Gson
     private final String generatedAt = Instant.now().toString();

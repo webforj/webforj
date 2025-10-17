@@ -103,8 +103,8 @@ public class MinifyMojo extends AbstractMojo {
       JsonArray assets = null;
       if (manifest.has("assets")) {
         assets = manifest.getAsJsonArray("assets");
-      } else if (manifest.has("resources")) {
-        assets = manifest.getAsJsonArray("resources");
+      } else if (manifest.has(RESOURCES_DIR)) {
+        assets = manifest.getAsJsonArray(RESOURCES_DIR);
       }
 
       if (assets == null || assets.size() == 0) {
