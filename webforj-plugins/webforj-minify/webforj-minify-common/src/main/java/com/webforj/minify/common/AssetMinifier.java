@@ -6,8 +6,7 @@ import java.util.Set;
 /**
  * Interface for asset minification implementations.
  *
- * <p>
- * Implementations of this interface are discovered via Java SPI (Service Provider Interface). To
+ * <p>Implementations of this interface are discovered via Java SPI (Service Provider Interface). To
  * register a custom minifier:
  * <ol>
  * <li>Implement this interface</li>
