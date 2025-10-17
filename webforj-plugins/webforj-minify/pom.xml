@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-plugins</artifactId>
+    <version>25.10-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <packaging>pom</packaging>
+  <artifactId>webforj-minify</artifactId>
+  <name>${project.artifactId}</name>
+  <description>Build-time asset minification system for webforJ applications</description>
+
+  <modules>
+    <module>webforj-minify-common</module>
+    <module>webforj-minify-processor</module>
+    <module>webforj-minify-maven-plugin</module>
+    <module>webforj-minify-gradle-plugin</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Internal modules -->
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-minify-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- CSS minification (optional, for default implementation) -->
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>ph-css</artifactId>
+        <version>8.0.0</version>
+        <optional>true</optional>
+      </dependency>
+
+      <!-- JavaScript minification (optional, for default implementation) -->
+      <dependency>
+        <groupId>com.google.javascript</groupId>
+        <artifactId>closure-compiler</artifactId>
+        <version>v20250820</version>
+        <optional>true</optional>
+      </dependency>
+
+      <!-- JSON processing for manifest generation -->
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>
