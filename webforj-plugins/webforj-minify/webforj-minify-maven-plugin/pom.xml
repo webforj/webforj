@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-minify</artifactId>
+    <version>25.10-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webforj-minify-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <name>${project.artifactId}</name>
+  <description>Maven plugin for minifying webforJ assets at build time</description>
+
+  <properties>
+    <maven.version>3.8.1</maven.version>
+    <maven-plugin-annotations.version>3.6.4</maven-plugin-annotations.version>
+  </properties>
+
+  <dependencies>
+    <!-- Common module -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-common</artifactId>
+    </dependency>
+
+    <!-- Maven plugin API -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${maven.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${maven.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>${maven-plugin-annotations.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- JSON processing -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.6.4</version>
+        <configuration>
+          <goalPrefix>webforj-minify</goalPrefix>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
