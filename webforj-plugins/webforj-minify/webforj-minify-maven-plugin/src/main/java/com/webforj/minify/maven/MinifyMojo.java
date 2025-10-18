@@ -114,8 +114,8 @@ public class MinifyMojo extends AbstractMojo {
 
       getLog().info("Found " + assets.size() + " asset(s) in manifest");
 
-      ResourceResolver resolver = new ResourceResolver(
-          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR));
+      // Use outputDirectory (target/classes) to process compiled resources, not source files
+      ResourceResolver resolver = new ResourceResolver(Paths.get(outputDirectory));
 
       // Collect all file paths first
       Set<Path> filesToProcess = new HashSet<>();
