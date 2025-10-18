@@ -13,17 +13,17 @@ function init() {
 function setupEventListeners() {
   const buttons = document.querySelectorAll(".button");
 
-  buttons.forEach(function(button) {
+  for (const button of buttons) {
     button.addEventListener("click", function() {
       console.log("Button clicked:", this.textContent);
       handleButtonClick(this);
     });
-  });
+  }
 }
 
 // Handle button click events
 function handleButtonClick(button) {
-  const action = button.getAttribute("data-action");
+  const action = button.dataset.action;
 
   if (action === "submit") {
     submitForm();
