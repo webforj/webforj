@@ -58,12 +58,12 @@ public class RolesAllowedEvaluator implements RouteSecurityEvaluator {
     // Check if user has any of the required roles
     boolean hasRequiredRole = Arrays.stream(requiredRoles).anyMatch(securityContext::hasRole);
 
-    if (hasRequiredRole) {
-      // User has required role - don't call chain
-      return RouteAccessDecision.grant();
+    if (!hasRequiredRole) {
+      // User doesn't have required roles
+      return RouteAccessDecision.deny(CODE);
     }
 
-    // User doesn't have required roles
-    return RouteAccessDecision.deny(CODE);
+    // User has required role - continue chain to allow other evaluators to run
+    return chain.evaluate(routeClass, context, securityContext);
   }
 }

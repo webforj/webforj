@@ -131,23 +131,31 @@ class SpringRouteAccessEvaluatorTest {
     }
 
     @Test
-    void shouldGrantAccessWhenHasAnyRole() {
+    void shouldDelegateToChainWhenHasAnyRole() {
+      RouteAccessDecision chainDecision = RouteAccessDecision.grant();
+      when(chain.evaluate(RouteWithAnyRole.class, navigationContext, securityContext))
+          .thenReturn(chainDecision);
+
       RouteAccessDecision decision =
           evaluator.evaluate(RouteWithAnyRole.class, navigationContext, securityContext, chain);
 
-      assertTrue(decision.isGranted());
+      assertEquals(chainDecision, decision);
     }
 
     @Test
-    void shouldGrantAccessForAuthenticatedExpression() {
+    void shouldDelegateToChainForAuthenticatedExpression() {
+      RouteAccessDecision chainDecision = RouteAccessDecision.grant();
+      when(chain.evaluate(RouteWithAuthenticated.class, navigationContext, securityContext))
+          .thenReturn(chainDecision);
+
       RouteAccessDecision decision = evaluator.evaluate(RouteWithAuthenticated.class,
           navigationContext, securityContext, chain);
 
-      assertTrue(decision.isGranted());
+      assertEquals(chainDecision, decision);
     }
 
     @Test
-    void shouldGrantAccessWithCorrectRole() {
+    void shouldDelegateToChainWithCorrectRole() {
       Collection<GrantedAuthority> authorities = Arrays.asList(
           new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_MANAGER"));
       User principal = new User("testuser", "password", authorities);
@@ -157,19 +165,26 @@ class SpringRouteAccessEvaluatorTest {
       securityContextHolderMock.when(SecurityContextHolder::getContext)
           .thenReturn(springSecurityContext);
       when(springSecurityContext.getAuthentication()).thenReturn(authentication);
+      RouteAccessDecision chainDecision = RouteAccessDecision.grant();
+      when(chain.evaluate(RouteWithRoleManager.class, navigationContext, securityContext))
+          .thenReturn(chainDecision);
 
       RouteAccessDecision decision =
           evaluator.evaluate(RouteWithRoleManager.class, navigationContext, securityContext, chain);
 
-      assertTrue(decision.isGranted());
+      assertEquals(chainDecision, decision);
     }
 
     @Test
-    void shouldEvaluateComplexExpression() {
+    void shouldDelegateToChainForComplexExpression() {
+      RouteAccessDecision chainDecision = RouteAccessDecision.grant();
+      when(chain.evaluate(RouteWithComplexExpression.class, navigationContext, securityContext))
+          .thenReturn(chainDecision);
+
       RouteAccessDecision decision = evaluator.evaluate(RouteWithComplexExpression.class,
           navigationContext, securityContext, chain);
 
-      assertTrue(decision.isGranted());
+      assertEquals(chainDecision, decision);
     }
 
     @Test

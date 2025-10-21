@@ -85,7 +85,7 @@ public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
     String code = annotation.code();
 
     // Evaluate the expression
-    return evaluateExpression(expression, code, routeClass, context, securityContext);
+    return evaluateExpression(expression, code, routeClass, context, securityContext, chain);
   }
 
   /**
@@ -96,10 +96,12 @@ public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
    * @param routeClass the route component class
    * @param context the navigation context
    * @param securityContext the security context
+   * @param chain the evaluator chain
    * @return the access decision
    */
   private RouteAccessDecision evaluateExpression(String expression, String code,
-      Class<?> routeClass, NavigationContext context, RouteSecurityContext securityContext) {
+      Class<?> routeClass, NavigationContext context, RouteSecurityContext securityContext,
+      SecurityEvaluatorChain chain) {
 
     try {
       // Parse the expression
@@ -112,7 +114,8 @@ public class SpringRouteAccessEvaluator implements RouteSecurityEvaluator {
       Boolean result = exp.getValue(evalContext, Boolean.class);
 
       if (Boolean.TRUE.equals(result)) {
-        return RouteAccessDecision.grant();
+        // SpEL check passed - continue chain to allow other evaluators to run
+        return chain.evaluate(routeClass, context, securityContext);
       } else {
         return RouteAccessDecision.deny(code);
       }

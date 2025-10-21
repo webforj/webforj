@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.webforj.router.NavigationContext;
@@ -54,27 +54,32 @@ class RolesAllowedEvaluatorTest {
   }
 
   @Test
-  void shouldGrantAccessWithSingleRole() {
+  void shouldDelegateToChainWhenRoleCheckPasses() {
     when(securityContext.isAuthenticated()).thenReturn(true);
     when(securityContext.hasRole("ADMIN")).thenReturn(true);
+    RouteAccessDecision chainDecision = RouteAccessDecision.grant();
+    when(chain.evaluate(SingleRoleRoute.class, navigationContext, securityContext))
+        .thenReturn(chainDecision);
 
     RouteAccessDecision decision =
         evaluator.evaluate(SingleRoleRoute.class, navigationContext, securityContext, chain);
 
-    assertTrue(decision.isGranted());
-    verifyNoInteractions(chain);
+    assertEquals(chainDecision, decision);
   }
 
   @Test
-  void shouldGrantAccessWithAnyMatchingRole() {
+  void shouldDelegateToChainWithAnyMatchingRole() {
     when(securityContext.isAuthenticated()).thenReturn(true);
     when(securityContext.hasRole("ADMIN")).thenReturn(false);
     when(securityContext.hasRole("USER")).thenReturn(true);
+    RouteAccessDecision chainDecision = RouteAccessDecision.grant();
+    when(chain.evaluate(MultiRoleRoute.class, navigationContext, securityContext))
+        .thenReturn(chainDecision);
 
     RouteAccessDecision decision =
         evaluator.evaluate(MultiRoleRoute.class, navigationContext, securityContext, chain);
 
-    assertTrue(decision.isGranted());
+    assertEquals(chainDecision, decision);
   }
 
   @Test

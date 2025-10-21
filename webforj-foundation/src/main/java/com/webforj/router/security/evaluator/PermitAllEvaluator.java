@@ -40,7 +40,8 @@ public class PermitAllEvaluator implements RouteSecurityEvaluator {
       return RouteAccessDecision.denyAuthentication();
     }
 
-    // User is authenticated, grant access - don't call chain
+    // User is authenticated - grant access (don't call chain)
+    // @PermitAll is a complete decision: any authenticated user is allowed
     return RouteAccessDecision.grant();
   }
 }
