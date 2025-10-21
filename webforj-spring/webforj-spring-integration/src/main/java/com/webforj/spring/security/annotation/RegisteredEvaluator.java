@@ -64,5 +64,5 @@ public @interface RegisteredEvaluator {
    *
    * @return the evaluator priority
    */
-  int priority();
+  int priority() default 10;
 }
