@@ -55,4 +55,15 @@ public class PhCssMinifier implements AssetMinifier {
   public Set<String> getSupportedExtensions() {
     return Set.of("css");
   }
+
+  @Override
+  public boolean shouldMinify(Path filePath) {
+    String fileName = filePath.getFileName().toString().toLowerCase();
+    if (fileName.endsWith(".min.css")) {
+      LOGGER.log(System.Logger.Level.DEBUG,
+          String.format("Skipping already minified file: %s", filePath.getFileName()));
+      return false;
+    }
+    return true;
+  }
 }

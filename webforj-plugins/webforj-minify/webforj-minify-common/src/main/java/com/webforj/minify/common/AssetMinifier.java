@@ -56,4 +56,17 @@ public interface AssetMinifier {
    * @return set of extensions without dot (e.g., ["css", "scss"])
    */
   Set<String> getSupportedExtensions();
+
+  /**
+   * Determines whether the given file should be minified.
+   *
+   * <p>This method allows minifiers to skip files that are already minified or otherwise should
+   * not be processed. The default implementation returns true for all files.
+   *
+   * @param filePath the file to check
+   * @return true if the file should be minified, false to skip it
+   */
+  default boolean shouldMinify(Path filePath) {
+    return true;
+  }
 }
