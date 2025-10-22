@@ -24,15 +24,6 @@ dependencies {
     // webforJ minify common module
     implementation("com.webforj:webforj-minify-common:25.10-SNAPSHOT")
 
-    // JSON processing
-    implementation("com.google.code.gson:gson:2.10.1")
-
-    // CSS minification
-    implementation("com.helger:ph-css:8.0.0")
-
-    // JavaScript minification
-    implementation("com.google.javascript:closure-compiler:v20230802")
-
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
