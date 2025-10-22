@@ -142,4 +142,16 @@ class ClosureJsMinifierTest {
     // Should have minimal whitespace
     assertTrue(!minified.contains("    "));
   }
+
+  @Test
+  void testShouldMinifyRegularJsFile() {
+    Path jsFile = Paths.get("scripts/app.js");
+    assertTrue(minifier.shouldMinify(jsFile), "Should minify regular .js files");
+  }
+
+  @Test
+  void testShouldNotMinifyMinifiedJsFile() {
+    Path minifiedFile = Paths.get("scripts/app.min.js");
+    assertTrue(!minifier.shouldMinify(minifiedFile), "Should not minify .min.js files");
+  }
 }
