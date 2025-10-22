@@ -240,6 +240,54 @@ Create `src/main/resources/META-INF/webforj-minify.txt`:
 
 By default, the plugin uses parallel streams for >10 files. This is automatic and requires no configuration.
 
+## Frequently Asked Questions
+
+### Why is the annotation processor configuration required?
+
+You may have noticed that the setup requires configuring the annotation processor separately in the `maven-compiler-plugin` or Gradle's `annotationProcessor` dependency. **This configuration cannot be hidden or automated by the minify plugin due to fundamental Maven/Gradle build lifecycle constraints.**
+
+**Technical Explanation:**
+
+1. **Build Lifecycle Phases:**
+   - Annotation processing happens during the **compile phase** (when javac runs)
+   - The minify plugin executes during the **process-classes phase** (after compilation completes)
+
+2. **Why plugins can't configure annotation processors:**
+   - By the time the minify plugin executes, compilation is already finished
+   - Plugins cannot retroactively modify the compiler plugin's configuration
+   - Maven/Gradle don't support automatic annotation processor discovery from plugin dependencies
+
+3. **Why not use classpath discovery?**
+   - We could make `webforj-minify-common` a regular compile dependency instead of just an annotation processor
+   - This would allow automatic discovery via classpath scanning
+   - **However**, this adds unnecessary runtime dependencies to users' final artifacts (JAR/WAR files)
+   - The annotation processor is only needed at build time, not runtime
+
+**Workaround for simpler configuration:**
+
+If you prefer a simpler setup at the cost of adding a compile dependency, you can use:
+
+```xml
+<dependencies>
+  <!-- Compile dependency (includes annotation processor) -->
+  <dependency>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-minify-common</artifactId>
+    <version>25.10-SNAPSHOT</version>
+    <scope>provided</scope> <!-- Won't be included in final artifact -->
+  </dependency>
+</dependencies>
+
+<!-- No need for annotationProcessorPaths with above approach -->
+<plugin>
+  <groupId>com.webforj</groupId>
+  <artifactId>webforj-minify-maven-plugin</artifactId>
+  ...
+</plugin>
+```
+
+**Recommendation:** Use `annotationProcessorPaths` (as shown in Quick Start) to keep dependencies minimal.
+
 ## Architecture
 
 ### Module Structure
