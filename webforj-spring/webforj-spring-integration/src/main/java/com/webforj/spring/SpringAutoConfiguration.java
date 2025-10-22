@@ -1,6 +1,7 @@
 package com.webforj.spring;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValueFactory;
 import com.webforj.servlet.WebforjServlet;
 import com.webforj.spring.scope.SpringScopeCleanup;
 import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
@@ -68,18 +69,24 @@ public class SpringAutoConfiguration {
       SpringConfigurationProperties properties, Config webforjConfig) {
     String mapping = properties.getServletMapping();
     boolean rootMapping = ServletMappingCondition.isRootMapping(mapping);
+    Config finalConfig = webforjConfig;
 
     if (rootMapping) {
       // When root mapped, register at internal path for MVC integration
       mapping = WebforjServletConfiguration.WEBFORJ_SERVLET_MAPPING;
       logger.log(Logger.Level.INFO,
           "Root mapping detected, registering WebforjServlet at internal path: " + mapping);
+
+      // configure root path for webforJ router. when root mapped, the router root is "/"
+      // instead of the context path
+      finalConfig =
+          webforjConfig.withValue("webforj.router.root", ConfigValueFactory.fromAnyRef("/"));
     } else {
       logger.log(Logger.Level.DEBUG, "Registering WebforjServlet with direct mapping: " + mapping);
     }
 
     // Set the configuration for the servlet
-    WebforjServlet.setConfig(webforjConfig);
+    WebforjServlet.setConfig(finalConfig);
     logger.log(Logger.Level.DEBUG, "Set webforj configuration for servlet");
 
     WebforjServlet webforjServlet = new WebforjServlet();
