@@ -393,37 +393,54 @@ buildscript {
 
 ## Default Minifiers
 
-### CSS Minifier (ph-css 8.0.0)
+The plugin provides two optional minifier implementations as separate modules. Users include only the minifiers they need as plugin dependencies.
 
-- Removes comments
-- Removes unnecessary whitespace
-- Optimizes property values
-- Preserves semantic correctness
-- Handles media queries and complex selectors
+### CSS Minifier (`webforj-minify-css`)
+
+**Implementation:** `PhCssMinifier` using ph-css 8.0.0
 
 **Features:**
-- ✅ CSS3 support
-- ✅ @media queries
-- ✅ Vendor prefixes
+- ✅ Removes comments and unnecessary whitespace
+- ✅ Optimizes property values
+- ✅ Preserves semantic correctness
+- ✅ CSS3 support with @media queries and vendor prefixes
+- ✅ Automatically skips `*.min.css` files via `shouldMinify()`
 - ✅ Graceful error handling (returns original on parse failure)
 
-### JavaScript Minifier (Closure Compiler v20230802)
+**Module:** Add as plugin dependency
+```xml
+<dependency>
+  <groupId>com.webforj</groupId>
+  <artifactId>webforj-minify-css</artifactId>
+  <version>25.10-SNAPSHOT</version>
+</dependency>
+```
 
-- Removes comments and whitespace
-- Renames local variables
-- Dead code elimination
-- ES6+ syntax support
+### JavaScript Minifier (`webforj-minify-js`)
+
+**Implementation:** `ClosureJsMinifier` using Google Closure Compiler v20230802
 
 **Configuration:**
-- Compilation level: `SIMPLE_OPTIMIZATIONS`
-- Language in: `ECMASCRIPT_2015` (ES6)
-- Language out: `ECMASCRIPT_2015` (ES6)
-- Preserves function names (for debugging)
+- Compilation level: `SIMPLE_OPTIMIZATIONS` (no symbol renaming)
+- Language in: `ECMASCRIPT_NEXT` (accepts modern ES6+ syntax)
+- Language out: `ECMASCRIPT5` (broad browser compatibility)
 
 **Features:**
-- ✅ ES6 arrow functions, classes, template literals
-- ✅ const/let support
+- ✅ Removes comments and whitespace
+- ✅ Renames local variables and optimizes code
+- ✅ Dead code elimination
+- ✅ ES6+ syntax support (arrow functions, classes, template literals, const/let)
+- ✅ Automatically skips `*.min.js` files via `shouldMinify()`
 - ✅ Graceful error handling (returns original on compilation errors)
+
+**Module:** Add as plugin dependency
+```xml
+<dependency>
+  <groupId>com.webforj</groupId>
+  <artifactId>webforj-minify-js</artifactId>
+  <version>25.10-SNAPSHOT</version>
+</dependency>
+```
 
 ## Performance
 
