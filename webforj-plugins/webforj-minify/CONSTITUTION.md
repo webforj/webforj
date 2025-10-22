@@ -2,6 +2,34 @@
 
 This document defines the core principles and coding standards for the webforj-minify project.
 
+## Version Control
+
+### Git Commits
+
+**Never add "Co-Authored-By: Claude" or "Generated with Claude Code" to commit messages**
+
+Since this is a public repository, commit messages must not include AI attribution. Commits should be attributed to human developers only.
+
+**Correct:**
+```
+fix: add webforj-minify-gradle-plugin to report-aggregate module
+
+Include Gradle plugin in JaCoCo coverage aggregation to ensure all minify plugin tests run on CI pipeline.
+```
+
+**Incorrect:**
+```
+fix: add webforj-minify-gradle-plugin to report-aggregate module
+
+Include Gradle plugin in JaCoCo coverage aggregation.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+**Rationale:** This is a company policy for public repositories to maintain professional commit history and proper human attribution.
+
 ## Coding Standards
 
 ### Logging
