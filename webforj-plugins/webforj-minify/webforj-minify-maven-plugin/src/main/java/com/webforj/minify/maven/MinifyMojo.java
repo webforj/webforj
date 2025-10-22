@@ -1,21 +1,12 @@
 package com.webforj.minify.maven;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.webforj.minify.common.AssetMinifier;
-import com.webforj.minify.common.MinificationException;
-import com.webforj.minify.common.MinifierRegistry;
+import com.google.gson.JsonSyntaxException;
+import com.webforj.minify.common.AssetProcessor;
+import com.webforj.minify.common.BuildLogger;
 import com.webforj.minify.common.ResourceResolver;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -27,7 +18,8 @@ import org.apache.maven.project.MavenProject;
 /**
  * Maven Mojo that minifies webforJ assets during the build process.
  *
- * <p>Runs in the process-classes phase (after compilation, before WAR packaging).
+ * <p>
+ * Runs in the process-classes phase (after compilation, before WAR packaging).
  */
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_CLASSES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
@@ -43,10 +35,6 @@ public class MinifyMojo extends AbstractMojo {
   @Parameter(property = "webforj.minify.skip", defaultValue = "false")
   private boolean skip;
 
-  private final Gson gson = new Gson();
-  private final MinifierRegistry registry = new MinifierRegistry();
-  private final Set<Path> processedFiles = new HashSet<>();
-
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (skip) {
@@ -57,23 +45,29 @@ public class MinifyMojo extends AbstractMojo {
     final long startTime = System.currentTimeMillis();
     getLog().info("Starting webforJ asset minification...");
 
-    // Load minifiers via SPI
-    registry.loadMinifiers(getClass().getClassLoader());
+    // Create logger adapter
+    BuildLogger logger = new MavenBuildLogger(getLog());
 
-    if (registry.getMinifierCount() == 0) {
+    // Create processor
+    AssetProcessor processor = new AssetProcessor(logger);
+
+    // Load minifiers via SPI
+    processor.getRegistry().loadMinifiers(getClass().getClassLoader());
+
+    if (processor.getRegistry().getMinifierCount() == 0) {
       getLog().warn("No minifiers registered via SPI. Skipping minification.");
       getLog().warn("Ensure ph-css and/or closure-compiler are on the classpath.");
       return;
     }
 
-    getLog()
-        .info("Discovered " + registry.getMinifierCount() + " minifier implementation(s) via SPI");
+    getLog().info("Discovered " + processor.getRegistry().getMinifierCount()
+        + " minifier implementation(s) via SPI");
 
     // Process manifest file
     Path manifestPath = Paths.get(outputDirectory, "META-INF", "webforj-resources.json");
     if (Files.exists(manifestPath)) {
       getLog().info("Processing manifest: " + manifestPath);
-      processManifest(manifestPath);
+      processManifest(processor, manifestPath);
     } else {
       getLog().debug("No manifest file found at " + manifestPath);
     }
@@ -83,193 +77,56 @@ public class MinifyMojo extends AbstractMojo {
         RESOURCES_DIR, "META-INF", "webforj-minify.txt");
     if (Files.exists(configPath)) {
       getLog().info("Processing configuration file: " + configPath);
-      processConfigFile(configPath);
+      Path resourcesRoot =
+          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR);
+      processor.processConfigFile(configPath, resourcesRoot);
     }
 
     long duration = System.currentTimeMillis() - startTime;
-    getLog().info("Minification complete. Processed " + processedFiles.size() + " file(s) in "
-        + duration + " ms");
+    getLog().info("Minification complete. Processed " + processor.getProcessedFileCount()
+        + " file(s) in " + duration + " ms");
   }
 
-  private void processManifest(Path manifestPath) throws MojoExecutionException {
+  private void processManifest(AssetProcessor processor, Path manifestPath)
+      throws MojoExecutionException {
     try {
-      String content = Files.readString(manifestPath, StandardCharsets.UTF_8);
-      JsonObject manifest = gson.fromJson(content, JsonObject.class);
-
-      // Check for "assets" (new format) or "resources" (legacy format)
-      JsonArray assets = null;
-      if (manifest.has("assets")) {
-        assets = manifest.getAsJsonArray("assets");
-      } else if (manifest.has(RESOURCES_DIR)) {
-        assets = manifest.getAsJsonArray(RESOURCES_DIR);
-      }
-
-      if (assets == null || assets.size() == 0) {
-        getLog().warn("Manifest file contains no assets");
-        return;
-      }
-
-      getLog().info("Found " + assets.size() + " asset(s) in manifest");
-
       // Use outputDirectory (target/classes) to process compiled resources, not source files
       ResourceResolver resolver = new ResourceResolver(Paths.get(outputDirectory));
-
-      // Collect all file paths first
-      Set<Path> filesToProcess = new HashSet<>();
-      collectFilesToProcess(assets, resolver, filesToProcess);
-
-      // Process files (use parallel streams for >10 files)
-      if (filesToProcess.size() > 10) {
-        getLog().info("Using parallel processing for " + filesToProcess.size() + " files");
-        filesToProcess.parallelStream().forEach(this::processFile);
-      } else {
-        filesToProcess.forEach(this::processFile);
-      }
-
-    } catch (IOException e) {
-      getLog().error("Failed to read manifest file: " + e.getMessage(), e);
-    } catch (com.google.gson.JsonSyntaxException e) {
-      getLog().error("Malformed manifest file: " + e.getMessage(), e);
+      processor.processManifest(manifestPath, resolver);
+    } catch (JsonSyntaxException e) {
       throw new MojoExecutionException(
           "Malformed manifest file - check META-INF/webforj-resources.json", e);
     }
   }
 
-  private void collectFilesToProcess(JsonArray assets, ResourceResolver resolver,
-      Set<Path> filesToProcess) {
-    for (JsonElement element : assets) {
-      JsonObject resource = element.getAsJsonObject();
-      String url = resource.get("url").getAsString();
+  /**
+   * Adapter to bridge Maven's Log to BuildLogger interface.
+   */
+  private static class MavenBuildLogger implements BuildLogger {
+    private final org.apache.maven.plugin.logging.Log log;
 
-      try {
-        Path filePath = resolver.resolve(url);
-        filesToProcess.add(filePath);
-      } catch (SecurityException e) {
-        getLog().warn("Security violation for URL '" + url + "': " + e.getMessage());
-      } catch (IllegalArgumentException e) {
-        getLog().warn("Failed to resolve URL '" + url + "': " + e.getMessage());
-      }
-    }
-  }
-
-  private void processConfigFile(Path configPath) {
-    try {
-      Path resourcesRoot =
-          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR);
-
-      // Parse patterns into inclusion and exclusion lists
-      Set<String> inclusionPatterns = new HashSet<>();
-      Set<String> exclusionPatterns = new HashSet<>();
-
-      Files.lines(configPath, StandardCharsets.UTF_8).map(String::trim)
-          .filter(line -> !line.isEmpty() && !line.startsWith("#")).forEach(pattern -> {
-            if (pattern.startsWith("!")) {
-              // Exclusion pattern - remove ! prefix and add to exclusions
-              exclusionPatterns.add(pattern.substring(1));
-              getLog().debug("Exclusion pattern: " + pattern.substring(1));
-            } else {
-              // Inclusion pattern
-              inclusionPatterns.add(pattern);
-              getLog().debug("Inclusion pattern: " + pattern);
-            }
-          });
-
-      // Collect all files matching inclusion patterns
-      Set<Path> filesToProcess = new HashSet<>();
-      for (String pattern : inclusionPatterns) {
-        collectFilesMatchingPattern(resourcesRoot, pattern, filesToProcess);
-      }
-
-      // Filter out files matching any exclusion pattern
-      if (!exclusionPatterns.isEmpty()) {
-        filesToProcess.removeIf(file -> exclusionPatterns.stream()
-            .anyMatch(pattern -> matchesGlob(resourcesRoot, file, pattern)));
-      }
-
-      // Process remaining files
-      filesToProcess.forEach(this::processFile);
-
-    } catch (IOException e) {
-      getLog().warn("Failed to read config file: " + e.getMessage());
-    }
-  }
-
-  private void collectFilesMatchingPattern(Path root, String pattern, Set<Path> files) {
-    try (Stream<Path> paths = Files.walk(root)) {
-      paths.filter(Files::isRegularFile).filter(p -> matchesGlob(root, p, pattern))
-          .forEach(files::add);
-    } catch (IOException e) {
-      getLog().warn("Error processing glob pattern " + pattern + ": " + e.getMessage());
-    }
-  }
-
-  private boolean matchesGlob(Path root, Path file, String pattern) {
-    String relativePath = root.relativize(file).toString().replace('\\', '/');
-    return relativePath.matches(pattern.replace("*", ".*"));
-  }
-
-  private synchronized void processFile(Path filePath) {
-    // Skip if already processed (synchronized for thread safety)
-    if (processedFiles.contains(filePath)) {
-      return;
+    MavenBuildLogger(org.apache.maven.plugin.logging.Log log) {
+      this.log = log;
     }
 
-    // Skip if doesn't exist
-    if (!Files.exists(filePath)) {
-      getLog().warn("File not found: " + filePath);
-      return;
+    @Override
+    public void info(String message) {
+      log.info(message);
     }
 
-    // Get file extension
-    String fileName = filePath.getFileName().toString();
-    int lastDot = fileName.lastIndexOf('.');
-    if (lastDot < 0) {
-      return; // No extension
+    @Override
+    public void warn(String message) {
+      log.warn(message);
     }
 
-    String extension = fileName.substring(lastDot + 1);
-
-    // Find minifier for this extension
-    AssetMinifier minifier = registry.getMinifier(extension).orElse(null);
-    if (minifier == null) {
-      getLog().debug("No minifier found for extension ." + extension + ": " + fileName);
-      return;
+    @Override
+    public void debug(String message) {
+      log.debug(message);
     }
 
-    // Ask minifier if this file should be processed
-    if (!minifier.shouldMinify(filePath)) {
-      return;
-    }
-
-    // Minify the file
-    try {
-      long fileStartTime = System.currentTimeMillis();
-      String content = Files.readString(filePath, StandardCharsets.UTF_8);
-      long originalSize = content.length();
-
-      String minified = minifier.minify(content, filePath);
-      long minifiedSize = minified.length();
-
-      // Only write if content changed
-      if (!content.equals(minified)) {
-        Files.writeString(filePath, minified, StandardCharsets.UTF_8);
-        long duration = System.currentTimeMillis() - fileStartTime;
-
-        double reductionPercent = 100.0 * (originalSize - minifiedSize) / originalSize;
-        getLog().info(String.format("Minified %s: %d → %d bytes (%.1f%% reduction) in %d ms",
-            fileName, originalSize, minifiedSize, reductionPercent, duration));
-      } else {
-        getLog().debug("No changes after minification: " + fileName);
-      }
-
-      processedFiles.add(filePath);
-
-    } catch (IOException e) {
-      getLog().warn("Error reading file " + filePath + ": " + e.getMessage());
-    } catch (MinificationException e) {
-      getLog().warn("Error minifying file " + filePath + ": " + e.getMessage());
-    } catch (Exception e) {
-      getLog().warn("Unexpected error processing " + filePath + ": " + e.getMessage());
+    @Override
+    public void error(String message, Throwable throwable) {
+      log.error(message, throwable);
     }
   }
 }
