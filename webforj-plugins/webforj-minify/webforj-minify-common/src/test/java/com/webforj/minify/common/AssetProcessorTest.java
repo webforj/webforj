@@ -1,6 +1,8 @@
 package com.webforj.minify.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -33,7 +35,7 @@ class AssetProcessorTest {
   @Test
   void testGetRegistry() {
     MinifierRegistry registry = processor.getRegistry();
-    assertTrue(registry != null);
+    assertNotNull(registry);
   }
 
   @Test
@@ -119,11 +121,9 @@ class AssetProcessorTest {
 
     ResourceResolver resolver = new ResourceResolver(tempDir);
 
-    try {
+    assertThrows(com.google.gson.JsonSyntaxException.class, () -> {
       processor.processManifest(manifestPath, resolver);
-    } catch (com.google.gson.JsonSyntaxException e) {
-      // Expected
-    }
+    });
   }
 
   @Test
