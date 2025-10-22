@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,7 +32,6 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_CLASSES, threadSafe = true)
 public class MinifyMojo extends AbstractMojo {
 
-  private static final Pattern MIN_FILE_PATTERN = Pattern.compile(".*\\.min\\.(css|js)$");
   private static final String RESOURCES_DIR = "resources";
 
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
@@ -222,12 +220,6 @@ public class MinifyMojo extends AbstractMojo {
       return;
     }
 
-    // Skip if already minified
-    if (MIN_FILE_PATTERN.matcher(filePath.toString()).matches()) {
-      getLog().debug("Skipping already minified file: " + filePath.getFileName());
-      return;
-    }
-
     // Get file extension
     String fileName = filePath.getFileName().toString();
     int lastDot = fileName.lastIndexOf('.');
@@ -241,6 +233,11 @@ public class MinifyMojo extends AbstractMojo {
     AssetMinifier minifier = registry.getMinifier(extension).orElse(null);
     if (minifier == null) {
       getLog().debug("No minifier found for extension ." + extension + ": " + fileName);
+      return;
+    }
+
+    // Ask minifier if this file should be processed
+    if (!minifier.shouldMinify(filePath)) {
       return;
     }
 

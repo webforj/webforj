@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -31,8 +30,6 @@ import org.gradle.api.tasks.TaskAction;
  * Gradle task that minifies webforJ assets during the build process.
  */
 public abstract class MinifyTask extends DefaultTask {
-
-  private static final Pattern MIN_FILE_PATTERN = Pattern.compile(".*\\.min\\.(css|js)$");
 
   private final Gson gson = new Gson();
   private final MinifierRegistry registry = new MinifierRegistry();
@@ -230,12 +227,6 @@ public abstract class MinifyTask extends DefaultTask {
       return;
     }
 
-    // Skip if already minified
-    if (MIN_FILE_PATTERN.matcher(filePath.toString()).matches()) {
-      getLogger().debug("Skipping already minified file: {}", filePath.getFileName());
-      return;
-    }
-
     // Get file extension
     String fileName = filePath.getFileName().toString();
     int lastDot = fileName.lastIndexOf('.');
@@ -249,6 +240,11 @@ public abstract class MinifyTask extends DefaultTask {
     AssetMinifier minifier = registry.getMinifier(extension).orElse(null);
     if (minifier == null) {
       getLogger().debug("No minifier found for extension .{}: {}", extension, fileName);
+      return;
+    }
+
+    // Ask minifier if this file should be processed
+    if (!minifier.shouldMinify(filePath)) {
       return;
     }
 

@@ -27,7 +27,10 @@ Add the plugin to your `pom.xml`:
 ```xml
 <build>
   <plugins>
-    <!-- 1. Annotation Processor (discovers assets) -->
+    <!-- 1. Annotation Processor (discovers assets during compilation) -->
+    <!-- NOTE: This configuration is required because annotation processing happens
+         during compilation, before the minify plugin executes. Maven/Gradle cannot
+         automatically discover annotation processors from plugin dependencies. -->
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-compiler-plugin</artifactId>
@@ -35,14 +38,14 @@ Add the plugin to your `pom.xml`:
         <annotationProcessorPaths>
           <path>
             <groupId>com.webforj</groupId>
-            <artifactId>webforj-minify-processor</artifactId>
+            <artifactId>webforj-minify-common</artifactId>
             <version>25.10-SNAPSHOT</version>
           </path>
         </annotationProcessorPaths>
       </configuration>
     </plugin>
 
-    <!-- 2. Minify Plugin (minifies discovered assets) -->
+    <!-- 2. Minify Plugin (minifies discovered assets after compilation) -->
     <plugin>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-maven-plugin</artifactId>
@@ -57,15 +60,15 @@ Add the plugin to your `pom.xml`:
       <dependencies>
         <!-- CSS minification -->
         <dependency>
-          <groupId>com.helger</groupId>
-          <artifactId>ph-css</artifactId>
-          <version>8.0.0</version>
+          <groupId>com.webforj</groupId>
+          <artifactId>webforj-minify-css</artifactId>
+          <version>25.10-SNAPSHOT</version>
         </dependency>
         <!-- JavaScript minification -->
         <dependency>
-          <groupId>com.google.javascript</groupId>
-          <artifactId>closure-compiler</artifactId>
-          <version>v20230802</version>
+          <groupId>com.webforj</groupId>
+          <artifactId>webforj-minify-js</artifactId>
+          <version>25.10-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </plugin>
@@ -90,7 +93,15 @@ repositories {
 
 dependencies {
     // Annotation processor for discovering assets
-    annotationProcessor 'com.webforj:webforj-minify-processor:25.10-SNAPSHOT'
+    annotationProcessor 'com.webforj:webforj-minify-common:25.10-SNAPSHOT'
+}
+
+// Add minifiers as plugin dependencies
+buildscript {
+    dependencies {
+        classpath 'com.webforj:webforj-minify-css:25.10-SNAPSHOT'
+        classpath 'com.webforj:webforj-minify-js:25.10-SNAPSHOT'
+    }
 }
 
 // Optional: Configure the plugin
@@ -235,18 +246,23 @@ By default, the plugin uses parallel streams for >10 files. This is automatic an
 
 ```
 webforj-minify/
-├── webforj-minify-common        # Core interfaces and implementations
+├── webforj-minify-common/       # Core interfaces + annotation processor
 │   ├── AssetMinifier            # SPI interface for minifiers
 │   ├── MinifierRegistry         # Thread-safe minifier registry
 │   ├── ResourceResolver         # URL protocol resolver
-│   ├── impl/
-│   │   ├── PhCssMinifier        # CSS minification (ph-css 8.0.0)
-│   │   └── ClosureJsMinifier    # JS minification (Closure Compiler v20230802)
-│   └── META-INF/services/       # SPI registration
-├── webforj-minify-processor     # Annotation processor
-│   └── AssetAnnotationProcessor # Generates manifest at compile time
-└── webforj-minify-maven-plugin  # Maven plugin
-    └── MinifyMojo               # Executes minification
+│   ├── MinificationException    # Exception type
+│   ├── AssetAnnotationProcessor # Generates manifest at compile time
+│   └── META-INF/services/javax.annotation.processing.Processor
+├── webforj-minify-css/          # CSS minifier module
+│   ├── PhCssMinifier            # CSS minification (ph-css 8.0.0)
+│   └── META-INF/services/com.webforj.minify.common.AssetMinifier
+├── webforj-minify-js/           # JavaScript minifier module
+│   ├── ClosureJsMinifier        # JS minification (Closure Compiler v20230802)
+│   └── META-INF/services/com.webforj.minify.common.AssetMinifier
+├── webforj-minify-maven-plugin/ # Maven plugin (depends only on common)
+│   └── MinifyMojo               # Executes minification
+└── webforj-minify-gradle-plugin/# Gradle plugin (depends only on common)
+    └── MinifyTask               # Gradle task implementation
 ```
 
 ### Extensibility
@@ -277,6 +293,13 @@ public class SassMinifier implements AssetMinifier {
   public Set<String> getSupportedExtensions() {
     return Set.of("scss", "sass");
   }
+
+  @Override
+  public boolean shouldMinify(Path filePath) {
+    // Skip already minified files
+    String fileName = filePath.getFileName().toString().toLowerCase();
+    return !fileName.endsWith(".min.scss") && !fileName.endsWith(".min.sass");
+  }
 }
 ```
 
@@ -286,20 +309,38 @@ Register via SPI by creating `META-INF/services/com.webforj.minify.common.AssetM
 com.example.SassMinifier
 ```
 
-Then include it in the plugin dependencies:
+Then include it in the plugin dependencies (Maven):
 
 ```xml
 <plugin>
   <groupId>com.webforj</groupId>
   <artifactId>webforj-minify-maven-plugin</artifactId>
   <dependencies>
+    <!-- Your custom minifier -->
     <dependency>
       <groupId>com.example</groupId>
       <artifactId>my-custom-minifier</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <!-- Standard minifiers (optional) -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-css</artifactId>
+      <version>25.10-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </plugin>
+```
+
+Or for Gradle:
+
+```groovy
+buildscript {
+    dependencies {
+        classpath 'com.example:my-custom-minifier:1.0.0'
+        classpath 'com.webforj:webforj-minify-css:25.10-SNAPSHOT'
+    }
+}
 ```
 
 ## Default Minifiers
@@ -351,10 +392,11 @@ Tested on MacBook M2, Java 17.0.16 (Temurin):
 
 ### Optimization Tips
 
-1. **Already Minified Files**: Files matching `*.min.css` or `*.min.js` are automatically skipped
+1. **Already Minified Files**: The default CSS and JS minifiers automatically skip files matching `*.min.css` or `*.min.js` via their `shouldMinify()` method
 2. **Parallel Processing**: Automatically enabled for >10 files
 3. **Incremental Builds**: Only changed files are processed (Maven incremental compilation)
 4. **CI/CD**: Enable minification only for production builds with profiles
+5. **Custom Skip Logic**: Implement custom `shouldMinify()` logic in your minifiers to skip files based on any criteria
 
 ## Troubleshooting
 
@@ -363,19 +405,26 @@ Tested on MacBook M2, Java 17.0.16 (Temurin):
 **Error:**
 ```
 [WARN] No minifiers registered via SPI. Skipping minification.
-[WARN] Ensure ph-css and/or closure-compiler are on the classpath.
+[WARN] Ensure minifier modules are on the classpath.
 ```
 
-**Solution:** Add minifier dependencies to the plugin configuration (see Quick Start).
+**Solution:** Add minifier module dependencies to the plugin configuration:
+- For CSS: Add `webforj-minify-css` as a plugin dependency
+- For JavaScript: Add `webforj-minify-js` as a plugin dependency
+
+See Quick Start section for complete configuration examples.
 
 ### Manifest file not found
 
 **Issue:** Plugin can't find `META-INF/webforj-resources.json`
 
 **Solutions:**
-1. Ensure annotation processor is configured in `maven-compiler-plugin`
+1. Ensure annotation processor is configured correctly:
+   - Maven: Add `webforj-minify-common` to `annotationProcessorPaths` in `maven-compiler-plugin`
+   - Gradle: Add `annotationProcessor 'com.webforj:webforj-minify-common:VERSION'` to dependencies
 2. Check that webforJ annotations are present in source code
 3. Verify `target/classes/META-INF/webforj-resources.json` exists after compilation
+4. Ensure `<proc>none</proc>` is NOT set in the compiler plugin (it disables annotation processing)
 
 ### File not found errors
 
@@ -427,24 +476,30 @@ mvn clean install
 ### Running Tests
 
 ```bash
-# Unit tests
+# All tests
+mvn clean verify
+
+# Specific module tests
 cd webforj-minify-common
 mvn test
 
-# Integration test
-cd integration-test
-mvn clean package
+cd ../webforj-minify-css
+mvn test
+
+cd ../webforj-minify-js
+mvn test
 ```
 
 ### Test Coverage
 
-- **28 unit tests** covering all core components
-- **Integration test** verifying end-to-end workflow
+- **35 unit tests** covering all modules (21 common, 6 CSS, 8 JavaScript)
+- **Code coverage** tracked via JaCoCo
 - **Security tests** for directory traversal protection
+- **Error handling tests** for graceful minification failures
 
 ## Roadmap
 
-- [ ] Gradle plugin implementation
+- [x] Gradle plugin implementation
 - [ ] Source map generation
 - [ ] Configurable compilation levels
 - [ ] CSS/JS validation before minification
