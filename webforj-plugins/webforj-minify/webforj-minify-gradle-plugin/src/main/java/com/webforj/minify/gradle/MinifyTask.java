@@ -167,25 +167,47 @@ public abstract class MinifyTask extends DefaultTask {
 
   private void processConfigFile(Path configPath, Path resourcesRoot) {
     try {
+      // Parse patterns into inclusion and exclusion lists
+      Set<String> inclusionPatterns = new HashSet<>();
+      Set<String> exclusionPatterns = new HashSet<>();
+
       Files.lines(configPath, StandardCharsets.UTF_8).map(String::trim)
           .filter(line -> !line.isEmpty() && !line.startsWith("#")).forEach(pattern -> {
             if (pattern.startsWith("!")) {
-              // Exclusion pattern - not yet implemented
-              getLogger().debug("Exclusion pattern: {}", pattern);
+              // Exclusion pattern - remove ! prefix and add to exclusions
+              exclusionPatterns.add(pattern.substring(1));
+              getLogger().debug("Exclusion pattern: {}", pattern.substring(1));
             } else {
-              // Inclusion pattern - find matching files
-              processGlobPattern(resourcesRoot, pattern);
+              // Inclusion pattern
+              inclusionPatterns.add(pattern);
+              getLogger().debug("Inclusion pattern: {}", pattern);
             }
           });
+
+      // Collect all files matching inclusion patterns
+      Set<Path> filesToProcess = new HashSet<>();
+      for (String pattern : inclusionPatterns) {
+        collectFilesMatchingPattern(resourcesRoot, pattern, filesToProcess);
+      }
+
+      // Filter out files matching any exclusion pattern
+      if (!exclusionPatterns.isEmpty()) {
+        filesToProcess.removeIf(file -> exclusionPatterns.stream()
+            .anyMatch(pattern -> matchesGlob(resourcesRoot, file, pattern)));
+      }
+
+      // Process remaining files
+      filesToProcess.forEach(this::processFile);
+
     } catch (IOException e) {
       getLogger().warn("Failed to read config file: {}", e.getMessage());
     }
   }
 
-  private void processGlobPattern(Path root, String pattern) {
+  private void collectFilesMatchingPattern(Path root, String pattern, Set<Path> files) {
     try (Stream<Path> paths = Files.walk(root)) {
       paths.filter(Files::isRegularFile).filter(p -> matchesGlob(root, p, pattern))
-          .forEach(this::processFile);
+          .forEach(files::add);
     } catch (IOException e) {
       getLogger().warn("Error processing glob pattern {}: {}", pattern, e.getMessage());
     }

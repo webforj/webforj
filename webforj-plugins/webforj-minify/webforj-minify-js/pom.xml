@@ -10,15 +10,21 @@
     <version>25.10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-minify-common</artifactId>
+  <artifactId>webforj-minify-js</artifactId>
   <name>${project.artifactId}</name>
-  <description>Shared constants, interfaces, and utilities for webforJ asset minification</description>
+  <description>JavaScript minifier implementation using Google Closure Compiler</description>
 
   <dependencies>
-    <!-- JSON processing -->
+    <!-- Common module -->
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-common</artifactId>
+    </dependency>
+
+    <!-- JavaScript minification -->
+    <dependency>
+      <groupId>com.google.javascript</groupId>
+      <artifactId>closure-compiler</artifactId>
     </dependency>
 
     <!-- Testing -->
@@ -28,16 +34,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <proc>none</proc>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

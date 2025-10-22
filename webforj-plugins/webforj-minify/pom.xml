@@ -18,7 +18,8 @@
 
   <modules>
     <module>webforj-minify-common</module>
-    <module>webforj-minify-processor</module>
+    <module>webforj-minify-css</module>
+    <module>webforj-minify-js</module>
     <module>webforj-minify-maven-plugin</module>
   </modules>
 
@@ -56,4 +57,23 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <!-- Disable formatter plugin - conflicts with checkstyle Javadoc rules -->
+      <plugin>
+        <groupId>net.revelc.code.formatter</groupId>
+        <artifactId>formatter-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
