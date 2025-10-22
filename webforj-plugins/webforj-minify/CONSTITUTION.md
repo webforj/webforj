@@ -30,6 +30,31 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **Rationale:** This is a company policy for public repositories to maintain professional commit history and proper human attribution.
 
+### Pre-Commit Validation
+
+**Always run `mvn checkstyle:check` before committing and pushing code**
+
+All code changes must pass checkstyle validation before being committed to the repository. This ensures consistent code quality and prevents CI failures.
+
+**Required command:**
+```bash
+mvn checkstyle:check
+```
+
+**Workflow:**
+1. Make code changes
+2. Run `mvn checkstyle:check` to validate
+3. Fix any checkstyle violations
+4. Commit and push only after checkstyle passes
+
+**Why this matters:**
+- Prevents CI pipeline failures due to style violations
+- Maintains consistent code formatting across the project
+- Catches issues early in the development process
+- Reduces review cycles and rework
+
+**Rationale:** Checkstyle violations that reach CI waste time and resources. Running checkstyle locally before committing ensures code quality standards are met before code review.
+
 ## Coding Standards
 
 ### Logging
