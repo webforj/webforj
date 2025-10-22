@@ -113,4 +113,16 @@ class PhCssMinifierTest {
     assertTrue(minifier.getSupportedExtensions().contains("css"));
     assertEquals(1, minifier.getSupportedExtensions().size());
   }
+
+  @Test
+  void testShouldMinifyRegularCssFile() {
+    Path cssFile = Paths.get("styles/app.css");
+    assertTrue(minifier.shouldMinify(cssFile), "Should minify regular .css files");
+  }
+
+  @Test
+  void testShouldNotMinifyMinifiedCssFile() {
+    Path minifiedFile = Paths.get("styles/app.min.css");
+    assertTrue(!minifier.shouldMinify(minifiedFile), "Should not minify .min.css files");
+  }
 }
