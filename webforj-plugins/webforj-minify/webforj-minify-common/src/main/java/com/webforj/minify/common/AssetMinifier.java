@@ -6,8 +6,7 @@ import java.util.Set;
 /**
  * Interface for asset minification implementations.
  *
- * <p>
- * Implementations of this interface are discovered via Java SPI (Service Provider Interface). To
+ * <p>Implementations of this interface are discovered via Java SPI (Service Provider Interface). To
  * register a custom minifier:
  * <ol>
  * <li>Implement this interface</li>
@@ -16,33 +15,28 @@ import java.util.Set;
  * <li>Add your minifier JAR as a dependency to the project</li>
  * </ol>
  *
- * <p>
- * <b>Example custom minifier:</b>
+ * <p><b>Example custom minifier:</b>
  *
- * <pre>
- * {
- *   &#64;code
- *   public class SassMinifier implements AssetMinifier {
- *     &#64;Override
- *     public String minify(String content, Path sourceFile) throws MinificationException {
- *       try {
- *         return SassCompiler.compile(content);
- *       } catch (Exception e) {
- *         throw new MinificationException("Failed to minify " + sourceFile, e);
- *       }
- *     }
- *
- *     @Override
- *     public Set<String> getSupportedExtensions() {
- *       return Set.of("scss", "sass");
+ * <pre>{@code
+ * public class SassMinifier implements AssetMinifier {
+ *   @Override
+ *   public String minify(String content, Path sourceFile) throws MinificationException {
+ *     try {
+ *       return SassCompiler.compile(content);
+ *     } catch (Exception e) {
+ *       throw new MinificationException("Failed to minify " + sourceFile, e);
  *     }
  *   }
- * }
- * </pre>
  *
- * <p>
- * <b>IMPORTANT:</b> Implementations must be stateless and thread-safe for parallel processing. Do
- * not maintain instance state between {@link #minify(String, Path)} calls.
+ *   @Override
+ *   public Set<String> getSupportedExtensions() {
+ *     return Set.of("scss", "sass");
+ *   }
+ * }
+ * }</pre>
+ *
+ * <p><b>IMPORTANT:</b> Implementations must be stateless and thread-safe for parallel
+ * processing. Do not maintain instance state between {@link #minify(String, Path)} calls.
  */
 public interface AssetMinifier {
 

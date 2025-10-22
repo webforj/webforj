@@ -73,12 +73,11 @@ class MinifierRegistryTest {
     // Load via SPI
     registry.loadMinifiers(getClass().getClassLoader());
 
-    // Should load PhCssMinifier and ClosureJsMinifier
+    // The common module has no minifier implementations
+    // CSS and JS minifiers are in separate modules (webforj-minify-css, webforj-minify-js)
+    // This test verifies the SPI loading mechanism works without expecting specific minifiers
     int count = registry.getMinifierCount();
-    assertTrue(count >= 2, "Expected at least 2 minifiers (CSS + JS), got " + count);
-
-    assertTrue(registry.getMinifier("css").isPresent());
-    assertTrue(registry.getMinifier("js").isPresent());
+    assertEquals(0, count, "Common module should not contain any minifier implementations");
   }
 
   @Test

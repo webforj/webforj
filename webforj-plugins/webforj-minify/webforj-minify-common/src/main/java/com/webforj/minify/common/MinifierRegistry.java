@@ -4,28 +4,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 /**
  * Registry for discovering and managing asset minifier implementations.
  *
- * <p>
- * Uses Java SPI (Service Provider Interface) to automatically discover minifier implementations on
- * the classpath.
+ * <p>Uses Java SPI (Service Provider Interface) to automatically discover minifier
+ * implementations on the classpath.
  *
- * <p>
- * This class is thread-safe and can be safely used in parallel processing.
+ * <p>This class is thread-safe and can be safely used in parallel processing.
  */
 public class MinifierRegistry {
-  private static final Logger LOGGER = Logger.getLogger(MinifierRegistry.class.getName());
+  private static final System.Logger LOGGER = System.getLogger(MinifierRegistry.class.getName());
 
   private final Map<String, AssetMinifier> minifiers = new ConcurrentHashMap<>();
 
   /**
    * Registers a minifier for its supported file extensions.
    *
-   * <p>
-   * Extensions are automatically normalized (lowercased and dots removed). If multiple minifiers
+   * <p>Extensions are automatically normalized (lowercased and dots removed). If multiple minifiers
    * support the same extension, the last one registered wins.
    *
    * @param minifier the minifier to register
@@ -36,14 +32,13 @@ public class MinifierRegistry {
       String normalized = normalizeExtension(extension);
 
       AssetMinifier previous = minifiers.put(normalized, minifier);
-      if (previous != null && LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
-        LOGGER.warning(String.format("Extension '.%s' already registered to %s, replacing with %s",
-            normalized, previous.getClass().getSimpleName(), minifier.getClass().getSimpleName()));
+      if (previous != null) {
+        LOGGER.log(System.Logger.Level.WARNING,
+            String.format("Extension '.%s' already registered to %s, replacing with %s", normalized,
+                previous.getClass().getSimpleName(), minifier.getClass().getSimpleName()));
       }
-      if (LOGGER.isLoggable(java.util.logging.Level.INFO)) {
-        LOGGER.info(String.format("Registered minifier for .%s: %s", normalized,
-            minifier.getClass().getSimpleName()));
-      }
+      LOGGER.log(System.Logger.Level.INFO, String.format("Registered minifier for .%s: %s",
+          normalized, minifier.getClass().getSimpleName()));
     }
   }
 
@@ -64,8 +59,7 @@ public class MinifierRegistry {
   /**
    * Gets the minifier for a given file extension.
    *
-   * <p>
-   * The extension is automatically normalized before lookup.
+   * <p>The extension is automatically normalized before lookup.
    *
    * @param fileExtension the file extension (with or without dot, e.g., ".css" or "css")
    * @return an Optional containing the minifier if found
@@ -77,8 +71,7 @@ public class MinifierRegistry {
   /**
    * Discovers and loads all minifier implementations using Java SPI.
    *
-   * <p>
-   * Minifiers are loaded from META-INF/services/com.webforj.minify.common.AssetMinifier. Failed
+   * <p>Minifiers are loaded from META-INF/services/com.webforj.minify.common.AssetMinifier. Failed
    * registrations are logged as warnings but do not stop the loading process.
    *
    * @param classLoader the class loader to use for discovery
@@ -92,16 +85,13 @@ public class MinifierRegistry {
         register(minifier);
         loadedCount++;
       } catch (Exception e) {
-        if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
-          LOGGER.warning(String.format("Failed to load minifier %s: %s",
-              minifier.getClass().getName(), e.getMessage()));
-        }
+        LOGGER.log(System.Logger.Level.WARNING, String.format("Failed to load minifier %s: %s",
+            minifier.getClass().getName(), e.getMessage()));
       }
     }
 
-    if (LOGGER.isLoggable(java.util.logging.Level.INFO)) {
-      LOGGER.info(String.format("Loaded %d minifier implementation(s)", loadedCount));
-    }
+    LOGGER.log(System.Logger.Level.INFO,
+        String.format("Loaded %d minifier implementation(s)", loadedCount));
   }
 
   /**
