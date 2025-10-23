@@ -32,28 +32,40 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Pre-Commit Validation
 
-**Always run `mvn checkstyle:check` before committing and pushing code**
+**MANDATORY: Run full test suite and validation before every commit and push**
 
-All code changes must pass checkstyle validation before being committed to the repository. This ensures consistent code quality and prevents CI failures.
+All code changes MUST pass the complete validation suite before being committed to the repository. This ensures consistent code quality and prevents CI failures.
 
-**Required command:**
+**Required commands (in order):**
 ```bash
+mvn test
+mvn -B verify
 mvn checkstyle:check
 ```
 
-**Workflow:**
+**Complete Workflow:**
 1. Make code changes
-2. Run `mvn checkstyle:check` to validate
-3. Fix any checkstyle violations
-4. Commit and push only after checkstyle passes
+2. Run `mvn test` - Verify all unit tests pass
+3. Run `mvn -B verify` - Run full build with integration tests and JaCoCo coverage
+4. Run `mvn checkstyle:check` - Validate code style compliance
+5. Fix any test failures, build errors, or checkstyle violations
+6. Commit and push ONLY after all three commands succeed
+
+**SonarQube Analysis:**
+SonarQube analysis runs automatically on CI (SonarCloud) and cannot be executed locally. However:
+- Review SonarQube findings on the PR after pushing
+- Address any Code Smells or Security Hotspots immediately
+- Do not merge PRs with unresolved SonarQube issues
 
 **Why this matters:**
-- Prevents CI pipeline failures due to style violations
-- Maintains consistent code formatting across the project
-- Catches issues early in the development process
-- Reduces review cycles and rework
+- **mvn test**: Catches unit test failures early (48 tests must pass)
+- **mvn -B verify**: Ensures full build succeeds including JaCoCo coverage reports
+- **mvn checkstyle:check**: Prevents style violations that fail CI
+- Early detection saves time and reduces review cycles
 
-**Rationale:** Checkstyle violations that reach CI waste time and resources. Running checkstyle locally before committing ensures code quality standards are met before code review.
+**Rationale:** Running the complete validation suite locally before committing catches issues early when they are cheapest to fix. CI failures waste time, block other developers, and delay merges. The 30-60 seconds spent on validation prevents hours of debugging and rework.
+
+**Enforcement:** This is NOT optional. Commits that fail CI checks due to skipped local validation are unacceptable and undermine team productivity.
 
 ## Coding Standards
 
