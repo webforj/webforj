@@ -48,7 +48,7 @@ class LocaleObserverRegistryTest {
 
   @Test
   void shouldThrowExceptionWhenRegisteringNullObserver() {
-    assertThrows(IllegalArgumentException.class, () -> registry.register(null));
+    assertThrows(NullPointerException.class, () -> registry.register(null));
   }
 
   @Test
@@ -82,7 +82,7 @@ class LocaleObserverRegistryTest {
 
   @Test
   void shouldThrowExceptionWhenFiringNullLocale() {
-    assertThrows(IllegalArgumentException.class, () -> registry.fireLocaleChange(null));
+    assertThrows(NullPointerException.class, () -> registry.fireLocaleChange(null));
   }
 
   @Test
