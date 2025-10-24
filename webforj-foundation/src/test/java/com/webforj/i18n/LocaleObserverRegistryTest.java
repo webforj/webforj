@@ -1,5 +1,6 @@
 package com.webforj.i18n;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,7 +64,7 @@ class LocaleObserverRegistryTest {
 
   @Test
   void shouldHandleNullObserverGracefullyWhenUnregistering() {
-    registry.unregister(null);
+    assertDoesNotThrow(() -> registry.unregister(null));
   }
 
   @Test

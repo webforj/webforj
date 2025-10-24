@@ -157,8 +157,8 @@ public abstract class Component {
     this.window = null;
     this.onDestroy();
 
-    if (this instanceof LocaleObserver) {
-      LocaleObserverRegistry.getCurrent().unregister((LocaleObserver) this);
+    if (this instanceof LocaleObserver observer) {
+      LocaleObserverRegistry.getCurrent().unregister(observer);
     }
 
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
@@ -309,8 +309,8 @@ public abstract class Component {
     this.window = window;
 
     onCreate(window);
-    if (this instanceof LocaleObserver) {
-      LocaleObserverRegistry.getCurrent().register((LocaleObserver) this);
+    if (this instanceof LocaleObserver observer) {
+      LocaleObserverRegistry.getCurrent().register(observer);
     }
 
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
