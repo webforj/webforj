@@ -4,6 +4,8 @@ import com.webforj.PendingResult;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
 import com.webforj.component.window.Window;
+import com.webforj.i18n.LocaleObserver;
+import com.webforj.i18n.LocaleObserverRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,6 +157,10 @@ public abstract class Component {
     this.window = null;
     this.onDestroy();
 
+    if (this instanceof LocaleObserver) {
+      LocaleObserverRegistry.getCurrent().unregister((LocaleObserver) this);
+    }
+
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
       observer.onComponentLifecycleEvent(this, LifecycleEvent.DESTROY);
     }
@@ -303,6 +309,10 @@ public abstract class Component {
     this.window = window;
 
     onCreate(window);
+    if (this instanceof LocaleObserver) {
+      LocaleObserverRegistry.getCurrent().register((LocaleObserver) this);
+    }
+
     for (ComponentLifecycleObserver observer : lifecycleObservers) {
       observer.onComponentLifecycleEvent(this, LifecycleEvent.CREATE);
     }
