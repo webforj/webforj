@@ -27,18 +27,6 @@ class ResourceResolverTest {
   }
 
   @Test
-  void testWebserverProtocol() throws IOException {
-    Path staticDir = tempDir.resolve("static");
-    Files.createDirectories(staticDir);
-    Path cssDir = staticDir.resolve("css");
-    Files.createDirectories(cssDir);
-
-    Path resolved = resolver.resolve("webserver://css/test.css");
-
-    assertEquals(cssDir.resolve("test.css").toAbsolutePath().normalize(), resolved);
-  }
-
-  @Test
   void testWsProtocol() throws IOException {
     Path staticDir = tempDir.resolve("static");
     Files.createDirectories(staticDir);
@@ -61,15 +49,14 @@ class ResourceResolverTest {
   }
 
   @Test
-  void testNoProtocol() throws IOException {
-    Path staticDir = tempDir.resolve("static");
-    Files.createDirectories(staticDir);
-    Path cssDir = staticDir.resolve("css");
-    Files.createDirectories(cssDir);
+  void testNoProtocol() {
+    // URLs without protocols should be rejected with clear error message
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+      resolver.resolve("css/test.css");
+    });
 
-    Path resolved = resolver.resolve("css/test.css");
-
-    assertEquals(cssDir.resolve("test.css").toAbsolutePath().normalize(), resolved);
+    assertTrue(exception.getMessage().contains("URL without protocol cannot be resolved"));
+    assertTrue(exception.getMessage().contains("Use ws:// or context://"));
   }
 
   @Test
@@ -83,10 +70,10 @@ class ResourceResolverTest {
   }
 
   @Test
-  void testDirectoryTraversalWithWebserver() {
-    // Attempt to escape via webserver protocol
+  void testDirectoryTraversalWithWs() {
+    // Attempt to escape via ws protocol
     SecurityException exception = assertThrows(SecurityException.class, () -> {
-      resolver.resolve("webserver://../../../etc/passwd");
+      resolver.resolve("ws://../../../etc/passwd");
     });
 
     assertTrue(exception.getMessage().contains("Path traversal detected"));
@@ -108,7 +95,7 @@ class ResourceResolverTest {
     Path nestedDir = staticDir.resolve("components").resolve("buttons");
     Files.createDirectories(nestedDir);
 
-    Path resolved = resolver.resolve("webserver://components/buttons/style.css");
+    Path resolved = resolver.resolve("ws://components/buttons/style.css");
 
     assertEquals(nestedDir.resolve("style.css").toAbsolutePath().normalize(), resolved);
   }

@@ -13,8 +13,11 @@ import java.util.regex.Pattern;
  * <li>webserver://path → src/main/resources/static/path</li>
  * <li>ws://path → src/main/resources/static/path</li>
  * <li>context://path → src/main/resources/path</li>
- * <li>No protocol → static/path</li>
  * </ul>
+ *
+ * <p><b>Note:</b> URLs without a protocol (e.g., "app.css") are NOT supported because webforJ
+ * passes them through unchanged to the browser, which resolves them as relative URLs. These
+ * cannot be reliably mapped to filesystem paths for minification.
  *
  * <p><b>Security:</b> All resolved paths are validated to prevent directory traversal attacks.
  * Paths containing ".." that escape the resources root will throw {@link SecurityException}.
@@ -26,13 +29,6 @@ public class ResourceResolver {
   private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^([a-z]+)://(.*)$");
 
   private final Path resourcesRoot;
-
-  /**
-   * Creates a resource resolver with the default resources root (src/main/resources).
-   */
-  public ResourceResolver() {
-    this(Paths.get("src", "main", "resources"));
-  }
 
   /**
    * Creates a resource resolver with a custom resources root.
@@ -52,21 +48,24 @@ public class ResourceResolver {
    * @param url the resource URL (e.g., "webserver://css/app.css")
    * @return the resolved filesystem path
    * @throws SecurityException if the resolved path escapes the resources root
-   * @throws IllegalArgumentException if the protocol is unknown
+   * @throws IllegalArgumentException if the protocol is unknown or missing
    */
   public Path resolve(String url) {
     Matcher matcher = PROTOCOL_PATTERN.matcher(url);
 
     Path resolved;
     if (!matcher.matches()) {
-      // No protocol - treat as static path
-      resolved = resourcesRoot.resolve("static").resolve(url);
+      // No protocol - webforJ passes these through unchanged to the browser
+      // They cannot be reliably mapped to filesystem paths for minification
+      throw new IllegalArgumentException(
+          "URL without protocol cannot be resolved: '" + url
+              + "'. Use ws:// or context:// protocol for minifiable resources.");
     } else {
       String protocol = matcher.group(1);
       String path = matcher.group(2);
 
       resolved = switch (protocol) {
-        case "webserver", "ws" -> resourcesRoot.resolve("static").resolve(path);
+        case "ws" -> resourcesRoot.resolve("static").resolve(path);
         case "context" -> resourcesRoot.resolve(path);
         default -> throw new IllegalArgumentException("Unknown protocol: " + protocol);
       };
@@ -81,14 +80,5 @@ public class ResourceResolver {
     }
 
     return normalizedResolved;
-  }
-
-  /**
-   * Gets the resources root directory.
-   *
-   * @return the resources root path
-   */
-  public Path getResourcesRoot() {
-    return resourcesRoot;
   }
 }

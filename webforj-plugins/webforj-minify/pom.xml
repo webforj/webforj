@@ -17,9 +17,9 @@
   <description>Build-time asset minification system for webforJ applications</description>
 
   <modules>
-    <module>webforj-minify-common</module>
-    <module>webforj-minify-css</module>
-    <module>webforj-minify-js</module>
+    <module>webforj-minify-foundation</module>
+    <module>webforj-minify-phcss-css</module>
+    <module>webforj-minify-closure-js</module>
     <module>webforj-minify-maven-plugin</module>
   </modules>
 
@@ -28,7 +28,7 @@
       <!-- Internal modules -->
       <dependency>
         <groupId>com.webforj</groupId>
-        <artifactId>webforj-minify-common</artifactId>
+        <artifactId>webforj-minify-foundation</artifactId>
         <version>${project.version}</version>
       </dependency>
 

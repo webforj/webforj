@@ -31,5 +31,8 @@ gradle-app.setting
 # Documentation (project-specific, not for repo)
 CLAUDE.md
 
+# SonarQube
+sonar-project.properties
+
 # OS
 .DS_Store

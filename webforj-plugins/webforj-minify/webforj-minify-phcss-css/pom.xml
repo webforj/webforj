@@ -10,15 +10,15 @@
     <version>25.10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-minify-css</artifactId>
+  <artifactId>webforj-minify-phcss-css</artifactId>
   <name>${project.artifactId}</name>
-  <description>CSS minifier implementation using ph-css</description>
+  <description>CSS minifier implementation using ph-css library</description>
 
   <dependencies>
-    <!-- Common module -->
+    <!-- Foundation module -->
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-minify-common</artifactId>
+      <artifactId>webforj-minify-foundation</artifactId>
     </dependency>
 
     <!-- CSS minification -->

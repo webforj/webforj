@@ -28,20 +28,40 @@ import javax.tools.StandardLocation;
  * Annotation processor that discovers webforJ asset annotations and generates a manifest file
  * (META-INF/webforj-resources.json) listing all discovered assets.
  *
- * <p>Supports the following annotations:
+ * <p>Supports the following file-based annotations:
  *
  * <ul>
- * <li>@StyleSheet
- * <li>@JavaScript
- * <li>@InlineStyleSheet
- * <li>@InlineJavaScript
+ * <li>@StyleSheet - references external CSS files that need minification
+ * <li>@JavaScript - references external JS files that need minification
  * </ul>
+ *
+ * <p>Supported protocols:
+ *
+ * <ul>
+ * <li>ws:// - Maps to src/main/resources/static/ (web server protocol)
+ * <li>context:// - Maps to src/main/resources/ (context protocol)
+ * </ul>
+ *
+ * <p>Unsupported (skipped with warning):
+ *
+ * <ul>
+ * <li>http://, https:// - External CDN resources (cannot be minified)
+ * <li>icons:// - Icon resources (images, not CSS/JS)
+ * <li>URLs without protocol - webforJ passes these through unchanged to the browser
+ * </ul>
+ *
+ * <p>Note: @InlineStyleSheet and @InlineJavaScript are NOT processed because they inject code
+ * directly into the DOM rather than referencing external files. There are no files to minify.
  *
  * <p>The generated manifest is used by the Maven and Gradle plugins to determine which assets need
  * minification during the build process.
  */
-@SupportedAnnotationTypes({"com.webforj.annotation.StyleSheet", "com.webforj.annotation.JavaScript",
-    "com.webforj.annotation.InlineStyleSheet", "com.webforj.annotation.InlineJavaScript"})
+@SupportedAnnotationTypes({
+    // File-based annotations only
+    "com.webforj.annotation.StyleSheet", "com.webforj.annotation.JavaScript",
+    // Container annotations for repeatable file-based annotations
+    "com.webforj.annotation.StyleSheet.Container",
+    "com.webforj.annotation.JavaScript.Container"})
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class AssetAnnotationProcessor extends AbstractProcessor {
 
@@ -60,12 +80,25 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
 
     // Process each annotation type
     for (TypeElement annotation : annotations) {
-      String annotationType = getAnnotationType(annotation.getSimpleName().toString());
+      String simpleName = annotation.getSimpleName().toString();
+      String qualifiedName = annotation.getQualifiedName().toString();
 
-      for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-        // Only process class-level annotations
-        if (element instanceof TypeElement) {
-          extractResourceUrls(element, annotation, annotationType);
+      // Check if this is a container annotation (plural form)
+      if (isContainerAnnotation(simpleName)) {
+        // Process container annotation - derive type from qualified name
+        String annotationType = getAnnotationTypeFromContainer(qualifiedName);
+        for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+          if (element instanceof TypeElement) {
+            extractResourceUrlsFromContainer(element, annotation, annotationType);
+          }
+        }
+      } else {
+        // Process individual annotation (e.g., @StyleSheet)
+        String annotationType = getAnnotationType(simpleName);
+        for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+          if (element instanceof TypeElement) {
+            extractResourceUrls(element, annotation, annotationType);
+          }
         }
       }
     }
@@ -116,10 +149,102 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
   }
 
   private void addResourceIfNotEmpty(String url, String type, String sourceClass) {
-    if (!url.isEmpty()) {
+    if (!url.isEmpty() && isLocalResource(url)) {
       resources.add(new ResourceEntry(url, type, sourceClass));
       processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
           "Discovered " + type + " asset: " + url + " in " + sourceClass);
+    } else if (!url.isEmpty() && !isLocalResource(url)) {
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
+          "Skipping external resource (cannot be minified): " + url);
+    }
+  }
+
+  private boolean isLocalResource(String url) {
+    // Only process local resources that can be minified
+    // External URLs (http://, https://) cannot be minified - they're hosted on CDNs
+    // Icons (icons://) are images, not CSS/JS files
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return false; // External CDN resources
+    }
+    if (url.startsWith("icons://")) {
+      return false; // Icon resources (images, not minifiable)
+    }
+
+    // Check for valid protocols
+    if (url.contains("://")) {
+      // Has a protocol - must be ws:// or context://
+      if (!url.startsWith("ws://") && !url.startsWith("context://")) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+            "Unknown protocol in asset URL: " + url
+                + " (only ws://, context:// are supported for minification)");
+        return false;
+      }
+    } else {
+      // No protocol - webforJ passes these through unchanged to the browser
+      // They cannot be reliably mapped to filesystem paths for minification
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+          "Skipping URL without protocol: " + url
+              + " (use ws:// or context:// for minifiable resources)");
+      return false;
+    }
+
+    // Accept: ws:// or context://
+    return true;
+  }
+
+  private boolean isContainerAnnotation(String annotationName) {
+    // Container annotations are inner classes (use simple name "Container")
+    return annotationName.equals("Container");
+  }
+
+  private String getAnnotationTypeFromContainer(String qualifiedName) {
+    // Container annotation qualified name: com.webforj.annotation.StyleSheet.Container
+    // Extract "StyleSheet" from the qualified name
+    if (qualifiedName.contains(".Container")) {
+      String withoutContainer = qualifiedName.replace(".Container", "");
+      int lastDot = withoutContainer.lastIndexOf('.');
+      if (lastDot >= 0) {
+        return withoutContainer.substring(lastDot + 1);
+      }
+    }
+    return "Unknown";
+  }
+
+  private void extractResourceUrlsFromContainer(Element element,
+      TypeElement containerAnnotationType, String type) {
+    String sourceClass = element.toString();
+
+    for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
+      if (mirror.getAnnotationType().asElement().equals(containerAnnotationType)) {
+        // Container annotation found - extract the array of repeated annotations
+        Map<? extends ExecutableElement, ? extends AnnotationValue> values =
+            processingEnv.getElementUtils().getElementValuesWithDefaults(mirror);
+
+        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : values
+            .entrySet()) {
+          String paramName = entry.getKey().getSimpleName().toString();
+
+          // Container annotations have a 'value' parameter that is an array of the repeated
+          // annotation
+          if ("value".equals(paramName)) {
+            Object arrayValue = entry.getValue().getValue();
+            if (arrayValue instanceof List) {
+              @SuppressWarnings("unchecked")
+              List<? extends AnnotationValue> annotationArray =
+                  (List<? extends AnnotationValue>) arrayValue;
+
+              // Process each annotation in the array
+              for (AnnotationValue annotationValue : annotationArray) {
+                if (annotationValue.getValue() instanceof AnnotationMirror) {
+                  AnnotationMirror repeatedAnnotation =
+                      (AnnotationMirror) annotationValue.getValue();
+                  processAnnotationMirror(repeatedAnnotation, type, sourceClass);
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -129,10 +254,6 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
         return "StyleSheet";
       case "JavaScript":
         return "JavaScript";
-      case "InlineStyleSheet":
-        return "InlineStyleSheet";
-      case "InlineJavaScript":
-        return "InlineJavaScript";
       default:
         return "Unknown";
     }

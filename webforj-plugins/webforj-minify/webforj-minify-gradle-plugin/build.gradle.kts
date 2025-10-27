@@ -21,8 +21,8 @@ repositories {
 }
 
 dependencies {
-    // webforJ minify common module
-    implementation("com.webforj:webforj-minify-common:25.10-SNAPSHOT")
+    // webforJ minify foundation module
+    implementation("com.webforj:webforj-minify-foundation:25.10-SNAPSHOT")
 
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")

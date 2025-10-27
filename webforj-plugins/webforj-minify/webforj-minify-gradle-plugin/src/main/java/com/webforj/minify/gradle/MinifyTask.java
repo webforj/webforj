@@ -8,6 +8,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.DirectoryProperty;
@@ -22,7 +23,8 @@ import org.gradle.api.tasks.TaskAction;
  */
 public abstract class MinifyTask extends DefaultTask {
 
-  protected MinifyTask() {
+  @Inject
+  public MinifyTask() {
     setGroup("webforJ");
     setDescription("Minifies webforJ assets");
   }

@@ -10,15 +10,15 @@
     <version>25.10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-minify-js</artifactId>
+  <artifactId>webforj-minify-closure-js</artifactId>
   <name>${project.artifactId}</name>
   <description>JavaScript minifier implementation using Google Closure Compiler</description>
 
   <dependencies>
-    <!-- Common module -->
+    <!-- Foundation module -->
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-minify-common</artifactId>
+      <artifactId>webforj-minify-foundation</artifactId>
     </dependency>
 
     <!-- JavaScript minification -->

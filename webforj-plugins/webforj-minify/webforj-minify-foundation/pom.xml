@@ -10,9 +10,9 @@
     <version>25.10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webforj-minify-common</artifactId>
+  <artifactId>webforj-minify-foundation</artifactId>
   <name>${project.artifactId}</name>
-  <description>Shared constants, interfaces, and utilities for webforJ asset minification</description>
+  <description>Foundation module with core interfaces and utilities for webforJ asset minification</description>
 
   <dependencies>
     <!-- JSON processing -->
@@ -25,6 +25,24 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.14.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>5.14.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.testing.compile</groupId>
+      <artifactId>compile-testing</artifactId>
+      <version>0.21.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -107,7 +107,13 @@ public class AssetProcessor {
 
       try {
         Path filePath = resolver.resolve(url);
-        filesToProcess.add(filePath);
+
+        // Validate file existence - warn and skip if file doesn't exist
+        if (!Files.exists(filePath)) {
+          logger.warn("File not found: " + filePath + " (referenced as '" + url + "')");
+        } else {
+          filesToProcess.add(filePath);
+        }
       } catch (SecurityException e) {
         logger.warn("Security violation for URL '" + url + "': " + e.getMessage());
       } catch (IllegalArgumentException e) {
@@ -172,7 +178,64 @@ public class AssetProcessor {
 
   private boolean matchesGlob(Path root, Path file, String pattern) {
     String relativePath = root.relativize(file).toString().replace('\\', '/');
-    return relativePath.matches(pattern.replace("*", ".*"));
+    String regex = convertGlobToRegex(pattern);
+    return relativePath.matches(regex);
+  }
+
+  /**
+   * Converts a glob pattern to a regular expression.
+   *
+   * <p>Supports the following glob patterns:
+   *
+   * <ul>
+   * <li>** - matches zero or more path segments (directories)
+   * <li>* - matches zero or more characters within a single path segment (not /)
+   * <li>? - matches exactly one character (not /)
+   * <li>All other characters are treated literally
+   * </ul>
+   *
+   * @param glob the glob pattern to convert
+   * @return the equivalent regular expression
+   */
+  private String convertGlobToRegex(String glob) {
+    StringBuilder regex = new StringBuilder();
+    int i = 0;
+
+    while (i < glob.length()) {
+      char c = glob.charAt(i);
+
+      if (c == '*') {
+        // Check for **
+        if (i + 1 < glob.length() && glob.charAt(i + 1) == '*') {
+          // ** matches zero or more path segments
+          regex.append(".*");
+          i += 2;
+
+          // Skip trailing slash after **
+          if (i < glob.length() && glob.charAt(i) == '/') {
+            i++;
+          }
+        } else {
+          // * matches zero or more characters except /
+          regex.append("[^/]*");
+          i++;
+        }
+      } else if (c == '?') {
+        // ? matches exactly one character except /
+        regex.append("[^/]");
+        i++;
+      } else if ("\\[]{}()+|^$.".indexOf(c) >= 0) {
+        // Escape regex special characters
+        regex.append('\\').append(c);
+        i++;
+      } else {
+        // Regular character
+        regex.append(c);
+        i++;
+      }
+    }
+
+    return regex.toString();
   }
 
   private synchronized void processFile(Path filePath) {

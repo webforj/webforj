@@ -55,7 +55,7 @@ class AssetProcessorTest {
     Path manifestPath = tempDir.resolve("manifest.json");
     String manifestContent = "{"
         + "\"assets\": ["
-        + "{\"url\": \"webserver://test.css\", \"type\": \"StyleSheet\"}"
+        + "{\"url\": \"ws://test.css\", \"type\": \"StyleSheet\"}"
         + "]"
         + "}";
     Files.writeString(manifestPath, manifestContent);
@@ -85,7 +85,7 @@ class AssetProcessorTest {
     Path manifestPath = tempDir.resolve("manifest.json");
     String manifestContent = "{"
         + "\"resources\": ["
-        + "{\"url\": \"webserver://legacy.css\", \"type\": \"StyleSheet\"}"
+        + "{\"url\": \"ws://legacy.css\", \"type\": \"StyleSheet\"}"
         + "]"
         + "}";
     Files.writeString(manifestPath, manifestContent);
@@ -181,6 +181,37 @@ class AssetProcessorTest {
   }
 
   @Test
+  void testProcessConfigFileWithMultiLevelExclusion() throws IOException {
+    // Test for bug fix: !**/*.js should exclude ALL JavaScript files at any depth
+    Path resourcesRoot = tempDir.resolve("resources");
+    Path jsDir = resourcesRoot.resolve("js");
+    Path libDir = jsDir.resolve("lib");
+    Path vendorDir = libDir.resolve("vendor");
+    Files.createDirectories(vendorDir);
+
+    // Create JS files at multiple levels
+    Path js1 = jsDir.resolve("app.js");
+    Path js2 = libDir.resolve("utils.js");
+    Path js3 = vendorDir.resolve("jquery.js");
+    Files.writeString(js1, "console.log('app');");
+    Files.writeString(js2, "console.log('utils');");
+    Files.writeString(js3, "console.log('jquery');");
+
+    // Create config file with multi-level exclusion pattern
+    Path configPath = tempDir.resolve("config.txt");
+    Files.writeString(configPath, "js/**/*.js\n!**/*.js\n");
+
+    // Register test minifier for JS
+    processor.getRegistry().register(new TestJsMinifier());
+
+    // Process config file
+    processor.processConfigFile(configPath, resourcesRoot);
+
+    // Verify NO files were processed (all excluded by !**/*.js)
+    assertEquals(0, processor.getProcessedFileCount());
+  }
+
+  @Test
   void testProcessConfigFileWithComments() throws IOException {
     // Create test directory structure
     Path resourcesRoot = tempDir.resolve("resources");
@@ -246,6 +277,21 @@ class AssetProcessorTest {
     @Override
     public Set<String> getSupportedExtensions() {
       return Set.of("css");
+    }
+  }
+
+  /**
+   * Test minifier for JS files.
+   */
+  private static class TestJsMinifier implements AssetMinifier {
+    @Override
+    public String minify(String content, Path sourceFile) {
+      return "MINIFIED_JS";
+    }
+
+    @Override
+    public Set<String> getSupportedExtensions() {
+      return Set.of("js");
     }
   }
 }
