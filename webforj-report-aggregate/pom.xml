@@ -68,22 +68,27 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-minify-common</artifactId>
+      <artifactId>webforj-minify-foundation</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-minify-css</artifactId>
+      <artifactId>webforj-minify-phcss-css</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-minify-js</artifactId>
+      <artifactId>webforj-minify-closure-js</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-maven-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-gradle-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
 
