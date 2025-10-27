@@ -38,7 +38,7 @@ Add the plugin to your `pom.xml`:
         <annotationProcessorPaths>
           <path>
             <groupId>com.webforj</groupId>
-            <artifactId>webforj-minify-common</artifactId>
+            <artifactId>webforj-minify-foundation</artifactId>
             <version>25.10-SNAPSHOT</version>
           </path>
         </annotationProcessorPaths>
@@ -93,7 +93,7 @@ repositories {
 
 dependencies {
     // Annotation processor for discovering assets
-    annotationProcessor 'com.webforj:webforj-minify-common:25.10-SNAPSHOT'
+    annotationProcessor 'com.webforj:webforj-minify-foundation:25.10-SNAPSHOT'
 }
 
 // Add minifiers as plugin dependencies
@@ -129,7 +129,7 @@ package com.example;
 import com.webforj.annotation.StyleSheet;
 import com.webforj.annotation.JavaScript;
 
-@StyleSheet("webserver://css/app.css")
+@StyleSheet("ws://css/app.css")
 @JavaScript("ws://js/app.js")
 public class MyApp extends App {
   // Your application code
@@ -165,7 +165,7 @@ It generates a manifest file at `META-INF/webforj-resources.json`:
   "generatedAt": "2025-10-17T12:00:00Z",
   "assets": [
     {
-      "url": "webserver://css/app.css",
+      "url": "ws://css/app.css",
       "type": "StyleSheet",
       "discoveredIn": "com.example.MyApp"
     }
@@ -189,9 +189,10 @@ The plugin understands webforJ URL protocols:
 
 | Protocol | Resolves To | Example |
 |----------|-------------|---------|
-| `webserver://` or `ws://` | `src/main/resources/static/` | `ws://css/app.css` → `static/css/app.css` |
+| `ws://` | `src/main/resources/static/` | `ws://css/app.css` → `static/css/app.css` |
 | `context://` | `src/main/resources/` | `context://styles/app.css` → `styles/app.css` |
-| No protocol | `src/main/resources/static/` | `css/app.css` → `static/css/app.css` |
+
+**Note:** URLs without a protocol (e.g., `css/app.css`) are NOT supported for minification because webforJ passes them through unchanged to the browser, which resolves them as relative URLs. These cannot be reliably mapped to filesystem paths. Use `ws://` or `context://` for assets that need minification.
 
 ## Configuration
 
@@ -242,51 +243,72 @@ By default, the plugin uses parallel streams for >10 files. This is automatic an
 
 ## Frequently Asked Questions
 
-### Why is the annotation processor configuration required?
+### Why is the annotation processor configuration required? Can it be avoided?
 
-You may have noticed that the setup requires configuring the annotation processor separately in the `maven-compiler-plugin` or Gradle's `annotationProcessor` dependency. **This configuration cannot be hidden or automated by the minify plugin due to fundamental Maven/Gradle build lifecycle constraints.**
+**Short Answer:** No, the annotation processor configuration cannot be avoided or automated. This is a fundamental requirement of Maven/Gradle build lifecycles and is standard practice for ALL Java annotation processors.
 
-**Technical Explanation:**
+**Detailed Explanation:**
 
-1. **Build Lifecycle Phases:**
+You may have noticed that the setup requires explicit configuration of the annotation processor in the `maven-compiler-plugin` (using `<annotationProcessorPaths>`) or Gradle (using `annotationProcessor` dependency). **This configuration is mandatory and cannot be hidden, automated, or bundled with the minify plugin.**
+
+**Why This Cannot Be Avoided:**
+
+1. **Build Lifecycle Phases (Fundamental Constraint):**
    - Annotation processing happens during the **compile phase** (when javac runs)
    - The minify plugin executes during the **process-classes phase** (after compilation completes)
-
-2. **Why plugins can't configure annotation processors:**
    - By the time the minify plugin executes, compilation is already finished
-   - Plugins cannot retroactively modify the compiler plugin's configuration
-   - Maven/Gradle don't support automatic annotation processor discovery from plugin dependencies
+   - Plugins cannot retroactively modify the compiler plugin's configuration for past phases
 
-3. **Why not use classpath discovery?**
-   - We could make `webforj-minify-common` a regular compile dependency instead of just an annotation processor
-   - This would allow automatic discovery via classpath scanning
-   - **However**, this adds unnecessary runtime dependencies to users' final artifacts (JAR/WAR files)
-   - The annotation processor is only needed at build time, not runtime
+2. **Maven 3+ Security Model (Deliberate Design):**
+   - Maven 3.0+ introduced a security model that prevents automatic classpath scanning for annotation processors
+   - This prevents malicious code execution during compilation
+   - Annotation processors must be explicitly declared in `annotationProcessorPaths` or as compile dependencies
+   - This is a **deliberate design decision** by the Maven team, not a limitation
 
-**Workaround for simpler configuration:**
+3. **Gradle Annotation Processing Model:**
+   - Gradle requires explicit declaration of annotation processors via the `annotationProcessor` configuration
+   - This separates compile-time tooling from runtime dependencies
+   - Gradle does not support automatic discovery from plugin classpaths
 
-If you prefer a simpler setup at the cost of adding a compile dependency, you can use:
+**This Is Standard Practice:**
+
+Every major Java annotation processor requires the same configuration:
+- **Lombok:** Requires `annotationProcessorPaths` or `annotationProcessor` dependency
+- **MapStruct:** Requires `annotationProcessorPaths` or `annotationProcessor` dependency
+- **Dagger:** Requires `annotationProcessorPaths` or `annotationProcessor` dependency
+- **Google Auto:** Requires `annotationProcessorPaths` or `annotationProcessor` dependency
+
+The webforJ minify plugin follows the same industry-standard approach.
+
+**Alternative Approach (Not Recommended):**
+
+If you strongly prefer to avoid `annotationProcessorPaths`, you can add `webforj-minify-foundation` as a regular compile dependency with `provided` scope:
 
 ```xml
 <dependencies>
-  <!-- Compile dependency (includes annotation processor) -->
   <dependency>
     <groupId>com.webforj</groupId>
-    <artifactId>webforj-minify-common</artifactId>
+    <artifactId>webforj-minify-foundation</artifactId>
     <version>25.10-SNAPSHOT</version>
-    <scope>provided</scope> <!-- Won't be included in final artifact -->
+    <scope>provided</scope>
   </dependency>
 </dependencies>
 
-<!-- No need for annotationProcessorPaths with above approach -->
+<!-- maven-compiler-plugin will auto-discover from compile classpath -->
 <plugin>
-  <groupId>com.webforj</groupId>
-  <artifactId>webforj-minify-maven-plugin</artifactId>
-  ...
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <!-- No annotationProcessorPaths needed with above approach -->
 </plugin>
 ```
 
-**Recommendation:** Use `annotationProcessorPaths` (as shown in Quick Start) to keep dependencies minimal.
+**However**, this approach:
+- ✅ Simplifies configuration (no `annotationProcessorPaths` needed)
+- ❌ Adds an unnecessary compile dependency to your project
+- ❌ Increases your project's dependency tree complexity
+- ❌ Goes against Maven best practices (separate build-time from compile-time dependencies)
+
+**Recommendation:** Use `annotationProcessorPaths` (as shown in Quick Start). This is the correct, industry-standard approach that keeps your dependencies clean and minimal.
 
 ## Architecture
 
@@ -294,7 +316,7 @@ If you prefer a simpler setup at the cost of adding a compile dependency, you ca
 
 ```
 webforj-minify/
-├── webforj-minify-common/       # Core interfaces + annotation processor
+├── webforj-minify-foundation/   # Core interfaces + annotation processor
 │   ├── AssetMinifier            # SPI interface for minifiers
 │   ├── MinifierRegistry         # Thread-safe minifier registry
 │   ├── ResourceResolver         # URL protocol resolver
@@ -305,11 +327,11 @@ webforj-minify/
 │   ├── PhCssMinifier            # CSS minification (ph-css 8.0.0)
 │   └── META-INF/services/com.webforj.minify.common.AssetMinifier
 ├── webforj-minify-js/           # JavaScript minifier module
-│   ├── ClosureJsMinifier        # JS minification (Closure Compiler v20230802)
+│   ├── ClosureJsMinifier        # JS minification (Closure Compiler v20250820)
 │   └── META-INF/services/com.webforj.minify.common.AssetMinifier
-├── webforj-minify-maven-plugin/ # Maven plugin (depends only on common)
+├── webforj-minify-maven-plugin/ # Maven plugin (depends only on foundation)
 │   └── MinifyMojo               # Executes minification
-└── webforj-minify-gradle-plugin/# Gradle plugin (depends only on common)
+└── webforj-minify-gradle-plugin/# Gradle plugin (depends only on foundation)
     └── MinifyTask               # Gradle task implementation
 ```
 
@@ -418,7 +440,7 @@ The plugin provides two optional minifier implementations as separate modules. U
 
 ### JavaScript Minifier (`webforj-minify-js`)
 
-**Implementation:** `ClosureJsMinifier` using Google Closure Compiler v20230802
+**Implementation:** `ClosureJsMinifier` using Google Closure Compiler v20250820
 
 **Configuration:**
 - Compilation level: `SIMPLE_OPTIMIZATIONS` (no symbol renaming)
@@ -485,8 +507,8 @@ See Quick Start section for complete configuration examples.
 
 **Solutions:**
 1. Ensure annotation processor is configured correctly:
-   - Maven: Add `webforj-minify-common` to `annotationProcessorPaths` in `maven-compiler-plugin`
-   - Gradle: Add `annotationProcessor 'com.webforj:webforj-minify-common:VERSION'` to dependencies
+   - Maven: Add `webforj-minify-foundation` to `annotationProcessorPaths` in `maven-compiler-plugin`
+   - Gradle: Add `annotationProcessor 'com.webforj:webforj-minify-foundation:VERSION'` to dependencies
 2. Check that webforJ annotations are present in source code
 3. Verify `target/classes/META-INF/webforj-resources.json` exists after compilation
 4. Ensure `<proc>none</proc>` is NOT set in the compiler plugin (it disables annotation processing)

@@ -76,8 +76,8 @@ public class MinifyMojo extends AbstractMojo {
         RESOURCES_DIR, "META-INF", "webforj-minify.txt");
     if (Files.exists(configPath)) {
       getLog().info("Processing configuration file: " + configPath);
-      Path resourcesRoot =
-          Paths.get(project.getBasedir().getAbsolutePath(), "src", "main", RESOURCES_DIR);
+      // Use outputDirectory (target/classes) to process compiled resources, not source files
+      Path resourcesRoot = Paths.get(outputDirectory);
       processor.processConfigFile(configPath, resourcesRoot);
     }
 
@@ -95,6 +95,8 @@ public class MinifyMojo extends AbstractMojo {
     } catch (JsonSyntaxException e) {
       throw new MojoExecutionException(
           "Malformed manifest file - check META-INF/webforj-resources.json", e);
+    } catch (RuntimeException e) {
+      throw new MojoExecutionException("Asset minification failed: " + e.getMessage(), e);
     }
   }
 
