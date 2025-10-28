@@ -18,11 +18,11 @@ import java.util.Set;
  * <p><b>Example custom minifier:</b>
  *
  * <pre>{@code
- * public class SassMinifier implements AssetMinifier {
+ * public class JsonMinifier implements AssetMinifier {
  *   @Override
  *   public String minify(String content, Path sourceFile) throws MinificationException {
  *     try {
- *       return SassCompiler.compile(content);
+ *       return JsonCompressor.minify(content);
  *     } catch (Exception e) {
  *       throw new MinificationException("Failed to minify " + sourceFile, e);
  *     }
@@ -30,7 +30,7 @@ import java.util.Set;
  *
  *   @Override
  *   public Set<String> getSupportedExtensions() {
- *     return Set.of("scss", "sass");
+ *     return Set.of("json");
  *   }
  * }
  * }</pre>
