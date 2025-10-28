@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,13 +50,23 @@ class AssetAnnotationProcessorTest {
 
     // Create a test manifest that simulates what the processor should generate
     Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = "{"
-        + "\"version\": \"1.0\","
-        + "\"assets\": ["
-        + "{\"url\": \"context://static/app.css\", \"type\": \"InlineStyleSheet\", \"discoveredIn\": \"com.example.Application\"},"
-        + "{\"url\": \"foobar\", \"type\": \"InlineStyleSheet\", \"discoveredIn\": \"com.example.Application\"}"
-        + "]"
-        + "}";
+    String manifestContent = """
+        {
+          "version": "1.0",
+          "assets": [
+            {
+              "url": "context://static/app.css",
+              "type": "InlineStyleSheet",
+              "discoveredIn": "com.example.Application"
+            },
+            {
+              "url": "foobar",
+              "type": "InlineStyleSheet",
+              "discoveredIn": "com.example.Application"
+            }
+          ]
+        }
+        """;
     Files.writeString(manifestPath, manifestContent);
 
     // Verify the manifest structure
@@ -87,12 +96,14 @@ class AssetAnnotationProcessorTest {
     // The processor must handle this container and extract all @StyleSheet annotations
 
     Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = "{"
-        + "\"assets\": ["
-        + "{\"url\": \"webserver://css/theme.css\", \"type\": \"StyleSheet\"},"
-        + "{\"url\": \"webserver://css/layout.css\", \"type\": \"StyleSheet\"}"
-        + "]"
-        + "}";
+    String manifestContent = """
+        {
+          "assets": [
+            {"url": "ws://css/theme.css", "type": "StyleSheet"},
+            {"url": "ws://css/layout.css", "type": "StyleSheet"}
+          ]
+        }
+        """;
     Files.writeString(manifestPath, manifestContent);
 
     Gson gson = new Gson();
@@ -108,12 +119,14 @@ class AssetAnnotationProcessorTest {
   void testMultipleJavaScriptAnnotations() throws IOException {
     // When multiple @JavaScript annotations are used, Java creates @JavaScripts container
     Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = "{"
-        + "\"assets\": ["
-        + "{\"url\": \"webserver://js/app.js\", \"type\": \"JavaScript\"},"
-        + "{\"url\": \"webserver://js/utils.js\", \"type\": \"JavaScript\"}"
-        + "]"
-        + "}";
+    String manifestContent = """
+        {
+          "assets": [
+            {"url": "ws://js/app.js", "type": "JavaScript"},
+            {"url": "ws://js/utils.js", "type": "JavaScript"}
+          ]
+        }
+        """;
     Files.writeString(manifestPath, manifestContent);
 
     Gson gson = new Gson();
@@ -130,12 +143,14 @@ class AssetAnnotationProcessorTest {
     // When multiple @InlineJavaScript annotations are used, Java creates @InlineJavaScripts
     // container
     Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = "{"
-        + "\"assets\": ["
-        + "{\"url\": \"context://js/inline1.js\", \"type\": \"InlineJavaScript\"},"
-        + "{\"url\": \"context://js/inline2.js\", \"type\": \"InlineJavaScript\"}"
-        + "]"
-        + "}";
+    String manifestContent = """
+        {
+          "assets": [
+            {"url": "context://js/inline1.js", "type": "InlineJavaScript"},
+            {"url": "context://js/inline2.js", "type": "InlineJavaScript"}
+          ]
+        }
+        """;
     Files.writeString(manifestPath, manifestContent);
 
     Gson gson = new Gson();
@@ -144,13 +159,14 @@ class AssetAnnotationProcessorTest {
     assertEquals(2, manifest.getAsJsonArray("assets").size());
   }
 
-  /**
+  /*
    * NOTE: These tests verify manifest structure, not actual annotation processing.
    *
-   * <p>Full integration testing of the annotation processor requires: 1. Creating a test project
-   * with actual @StyleSheet/@JavaScript annotations 2. Running javac with the annotation processor
+   * Full integration testing of the annotation processor requires:
+   * 1. Creating a test project with actual @StyleSheet/@JavaScript annotations
+   * 2. Running javac with the annotation processor
    * 3. Verifying the generated META-INF/webforj-resources.json
    *
-   * <p>This should be done in a separate integration test module or during CI builds.
+   * This should be done in a separate integration test module or during CI builds.
    */
 }
