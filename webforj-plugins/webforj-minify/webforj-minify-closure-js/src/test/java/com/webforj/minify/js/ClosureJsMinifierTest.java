@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for ClosureJsMinifier.
+ *
+ * @author Kevin Hagel
  */
 class ClosureJsMinifierTest {
 

@@ -37,6 +37,8 @@ import java.util.Set;
  *
  * <p><b>IMPORTANT:</b> Implementations must be stateless and thread-safe for parallel
  * processing. Do not maintain instance state between {@link #minify(String, Path)} calls.
+ *
+ * @author Kevin Hagel
  */
 public interface AssetMinifier {
 

@@ -14,6 +14,8 @@ import java.util.Set;
  *
  * <p>This implementation preserves semantic correctness and handles parse errors gracefully by
  * returning the original content when minification fails.
+ *
+ * @author Kevin Hagel
  */
 public class PhCssMinifier implements AssetMinifier {
   private static final System.Logger LOGGER = System.getLogger(PhCssMinifier.class.getName());

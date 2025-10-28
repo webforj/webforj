@@ -17,6 +17,8 @@ import java.util.stream.Stream;
  * Core asset processing logic shared between Maven and Gradle plugins.
  *
  * <p>This class extracts the common minification workflow to eliminate code duplication.
+ *
+ * @author Kevin Hagel
  */
 public class AssetProcessor {
 

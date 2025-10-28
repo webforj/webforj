@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for MinificationException.
+ *
+ * @author Kevin Hagel
  */
 class MinificationExceptionTest {
 

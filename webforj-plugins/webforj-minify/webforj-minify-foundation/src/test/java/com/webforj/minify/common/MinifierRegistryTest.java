@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for MinifierRegistry.
+ *
+ * @author Kevin Hagel
  */
 class MinifierRegistryTest {
 

@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * implementations on the classpath.
  *
  * <p>This class is thread-safe and can be safely used in parallel processing.
+ *
+ * @author Kevin Hagel
  */
 public class MinifierRegistry {
   private static final System.Logger LOGGER = System.getLogger(MinifierRegistry.class.getName());

@@ -17,6 +17,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Unit tests for AssetProcessor.
+ *
+ * @author Kevin Hagel
  */
 class AssetProcessorTest {
 

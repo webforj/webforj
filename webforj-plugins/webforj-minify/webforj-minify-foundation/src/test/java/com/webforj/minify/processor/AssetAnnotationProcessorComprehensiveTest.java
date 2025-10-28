@@ -39,6 +39,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
  *
  * <p>This test class provides two levels of testing: 1. Compile-testing: Tests actual compilation
  * and manifest generation 2. Mockito: Tests specific processor logic with mocked dependencies
+ *
+ * @author Kevin Hagel
  */
 @DisplayName("AssetAnnotationProcessor Comprehensive Tests")
 class AssetAnnotationProcessorComprehensiveTest {

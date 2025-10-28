@@ -55,6 +55,8 @@ import javax.tools.StandardLocation;
  *
  * <p>The generated manifest is used by the Maven and Gradle plugins to determine which assets need
  * minification during the build process.
+ *
+ * @author Kevin Hagel
  */
 @SupportedAnnotationTypes({
     // File-based annotations only

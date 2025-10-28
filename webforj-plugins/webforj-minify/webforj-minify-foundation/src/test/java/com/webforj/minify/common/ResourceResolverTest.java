@@ -13,6 +13,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Unit tests for ResourceResolver.
+ *
+ * @author Kevin Hagel
  */
 class ResourceResolverTest {
 

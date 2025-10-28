@@ -2,6 +2,8 @@ package com.webforj.minify.common;
 
 /**
  * Exception thrown when minification fails.
+ *
+ * @author Kevin Hagel
  */
 public class MinificationException extends Exception {
 

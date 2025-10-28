@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * Stub annotation for testing the AssetAnnotationProcessor.
+ *
+ * @author Kevin Hagel
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

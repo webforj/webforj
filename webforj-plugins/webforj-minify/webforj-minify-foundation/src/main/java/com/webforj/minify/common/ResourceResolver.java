@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
  * <p><b>Security:</b> All resolved paths are validated to prevent directory traversal attacks.
  * Paths containing ".." that escape the resources root will throw {@link SecurityException}.
  *
+ * @author Kevin Hagel
+ *
  * @see <a href="https://docs.webforj.com/docs/managing-resources/assets-protocols">webforJ Asset
  *      Protocols</a>
  */

@@ -11,6 +11,8 @@ import org.gradle.api.tasks.SourceSetContainer;
  *
  * <p>The plugin automatically configures the minify task to run after the classes task,
  * ensuring assets are minified before packaging.
+ *
+ * @author Kevin Hagel
  */
 public class MinifyPlugin implements Plugin<Project> {
 

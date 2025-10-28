@@ -20,6 +20,8 @@ import org.gradle.api.tasks.TaskAction;
 
 /**
  * Gradle task that minifies webforJ assets during the build process.
+ *
+ * @author Kevin Hagel
  */
 public abstract class MinifyTask extends DefaultTask {
 

@@ -18,6 +18,8 @@ import org.junit.jupiter.params.provider.CsvSource;
  *
  * <p>Note: Full annotation processor testing requires compile-time execution. These tests verify
  * the processor behavior through integration scenarios.
+ *
+ * @author Kevin Hagel
  */
 class AssetAnnotationProcessorTest {
 

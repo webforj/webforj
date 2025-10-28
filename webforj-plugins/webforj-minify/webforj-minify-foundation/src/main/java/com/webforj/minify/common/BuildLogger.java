@@ -3,6 +3,8 @@ package com.webforj.minify.common;
 /**
  * Abstraction for build tool logging, allowing both Maven and Gradle plugins to use the same core
  * logic.
+ *
+ * @author Kevin Hagel
  */
 public interface BuildLogger {
 

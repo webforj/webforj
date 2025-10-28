@@ -14,6 +14,8 @@ import java.util.Set;
  * JavaScript minifier implementation using Google Closure Compiler.
  *
  * <p>Uses SIMPLE_OPTIMIZATIONS for safe minification without symbol renaming.
+ *
+ * @author Kevin Hagel
  */
 public class ClosureJsMinifier implements AssetMinifier {
   private static final System.Logger LOGGER = System.getLogger(ClosureJsMinifier.class.getName());

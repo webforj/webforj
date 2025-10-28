@@ -11,6 +11,8 @@ import org.gradle.api.provider.Property;
  *   skip = false
  * }
  * </pre>
+ *
+ * @author Kevin Hagel
  */
 public interface MinifyExtension {
 
