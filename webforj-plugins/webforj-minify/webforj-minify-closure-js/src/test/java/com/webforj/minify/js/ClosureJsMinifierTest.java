@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.minify.common.MinificationException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,7 +129,8 @@ class ClosureJsMinifierTest {
   @Test
   void testSupportedExtensions() {
     assertTrue(minifier.getSupportedExtensions().contains("js"));
-    assertEquals(1, minifier.getSupportedExtensions().size());
+    assertTrue(minifier.getSupportedExtensions().contains("mjs"));
+    assertEquals(2, minifier.getSupportedExtensions().size());
   }
 
   @Test
@@ -155,5 +158,72 @@ class ClosureJsMinifierTest {
   void testShouldNotMinifyMinifiedJsFile() {
     Path minifiedFile = Paths.get("scripts/app.min.js");
     assertTrue(!minifier.shouldMinify(minifiedFile), "Should not minify .min.js files");
+  }
+
+  @Test
+  void testShouldMinifyRegularMjsFile() {
+    Path mjsFile = Paths.get("modules/app.mjs");
+    assertTrue(minifier.shouldMinify(mjsFile), "Should minify regular .mjs files");
+  }
+
+  @Test
+  void testShouldNotMinifyMinifiedMjsFile() {
+    Path minifiedMjsFile = Paths.get("modules/app.min.mjs");
+    assertTrue(!minifier.shouldMinify(minifiedMjsFile), "Should not minify .min.mjs files");
+  }
+
+  @Test
+  void testMinifyMjsContent() throws MinificationException {
+    // Test ES module syntax (typical .mjs content)
+    String mjs = """
+        export const PI = 3.14159;
+
+        export function calculateArea(radius) {
+          return PI * radius * radius;
+        }
+
+        export default class Circle {
+          constructor(radius) {
+            this.radius = radius;
+          }
+        }
+        """;
+    Path mjsPath = Paths.get("test.mjs");
+
+    String minified = minifier.minify(mjs, mjsPath);
+
+    // ES6 modules may be transpiled to ES5, which can increase size
+    // Just verify it compiles successfully and is not empty
+    assertTrue(!minified.isEmpty(), "Minified .mjs should not be empty");
+    assertTrue(!minified.trim().isEmpty(), "Minified .mjs should have content");
+  }
+
+  @Test
+  void testMinifyActualMjsFile() throws MinificationException, IOException {
+    // Integration test: Load actual .mjs file from test resources and minify it
+    Path mjsFile = Paths.get("src/test/resources/test-module.mjs");
+
+    // Verify the test file exists
+    assertTrue(Files.exists(mjsFile), "Test .mjs file should exist");
+
+    // Read the file content
+    String originalContent = Files.readString(mjsFile);
+    assertTrue(originalContent.contains("export"), "Original file should contain export statements");
+    assertTrue(originalContent.contains("class Square"), "Original file should contain Square class");
+
+    // Minify the content
+    String minified = minifier.minify(originalContent, mjsFile);
+
+    // Verify minification succeeded
+    assertTrue(!minified.isEmpty(), "Minified .mjs should not be empty");
+    assertTrue(!minified.trim().isEmpty(), "Minified .mjs should have content");
+
+    // Verify the file should be minified (not skipped)
+    assertTrue(minifier.shouldMinify(mjsFile), "Regular .mjs files should be minified");
+
+    // Verify .min.mjs would be skipped
+    Path minMjsFile = Paths.get("src/test/resources/test-module.min.mjs");
+    assertTrue(!minifier.shouldMinify(minMjsFile),
+        "Already minified .min.mjs files should be skipped");
   }
 }
