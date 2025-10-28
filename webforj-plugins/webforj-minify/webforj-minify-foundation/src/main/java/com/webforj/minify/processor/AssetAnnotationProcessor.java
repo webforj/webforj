@@ -71,39 +71,53 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (roundEnv.processingOver()) {
-      // Final round - write the manifest
-      if (!resources.isEmpty()) {
-        writeManifest();
-      }
+      writeManifestIfNeeded();
       return false;
     }
 
     // Process each annotation type
     for (TypeElement annotation : annotations) {
-      String simpleName = annotation.getSimpleName().toString();
-      String qualifiedName = annotation.getQualifiedName().toString();
-
-      // Check if this is a container annotation (plural form)
-      if (isContainerAnnotation(simpleName)) {
-        // Process container annotation - derive type from qualified name
-        String annotationType = getAnnotationTypeFromContainer(qualifiedName);
-        for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-          if (element instanceof TypeElement) {
-            extractResourceUrlsFromContainer(element, annotation, annotationType);
-          }
-        }
-      } else {
-        // Process individual annotation (e.g., @StyleSheet)
-        String annotationType = getAnnotationType(simpleName);
-        for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-          if (element instanceof TypeElement) {
-            extractResourceUrls(element, annotation, annotationType);
-          }
-        }
-      }
+      processAnnotation(annotation, roundEnv);
     }
 
     return false;
+  }
+
+  private void writeManifestIfNeeded() {
+    if (!resources.isEmpty()) {
+      writeManifest();
+    }
+  }
+
+  private void processAnnotation(TypeElement annotation, RoundEnvironment roundEnv) {
+    String simpleName = annotation.getSimpleName().toString();
+    String qualifiedName = annotation.getQualifiedName().toString();
+
+    if (isContainerAnnotation(simpleName)) {
+      processContainerAnnotation(annotation, qualifiedName, roundEnv);
+    } else {
+      processIndividualAnnotation(annotation, simpleName, roundEnv);
+    }
+  }
+
+  private void processContainerAnnotation(TypeElement annotation, String qualifiedName,
+      RoundEnvironment roundEnv) {
+    String annotationType = getAnnotationTypeFromContainer(qualifiedName);
+    for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+      if (element instanceof TypeElement) {
+        extractResourceUrlsFromContainer(element, annotation, annotationType);
+      }
+    }
+  }
+
+  private void processIndividualAnnotation(TypeElement annotation, String simpleName,
+      RoundEnvironment roundEnv) {
+    String annotationType = getAnnotationType(simpleName);
+    for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
+      if (element instanceof TypeElement) {
+        extractResourceUrls(element, annotation, annotationType);
+      }
+    }
   }
 
   private void extractResourceUrls(Element element, TypeElement annotationType, String type) {
@@ -216,34 +230,34 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
 
     for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
       if (mirror.getAnnotationType().asElement().equals(containerAnnotationType)) {
-        // Container annotation found - extract the array of repeated annotations
-        Map<? extends ExecutableElement, ? extends AnnotationValue> values =
-            processingEnv.getElementUtils().getElementValuesWithDefaults(mirror);
+        processContainerMirror(mirror, type, sourceClass);
+      }
+    }
+  }
 
-        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : values
-            .entrySet()) {
-          String paramName = entry.getKey().getSimpleName().toString();
+  private void processContainerMirror(AnnotationMirror mirror, String type, String sourceClass) {
+    Map<? extends ExecutableElement, ? extends AnnotationValue> values =
+        processingEnv.getElementUtils().getElementValuesWithDefaults(mirror);
 
-          // Container annotations have a 'value' parameter that is an array of the repeated
-          // annotation
-          if ("value".equals(paramName)) {
-            Object arrayValue = entry.getValue().getValue();
-            if (arrayValue instanceof List) {
-              @SuppressWarnings("unchecked")
-              List<? extends AnnotationValue> annotationArray =
-                  (List<? extends AnnotationValue>) arrayValue;
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : values
+        .entrySet()) {
+      if ("value".equals(entry.getKey().getSimpleName().toString())) {
+        processContainerValue(entry.getValue().getValue(), type, sourceClass);
+      }
+    }
+  }
 
-              // Process each annotation in the array
-              for (AnnotationValue annotationValue : annotationArray) {
-                if (annotationValue.getValue() instanceof AnnotationMirror) {
-                  AnnotationMirror repeatedAnnotation =
-                      (AnnotationMirror) annotationValue.getValue();
-                  processAnnotationMirror(repeatedAnnotation, type, sourceClass);
-                }
-              }
-            }
-          }
-        }
+  private void processContainerValue(Object arrayValue, String type, String sourceClass) {
+    if (!(arrayValue instanceof List)) {
+      return;
+    }
+
+    @SuppressWarnings("unchecked")
+    List<? extends AnnotationValue> annotationArray = (List<? extends AnnotationValue>) arrayValue;
+
+    for (AnnotationValue annotationValue : annotationArray) {
+      if (annotationValue.getValue() instanceof AnnotationMirror repeatedAnnotation) {
+        processAnnotationMirror(repeatedAnnotation, type, sourceClass);
       }
     }
   }

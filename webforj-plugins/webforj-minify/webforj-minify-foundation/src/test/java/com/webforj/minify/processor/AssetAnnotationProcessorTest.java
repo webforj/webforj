@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Integration tests for AssetAnnotationProcessor.
@@ -34,20 +36,6 @@ class AssetAnnotationProcessorTest {
    */
   @Test
   void testRepeatedAnnotationsAreCollected() throws IOException {
-    // This test documents the expected behavior:
-    // Given a class with:
-    //   @InlineStyleSheet("context://static/app.css")
-    //   @InlineStyleSheet("foobar")
-    //   public class Application extends App {}
-    //
-    // The generated manifest should contain BOTH resources:
-    // {
-    //   "assets": [
-    //     {"url": "context://static/app.css", "type": "InlineStyleSheet"},
-    //     {"url": "foobar", "type": "InlineStyleSheet"}
-    //   ]
-    // }
-
     // Create a test manifest that simulates what the processor should generate
     Path manifestPath = tempDir.resolve("webforj-resources.json");
     String manifestContent = """
@@ -88,69 +76,24 @@ class AssetAnnotationProcessorTest {
   }
 
   /**
-   * Test that multiple @StyleSheet annotations are collected.
+   * Test that multiple annotations are collected for different types.
    */
-  @Test
-  void testMultipleStyleSheetAnnotations() throws IOException {
-    // When multiple @StyleSheet annotations are used, Java creates @StyleSheets container
-    // The processor must handle this container and extract all @StyleSheet annotations
-
+  @ParameterizedTest
+  @CsvSource({
+      "ws://css/theme.css, ws://css/layout.css, StyleSheet",
+      "ws://js/app.js, ws://js/utils.js, JavaScript",
+      "context://js/inline1.js, context://js/inline2.js, InlineJavaScript"})
+  void testMultipleAnnotationsAreCollected(String url1, String url2, String type)
+      throws IOException {
     Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = """
+    String manifestContent = String.format("""
         {
           "assets": [
-            {"url": "ws://css/theme.css", "type": "StyleSheet"},
-            {"url": "ws://css/layout.css", "type": "StyleSheet"}
+            {"url": "%s", "type": "%s"},
+            {"url": "%s", "type": "%s"}
           ]
         }
-        """;
-    Files.writeString(manifestPath, manifestContent);
-
-    Gson gson = new Gson();
-    JsonObject manifest = gson.fromJson(Files.readString(manifestPath), JsonObject.class);
-
-    assertEquals(2, manifest.getAsJsonArray("assets").size());
-  }
-
-  /**
-   * Test that multiple @JavaScript annotations are collected.
-   */
-  @Test
-  void testMultipleJavaScriptAnnotations() throws IOException {
-    // When multiple @JavaScript annotations are used, Java creates @JavaScripts container
-    Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = """
-        {
-          "assets": [
-            {"url": "ws://js/app.js", "type": "JavaScript"},
-            {"url": "ws://js/utils.js", "type": "JavaScript"}
-          ]
-        }
-        """;
-    Files.writeString(manifestPath, manifestContent);
-
-    Gson gson = new Gson();
-    JsonObject manifest = gson.fromJson(Files.readString(manifestPath), JsonObject.class);
-
-    assertEquals(2, manifest.getAsJsonArray("assets").size());
-  }
-
-  /**
-   * Test that multiple @InlineJavaScript annotations are collected.
-   */
-  @Test
-  void testMultipleInlineJavaScriptAnnotations() throws IOException {
-    // When multiple @InlineJavaScript annotations are used, Java creates @InlineJavaScripts
-    // container
-    Path manifestPath = tempDir.resolve("webforj-resources.json");
-    String manifestContent = """
-        {
-          "assets": [
-            {"url": "context://js/inline1.js", "type": "InlineJavaScript"},
-            {"url": "context://js/inline2.js", "type": "InlineJavaScript"}
-          ]
-        }
-        """;
+        """, url1, type, url2, type);
     Files.writeString(manifestPath, manifestContent);
 
     Gson gson = new Gson();

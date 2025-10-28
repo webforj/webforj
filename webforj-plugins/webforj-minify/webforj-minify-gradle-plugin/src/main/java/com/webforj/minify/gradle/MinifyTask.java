@@ -24,7 +24,7 @@ import org.gradle.api.tasks.TaskAction;
 public abstract class MinifyTask extends DefaultTask {
 
   @Inject
-  public MinifyTask() {
+  protected MinifyTask() {
     setGroup("webforJ");
     setDescription("Minifies webforJ assets");
   }

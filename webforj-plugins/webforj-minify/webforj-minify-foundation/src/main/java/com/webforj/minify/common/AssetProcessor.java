@@ -203,39 +203,42 @@ public class AssetProcessor {
 
     while (i < glob.length()) {
       char c = glob.charAt(i);
-
-      if (c == '*') {
-        // Check for **
-        if (i + 1 < glob.length() && glob.charAt(i + 1) == '*') {
-          // ** matches zero or more path segments
-          regex.append(".*");
-          i += 2;
-
-          // Skip trailing slash after **
-          if (i < glob.length() && glob.charAt(i) == '/') {
-            i++;
-          }
-        } else {
-          // * matches zero or more characters except /
-          regex.append("[^/]*");
-          i++;
-        }
-      } else if (c == '?') {
-        // ? matches exactly one character except /
-        regex.append("[^/]");
-        i++;
-      } else if ("\\[]{}()+|^$.".indexOf(c) >= 0) {
-        // Escape regex special characters
-        regex.append('\\').append(c);
-        i++;
-      } else {
-        // Regular character
-        regex.append(c);
-        i++;
-      }
+      i += processGlobCharacter(c, glob, i, regex);
     }
 
     return regex.toString();
+  }
+
+  private int processGlobCharacter(char c, String glob, int index, StringBuilder regex) {
+    if (c == '*') {
+      return handleAsterisk(glob, index, regex);
+    }
+    if (c == '?') {
+      regex.append("[^/]");
+      return 1;
+    }
+    if ("\\[]{}()+|^$.".indexOf(c) >= 0) {
+      regex.append('\\').append(c);
+      return 1;
+    }
+    regex.append(c);
+    return 1;
+  }
+
+  private int handleAsterisk(String glob, int index, StringBuilder regex) {
+    // Check for **
+    if (index + 1 < glob.length() && glob.charAt(index + 1) == '*') {
+      regex.append(".*");
+      int newIndex = index + 2;
+      // Skip trailing slash after **
+      if (newIndex < glob.length() && glob.charAt(newIndex) == '/') {
+        return 3;
+      }
+      return 2;
+    }
+    // Single * matches zero or more characters except /
+    regex.append("[^/]*");
+    return 1;
   }
 
   private synchronized void processFile(Path filePath) {

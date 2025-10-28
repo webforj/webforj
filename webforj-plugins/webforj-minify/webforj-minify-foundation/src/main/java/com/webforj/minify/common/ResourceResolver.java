@@ -1,7 +1,6 @@
 package com.webforj.minify.common;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

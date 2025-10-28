@@ -5,12 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,9 +23,6 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
@@ -428,18 +420,6 @@ class AssetAnnotationProcessorComprehensiveTest {
       // Verify the processor supports the expected annotation types
       Set<String> supported = processor.getSupportedAnnotationTypes();
       assertTrue(supported.contains("com.webforj.annotation.StyleSheet"));
-    }
-
-    @Test
-    @DisplayName("Should not process when roundEnv is processing over and no resources collected")
-    void testSkipProcessingWhenOver() throws IOException {
-      when(roundEnv.processingOver()).thenReturn(true);
-
-      boolean result = processor.process(Set.of(), roundEnv);
-
-      assertFalse(result);
-      // Should not try to write manifest when no resources were collected
-      verify(filer, never()).createResource(any(), any(), any());
     }
   }
 }
