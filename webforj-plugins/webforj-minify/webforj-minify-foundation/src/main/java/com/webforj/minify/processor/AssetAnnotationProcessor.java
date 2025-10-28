@@ -172,17 +172,17 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
   }
 
   private void addResourceIfNotEmpty(String url, String type, String sourceClass) {
-    if (!url.isEmpty() && isLocalResource(url)) {
+    if (!url.isEmpty() && isLocalResource(url, sourceClass)) {
       resources.add(new ResourceEntry(url, type, sourceClass));
       processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
           "Discovered " + type + " asset: " + url + " in " + sourceClass);
-    } else if (!url.isEmpty() && !isLocalResource(url)) {
+    } else if (!url.isEmpty() && !isLocalResource(url, sourceClass)) {
       processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
           "Skipping external resource (cannot be minified): " + url);
     }
   }
 
-  private boolean isLocalResource(String url) {
+  private boolean isLocalResource(String url, String sourceClass) {
     // Only process local resources that can be minified
     // External URLs (http://, https://) cannot be minified - they're hosted on CDNs
     // Icons (icons://) are images, not CSS/JS files
@@ -198,7 +198,7 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
       // Has a protocol - must be ws:// or context://
       if (!url.startsWith("ws://") && !url.startsWith("context://")) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-            "Unknown protocol in asset URL: " + url
+            "Unknown protocol in asset URL: " + url + " in " + sourceClass
                 + " (only ws://, context:// are supported for minification)");
         return false;
       }
@@ -206,7 +206,7 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
       // No protocol - webforJ passes these through unchanged to the browser
       // They cannot be reliably mapped to filesystem paths for minification
       processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-          "Skipping URL without protocol: " + url
+          "Skipping URL without protocol: " + url + " in " + sourceClass
               + " (use ws:// or context:// for minifiable resources)");
       return false;
     }
