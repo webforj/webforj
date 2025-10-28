@@ -170,13 +170,14 @@ class AssetAnnotationProcessorComprehensiveTest {
     }
 
     @Test
-    @DisplayName("Should skip @InlineStyleSheet annotations")
-    void testInlineStyleSheetIsSkipped() {
+    @DisplayName("Should skip @InlineStyleSheet with inline content but process context:// URLs")
+    void testInlineStyleSheetWithContextProtocol() {
       JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
           + "package test;\n"
           + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".InlineStyleSheet;\n"
           + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
           + "@InlineStyleSheet(\"body { color: red; }\")\n"
+          + "@InlineStyleSheet(\"context://css/inline.css\")\n"
           + "@StyleSheet(\"ws://app.css\")\n"
           + "public class TestApp {}\n");
 
@@ -194,10 +195,57 @@ class AssetAnnotationProcessorComprehensiveTest {
         JsonObject manifest = new Gson().fromJson(content, JsonObject.class);
 
         JsonArray assets = manifest.getAsJsonArray("assets");
-        // Only @StyleSheet should be in manifest, @InlineStyleSheet should be skipped
-        assertEquals(1, assets.size());
-        assertEquals("ws://app.css", assets.get(0).getAsJsonObject().get("url").getAsString());
-        assertEquals("StyleSheet", assets.get(0).getAsJsonObject().get("type").getAsString());
+        // Should include @StyleSheet and @InlineStyleSheet with context:// URL
+        // Should skip inline content
+        assertEquals(2, assets.size());
+
+        Set<String> urls = Set.of(
+            assets.get(0).getAsJsonObject().get("url").getAsString(),
+            assets.get(1).getAsJsonObject().get("url").getAsString());
+
+        assertTrue(urls.contains("ws://app.css"));
+        assertTrue(urls.contains("context://css/inline.css"));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Test
+    @DisplayName("Should process @InlineJavaScript with context:// protocol")
+    void testInlineJavaScriptWithContextProtocol() {
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
+          + "package test;\n"
+          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".InlineJavaScript;\n"
+          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".JavaScript;\n"
+          + "@InlineJavaScript(\"console.log('hello');\")\n"
+          + "@InlineJavaScript(\"context://js/init.js\")\n"
+          + "@JavaScript(\"ws://app.js\")\n"
+          + "public class TestApp {}\n");
+
+      Compilation compilation = Compiler.javac()
+          .withProcessors(new AssetAnnotationProcessor())
+          .compile(source);
+
+      assertThat(compilation).succeeded();
+
+      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
+          "META-INF/webforj-resources.json").get();
+
+      try {
+        String content = manifestFile.getCharContent(false).toString();
+        JsonObject manifest = new Gson().fromJson(content, JsonObject.class);
+
+        JsonArray assets = manifest.getAsJsonArray("assets");
+        // Should include @JavaScript and @InlineJavaScript with context:// URL
+        // Should skip inline code
+        assertEquals(2, assets.size());
+
+        Set<String> urls = Set.of(
+            assets.get(0).getAsJsonObject().get("url").getAsString(),
+            assets.get(1).getAsJsonObject().get("url").getAsString());
+
+        assertTrue(urls.contains("ws://app.js"));
+        assertTrue(urls.contains("context://js/init.js"));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -270,6 +318,41 @@ class AssetAnnotationProcessorComprehensiveTest {
     }
 
     @Test
+    @DisplayName("Should only process value parameter, ignore other parameters")
+    void testOnlyValueParameterIsProcessed() {
+      // This test documents that only the 'value' parameter is processed
+      // If annotations had other parameters like 'url', 'path', etc., they would be ignored
+      // All webforJ annotations use only 'value' parameter
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
+          + "package test;\n"
+          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+          + "@StyleSheet(\"ws://app.css\")\n"
+          + "public class TestApp {}\n");
+
+      Compilation compilation = Compiler.javac()
+          .withProcessors(new AssetAnnotationProcessor())
+          .compile(source);
+
+      assertThat(compilation).succeeded();
+
+      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
+          "META-INF/webforj-resources.json").get();
+
+      try {
+        String content = manifestFile.getCharContent(false).toString();
+        JsonObject manifest = new Gson().fromJson(content, JsonObject.class);
+
+        JsonArray assets = manifest.getAsJsonArray("assets");
+        assertEquals(1, assets.size());
+
+        // The manifest JSON has 'url' field (output), but annotation has 'value' param (input)
+        assertEquals("ws://app.css", assets.get(0).getAsJsonObject().get("url").getAsString());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Test
     @DisplayName("Should handle mixed annotations correctly")
     void testMixedAnnotations() {
       JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
@@ -278,7 +361,9 @@ class AssetAnnotationProcessorComprehensiveTest {
           + "@StyleSheet(\"ws://app.css\")\n"
           + "@JavaScript(\"ws://app.js\")\n"
           + "@InlineStyleSheet(\"body { color: blue; }\")\n"
+          + "@InlineStyleSheet(\"context://css/inline.css\")\n"
           + "@InlineJavaScript(\"console.log('test');\")\n"
+          + "@InlineJavaScript(\"context://js/inline.js\")\n"
           + "@StyleSheet(\"https://cdn.example.com/lib.css\")\n"
           + "@StyleSheet(\"relative.css\")\n"
           + "@StyleSheet(\"context://static/theme.css\")\n"
@@ -298,18 +383,23 @@ class AssetAnnotationProcessorComprehensiveTest {
         JsonObject manifest = new Gson().fromJson(content, JsonObject.class);
 
         JsonArray assets = manifest.getAsJsonArray("assets");
-        // Should only include: ws://app.css, ws://app.js, context://static/theme.css
-        // Should exclude: inline annotations, https://, relative.css
-        assertEquals(3, assets.size());
+        // Should include: ws://app.css, ws://app.js, context://static/theme.css,
+        // context://css/inline.css, context://js/inline.js
+        // Should exclude: inline content, https://, relative.css
+        assertEquals(5, assets.size());
 
         Set<String> urls = Set.of(
             assets.get(0).getAsJsonObject().get("url").getAsString(),
             assets.get(1).getAsJsonObject().get("url").getAsString(),
-            assets.get(2).getAsJsonObject().get("url").getAsString());
+            assets.get(2).getAsJsonObject().get("url").getAsString(),
+            assets.get(3).getAsJsonObject().get("url").getAsString(),
+            assets.get(4).getAsJsonObject().get("url").getAsString());
 
         assertTrue(urls.contains("ws://app.css"));
         assertTrue(urls.contains("ws://app.js"));
         assertTrue(urls.contains("context://static/theme.css"));
+        assertTrue(urls.contains("context://css/inline.css"));
+        assertTrue(urls.contains("context://js/inline.js"));
         assertFalse(urls.contains("https://cdn.example.com/lib.css"));
         assertFalse(urls.contains("relative.css"));
       } catch (IOException e) {
@@ -368,9 +458,11 @@ class AssetAnnotationProcessorComprehensiveTest {
       assertTrue(supported.contains("com.webforj.annotation.StyleSheet.Container"));
       assertTrue(supported.contains("com.webforj.annotation.JavaScript.Container"));
 
-      // Should NOT support inline annotations
-      assertFalse(supported.contains("com.webforj.annotation.InlineStyleSheet"));
-      assertFalse(supported.contains("com.webforj.annotation.InlineJavaScript"));
+      // Should support inline annotations (they can use context:// protocol)
+      assertTrue(supported.contains("com.webforj.annotation.InlineStyleSheet"));
+      assertTrue(supported.contains("com.webforj.annotation.InlineJavaScript"));
+      assertTrue(supported.contains("com.webforj.annotation.InlineStyleSheet.Container"));
+      assertTrue(supported.contains("com.webforj.annotation.InlineJavaScript.Container"));
     }
 
     @Test

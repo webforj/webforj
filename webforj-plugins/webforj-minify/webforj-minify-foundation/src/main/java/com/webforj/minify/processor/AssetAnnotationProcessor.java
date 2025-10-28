@@ -28,11 +28,13 @@ import javax.tools.StandardLocation;
  * Annotation processor that discovers webforJ asset annotations and generates a manifest file
  * (META-INF/webforj-resources.json) listing all discovered assets.
  *
- * <p>Supports the following file-based annotations:
+ * <p>Supports the following annotations:
  *
  * <ul>
  * <li>@StyleSheet - references external CSS files that need minification
  * <li>@JavaScript - references external JS files that need minification
+ * <li>@InlineStyleSheet - can reference external files via context:// protocol
+ * <li>@InlineJavaScript - can reference external files via context:// protocol
  * </ul>
  *
  * <p>Supported protocols:
@@ -50,8 +52,9 @@ import javax.tools.StandardLocation;
  * <li>URLs without protocol - webforJ passes these through unchanged to the browser
  * </ul>
  *
- * <p>Note: @InlineStyleSheet and @InlineJavaScript are NOT processed because they inject code
- * directly into the DOM rather than referencing external files. There are no files to minify.
+ * <p>Note: While @InlineStyleSheet and @InlineJavaScript typically inject code directly into the
+ * DOM, they can also reference external files using the context:// protocol. When using context://,
+ * these annotations are processed for minification.
  *
  * <p>The generated manifest is used by the Maven and Gradle plugins to determine which assets need
  * minification during the build process.
@@ -59,11 +62,15 @@ import javax.tools.StandardLocation;
  * @author Kevin Hagel
  */
 @SupportedAnnotationTypes({
-    // File-based annotations only
+    // File-based annotations
     "com.webforj.annotation.StyleSheet", "com.webforj.annotation.JavaScript",
-    // Container annotations for repeatable file-based annotations
+    // Inline annotations (support context:// protocol for external files)
+    "com.webforj.annotation.InlineStyleSheet", "com.webforj.annotation.InlineJavaScript",
+    // Container annotations for repeatable annotations
     "com.webforj.annotation.StyleSheet.Container",
-    "com.webforj.annotation.JavaScript.Container"})
+    "com.webforj.annotation.JavaScript.Container",
+    "com.webforj.annotation.InlineStyleSheet.Container",
+    "com.webforj.annotation.InlineJavaScript.Container"})
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class AssetAnnotationProcessor extends AbstractProcessor {
 
@@ -140,8 +147,8 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
         .entrySet()) {
       String paramName = entry.getKey().getSimpleName().toString();
 
-      // Look for 'value' or 'url' parameter
-      if ("value".equals(paramName) || "url".equals(paramName)) {
+      // All webforJ annotations use 'value' parameter only
+      if ("value".equals(paramName)) {
         processAnnotationValue(entry.getValue().getValue(), type, sourceClass);
       }
     }
@@ -270,6 +277,10 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
         return "StyleSheet";
       case "JavaScript":
         return "JavaScript";
+      case "InlineStyleSheet":
+        return "InlineStyleSheet";
+      case "InlineJavaScript":
+        return "InlineJavaScript";
       default:
         return "Unknown";
     }
