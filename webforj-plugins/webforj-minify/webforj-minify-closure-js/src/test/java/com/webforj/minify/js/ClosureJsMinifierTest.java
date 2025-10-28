@@ -42,10 +42,12 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(js, testPath);
 
     // Should be shorter
-    assertTrue(minified.length() < js.length(), "Minified JS should be shorter than original");
+    assertTrue(minified.length() < js.length(),
+        "Minified JS should be shorter than original");
 
     // Should not contain comments
-    assertTrue(!minified.contains("//"), "Minified JS should not contain line comments");
+    assertTrue(!minified.contains("//"),
+        "Minified JS should not contain line comments");
   }
 
   @Test
@@ -73,7 +75,8 @@ class ClosureJsMinifierTest {
     // Should return original content on compilation failure
     String result = minifier.minify(malformed, testPath);
 
-    assertEquals(malformed, result, "Should return original content for malformed JS");
+    assertEquals(malformed, result,
+        "Should return original content for malformed JS");
   }
 
   @Test
@@ -123,7 +126,8 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(js, testPath);
 
     assertTrue(minified.length() < js.length());
-    assertTrue(!minified.contains("/*"), "Should not contain multiline comments");
+    assertTrue(!minified.contains("/*"),
+        "Should not contain multiline comments");
   }
 
   @Test
@@ -151,25 +155,29 @@ class ClosureJsMinifierTest {
   @Test
   void testShouldMinifyRegularJsFile() {
     Path jsFile = Paths.get("scripts/app.js");
-    assertTrue(minifier.shouldMinify(jsFile), "Should minify regular .js files");
+    assertTrue(minifier.shouldMinify(jsFile),
+        "Should minify regular .js files");
   }
 
   @Test
   void testShouldNotMinifyMinifiedJsFile() {
     Path minifiedFile = Paths.get("scripts/app.min.js");
-    assertTrue(!minifier.shouldMinify(minifiedFile), "Should not minify .min.js files");
+    assertTrue(!minifier.shouldMinify(minifiedFile),
+        "Should not minify .min.js files");
   }
 
   @Test
   void testShouldMinifyRegularMjsFile() {
     Path mjsFile = Paths.get("modules/app.mjs");
-    assertTrue(minifier.shouldMinify(mjsFile), "Should minify regular .mjs files");
+    assertTrue(minifier.shouldMinify(mjsFile),
+        "Should minify regular .mjs files");
   }
 
   @Test
   void testShouldNotMinifyMinifiedMjsFile() {
     Path minifiedMjsFile = Paths.get("modules/app.min.mjs");
-    assertTrue(!minifier.shouldMinify(minifiedMjsFile), "Should not minify .min.mjs files");
+    assertTrue(!minifier.shouldMinify(minifiedMjsFile),
+        "Should not minify .min.mjs files");
   }
 
   @Test
@@ -208,8 +216,10 @@ class ClosureJsMinifierTest {
 
     // Read the file content
     String originalContent = Files.readString(mjsFile);
-    assertTrue(originalContent.contains("export"), "Original file should contain export statements");
-    assertTrue(originalContent.contains("class Square"), "Original file should contain Square class");
+    assertTrue(originalContent.contains("export"),
+        "Original file should contain export statements");
+    assertTrue(originalContent.contains("class Square"),
+        "Original file should contain Square class");
 
     // Minify the content
     String minified = minifier.minify(originalContent, mjsFile);
@@ -219,7 +229,8 @@ class ClosureJsMinifierTest {
     assertTrue(!minified.trim().isEmpty(), "Minified .mjs should have content");
 
     // Verify the file should be minified (not skipped)
-    assertTrue(minifier.shouldMinify(mjsFile), "Regular .mjs files should be minified");
+    assertTrue(minifier.shouldMinify(mjsFile),
+        "Regular .mjs files should be minified");
 
     // Verify .min.mjs would be skipped
     Path minMjsFile = Paths.get("src/test/resources/test-module.min.mjs");
