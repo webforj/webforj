@@ -34,5 +34,8 @@ CLAUDE.md
 # SonarQube
 sonar-project.properties
 
+# Worktrees
+.worktrees/
+
 # OS
 .DS_Store
