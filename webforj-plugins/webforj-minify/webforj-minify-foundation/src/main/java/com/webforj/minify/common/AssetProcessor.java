@@ -59,9 +59,11 @@ public class AssetProcessor {
    *
    * @param manifestPath path to the manifest file
    * @param resolver resource resolver for converting URLs to file paths
+   * @return set of files to process (does not process them yet)
    * @throws JsonSyntaxException if the manifest is malformed
    */
-  public void processManifest(Path manifestPath, ResourceResolver resolver) {
+  public Set<Path> collectManifestFiles(Path manifestPath, ResourceResolver resolver) {
+    Set<Path> filesToProcess = new HashSet<>();
     try {
       String content = Files.readString(manifestPath, StandardCharsets.UTF_8);
       JsonObject manifest = gson.fromJson(content, JsonObject.class);
@@ -76,22 +78,11 @@ public class AssetProcessor {
 
       if (assets == null || assets.size() == 0) {
         logger.warn("Manifest file contains no assets");
-        return;
+        return filesToProcess;
       }
 
       logger.info("Found " + assets.size() + " asset(s) in manifest");
-
-      // Collect all file paths first
-      Set<Path> filesToProcess = new HashSet<>();
       collectFilesToProcess(assets, resolver, filesToProcess);
-
-      // Process files (use parallel streams for >10 files)
-      if (filesToProcess.size() > 10) {
-        logger.info("Using parallel processing for " + filesToProcess.size() + " files");
-        filesToProcess.parallelStream().forEach(this::processFile);
-      } else {
-        filesToProcess.forEach(this::processFile);
-      }
 
     } catch (IOException e) {
       logger.error("Failed to read manifest file: " + e.getMessage(), e);
@@ -99,6 +90,7 @@ public class AssetProcessor {
       logger.error("Malformed manifest file: " + e.getMessage(), e);
       throw e;
     }
+    return filesToProcess;
   }
 
   private void collectFilesToProcess(JsonArray assets, ResourceResolver resolver,
@@ -125,12 +117,14 @@ public class AssetProcessor {
   }
 
   /**
-   * Processes a configuration file containing glob patterns for additional assets.
+   * Collects files from a configuration file containing glob patterns.
    *
    * @param configPath path to the configuration file
    * @param resourcesRoot root directory for resolving relative paths
+   * @return set of files to process (does not process them yet)
    */
-  public void processConfigFile(Path configPath, Path resourcesRoot) {
+  public Set<Path> collectConfigFiles(Path configPath, Path resourcesRoot) {
+    Set<Path> filesToProcess = new HashSet<>();
     try {
       // Parse patterns into inclusion and exclusion lists
       Set<String> inclusionPatterns = new HashSet<>();
@@ -150,7 +144,6 @@ public class AssetProcessor {
           });
 
       // Collect all files matching inclusion patterns
-      Set<Path> filesToProcess = new HashSet<>();
       for (String pattern : inclusionPatterns) {
         collectFilesMatchingPattern(resourcesRoot, pattern, filesToProcess);
       }
@@ -161,11 +154,53 @@ public class AssetProcessor {
             .anyMatch(pattern -> matchesGlob(resourcesRoot, file, pattern)));
       }
 
-      // Process remaining files
-      filesToProcess.forEach(this::processFile);
-
     } catch (IOException e) {
       logger.warn("Failed to read config file: " + e.getMessage());
+    }
+    return filesToProcess;
+  }
+
+  /**
+   * Applies exclusion patterns from config file to a set of files.
+   *
+   * @param configPath path to the configuration file
+   * @param resourcesRoot root directory for resolving relative paths
+   * @param files set of files to filter
+   */
+  public void applyConfigExclusions(Path configPath, Path resourcesRoot, Set<Path> files) {
+    try {
+      Set<String> exclusionPatterns = new HashSet<>();
+
+      Files.lines(configPath, StandardCharsets.UTF_8).map(String::trim)
+          .filter(line -> !line.isEmpty() && !line.startsWith("#"))
+          .filter(pattern -> pattern.startsWith("!"))
+          .forEach(pattern -> exclusionPatterns.add(pattern.substring(1)));
+
+      if (!exclusionPatterns.isEmpty()) {
+        files.removeIf(file -> exclusionPatterns.stream()
+            .anyMatch(pattern -> matchesGlob(resourcesRoot, file, pattern)));
+      }
+    } catch (IOException e) {
+      logger.warn("Failed to read config file for exclusions: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Processes a set of files.
+   *
+   * @param files set of files to process
+   */
+  public void processFiles(Set<Path> files) {
+    if (files.isEmpty()) {
+      return;
+    }
+
+    // Use parallel streams for >10 files
+    if (files.size() > 10) {
+      logger.info("Using parallel processing for " + files.size() + " files");
+      files.parallelStream().forEach(this::processFile);
+    } else {
+      files.forEach(this::processFile);
     }
   }
 

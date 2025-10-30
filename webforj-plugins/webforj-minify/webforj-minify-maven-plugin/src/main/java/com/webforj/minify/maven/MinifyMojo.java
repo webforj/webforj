@@ -95,36 +95,45 @@ public class MinifyMojo extends AbstractMojo {
       getLog().info("Applied configuration to minifiers");
     }
 
-    // Process manifest file
+    // Collect files from both manifest and config file
+    // Config file rules ALWAYS take priority
+    Path resourcesRoot = Paths.get(outputDirectory);
+    Path configPath = Paths.get(project.getBasedir().getAbsolutePath(), "src", "main",
+        RESOURCES_DIR, "META-INF", "webforj-minify.txt");
     Path manifestPath = Paths.get(outputDirectory, "META-INF", "webforj-resources.json");
+
+    java.util.Set<java.nio.file.Path> allFiles = new java.util.HashSet<>();
+
+    // 1. Collect files from manifest
     if (Files.exists(manifestPath)) {
       getLog().info("Processing manifest: " + manifestPath);
-      processManifest(processor, manifestPath);
+      allFiles.addAll(collectManifestFiles(processor, manifestPath));
     } else {
       getLog().debug("No manifest file found at " + manifestPath);
     }
 
-    // Process additional configuration file
-    Path configPath = Paths.get(project.getBasedir().getAbsolutePath(), "src", "main",
-        RESOURCES_DIR, "META-INF", "webforj-minify.txt");
+    // 2. Collect files from config file and apply its exclusions to ALL files
     if (Files.exists(configPath)) {
       getLog().info("Processing configuration file: " + configPath);
-      // Use outputDirectory (target/classes) to process compiled resources, not source files
-      Path resourcesRoot = Paths.get(outputDirectory);
-      processor.processConfigFile(configPath, resourcesRoot);
+      allFiles.addAll(processor.collectConfigFiles(configPath, resourcesRoot));
+      // Apply config file exclusions to manifest files too (config takes priority)
+      processor.applyConfigExclusions(configPath, resourcesRoot, allFiles);
     }
+
+    // 3. Process all collected files
+    processor.processFiles(allFiles);
 
     long duration = System.currentTimeMillis() - startTime;
     getLog().info("Minification complete. Processed " + processor.getProcessedFileCount()
         + " file(s) in " + duration + " ms");
   }
 
-  private void processManifest(AssetProcessor processor, Path manifestPath)
-      throws MojoExecutionException {
+  private java.util.Set<java.nio.file.Path> collectManifestFiles(AssetProcessor processor,
+      Path manifestPath) throws MojoExecutionException {
     try {
       // Use outputDirectory (target/classes) to process compiled resources, not source files
       ResourceResolver resolver = new ResourceResolver(Paths.get(outputDirectory));
-      processor.processManifest(manifestPath, resolver);
+      return processor.collectManifestFiles(manifestPath, resolver);
     } catch (JsonSyntaxException e) {
       throw new MojoExecutionException(
           "Malformed manifest file - check META-INF/webforj-resources.json", e);
