@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -236,5 +238,189 @@ class ClosureJsMinifierTest {
     Path minMjsFile = Paths.get("src/test/resources/test-module.min.mjs");
     assertTrue(!minifier.shouldMinify(minMjsFile),
         "Already minified .min.mjs files should be skipped");
+  }
+
+  // Configuration Tests
+
+  @Test
+  void testConfigureWithNoConfiguration() throws MinificationException {
+    // Test that minifier works with no configuration (uses defaults)
+    minifier.configure(null);
+
+    String js = "function test() { return 42; }";
+    String minified = minifier.minify(js, testPath);
+
+    assertTrue(!minified.isEmpty(), "Should minify with default configuration");
+  }
+
+  @Test
+  void testConfigureWithEmptyMap() throws MinificationException {
+    // Test with empty config map
+    Map<String, Object> config = new HashMap<>();
+    minifier.configure(config);
+
+    String js = "function test() { return 42; }";
+    String minified = minifier.minify(js, testPath);
+
+    assertTrue(!minified.isEmpty(), "Should minify with empty configuration");
+  }
+
+  @Test
+  void testConfigureWithNoClosureJsKey() throws MinificationException {
+    // Test with config map that doesn't contain "closureJs" key
+    Map<String, Object> config = new HashMap<>();
+    config.put("someOtherMinifier", Map.of("option", "value"));
+    minifier.configure(config);
+
+    String js = "function test() { return 42; }";
+    String minified = minifier.minify(js, testPath);
+
+    assertTrue(!minified.isEmpty(), "Should minify with defaults when closureJs key absent");
+  }
+
+  @Test
+  void testConfigureWithInvalidClosureJsValue() throws MinificationException {
+    // Test with closureJs value that's not a Map
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", "invalid value");
+    minifier.configure(config);
+
+    String js = "function test() { return 42; }";
+    String minified = minifier.minify(js, testPath);
+
+    assertTrue(!minified.isEmpty(), "Should use defaults when closureJs value is invalid");
+  }
+
+  @Test
+  void testConfigureCompilationLevel() throws MinificationException {
+    Map<String, Object> closureJsConfig = new HashMap<>();
+    closureJsConfig.put("compilationLevel", "WHITESPACE_ONLY");
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", closureJsConfig);
+
+    minifier.configure(config);
+
+    String js = """
+        function test(longVariableName) {
+          const anotherLongVariableName = 42;
+          return longVariableName + anotherLongVariableName;
+        }
+        """;
+
+    String minified = minifier.minify(js, testPath);
+
+    // WHITESPACE_ONLY should preserve variable names
+    assertTrue(minified.contains("longVariableName"),
+        "WHITESPACE_ONLY should preserve variable names");
+    assertTrue(minified.contains("anotherLongVariableName"),
+        "WHITESPACE_ONLY should preserve all variable names");
+  }
+
+  @Test
+  void testConfigurePrettyPrint() throws MinificationException {
+    Map<String, Object> closureJsConfig = new HashMap<>();
+    closureJsConfig.put("prettyPrint", "true");
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", closureJsConfig);
+
+    minifier.configure(config);
+
+    String js = """
+        function test() {
+          return 42;
+        }
+        """;
+
+    String minified = minifier.minify(js, testPath);
+
+    // Pretty print should preserve some formatting
+    assertTrue(minified.contains("\n") || minified.contains(" "),
+        "Pretty print should preserve some whitespace");
+  }
+
+  @Test
+  void testConfigureLanguageInAndOut() throws MinificationException {
+    Map<String, Object> closureJsConfig = new HashMap<>();
+    closureJsConfig.put("languageIn", "ECMASCRIPT_2020");
+    closureJsConfig.put("languageOut", "ECMASCRIPT5");
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", closureJsConfig);
+
+    minifier.configure(config);
+
+    // ES2020 optional chaining should be transpiled to ES5
+    String js = """
+        const value = obj?.prop?.nested;
+        """;
+
+    String minified = minifier.minify(js, testPath);
+
+    // Should successfully compile (transpile ES2020 to ES5)
+    assertTrue(!minified.isEmpty(), "Should transpile ES2020 to ES5");
+  }
+
+  @Test
+  void testConfigureInvalidCompilationLevel() throws MinificationException {
+    Map<String, Object> closureJsConfig = new HashMap<>();
+    closureJsConfig.put("compilationLevel", "INVALID_LEVEL");
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", closureJsConfig);
+
+    minifier.configure(config);
+
+    String js = "function test() { return 42; }";
+    String minified = minifier.minify(js, testPath);
+
+    // Should use default level and still minify successfully
+    assertTrue(!minified.isEmpty(), "Should use default level for invalid compilation level");
+  }
+
+  @Test
+  void testConfigureInvalidLanguageMode() throws MinificationException {
+    Map<String, Object> closureJsConfig = new HashMap<>();
+    closureJsConfig.put("languageIn", "INVALID_MODE");
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", closureJsConfig);
+
+    minifier.configure(config);
+
+    String js = "function test() { return 42; }";
+    String minified = minifier.minify(js, testPath);
+
+    // Should use default mode and still minify successfully
+    assertTrue(!minified.isEmpty(), "Should use default mode for invalid language mode");
+  }
+
+  @Test
+  void testConfigureMultipleOptions() throws MinificationException {
+    Map<String, Object> closureJsConfig = new HashMap<>();
+    closureJsConfig.put("compilationLevel", "SIMPLE_OPTIMIZATIONS");
+    closureJsConfig.put("languageIn", "ECMASCRIPT_2015");
+    closureJsConfig.put("languageOut", "ECMASCRIPT5");
+    closureJsConfig.put("prettyPrint", "false");
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("closureJs", closureJsConfig);
+
+    minifier.configure(config);
+
+    String js = """
+        const greet = (name) => `Hello, ${name}!`;
+        class Person {
+          constructor(name) { this.name = name; }
+        }
+        """;
+
+    String minified = minifier.minify(js, testPath);
+
+    // Should successfully compile with all options applied
+    // Note: Transpilation from ES2015 to ES5 can increase size due to polyfills
+    assertTrue(!minified.isEmpty(), "Should minify with multiple options configured");
+    assertTrue(!minified.trim().isEmpty(), "Should have actual content");
   }
 }

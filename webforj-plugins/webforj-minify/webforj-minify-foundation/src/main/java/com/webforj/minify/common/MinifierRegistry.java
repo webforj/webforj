@@ -19,6 +19,16 @@ public class MinifierRegistry {
   private static final System.Logger LOGGER = System.getLogger(MinifierRegistry.class.getName());
 
   private final Map<String, AssetMinifier> minifiers = new ConcurrentHashMap<>();
+  private BuildLogger buildLogger;
+
+  /**
+   * Sets the build logger for configuration logging.
+   *
+   * @param logger the build logger to use
+   */
+  public void setBuildLogger(BuildLogger logger) {
+    this.buildLogger = logger;
+  }
 
   /**
    * Registers a minifier for its supported file extensions.
@@ -103,5 +113,41 @@ public class MinifierRegistry {
    */
   public int getMinifierCount() {
     return minifiers.size();
+  }
+
+  /**
+   * Configures all registered minifiers with the provided configuration map.
+   *
+   * <p>Each minifier can extract its specific configuration from the map using a well-known key.
+   * For example, the Closure JS minifier looks for the "closureJs" key.
+   *
+   * @param config configuration map containing minifier-specific options
+   */
+  public void configureMinifiers(Map<String, Object> config) {
+    if (config == null || config.isEmpty()) {
+      if (buildLogger != null) {
+        buildLogger.debug("No configuration provided to registry");
+      }
+      return;
+    }
+
+    if (buildLogger != null) {
+      buildLogger.debug("Configuring " + minifiers.size() + " minifier(s) with keys: "
+          + config.keySet());
+    }
+
+    for (AssetMinifier minifier : minifiers.values()) {
+      try {
+        minifier.configure(config);
+        if (buildLogger != null) {
+          buildLogger.debug("Configured: " + minifier.getClass().getSimpleName());
+        }
+      } catch (Exception e) {
+        if (buildLogger != null) {
+          buildLogger.warn(String.format("Failed to configure minifier %s: %s",
+              minifier.getClass().getSimpleName(), e.getMessage()));
+        }
+      }
+    }
   }
 }

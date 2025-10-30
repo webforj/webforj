@@ -1,6 +1,7 @@
 package com.webforj.minify.common;
 
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -70,5 +71,20 @@ public interface AssetMinifier {
    */
   default boolean shouldMinify(Path filePath) {
     return true;
+  }
+
+  /**
+   * Configures this minifier with custom options.
+   *
+   * <p>This method is called by the build plugin to pass configuration options to the minifier.
+   * Implementations can extract their specific configuration from the map using a well-known key.
+   *
+   * <p>The default implementation does nothing, maintaining backward compatibility with existing
+   * minifiers that don't support configuration.
+   *
+   * @param config configuration map containing minifier-specific options
+   */
+  default void configure(Map<String, Object> config) {
+    // Default: no-op for backward compatibility
   }
 }

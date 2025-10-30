@@ -7,6 +7,7 @@ import com.webforj.minify.common.ResourceResolver;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -36,6 +37,9 @@ public class MinifyMojo extends AbstractMojo {
   @Parameter(property = "webforj.minify.skip", defaultValue = "false")
   private boolean skip;
 
+  @Parameter
+  private java.util.Map<String, java.util.Map<String, String>> minifierConfigurations;
+
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     if (skip) {
@@ -46,6 +50,17 @@ public class MinifyMojo extends AbstractMojo {
     final long startTime = System.currentTimeMillis();
     getLog().info("Starting webforJ asset minification...");
 
+    // Log configuration if present
+    if (minifierConfigurations != null && !minifierConfigurations.isEmpty()) {
+      getLog().debug("Minifier configurations provided: " + minifierConfigurations.keySet());
+      for (Map.Entry<String, java.util.Map<String, String>> entry
+          : minifierConfigurations.entrySet()) {
+        getLog().debug("Configuration [" + entry.getKey() + "]: " + entry.getValue());
+      }
+    } else {
+      getLog().debug("No minifier configurations provided");
+    }
+
     // Create logger adapter
     BuildLogger logger = new MavenBuildLogger(getLog());
 
@@ -55,6 +70,9 @@ public class MinifyMojo extends AbstractMojo {
     // Load minifiers via SPI
     processor.getRegistry().loadMinifiers(getClass().getClassLoader());
 
+    // Set build logger on registry for configuration logging
+    processor.getRegistry().setBuildLogger(logger);
+
     if (processor.getRegistry().getMinifierCount() == 0) {
       getLog().warn("No minifiers registered via SPI. Skipping minification.");
       getLog().warn("Ensure ph-css and/or closure-compiler are on the classpath.");
@@ -63,6 +81,19 @@ public class MinifyMojo extends AbstractMojo {
 
     getLog().info("Discovered " + processor.getRegistry().getMinifierCount()
         + " minifier implementation(s) via SPI");
+
+    // Configure minifiers with provided configuration
+    if (minifierConfigurations != null && !minifierConfigurations.isEmpty()) {
+      // Convert Map<String, Map<String, String>> to Map<String, Object>
+      Map<String, Object> config = new java.util.HashMap<>();
+      for (Map.Entry<String, java.util.Map<String, String>> entry
+          : minifierConfigurations.entrySet()) {
+        config.put(entry.getKey(), entry.getValue());
+      }
+      getLog().debug("Applying configuration to minifiers: " + config.keySet());
+      processor.getRegistry().configureMinifiers(config);
+      getLog().info("Applied configuration to minifiers");
+    }
 
     // Process manifest file
     Path manifestPath = Paths.get(outputDirectory, "META-INF", "webforj-resources.json");
