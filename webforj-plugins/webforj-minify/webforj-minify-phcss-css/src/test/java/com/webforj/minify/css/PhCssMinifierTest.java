@@ -1,6 +1,7 @@
 package com.webforj.minify.css;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,7 +47,7 @@ class PhCssMinifierTest {
     assertTrue(minified.length() < css.length(), "Minified CSS should be shorter than original");
 
     // Should not contain comments
-    assertTrue(!minified.contains("/*"), "Minified CSS should not contain comments");
+    assertFalse(minified.contains("/*"), "Minified CSS should not contain comments");
 
     // Should still contain the actual rules
     assertTrue(minified.contains("body"), "Should contain body selector");
@@ -125,6 +126,6 @@ class PhCssMinifierTest {
   @Test
   void testShouldNotMinifyMinifiedCssFile() {
     Path minifiedFile = Paths.get("styles/app.min.css");
-    assertTrue(!minifier.shouldMinify(minifiedFile), "Should not minify .min.css files");
+    assertFalse(minifier.shouldMinify(minifiedFile), "Should not minify .min.css files");
   }
 }

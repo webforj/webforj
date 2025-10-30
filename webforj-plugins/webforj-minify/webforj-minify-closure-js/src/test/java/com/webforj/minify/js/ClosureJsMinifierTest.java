@@ -1,6 +1,7 @@
 package com.webforj.minify.js;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.webforj.minify.common.MinificationException;
@@ -48,7 +49,7 @@ class ClosureJsMinifierTest {
         "Minified JS should be shorter than original");
 
     // Should not contain comments
-    assertTrue(!minified.contains("//"),
+    assertFalse(minified.contains("//"),
         "Minified JS should not contain line comments");
   }
 
@@ -109,8 +110,8 @@ class ClosureJsMinifierTest {
 
     // ES6 code might be transpiled which can increase size in some cases
     // Just verify it compiles successfully
-    assertTrue(!minified.isEmpty(), "Minified code should not be empty");
-    assertTrue(!minified.trim().isEmpty(), "Minified code should have content");
+    assertFalse(minified.isEmpty(), "Minified code should not be empty");
+    assertFalse(minified.trim().isEmpty(), "Minified code should have content");
   }
 
   @Test
@@ -128,7 +129,7 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(js, testPath);
 
     assertTrue(minified.length() < js.length());
-    assertTrue(!minified.contains("/*"),
+    assertFalse(minified.contains("/*"),
         "Should not contain multiline comments");
   }
 
@@ -151,7 +152,7 @@ class ClosureJsMinifierTest {
 
     assertTrue(minified.length() < js.length());
     // Should have minimal whitespace
-    assertTrue(!minified.contains("    "));
+    assertFalse(minified.contains("    "));
   }
 
   @Test
@@ -204,8 +205,8 @@ class ClosureJsMinifierTest {
 
     // ES6 modules may be transpiled to ES5, which can increase size
     // Just verify it compiles successfully and is not empty
-    assertTrue(!minified.isEmpty(), "Minified .mjs should not be empty");
-    assertTrue(!minified.trim().isEmpty(), "Minified .mjs should have content");
+    assertFalse(minified.isEmpty(), "Minified .mjs should not be empty");
+    assertFalse(minified.trim().isEmpty(), "Minified .mjs should have content");
   }
 
   @Test
@@ -227,8 +228,8 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(originalContent, mjsFile);
 
     // Verify minification succeeded
-    assertTrue(!minified.isEmpty(), "Minified .mjs should not be empty");
-    assertTrue(!minified.trim().isEmpty(), "Minified .mjs should have content");
+    assertFalse(minified.isEmpty(), "Minified .mjs should not be empty");
+    assertFalse(minified.trim().isEmpty(), "Minified .mjs should have content");
 
     // Verify the file should be minified (not skipped)
     assertTrue(minifier.shouldMinify(mjsFile),
@@ -250,7 +251,7 @@ class ClosureJsMinifierTest {
     String js = "function test() { return 42; }";
     String minified = minifier.minify(js, testPath);
 
-    assertTrue(!minified.isEmpty(), "Should minify with default configuration");
+    assertFalse(minified.isEmpty(), "Should minify with default configuration");
   }
 
   @Test
@@ -262,7 +263,7 @@ class ClosureJsMinifierTest {
     String js = "function test() { return 42; }";
     String minified = minifier.minify(js, testPath);
 
-    assertTrue(!minified.isEmpty(), "Should minify with empty configuration");
+    assertFalse(minified.isEmpty(), "Should minify with empty configuration");
   }
 
   @Test
@@ -275,7 +276,7 @@ class ClosureJsMinifierTest {
     String js = "function test() { return 42; }";
     String minified = minifier.minify(js, testPath);
 
-    assertTrue(!minified.isEmpty(), "Should minify with defaults when closureJs key absent");
+    assertFalse(minified.isEmpty(), "Should minify with defaults when closureJs key absent");
   }
 
   @Test
@@ -288,7 +289,7 @@ class ClosureJsMinifierTest {
     String js = "function test() { return 42; }";
     String minified = minifier.minify(js, testPath);
 
-    assertTrue(!minified.isEmpty(), "Should use defaults when closureJs value is invalid");
+    assertFalse(minified.isEmpty(), "Should use defaults when closureJs value is invalid");
   }
 
   @Test
@@ -359,7 +360,7 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(js, testPath);
 
     // Should successfully compile (transpile ES2020 to ES5)
-    assertTrue(!minified.isEmpty(), "Should transpile ES2020 to ES5");
+    assertFalse(minified.isEmpty(), "Should transpile ES2020 to ES5");
   }
 
   @Test
@@ -376,7 +377,7 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(js, testPath);
 
     // Should use default level and still minify successfully
-    assertTrue(!minified.isEmpty(), "Should use default level for invalid compilation level");
+    assertFalse(minified.isEmpty(), "Should use default level for invalid compilation level");
   }
 
   @Test
@@ -393,7 +394,7 @@ class ClosureJsMinifierTest {
     String minified = minifier.minify(js, testPath);
 
     // Should use default mode and still minify successfully
-    assertTrue(!minified.isEmpty(), "Should use default mode for invalid language mode");
+    assertFalse(minified.isEmpty(), "Should use default mode for invalid language mode");
   }
 
   @Test
@@ -420,7 +421,7 @@ class ClosureJsMinifierTest {
 
     // Should successfully compile with all options applied
     // Note: Transpilation from ES2015 to ES5 can increase size due to polyfills
-    assertTrue(!minified.isEmpty(), "Should minify with multiple options configured");
-    assertTrue(!minified.trim().isEmpty(), "Should have actual content");
+    assertFalse(minified.isEmpty(), "Should minify with multiple options configured");
+    assertFalse(minified.trim().isEmpty(), "Should have actual content");
   }
 }

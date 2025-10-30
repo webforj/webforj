@@ -54,12 +54,6 @@ class MinificationExceptionTest {
     assertNull(exception.getCause());
   }
 
-  @Test
-  void testExceptionIsThrowable() {
-    MinificationException exception = new MinificationException("Test");
-    assertTrue(exception instanceof Throwable);
-    assertTrue(exception instanceof Exception);
-  }
 
   @Test
   void testStackTrace() {
