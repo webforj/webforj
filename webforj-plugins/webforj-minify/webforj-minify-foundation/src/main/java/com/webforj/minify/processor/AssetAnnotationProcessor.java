@@ -76,8 +76,6 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
 
   private static final String INLINE_STYLE_SHEET = "InlineStyleSheet";
   private static final String INLINE_JAVASCRIPT = "InlineJavaScript";
-  private static final String STYLE_SHEET = "StyleSheet";
-  private static final String JAVASCRIPT = "JavaScript";
 
   private final Set<ResourceEntry> resources = new HashSet<>();
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -126,10 +124,9 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
 
   private void processIndividualAnnotation(TypeElement annotation, String simpleName,
       RoundEnvironment roundEnv) {
-    String annotationType = getAnnotationType(simpleName);
     for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
       if (element instanceof TypeElement) {
-        extractResourceUrls(element, annotation, annotationType);
+        extractResourceUrls(element, annotation, simpleName);
       }
     }
   }
@@ -300,21 +297,6 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
       if (annotationValue.getValue() instanceof AnnotationMirror repeatedAnnotation) {
         processAnnotationMirror(repeatedAnnotation, type, sourceClass);
       }
-    }
-  }
-
-  private String getAnnotationType(String annotationName) {
-    switch (annotationName) {
-      case "StyleSheet":
-        return STYLE_SHEET;
-      case "JavaScript":
-        return JAVASCRIPT;
-      case "InlineStyleSheet":
-        return INLINE_STYLE_SHEET;
-      case "InlineJavaScript":
-        return INLINE_JAVASCRIPT;
-      default:
-        return "Unknown";
     }
   }
 

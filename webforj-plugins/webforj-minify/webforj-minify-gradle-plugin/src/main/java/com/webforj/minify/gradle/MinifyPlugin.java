@@ -31,25 +31,39 @@ public class MinifyPlugin implements Plugin<Project> {
     SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 
     // Register minify task
-    var minifyTask = project.getTasks().register("minify", MinifyTask.class, task -> {
-      // Configure task inputs
-      task.getOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
-      task.getResourcesDirectory()
-          .set(mainSourceSet.getResources().getSourceDirectories().getSingleFile());
-      task.getSkip().set(extension.getSkip());
-
-      // Run after classes task
-      task.dependsOn(project.getTasks().named("classes"));
-    });
+    var minifyTask = project.getTasks().register("minify", MinifyTask.class,
+        task -> configureMinifyTask(task, mainSourceSet, extension, project));
 
     // Make jar/war task depend on minify (must be done outside register block)
-    project.getTasks().named("jar").configure(jarTask -> jarTask.dependsOn(minifyTask));
+    configureJarTaskDependency(project, minifyTask);
 
     // Also configure war task if present
+    configureWarTaskDependency(project, minifyTask);
+
+    project.getLogger().debug("webforJ Minify Plugin applied to project: {}", project.getName());
+  }
+
+  private void configureJarTaskDependency(Project project,
+      org.gradle.api.tasks.TaskProvider<MinifyTask> minifyTask) {
+    project.getTasks().named("jar").configure(jarTask -> jarTask.dependsOn(minifyTask));
+  }
+
+  private void configureWarTaskDependency(Project project,
+      org.gradle.api.tasks.TaskProvider<MinifyTask> minifyTask) {
     project.getPlugins().withId("war", plugin -> {
       project.getTasks().named("war").configure(warTask -> warTask.dependsOn(minifyTask));
     });
+  }
 
-    project.getLogger().debug("webforJ Minify Plugin applied to project: {}", project.getName());
+  private void configureMinifyTask(MinifyTask task, SourceSet mainSourceSet,
+      MinifyExtension extension, Project project) {
+    // Configure task inputs
+    task.getOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
+    task.getResourcesDirectory()
+        .set(mainSourceSet.getResources().getSourceDirectories().getSingleFile());
+    task.getSkip().set(extension.getSkip());
+
+    // Run after classes task
+    task.dependsOn(project.getTasks().named("classes"));
   }
 }
