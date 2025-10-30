@@ -66,7 +66,7 @@ class AssetProcessorTest {
 
     // Process manifest
     ResourceResolver resolver = new ResourceResolver(tempDir);
-    java.util.Set<java.nio.file.Path> files = processor.collectManifestFiles(manifestPath, resolver);
+    Set<Path> files = processor.collectManifestFiles(manifestPath, resolver);
     processor.processFiles(files);
 
     // Verify file was processed
@@ -96,7 +96,7 @@ class AssetProcessorTest {
 
     // Process manifest
     ResourceResolver resolver = new ResourceResolver(tempDir);
-    java.util.Set<java.nio.file.Path> files = processor.collectManifestFiles(manifestPath, resolver);
+    Set<Path> files = processor.collectManifestFiles(manifestPath, resolver);
     processor.processFiles(files);
 
     // Verify file was processed
@@ -109,7 +109,7 @@ class AssetProcessorTest {
     Files.writeString(manifestPath, "{\"assets\": []}");
 
     ResourceResolver resolver = new ResourceResolver(tempDir);
-    java.util.Set<java.nio.file.Path> files = processor.collectManifestFiles(manifestPath, resolver);
+    Set<Path> files = processor.collectManifestFiles(manifestPath, resolver);
     processor.processFiles(files);
 
     assertEquals(0, processor.getProcessedFileCount());
@@ -125,7 +125,7 @@ class AssetProcessorTest {
     ResourceResolver resolver = new ResourceResolver(tempDir);
 
     assertThrows(com.google.gson.JsonSyntaxException.class, () -> {
-      java.util.Set<java.nio.file.Path> files = processor.collectManifestFiles(manifestPath, resolver);
+      Set<Path> files = processor.collectManifestFiles(manifestPath, resolver);
     processor.processFiles(files);
     });
   }
@@ -151,7 +151,7 @@ class AssetProcessorTest {
     processor.getRegistry().register(new TestCssMinifier());
 
     // Process config file
-    java.util.Set<java.nio.file.Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
+    Set<Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
     processor.processFiles(files);
 
     // Verify files were processed
@@ -179,7 +179,7 @@ class AssetProcessorTest {
     processor.getRegistry().register(new TestCssMinifier());
 
     // Process config file
-    java.util.Set<java.nio.file.Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
+    Set<Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
     processor.processFiles(files);
 
     // Verify only one file was processed (vendor.css excluded)
@@ -211,7 +211,7 @@ class AssetProcessorTest {
     processor.getRegistry().register(new TestJsMinifier());
 
     // Process config file
-    java.util.Set<java.nio.file.Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
+    Set<Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
     processor.processFiles(files);
 
     // Verify NO files were processed (all excluded by !**/*.js)
@@ -235,7 +235,7 @@ class AssetProcessorTest {
     processor.getRegistry().register(new TestCssMinifier());
 
     // Process config file
-    java.util.Set<java.nio.file.Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
+    Set<Path> files = processor.collectConfigFiles(configPath, resourcesRoot);
     processor.processFiles(files);
 
     // Verify file was processed
