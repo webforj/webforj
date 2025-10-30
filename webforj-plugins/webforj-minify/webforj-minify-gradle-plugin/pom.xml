@@ -22,11 +22,25 @@
 
   <build>
     <plugins>
-      <!-- Install foundation dependency to local Maven repo before Gradle build -->
+      <!-- Install parent POM and foundation dependency to local Maven repo before Gradle build -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
         <executions>
+          <execution>
+            <id>install-parent-pom</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <configuration>
+              <file>../pom.xml</file>
+              <groupId>com.webforj</groupId>
+              <artifactId>webforj-minify</artifactId>
+              <version>${project.version}</version>
+              <packaging>pom</packaging>
+            </configuration>
+          </execution>
           <execution>
             <id>install-foundation-dependency</id>
             <phase>initialize</phase>
