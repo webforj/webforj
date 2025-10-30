@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugin.logging.SystemStreamLog;
-import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,12 +19,10 @@ import org.junit.jupiter.api.Test;
 class MinifyMojoConfigurationTest {
 
   private MinifyMojo mojo;
-  private Log log;
 
   @BeforeEach
   void setUp() {
     mojo = new MinifyMojo();
-    log = new SystemStreamLog();
   }
 
   @Test
