@@ -105,8 +105,10 @@ class ResourceEntryTest {
     Class<?>[] innerClasses = processorClass.getDeclaredClasses();
 
     Class<?> resourceEntryClass = null;
+    Class<?> expectedClass = Class.forName(
+        "com.webforj.minify.processor.AssetAnnotationProcessor$ResourceEntry");
     for (Class<?> innerClass : innerClasses) {
-      if (innerClass.getSimpleName().equals("ResourceEntry")) {
+      if (expectedClass.isAssignableFrom(innerClass)) {
         resourceEntryClass = innerClass;
         break;
       }

@@ -55,12 +55,11 @@ class AssetProcessorTest {
 
     // Create manifest
     Path manifestPath = tempDir.resolve("manifest.json");
-    String manifestContent = "{"
+    Files.writeString(manifestPath, "{"
         + "\"assets\": ["
         + "{\"url\": \"ws://test.css\", \"type\": \"StyleSheet\"}"
         + "]"
-        + "}";
-    Files.writeString(manifestPath, manifestContent);
+        + "}");
 
     // Register test minifier
     processor.getRegistry().register(new TestCssMinifier());
@@ -86,12 +85,11 @@ class AssetProcessorTest {
 
     // Create manifest with legacy "resources" key
     Path manifestPath = tempDir.resolve("manifest.json");
-    String manifestContent = "{"
+    Files.writeString(manifestPath, "{"
         + "\"resources\": ["
         + "{\"url\": \"ws://legacy.css\", \"type\": \"StyleSheet\"}"
         + "]"
-        + "}";
-    Files.writeString(manifestPath, manifestContent);
+        + "}");
 
     // Register test minifier
     processor.getRegistry().register(new TestCssMinifier());
@@ -226,7 +224,6 @@ class AssetProcessorTest {
     Path resourcesRoot = tempDir.resolve("resources");
     Path cssDir = resourcesRoot.resolve("css");
     Files.createDirectories(cssDir);
-
     Path css1 = cssDir.resolve("style.css");
     Files.writeString(css1, "/* css */");
 
