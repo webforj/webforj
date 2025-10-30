@@ -20,45 +20,16 @@
     <gradle.executable>./gradlew</gradle.executable>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-foundation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
-      <!-- Install parent POM and foundation dependency to local Maven repo before Gradle build -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>install-parent-pom</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>install-file</goal>
-            </goals>
-            <configuration>
-              <file>../pom.xml</file>
-              <groupId>com.webforj</groupId>
-              <artifactId>webforj-minify</artifactId>
-              <version>${project.version}</version>
-              <packaging>pom</packaging>
-            </configuration>
-          </execution>
-          <execution>
-            <id>install-foundation-dependency</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>install-file</goal>
-            </goals>
-            <configuration>
-              <file>../webforj-minify-foundation/target/webforj-minify-foundation-${project.version}.jar</file>
-              <groupId>com.webforj</groupId>
-              <artifactId>webforj-minify-foundation</artifactId>
-              <version>${project.version}</version>
-              <packaging>jar</packaging>
-              <pomFile>../webforj-minify-foundation/pom.xml</pomFile>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- Execute Gradle build -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -76,10 +47,9 @@
               <arguments>
                 <argument>clean</argument>
                 <argument>build</argument>
-                <argument>javadocJar</argument>
-                <argument>sourcesJar</argument>
                 <argument>--console=plain</argument>
-              </arguments>            </configuration>
+              </arguments>
+            </configuration>
           </execution>
         </executions>
       </plugin>

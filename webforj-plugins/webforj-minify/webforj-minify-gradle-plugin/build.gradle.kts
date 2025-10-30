@@ -1,13 +1,28 @@
+import javax.xml.parsers.DocumentBuilderFactory
+
 plugins {
     `java-gradle-plugin`
     `maven-publish`
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
 
-// TODO: Read version from parent pom.xml dynamically
-// For now, must match parent POM version
+// Read version from parent pom.xml dynamically
+val parentPomFile = file("../pom.xml")
+val parentVersion = if (parentPomFile.exists()) {
+    val docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+    val doc = docBuilder.parse(parentPomFile)
+    val versionNodes = doc.getElementsByTagName("version")
+    if (versionNodes.length > 0) {
+        versionNodes.item(0).textContent
+    } else {
+        throw GradleException("Could not find version in parent POM")
+    }
+} else {
+    throw GradleException("Parent POM not found at ${parentPomFile.absolutePath}")
+}
+
 group = "com.webforj"
-version = "25.10-SNAPSHOT"
+version = parentVersion
 
 java {
     toolchain {
@@ -24,7 +39,7 @@ repositories {
 
 dependencies {
     // webforJ minify foundation module
-    implementation("com.webforj:webforj-minify-foundation:25.10-SNAPSHOT")
+    implementation("com.webforj:webforj-minify-foundation:$version")
 
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
