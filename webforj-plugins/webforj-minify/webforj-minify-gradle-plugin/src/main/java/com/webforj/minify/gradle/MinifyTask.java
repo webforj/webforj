@@ -8,6 +8,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -25,18 +27,36 @@ import org.gradle.api.tasks.TaskAction;
  */
 public abstract class MinifyTask extends DefaultTask {
 
+  /**
+   * Creates a new MinifyTask instance.
+   */
   @Inject
-  protected MinifyTask() {
+  public MinifyTask() {
     setGroup("webforJ");
     setDescription("Minifies webforJ assets");
   }
 
+  /**
+   * Gets the output directory where compiled classes are located.
+   *
+   * @return the output directory property
+   */
   @InputDirectory
   public abstract DirectoryProperty getOutputDirectory();
 
+  /**
+   * Gets the resources directory containing source resources.
+   *
+   * @return the resources directory property
+   */
   @InputDirectory
   public abstract DirectoryProperty getResourcesDirectory();
 
+  /**
+   * Gets whether minification should be skipped.
+   *
+   * @return the skip property
+   */
   @Input
   @Optional
   public abstract Property<Boolean> getSkip();
@@ -72,37 +92,46 @@ public abstract class MinifyTask extends DefaultTask {
     getLogger().info("Discovered {} minifier implementation(s) via SPI",
         processor.getRegistry().getMinifierCount());
 
-    // Process manifest file
+    // Collect files to process
+    Set<Path> filesToProcess = new HashSet<>();
+
+    // Collect files from manifest
     File outputDir = getOutputDirectory().get().getAsFile();
     Path manifestPath =
         Paths.get(outputDir.getAbsolutePath(), "META-INF", "webforj-resources.json");
 
     if (Files.exists(manifestPath)) {
       getLogger().info("Processing manifest: {}", manifestPath);
-      processManifest(processor, manifestPath);
+      collectFromManifest(processor, manifestPath, filesToProcess);
     } else {
       getLogger().debug("No manifest file found at {}", manifestPath);
     }
 
-    // Process additional configuration file
+    // Collect files from configuration file
     File resourcesDir = getResourcesDirectory().get().getAsFile();
     Path configPath = Paths.get(resourcesDir.getAbsolutePath(), "META-INF", "webforj-minify.txt");
 
     if (Files.exists(configPath)) {
       getLogger().info("Processing configuration file: {}", configPath);
-      processor.processConfigFile(configPath, resourcesDir.toPath());
+      Set<Path> configFiles = processor.collectConfigFiles(configPath, resourcesDir.toPath());
+      filesToProcess.addAll(configFiles);
     }
+
+    // Process all collected files
+    processor.processFiles(filesToProcess);
 
     long duration = System.currentTimeMillis() - startTime;
     getLogger().info("Minification complete. Processed {} file(s) in {} ms",
         processor.getProcessedFileCount(), duration);
   }
 
-  private void processManifest(AssetProcessor processor, Path manifestPath) {
+  private void collectFromManifest(AssetProcessor processor, Path manifestPath,
+      Set<Path> filesToProcess) {
     try {
       File resourcesDir = getResourcesDirectory().get().getAsFile();
       ResourceResolver resolver = new ResourceResolver(resourcesDir.toPath());
-      processor.processManifest(manifestPath, resolver);
+      Set<Path> manifestFiles = processor.collectManifestFiles(manifestPath, resolver);
+      filesToProcess.addAll(manifestFiles);
     } catch (JsonSyntaxException e) {
       throw new GradleException(
           "Malformed manifest file - check META-INF/webforj-resources.json", e);

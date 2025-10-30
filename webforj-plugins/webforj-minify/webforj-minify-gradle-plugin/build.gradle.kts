@@ -4,6 +4,8 @@ plugins {
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
 
+// TODO: Read version from parent pom.xml dynamically
+// For now, must match parent POM version
 group = "com.webforj"
 version = "25.10-SNAPSHOT"
 

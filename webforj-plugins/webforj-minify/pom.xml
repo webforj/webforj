@@ -21,6 +21,7 @@
     <module>webforj-minify-phcss-css</module>
     <module>webforj-minify-closure-js</module>
     <module>webforj-minify-maven-plugin</module>
+    <module>webforj-minify-gradle-plugin</module>
   </modules>
 
   <dependencyManagement>
