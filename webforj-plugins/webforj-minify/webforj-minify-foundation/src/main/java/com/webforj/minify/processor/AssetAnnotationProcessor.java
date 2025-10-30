@@ -74,6 +74,11 @@ import javax.tools.StandardLocation;
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class AssetAnnotationProcessor extends AbstractProcessor {
 
+  private static final String INLINE_STYLE_SHEET = "InlineStyleSheet";
+  private static final String INLINE_JAVASCRIPT = "InlineJavaScript";
+  private static final String STYLE_SHEET = "StyleSheet";
+  private static final String JAVASCRIPT = "JavaScript";
+
   private final Set<ResourceEntry> resources = new HashSet<>();
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -183,47 +188,62 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
   }
 
   private boolean isLocalResource(String url, String type, String sourceClass) {
-    // Only process local resources that can be minified
-    // External URLs (http://, https://) cannot be minified - they're hosted on CDNs
-    // Icons (icons://) are images, not CSS/JS files
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-      return false; // External CDN resources
-    }
-    if (url.startsWith("icons://")) {
-      return false; // Icon resources (images, not minifiable)
-    }
-
-    // Check for valid protocols
-    if (url.contains("://")) {
-      boolean isInlineAnnotation =
-          type.equals("InlineStyleSheet") || type.equals("InlineJavaScript");
-
-      // Inline annotations only support context:// protocol
-      if (isInlineAnnotation) {
-        if (!url.startsWith("context://")) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-              "Invalid protocol for " + type + ": " + url + " in " + sourceClass
-                  + " (only context:// is supported for inline annotations)");
-          return false;
-        }
-      } else {
-        // Regular annotations support ws:// or context://
-        if (!url.startsWith("ws://") && !url.startsWith("context://")) {
-          processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-              "Unknown protocol in asset URL: " + url + " in " + sourceClass
-                  + " (only ws://, context:// are supported for minification)");
-          return false;
-        }
-      }
-    } else {
-      // No protocol - webforJ passes these through unchanged to the browser
-      // They cannot be reliably mapped to filesystem paths for minification
-      processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
-          "Skipping URL without protocol: " + url + " in " + sourceClass
-              + " (use context:// for inline or ws://context:// for regular annotations)");
+    if (isExternalResource(url)) {
       return false;
     }
 
+    if (!url.contains("://")) {
+      return handleUrlWithoutProtocol(url, sourceClass);
+    }
+
+    return validateProtocol(url, type, sourceClass);
+  }
+
+  private boolean isExternalResource(String url) {
+    // External URLs (http://, https://) cannot be minified - they're hosted on CDNs
+    // Icons (icons://) are images, not CSS/JS files
+    return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("icons://");
+  }
+
+  private boolean handleUrlWithoutProtocol(String url, String sourceClass) {
+    // No protocol - webforJ passes these through unchanged to the browser
+    // They cannot be reliably mapped to filesystem paths for minification
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+        "Skipping URL without protocol: " + url + " in " + sourceClass
+            + " (use context:// for inline or ws://context:// for regular annotations)");
+    return false;
+  }
+
+  private boolean validateProtocol(String url, String type, String sourceClass) {
+    boolean isInlineAnnotation =
+        type.equals(INLINE_STYLE_SHEET) || type.equals(INLINE_JAVASCRIPT);
+
+    if (isInlineAnnotation) {
+      return validateInlineAnnotationProtocol(url, type, sourceClass);
+    }
+
+    return validateRegularAnnotationProtocol(url, sourceClass);
+  }
+
+  private boolean validateInlineAnnotationProtocol(String url, String type, String sourceClass) {
+    // Inline annotations only support context:// protocol
+    if (!url.startsWith("context://")) {
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+          "Invalid protocol for " + type + ": " + url + " in " + sourceClass
+              + " (only context:// is supported for inline annotations)");
+      return false;
+    }
+    return true;
+  }
+
+  private boolean validateRegularAnnotationProtocol(String url, String sourceClass) {
+    // Regular annotations support ws:// or context://
+    if (!url.startsWith("ws://") && !url.startsWith("context://")) {
+      processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+          "Unknown protocol in asset URL: " + url + " in " + sourceClass
+              + " (only ws://, context:// are supported for minification)");
+      return false;
+    }
     return true;
   }
 
@@ -286,13 +306,13 @@ public class AssetAnnotationProcessor extends AbstractProcessor {
   private String getAnnotationType(String annotationName) {
     switch (annotationName) {
       case "StyleSheet":
-        return "StyleSheet";
+        return STYLE_SHEET;
       case "JavaScript":
-        return "JavaScript";
+        return JAVASCRIPT;
       case "InlineStyleSheet":
-        return "InlineStyleSheet";
+        return INLINE_STYLE_SHEET;
       case "InlineJavaScript":
-        return "InlineJavaScript";
+        return INLINE_JAVASCRIPT;
       default:
         return "Unknown";
     }
