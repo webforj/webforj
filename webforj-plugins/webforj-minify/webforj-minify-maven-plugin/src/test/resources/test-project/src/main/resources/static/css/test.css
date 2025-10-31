@@ -1,0 +1,11 @@
+body {
+  background-color: white;
+  color: black;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
