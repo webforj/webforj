@@ -31,8 +31,8 @@ public class MinifyPlugin implements Plugin<Project> {
         project.getConfigurations().create("webforjMinifier", config -> {
           config.setVisible(false);
           config.setCanBeConsumed(false);
-          config.setDescription(
-              "Minifier implementations for webforJ minify plugin (e.g., ph-css, closure-compiler)");
+          config.setDescription("Minifier implementations for webforJ minify plugin "
+              + "(e.g., ph-css, closure-compiler)");
         });
 
     // Get source sets

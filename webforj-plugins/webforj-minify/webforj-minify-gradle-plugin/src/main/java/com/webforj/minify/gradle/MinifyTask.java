@@ -38,7 +38,7 @@ public abstract class MinifyTask extends DefaultTask {
    * Creates a new MinifyTask instance.
    */
   @Inject
-  public MinifyTask() {
+  protected MinifyTask() {
     setGroup("webforJ");
     setDescription("Minifies webforJ assets");
   }
