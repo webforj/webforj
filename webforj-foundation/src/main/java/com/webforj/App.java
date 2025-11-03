@@ -15,6 +15,8 @@ import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.i18n.LocaleObserver;
+import com.webforj.i18n.LocaleObserverRegistry;
 import com.webforj.router.NavigationOptions;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
@@ -213,10 +215,16 @@ public abstract class App {
   /**
    * Sets the locale used by the application.
    *
+   * <p>
+   * In webforJ 25.10 and higher, when the locale is changed, all components implementing
+   * {@link LocaleObserver} will be notified of the change.
+   * </p>
+   *
    * @param locale The locale to use
    */
   public static void setLocale(Locale locale) {
     StringTable.put("!LOCALE", locale.toString());
+    LocaleObserverRegistry.getCurrent().fireLocaleChange(locale);
   }
 
   /**
