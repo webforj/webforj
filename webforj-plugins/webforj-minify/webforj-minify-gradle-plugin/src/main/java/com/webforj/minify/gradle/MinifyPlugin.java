@@ -2,6 +2,7 @@ package com.webforj.minify.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -25,6 +26,15 @@ public class MinifyPlugin implements Plugin<Project> {
     MinifyExtension extension =
         project.getExtensions().create("webforjMinify", MinifyExtension.class);
 
+    // Create minifier configuration for minifier implementations
+    Configuration minifierConfig =
+        project.getConfigurations().create("webforjMinifier", config -> {
+          config.setVisible(false);
+          config.setCanBeConsumed(false);
+          config.setDescription(
+              "Minifier implementations for webforJ minify plugin (e.g., ph-css, closure-compiler)");
+        });
+
     // Get source sets
     SourceSetContainer sourceSets =
         project.getExtensions().getByType(SourceSetContainer.class);
@@ -32,7 +42,7 @@ public class MinifyPlugin implements Plugin<Project> {
 
     // Register minify task
     var minifyTask = project.getTasks().register("minify", MinifyTask.class,
-        task -> configureMinifyTask(task, mainSourceSet, extension, project));
+        task -> configureMinifyTask(task, mainSourceSet, extension, project, minifierConfig));
 
     // Make jar/war task depend on minify (must be done outside register block)
     configureJarTaskDependency(project, minifyTask);
@@ -56,12 +66,13 @@ public class MinifyPlugin implements Plugin<Project> {
   }
 
   private void configureMinifyTask(MinifyTask task, SourceSet mainSourceSet,
-      MinifyExtension extension, Project project) {
+      MinifyExtension extension, Project project, Configuration minifierConfig) {
     // Configure task inputs
     task.getOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
     task.getResourcesDirectory()
         .set(mainSourceSet.getResources().getSourceDirectories().getSingleFile());
     task.getSkip().set(extension.getSkip());
+    task.getMinifierClasspath().from(minifierConfig);
 
     // Run after classes task
     task.dependsOn(project.getTasks().named("classes"));

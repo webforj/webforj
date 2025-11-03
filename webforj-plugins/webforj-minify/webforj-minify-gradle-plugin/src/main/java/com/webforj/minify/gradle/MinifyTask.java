@@ -5,16 +5,23 @@ import com.webforj.minify.common.AssetProcessor;
 import com.webforj.minify.common.BuildLogger;
 import com.webforj.minify.common.ResourceResolver;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
@@ -31,7 +38,7 @@ public abstract class MinifyTask extends DefaultTask {
    * Creates a new MinifyTask instance.
    */
   @Inject
-  protected MinifyTask() {
+  public MinifyTask() {
     setGroup("webforJ");
     setDescription("Minifies webforJ assets");
   }
@@ -62,6 +69,15 @@ public abstract class MinifyTask extends DefaultTask {
   public abstract Property<Boolean> getSkip();
 
   /**
+   * Gets the classpath containing minifier implementations.
+   *
+   * @return the minifier classpath
+   */
+  @Classpath
+  @Optional
+  public abstract ConfigurableFileCollection getMinifierClasspath();
+
+  /**
    * Executes the minification task.
    */
   @TaskAction
@@ -80,8 +96,9 @@ public abstract class MinifyTask extends DefaultTask {
     // Create processor
     AssetProcessor processor = new AssetProcessor(logger);
 
-    // Load minifiers via SPI
-    processor.getRegistry().loadMinifiers(getClass().getClassLoader());
+    // Load minifiers via SPI - use custom classloader if minifier classpath is provided
+    ClassLoader classLoader = getMinifierClassLoader();
+    processor.getRegistry().loadMinifiers(classLoader);
 
     if (processor.getRegistry().getMinifierCount() == 0) {
       getLogger().warn("No minifiers registered via SPI. Skipping minification.");
@@ -136,6 +153,24 @@ public abstract class MinifyTask extends DefaultTask {
       throw new GradleException(
           "Malformed manifest file - check META-INF/webforj-resources.json", e);
     }
+  }
+
+  private ClassLoader getMinifierClassLoader() {
+    ConfigurableFileCollection minifierClasspath = getMinifierClasspath();
+    if (minifierClasspath == null || minifierClasspath.isEmpty()) {
+      return getClass().getClassLoader();
+    }
+
+    List<URL> urls = new ArrayList<>();
+    for (File file : minifierClasspath.getFiles()) {
+      try {
+        urls.add(file.toURI().toURL());
+      } catch (MalformedURLException e) {
+        getLogger().warn("Failed to add {} to minifier classpath", file, e);
+      }
+    }
+
+    return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
   }
 
   /**

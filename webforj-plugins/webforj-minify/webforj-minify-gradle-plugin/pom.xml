@@ -30,7 +30,7 @@
 
   <build>
     <plugins>
-      <!-- Execute Gradle build -->
+      <!-- Execute Gradle build (includes running tests) -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -49,6 +49,46 @@
                 <argument>build</argument>
                 <argument>--console=plain</argument>
               </arguments>
+              <!-- Fail Maven build if Gradle build fails -->
+              <successCodes>
+                <successCode>0</successCode>
+              </successCodes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Display Gradle test results in Maven output -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>display-gradle-test-results</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo message="========================================"/>
+                <echo message="Gradle Plugin Test Results:"/>
+                <echo message="========================================"/>
+                <loadfile property="test.results"
+                          srcFile="${basedir}/build/test-results/test/TEST-com.webforj.minify.gradle.MinifyPluginTest.xml"
+                          failonerror="false"/>
+                <echo message="${test.results}"/>
+                <exec executable="grep" outputproperty="test.summary" failonerror="false">
+                  <arg value="-E"/>
+                  <arg value='testsuite name.*tests="[0-9]+"'/>
+                  <arg value="${basedir}/build/test-results/test/TEST-com.webforj.minify.gradle.MinifyPluginTest.xml"/>
+                </exec>
+                <echo message="${test.summary}"/>
+                <echo message="========================================"/>
+                <echo message="See full report: ${basedir}/build/reports/tests/test/index.html"/>
+                <echo message="========================================"/>
+              </target>
             </configuration>
           </execution>
         </executions>

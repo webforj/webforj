@@ -15,10 +15,14 @@ Build-time asset minification system for webforJ applications that automatically
 ## Requirements
 
 - Java 17 or higher
-- Maven 3.6+
+- Maven 3.6+ or Gradle 7.6+
 - webforJ framework (any version with annotation support)
 
 ## Quick Start
+
+Choose your build tool:
+- [Maven Setup](#maven-setup)
+- [Gradle Setup](#gradle-setup)
 
 ### Maven Setup
 
@@ -74,6 +78,46 @@ Add the plugin to your `pom.xml`:
     </plugin>
   </plugins>
 </build>
+```
+
+### Gradle Setup
+
+Add the plugin to your `build.gradle.kts`:
+
+```kotlin
+plugins {
+  java
+  id("com.webforj.minify") version "25.10-SNAPSHOT"
+}
+
+dependencies {
+  // Minify foundation (provided scope for annotation processing)
+  compileOnly("com.webforj:webforj-minify-foundation:25.10-SNAPSHOT")
+
+  // Minifier implementations - add to the webforjMinifier configuration
+  add("webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.10-SNAPSHOT")
+  add("webforjMinifier", "com.webforj:webforj-minify-closure-js:25.10-SNAPSHOT")
+}
+
+// Optional configuration
+webforjMinify {
+  skip.set(false)  // Set to true to skip minification
+}
+```
+
+**Running Minification:**
+
+The `minify` task runs automatically before the `jar` or `war` tasks:
+
+```bash
+# Minification happens automatically during build
+./gradlew build
+
+# Run minification manually
+./gradlew minify
+
+# Skip minification (via extension)
+./gradlew build  # with skip.set(true) in build.gradle.kts
 ```
 
 ### Usage Example
@@ -486,7 +530,7 @@ mvn test
 
 ## Roadmap
 
-- [ ] Gradle plugin implementation
+- [x] Gradle plugin implementation
 - [ ] Source map generation
 - [ ] Watch mode for development
 
