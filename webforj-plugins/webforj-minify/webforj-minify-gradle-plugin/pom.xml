@@ -17,7 +17,10 @@
   <description>Gradle plugin for minifying webforJ assets at build time</description>
 
   <properties>
-    <gradle.executable>./gradlew</gradle.executable>
+    <!-- Use system Gradle (compatible with Java 17, 21, 25+)
+         The wrapper ./gradlew may have compatibility issues with newer Java versions.
+         To use wrapper instead: mvn clean install -Puse-gradle-wrapper -->
+    <gradle.executable>gradle</gradle.executable>
   </properties>
 
   <dependencies>
@@ -212,13 +215,37 @@
   </build>
 
   <profiles>
-    <!-- Windows-specific profile for gradlew.bat -->
+    <!-- Use Gradle wrapper (./gradlew) - activate with -Puse-gradle-wrapper -->
+    <profile>
+      <id>use-gradle-wrapper</id>
+      <properties>
+        <gradle.executable>./gradlew</gradle.executable>
+      </properties>
+    </profile>
+
+    <!-- Windows-specific profile for system Gradle -->
     <profile>
       <id>windows</id>
       <activation>
         <os>
           <family>windows</family>
         </os>
+      </activation>
+      <properties>
+        <gradle.executable>gradle.bat</gradle.executable>
+      </properties>
+    </profile>
+
+    <!-- Windows-specific profile for Gradle wrapper -->
+    <profile>
+      <id>windows-wrapper</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+        <property>
+          <name>use-gradle-wrapper</name>
+        </property>
       </activation>
       <properties>
         <gradle.executable>gradlew.bat</gradle.executable>

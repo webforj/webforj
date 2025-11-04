@@ -82,7 +82,29 @@ Add the plugin to your `pom.xml`:
 
 ### Gradle Setup
 
-Add the plugin to your `build.gradle.kts`:
+**Step 1:** Configure plugin repositories in `settings.gradle.kts`:
+
+> **Important for SNAPSHOT versions:** Gradle needs to know where to find the plugin. Add this configuration to your `settings.gradle.kts` file.
+
+```kotlin
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        maven {
+            name = "Central Portal Snapshots"
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+    }
+}
+
+rootProject.name = "your-project-name"
+```
+
+**Step 2:** Add the plugin to your `build.gradle.kts`:
 
 ```kotlin
 plugins {
@@ -329,8 +351,8 @@ Create custom minifiers by implementing the `AssetMinifier` interface:
 ```java
 package com.example;
 
-import com.webforj.minify.common.AssetMinifier;
-import com.webforj.minify.common.MinificationException;
+import com.webforj.minify.foundation.AssetMinifier;
+import com.webforj.minify.foundation.MinificationException;
 import java.nio.file.Path;
 import java.util.Set;
 
@@ -360,7 +382,7 @@ public class SassMinifier implements AssetMinifier {
 }
 ```
 
-Register via SPI by creating `META-INF/services/com.webforj.minify.common.AssetMinifier`:
+Register via SPI by creating `META-INF/services/com.webforj.minify.foundation.AssetMinifier`:
 
 ```
 com.example.SassMinifier
