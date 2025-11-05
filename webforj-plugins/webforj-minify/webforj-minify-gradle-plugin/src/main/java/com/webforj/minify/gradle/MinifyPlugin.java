@@ -44,11 +44,14 @@ public class MinifyPlugin implements Plugin<Project> {
     var minifyTask = project.getTasks().register("minify", MinifyTask.class,
         task -> configureMinifyTask(task, mainSourceSet, extension, project, minifierConfig));
 
-    // Make jar/war task depend on minify (must be done outside register block)
+    // Make jar/war/bootJar task depend on minify (must be done outside register block)
     configureJarTaskDependency(project, minifyTask);
 
     // Also configure war task if present
     configureWarTaskDependency(project, minifyTask);
+
+    // Also configure bootJar task if present (Spring Boot)
+    configureBootJarTaskDependency(project, minifyTask);
 
     project.getLogger().debug("webforJ Minify Plugin applied to project: {}", project.getName());
   }
@@ -65,6 +68,13 @@ public class MinifyPlugin implements Plugin<Project> {
     });
   }
 
+  private void configureBootJarTaskDependency(Project project,
+      org.gradle.api.tasks.TaskProvider<MinifyTask> minifyTask) {
+    project.getPlugins().withId("org.springframework.boot", plugin -> {
+      project.getTasks().named("bootJar").configure(bootJarTask -> bootJarTask.dependsOn(minifyTask));
+    });
+  }
+
   private void configureMinifyTask(MinifyTask task, SourceSet mainSourceSet,
       MinifyExtension extension, Project project, Configuration minifierConfig) {
     // Set task metadata
@@ -73,12 +83,12 @@ public class MinifyPlugin implements Plugin<Project> {
 
     // Configure task inputs
     task.getOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
-    task.getResourcesDirectory()
-        .set(mainSourceSet.getResources().getSourceDirectories().getSingleFile());
+    // FIXED: Use output resources directory (build/resources/main), not source directory
+    task.getResourcesDirectory().set(mainSourceSet.getOutput().getResourcesDir());
     task.getSkip().set(extension.getSkip());
     task.getMinifierClasspath().from(minifierConfig);
 
-    // Run after classes task
+    // Run after classes task (which includes processResources)
     task.dependsOn(project.getTasks().named("classes"));
   }
 }
