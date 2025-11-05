@@ -5,6 +5,7 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.typesafe.config.Config;
 import com.webforj.annotation.AnnotationProcessor;
 import com.webforj.annotation.Routify;
 import com.webforj.component.window.Frame;
@@ -14,6 +15,8 @@ import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.i18n.LocaleObserver;
+import com.webforj.i18n.LocaleObserverRegistry;
 import com.webforj.router.NavigationOptions;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
@@ -212,10 +215,16 @@ public abstract class App {
   /**
    * Sets the locale used by the application.
    *
+   * <p>
+   * In webforJ 25.10 and higher, when the locale is changed, all components implementing
+   * {@link LocaleObserver} will be notified of the change.
+   * </p>
+   *
    * @param locale The locale to use
    */
   public static void setLocale(Locale locale) {
     StringTable.put("!LOCALE", locale.toString());
+    LocaleObserverRegistry.getCurrent().fireLocaleChange(locale);
   }
 
   /**
@@ -665,6 +674,16 @@ public abstract class App {
       return;
     }
 
+    Config config = Environment.getCurrent().getConfig();
+    String rootProp = "webforj.router.root";
+    String context = Environment.getContextPath();
+    if (config.hasPath(rootProp) && !config.getIsNull(rootProp)) {
+      String rootFromConfig = config.getString(rootProp);
+      if (rootFromConfig != null && !rootFromConfig.isEmpty()) {
+        context = rootFromConfig;
+      }
+    }
+
     String[] packages = getClass().getAnnotation(Routify.class).packages();
     if (packages.length == 0) {
       // default package
@@ -674,7 +693,7 @@ public abstract class App {
     String root = "webapp/" + getApplicationName();
     boolean isBbjService = Environment.isRunningWithBBjServices();
     if (!isBbjService) {
-      root = Environment.getContextPath();
+      root = context;
       root = root.isBlank() ? "/" : root;
     }
 
