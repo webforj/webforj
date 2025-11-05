@@ -50,6 +50,7 @@
               <arguments>
                 <argument>clean</argument>
                 <argument>build</argument>
+                <argument>publishToMavenLocal</argument>
                 <argument>--console=plain</argument>
               </arguments>
               <!-- Fail Maven build if Gradle build fails -->

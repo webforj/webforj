@@ -67,6 +67,10 @@ public class MinifyPlugin implements Plugin<Project> {
 
   private void configureMinifyTask(MinifyTask task, SourceSet mainSourceSet,
       MinifyExtension extension, Project project, Configuration minifierConfig) {
+    // Set task metadata
+    task.setGroup("webforJ");
+    task.setDescription("Minifies webforJ assets");
+
     // Configure task inputs
     task.getOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
     task.getResourcesDirectory()

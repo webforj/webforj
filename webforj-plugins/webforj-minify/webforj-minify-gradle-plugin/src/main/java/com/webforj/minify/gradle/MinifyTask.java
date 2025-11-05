@@ -35,15 +35,6 @@ import org.gradle.api.tasks.TaskAction;
 public abstract class MinifyTask extends DefaultTask {
 
   /**
-   * Creates a new MinifyTask instance.
-   */
-  @Inject
-  protected MinifyTask() {
-    setGroup("webforJ");
-    setDescription("Minifies webforJ assets");
-  }
-
-  /**
    * Gets the output directory where compiled classes are located.
    *
    * @return the output directory property
