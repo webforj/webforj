@@ -81,10 +81,19 @@ public class MinifyPlugin implements Plugin<Project> {
     task.setGroup("webforJ");
     task.setDescription("Minifies webforJ assets");
 
-    // Configure task inputs
-    task.getOutputDirectory().set(mainSourceSet.getOutput().getClassesDirs().getSingleFile());
+    // Configure task inputs using Provider API for lazy configuration
+    // Use layout.dir() with provider to safely handle file collections
+    task.getOutputDirectory().set(
+        project.getLayout().dir(
+            project.provider(() -> mainSourceSet.getOutput().getClassesDirs().getFiles()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new org.gradle.api.GradleException(
+                    "No classes directory found for source set: " + mainSourceSet.getName())))));
+
     // FIXED: Use output resources directory (build/resources/main), not source directory
     task.getResourcesDirectory().set(mainSourceSet.getOutput().getResourcesDir());
+
     task.getSkip().set(extension.getSkip());
     task.getMinifierClasspath().from(minifierConfig);
 
