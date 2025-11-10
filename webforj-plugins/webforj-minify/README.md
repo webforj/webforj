@@ -491,17 +491,6 @@ See Quick Start section for complete configuration examples.
 2. Check for unsupported features
 3. Review error message for specific line/column
 
-### Security violations
-
-**Error:**
-```
-[WARN] Security violation for URL '../../../etc/passwd': Path traversal detected
-```
-
-**Cause:** URL attempts to escape resources directory
-
-**Solution:** Use valid webforJ protocols and paths
-
 ## Development
 
 ### Building from Source
