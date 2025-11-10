@@ -195,15 +195,6 @@
         </configuration>
       </plugin>
 
-      <!-- Disable checkstyle since Gradle plugin uses different conventions -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-
       <!-- Disable Jacoco coverage -->
       <plugin>
         <groupId>org.jacoco</groupId>

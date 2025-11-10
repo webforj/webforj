@@ -71,7 +71,8 @@ public class MinifyPlugin implements Plugin<Project> {
   private void configureBootJarTaskDependency(Project project,
       org.gradle.api.tasks.TaskProvider<MinifyTask> minifyTask) {
     project.getPlugins().withId("org.springframework.boot", plugin -> {
-      project.getTasks().named("bootJar").configure(bootJarTask -> bootJarTask.dependsOn(minifyTask));
+      project.getTasks().named("bootJar").configure(
+          bootJarTask -> bootJarTask.dependsOn(minifyTask));
     });
   }
 
