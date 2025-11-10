@@ -85,4 +85,49 @@ class EntityKeysRegistryTest {
     registry.cleanUp();
     assertNull(registry.getEntity(key2));
   }
+
+  @Test
+  void shouldUseCustomKeyProviderWhenSet() {
+    EntityKeysRegistry customRegistry = new EntityKeysRegistry();
+    TestEntity entity = new TestEntity(123L);
+    customRegistry.setKeyProvider(e -> ((TestEntity) e).getId());
+
+    String key = customRegistry.getKey(entity);
+    assertEquals("123", key);
+  }
+
+  @Test
+  void shouldPrioritizeHasEntityKeyOverCustomProvider() {
+    EntityKeysRegistry customRegistry = new EntityKeysRegistry();
+    EntityWithKey entity = new EntityWithKey(456L);
+    customRegistry.setKeyProvider(e -> 999L);
+
+    String key = customRegistry.getKey(entity);
+    assertEquals("456", key);
+  }
+
+  static class TestEntity {
+    private final Long id;
+
+    TestEntity(Long id) {
+      this.id = id;
+    }
+
+    public Long getId() {
+      return id;
+    }
+  }
+
+  static class EntityWithKey implements HasEntityKey {
+    private final Long id;
+
+    EntityWithKey(Long id) {
+      this.id = id;
+    }
+
+    @Override
+    public Object getEntityKey() {
+      return id;
+    }
+  }
 }
