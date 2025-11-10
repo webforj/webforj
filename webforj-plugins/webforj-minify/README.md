@@ -438,27 +438,6 @@ Uses Google Closure Compiler v20250820. Automatically skips `*.min.js` and `*.mj
 - ES6+ syntax support
 - Graceful error handling (returns original on compilation errors)
 
-## Performance
-
-### Benchmarks
-
-Tested on MacBook M2, Java 17.0.16 (Temurin):
-
-| File Count | Size | Processing Mode | Time |
-|------------|------|----------------|------|
-| 2 files | 1.3 KB | Sequential | 355 ms |
-| 10 files | 12 KB | Sequential | ~1.2 s |
-| 25 files | 50 KB | Parallel | ~2.5 s |
-| 100 files | 250 KB | Parallel | ~8 s |
-
-### Optimization Tips
-
-1. **Already Minified Files**: The default CSS and JS minifiers automatically skip files matching `*.min.css` or `*.min.js` via their `shouldMinify()` method
-2. **Parallel Processing**: Automatically enabled for >10 files
-3. **Incremental Builds**: Only changed files are processed (Maven incremental compilation)
-4. **CI/CD**: Enable minification only for production builds with profiles
-5. **Custom Skip Logic**: Implement custom `shouldMinify()` logic in your minifiers to skip files based on any criteria
-
 ## Troubleshooting
 
 ### No minifiers registered via SPI
