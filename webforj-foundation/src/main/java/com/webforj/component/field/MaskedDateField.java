@@ -1,5 +1,6 @@
 package com.webforj.component.field;
 
+import com.basis.bbj.funcs.Day;
 import com.basis.bbj.proxies.sysgui.BBjInputD;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
@@ -14,6 +15,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.utilities.BBjFunctionalityHelper;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 
@@ -301,6 +303,7 @@ public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateFie
   private boolean pickerShowWeeks = false;
   private boolean pickerAutoOpen = false;
   private final DatePicker picker = new DatePicker();
+  private boolean textualDateParsing = false;
 
   /**
    * Constructs a new masked field with a label, value, and placeholder.
@@ -499,6 +502,73 @@ public sealed class MaskedDateField extends DwcDateTimeMaskedField<MaskedDateFie
    */
   public DatePicker getPicker() {
     return picker;
+  }
+
+  /**
+   * Sets whether to enable textual date parsing.
+   *
+   * <p>
+   * When enabled, month and day names can be used in date input according to the mask.
+   * </p>
+   *
+   * <p>
+   * <b>Month Name Substitution (%Ms, %Ml):</b><br>
+   * Month names replace numeric months in the input. Works in any position:
+   * <ul>
+   * <li>Mask "%Ms/%Dz/%Yz" accepts "Sep/01/25" → valid Date</li>
+   * <li>Mask "%Ml/%Dz/%Yz" accepts "September/01/25" → valid Date</li>
+   * <li>Mask "%Dz/%Ml/%Yz" accepts "01/September/25" → valid Date</li>
+   * <li>Numeric fallback: "09/01/25" still works with "%Ms/%Dz/%Yz"</li>
+   * </ul>
+   * Supports all 12 months in both short (Jan, Feb...) and long (January, February...) forms.
+   * </p>
+   *
+   * <p>
+   * <b>Day Name Decoration (%Ds, %Dl):</b><br>
+   * Day-of-week names can be included but are stripped during parsing. The mask <b>MUST include %Dz
+   * or %Dd</b>:
+   * <ul>
+   * <li>Mask "%Ds %Mz/%Dz/%Yz" accepts "Mon 09/01/25" → valid Date</li>
+   * <li>Mask "%Dl %Mz/%Dz/%Yz" accepts "Monday 09/01/25" → valid Date</li>
+   * <li>Mask "%Mz/%Dz/%Yz %Ds" accepts "09/01/25 Tue" → valid Date</li>
+   * <li>Mask "%Dl/%Mz/%Yz" with "Monday/09/25" → <b>invalid Date</b> (missing %Dz)</li>
+   * <li>Mask "%Mz/%Dl/%Yz" with "09/Monday/25" → <b>invalid Date</b> (missing %Dz)</li>
+   * </ul>
+   * Supports all 7 weekdays in both short (Mon, Tue...) and long (Monday, Tuesday...) forms.
+   * </p>
+   *
+   * <p>
+   * <b>Additional Parsing Rules:</b>
+   * <ul>
+   * <li>Case-insensitive: "MONDAY 09/01/25" works same as "monday 09/01/25"</li>
+   * <li>Locale-aware: "septembre/01/25" (French) or "Montag 09/01/25" (German)</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * <b>When Disabled (default):</b><br>
+   * Mask "%Ms/%Dz/%Yz" with "Sep/01/25" → <b>invalid Date</b> (names not recognized)<br>
+   * Only numeric input accepted: "09/01/25" → valid Date
+   * </p>
+   *
+   * @param textualDateParsing true to enable month/day name parsing, false for numeric only
+   * @return this masked date field
+   * @since 25.10
+   */
+  public MaskedDateField setTextualDateParsing(boolean textualDateParsing) {
+    this.textualDateParsing = textualDateParsing;
+    setUnrestrictedProperty("textualDateParsing", textualDateParsing);
+    return this;
+  }
+
+  /**
+   * Gets whether textual date parsing is enabled.
+   *
+   * @return true if textual date parsing is enabled, false otherwise
+   * @since 25.10
+   */
+  public boolean isTextualDateParsing() {
+    return textualDateParsing;
   }
 
   /**
