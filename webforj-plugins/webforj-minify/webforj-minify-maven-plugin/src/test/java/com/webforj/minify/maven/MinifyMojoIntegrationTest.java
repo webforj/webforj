@@ -59,8 +59,6 @@ class MinifyMojoIntegrationTest {
         """;
     Files.writeString(jsFile, originalJs);
 
-    long originalSize = Files.size(jsFile);
-
     // Create webforj-minify.txt config file to tell plugin what to process
     Path srcDir = tempDir.resolve("src/main/resources/META-INF");
     Files.createDirectories(srcDir);
@@ -84,6 +82,9 @@ class MinifyMojoIntegrationTest {
     // Set base directory for config file resolution
     File baseDir = tempDir.toFile();
     project.setFile(new File(baseDir, "pom.xml"));
+
+    // Get original file size before minification
+    long originalSize = Files.size(jsFile);
 
     // Execute minification
     mojo.execute();
@@ -130,8 +131,6 @@ class MinifyMojoIntegrationTest {
         """;
     Files.writeString(cssFile, originalCss);
 
-    long originalSize = Files.size(cssFile);
-
     // Create webforj-minify.txt config file
     Path srcDir = tempDir.resolve("src/main/resources/META-INF");
     Files.createDirectories(srcDir);
@@ -145,6 +144,9 @@ class MinifyMojoIntegrationTest {
 
     File baseDir = tempDir.toFile();
     project.setFile(new File(baseDir, "pom.xml"));
+
+    // Get original file size before minification
+    long originalSize = Files.size(cssFile);
 
     // Execute minification
     mojo.execute();
