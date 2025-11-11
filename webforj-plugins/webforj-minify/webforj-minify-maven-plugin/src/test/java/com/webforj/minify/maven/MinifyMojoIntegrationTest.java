@@ -71,11 +71,11 @@ class MinifyMojoIntegrationTest {
     setField(mojo, "skip", false);
 
     // Add Closure JS configuration
-    Map<String, Map<String, String>> config = new HashMap<>();
     Map<String, String> closureConfig = new HashMap<>();
     closureConfig.put("compilationLevel", "SIMPLE_OPTIMIZATIONS");
     closureConfig.put("languageIn", "ECMASCRIPT_2020");
     closureConfig.put("languageOut", "ECMASCRIPT5");
+    Map<String, Map<String, String>> config = new HashMap<>();
     config.put("closureJs", closureConfig);
     setField(mojo, "minifierConfigurations", config);
 
