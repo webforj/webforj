@@ -29,8 +29,10 @@ import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.HasEntityKey;
+import com.webforj.data.repository.CollectionRepository;
 import com.webforj.data.repository.Repository;
 import com.webforj.dispatcher.EventListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -699,6 +701,68 @@ class TableTest {
       assertEquals(movable, column2.isMovable());
       assertEquals(table, result);
       verify(table).refreshColumns();
+    }
+  }
+
+  @Nested
+  @DisplayName("Key Provider API")
+  class KeyProviderApi {
+
+    @Test
+    void shouldDelegateSetKeyProviderToRepository() {
+      Table<Person> table = new Table<>();
+      table.setItems(Arrays.asList(new Person("John"), new Person("Jane")));
+
+      // Set key provider through table
+      Function<Person, ?> keyProvider = Person::getName;
+      table.setKeyProvider(keyProvider);
+
+      // Verify it's set on the repository
+      assertEquals(keyProvider, table.getRepository().getKeyProvider());
+    }
+
+    @Test
+    void shouldReturnRepositoryKeyProvider() {
+      Table<Person> table = new Table<>();
+      table.setItems(Arrays.asList(new Person("John"), new Person("Jane")));
+
+      Function<Person, ?> keyProvider = Person::getName;
+      table.setKeyProvider(keyProvider);
+
+      // Should return the same provider
+      assertEquals(keyProvider, table.getKeyProvider());
+    }
+
+    @Test
+    void shouldWorkWithDefaultRepository() {
+      Table<Person> table = new Table<>();
+
+      // Table has default empty repository
+      assertDoesNotThrow(() -> {
+        table.setKeyProvider(Person::getName);
+      });
+    }
+
+    @Test
+    void shouldPreserveKeyProviderSetOnRepositoryBeforeSetRepository() {
+      // Create a real repository with key provider set
+      List<EntityWithLongId> items = new ArrayList<>();
+      items.add(new EntityWithLongId(123L, "Entity 1"));
+      items.add(new EntityWithLongId(456L, "Entity 2"));
+
+      CollectionRepository<EntityWithLongId> repository = new CollectionRepository<>(items);
+      Function<EntityWithLongId, ?> keyProvider = EntityWithLongId::getName;
+      repository.setKeyProvider(keyProvider);
+
+      Table<EntityWithLongId> table = new Table<>();
+      table.setRepository(repository);
+
+      // Verify the key provider is still the one set on the repository
+      assertEquals(keyProvider, table.getKeyProvider());
+
+      // Verify it actually works
+      EntityWithLongId entity = items.get(0);
+      assertEquals("Entity 1", repository.getKey(entity));
     }
   }
 
