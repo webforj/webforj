@@ -21,6 +21,7 @@ jobs:
       - uses: dbelyaev/action-checkstyle@v3
         with:
           reporter: github-pr-review
+          checkstyle_version: "10.12.0"
 
   conventional-commits:
     name: Verify Commit Messages
