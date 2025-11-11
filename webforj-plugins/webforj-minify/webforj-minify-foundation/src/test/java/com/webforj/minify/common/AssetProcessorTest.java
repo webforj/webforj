@@ -55,11 +55,8 @@ class AssetProcessorTest {
 
     // Create manifest
     Path manifestPath = tempDir.resolve("manifest.json");
-    Files.writeString(manifestPath, "{"
-        + "\"assets\": ["
-        + "{\"url\": \"ws://test.css\", \"type\": \"StyleSheet\"}"
-        + "]"
-        + "}");
+    Files.writeString(manifestPath, "{" + "\"assets\": ["
+        + "{\"url\": \"ws://test.css\", \"type\": \"StyleSheet\"}" + "]" + "}");
 
     // Register test minifier
     processor.getRegistry().register(new TestCssMinifier());
@@ -85,11 +82,8 @@ class AssetProcessorTest {
 
     // Create manifest with legacy "resources" key
     Path manifestPath = tempDir.resolve("manifest.json");
-    Files.writeString(manifestPath, "{"
-        + "\"resources\": ["
-        + "{\"url\": \"ws://legacy.css\", \"type\": \"StyleSheet\"}"
-        + "]"
-        + "}");
+    Files.writeString(manifestPath, "{" + "\"resources\": ["
+        + "{\"url\": \"ws://legacy.css\", \"type\": \"StyleSheet\"}" + "]" + "}");
 
     // Register test minifier
     processor.getRegistry().register(new TestCssMinifier());
@@ -113,8 +107,7 @@ class AssetProcessorTest {
     processor.processFiles(files);
 
     assertEquals(0, processor.getProcessedFileCount());
-    assertTrue(logger.warnings.stream()
-        .anyMatch(msg -> msg.contains("no assets")));
+    assertTrue(logger.warnings.stream().anyMatch(msg -> msg.contains("no assets")));
   }
 
   @Test
@@ -126,7 +119,7 @@ class AssetProcessorTest {
 
     assertThrows(com.google.gson.JsonSyntaxException.class, () -> {
       Set<Path> files = processor.collectManifestFiles(manifestPath, resolver);
-    processor.processFiles(files);
+      processor.processFiles(files);
     });
   }
 

@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for AssetAnnotationProcessor.ResourceEntry.
  *
- * <p>These tests verify the equals() and hashCode() contract to increase branch coverage.
+ * <p>
+ * These tests verify the equals() and hashCode() contract to increase branch coverage.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -96,8 +98,9 @@ class ResourceEntryTest {
   /**
    * Helper method to create ResourceEntry instance using reflection.
    *
-   * <p>ResourceEntry is a private inner class of AssetAnnotationProcessor, so we need reflection
-   * to instantiate it for testing.
+   * <p>
+   * ResourceEntry is a private inner class of AssetAnnotationProcessor, so we need reflection to
+   * instantiate it for testing.
    */
   private Object createResourceEntry(String url, String type, String discoveredIn)
       throws Exception {
@@ -105,8 +108,8 @@ class ResourceEntryTest {
     Class<?>[] innerClasses = processorClass.getDeclaredClasses();
 
     Class<?> resourceEntryClass = null;
-    Class<?> expectedClass = Class.forName(
-        "com.webforj.minify.processor.AssetAnnotationProcessor$ResourceEntry");
+    Class<?> expectedClass =
+        Class.forName("com.webforj.minify.processor.AssetAnnotationProcessor$ResourceEntry");
     for (Class<?> innerClass : innerClasses) {
       if (expectedClass.isAssignableFrom(innerClass)) {
         resourceEntryClass = innerClass;

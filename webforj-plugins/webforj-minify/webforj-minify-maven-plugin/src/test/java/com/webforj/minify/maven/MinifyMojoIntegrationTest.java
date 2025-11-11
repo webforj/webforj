@@ -18,7 +18,8 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Integration tests for MinifyMojo that test actual plugin execution.
  *
- * <p>These tests create real file structures and execute the mojo to verify minification works
+ * <p>
+ * These tests create real file structures and execute the mojo to verify minification works
  * end-to-end.
  *
  * @author Kevin Hagel
@@ -93,9 +94,8 @@ class MinifyMojoIntegrationTest {
     String minifiedContent = Files.readString(jsFile);
 
     // Minified file should be smaller
-    assertTrue(minifiedSize < originalSize,
-        String.format("File should be minified (original: %d, minified: %d)", originalSize,
-            minifiedSize));
+    assertTrue(minifiedSize < originalSize, String.format(
+        "File should be minified (original: %d, minified: %d)", originalSize, minifiedSize));
 
     // Minified content should not be empty
     assertFalse(minifiedContent.trim().isEmpty(), "Minified content should not be empty");
@@ -155,9 +155,8 @@ class MinifyMojoIntegrationTest {
     String minifiedContent = Files.readString(cssFile);
 
     // Minified file should be smaller or same size
-    assertTrue(minifiedSize <= originalSize,
-        String.format("CSS should be minified (original: %d, minified: %d)", originalSize,
-            minifiedSize));
+    assertTrue(minifiedSize <= originalSize, String
+        .format("CSS should be minified (original: %d, minified: %d)", originalSize, minifiedSize));
 
     // Minified content should not be empty
     assertFalse(minifiedContent.trim().isEmpty(), "Minified CSS should not be empty");

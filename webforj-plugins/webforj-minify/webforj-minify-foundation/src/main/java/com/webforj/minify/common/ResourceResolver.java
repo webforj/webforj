@@ -7,19 +7,25 @@ import java.util.regex.Pattern;
 /**
  * Resolves webforJ resource protocol URLs to filesystem paths.
  *
- * <p>Supports the following protocols:
+ * <p>
+ * Supports the following protocols:
+ * </p>
  * <ul>
  * <li>webserver://path → src/main/resources/static/path</li>
  * <li>ws://path → src/main/resources/static/path</li>
  * <li>context://path → src/main/resources/path</li>
  * </ul>
  *
- * <p><b>Note:</b> URLs without a protocol (e.g., "app.css") are NOT supported because webforJ
- * passes them through unchanged to the browser, which resolves them as relative URLs. These
- * cannot be reliably mapped to filesystem paths for minification.
+ * <p>
+ * <b>Note:</b> URLs without a protocol (e.g., "app.css") are NOT supported because webforJ passes
+ * them through unchanged to the browser, which resolves them as relative URLs. These cannot be
+ * reliably mapped to filesystem paths for minification.
+ * </p>
  *
- * <p><b>Security:</b> All resolved paths are validated to prevent directory traversal attacks.
- * Paths containing ".." that escape the resources root will throw {@link SecurityException}.
+ * <p>
+ * <b>Security:</b> All resolved paths are validated to prevent directory traversal attacks. Paths
+ * containing ".." that escape the resources root will throw {@link SecurityException}.
+ * </p>
  *
  * @author Kevin Hagel
  *
@@ -43,8 +49,10 @@ public class ResourceResolver {
   /**
    * Resolves a webforJ resource URL to a filesystem path.
    *
-   * <p><b>Security:</b> The resolved path is validated to ensure it remains within the resources
-   * root directory. Paths attempting to escape via ".." will throw {@link SecurityException}.
+   * <p>
+   * <b>Security:</b> The resolved path is validated to ensure it remains within the resources root
+   * directory. Paths attempting to escape via ".." will throw {@link SecurityException}.
+   * </p>
    *
    * @param url the resource URL (e.g., "webserver://css/app.css")
    * @return the resolved filesystem path
@@ -58,9 +66,8 @@ public class ResourceResolver {
     if (!matcher.matches()) {
       // No protocol - webforJ passes these through unchanged to the browser
       // They cannot be reliably mapped to filesystem paths for minification
-      throw new IllegalArgumentException(
-          "URL without protocol cannot be resolved: '" + url
-              + "'. Use ws:// or context:// protocol for minifiable resources.");
+      throw new IllegalArgumentException("URL without protocol cannot be resolved: '" + url
+          + "'. Use ws:// or context:// protocol for minifiable resources.");
     } else {
       String protocol = matcher.group(1);
       String path = matcher.group(2);

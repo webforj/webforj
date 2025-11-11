@@ -12,8 +12,10 @@ import java.util.Set;
 /**
  * CSS minifier implementation using the ph-css library (v8.0.0).
  *
- * <p>This implementation preserves semantic correctness and handles parse errors gracefully by
+ * <p>
+ * This implementation preserves semantic correctness and handles parse errors gracefully by
  * returning the original content when minification fails.
+ * </p>
  *
  * @author Kevin Hagel
  */

@@ -14,8 +14,10 @@ import java.util.Set;
 /**
  * JavaScript minifier implementation using Google Closure Compiler.
  *
- * <p>Configuration can be provided via the build plugin using the "closureJs" key. Default
+ * <p>
+ * Configuration can be provided via the build plugin using the "closureJs" key. Default
  * configuration uses SIMPLE_OPTIMIZATIONS with ECMASCRIPT_NEXT input and ECMASCRIPT5 output.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -31,8 +33,7 @@ public class ClosureJsMinifier implements AssetMinifier {
   @Override
   public void configure(Map<String, Object> config) {
     if (config == null || !config.containsKey("closureJs")) {
-      LOGGER.log(System.Logger.Level.DEBUG,
-          "No closureJs configuration found, using defaults");
+      LOGGER.log(System.Logger.Level.DEBUG, "No closureJs configuration found, using defaults");
       return;
     }
 
@@ -50,8 +51,7 @@ public class ClosureJsMinifier implements AssetMinifier {
 
     if (options.containsKey("compilationLevel")) {
       this.compilationLevel = String.valueOf(options.get("compilationLevel"));
-      LOGGER.log(System.Logger.Level.DEBUG,
-          "Set compilationLevel: " + this.compilationLevel);
+      LOGGER.log(System.Logger.Level.DEBUG, "Set compilationLevel: " + this.compilationLevel);
     }
 
     if (options.containsKey("languageIn")) {
@@ -90,8 +90,8 @@ public class ClosureJsMinifier implements AssetMinifier {
           String.format("Using language out: %s for %s", langOut, sourceFile.getFileName()));
 
       // Set compilation level from configuration
-      CompilationLevel level = parseCompilationLevel(compilationLevel,
-          CompilationLevel.SIMPLE_OPTIMIZATIONS);
+      CompilationLevel level =
+          parseCompilationLevel(compilationLevel, CompilationLevel.SIMPLE_OPTIMIZATIONS);
       level.setOptionsForCompilationLevel(options);
       LOGGER.log(System.Logger.Level.DEBUG, String.format("Using compilation level: %s for %s",
           compilationLevel, sourceFile.getFileName()));
@@ -156,8 +156,8 @@ public class ClosureJsMinifier implements AssetMinifier {
     try {
       return CompilationLevel.valueOf(level);
     } catch (IllegalArgumentException e) {
-      LOGGER.log(System.Logger.Level.WARNING, String.format(
-          "Invalid compilation level '%s', using default %s", level, defaultLevel));
+      LOGGER.log(System.Logger.Level.WARNING,
+          String.format("Invalid compilation level '%s', using default %s", level, defaultLevel));
       return defaultLevel;
     }
   }

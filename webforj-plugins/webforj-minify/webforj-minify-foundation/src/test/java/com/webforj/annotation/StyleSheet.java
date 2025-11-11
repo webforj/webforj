@@ -15,11 +15,24 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(StyleSheet.Container.class)
 public @interface StyleSheet {
+  /**
+   * The CSS file URL.
+   *
+   * @return the CSS file URL
+   */
   String value();
 
+  /**
+   * Container annotation for repeatable StyleSheet annotations.
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @interface Container {
+    /**
+     * Array of StyleSheet annotations.
+     *
+     * @return array of StyleSheet annotations
+     */
     StyleSheet[] value();
   }
 }

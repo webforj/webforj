@@ -7,8 +7,10 @@ import java.util.Set;
 /**
  * Interface for asset minification implementations.
  *
- * <p>Implementations of this interface are discovered via Java SPI (Service Provider Interface). To
+ * <p>
+ * Implementations of this interface are discovered via Java SPI (Service Provider Interface). To
  * register a custom minifier:
+ * </p>
  * <ol>
  * <li>Implement this interface</li>
  * <li>Create META-INF/services/com.webforj.minify.common.AssetMinifier</li>
@@ -16,28 +18,30 @@ import java.util.Set;
  * <li>Add your minifier JAR as a dependency to the project</li>
  * </ol>
  *
- * <p><b>Example custom minifier:</b>
+ * <p>
+ * <b>Example custom minifier:</b>
+ * </p>
  *
  * <pre>{@code
  * public class JsonMinifier implements AssetMinifier {
- *   @Override
+ *   &#64;Override
  *   public String minify(String content, Path sourceFile) throws MinificationException {
  *     try {
  *       return JsonCompressor.minify(content);
  *     } catch (Exception e) {
  *       throw new MinificationException("Failed to minify " + sourceFile, e);
  *     }
- *   }
- *
- *   @Override
+ *   } @Override
  *   public Set<String> getSupportedExtensions() {
  *     return Set.of("json");
  *   }
  * }
  * }</pre>
  *
- * <p><b>IMPORTANT:</b> Implementations must be stateless and thread-safe for parallel
- * processing. Do not maintain instance state between {@link #minify(String, Path)} calls.
+ * <p>
+ * <b>IMPORTANT:</b> Implementations must be stateless and thread-safe for parallel processing. Do
+ * not maintain instance state between {@link #minify(String, Path)} calls.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -63,8 +67,10 @@ public interface AssetMinifier {
   /**
    * Determines whether the given file should be minified.
    *
-   * <p>This method allows minifiers to skip files that are already minified or otherwise should
-   * not be processed. The default implementation returns true for all files.
+   * <p>
+   * This method allows minifiers to skip files that are already minified or otherwise should not be
+   * processed. The default implementation returns true for all files.
+   * </p>
    *
    * @param filePath the file to check
    * @return true if the file should be minified, false to skip it
@@ -76,11 +82,15 @@ public interface AssetMinifier {
   /**
    * Configures this minifier with custom options.
    *
-   * <p>This method is called by the build plugin to pass configuration options to the minifier.
+   * <p>
+   * This method is called by the build plugin to pass configuration options to the minifier.
    * Implementations can extract their specific configuration from the map using a well-known key.
+   * </p>
    *
-   * <p>The default implementation does nothing, maintaining backward compatibility with existing
+   * <p>
+   * The default implementation does nothing, maintaining backward compatibility with existing
    * minifiers that don't support configuration.
+   * </p>
    *
    * @param config configuration map containing minifier-specific options
    */

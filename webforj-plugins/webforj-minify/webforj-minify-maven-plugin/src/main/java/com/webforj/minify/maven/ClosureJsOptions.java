@@ -3,11 +3,16 @@ package com.webforj.minify.maven;
 /**
  * Configuration options for the Closure Compiler JavaScript minifier.
  *
- * <p>This class provides configuration for the Google Closure Compiler used by the
+ * <p>
+ * This class provides configuration for the Google Closure Compiler used by the
  * webforj-minify-closure-js minifier. All options have sensible defaults that match the current
  * hardcoded behavior.
+ * </p>
  *
- * <p>Example configuration in pom.xml:
+ * <p>
+ * Example configuration in pom.xml:
+ * </p>
+ *
  * <pre>{@code
  * <plugin>
  *   <groupId>com.webforj</groupId>
@@ -37,7 +42,9 @@ public class ClosureJsOptions {
   /**
    * Compilation level for optimization.
    *
-   * <p>Valid values:
+   * <p>
+   * Valid values:
+   * </p>
    * <ul>
    * <li><b>WHITESPACE_ONLY</b> - Only removes whitespace and comments</li>
    * <li><b>SIMPLE_OPTIMIZATIONS</b> - Renames local variables, removes dead code (default)</li>
@@ -50,7 +57,9 @@ public class ClosureJsOptions {
   /**
    * Input JavaScript language version.
    *
-   * <p>Valid values include:
+   * <p>
+   * Valid values include:
+   * </p>
    * <ul>
    * <li><b>ECMASCRIPT3</b> - ES3 (very old browsers)</li>
    * <li><b>ECMASCRIPT5</b> - ES5</li>
@@ -69,7 +78,9 @@ public class ClosureJsOptions {
   /**
    * Output JavaScript language version for transpilation.
    *
-   * <p>Valid values include:
+   * <p>
+   * Valid values include:
+   * </p>
    * <ul>
    * <li><b>ECMASCRIPT3</b> - ES3</li>
    * <li><b>ECMASCRIPT5</b> - ES5 (broad browser compatibility, default)</li>
@@ -88,8 +99,10 @@ public class ClosureJsOptions {
   /**
    * Pretty print the output (preserve formatting for debugging).
    *
-   * <p>When true, the output will be formatted with whitespace and line breaks. When false
-   * (default), output will be minified to a single line.
+   * <p>
+   * When true, the output will be formatted with whitespace and line breaks. When false (default),
+   * output will be minified to a single line.
+   * </p>
    */
   private boolean prettyPrint = false;
 
@@ -167,11 +180,8 @@ public class ClosureJsOptions {
 
   @Override
   public String toString() {
-    return "ClosureJsOptions{"
-        + "compilationLevel='" + compilationLevel + '\''
-        + ", languageIn='" + languageIn + '\''
-        + ", languageOut='" + languageOut + '\''
-        + ", prettyPrint=" + prettyPrint
-        + '}';
+    return "ClosureJsOptions{" + "compilationLevel='" + compilationLevel + '\'' + ", languageIn='"
+        + languageIn + '\'' + ", languageOut='" + languageOut + '\'' + ", prettyPrint="
+        + prettyPrint + '}';
   }
 }

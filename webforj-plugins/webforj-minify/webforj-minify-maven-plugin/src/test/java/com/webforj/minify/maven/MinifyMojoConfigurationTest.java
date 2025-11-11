@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for MinifyMojo configuration handling.
  *
- * <p>Tests that configuration from pom.xml is properly received and can be passed to minifiers.
+ * <p>
+ * Tests that configuration from pom.xml is properly received and can be passed to minifiers.
  *
  * @author Kevin Hagel
  */
@@ -139,11 +140,9 @@ class MinifyMojoConfigurationTest {
   @Test
   void testAllLanguageModes() {
     // Test various ECMAScript language modes
-    String[] modes =
-        new String[] {
-          "ECMASCRIPT3", "ECMASCRIPT5", "ECMASCRIPT_2015", "ECMASCRIPT_2016", "ECMASCRIPT_2017",
-          "ECMASCRIPT_2018", "ECMASCRIPT_2019", "ECMASCRIPT_2020", "ECMASCRIPT_NEXT"
-        };
+    String[] modes = new String[] {"ECMASCRIPT3", "ECMASCRIPT5", "ECMASCRIPT_2015",
+        "ECMASCRIPT_2016", "ECMASCRIPT_2017", "ECMASCRIPT_2018", "ECMASCRIPT_2019",
+        "ECMASCRIPT_2020", "ECMASCRIPT_NEXT"};
 
     for (String mode : modes) {
       Map<String, Object> closureJsConfig = new HashMap<>();

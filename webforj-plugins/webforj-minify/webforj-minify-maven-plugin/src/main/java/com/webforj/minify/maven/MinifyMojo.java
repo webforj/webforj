@@ -19,7 +19,9 @@ import org.apache.maven.project.MavenProject;
 /**
  * Maven Mojo that minifies webforJ assets during the build process.
  *
- * <p>Runs in the process-classes phase (after compilation, before WAR packaging).
+ * <p>
+ * Runs in the process-classes phase (after compilation, before WAR packaging).
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -53,8 +55,8 @@ public class MinifyMojo extends AbstractMojo {
     // Log configuration if present
     if (minifierConfigurations != null && !minifierConfigurations.isEmpty()) {
       getLog().debug("Minifier configurations provided: " + minifierConfigurations.keySet());
-      for (Map.Entry<String, java.util.Map<String, String>> entry
-          : minifierConfigurations.entrySet()) {
+      for (Map.Entry<String, java.util.Map<String, String>> entry : minifierConfigurations
+          .entrySet()) {
         getLog().debug("Configuration [" + entry.getKey() + "]: " + entry.getValue());
       }
     } else {
@@ -86,8 +88,8 @@ public class MinifyMojo extends AbstractMojo {
     if (minifierConfigurations != null && !minifierConfigurations.isEmpty()) {
       // Convert Map<String, Map<String, String>> to Map<String, Object>
       Map<String, Object> config = new java.util.HashMap<>();
-      for (Map.Entry<String, java.util.Map<String, String>> entry
-          : minifierConfigurations.entrySet()) {
+      for (Map.Entry<String, java.util.Map<String, String>> entry : minifierConfigurations
+          .entrySet()) {
         config.put(entry.getKey(), entry.getValue());
       }
       getLog().debug("Applying configuration to minifiers: " + config.keySet());

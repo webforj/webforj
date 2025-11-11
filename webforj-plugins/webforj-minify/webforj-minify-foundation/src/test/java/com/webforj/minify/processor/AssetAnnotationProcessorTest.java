@@ -16,8 +16,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 /**
  * Integration tests for AssetAnnotationProcessor.
  *
- * <p>Note: Full annotation processor testing requires compile-time execution. These tests verify
- * the processor behavior through integration scenarios.
+ * <p>
+ * Note: Full annotation processor testing requires compile-time execution. These tests verify the
+ * processor behavior through integration scenarios.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -29,10 +31,12 @@ class AssetAnnotationProcessorTest {
   /**
    * Test that verifies repeated annotations are collected.
    *
-   * <p>This is a regression test for the bug where multiple @InlineStyleSheet annotations on the
-   * same class were ignored.
+   * <p>
+   * This is a regression test for the bug where multiple @InlineStyleSheet annotations on the same
+   * class were ignored.
    *
-   * <p>When annotations are repeated: - Java automatically wraps them in a container annotation
+   * <p>
+   * When annotations are repeated: - Java automatically wraps them in a container annotation
    * (e.g., @InlineStyleSheets) - The processor must detect and unwrap the container - All repeated
    * annotations must be collected
    */
@@ -81,8 +85,7 @@ class AssetAnnotationProcessorTest {
    * Test that multiple annotations are collected for different types.
    */
   @ParameterizedTest
-  @CsvSource({
-      "ws://css/theme.css, ws://css/layout.css, StyleSheet",
+  @CsvSource({"ws://css/theme.css, ws://css/layout.css, StyleSheet",
       "ws://js/app.js, ws://js/utils.js, JavaScript",
       "context://js/inline1.js, context://js/inline2.js, InlineJavaScript"})
   void testMultipleAnnotationsAreCollected(String url1, String url2, String type)
@@ -107,10 +110,9 @@ class AssetAnnotationProcessorTest {
   /*
    * NOTE: These tests verify manifest structure, not actual annotation processing.
    *
-   * Full integration testing of the annotation processor requires:
-   * 1. Creating a test project with actual @StyleSheet/@JavaScript annotations
-   * 2. Running javac with the annotation processor
-   * 3. Verifying the generated META-INF/webforj-resources.json
+   * Full integration testing of the annotation processor requires: 1. Creating a test project with
+   * actual @StyleSheet/@JavaScript annotations 2. Running javac with the annotation processor 3.
+   * Verifying the generated META-INF/webforj-resources.json
    *
    * This should be done in a separate integration test module or during CI builds.
    */

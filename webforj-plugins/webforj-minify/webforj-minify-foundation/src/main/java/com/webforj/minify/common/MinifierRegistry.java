@@ -8,10 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Registry for discovering and managing asset minifier implementations.
  *
- * <p>Uses Java SPI (Service Provider Interface) to automatically discover minifier
- * implementations on the classpath.
+ * <p>
+ * Uses Java SPI (Service Provider Interface) to automatically discover minifier implementations on
+ * the classpath.
+ * </p>
  *
- * <p>This class is thread-safe and can be safely used in parallel processing.
+ * <p>
+ * This class is thread-safe and can be safely used in parallel processing.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -33,8 +37,10 @@ public class MinifierRegistry {
   /**
    * Registers a minifier for its supported file extensions.
    *
-   * <p>Extensions are automatically normalized (lowercased and dots removed). If multiple minifiers
+   * <p>
+   * Extensions are automatically normalized (lowercased and dots removed). If multiple minifiers
    * support the same extension, the last one registered wins.
+   * </p>
    *
    * @param minifier the minifier to register
    */
@@ -71,7 +77,9 @@ public class MinifierRegistry {
   /**
    * Gets the minifier for a given file extension.
    *
-   * <p>The extension is automatically normalized before lookup.
+   * <p>
+   * The extension is automatically normalized before lookup.
+   * </p>
    *
    * @param fileExtension the file extension (with or without dot, e.g., ".css" or "css")
    * @return an Optional containing the minifier if found
@@ -83,8 +91,10 @@ public class MinifierRegistry {
   /**
    * Discovers and loads all minifier implementations using Java SPI.
    *
-   * <p>Minifiers are loaded from META-INF/services/com.webforj.minify.common.AssetMinifier. Failed
+   * <p>
+   * Minifiers are loaded from META-INF/services/com.webforj.minify.common.AssetMinifier. Failed
    * registrations are logged as warnings but do not stop the loading process.
+   * </p>
    *
    * @param classLoader the class loader to use for discovery
    */
@@ -118,8 +128,10 @@ public class MinifierRegistry {
   /**
    * Configures all registered minifiers with the provided configuration map.
    *
-   * <p>Each minifier can extract its specific configuration from the map using a well-known key.
-   * For example, the Closure JS minifier looks for the "closureJs" key.
+   * <p>
+   * Each minifier can extract its specific configuration from the map using a well-known key. For
+   * example, the Closure JS minifier looks for the "closureJs" key.
+   * </p>
    *
    * @param config configuration map containing minifier-specific options
    */
@@ -132,8 +144,8 @@ public class MinifierRegistry {
     }
 
     if (buildLogger != null) {
-      buildLogger.debug("Configuring " + minifiers.size() + " minifier(s) with keys: "
-          + config.keySet());
+      buildLogger
+          .debug("Configuring " + minifiers.size() + " minifier(s) with keys: " + config.keySet());
     }
 
     for (AssetMinifier minifier : minifiers.values()) {

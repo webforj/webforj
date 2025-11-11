@@ -36,8 +36,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /**
  * Comprehensive tests for AssetAnnotationProcessor using both compile-testing and Mockito.
  *
- * <p>This test class provides two levels of testing: 1. Compile-testing: Tests actual compilation
- * and manifest generation 2. Mockito: Tests specific processor logic with mocked dependencies
+ * <p>
+ * This test class provides two levels of testing: 1. Compile-testing: Tests actual compilation and
+ * manifest generation 2. Mockito: Tests specific processor logic with mocked dependencies
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -57,23 +59,20 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should generate manifest for single @StyleSheet annotation")
     void testSingleStyleSheetAnnotation() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
-          + "@StyleSheet(\"ws://app.css\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+              + "@StyleSheet(\"ws://app.css\")\n" + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
       assertThat(compilation).generatedFile(StandardLocation.CLASS_OUTPUT,
           "META-INF/webforj-resources.json");
 
       // Verify manifest content
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -94,22 +93,18 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should generate manifest for multiple @StyleSheet annotations")
     void testMultipleStyleSheetAnnotations() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
-          + "@StyleSheet(\"ws://app.css\")\n"
-          + "@StyleSheet(\"ws://theme.css\")\n"
-          + "@StyleSheet(\"context://static/layout.css\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+              + "@StyleSheet(\"ws://app.css\")\n" + "@StyleSheet(\"ws://theme.css\")\n"
+              + "@StyleSheet(\"context://static/layout.css\")\n" + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -119,8 +114,7 @@ class AssetAnnotationProcessorComprehensiveTest {
         assertEquals(3, assets.size());
 
         // Verify all three URLs are present
-        Set<String> urls = Set.of(
-            assets.get(0).getAsJsonObject().get("url").getAsString(),
+        Set<String> urls = Set.of(assets.get(0).getAsJsonObject().get("url").getAsString(),
             assets.get(1).getAsJsonObject().get("url").getAsString(),
             assets.get(2).getAsJsonObject().get("url").getAsString());
 
@@ -135,21 +129,18 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should generate manifest for @JavaScript annotations")
     void testJavaScriptAnnotations() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".JavaScript;\n"
-          + "@JavaScript(\"ws://app.js\")\n"
-          + "@JavaScript(\"context://static/utils.js\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".JavaScript;\n"
+              + "@JavaScript(\"ws://app.js\")\n" + "@JavaScript(\"context://static/utils.js\")\n"
+              + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -171,23 +162,20 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should skip @InlineStyleSheet with inline content but process context:// URLs")
     void testInlineStyleSheetWithContextProtocol() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".InlineStyleSheet;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
-          + "@InlineStyleSheet(\"body { color: red; }\")\n"
-          + "@InlineStyleSheet(\"context://css/inline.css\")\n"
-          + "@StyleSheet(\"ws://app.css\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".InlineStyleSheet;\n"
+              + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+              + "@InlineStyleSheet(\"body { color: red; }\")\n"
+              + "@InlineStyleSheet(\"context://css/inline.css\")\n"
+              + "@StyleSheet(\"ws://app.css\")\n" + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -198,8 +186,7 @@ class AssetAnnotationProcessorComprehensiveTest {
         // Should skip inline content
         assertEquals(2, assets.size());
 
-        Set<String> urls = Set.of(
-            assets.get(0).getAsJsonObject().get("url").getAsString(),
+        Set<String> urls = Set.of(assets.get(0).getAsJsonObject().get("url").getAsString(),
             assets.get(1).getAsJsonObject().get("url").getAsString());
 
         assertTrue(urls.contains("ws://app.css"));
@@ -212,23 +199,20 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should process @InlineJavaScript with context:// protocol")
     void testInlineJavaScriptWithContextProtocol() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".InlineJavaScript;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".JavaScript;\n"
-          + "@InlineJavaScript(\"console.log('hello');\")\n"
-          + "@InlineJavaScript(\"context://js/init.js\")\n"
-          + "@JavaScript(\"ws://app.js\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".InlineJavaScript;\n"
+              + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".JavaScript;\n"
+              + "@InlineJavaScript(\"console.log('hello');\")\n"
+              + "@InlineJavaScript(\"context://js/init.js\")\n" + "@JavaScript(\"ws://app.js\")\n"
+              + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -239,8 +223,7 @@ class AssetAnnotationProcessorComprehensiveTest {
         // Should skip inline code
         assertEquals(2, assets.size());
 
-        Set<String> urls = Set.of(
-            assets.get(0).getAsJsonObject().get("url").getAsString(),
+        Set<String> urls = Set.of(assets.get(0).getAsJsonObject().get("url").getAsString(),
             assets.get(1).getAsJsonObject().get("url").getAsString());
 
         assertTrue(urls.contains("ws://app.js"));
@@ -253,22 +236,19 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should warn about external URLs (http/https)")
     void testExternalUrlsAreRejected() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
-          + "@StyleSheet(\"https://cdn.example.com/bootstrap.css\")\n"
-          + "@StyleSheet(\"ws://app.css\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+              + "@StyleSheet(\"https://cdn.example.com/bootstrap.css\")\n"
+              + "@StyleSheet(\"ws://app.css\")\n" + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
       assertThat(compilation).hadNoteContaining("Skipping external resource");
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -286,22 +266,19 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should warn about URLs without protocol")
     void testUrlsWithoutProtocolAreRejected() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
-          + "@StyleSheet(\"app.css\")\n"
-          + "@StyleSheet(\"ws://theme.css\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+              + "@StyleSheet(\"app.css\")\n" + "@StyleSheet(\"ws://theme.css\")\n"
+              + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
       assertThat(compilation).hadWarningContaining("Skipping URL without protocol");
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -322,20 +299,17 @@ class AssetAnnotationProcessorComprehensiveTest {
       // This test documents that only the 'value' parameter is processed
       // If annotations had other parameters like 'url', 'path', etc., they would be ignored
       // All webforJ annotations use only 'value' parameter
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
-          + "@StyleSheet(\"ws://app.css\")\n"
-          + "public class TestApp {}\n");
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp",
+          "" + "package test;\n" + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".StyleSheet;\n"
+              + "@StyleSheet(\"ws://app.css\")\n" + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -354,28 +328,22 @@ class AssetAnnotationProcessorComprehensiveTest {
     @Test
     @DisplayName("Should handle mixed annotations correctly")
     void testMixedAnnotations() {
-      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", ""
-          + "package test;\n"
-          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".*;\n"
-          + "@StyleSheet(\"ws://app.css\")\n"
-          + "@JavaScript(\"ws://app.js\")\n"
-          + "@InlineStyleSheet(\"body { color: blue; }\")\n"
+      JavaFileObject source = JavaFileObjects.forSourceString("test.TestApp", "" + "package test;\n"
+          + "import " + WEBFORJ_ANNOTATION_PACKAGE + ".*;\n" + "@StyleSheet(\"ws://app.css\")\n"
+          + "@JavaScript(\"ws://app.js\")\n" + "@InlineStyleSheet(\"body { color: blue; }\")\n"
           + "@InlineStyleSheet(\"context://css/inline.css\")\n"
           + "@InlineJavaScript(\"console.log('test');\")\n"
           + "@InlineJavaScript(\"context://js/inline.js\")\n"
-          + "@StyleSheet(\"https://cdn.example.com/lib.css\")\n"
-          + "@StyleSheet(\"relative.css\")\n"
-          + "@StyleSheet(\"context://static/theme.css\")\n"
-          + "public class TestApp {}\n");
+          + "@StyleSheet(\"https://cdn.example.com/lib.css\")\n" + "@StyleSheet(\"relative.css\")\n"
+          + "@StyleSheet(\"context://static/theme.css\")\n" + "public class TestApp {}\n");
 
-      Compilation compilation = Compiler.javac()
-          .withProcessors(new AssetAnnotationProcessor())
-          .compile(source);
+      Compilation compilation =
+          Compiler.javac().withProcessors(new AssetAnnotationProcessor()).compile(source);
 
       assertThat(compilation).succeeded();
 
-      JavaFileObject manifestFile = compilation.generatedFile(StandardLocation.CLASS_OUTPUT,
-          "META-INF/webforj-resources.json").get();
+      JavaFileObject manifestFile = compilation
+          .generatedFile(StandardLocation.CLASS_OUTPUT, "META-INF/webforj-resources.json").get();
 
       try {
         String content = manifestFile.getCharContent(false).toString();
@@ -387,8 +355,7 @@ class AssetAnnotationProcessorComprehensiveTest {
         // Should exclude: inline content, https://, relative.css
         assertEquals(5, assets.size());
 
-        Set<String> urls = Set.of(
-            assets.get(0).getAsJsonObject().get("url").getAsString(),
+        Set<String> urls = Set.of(assets.get(0).getAsJsonObject().get("url").getAsString(),
             assets.get(1).getAsJsonObject().get("url").getAsString(),
             assets.get(2).getAsJsonObject().get("url").getAsString(),
             assets.get(3).getAsJsonObject().get("url").getAsString(),

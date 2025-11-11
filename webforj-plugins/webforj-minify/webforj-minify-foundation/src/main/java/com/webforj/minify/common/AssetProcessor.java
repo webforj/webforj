@@ -16,7 +16,9 @@ import java.util.stream.Stream;
 /**
  * Core asset processing logic shared between Maven and Gradle plugins.
  *
- * <p>This class extracts the common minification workflow to eliminate code duplication.
+ * <p>
+ * This class extracts the common minification workflow to eliminate code duplication.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -222,7 +224,9 @@ public class AssetProcessor {
   /**
    * Converts a glob pattern to a regular expression.
    *
-   * <p>Supports the following glob patterns:
+   * <p>
+   * Supports the following glob patterns:
+   * </p>
    *
    * <ul>
    * <li>** - matches zero or more path segments (directories)

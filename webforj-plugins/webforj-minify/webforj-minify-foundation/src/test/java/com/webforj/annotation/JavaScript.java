@@ -15,11 +15,24 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Repeatable(JavaScript.Container.class)
 public @interface JavaScript {
+  /**
+   * The JavaScript file URL.
+   *
+   * @return the JavaScript file URL
+   */
   String value();
 
+  /**
+   * Container annotation for repeatable JavaScript annotations.
+   */
   @Retention(RetentionPolicy.RUNTIME)
   @Target(ElementType.TYPE)
   @interface Container {
+    /**
+     * Array of JavaScript annotations.
+     *
+     * @return array of JavaScript annotations
+     */
     JavaScript[] value();
   }
 }
