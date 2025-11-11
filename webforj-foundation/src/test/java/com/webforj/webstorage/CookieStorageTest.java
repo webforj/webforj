@@ -1,6 +1,7 @@
 package com.webforj.webstorage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -87,6 +88,15 @@ class CookieStorageTest {
 
       webStorage.get(keys);
       verify(thinClient).getUserProperties(BBjThinClient.USER_PROPERTIES_COOKIES, keys);
+    }
+
+    @Test
+    void shouldReturnNullForNonExistentKey() throws BBjException {
+      when(thinClient.getUserProperty(anyLong(), eq("nonexistent"))).thenThrow(BBjException.class);
+
+      String result = webStorage.getItem("nonexistent");
+
+      assertNull(result);
     }
   }
 

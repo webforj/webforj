@@ -150,16 +150,16 @@ public abstract sealed class WebStorage permits CookieStorage, LocalStorage, Ses
   }
 
   /**
-   * When passed a key name, will return that key's value.
+   * When passed a key name, will return that key's value, or null if the key does not exist.
    *
    * @param key the key name
-   * @return the value of the key
+   * @return the value of the key, or null if the key does not exist
    */
   public String get(String key) {
     try {
       return thinClient.getUserProperty(type.getValue(), key);
     } catch (BBjException e) {
-      return "";
+      return null;
     }
   }
 

@@ -26,6 +26,7 @@ import com.webforj.component.table.event.selection.TableItemSelectEvent;
 import com.webforj.component.table.event.selection.TableItemSelectionChange;
 import com.webforj.component.table.renderer.Renderer;
 import com.webforj.data.EntityKeysRegistry;
+import com.webforj.data.concern.HasKeyProvider;
 import com.webforj.data.concern.ValueAware;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.data.repository.CollectionRepository;
@@ -92,7 +93,7 @@ import java.util.stream.Stream;
  */
 @NodeName("dwc-table")
 public final class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T>,
-    MultipleSelectableRepository<Table<T>, T>, ValueAware<Table<T>, List<T>> {
+    MultipleSelectableRepository<Table<T>, T>, ValueAware<Table<T>, List<T>>, HasKeyProvider<T> {
   /**
    * The selection mode for the table.
    */
@@ -135,7 +136,8 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   }
 
   private static final record ClientItem(String id, JsonObject data, JsonArray rowParts,
-      JsonObject cellParts) {}
+      JsonObject cellParts) {
+  }
 
   private static final String GET_ROW_ID_EXP = "row.data.__APPID__";
   private static final String GET_ROW_PART_EXP = """
@@ -360,11 +362,20 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   public Table<T> setRepository(Repository<T> repository) {
     Objects.requireNonNull(repository, "The repository cannot be null");
 
-    // set the repository if not the same as the current repository
-
-    if (this.repository != null && !this.repository.equals(repository)) {
+    // set the repository if it's the first time or if it's different from the current repository
+    if (this.repository == null || !this.repository.equals(repository)) {
       this.repository = repository;
       this.repository.onCommit(this::handleRepositoryCommit);
+
+      // Sync EntityKeysRegistry with Repository's key provider
+      keyRegistry.setKeyProvider(entity -> {
+        @SuppressWarnings("unchecked")
+        T typedEntity = (T) entity;
+        Object key = repository.getKey(typedEntity);
+
+        // Only use if key is not the entity itself (which is the default fallback)
+        return key != entity ? key : null;
+      });
     }
 
     return this;
@@ -376,6 +387,52 @@ public final class Table<T> extends HtmlComponent<Table<T>> implements HasReposi
   @Override
   public Repository<T> getRepository() {
     return repository;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Delegates to the repository's key provider. A repository must be set before calling this
+   * method.
+   * </p>
+   *
+   * <p>
+   * You should set the key provider directly on the repository before passing it to the table via
+   * {@link #setRepository(Repository)}. This ensures the repository is fully configured before
+   * being used.
+   * </p>
+   *
+   * @throws IllegalStateException if no repository is set
+   */
+  @Override
+  public Table<T> setKeyProvider(Function<T, ?> keyProvider) {
+    if (repository == null) {
+      throw new IllegalStateException("Repository must be set before configuring key provider. "
+          + "Call setRepository() first or set the key provider directly on the repository.");
+    }
+
+    // Delegate to repository
+    repository.setKeyProvider(keyProvider);
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Returns the repository's key provider.
+   * </p>
+   *
+   * @throws IllegalStateException if no repository is set
+   */
+  @Override
+  public Function<T, ?> getKeyProvider() {
+    if (repository == null) {
+      throw new IllegalStateException("No repository is set");
+    }
+
+    return repository.getKeyProvider();
   }
 
   /**

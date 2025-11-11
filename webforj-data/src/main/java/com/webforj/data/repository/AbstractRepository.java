@@ -1,5 +1,6 @@
 package com.webforj.data.repository;
 
+import com.webforj.data.HasEntityKey;
 import com.webforj.data.repository.event.RepositoryCommitEvent;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
@@ -7,6 +8,8 @@ import com.webforj.dispatcher.ListenerRegistration;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -25,6 +28,43 @@ public abstract class AbstractRepository<T> implements Repository<T> {
   private Comparator<T> orderBy = null;
   private Predicate<T> filter = null;
   private final OrderCriteriaList<T> orderCriteriaList = new OrderCriteriaList<>();
+  private Function<T, ?> keyProvider = null;
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Repository<T> setKeyProvider(Function<T, ?> keyProvider) {
+    Objects.requireNonNull(keyProvider, "Key provider cannot be null");
+    this.keyProvider = keyProvider;
+    // Trigger commit to notify listeners (e.g., Table) to update entity key mappings
+    commit();
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>
+   * Returns the custom key provider if set, otherwise returns a default provider that checks for
+   * {@link HasEntityKey} interface and falls back to returning the entity itself.
+   * </p>
+   */
+  @Override
+  public Function<T, ?> getKeyProvider() {
+    if (keyProvider != null) {
+      return keyProvider;
+    }
+
+    // check HasEntityKey, otherwise return entity
+    return entity -> {
+      if (entity instanceof HasEntityKey hasEntityKey) {
+        return hasEntityKey.getEntityKey();
+      }
+
+      return entity;
+    };
+  }
 
   /**
    * {@inheritDoc}

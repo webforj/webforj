@@ -23,12 +23,19 @@ public class CollectionRepository<T> extends AbstractRepository<T>
   private Predicate<T> baseFilter = null;
 
   /**
-   * Creates a new instance of ListRepository with the provided list of items.
+   * Creates a new instance of CollectionRepository with the provided list of items.
    *
    * @param items The list of items to be used for data retrieval.
    */
   public CollectionRepository(Collection<T> items) {
     this.items = items;
+    setKeyProvider(entity -> {
+      if (entity instanceof com.webforj.data.HasEntityKey hasEntityKey) {
+        return hasEntityKey.getEntityKey();
+      }
+
+      return entity;
+    });
   }
 
   /**

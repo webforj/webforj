@@ -1,8 +1,10 @@
 package com.webforj.data;
 
+import com.webforj.data.concern.HasKeyProvider;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * EntityKeysRegistry is a thread-safe mapping utility that associates unique string keys with
@@ -26,20 +28,48 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public class EntityKeysRegistry {
+public class EntityKeysRegistry implements HasKeyProvider<Object> {
   private static final String ENTITY_CANNOT_BE_NULL = "Entity cannot be null";
   private final ConcurrentHashMap<Object, String> entityToKeyMap = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, Object> keyToEntityMap = new ConcurrentHashMap<>();
+  private Function<Object, ?> keyProvider;
+
+  /**
+   * {@inheritDoc}
+   *
+   * <h4>Priority Order for Key Generation:</h4>
+   * <ol>
+   * <li>{@link HasEntityKey} interface (if entity implements it)</li>
+   * <li>Custom key provider (if set via this method)</li>
+   * <li>Random UUID (fallback)</li>
+   * </ol>
+   */
+  @Override
+  public EntityKeysRegistry setKeyProvider(Function<Object, ?> keyProvider) {
+    this.keyProvider = keyProvider;
+    return this;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Function<Object, ?> getKeyProvider() {
+    return keyProvider;
+  }
 
   /**
    * Retrieves or generates a unique key for the specified entity. If the entity already has an
    * associated key, it returns the existing key. Otherwise, a new key is generated.
    *
    * <p>
-   * If the entity implements {@link HasEntityKey}, the key provided by the entity is used. If not,
-   * a new UUID (first 8 characters) is generated and used as the key. This method ensures that each
-   * entity has a unique and consistent identifier.
+   * Key generation follows this priority:
    * </p>
+   * <ol>
+   * <li>If entity implements {@link HasEntityKey}, use its key</li>
+   * <li>If an identifier provider is set, use it to extract the key</li>
+   * <li>Otherwise, generate a random UUID (first 8 characters)</li>
+   * </ol>
    *
    * @param entity the entity for which a unique key is desired. Must not be null.
    *
@@ -50,9 +80,24 @@ public class EntityKeysRegistry {
     Objects.requireNonNull(entity, ENTITY_CANNOT_BE_NULL);
 
     return entityToKeyMap.computeIfAbsent(entity, k -> {
-      String id = (entity instanceof HasEntityKey hasEntityKey)
-          ? String.valueOf(hasEntityKey.getEntityKey())
-          : UUID.randomUUID().toString().substring(0, 8);
+      String id;
+
+      if (entity instanceof HasEntityKey hasEntityKey) {
+        // Priority 1: HasEntityKey interface
+        id = String.valueOf(hasEntityKey.getEntityKey());
+      } else if (keyProvider != null) {
+        // Priority 2: Custom key provider
+        Object providedId = keyProvider.apply(entity);
+        id = providedId != null ? String.valueOf(providedId) : null;
+      } else {
+        // Priority 3: Random UUID fallback
+        id = null;
+      }
+
+      // If no ID could be determined, generate random UUID
+      if (id == null) {
+        id = UUID.randomUUID().toString().substring(0, 8);
+      }
 
       keyToEntityMap.put(id, entity);
       return id;
