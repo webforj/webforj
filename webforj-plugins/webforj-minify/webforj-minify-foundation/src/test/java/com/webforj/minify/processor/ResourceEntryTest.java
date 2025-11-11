@@ -101,6 +101,7 @@ class ResourceEntryTest {
    * <p>
    * ResourceEntry is a private inner class of AssetAnnotationProcessor, so we need reflection to
    * instantiate it for testing.
+   * </p>
    */
   private Object createResourceEntry(String url, String type, String discoveredIn)
       throws Exception {

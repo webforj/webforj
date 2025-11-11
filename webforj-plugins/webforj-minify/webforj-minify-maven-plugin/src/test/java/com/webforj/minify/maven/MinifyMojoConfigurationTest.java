@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
  *
  * <p>
  * Tests that configuration from pom.xml is properly received and can be passed to minifiers.
+ * </p>
  *
  * @author Kevin Hagel
  */

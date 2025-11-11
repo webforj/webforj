@@ -34,11 +34,13 @@ class AssetAnnotationProcessorTest {
    * <p>
    * This is a regression test for the bug where multiple @InlineStyleSheet annotations on the same
    * class were ignored.
+   * </p>
    *
    * <p>
    * When annotations are repeated: - Java automatically wraps them in a container annotation
    * (e.g., @InlineStyleSheets) - The processor must detect and unwrap the container - All repeated
    * annotations must be collected
+   * </p>
    */
   @Test
   void testRepeatedAnnotationsAreCollected() throws IOException {

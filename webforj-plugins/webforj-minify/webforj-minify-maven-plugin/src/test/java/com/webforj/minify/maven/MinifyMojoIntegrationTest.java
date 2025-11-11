@@ -21,6 +21,7 @@ import org.junit.jupiter.api.io.TempDir;
  * <p>
  * These tests create real file structures and execute the mojo to verify minification works
  * end-to-end.
+ * </p>
  *
  * @author Kevin Hagel
  */
