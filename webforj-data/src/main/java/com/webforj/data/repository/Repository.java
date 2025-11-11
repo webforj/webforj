@@ -1,11 +1,13 @@
 package com.webforj.data.repository;
 
 import com.webforj.data.HasEntityKey;
+import com.webforj.data.concern.HasKeyProvider;
 import com.webforj.data.repository.event.RepositoryCommitEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -16,7 +18,7 @@ import java.util.stream.Stream;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public interface Repository<T> extends RetrievalCriteria<T> {
+public interface Repository<T> extends RetrievalCriteria<T>, HasKeyProvider<T> {
 
   /**
    * Gets the starting position of records to retrieve.
@@ -61,19 +63,42 @@ public interface Repository<T> extends RetrievalCriteria<T> {
   OrderCriteriaList<T> getOrderCriteriaList();
 
   /**
+   * {@inheritDoc}
+   *
+   * <h3>Priority Order for Key Resolution:</h3>
+   * <ol>
+   * <li>Custom key provider (if set via this method)</li>
+   * <li>{@link HasEntityKey} interface (if entity implements it)</li>
+   * <li>Repository-specific default (e.g., JPA metadata, or entity itself)</li>
+   * </ol>
+   *
+   * <h3>Usage Example:</h3>
+   *
+   * <pre>{@code
+   * repository.setKeyProvider(Person::getId);
+   * }</pre>
+   */
+  @Override
+  Repository<T> setKeyProvider(Function<T, ?> keyProvider);
+
+  /**
    * Gets the id/key of the provided entity.
+   *
+   * <p>
+   * This method uses the key provider chain to determine the entity's key:
+   * </p>
+   * <ol>
+   * <li>Custom key provider (if set)</li>
+   * <li>{@link HasEntityKey} interface (if implemented)</li>
+   * <li>Entity itself (backward compatible default)</li>
+   * </ol>
    *
    * @param entity The entity for which to get the id.
    * @return The id of the entity.
    */
   default Object getKey(T entity) {
     Objects.requireNonNull(entity, "entity cannot be null");
-
-    if (entity instanceof HasEntityKey hasEntityKey) {
-      return hasEntityKey.getEntityKey();
-    } else {
-      return entity;
-    }
+    return getKeyProvider().apply(entity);
   }
 
   /**
