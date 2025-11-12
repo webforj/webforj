@@ -5,7 +5,10 @@ import org.gradle.api.provider.Property;
 /**
  * Configuration extension for the webforJ minify plugin.
  *
- * <p>Usage in build.gradle:
+ * <p>
+ * Usage in build.gradle:
+ * </p>
+ *
  * <pre>
  * webforjMinify {
  *   skip = false

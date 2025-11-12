@@ -10,8 +10,10 @@ import org.gradle.api.tasks.SourceSetContainer;
 /**
  * Gradle plugin that registers the minify task for webforJ applications.
  *
- * <p>The plugin automatically configures the minify task to run after the classes task,
- * ensuring assets are minified before packaging.
+ * <p>
+ * The plugin automatically configures the minify task to run after the classes task, ensuring
+ * assets are minified before packaging.
+ * </p>
  *
  * @author Kevin Hagel
  */
@@ -27,17 +29,15 @@ public class MinifyPlugin implements Plugin<Project> {
         project.getExtensions().create("webforjMinify", MinifyExtension.class);
 
     // Create minifier configuration for minifier implementations
-    Configuration minifierConfig =
-        project.getConfigurations().create("webforjMinifier", config -> {
-          config.setVisible(false);
-          config.setCanBeConsumed(false);
-          config.setDescription("Minifier implementations for webforJ minify plugin "
-              + "(e.g., ph-css, closure-compiler)");
-        });
+    Configuration minifierConfig = project.getConfigurations().create("webforjMinifier", config -> {
+      config.setVisible(false);
+      config.setCanBeConsumed(false);
+      config.setDescription("Minifier implementations for webforJ minify plugin "
+          + "(e.g., ph-css, closure-compiler)");
+    });
 
     // Get source sets
-    SourceSetContainer sourceSets =
-        project.getExtensions().getByType(SourceSetContainer.class);
+    SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
     SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 
     // Register minify task
@@ -71,8 +71,8 @@ public class MinifyPlugin implements Plugin<Project> {
   private void configureBootJarTaskDependency(Project project,
       org.gradle.api.tasks.TaskProvider<MinifyTask> minifyTask) {
     project.getPlugins().withId("org.springframework.boot", plugin -> {
-      project.getTasks().named("bootJar").configure(
-          bootJarTask -> bootJarTask.dependsOn(minifyTask));
+      project.getTasks().named("bootJar")
+          .configure(bootJarTask -> bootJarTask.dependsOn(minifyTask));
     });
   }
 
@@ -84,12 +84,10 @@ public class MinifyPlugin implements Plugin<Project> {
 
     // Configure task inputs using Provider API for lazy configuration
     // Use layout.dir() with provider to safely handle file collections
-    task.getOutputDirectory().set(
-        project.getLayout().dir(
-            project.provider(() -> mainSourceSet.getOutput().getClassesDirs().getFiles()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new org.gradle.api.GradleException(
+    task.getOutputDirectory()
+        .set(project.getLayout()
+            .dir(project.provider(() -> mainSourceSet.getOutput().getClassesDirs().getFiles()
+                .stream().findFirst().orElseThrow(() -> new org.gradle.api.GradleException(
                     "No classes directory found for source set: " + mainSourceSet.getName())))));
 
     // FIXED: Use output resources directory (build/resources/main), not source directory

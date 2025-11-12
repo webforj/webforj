@@ -13,13 +13,16 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Unit tests for MinifyPlugin.
  *
- * <p>Tests verify that the plugin can be applied and registers its extension correctly.
+ * <p>
+ * Tests verify that the plugin can be applied and registers its extension correctly.
+ * </p>
  *
  * @author Kevin Hagel
  */
 class MinifyPluginTest {
 
-  @TempDir File testProjectDir;
+  @TempDir
+  File testProjectDir;
   private Project project;
 
   @BeforeEach
@@ -39,8 +42,7 @@ class MinifyPluginTest {
     project.getPlugins().apply("com.webforj.minify");
 
     // Verify plugin is applied
-    assertTrue(project.getPlugins().hasPlugin("com.webforj.minify"),
-        "Plugin should be applied");
+    assertTrue(project.getPlugins().hasPlugin("com.webforj.minify"), "Plugin should be applied");
   }
 
   @Test

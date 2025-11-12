@@ -140,8 +140,8 @@ public abstract class MinifyTask extends DefaultTask {
       Set<Path> manifestFiles = processor.collectManifestFiles(manifestPath, resolver);
       filesToProcess.addAll(manifestFiles);
     } catch (JsonSyntaxException e) {
-      throw new GradleException(
-          "Malformed manifest file - check META-INF/webforj-resources.json", e);
+      throw new GradleException("Malformed manifest file - check META-INF/webforj-resources.json",
+          e);
     }
   }
 
