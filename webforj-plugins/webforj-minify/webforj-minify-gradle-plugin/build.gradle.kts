@@ -69,38 +69,3 @@ tasks.withType<JavaCompile> {
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-
-            pom {
-                name.set("webforJ Minify Gradle Plugin")
-                description.set("Gradle plugin for minifying webforJ assets at build time")
-                url.set("https://github.com/webforj/webforj")
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("webforj")
-                        name.set("webforJ Team")
-                        email.set("info@webforj.com")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/webforj/webforj.git")
-                    developerConnection.set("scm:git:ssh://github.com/webforj/webforj.git")
-                    url.set("https://github.com/webforj/webforj")
-                }
-            }
-        }
-    }
-}
