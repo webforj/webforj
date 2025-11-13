@@ -2,28 +2,6 @@
 
 Build-time asset minification system for webforJ applications that automatically discovers and minifies CSS and JavaScript resources referenced via webforJ annotations.
 
-## Features
-
-- 🚀 **Zero Configuration** - Works out of the box for 90% of use cases
-- 🔍 **Automatic Discovery** - Scans webforJ annotations at compile time
-- ⚡ **Parallel Processing** - Minifies multiple files concurrently for large projects
-- 🔌 **Pluggable Architecture** - Extensible via Java SPI
-- 🛡️ **Graceful Error Handling** - Minification errors don't fail builds
-- 📊 **Performance Metrics** - Detailed logging with size reduction statistics
-- 🔒 **Security Validated** - Directory traversal protection
-
-## Requirements
-
-- Java 17 or higher
-- Maven 3.6+ or Gradle 7.6+
-- webforJ framework (any version with annotation support)
-
-## Quick Start
-
-Choose your build tool:
-- [Maven Setup](#maven-setup)
-- [Gradle Setup](#gradle-setup)
-
 ### Maven Setup
 
 Add the plugin to your `pom.xml`:
@@ -114,7 +92,7 @@ plugins {
 
 dependencies {
   // Minify foundation (provided scope for annotation processing)
-  compileOnly("com.webforj:webforj-minify-foundation:25.10-SNAPSHOT")
+  annotationProcessor("com.webforj:webforj-minify-foundation:25.10-SNAPSHOT")
 
   // Minifier implementations - add to the webforjMinifier configuration
   add("webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.10-SNAPSHOT")
@@ -311,73 +289,21 @@ Create `src/main/resources/META-INF/webforj-minify.txt`:
 !**/*.min.js
 ```
 
-### Parallel Processing Threshold
-
-By default, the plugin uses parallel streams for >10 files. This is automatic and requires no configuration.
-
-## Frequently Asked Questions
-
-### Why is the annotation processor configuration required?
-
-The annotation processor configuration (`<annotationProcessorPaths>` or `annotationProcessor`) is required because:
-
-1. **Build Lifecycle**: Annotation processing happens during compilation, before the minify plugin executes
-2. **Security**: Maven 3+ requires explicit annotation processor declaration to prevent malicious code execution
-3. **Industry Standard**: Lombok, MapStruct, Dagger, and all major annotation processors require the same configuration
-
-This is standard practice for Java annotation processors and cannot be automated.
-
-## Architecture
-
-### Module Structure
-
-```
-webforj-minify/
-├── webforj-minify-foundation/     # Core interfaces + annotation processor
-│   ├── AssetMinifier              # SPI interface for minifiers
-│   ├── MinifierRegistry           # Thread-safe minifier registry
-│   ├── ResourceResolver           # URL protocol resolver
-│   ├── MinificationException      # Exception type
-│   └── AssetAnnotationProcessor   # Generates manifest at compile time
-├── webforj-minify-phcss-css/      # CSS minifier (ph-css 8.0.0)
-├── webforj-minify-closure-js/     # JavaScript minifier (Closure Compiler)
-└── webforj-minify-maven-plugin/   # Maven plugin
-```
-
 ### Extensibility
 
 Create custom minifiers by implementing the `AssetMinifier` interface:
 
 ```java
-package com.example;
-
-import com.webforj.minify.foundation.AssetMinifier;
-import com.webforj.minify.foundation.MinificationException;
-import java.nio.file.Path;
-import java.util.Set;
-
-public class SassMinifier implements AssetMinifier {
+public class JsonMinifier implements AssetMinifier {
 
   @Override
   public String minify(String content, Path sourceFile) throws MinificationException {
-    try {
-      // Your minification logic here
-      return compileSass(content);
-    } catch (Exception e) {
-      throw new MinificationException("Failed to minify " + sourceFile, e);
-    }
+    ...
   }
 
   @Override
   public Set<String> getSupportedExtensions() {
-    return Set.of("scss", "sass");
-  }
-
-  @Override
-  public boolean shouldMinify(Path filePath) {
-    // Skip already minified files
-    String fileName = filePath.getFileName().toString().toLowerCase();
-    return !fileName.endsWith(".min.scss") && !fileName.endsWith(".min.sass");
+    return Set.of("json");
   }
 }
 ```
@@ -385,7 +311,7 @@ public class SassMinifier implements AssetMinifier {
 Register via SPI by creating `META-INF/services/com.webforj.minify.foundation.AssetMinifier`:
 
 ```
-com.example.SassMinifier
+com.example.JsonMinifier
 ```
 
 Then include it in the plugin dependencies (Maven):
@@ -510,36 +436,3 @@ mvn clean verify
 cd webforj-minify-foundation
 mvn test
 ```
-
-### Test Coverage
-
-- **109 tests** across all modules (foundation: 64, CSS: 8, JS: 24, Maven plugin: 13)
-- Code coverage tracked via JaCoCo
-- Security tests for directory traversal protection
-- Comprehensive integration tests for Maven plugin
-
-## Roadmap
-
-- [x] Gradle plugin implementation
-- [ ] Source map generation
-- [ ] Watch mode for development
-
-## License
-
-Part of the webforJ project. See parent repository for license details.
-
-## Contributing
-
-Contributions welcome! Please follow webforJ contribution guidelines:
-
-1. Run Checkstyle before committing
-2. Ensure all tests pass
-3. Follow Conventional Commits format
-4. Add unit tests for new features
-
-
-## Support
-
-- **Issues**: https://github.com/webforj/webforj/issues
-- **Documentation**: https://docs.webforj.com
-- **Community**: https://discord.gg/webforj
