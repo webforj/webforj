@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.webforj.test</groupId>
+  <artifactId>test-project</artifactId>
+  <version>1.0.0-TEST</version>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-minify-maven-plugin</artifactId>
+        <version>25.10-SNAPSHOT</version>
+        <configuration>
+          <minifierConfigurations>
+            <closureJs>
+              <compilationLevel>SIMPLE_OPTIMIZATIONS</compilationLevel>
+              <languageIn>ECMASCRIPT_2020</languageIn>
+              <languageOut>ECMASCRIPT5</languageOut>
+            </closureJs>
+          </minifierConfigurations>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

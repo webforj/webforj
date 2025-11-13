@@ -66,6 +66,26 @@
       <artifactId>webforj-install-maven-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-foundation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-phcss-css</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-closure-js</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-maven-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- webforj-components -->
     <dependency>
