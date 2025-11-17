@@ -59,7 +59,7 @@ import java.util.UUID;
  * @author Hyyan Abo Fakher
  * @since 25.01
  */
-public class Tree extends DwcFocusableComponent<Tree>
+public final class Tree extends DwcFocusableComponent<Tree>
     implements TreeNodeDelegate, ItemSingleSelectable<Tree, TreeNode>, KeySingleSelectable<Tree>,
     ItemMultiSelectable<Tree, TreeNode>, KeyMultiSelectable<Tree> {
   static final String PROP_CONNECT = "connect";

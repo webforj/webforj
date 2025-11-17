@@ -20,7 +20,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public class Frame extends Window {
+public final class Frame extends Window {
 
   /**
    * Enum representing the various areas of a Frame. Each constant corresponds to a specific area
