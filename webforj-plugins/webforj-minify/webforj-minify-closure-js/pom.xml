@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-minify</artifactId>
+    <version>25.10-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webforj-minify-closure-js</artifactId>
+  <name>${project.artifactId}</name>
+  <description>JavaScript minifier implementation using Google Closure Compiler</description>
+
+  <dependencies>
+    <!-- Foundation module -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-foundation</artifactId>
+    </dependency>
+
+    <!-- JavaScript minification -->
+    <dependency>
+      <groupId>com.google.javascript</groupId>
+      <artifactId>closure-compiler</artifactId>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

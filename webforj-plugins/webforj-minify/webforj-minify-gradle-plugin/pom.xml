@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-minify</artifactId>
+    <version>25.10-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>webforj-minify-gradle-plugin</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.artifactId}</name>
+  <description>Gradle plugin for minifying webforJ assets at build time</description>
+
+  <properties>
+    <gradle.executable>./gradlew</gradle.executable>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-minify-foundation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Execute Gradle build (includes running tests) -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>gradle-build</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${gradle.executable}</executable>
+              <arguments>
+                <argument>clean</argument>
+                <argument>build</argument>
+                <argument>publishToMavenLocal</argument>
+                <argument>--console=plain</argument>
+              </arguments>
+              <!-- Fail Maven build if Gradle build fails -->
+              <successCodes>
+                <successCode>0</successCode>
+              </successCodes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Display Gradle test results in Maven output -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>display-gradle-test-results</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo message="========================================"/>
+                <echo message="Gradle Plugin Test Results:"/>
+                <echo message="========================================"/>
+                <loadfile property="test.results"
+                          srcFile="${basedir}/build/test-results/test/TEST-com.webforj.minify.gradle.MinifyPluginTest.xml"
+                          failonerror="false"/>
+                <echo message="${test.results}"/>
+                <exec executable="grep" outputproperty="test.summary" failonerror="false">
+                  <arg value="-E"/>
+                  <arg value='testsuite name.*tests="[0-9]+"'/>
+                  <arg value="${basedir}/build/test-results/test/TEST-com.webforj.minify.gradle.MinifyPluginTest.xml"/>
+                </exec>
+                <echo message="${test.summary}"/>
+                <echo message="========================================"/>
+                <echo message="See full report: ${basedir}/build/reports/tests/test/index.html"/>
+                <echo message="========================================"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Copy Gradle-generated JARs to Maven target directory -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-gradle-jars</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>build/libs/</directory>
+                  <includes>
+                    <include>**/*.jar</include>
+                  </includes>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Attach sources and javadoc JARs -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/${project.artifactId}-${project.version}-sources.jar</file>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                </artifact>
+                <artifact>
+                  <file>target/${project.artifactId}-${project.version}-javadoc.jar</file>
+                  <type>jar</type>
+                  <classifier>javadoc</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Skip Maven compilation since Gradle handles it -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Skip Maven tests since Gradle handles it -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- Disable checkstyle since Gradle plugin uses different conventions -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <!-- Disable Jacoco coverage -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>windows_profile</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+      <properties>
+        <gradle.executable>gradlew.bat</gradle.executable>
+      </properties>
+    </profile>
+  </profiles>
+</project>

@@ -1,0 +1,41 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Spec-kit (contains credentials and auth tokens)
+.claude/
+.specify/
+
+# Documentation (project-specific, not for repo)
+CLAUDE.md
+
+# SonarQube
+sonar-project.properties
+
+# Worktrees
+.worktrees/
+
+# OS
+.DS_Store
