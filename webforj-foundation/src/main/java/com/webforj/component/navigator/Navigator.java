@@ -46,7 +46,7 @@ import java.util.Objects;
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
-public class Navigator extends DwcFocusableComponent<Navigator>
+public final class Navigator extends DwcFocusableComponent<Navigator>
     implements HasExpanse<Navigator, Expanse> {
 
   /**

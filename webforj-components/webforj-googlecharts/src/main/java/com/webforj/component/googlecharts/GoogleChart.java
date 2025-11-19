@@ -36,7 +36,7 @@ import java.util.Optional;
 @NodeName("google-chart")
 @JavaScript(value = "https://cdn.jsdelivr.net/npm/@google-web-components/google-chart@5.0.3/+esm",
     attributes = {@Attribute(name = "type", value = "module")})
-public final class GoogleChart extends ElementComposite
+public class GoogleChart extends ElementComposite
     implements HasClassName<GoogleChart>, HasStyle<GoogleChart>, HasVisibility<GoogleChart>,
     HasSize<GoogleChart>, HasAttribute<GoogleChart> {
 
