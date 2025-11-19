@@ -21,7 +21,7 @@ Add the plugin to your `pom.xml`:
           <path>
             <groupId>com.webforj</groupId>
             <artifactId>webforj-minify-foundation</artifactId>
-            <version>25.10-SNAPSHOT</version>
+              <version>25.11-SNAPSHOT</version>
           </path>
         </annotationProcessorPaths>
       </configuration>
@@ -31,7 +31,7 @@ Add the plugin to your `pom.xml`:
     <plugin>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-maven-plugin</artifactId>
-      <version>25.10-SNAPSHOT</version>
+        <version>25.11-SNAPSHOT</version>
       <executions>
         <execution>
           <goals>
@@ -44,13 +44,13 @@ Add the plugin to your `pom.xml`:
         <dependency>
           <groupId>com.webforj</groupId>
           <artifactId>webforj-minify-phcss-css</artifactId>
-          <version>25.10-SNAPSHOT</version>
+            <version>25.11-SNAPSHOT</version>
         </dependency>
         <!-- JavaScript minification -->
         <dependency>
           <groupId>com.webforj</groupId>
           <artifactId>webforj-minify-closure-js</artifactId>
-          <version>25.10-SNAPSHOT</version>
+            <version>25.11-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </plugin>
@@ -87,16 +87,16 @@ rootProject.name = "your-project-name"
 ```kotlin
 plugins {
   java
-  id("com.webforj.minify") version "25.10-SNAPSHOT"
+  id("com.webforj.minify") version "25.10"
 }
 
 dependencies {
   // Minify foundation (provided scope for annotation processing)
-  annotationProcessor("com.webforj:webforj-minify-foundation:25.10-SNAPSHOT")
+  annotationProcessor("com.webforj:webforj-minify-foundation:25.10")
 
   // Minifier implementations - add to the webforjMinifier configuration
-  add("webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.10-SNAPSHOT")
-  add("webforjMinifier", "com.webforj:webforj-minify-closure-js:25.10-SNAPSHOT")
+  add("webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.10")
+  add("webforjMinifier", "com.webforj:webforj-minify-closure-js:25.10")
 }
 
 // Optional configuration
@@ -220,7 +220,7 @@ You can customize the behavior of individual minifiers by adding a `<minifierCon
 <plugin>
   <groupId>com.webforj</groupId>
   <artifactId>webforj-minify-maven-plugin</artifactId>
-  <version>25.10-SNAPSHOT</version>
+    <version>25.11-SNAPSHOT</version>
   <configuration>
     <minifierConfigurations>
       <closureJs>
@@ -242,7 +242,7 @@ You can customize the behavior of individual minifiers by adding a `<minifierCon
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-closure-js</artifactId>
-      <version>25.10-SNAPSHOT</version>
+        <version>25.11-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </plugin>
@@ -331,7 +331,7 @@ Then include it in the plugin dependencies (Maven):
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-phcss-css</artifactId>
-      <version>25.10-SNAPSHOT</version>
+        <version>25.11-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </plugin>
