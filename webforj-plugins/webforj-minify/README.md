@@ -9,10 +9,6 @@ Add the plugin to your `pom.xml`:
 ```xml
 <build>
   <plugins>
-    <!-- 1. Annotation Processor (discovers assets during compilation) -->
-    <!-- NOTE: This configuration is required because annotation processing happens
-         during compilation, before the minify plugin executes. Maven cannot
-         automatically discover annotation processors from plugin dependencies. -->
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-compiler-plugin</artifactId>
@@ -21,17 +17,17 @@ Add the plugin to your `pom.xml`:
           <path>
             <groupId>com.webforj</groupId>
             <artifactId>webforj-minify-foundation</artifactId>
-              <version>25.11-SNAPSHOT</version>
+            <version>25.11</version>
           </path>
         </annotationProcessorPaths>
       </configuration>
     </plugin>
 
-    <!-- 2. Minify Plugin (minifies discovered assets after compilation) -->
+    <!-- 2. Minify Plugin -->
     <plugin>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-maven-plugin</artifactId>
-        <version>25.11-SNAPSHOT</version>
+      <version>25.11</version>
       <executions>
         <execution>
           <goals>
@@ -44,13 +40,13 @@ Add the plugin to your `pom.xml`:
         <dependency>
           <groupId>com.webforj</groupId>
           <artifactId>webforj-minify-phcss-css</artifactId>
-            <version>25.11-SNAPSHOT</version>
+          <version>25.11</version>
         </dependency>
         <!-- JavaScript minification -->
         <dependency>
           <groupId>com.webforj</groupId>
           <artifactId>webforj-minify-closure-js</artifactId>
-            <version>25.11-SNAPSHOT</version>
+          <version>25.11</version>
         </dependency>
       </dependencies>
     </plugin>
@@ -60,48 +56,81 @@ Add the plugin to your `pom.xml`:
 
 ### Gradle Setup
 
-**Step 1:** Configure plugin repositories in `settings.gradle.kts`:
+Add the plugin to your `build.gradle`:
 
-> **Important for SNAPSHOT versions:** Gradle needs to know where to find the plugin. Add this configuration to your `settings.gradle.kts` file.
+**For release versions:**
 
-```kotlin
-pluginManagement {
+```groovy
+buildscript {
     repositories {
-        mavenLocal()
-        gradlePluginPortal()
-        maven {
-            name = "Central Portal Snapshots"
-            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-            mavenContent {
-                snapshotsOnly()
-            }
-        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.webforj:webforj-minify-gradle-plugin:25.11"
     }
 }
 
-rootProject.name = "your-project-name"
-```
-
-**Step 2:** Add the plugin to your `build.gradle.kts`:
-
-```kotlin
 plugins {
-  java
-  id("com.webforj.minify") version "25.10"
+    id 'java'
 }
 
-dependencies {
-  // Minify foundation (provided scope for annotation processing)
-  annotationProcessor("com.webforj:webforj-minify-foundation:25.10")
+apply plugin: 'com.webforj.minify'
 
-  // Minifier implementations - add to the webforjMinifier configuration
-  add("webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.10")
-  add("webforjMinifier", "com.webforj:webforj-minify-closure-js:25.10")
+dependencies {
+    // Minify foundation (provided scope for annotation processing)
+    annotationProcessor "com.webforj:webforj-minify-foundation:25.11"
+
+    // Minifier implementations - add to the webforjMinifier configuration
+    add "webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.11"
+    add "webforjMinifier", "com.webforj:webforj-minify-closure-js:25.11"
 }
 
 // Optional configuration
 webforjMinify {
-  skip.set(false)  // Set to true to skip minification
+    skip = false  // Set to true to skip minification
+}
+```
+
+**For SNAPSHOT versions:**
+
+```groovy
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://central.sonatype.com/repository/maven-snapshots/"
+        }
+    }
+    dependencies {
+        classpath "com.webforj:webforj-minify-gradle-plugin:25.11-SNAPSHOT"
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'com.webforj.minify'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://central.sonatype.com/repository/maven-snapshots/"
+    }
+}
+
+dependencies {
+    // Minify foundation (provided scope for annotation processing)
+    annotationProcessor "com.webforj:webforj-minify-foundation:25.11-SNAPSHOT"
+
+    // Minifier implementations - add to the webforjMinifier configuration
+    add "webforjMinifier", "com.webforj:webforj-minify-phcss-css:25.11-SNAPSHOT"
+    add "webforjMinifier", "com.webforj:webforj-minify-closure-js:25.11-SNAPSHOT"
+}
+
+// Optional configuration
+webforjMinify {
+    skip = false  // Set to true to skip minification
 }
 ```
 
@@ -117,7 +146,7 @@ The `minify` task runs automatically before the `jar` or `war` tasks:
 ./gradlew minify
 
 # Skip minification (via extension)
-./gradlew build  # with skip.set(true) in build.gradle.kts
+./gradlew build  # with skip = true in build.gradle
 ```
 
 ### Usage Example
@@ -220,7 +249,7 @@ You can customize the behavior of individual minifiers by adding a `<minifierCon
 <plugin>
   <groupId>com.webforj</groupId>
   <artifactId>webforj-minify-maven-plugin</artifactId>
-    <version>25.11-SNAPSHOT</version>
+  <version>25.11</version>
   <configuration>
     <minifierConfigurations>
       <closureJs>
@@ -242,7 +271,7 @@ You can customize the behavior of individual minifiers by adding a `<minifierCon
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-closure-js</artifactId>
-        <version>25.11-SNAPSHOT</version>
+      <version>25.11</version>
     </dependency>
   </dependencies>
 </plugin>
@@ -331,7 +360,7 @@ Then include it in the plugin dependencies (Maven):
     <dependency>
       <groupId>com.webforj</groupId>
       <artifactId>webforj-minify-phcss-css</artifactId>
-        <version>25.11-SNAPSHOT</version>
+      <version>25.11</version>
     </dependency>
   </dependencies>
 </plugin>
