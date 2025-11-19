@@ -68,7 +68,7 @@ jobs:
             ${{ runner.os }}-m2-
 
       - name: Verify with Maven
-        run: mvn -B verify
+        run: mvn -B install
 
       - name: Jacoco Report
         # if: github.event_name == 'pull_request'
