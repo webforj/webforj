@@ -58,6 +58,47 @@ import org.springframework.stereotype.Component;
 public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
   private final Logger logger = System.getLogger(ComponentRegistrar.class.getName());
   private static final BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
+  private final Set<String> registeredPackages = new HashSet<>();
+
+  /**
+   * Ensures the specified packages are scanned for {@code @Route} components and registered as
+   * Spring beans if not already present.
+   *
+   * <p>
+   * This method enables dynamic package registration at runtime, complementing the automatic
+   * registration performed during application startup via {@code @Routify}. It is particularly
+   * useful when routes need to be registered from packages not declared in the {@code @Routify}
+   * annotation, such as when building a {@link RouteRegistry} for additional packages discovered at
+   * runtime.
+   * </p>
+   *
+   * <p>
+   * The method is thread-safe. Packages already scanned will be skipped. All registered route
+   * components receive PROTOTYPE scope and LAZY initialization.
+   * </p>
+   *
+   * @param registry the bean definition registry to register components in
+   * @param packages the packages to scan for route components; null or empty array is a no-op
+   */
+  public synchronized void ensurePackagesRegistered(BeanDefinitionRegistry registry,
+      String[] packages) {
+    if (packages == null || packages.length == 0) {
+      return;
+    }
+
+    Set<String> packagesToScan = new HashSet<>();
+    for (String pkg : packages) {
+      if (!registeredPackages.contains(pkg)) {
+        packagesToScan.add(pkg);
+      }
+    }
+
+    if (!packagesToScan.isEmpty()) {
+      ClassPathScanningCandidateComponentProvider scanner = createScanner();
+      registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan);
+      registeredPackages.addAll(packagesToScan);
+    }
+  }
 
   /**
    * {@inheritDoc}
@@ -74,6 +115,7 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
       ClassPathScanningCandidateComponentProvider scanner = createScanner();
       registerWebforjComponents(scanner, registry, Route.class, true, packagesToScan);
       registerWebforjComponents(scanner, registry, Routify.class, false, packagesToScan);
+      registeredPackages.addAll(packagesToScan);
     }
   }
 
@@ -288,5 +330,24 @@ public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
     return AnnotationUtils.findAnnotation(clazz, Component.class) != null
         || AnnotationUtils.findAnnotation(clazz, Configuration.class) != null
         || AnnotationUtils.findAnnotation(clazz, SpringBootApplication.class) != null;
+  }
+
+  /**
+   * Checks if a package has been registered.
+   *
+   * @param packageName the package name to check
+   * @return true if the package has been registered
+   */
+  boolean isPackageRegistered(String packageName) {
+    return registeredPackages.contains(packageName);
+  }
+
+  /**
+   * Gets the count of registered packages.
+   *
+   * @return the number of registered packages
+   */
+  int getRegisteredPackageCount() {
+    return registeredPackages.size();
   }
 }

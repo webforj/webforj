@@ -6,14 +6,17 @@ import com.webforj.router.annotation.Route;
 import com.webforj.router.annotation.RouteAlias;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import java.lang.System.Logger;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Represents a route registry.
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
  * @since 24.12
  */
 public class RouteRegistry {
+  private static final Logger logger = System.getLogger(RouteRegistry.class.getName());
   private final Set<RouteEntry> routeConfigs =
       new TreeSet<>(Comparator.comparingInt(RouteEntry::getPriority)
           .thenComparing(RouteEntry::getPath, Comparator.reverseOrder()));
@@ -36,6 +40,12 @@ public class RouteRegistry {
    * Scans the given base package for classes annotated with {@link Route} and {@link RouteAlias}
    * annotations and builds a new {@link RouteRegistry} instance.
    *
+   * <p>
+   * This method first checks for registered {@link RouteRegistryProvider} implementations via
+   * Java's {@link ServiceLoader} mechanism. If a provider is found, it delegates route discovery to
+   * the provider. Otherwise, it falls back to the default scanning mechanism.
+   * </p>
+   *
    * @param packages the packages to scan for route-annotated classes
    * @param registry the {@link RouteRegistry} instance to populate with the discovered routes
    *
@@ -43,6 +53,22 @@ public class RouteRegistry {
    * @throws IllegalStateException if a class annotated with {@link Route} does not extend
    */
   public static RouteRegistry ofPackage(String[] packages, RouteRegistry registry) {
+    // Try to use SPI providers first
+    ServiceLoader<RouteRegistryProvider> loader = ServiceLoader.load(RouteRegistryProvider.class);
+    Optional<RouteRegistryProvider> provider =
+        StreamSupport.stream(loader.spliterator(), false).findFirst();
+
+    if (provider.isPresent()) {
+      logger.log(Logger.Level.INFO,
+          "Using RouteRegistryProvider: " + provider.get().getClass().getName());
+      RouteRegistry providedRegistry = provider.get().createRouteRegistry(packages);
+      if (providedRegistry != null) {
+        return providedRegistry;
+      }
+    }
+
+    // Fallback to default scanning
+    logger.log(Logger.Level.INFO, "Using default scanning for route discovery");
     try (ScanResult scanResult =
         new ClassGraph().enableClassInfo().enableAnnotationInfo().acceptPackages(packages).scan()) {
 

@@ -1,5 +1,7 @@
 package com.webforj.spring;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -92,6 +94,47 @@ class ComponentRegistrarTest {
     }
   }
 
+  @Nested
+  class EnsurePackagesRegisteredBehavior {
+
+    @Test
+    void shouldTrackRegisteredPackages() {
+      String[] packages = {"com.example.routes"};
+
+      registrar.ensurePackagesRegistered(registry, packages);
+
+      assertTrue(registrar.isPackageRegistered("com.example.routes"));
+    }
+
+    @Test
+    void shouldNotRescanAlreadyRegisteredPackages() {
+      String[] packages = {"com.example.routes"};
+
+      registrar.ensurePackagesRegistered(registry, packages);
+      int sizeAfterFirstCall = registrar.getRegisteredPackageCount();
+
+      registrar.ensurePackagesRegistered(registry, packages);
+
+      // Size should not change, package already tracked
+      assertEquals(sizeAfterFirstCall, registrar.getRegisteredPackageCount());
+    }
+
+    @Test
+    void shouldAddNewPackagesButNotDuplicates() {
+      String[] firstCall = {"com.example.one"};
+      String[] secondCall = {"com.example.one", "com.example.two"};
+
+      registrar.ensurePackagesRegistered(registry, firstCall);
+      assertEquals(1, registrar.getRegisteredPackageCount());
+
+      registrar.ensurePackagesRegistered(registry, secondCall);
+
+      assertEquals(2, registrar.getRegisteredPackageCount());
+      assertTrue(registrar.isPackageRegistered("com.example.one"));
+      assertTrue(registrar.isPackageRegistered("com.example.two"));
+    }
+  }
+
   // Test classes for various scenarios
   @SpringBootApplication
   static class TestAppWithoutRoutify {
@@ -102,3 +145,4 @@ class ComponentRegistrarTest {
   static class TestAppWithRoutify {
   }
 }
+
