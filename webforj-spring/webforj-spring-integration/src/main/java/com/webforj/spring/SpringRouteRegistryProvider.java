@@ -97,7 +97,8 @@ public class SpringRouteRegistryProvider implements RouteRegistryProvider {
       }
     } catch (Exception e) {
       logger.log(Logger.Level.ERROR,
-          "Error registering routes, returning empty registry: " + e.getMessage(), e);
+          "Error registering routes: " + e.getMessage() + ". Returning registry with " +
+          registry.getAvailableRouteEntires().size() + " routes.", e);
     }
 
     return registry;
