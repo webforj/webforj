@@ -1,7 +1,6 @@
 package com.webforj.spring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -129,7 +128,7 @@ class SpringRouteRegistryProviderTest {
     @Test
     void shouldReturnEmptyRegistryOnClassNotFoundException() {
       String[] beanNames = {"testRoute"};
-      RouteRegistry registry = new RouteRegistry();
+      final RouteRegistry registry = new RouteRegistry();
       when(beanFactory.getBeanNamesForAnnotation(Route.class)).thenReturn(beanNames);
 
       BeanDefinition beanDefinition = mock(BeanDefinition.class);
