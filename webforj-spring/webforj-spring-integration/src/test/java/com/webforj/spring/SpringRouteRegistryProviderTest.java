@@ -2,7 +2,6 @@ package com.webforj.spring;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,8 +87,8 @@ class SpringRouteRegistryProviderTest {
 
       provider.createRouteRegistry(packages);
 
-      verify(componentRegistrar).ensurePackagesRegistered(eq((BeanDefinitionRegistry) beanFactory),
-          eq(packages));
+      verify(componentRegistrar).ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory,
+          packages);
     }
 
     @Test
@@ -99,8 +98,8 @@ class SpringRouteRegistryProviderTest {
 
       provider.createRouteRegistry(packages);
 
-      verify(componentRegistrar).ensurePackagesRegistered(eq((BeanDefinitionRegistry) beanFactory),
-          eq(packages));
+      verify(componentRegistrar).ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory,
+          packages);
     }
 
     @Test
@@ -109,8 +108,8 @@ class SpringRouteRegistryProviderTest {
 
       provider.createRouteRegistry(null);
 
-      verify(componentRegistrar).ensurePackagesRegistered(eq((BeanDefinitionRegistry) beanFactory),
-          eq((String[]) null));
+      verify(componentRegistrar).ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory,
+          (String[]) null);
     }
   }
 
