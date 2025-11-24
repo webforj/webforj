@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -58,7 +59,7 @@ import org.springframework.stereotype.Component;
 public class ComponentRegistrar implements BeanDefinitionRegistryPostProcessor {
   private final Logger logger = System.getLogger(ComponentRegistrar.class.getName());
   private static final BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
-  private final Set<String> registeredPackages = new HashSet<>();
+  private final Set<String> registeredPackages = ConcurrentHashMap.newKeySet();
 
   /**
    * Ensures the specified packages are scanned for {@code @Route} components and registered as
