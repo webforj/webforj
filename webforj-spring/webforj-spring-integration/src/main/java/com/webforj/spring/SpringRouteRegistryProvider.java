@@ -18,14 +18,15 @@ import org.springframework.context.ConfigurableApplicationContext;
  * <p>
  * This provider is discovered via Java's {@link java.util.ServiceLoader} mechanism and is used when
  * a Spring application context is available. It retrieves {@code @Route} annotated components from
- * the Spring bean factory, enabling full Spring features including dependency injection.
+ * the Spring bean factory and registers them into the provided {@link RouteRegistry}, enabling full
+ * Spring features including dependency injection.
  * </p>
  *
  * <p>
  * The provider supports both startup-time registration (via {@code @Routify} annotation) and
- * runtime package registration. When building a registry for packages not yet scanned, it delegates
+ * runtime package registration. When registering routes for packages not yet scanned, it delegates
  * to {@link ComponentRegistrar} to ensure the requested packages are registered as Spring beans
- * before constructing the {@link RouteRegistry}.
+ * before adding routes to the {@link RouteRegistry}.
  * </p>
  *
  * <p>
@@ -43,20 +44,17 @@ public class SpringRouteRegistryProvider implements RouteRegistryProvider {
 
   @Override
   @SuppressWarnings("resource") // Context lifecycle is managed by Spring, not this method
-  public RouteRegistry createRouteRegistry(String[] packages) {
-    RouteRegistry registry = new RouteRegistry();
-
+  public void registerRoutes(String[] packages, RouteRegistry registry) {
     ApplicationContext context = ContextHolder.getContext();
     if (context == null) {
-      logger.log(Logger.Level.DEBUG,
-          "Spring context not available, returning empty registry to prevent fallback");
-      return registry;
+      logger.log(Logger.Level.DEBUG, "Spring context not available, registry will remain empty");
+      return;
     }
 
     if (!(context instanceof ConfigurableApplicationContext)) {
       logger.log(Logger.Level.WARNING,
-          "ApplicationContext is not ConfigurableApplicationContext, returning empty registry");
-      return registry;
+          "ApplicationContext is not ConfigurableApplicationContext, registry will remain empty");
+      return;
     }
 
     ConfigurableApplicationContext configurableContext = (ConfigurableApplicationContext) context;
@@ -66,7 +64,7 @@ public class SpringRouteRegistryProvider implements RouteRegistryProvider {
     ComponentRegistrar registrar = context.getBean(ComponentRegistrar.class);
     registrar.ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory, packages);
 
-    // Build RouteRegistry from registered beans
+    // Register routes from Spring beans into RouteRegistry
     try {
       String[] beanNames = beanFactory.getBeanNamesForAnnotation(Route.class);
       int registeredCount = 0;
@@ -100,8 +98,6 @@ public class SpringRouteRegistryProvider implements RouteRegistryProvider {
           "Error registering routes: " + e.getMessage() + ". Returning registry with " +
           registry.getAvailableRouteEntires().size() + " routes.", e);
     }
-
-    return registry;
   }
 
   private boolean isInPackages(String className, String[] packages) {

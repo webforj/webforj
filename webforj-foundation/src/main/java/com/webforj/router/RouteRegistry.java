@@ -61,10 +61,8 @@ public class RouteRegistry {
     if (provider.isPresent()) {
       logger.log(Logger.Level.INFO,
           "Using RouteRegistryProvider: " + provider.get().getClass().getName());
-      RouteRegistry providedRegistry = provider.get().createRouteRegistry(packages);
-      if (providedRegistry != null) {
-        return providedRegistry;
-      }
+      provider.get().registerRoutes(packages, registry);
+      return registry;
     }
 
     // Fallback to default scanning

@@ -51,10 +51,10 @@ class SpringRouteRegistryProviderTest {
     @Test
     void shouldReturnEmptyRegistryWhenContextNotAvailable() {
       ContextHolder.setContext(null);
+      RouteRegistry registry = new RouteRegistry();
 
-      RouteRegistry registry = provider.createRouteRegistry(new String[] {"com.example"});
+      provider.registerRoutes(new String[] {"com.example"}, registry);
 
-      assertNotNull(registry);
       assertEquals(0, registry.getAvailableRouteEntires().size());
     }
 
@@ -62,10 +62,10 @@ class SpringRouteRegistryProviderTest {
     void shouldReturnEmptyRegistryWhenContextNotConfigurable() {
       ApplicationContext nonConfigurableContext = mock(ApplicationContext.class);
       ContextHolder.setContext(nonConfigurableContext);
+      RouteRegistry registry = new RouteRegistry();
 
-      RouteRegistry registry = provider.createRouteRegistry(new String[] {"com.example"});
+      provider.registerRoutes(new String[] {"com.example"}, registry);
 
-      assertNotNull(registry);
       assertEquals(0, registry.getAvailableRouteEntires().size());
     }
   }
@@ -83,9 +83,10 @@ class SpringRouteRegistryProviderTest {
     @Test
     void shouldCallEnsurePackagesRegistered() {
       String[] packages = {"com.example.routes"};
+      RouteRegistry registry = new RouteRegistry();
       when(beanFactory.getBeanNamesForAnnotation(Route.class)).thenReturn(new String[0]);
 
-      provider.createRouteRegistry(packages);
+      provider.registerRoutes(packages, registry);
 
       verify(componentRegistrar).ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory,
           packages);
@@ -94,9 +95,10 @@ class SpringRouteRegistryProviderTest {
     @Test
     void shouldCallEnsurePackagesRegisteredWithEmptyPackages() {
       String[] packages = new String[0];
+      RouteRegistry registry = new RouteRegistry();
       when(beanFactory.getBeanNamesForAnnotation(Route.class)).thenReturn(new String[0]);
 
-      provider.createRouteRegistry(packages);
+      provider.registerRoutes(packages, registry);
 
       verify(componentRegistrar).ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory,
           packages);
@@ -104,9 +106,10 @@ class SpringRouteRegistryProviderTest {
 
     @Test
     void shouldCallEnsurePackagesRegisteredWithNullPackages() {
+      RouteRegistry registry = new RouteRegistry();
       when(beanFactory.getBeanNamesForAnnotation(Route.class)).thenReturn(new String[0]);
 
-      provider.createRouteRegistry(null);
+      provider.registerRoutes(null, registry);
 
       verify(componentRegistrar).ensurePackagesRegistered((BeanDefinitionRegistry) beanFactory,
           (String[]) null);
@@ -126,26 +129,26 @@ class SpringRouteRegistryProviderTest {
     @Test
     void shouldReturnEmptyRegistryOnClassNotFoundException() {
       String[] beanNames = {"testRoute"};
+      RouteRegistry registry = new RouteRegistry();
       when(beanFactory.getBeanNamesForAnnotation(Route.class)).thenReturn(beanNames);
 
       BeanDefinition beanDefinition = mock(BeanDefinition.class);
       when(beanFactory.getBeanDefinition("testRoute")).thenReturn(beanDefinition);
       when(beanDefinition.getBeanClassName()).thenReturn("com.example.NonExistentClass");
 
-      RouteRegistry registry = provider.createRouteRegistry(new String[] {"com.example"});
+      provider.registerRoutes(new String[] {"com.example"}, registry);
 
-      assertNotNull(registry);
       assertEquals(0, registry.getAvailableRouteEntires().size());
     }
 
     @Test
     void shouldReturnEmptyRegistryOnBeanFactoryException() {
+      RouteRegistry registry = new RouteRegistry();
       when(beanFactory.getBeanNamesForAnnotation(Route.class))
           .thenThrow(new RuntimeException("Bean factory error"));
 
-      RouteRegistry registry = provider.createRouteRegistry(new String[] {"com.example"});
+      provider.registerRoutes(new String[] {"com.example"}, registry);
 
-      assertNotNull(registry);
       assertEquals(0, registry.getAvailableRouteEntires().size());
     }
   }

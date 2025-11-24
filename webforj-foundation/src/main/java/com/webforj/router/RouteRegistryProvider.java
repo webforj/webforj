@@ -6,7 +6,7 @@ import java.util.ServiceLoader;
  * Service Provider Interface for providing custom {@link RouteRegistry} implementations.
  *
  * <p>
- * This SPI allows integration frameworks to provide pre-populated {@link RouteRegistry} instances
+ * This SPI allows integration frameworks to register routes into {@link RouteRegistry} instances
  * using their own classpath scanning mechanisms instead of relying on the default scanning. This is
  * useful when the default scanner cannot find classes in certain environments or JAR structures.
  * </p>
@@ -24,16 +24,16 @@ import java.util.ServiceLoader;
 public interface RouteRegistryProvider {
 
   /**
-   * Creates and returns a {@link RouteRegistry} populated with discovered routes.
+   * Registers routes from the specified packages into the provided {@link RouteRegistry}.
    *
    * <p>
    * This method is called by the webforJ framework during router initialization. The implementation
-   * should scan for and register all route-annotated classes using whatever classpath scanning
-   * mechanism is appropriate for the provider.
+   * should scan the specified packages for route-annotated classes and register them into the
+   * provided registry using whatever classpath scanning mechanism is appropriate for the provider.
    * </p>
    *
    * @param packages the packages to scan for routes
-   * @return a populated {@link RouteRegistry}, never {@code null}.
+   * @param registry the {@link RouteRegistry} to register discovered routes into
    */
-  RouteRegistry createRouteRegistry(String[] packages);
+  void registerRoutes(String[] packages, RouteRegistry registry);
 }
