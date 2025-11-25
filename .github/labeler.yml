@@ -34,6 +34,10 @@
 - changed-files:
   - any-glob-to-any-file: 'webforj-webswing/**'
 
+"module: jbang":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-jbang/**'
+
 documentation:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'

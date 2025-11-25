@@ -55,6 +55,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj-jbang -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-jbang-starter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- webforj-plugins -->
     <dependency>
       <groupId>com.webforj</groupId>
