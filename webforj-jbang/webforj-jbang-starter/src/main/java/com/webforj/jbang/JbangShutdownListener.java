@@ -90,6 +90,7 @@ public class JbangShutdownListener implements AppLifecycleListener {
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings("java:S2696")
   public void onDidRun(App app) {
     enabled = Boolean.parseBoolean(System.getProperty("webforj.jbang.auto-shutdown", "true"));
 
@@ -158,9 +159,11 @@ public class JbangShutdownListener implements AppLifecycleListener {
     return activeApps.get();
   }
 
+  @SuppressWarnings("java:S2696")
   static void resetState() {
     activeApps.set(0);
     lastActiveTime.set(System.currentTimeMillis());
+    intervalStarted = false;
     enabled = false;
   }
 }
