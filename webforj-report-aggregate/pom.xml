@@ -58,7 +58,7 @@
     <!-- webforj-jbang -->
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-jbang</artifactId>
+      <artifactId>webforj-jbang-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
 
