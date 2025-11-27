@@ -169,4 +169,21 @@ class ComponentRegistryTest {
     Component result = registry.getComponent("unknown");
     assertNull(result);
   }
+
+  @Test
+  @DisplayName("add should set the owner on added components")
+  void shouldSetOwnerOnAdd() {
+    registry.add(component);
+    assertEquals(parent, component.getOwner());
+  }
+
+  @Test
+  @DisplayName("remove should clear the owner")
+  void shouldClearOwnerOnRemove() {
+    registry.add(component);
+    assertEquals(parent, component.getOwner());
+
+    registry.remove(component);
+    assertNull(component.getOwner());
+  }
 }
