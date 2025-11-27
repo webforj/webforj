@@ -178,7 +178,7 @@ class RadioButtonGroupTest {
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
     void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
       RadioButton[] buttons = {spy(new RadioButton()), spy(new RadioButton())};
-      // Mock buttons as attached so BBjRadioGroup.add is called synchronously
+      // Mock button to become attached after being added to window (returns false, then true)
       when(buttons[0].isAttached()).thenReturn(false, true);
       doThrow(BBjException.class).when(bbjGroup).add(any());
 
