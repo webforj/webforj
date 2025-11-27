@@ -139,7 +139,7 @@ class RadioButtonGroupTest {
     @DisplayName("When group is not null")
     void whenGroupIsNotNull() throws BBjException {
       RadioButton[] buttons = {spy(new RadioButton()), spy(new RadioButton())};
-      // Mock buttons as attached so BBjRadioGroup.add is called synchronously
+      // Mock buttons to become attached after being added to window
       when(buttons[0].isAttached()).thenReturn(false, true);
       when(buttons[1].isAttached()).thenReturn(false, true);
 
