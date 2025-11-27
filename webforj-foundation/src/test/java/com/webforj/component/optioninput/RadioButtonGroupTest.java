@@ -11,11 +11,15 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
+import com.webforj.component.Component;
+import com.webforj.component.ComponentRegistry;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasClientValidationStyle.ValidationStyle;
+import com.webforj.concern.HasComponents;
 import com.webforj.data.event.ValueChangeEvent;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -134,7 +138,11 @@ class RadioButtonGroupTest {
     @Test
     @DisplayName("When group is not null")
     void whenGroupIsNotNull() throws BBjException {
-      RadioButton[] buttons = {new RadioButton(), new RadioButton()};
+      RadioButton[] buttons = {spy(new RadioButton()), spy(new RadioButton())};
+      // Mock buttons to become attached after being added to window
+      when(buttons[0].isAttached()).thenReturn(false, true);
+      when(buttons[1].isAttached()).thenReturn(false, true);
+
       component.add(buttons);
 
       verify(window, times(2)).add(any(RadioButton.class));
@@ -144,8 +152,10 @@ class RadioButtonGroupTest {
     @Test
     @DisplayName("When button is already attached to a window")
     void whenButtonIsAlreadyAttachedToAWindow() throws BBjException {
-      RadioButton[] buttons = {spy(new RadioButton()), new RadioButton()};
+      RadioButton[] buttons = {spy(new RadioButton()), spy(new RadioButton())};
+      // First button is always attached, second becomes attached after add
       when(buttons[0].isAttached()).thenReturn(true);
+      when(buttons[1].isAttached()).thenReturn(false, true);
 
       component.add(buttons);
 
@@ -167,10 +177,39 @@ class RadioButtonGroupTest {
     @Test
     @DisplayName("When control throws BBjException a DwcjRuntimeException is thrown")
     void whenControlThrowsBBjExceptionADwcjRuntimeExceptionIsThrown() throws BBjException {
-      RadioButton[] buttons = {new RadioButton(), new RadioButton()};
+      RadioButton[] buttons = {spy(new RadioButton()), spy(new RadioButton())};
+      // Mock button to become attached after being added to window (returns false, then true)
+      when(buttons[0].isAttached()).thenReturn(false, true);
       doThrow(BBjException.class).when(bbjGroup).add(any());
 
       assertThrows(WebforjRuntimeException.class, () -> component.add(buttons));
+    }
+
+  }
+
+  @Nested
+  @DisplayName("Parent Container API")
+  class ParentContainerApi {
+
+    @Test
+    @DisplayName("When parent implements HasComponents, buttons are added to parent not window")
+    void shouldAddButtonsToParentContainerInsteadOfWindow() throws BBjException {
+      Component mockParent =
+          mock(Component.class, withSettings().extraInterfaces(HasComponents.class));
+      when(mockParent.isAttached()).thenReturn(false);
+
+      // ComponentRegistry should set the parent
+      ComponentRegistry registry = new ComponentRegistry(mockParent, c -> {
+      });
+      registry.add(component);
+
+      // buttons go to parent (HasComponents), not window
+      RadioButton[] buttons = {new RadioButton(), new RadioButton()};
+      component.add(buttons);
+
+      // buttons were added to parent container
+      verify((HasComponents) mockParent, times(2)).add(any(RadioButton.class));
+      verify(window, times(0)).add(any(RadioButton.class));
     }
   }
 

@@ -91,6 +91,9 @@ public final class ComponentRegistry implements HasComponents {
       // monitoring component lifecycle destruction
       current.addLifecycleObserver(observer);
 
+      // set the owner component
+      current.setOwner(parent);
+
       this.components.put(current.getComponentId(), current);
       if (parent.isAttached()) {
         addConsumer.accept(current);
@@ -114,6 +117,7 @@ public final class ComponentRegistry implements HasComponents {
 
       if (this.components.containsKey(c.getComponentId())) {
         this.components.remove(c.getComponentId());
+        c.setOwner(null);
         c.destroy();
       }
     }

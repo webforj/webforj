@@ -13,6 +13,7 @@ import com.webforj.component.optioninput.event.RadioButtonGroupChangeEvent;
 import com.webforj.component.optioninput.sink.RadioButtonGroupChangeSink;
 import com.webforj.component.window.Window;
 import com.webforj.concern.HasClientValidationStyle;
+import com.webforj.concern.HasComponents;
 import com.webforj.data.concern.FocusAcceptorAware;
 import com.webforj.data.concern.ValueAware;
 import com.webforj.data.event.ValueChangeEvent;
@@ -145,24 +146,30 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
    * @return the component itself.
    */
   public RadioButtonGroup add(RadioButton... buttons) {
-    this.buttons.addAll(List.of(buttons));
-
     for (RadioButton button : buttons) {
+      // avoid duplicates when onAttach re-adds existing buttons
+      if (!this.buttons.contains(button)) {
+        this.buttons.add(button);
+      }
+
       button.setButtonGroup(this);
 
       if (this.group != null) {
-        // if the button is not already attached to a window then we add it to the window.
+        // if the button is not already attached to a window then we add it to the container.
+        // also check if button is already in the container (backwards compatibility with old hack)
         if (Boolean.FALSE.equals(button.isAttached())) {
-          this.window.add(button);
+          HasComponents container = getTargetContainer();
+          if (!container.hasComponent(button)) {
+            container.add(button);
+          }
         }
 
-        // add the button to the group
-        try {
-          BBjControl buttonControl = ComponentAccessor.getDefault().getControl(button);
-          group.add((BBjRadioButton) buttonControl);
-        } catch (IllegalAccessException | BBjException e) {
-          throw new WebforjRuntimeException(
-              "Failed to add the BBjRadioButton to the BBjRadioGroup.", e);
+        // add the button to the BBjRadioGroup when it's attached and has a control
+        if (button.isAttached()) {
+          addButtonToBbjGroup(button);
+        } else {
+          // defer adding to BBjRadioGroup until the button is attached
+          button.whenAttached().thenAccept(comp -> addButtonToBbjGroup((RadioButton) comp));
         }
       }
     }
@@ -501,5 +508,38 @@ public final class RadioButtonGroup extends Component implements Iterable<RadioB
 
   private Optional<RadioButton> getFirstRadioButton() {
     return buttons.stream().findFirst();
+  }
+
+  private void addButtonToBbjGroup(RadioButton button) {
+    // Only proceed if group still exists
+    if (this.group == null) {
+      return;
+    }
+
+    try {
+      BBjControl buttonControl = ComponentAccessor.getDefault().getControl(button);
+      group.add((BBjRadioButton) buttonControl);
+    } catch (IllegalAccessException | BBjException e) {
+      throw new WebforjRuntimeException("Failed to add the BBjRadioButton to the BBjRadioGroup.",
+          e);
+    }
+  }
+
+  /**
+   * Returns the target container for adding radio buttons.
+   *
+   * <p>
+   * If the RadioButtonGroup has a parent that implements {@link HasComponents}, the buttons will be
+   * added to that parent container. Otherwise, the buttons will be added to the window.
+   * </p>
+   *
+   * @return the target container.
+   */
+  private HasComponents getTargetContainer() {
+    Component parent = getOwner();
+    if (parent instanceof HasComponents container) {
+      return container;
+    }
+    return this.window;
   }
 }

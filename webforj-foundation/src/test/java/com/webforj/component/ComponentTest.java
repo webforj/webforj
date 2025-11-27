@@ -137,4 +137,23 @@ class ComponentTest {
     component.create(mock(Window.class));
     assertTrue(result.isDone());
   }
+
+  @Test
+  @DisplayName("getOwner should return null initially")
+  void shouldGetOwnerReturnsNullInitially() {
+    assertNull(component.getOwner());
+  }
+
+  @Test
+  @DisplayName("destroy should clear the owner")
+  void shouldDestroyResetsOwner() {
+    Component owner = spy(Component.class);
+    component.setOwner(owner);
+
+    assertEquals(owner, component.getOwner());
+
+    component.destroy();
+
+    assertNull(component.getOwner());
+  }
 }

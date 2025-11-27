@@ -36,6 +36,7 @@ public abstract class Component {
   private boolean attached = false;
   private boolean destroyed = false;
   private Window window;
+  private Component parentComponent;
   private final List<PendingResult<Component>> whenAttachedResults = new ArrayList<>();
 
   static {
@@ -155,6 +156,7 @@ public abstract class Component {
     this.attached = false;
     this.destroyed = true;
     this.window = null;
+    this.parentComponent = null;
     this.onDestroy();
 
     if (this instanceof LocaleObserver observer) {
@@ -196,6 +198,36 @@ public abstract class Component {
    */
   public Window getWindow() {
     return this.window;
+  }
+
+  /**
+   * Retrieves the owner component to which this component belongs.
+   *
+   * <p>
+   * The owner is the component that contains this component in its hierarchy. This is different
+   * from the window, which is the root container. A component can have an owner without being
+   * attached to a window yet.
+   * </p>
+   *
+   * @return The owner component, or {@code null} if this component has no owner.
+   * @since 25.11
+   */
+  public Component getOwner() {
+    return this.parentComponent;
+  }
+
+  /**
+   * Sets the owner component to which this component belongs.
+   *
+   * <p>
+   * This method is intended for internal use by the component registry and should not be called
+   * directly by the API user.
+   * </p>
+   *
+   * @param owner The owner component.
+   */
+  void setOwner(Component owner) {
+    this.parentComponent = owner;
   }
 
   /**
