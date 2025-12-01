@@ -58,9 +58,7 @@ public class MarkdownViewer extends ElementComposite
     setContent(content);
     // Listen for client-side progressive render completion
     getElement().addEventListener("dwc-progressive-render-complete", e -> {
-      rendering = false;
-      whenRenderCompleteResults.forEach(r -> r.complete(this));
-      whenRenderCompleteResults.clear();
+      completeRendering();
     });
   }
 
@@ -212,12 +210,7 @@ public class MarkdownViewer extends ElementComposite
   public MarkdownViewer clear() {
     contentBuffer.setLength(0);
     set(contentProp, "");
-    rendering = false;
-
-    // Complete and clear all pending render completion results
-    whenRenderCompleteResults.forEach(r -> r.complete(this));
-    whenRenderCompleteResults.clear();
-
+    completeRendering();
     return this;
   }
 
@@ -269,7 +262,7 @@ public class MarkdownViewer extends ElementComposite
    */
   public MarkdownViewer stop() {
     getElement().callJsFunctionVoidAsync("stop");
-    rendering = false;
+    completeRendering();
     return this;
   }
 
@@ -285,7 +278,7 @@ public class MarkdownViewer extends ElementComposite
    */
   public MarkdownViewer flush() {
     getElement().callJsFunctionVoidAsync("flush");
-    rendering = false;
+    completeRendering();
     return this;
   }
 
@@ -308,5 +301,11 @@ public class MarkdownViewer extends ElementComposite
     PendingResult<MarkdownViewer> result = new PendingResult<>();
     whenRenderCompleteResults.add(result);
     return result;
+  }
+
+  private void completeRendering() {
+    rendering = false;
+    whenRenderCompleteResults.forEach(r -> r.complete(this));
+    whenRenderCompleteResults.clear();
   }
 }
