@@ -43,7 +43,7 @@ public class MarkdownViewer extends ElementComposite
   private final PropertyDescriptor<Integer> renderSpeedProp =
       PropertyDescriptor.property("renderSpeed", 4);
 
-  private final StringBuffer contentBuffer = new StringBuffer();
+  private final StringBuilder contentBuffer = new StringBuilder();
   private final List<PendingResult<MarkdownViewer>> whenRenderCompleteResults =
       new CopyOnWriteArrayList<>();
   private volatile boolean rendering = false;
