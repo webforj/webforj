@@ -88,10 +88,6 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
-      <artifactId>webforj-login</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.webforj</groupId>
       <artifactId>webforj-refresher</artifactId>
     </dependency>
     <dependency>
