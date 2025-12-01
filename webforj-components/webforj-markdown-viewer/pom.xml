@@ -1,0 +1,35 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.webforj</groupId>
+    <artifactId>webforj-components</artifactId>
+    <version>25.11-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webforj-markdown-viewer</artifactId>
+  <name>${project.artifactId}</name>
+  <description>webforJ markdown viewer component for rendering markdown content with streaming support.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-foundation</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
