@@ -214,6 +214,10 @@ public class MarkdownViewer extends ElementComposite
     set(contentProp, "");
     rendering = false;
 
+    // Complete and clear all pending render completion results
+    whenRenderCompleteResults.forEach(r -> r.complete(this));
+    whenRenderCompleteResults.clear();
+
     return this;
   }
 
