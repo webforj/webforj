@@ -40,7 +40,7 @@ public class Avatar extends ElementCompositeContainer
       PropertyDescriptor.property("shape", AvatarShape.CIRCLE);
 
   /**
-   * Creates a new heading with the given initials.
+   * Creates a new avatar with the given initials.
    *
    * @param initials the initials
    */
