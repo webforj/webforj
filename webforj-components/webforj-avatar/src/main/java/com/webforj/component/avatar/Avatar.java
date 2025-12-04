@@ -27,6 +27,9 @@ public class Avatar extends ElementCompositeContainer
     HasLabel<Avatar>, HasAttribute<Avatar>, HasTooltip<Avatar>, HasTheme<Avatar, AvatarTheme>,
     HasExpanse<Avatar, AvatarExpanse>, HasElementClickListener<Avatar> {
 
+  static final String DEFAULT_LABEL = "Avatar";
+  private String tooltipText;
+
   // Properties
   private final PropertyDescriptor<String> initialsProp =
       PropertyDescriptor.property("initials", "");
@@ -42,12 +45,34 @@ public class Avatar extends ElementCompositeContainer
   /**
    * Creates a new avatar with the given initials.
    *
+   * @param label the accessible label
    * @param initials the initials
    */
-
-  public Avatar(String initials) {
+  public Avatar(String label, String initials) {
     super();
+    setText(label);
     setInitials(initials);
+  }
+
+  /**
+   * Creates a new avatar with the given label. The initials are computed from the label.
+   *
+   * @param label the accessible label
+   */
+  public Avatar(String label) {
+    this(label, getComputedInitials(label));
+  }
+
+  /**
+   * Creates a new avatar with the given label and child components.
+   *
+   * @param label the accessible label
+   * @param components the child components
+   */
+  public Avatar(String label, Component... components) {
+    super();
+    setText(label);
+    add(components);
   }
 
   /**
@@ -56,15 +81,14 @@ public class Avatar extends ElementCompositeContainer
    * @param components the child components
    */
   public Avatar(Component... components) {
-    super();
-    add(components);
+    this(DEFAULT_LABEL, components);
   }
 
   /**
    * Creates a new empty avatar.
    */
   public Avatar() {
-    super();
+    this(DEFAULT_LABEL);
   }
 
   /**
@@ -88,27 +112,6 @@ public class Avatar extends ElementCompositeContainer
   }
 
   /**
-   * Alias for {@link #setInitials(String)}.
-   *
-   * {@inheritDoc}
-   */
-  @Override
-  public Avatar setText(String text) {
-    setInitials(text);
-    return this;
-  }
-
-  /**
-   * Alias for {@link #getInitials()}.
-   *
-   * {@inheritDoc}
-   */
-  @Override
-  public String getText() {
-    return getInitials();
-  }
-
-  /**
    * Sets the accessible label for the avatar.
    *
    * @param label the accessible label
@@ -117,6 +120,12 @@ public class Avatar extends ElementCompositeContainer
   @Override
   public Avatar setLabel(String label) {
     set(labelProp, label);
+
+    // auto generate the tooltip too, but not for the default label
+    if ((this.tooltipText == null || this.tooltipText.isBlank()) && !DEFAULT_LABEL.equals(label)) {
+      setTooltipText(label);
+    }
+
     return this;
   }
 
@@ -128,6 +137,27 @@ public class Avatar extends ElementCompositeContainer
   @Override
   public String getLabel() {
     return get(labelProp);
+  }
+
+  /**
+   * Alias for {@link #setLabel(String)}.
+   *
+   * {@inheritDoc}
+   */
+  @Override
+  public Avatar setText(String text) {
+    setLabel(text);
+    return this;
+  }
+
+  /**
+   * Alias for {@link #getLabel()}.
+   *
+   * {@inheritDoc}
+   */
+  @Override
+  public String getText() {
+    return getLabel();
   }
 
   /**
@@ -182,5 +212,21 @@ public class Avatar extends ElementCompositeContainer
   @Override
   public AvatarTheme getTheme() {
     return get(themeProp);
+  }
+
+  static String getComputedInitials(String label) {
+    if (label == null || label.isBlank()) {
+      return "";
+    }
+
+    String[] parts = label.trim().split(" ");
+    StringBuilder initials = new StringBuilder();
+    for (String part : parts) {
+      if (!part.isEmpty()) {
+        initials.append(part.charAt(0));
+      }
+    }
+
+    return initials.toString();
   }
 }
