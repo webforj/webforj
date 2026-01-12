@@ -29,6 +29,7 @@ import com.basis.startup.type.BBjException;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
+import com.webforj.environment.ObjectTable;
 import com.webforj.event.page.PageEvent;
 import com.webforj.event.page.PageEventOptions;
 import com.webforj.event.page.PageUnloadEvent;
@@ -262,6 +263,23 @@ class PageTest {
       EventListener<PageUnloadEvent> listener = mock(EventListener.class);
 
       assertThrows(WebforjWebManagerException.class, () -> page.onUnload(listener));
+    }
+  }
+
+  @Test
+  void shouldReturnViewTransitionBuilder() throws BBjException {
+    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class);
+        MockedStatic<ObjectTable> mockedObjectTable = mockStatic(ObjectTable.class);
+        MockedStatic<com.webforj.utilities.Assets> mockedAssets =
+            mockStatic(com.webforj.utilities.Assets.class)) {
+      mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
+      mockedObjectTable.when(() -> ObjectTable.contains(anyString())).thenReturn(false);
+      mockedAssets.when(() -> com.webforj.utilities.Assets.contentOf(anyString())).thenReturn("");
+      BBjWebEventOptions optionsMock = mock(BBjWebEventOptions.class);
+      when(webManager.newEventOptions()).thenReturn(optionsMock);
+
+      ViewTransition result = page.startViewTransition();
+      assertNotNull(result);
     }
   }
 

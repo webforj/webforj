@@ -7,6 +7,7 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.CustomObject;
+import com.webforj.annotation.Experimental;
 import com.webforj.component.element.annotation.EventOptions;
 import com.webforj.component.element.annotation.EventOptionsAnnotationProcessor;
 import com.webforj.concern.HasJsExecution;
@@ -49,6 +50,7 @@ public final class Page implements HasJsExecution {
   private PageExecuteJsAsyncHandler executeJsAsyncHandler = null;
   private Environment environment = Environment.getCurrent();
   private boolean isBrowserCloseEventRegistered = false;
+  private ViewTransitionManager viewTransitionManager;
   private final Map<String, PageEventSinkRegistry> registries = new HashMap<>();
   private final EventDispatcher eventDispatcher = new EventDispatcher();
 
@@ -949,6 +951,70 @@ public final class Page implements HasJsExecution {
    */
   public Page open(String url) {
     return open(url, null, "");
+  }
+
+  /**
+   * Creates a new view transition builder.
+   *
+   * <p>
+   * View transitions provide animations when components change. This method returns a builder that
+   * allows you to configure and start an animated transition.
+   * </p>
+   *
+   * <p>
+   * Basic usage:
+   * </p>
+   *
+   * <pre>
+   * Page.getCurrent().startViewTransition().onUpdate(() -&gt; {
+   *   container.remove(oldView);
+   *   container.add(newView);
+   * }).start();
+   * </pre>
+   *
+   * <p>
+   * With transition type for CSS targeting:
+   * </p>
+   *
+   * <pre>
+   * Page.getCurrent().startViewTransition().type(ViewTransition.SLIDE_LEFT).exit(oldView)
+   *     .onUpdate(() -&gt; {
+   *       container.remove(oldView);
+   *       container.add(newView);
+   *     }).start();
+   * </pre>
+   *
+   * <p>
+   * With shared element transitions (morphing):
+   * </p>
+   *
+   * <pre>
+   * // In list view - mark elements with transition names
+   * thumbnail.setViewTransitionName("profile-avatar-" + id);
+   *
+   * // In detail view - use same transition name
+   * fullImage.setViewTransitionName("profile-avatar-" + id);
+   *
+   * // Navigate - elements with matching names will morph automatically
+   * Page.getCurrent().startViewTransition().onUpdate(() -&gt; {
+   *   Router.getCurrent().navigate(DetailView.class, params);
+   * }).start();
+   * </pre>
+   *
+   * <p>
+   * ⚠️ WARNING: This method is experimental since 25.11 and may change in future releases.
+   * </p>
+   *
+   * @return a new ViewTransition builder
+   * @since 25.11
+   */
+  @Experimental(since = "25.11")
+  public ViewTransition startViewTransition() {
+    if (viewTransitionManager == null) {
+      viewTransitionManager = new ViewTransitionManager(this);
+    }
+
+    return new ViewTransition(this, viewTransitionManager);
   }
 
   /**

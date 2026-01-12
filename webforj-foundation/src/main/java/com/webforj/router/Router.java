@@ -1,6 +1,7 @@
 package com.webforj.router;
 
 import com.webforj.Page;
+import com.webforj.ViewTransition;
 import com.webforj.component.Component;
 import com.webforj.component.window.Frame;
 import com.webforj.component.window.Window;
@@ -9,6 +10,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
 import com.webforj.router.annotation.FrameTitle;
+import com.webforj.router.annotation.RouteTransition;
 import com.webforj.router.concern.HasFrameTitle;
 import com.webforj.router.event.ActivateEvent;
 import com.webforj.router.event.DidEnterEvent;
@@ -202,17 +204,69 @@ public class Router {
     // remove the history state listener to avoid loops (MemoryHistory)
     removeHistoryStateListener();
 
-    renderer.render(componentClass.get(), context, component -> {
-      if (component.isPresent()) {
-        handleNavigateComplete(component.get(), context);
+    Class<? extends Component> targetClass = componentClass.get();
+    RouteTransition transition = targetClass.getAnnotation(RouteTransition.class);
+
+    Component exitingComponent = getExitingComponent();
+
+    // Skip transition if navigating to the same view
+    boolean sameView = exitingComponent != null && targetClass.isInstance(exitingComponent);
+
+    RouteTransition exitTransition =
+        exitingComponent != null ? exitingComponent.getClass().getAnnotation(RouteTransition.class)
+            : null;
+
+    boolean hasTransition = !sameView && (transition != null || exitTransition != null);
+
+    if (!hasTransition) {
+      renderer.render(targetClass, context, component -> {
+        component.ifPresent(c -> handleNavigateComplete(c, context));
+        if (onComplete != null) {
+          onComplete.accept(component);
+        }
+        addHistoryStateListener();
+      });
+    } else {
+      ViewTransition vt = Page.getCurrent().startViewTransition();
+
+      // Determine the transition type based on target view's annotation
+      String transitionType = null;
+      if (transition != null && !ViewTransition.NONE.equals(transition.enter())) {
+        // Forward navigation: use target's enter transition
+        transitionType = transition.enter();
+      } else if (transition != null && !ViewTransition.NONE.equals(transition.exit())) {
+        // Back navigation: use target's exit transition (reverse animation)
+        transitionType = transition.exit();
       }
 
-      if (onComplete != null) {
-        onComplete.accept(component);
+      final String activeTransitionType = transitionType;
+
+      // ViewTransition handles the exit/enter suffix internally
+      if (exitingComponent != null && activeTransitionType != null) {
+        vt.exit(exitingComponent, activeTransitionType);
       }
 
-      addHistoryStateListener();
-    });
+      vt.onUpdate(done -> {
+        renderer.render(targetClass, context, component -> {
+          // Apply enter transition AFTER component is created
+          if (component.isPresent() && activeTransitionType != null) {
+            vt.enter(component.get(), activeTransitionType);
+          }
+
+          // Call lifecycle observers BEFORE done() so morph element names are set
+          component.ifPresent(c -> handleNavigateComplete(c, context));
+
+          // Signal that async update is complete - view transition can now capture new state
+          done.run();
+
+          if (onComplete != null) {
+            onComplete.accept(component);
+          }
+
+          addHistoryStateListener();
+        });
+      }).start();
+    }
   }
 
   /**
@@ -807,5 +861,18 @@ public class Router {
           window.dispatchEvent(navigateEvent);
           """, context.getLocation().getFullURI()));
     });
+  }
+
+  private Component getExitingComponent() {
+    RouteRelation<Class<? extends Component>> path = renderer.getActiveRoutePath().orElse(null);
+    if (path == null) {
+      return null;
+    }
+
+    while (!path.getChildren().isEmpty()) {
+      path = path.getChildren().get(0);
+    }
+
+    return renderer.getRenderedComponent(path.getData()).orElse(null);
   }
 }
