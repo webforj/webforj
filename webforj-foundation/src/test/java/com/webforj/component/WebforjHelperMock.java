@@ -57,32 +57,6 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   }
 
   @Override
-  public int msgbox(ConfirmDialog config) {
-    return 0;
-  }
-
-  @Override
-  public String prompt(InputDialog options) {
-    return "";
-  }
-
-  @Override
-  public String fileChooser(FileChooserDialog options) {
-    return "";
-  }
-
-  @Override
-  public String fileUpload(FileUploadDialog options) {
-    return "";
-  }
-
-
-  @Override
-  public String fileSave(FileSaveDialog options) {
-    return "";
-  }
-
-  @Override
   public void sleep(int seconds) {
     // no-op
   }

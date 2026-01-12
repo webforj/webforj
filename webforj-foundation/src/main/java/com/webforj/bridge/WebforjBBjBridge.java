@@ -4,11 +4,6 @@ import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
-import com.webforj.component.optiondialog.ConfirmDialog;
-import com.webforj.component.optiondialog.FileChooserDialog;
-import com.webforj.component.optiondialog.FileSaveDialog;
-import com.webforj.component.optiondialog.FileUploadDialog;
-import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -48,51 +43,6 @@ public interface WebforjBBjBridge {
    * @return the BBjControl returned by the BBj side constructor
    */
   BBjControl createWidget(String classname, BBjWindow wnd);
-
-  /**
-   * invoke the BBj-side MSGBOX function with the given options.
-   *
-   * @param options the config
-   * @return the result of the MSGBOX function
-   * @since 24.02
-   */
-  int msgbox(ConfirmDialog options);
-
-  /**
-   * invoke the BBj-side PROMPT function with the given options.
-   *
-   * @param options the options
-   * @return the result of the PROMPT function
-   * @since 24.02
-   */
-  String prompt(InputDialog options);
-
-  /**
-   * invoke the BBj-side FILEOPEN(server) function with the given options.
-   *
-   * @param options the options
-   * @return the result of the FILEOPEN function
-   * @since 24.02
-   */
-  String fileChooser(FileChooserDialog options);
-
-  /**
-   * invoke the BBj-side FILEOPEN(client) function with the given options.
-   *
-   * @param options the options
-   * @return the result of the FILEOPEN function
-   * @since 24.02
-   */
-  String fileUpload(FileUploadDialog options);
-
-  /**
-   * invoke the BBj-side FILESAVE(server) function with the given options.
-   *
-   * @param options the options
-   * @return the result of the FILESAVE function
-   * @since 24.21
-   */
-  String fileSave(FileSaveDialog options);
 
   /**
    * invoke the BBj-side WAIT function.

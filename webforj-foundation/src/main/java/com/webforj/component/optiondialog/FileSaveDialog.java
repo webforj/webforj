@@ -1,6 +1,9 @@
 package com.webforj.component.optiondialog;
 
+import com.basis.bbj.proxies.BBjFileSave;
+import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
+import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.List;
 
 /**
@@ -249,11 +252,55 @@ public final class FileSaveDialog extends FileChooserDialog {
    */
   @Override
   public String show() {
-    String result = Environment.getCurrent().getBridge().fileSave(this);
-    if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
-      return null;
-    }
+    try {
+      BBjFileSave fileSave = Environment.getCurrent().getBBjAPI().filesave();
 
-    return result;
+      // Set title, path, and name
+      fileSave.title(String.valueOf(getTitle()));
+      fileSave.path(String.valueOf(getInitialPath()));
+      fileSave.name(String.valueOf(getName()));
+
+      // Build filters string
+      List<FileChooserFilter> filterList = getFilters();
+      if (filterList != null && !filterList.isEmpty()) {
+        StringBuilder filterBuilder = new StringBuilder();
+        for (FileChooserFilter filter : filterList) {
+          filterBuilder.append(String.valueOf(filter.getDescription()));
+          filterBuilder.append("\n");
+          filterBuilder.append(String.valueOf(filter.getPattern()));
+          filterBuilder.append("\n");
+        }
+        fileSave.filters(filterBuilder.toString());
+      }
+
+      // Set selection mode
+      fileSave.mode(getSelectionMode().getValue());
+
+      // Build modes string
+      StringBuilder modesBuilder = new StringBuilder();
+      if (isRestricted()) {
+        modesBuilder.append("RESTRICTED,");
+      }
+      String attributes = getAttributesAsString();
+      if (attributes != null && !attributes.isEmpty()) {
+        modesBuilder.append(attributes);
+      }
+      modesBuilder.append(",EXISTS=").append(getExistsAction().getValue());
+      modesBuilder.append(",i18n=").append(getI18n().toString());
+
+      String modes = modesBuilder.toString();
+      if (!modes.isEmpty()) {
+        fileSave.modes(modes);
+      }
+
+      String result = fileSave.show();
+      if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
+        return null;
+      }
+
+      return result;
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to show file save dialog.", e);
+    }
   }
 }
