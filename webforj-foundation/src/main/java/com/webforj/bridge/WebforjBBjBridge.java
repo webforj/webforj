@@ -44,14 +44,6 @@ public interface WebforjBBjBridge {
   BBjControl createWidget(String classname, BBjWindow wnd);
 
   /**
-   * invoke the BBj-side WAIT function.
-   *
-   * @param seconds the number of seconds to wait
-   * @since 24.02
-   */
-  void sleep(int seconds);
-
-  /**
    * invoke a method of a BBj-side object instance, mostly custom objects.
    *
    * @param object the object instance

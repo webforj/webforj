@@ -12,6 +12,7 @@ import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
+import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.servlet.WebforjServlet;
 import jakarta.servlet.http.HttpSession;
@@ -337,7 +338,11 @@ public final class Environment {
    *        255. (Some systems may allow waits longer than 255 seconds.)
    */
   public void sleep(int seconds) {
-    getBridge().sleep(seconds);
+    try {
+      Environment.getCurrent().getBBjAPI().getInterpreter().waitVerb(seconds);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to sleep", e);
+    }
   }
 
   /**

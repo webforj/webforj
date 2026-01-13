@@ -57,10 +57,6 @@ class public WebforjHelper implements WebforjBBjBridge
         methodret ep!
     methodend
 
-    method public void sleep(int seconds!)
-        wait(seconds!)
-    methodend
-
     method public BBjControl createWidget(String class!, BBjWindow w!)
         wnd! = w!
         widget! = eval("new "+class!+"(wnd!)")

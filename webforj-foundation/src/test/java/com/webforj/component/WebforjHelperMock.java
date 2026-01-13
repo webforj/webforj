@@ -49,9 +49,4 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   public String getQueryParam(String key) {
     return "";
   }
-
-  @Override
-  public void sleep(int seconds) {
-    // no-op
-  }
 }

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
+import com.basis.bbj.proxies.BBjInterpreter;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -182,5 +183,22 @@ class EnvironmentTest {
         Files.deleteIfExists(tempConfigFile);
       }
     }
+  }
+
+  @Test
+  void shouldCallWaitVerbWithCorrectSeconds() throws Exception {
+    BBjAPI mockApi = mock(BBjAPI.class);
+    BBjInterpreter mockInterpreter = mock(BBjInterpreter.class);
+    WebforjBBjBridge mockBridge = mock(WebforjBBjBridge.class);
+
+    when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+    when(mockApi.getInterpreter()).thenReturn(mockInterpreter);
+
+    Environment.init(mockApi, mockBridge, 0);
+    Environment.getCurrent().sleep(5);
+
+    verify(mockInterpreter).waitVerb(5);
+
+    Environment.cleanup();
   }
 }
