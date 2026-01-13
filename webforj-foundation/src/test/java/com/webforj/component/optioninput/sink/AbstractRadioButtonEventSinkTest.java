@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
-import com.webforj.component.WebforjHelperMock;
 import com.webforj.component.optioninput.RadioButtonGroup;
 import com.webforj.component.optioninput.mocks.RadioButtonEventSinkMock;
 import com.webforj.dispatcher.EventDispatcher;
@@ -36,9 +35,6 @@ class AbstractRadioButtonEventSinkTest {
   @Mock
   BBjRadioGroup control;
 
-  @Mock
-  WebforjHelperMock webforjHelper;
-
   @InjectMocks
   RadioButtonEventSinkMock sink;
 
@@ -48,12 +44,12 @@ class AbstractRadioButtonEventSinkTest {
     @Test
     void callSetCallbackOnUnderlyingControl() throws BBjException {
       sink.setCallback();
-      verify(control, times(1)).setCallback(eq(0), any(), eq("onEvent"));
+      verify(control, times(1)).setCallback(eq(0), any(), eq("handleEvent"));
     }
 
     @Test
     void throwDwcjRuntimeExceptionWhenSetCallbackFails() throws BBjException {
-      doThrow(BBjException.class).when(control).setCallback(eq(0), any(), eq("onEvent"));
+      doThrow(BBjException.class).when(control).setCallback(eq(0), any(), eq("handleEvent"));
       assertThrows(WebforjRuntimeException.class, () -> sink.setCallback());
     }
   }

@@ -6,7 +6,6 @@ import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWebComponent;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.event.DebouncePhase;
 import com.webforj.component.element.event.ElementEvent;
@@ -74,7 +73,7 @@ public final class ElementEventSink extends AbstractDwcEventSink {
    * {@inheritDoc}
    */
   @Override
-  protected String doSetCallback(BBjControl control, Object options, CustomObject handler,
+  protected String doSetCallback(BBjControl control, Object options, Object handler,
       String callback) throws BBjException {
     BBjWebComponent theControl = (BBjWebComponent) control;
 

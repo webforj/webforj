@@ -14,7 +14,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxies.sysgui.BBjWebComponent;
 import com.basis.startup.type.BBjException;
 import com.webforj.PendingResult;
@@ -187,7 +187,10 @@ class ElementTest {
 
     @Test
     @DisplayName("Adding events with different params will return different ListenerRegistration")
-    void addingEventWithDifferentParams() {
+    void addingEventWithDifferentParams() throws BBjException {
+      when(control.newEventOptions())
+          .thenReturn(mock(BBjWebEventOptions.class));
+
       String type = "click";
       EventListener<ElementEvent> listener = event -> {
       };

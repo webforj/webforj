@@ -5,10 +5,8 @@ import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjWebEvent;
 import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.Environment;
 import com.webforj.Page;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.element.event.DebouncePhase;
 import com.webforj.component.event.sink.DwcEventSink;
 import com.webforj.dispatcher.EventDispatcher;
@@ -53,9 +51,7 @@ public class PageEventSink implements DwcEventSink<Page> {
   public String setCallback(Object options) {
     if (isConnected()) {
       try {
-        WebforjBBjBridge bridge = getEnvironment().getBridge();
-        CustomObject handler = bridge.getEventProxy(this, "handleEvent");
-        return doSetCallback(getBbjWebManager(), options, handler, "onEvent");
+        return doSetCallback(getBbjWebManager(), options, this, "handleEvent");
       } catch (BBjException e) {
         throw new WebforjRuntimeException("Failed to set BBjWebManager callback.", e);
       }
@@ -130,13 +126,13 @@ public class PageEventSink implements DwcEventSink<Page> {
    *
    * @param manager The BBjWebManager instance
    * @param options The options object
-   * @param handler The BBj CustomObject instance
+   * @param handler The event handler instance
    * @param callback The callback method name as defined in the handler
    *
    * @return the callback id.
    * @throws BBjException if the callback cannot be set.
    */
-  protected String doSetCallback(BBjWebManager manager, Object options, CustomObject handler,
+  protected String doSetCallback(BBjWebManager manager, Object options, Object handler,
       String callback) throws BBjException {
 
     // create a control options and map it from the passed PageEventOptions

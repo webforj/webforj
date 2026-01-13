@@ -2,35 +2,10 @@ package com.webforj.bridge;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.bbj.proxies.sysgui.BBjWindow;
-import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import java.util.ArrayList;
 
 public interface WebforjBBjBridge {
-
-  /**
-   * create and register an event proxy that defers B Bj-side callback invocations to the Java DWCJ
-   * side.
-   *
-   * @param obj - the webforj-side object instance to receive the event
-   * @param method - the method name to receive the callback
-   * @return the instance of the event proxy on the BBj side that receives the BBj events (which
-   *         exposes "onEvent" for the BBj side)
-   */
-  CustomObject getEventProxy(Object obj, String method);
-
-  /**
-   * create and register an event proxy that defers BBj-side callback invocations to the Java DWCJ
-   * side.
-   *
-   * @param obj - the webforj-side object instance to receive the event
-   * @param method - the method name to receive the callback
-   * @param eventclassname - the BBj event class type (used for BBj Plug-Ins that define custom
-   *        event payload objects)
-   * @return the instance of the event proxy on the BBj side that receives the BBj events (which
-   *         exposes "onEvent" for the BBj side)
-   */
-  CustomObject getEventProxy(Object obj, String method, String eventclassname);
 
   /**
    * delegates the creation of a widget, mostly BBj Plug-Ins written as a BBj Custom Class extending

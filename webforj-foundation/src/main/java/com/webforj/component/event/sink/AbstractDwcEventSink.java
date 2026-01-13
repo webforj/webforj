@@ -3,10 +3,7 @@ package com.webforj.component.event.sink;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
-import com.webforj.Environment;
 import com.webforj.bridge.ComponentAccessor;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.Component;
 import com.webforj.component.DwcComponent;
 import com.webforj.dispatcher.EventDispatcher;
@@ -26,7 +23,6 @@ public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
   private EventDispatcher dispatcher;
   private final Object eventType;
   private BBjControl control;
-  private WebforjBBjBridge webforjHelper;
 
   /**
    * Constructor a new event sink for the given component and the BBj event type.
@@ -34,17 +30,12 @@ public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
    * @param component The Java component
    * @param dispatcher The events dispatcher
    * @param eventType The type of the BBj event
-   * @param options The options to be passed to the BBj event callback if the event supports options
    */
   protected AbstractDwcEventSink(DwcComponent<?> component, EventDispatcher dispatcher,
       Object eventType) {
     this.component = component;
     this.dispatcher = dispatcher;
     this.eventType = eventType;
-
-    if (Environment.getCurrent() != null) {
-      setWebforjHelper(Environment.getCurrent().getBridge());
-    }
   }
 
   /**
@@ -54,8 +45,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
   public final String setCallback(Object options) {
     if (isConnected()) {
       try {
-        CustomObject handler = getWebforjHelper().getEventProxy(this, "handleEvent");
-        return doSetCallback(getControl(), options, handler, "onEvent");
+        return doSetCallback(getControl(), options, this, "handleEvent");
       } catch (BBjException e) {
         throw new WebforjRuntimeException("Failed to set BBjControl callback.", e);
       }
@@ -93,7 +83,7 @@ public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
    */
   @Override
   public final boolean isConnected() {
-    return getControl() != null && getWebforjHelper() != null;
+    return getControl() != null;
   }
 
   /**
@@ -135,36 +125,18 @@ public abstract class AbstractDwcEventSink implements DwcEventSink<Component> {
   }
 
   /**
-   * Sets the instance of the WebforjHelper.
-   *
-   * @param helper The WebforjHelper instance.
-   */
-  void setWebforjHelper(WebforjBBjBridge helper) {
-    this.webforjHelper = helper;
-  }
-
-  /**
-   * Gets the instance of the WebforjHelper.
-   *
-   * @return The WebforjHelper instance.
-   */
-  WebforjBBjBridge getWebforjHelper() {
-    return this.webforjHelper;
-  }
-
-  /**
    * Do set a callback on the underlying BBj control.
    *
    * @param control The control
    * @param options The options object
-   * @param handler The BBj CustomObject instance
+   * @param handler The event handler instance
    * @param callback The callback method name as defined in the handler
    *
    * @return the callback id.
    *
    * @throws BBjException if the callback cannot be set.
    */
-  protected String doSetCallback(BBjControl control, Object options, CustomObject handler,
+  protected String doSetCallback(BBjControl control, Object options, Object handler,
       String callback) throws BBjException {
     if (control != null) {
       control.setCallback(Integer.valueOf(String.valueOf(eventType)), handler, callback);
