@@ -13,7 +13,6 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjObjectTable;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,7 @@ class ObjectTableTest {
     BBjAPI mockApi = mock(BBjAPI.class);
     mockObjectTable = mock(BBjObjectTable.class);
     when(mockApi.getObjectTable()).thenReturn(mockObjectTable);
-    Environment.init(mockApi, mock(WebforjBBjBridge.class), 0);
+    Environment.init(mockApi, 0);
   }
 
   @AfterEach

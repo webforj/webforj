@@ -8,7 +8,6 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.namespace.event.NamespaceEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +21,7 @@ class NamespaceEventTest {
   @BeforeEach
   void setUp() throws BBjException {
     BBjAPI api = mock(BBjAPI.class);
-    WebforjBBjBridge bridge = mock(WebforjBBjBridge.class);
-    Environment.init(api, bridge, 0);
+    Environment.init(api, 0);
 
     namespace = new GlobalNamespace();
     namespace.setBbjNamespace(mock(BBjNamespace.class));

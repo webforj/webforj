@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
-import com.webforj.bridge.WebforjBBjBridge;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +34,6 @@ class EnvironmentRunLaterTest {
   private BBjAPI mockApi;
 
   @Mock
-  private WebforjBBjBridge mockBridge;
-
-  @Mock
   private BBjSysGui mockSysGui;
 
   private Environment environment;
@@ -57,7 +53,7 @@ class EnvironmentRunLaterTest {
       }
     }).when(mockApi).postCustomEvent(anyString(), anyString());
 
-    Environment.init(mockApi, mockBridge, 0);
+    Environment.init(mockApi, 0);
     environment = Environment.getCurrent();
   }
 

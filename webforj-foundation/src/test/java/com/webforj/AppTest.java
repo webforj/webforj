@@ -14,7 +14,6 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.window.Frame;
 import java.util.List;
 import java.util.stream.Stream;
@@ -32,7 +31,6 @@ class AppTest {
   BBjAPI api;
   BBjWebManager webManager;
   BBjSysGui sysGui;
-  WebforjBBjBridge bridge;
   BBjBusyIndicator busyIndicator;
   App app;
 
@@ -42,12 +40,10 @@ class AppTest {
     api = mock(BBjAPI.class);
     webManager = mock(BBjWebManager.class);
     sysGui = mock(BBjSysGui.class);
-    bridge = mock(WebforjBBjBridge.class);
     busyIndicator = mock(BBjBusyIndicator.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getBridge()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
     when(webManager.getBusyIndicator()).thenReturn(busyIndicator);
 

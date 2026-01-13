@@ -7,7 +7,6 @@ import com.basis.util.common.Util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.annotation.Experimental;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
@@ -54,7 +53,6 @@ public final class Environment {
       new InheritableThreadLocal<>();
   private final BBjAPI api;
   private final BBjSysGui sysgui;
-  private final WebforjBBjBridge bridge;
   private final ConcurrentHashMap<String, EnvironmentAccessRequest> pendingRequests =
       new ConcurrentHashMap<>();
   private boolean debug = false;
@@ -64,14 +62,12 @@ public final class Environment {
    * Creates a new environment.
    *
    * @param api the BBjAPI instance.
-   * @param bridge the WebforjBBjBridge instance.
    * @param debug {@code true} if debug mode is enabled, {@code false} otherwise.
    * @throws BBjException if an error occurs while creating the environment.
    */
-  private Environment(BBjAPI api, WebforjBBjBridge bridge, boolean debug) throws BBjException {
+  private Environment(BBjAPI api, boolean debug) throws BBjException {
     this.api = api;
     this.sysgui = api.openSysGui("X0");
-    this.bridge = bridge;
     this.debug = debug;
   }
 
@@ -79,13 +75,12 @@ public final class Environment {
    * Initializes the environment for the current thread.
    *
    * @param api the BBjAPI instance.
-   * @param helper the WebforjBBjBridge instance.
    * @param debug {@code 1} if debug mode is enabled, {@code 0} otherwise.
    *
    * @throws BBjException if an error occurs while initializing the environment.
    */
-  public static void init(BBjAPI api, WebforjBBjBridge helper, int debug) throws BBjException {
-    Environment env = new Environment(api, helper, debug > 0);
+  public static void init(BBjAPI api, int debug) throws BBjException {
+    Environment env = new Environment(api, debug > 0);
     Long currentThreadId = Thread.currentThread().getId();
     Environment.instanceMap.put(currentThreadId, env);
 
@@ -418,15 +413,6 @@ public final class Environment {
     }
 
     return Optional.empty();
-  }
-
-  /**
-   * Returns the WebforjBBjBridge instance.
-   *
-   * @return the WebforjBBjBridge instance.
-   */
-  public WebforjBBjBridge getBridge() {
-    return bridge;
   }
 
   /**

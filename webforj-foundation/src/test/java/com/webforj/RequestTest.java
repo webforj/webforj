@@ -12,7 +12,6 @@ import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.webforj.bridge.WebforjBBjBridge;
 import java.util.Locale;
 import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +23,6 @@ class RequestTest {
   BBjAPI api;
   BBjSysGui sysGui;
   BBjThinClient thinClient;
-  WebforjBBjBridge bridge;
   BBjWebManager webManager;
   BBjConfig config;
 
@@ -34,7 +32,6 @@ class RequestTest {
     api = mock(BBjAPI.class);
     thinClient = mock(BBjThinClient.class);
     sysGui = mock(BBjSysGui.class);
-    bridge = mock(WebforjBBjBridge.class);
     webManager = mock(BBjWebManager.class);
     config = mock(BBjConfig.class);
 
@@ -43,7 +40,6 @@ class RequestTest {
     when(api.getWebManager()).thenReturn(webManager);
     when(api.getConfig()).thenReturn(config);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getBridge()).thenReturn(bridge);
 
     request = spy(Request.class);
     when(request.getEnvironment()).thenReturn(environment);

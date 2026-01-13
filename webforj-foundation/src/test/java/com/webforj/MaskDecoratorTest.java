@@ -1,12 +1,7 @@
 package com.webforj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
-import com.webforj.bridge.WebforjBBjBridge;
-import com.webforj.data.transformation.transformer.HoursLocalTimeTransformer;
-import com.webforj.data.transformation.transformer.JulianLocaleDateTransformer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -14,7 +9,6 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,9 +16,6 @@ class MaskDecoratorTest {
 
   @Mock
   private Environment env;
-
-  @Mock
-  private WebforjBBjBridge bridge;
 
   @Test
   void shouldMaskString() {

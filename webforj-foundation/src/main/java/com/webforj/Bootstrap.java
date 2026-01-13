@@ -4,7 +4,6 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.typesafe.config.Config;
 import com.webforj.annotation.AppEntry;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.conceiver.ConceiverProvider;
 import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
@@ -56,7 +55,6 @@ public final class Bootstrap {
    * </p>
    *
    * @param api the BBjAPI instance.
-   * @param bridge the WebforjBBjBridge instance.
    * @param debug {@code 1} if debug mode is enabled, {@code 0} otherwise.
    * @param className the fully qualified class name of the application to launch, or {@code null}
    *        to automatically detect it.
@@ -67,9 +65,9 @@ public final class Bootstrap {
    * @throws WebforjException if there is an error initializing the application, such as if no valid
    *         application class is found or if multiple annotated application classes are detected.
    */
-  public static App init(BBjAPI api, WebforjBBjBridge bridge, int debug, String className)
+  public static App init(BBjAPI api, int debug, String className)
       throws BBjException, WebforjException {
-    Environment.init(api, bridge, debug);
+    Environment.init(api, debug);
     Environment env = Environment.getCurrent();
 
     Collection<AppLifecycleListener> listeners = AppLifecycleListenerRegistry.discoverListeners();
