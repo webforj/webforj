@@ -62,17 +62,6 @@ class public WebforjHelper implements WebforjBBjBridge
         wait(seconds!)
     methodend
 
-    method public String maskDateTime(int julian!, Double time!, String mask!)
-      if time! <> null() then
-        methodret DATE(julian!, time!, mask!)
-      else
-        methodret DATE(julian!, mask!)
-      fi
-
-      failed_datetime_mask:
-      methodret null()
-    methodend
-
     method public Integer parseDate(String date!, String mask!, Locale locale!)
       methodret JUL(date!, mask!, locale!.toString(), err=failed_parse_date)
 

@@ -53,19 +53,6 @@ public interface WebforjBBjBridge {
   void sleep(int seconds);
 
   /**
-   * Mask the given date and time using the BBj date and time mask rules.
-   *
-   * @param julian the julian date
-   * @param time a number greater than or equal to zero and less than 24 and indicates hours and
-   *        fractions of hours. For example, 10.5 means 10:30 a.m.
-   * @param mask the mask to use
-   *
-   * @return tha input arguments applied to the specified mask
-   * @since 24.10
-   */
-  String maskDateTime(int julian, Double time, String mask);
-
-  /**
    * Returns the Julian day number for a given date string.
    *
    * @param date the date string formatted according to the BBj date masks.

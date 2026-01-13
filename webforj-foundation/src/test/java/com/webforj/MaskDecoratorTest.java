@@ -50,62 +50,35 @@ class MaskDecoratorTest {
 
   @Test
   void shouldMaskDate() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
+    LocalDate input = LocalDate.of(2023, 6, 12);
+    String mask = "%Dz-%Mz-%Yl";
+    String expected = "12-06-2023";
 
-      LocalDate input = LocalDate.now();
-      String mask = "%Dz-%Mz-%Yl";
-      String expected = "12-06-2023";
+    String result = MaskDecorator.forDate(input, mask);
 
-      int julian = new JulianLocaleDateTransformer().transformToComponent(input);
-      when(bridge.maskDateTime(julian, null, mask)).thenReturn(expected);
-
-      String result = MaskDecorator.forDate(input, mask);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 
   @Test
   void shouldMaskTime() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
+    LocalTime input = LocalTime.of(14, 30, 15);
+    String mask = "%Hz:%mz:%sz";
+    String expected = "14:30:15";
 
-      LocalTime input = LocalTime.of(14, 30, 15);
-      String mask = "%Hz:%mz:%sz";
-      String expected = "14:30:15";
+    String result = MaskDecorator.forTime(input, mask);
 
-      double hms = new HoursLocalTimeTransformer().transformToComponent(input);
-      when(bridge.maskDateTime(0, hms, mask)).thenReturn(expected);
-
-      String result = MaskDecorator.forTime(input, mask);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 
   @Test
   void shouldMaskDateTime() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
+    LocalDateTime input = LocalDateTime.of(2023, 6, 12, 14, 30, 15);
+    String mask = "%Dz-%Mz-%Yl %Hz:%mz:%sz";
+    String expected = "12-06-2023 14:30:15";
 
-      LocalDateTime input = LocalDateTime.of(2023, 6, 12, 14, 30, 15);
-      String mask = "%Dz-%Mz-%Yl %Hz:%mz:%s";
-      String expected = "12-06-2023 14:30:15";
+    String result = MaskDecorator.forDateTime(input, mask);
 
-      JulianLocaleDateTransformer dateTransformer = new JulianLocaleDateTransformer();
-      HoursLocalTimeTransformer timeTransformer = new HoursLocalTimeTransformer();
-      int julian = dateTransformer.transformToComponent(input.toLocalDate());
-      double hms = timeTransformer.transformToComponent(input.toLocalTime());
-      when(bridge.maskDateTime(julian, hms, mask)).thenReturn(expected);
-
-      String result = MaskDecorator.forDateTime(input, mask);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 
   @Test
