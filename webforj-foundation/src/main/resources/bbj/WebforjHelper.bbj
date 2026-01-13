@@ -62,13 +62,6 @@ class public WebforjHelper implements WebforjBBjBridge
         wait(seconds!)
     methodend
 
-    method public String maskNumber(double input!, String mask!)
-      methodret STR(input!, mask!, err=failed_number_mask)
-
-      failed_number_mask:
-      methodret null()
-    methodend
-
     method public String maskDateTime(int julian!, Double time!, String mask!)
       if time! <> null() then
         methodret DATE(julian!, time!, mask!)

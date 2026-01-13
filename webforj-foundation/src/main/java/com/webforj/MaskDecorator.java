@@ -174,8 +174,11 @@ public final class MaskDecorator {
   public static String forNumber(double input, String mask) {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    return env.getBridge().maskNumber(input, mask);
+    try {
+      return BasisFunctions.str(input, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**

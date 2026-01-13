@@ -53,17 +53,6 @@ public interface WebforjBBjBridge {
   void sleep(int seconds);
 
   /**
-   * Mask the given number using the BBj number mask rules.
-   *
-   * @param input the input to format
-   * @param mask the mask to use
-   *
-   * @return tha input argument applied to the specified mask
-   * @since 24.10
-   */
-  String maskNumber(double input, String mask);
-
-  /**
    * Mask the given date and time using the BBj date and time mask rules.
    *
    * @param julian the julian date

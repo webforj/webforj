@@ -39,19 +39,13 @@ class MaskDecoratorTest {
 
   @Test
   void shouldMaskNumber() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
-      float input = 12345;
-      String mask = "##,###,###.00";
-      String expected = "12,345.00";
+    double input = 12345;
+    String mask = "##,###,###.00";
+    String expected = "    12,345.00";
 
-      when(bridge.maskNumber(input, mask)).thenReturn(expected);
+    String result = MaskDecorator.forNumber(input, mask);
 
-      String result = MaskDecorator.forNumber(input, mask);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 
   @Test
