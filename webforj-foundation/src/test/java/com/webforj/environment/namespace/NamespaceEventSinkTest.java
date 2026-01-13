@@ -12,7 +12,6 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.bbj.proxies.event.BBjNamespaceEvent;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.Environment;
 import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventDispatcher;
@@ -41,7 +40,7 @@ class NamespaceEventSinkTest {
 
     eventSink = new NamespaceEventSink(namespace, dispatcher) {
       @Override
-      protected void doSetCallback(BBjNamespace namespace, CustomObject handler, String callback)
+      protected void doSetCallback(BBjNamespace namespace, Object handler, String callback)
           throws BBjException {
         namespace.setCallbackForNamespace(handler, callback);
       }

@@ -2,7 +2,6 @@ package com.webforj.environment.namespace.sink;
 
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.environment.namespace.Namespace;
 import com.webforj.environment.namespace.NamespaceEventSink;
@@ -41,7 +40,7 @@ public final class NamespaceAccessEventSink extends NamespaceEventSink {
    * {@inheritDoc}
    */
   @Override
-  protected void doSetCallback(BBjNamespace namespace, CustomObject handler, String callback)
+  protected void doSetCallback(BBjNamespace namespace, Object handler, String callback)
       throws BBjException {
     namespace.setCallbackForNamespace(handler, callback);
   }
