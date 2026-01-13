@@ -4,7 +4,6 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
-import com.webforj.webstorage.CookieStorage;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
