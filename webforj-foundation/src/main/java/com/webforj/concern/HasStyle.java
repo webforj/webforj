@@ -1,5 +1,6 @@
 package com.webforj.concern;
 
+import com.webforj.annotation.Experimental;
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
 
@@ -99,4 +100,51 @@ public interface HasStyle<T extends Component> {
 
     throw new UnsupportedOperationException("The component does not support styles");
   }
+
+  /**
+   * Sets the view transition name for this component.
+   *
+   * <p>
+   * The view transition name is used to identify elements that should morph between views during
+   * animated transitions. Elements with matching names in the old and new views will be smoothly
+   * animated from one position/size to another.
+   * </p>
+   *
+   * <p>
+   * ⚠️ WARNING: This method is experimental since 25.11 and may change in future releases.
+   * </p>
+   *
+   * @param name the transition name, or {@code null} to remove
+   * @return the component itself
+   *
+   * @see #getViewTransitionName()
+   *
+   * @since 25.11
+   */
+  @Experimental(since = "25.11")
+  public default T setViewTransitionName(String name) {
+    if (name == null || name.isEmpty()) {
+      return removeStyle("view-transition-name");
+    }
+    return setStyle("view-transition-name", name);
+  }
+
+  /**
+   * Gets the view transition name for this component.
+   *
+   * <p>
+   * ⚠️ WARNING: This method is experimental since 25.11 and may change in future releases.
+   * </p>
+   *
+   * @return the transition name, or {@code null} if not set
+   *
+   * @see #setViewTransitionName(String)
+   *
+   * @since 25.11
+   */
+  @Experimental(since = "25.11")
+  public default String getViewTransitionName() {
+    return getStyle("view-transition-name");
+  }
+
 }

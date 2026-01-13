@@ -1,0 +1,247 @@
+/**
+ * webforJ View Transitions CSS
+ *
+ * Uses view-transition-name to match transition types applied to elements.
+ * All transitions use separate -exit and -enter names to prevent morphing.
+ *
+ * @prop --vt-fade-duration: The fade transition duration (default: 200ms)
+ * @prop --vt-fade-easing: The fade transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ *
+ * @prop --vt-slide-left-duration: The slide-left transition duration (default: 200ms)
+ * @prop --vt-slide-left-easing: The slide-left transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ * @prop --vt-slide-left-distance: The slide-left transition distance (default: 30%)
+ *
+ * @prop --vt-slide-right-duration: The slide-right transition duration (default: 200ms)
+ * @prop --vt-slide-right-easing: The slide-right transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ * @prop --vt-slide-right-distance: The slide-right transition distance (default: 30%)
+ *
+ * @prop --vt-slide-up-duration: The slide-up transition duration (default: 200ms)
+ * @prop --vt-slide-up-easing: The slide-up transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ * @prop --vt-slide-up-distance: The slide-up transition distance (default: 30%)
+ *
+ * @prop --vt-slide-down-duration: The slide-down transition duration (default: 200ms)
+ * @prop --vt-slide-down-easing: The slide-down transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ * @prop --vt-slide-down-distance: The slide-down transition distance (default: 30%)
+ *
+ * @prop --vt-zoom-duration: The zoom transition duration (default: 200ms)
+ * @prop --vt-zoom-easing: The zoom transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ * @prop --vt-zoom-scale: The zoom transition scale (default: 0.8)
+ *
+ * @prop --vt-zoom-out-duration: The zoom-out transition duration (default: 200ms)
+ * @prop --vt-zoom-out-easing: The zoom-out transition easing (default: cubic-bezier(0.4, 0, 0.2, 1))
+ * @prop --vt-zoom-out-scale: The zoom-out transition scale (default: 1.2)
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Disable default whole-page transition - only marked elements participate */
+:root {
+  view-transition-name: none;
+}
+
+/* Firefox stacking issue workaround */
+[style*="vt-"] {
+  transform: translateZ(0);
+}
+
+/* Morphing elements render above route transitions during view transitions */
+::view-transition-group(*) {
+  z-index: 1;
+}
+
+/* Route transitions render below morphing elements */
+::view-transition-group(vt-fade-exit),
+::view-transition-group(vt-fade-enter),
+::view-transition-group(vt-slide-left-exit),
+::view-transition-group(vt-slide-left-enter),
+::view-transition-group(vt-slide-right-exit),
+::view-transition-group(vt-slide-right-enter),
+::view-transition-group(vt-slide-up-exit),
+::view-transition-group(vt-slide-up-enter),
+::view-transition-group(vt-slide-down-exit),
+::view-transition-group(vt-slide-down-enter),
+::view-transition-group(vt-zoom-exit),
+::view-transition-group(vt-zoom-enter),
+::view-transition-group(vt-zoom-out-exit),
+::view-transition-group(vt-zoom-out-enter) {
+  z-index: 0;
+}
+
+/* Fade
+   ======== */
+::view-transition-old(vt-fade-exit) {
+  animation: vt-fadeOut var(--vt-fade-duration, 200ms)
+    var(--vt-fade-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-fade-enter) {
+  animation: vt-fadeIn var(--vt-fade-duration, 200ms)
+    var(--vt-fade-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide Left
+   ============== */
+::view-transition-old(vt-slide-left-exit) {
+  animation: vt-slideLeftOut var(--vt-slide-left-duration, 200ms)
+    var(--vt-slide-left-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-slide-left-enter) {
+  animation: vt-slideLeftIn var(--vt-slide-left-duration, 200ms)
+    var(--vt-slide-left-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-slideLeftOut {
+  to {
+    opacity: 0;
+    transform: translate3d(calc(-1 * var(--vt-slide-left-distance, 30%)), 0, 0);
+  }
+}
+@keyframes vt-slideLeftIn {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--vt-slide-left-distance, 30%), 0, 0);
+  }
+}
+
+/* Slide Right
+   =============== */
+::view-transition-old(vt-slide-right-exit) {
+  animation: vt-slideRightOut var(--vt-slide-right-duration, 200ms)
+    var(--vt-slide-right-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-slide-right-enter) {
+  animation: vt-slideRightIn var(--vt-slide-right-duration, 200ms)
+    var(--vt-slide-right-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-slideRightOut {
+  to {
+    opacity: 0;
+    transform: translate3d(var(--vt-slide-right-distance, 30%), 0, 0);
+  }
+}
+@keyframes vt-slideRightIn {
+  from {
+    opacity: 0;
+    transform: translate3d(calc(-1 * var(--vt-slide-right-distance, 30%)), 0, 0);
+  }
+}
+
+/* Slide Up
+   ============ */
+::view-transition-old(vt-slide-up-exit) {
+  animation: vt-slideUpOut var(--vt-slide-up-duration, 200ms)
+    var(--vt-slide-up-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-slide-up-enter) {
+  animation: vt-slideUpIn var(--vt-slide-up-duration, 200ms)
+    var(--vt-slide-up-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-slideUpOut {
+  to {
+    opacity: 0;
+    transform: translate3d(0, calc(-1 * var(--vt-slide-up-distance, 30%)), 0);
+  }
+}
+@keyframes vt-slideUpIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--vt-slide-up-distance, 30%), 0);
+  }
+}
+
+/* Slide Down
+   ============== */
+::view-transition-old(vt-slide-down-exit) {
+  animation: vt-slideDownOut var(--vt-slide-down-duration, 200ms)
+    var(--vt-slide-down-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-slide-down-enter) {
+  animation: vt-slideDownIn var(--vt-slide-down-duration, 200ms)
+    var(--vt-slide-down-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-slideDownOut {
+  to {
+    opacity: 0;
+    transform: translate3d(0, var(--vt-slide-down-distance, 30%), 0);
+  }
+}
+@keyframes vt-slideDownIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, calc(-1 * var(--vt-slide-down-distance, 30%)), 0);
+  }
+}
+
+/* Zoom
+   ======== */
+::view-transition-old(vt-zoom-exit) {
+  animation: vt-zoomOut var(--vt-zoom-duration, 200ms)
+    var(--vt-zoom-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-zoom-enter) {
+  animation: vt-zoomIn var(--vt-zoom-duration, 200ms)
+    var(--vt-zoom-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-zoomOut {
+  to {
+    opacity: 0;
+    transform: scale3d(var(--vt-zoom-scale, 0.8), var(--vt-zoom-scale, 0.8), 1);
+  }
+}
+@keyframes vt-zoomIn {
+  from {
+    opacity: 0;
+    transform: scale3d(var(--vt-zoom-scale, 0.8), var(--vt-zoom-scale, 0.8), 1);
+  }
+}
+
+/* Zoom Out
+   ============ */
+::view-transition-old(vt-zoom-out-exit) {
+  animation: vt-zoomOutGrow var(--vt-zoom-out-duration, 200ms)
+    var(--vt-zoom-out-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+::view-transition-new(vt-zoom-out-enter) {
+  animation: vt-zoomOutShrink var(--vt-zoom-out-duration, 200ms)
+    var(--vt-zoom-out-easing, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+@keyframes vt-zoomOutGrow {
+  to {
+    opacity: 0;
+    transform: scale3d(
+      var(--vt-zoom-out-scale, 1.2),
+      var(--vt-zoom-out-scale, 1.2),
+      1
+    );
+  }
+}
+@keyframes vt-zoomOutShrink {
+  from {
+    opacity: 0;
+    transform: scale3d(
+      var(--vt-zoom-out-scale, 1.2),
+      var(--vt-zoom-out-scale, 1.2),
+      1
+    );
+  }
+}
