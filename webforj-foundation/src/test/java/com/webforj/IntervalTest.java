@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,18 +27,15 @@ class IntervalTest {
   Interval interval;
   Environment environment;
   BBjAPI api;
-  WebforjBBjBridge bridge;
   EventListener<Interval.ElapsedEvent> listener;
 
   @BeforeEach
-  void setUp() throws BBjException {
+  void setUp() {
     environment = mock(Environment.class);
     api = mock(BBjAPI.class);
-    bridge = mock(WebforjBBjBridge.class);
     listener = mock(EventListener.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
-    when(environment.getBridge()).thenReturn(bridge);
 
     interval = spy(new Interval(1.0f, listener));
     doReturn(environment).when(interval).getEnvironment();
@@ -57,14 +53,16 @@ class IntervalTest {
   void shouldStartInterval() throws BBjException {
     interval.start();
     assertTrue(interval.isRunning());
-    verify(api, times(1)).createTimer(anyString(), any(BasisNumber.class), any(), eq("onEvent"));
+    verify(api, times(1)).createTimer(anyString(), any(BasisNumber.class), any(),
+        eq("handleEvent"));
   }
 
   @Test
   void shouldNotStartWhenAlreadyRunning() throws BBjException {
     interval.start();
     interval.start();
-    verify(api, times(1)).createTimer(anyString(), any(BasisNumber.class), any(), eq("onEvent"));
+    verify(api, times(1)).createTimer(anyString(), any(BasisNumber.class), any(),
+        eq("handleEvent"));
   }
 
   @Test
@@ -86,7 +84,8 @@ class IntervalTest {
     interval.start();
     interval.restart();
     verify(api, times(1)).removeTimer(anyString());
-    verify(api, times(2)).createTimer(anyString(), any(BasisNumber.class), any(), eq("onEvent"));
+    verify(api, times(2)).createTimer(anyString(), any(BasisNumber.class), any(),
+        eq("handleEvent"));
   }
 
   @Test
