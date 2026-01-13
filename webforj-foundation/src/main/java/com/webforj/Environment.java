@@ -3,7 +3,6 @@ package com.webforj;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.basis.util.common.Util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -552,9 +551,7 @@ public final class Environment {
     try {
       logger.log(Level.DEBUG, "Registering runLater event callback");
       EnvironmentRunLaterEventHandler eventHandler = new EnvironmentRunLaterEventHandler(this);
-      CustomObject handler = getBridge().getEventProxy(eventHandler, "handleEvent");
-
-      getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, handler, "onEvent");
+      getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, eventHandler, "handleEvent");
       logger.log(Level.DEBUG, "runLater event callback registered successfully");
     } catch (BBjException e) {
       logger.log(Level.ERROR, "Failed to register runLater event handler: {0}", e.getMessage(), e);

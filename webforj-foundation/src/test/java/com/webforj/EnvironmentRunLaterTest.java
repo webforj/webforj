@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -14,7 +13,6 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.bridge.WebforjBBjBridge;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -42,16 +40,12 @@ class EnvironmentRunLaterTest {
   @Mock
   private BBjSysGui mockSysGui;
 
-  @Mock
-  private CustomObject mockEventProxy;
-
   private Environment environment;
   private ConcurrentHashMap<String, String> postedEvents = new ConcurrentHashMap<>();
 
   @BeforeEach
   void setUp() throws BBjException {
     when(mockApi.openSysGui(anyString())).thenReturn(mockSysGui);
-    when(mockBridge.getEventProxy(any(), anyString())).thenReturn(mockEventProxy);
 
     // Capture posted custom events (lenient to avoid stubbing errors)
     lenient().doAnswer(new Answer<Void>() {
