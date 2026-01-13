@@ -1,61 +1,7 @@
-use com.webforj.component.EventProxy
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
 
-class public BBjEventProxy implements EventProxy
-
-    field private Object obj!
-    field private String method!
-
-    method public BBjEventProxy(Object obj!, String method!)
-        #obj! = obj!
-        #method! = method!
-    methodend
-
-    method public void onEvent(BBjEvent ev!)
-
-            rem DWCJ declares certain event callbacks as private to prevent them from
-            rem being accessible by users of the API
-            rem hence this bridge has to use reflection in order to invoke the event callbacks
-            rem after making them accessible
-            rem potential improvement: clarify the proxy tpyes to get the method directly and
-            rem avoid iterating the whole method list
-
-            o! = #obj!
-
-
-            l!=  java.util.Arrays.asList(o!.getClass().getDeclaredMethods())
-            it! = l!.iterator()
-            while it!.hasNext()
-                m! = it!.next()
-                if m!.getName() = #method! then break
-            wend
-
-            m!.setAccessible(BBjAPI.TRUE)
-
-            rem invoke destroy the stack trace!
-            rem m!.invoke(o!,ev!)
-
-            rem eval retains the stack trace in case of an error:
-            eval("o!."+#method!+"(ev!)")
-
-            methodret
-
-    methodend
-
-classend
-
-
 class public WebforjHelper implements WebforjBBjBridge
-
-    method public CustomObject getEventProxy(Object obj!, String method!)
-        methodret new BBjEventProxy(obj!, method!)
-    methodend
-
-    method public CustomObject getEventProxy(Object obj!, String method!, String eventClass!)
-        ep! = eval("new "+eventClass!+"(obj!, method!)")
-        methodret ep!
-    methodend
 
     method public BBjControl createWidget(String class!, BBjWindow w!)
         wnd! = w!

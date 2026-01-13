@@ -188,8 +188,7 @@ class ElementTest {
     @Test
     @DisplayName("Adding events with different params will return different ListenerRegistration")
     void addingEventWithDifferentParams() throws BBjException {
-      when(control.newEventOptions())
-          .thenReturn(mock(BBjWebEventOptions.class));
+      when(control.newEventOptions()).thenReturn(mock(BBjWebEventOptions.class));
 
       String type = "click";
       EventListener<ElementEvent> listener = event -> {
