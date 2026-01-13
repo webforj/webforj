@@ -676,11 +676,14 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    double hms = env.getBridge().parseTime(input, mask, locale == null ? App.getLocale() : locale);
-    HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
-
-    return transformer.transformToModel(hms);
+    try {
+      Locale effectiveLocale = locale == null ? App.getLocale() : locale;
+      double hms = BasisDate.parse(input, mask, effectiveLocale);
+      HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
+      return transformer.transformToModel(hms);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**

@@ -1,7 +1,6 @@
 use com.webforj.component.EventProxy
 use com.webforj.bridge.WebforjBBjBridge
 use java.util.ArrayList
-use java.util.Locale
 
 class public BBjEventProxy implements EventProxy
 
@@ -60,12 +59,6 @@ class public WebforjHelper implements WebforjBBjBridge
 
     method public void sleep(int seconds!)
         wait(seconds!)
-    methodend
-
-    method public Double parseTime(String time!, String mask!, Locale locale!)
-      methodret TIME(time!, mask!, locale!.toString(), err=failed_parse_time)
-      failed_parse_time:
-      methodret null()
     methodend
 
     method public BBjControl createWidget(String class!, BBjWindow w!)

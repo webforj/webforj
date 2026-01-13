@@ -6,7 +6,6 @@ import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /** Mock for the WebforjBBjBridge. */
 public class WebforjHelperMock implements WebforjBBjBridge {
@@ -54,10 +53,5 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   @Override
   public void sleep(int seconds) {
     // no-op
-  }
-
-  @Override
-  public Double parseTime(String time, String mask, Locale locale) {
-    throw new UnsupportedOperationException("Unimplemented method 'parseTime'");
   }
 }

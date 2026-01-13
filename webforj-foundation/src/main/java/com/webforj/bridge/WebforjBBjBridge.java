@@ -5,7 +5,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public interface WebforjBBjBridge {
 
@@ -51,20 +50,6 @@ public interface WebforjBBjBridge {
    * @since 24.02
    */
   void sleep(int seconds);
-
-  /**
-   * Returns the time value for a given time string.
-   *
-   * @param time the time string formatted according to the BBj time masks.
-   * @param mask the date mask which was used to format the time string
-   * @param locale the locale to use for parsing the time. The locale is only relevant when parsing
-   *        a time string containing a localized am/pm value
-   *
-   * @return a number greater than or equal to zero and less than 24 and indicates hours and
-   *         fractions of hours.
-   * @since 24.10
-   */
-  Double parseTime(String time, String mask, Locale locale);
 
   /**
    * invoke a method of a BBj-side object instance, mostly custom objects.

@@ -95,21 +95,13 @@ class MaskDecoratorTest {
 
   @Test
   void shouldParseTime() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
+    String input = "9pm";
+    String mask = "%Hz:%Mz:%S";
+    Locale locale = Locale.US;
+    LocalTime expected = LocalTime.of(21, 0, 0);
 
-      String input = "9pm";
-      String mask = "%Hz:%Mz:%S";
-      Locale locale = Locale.US;
-      LocalTime expected = LocalTime.of(21, 0, 0);
-      double hms = new HoursLocalTimeTransformer().transformToComponent(expected);
+    LocalTime result = MaskDecorator.parseTime(input, mask, locale);
 
-      when(bridge.parseTime(input, mask, locale)).thenReturn(hms);
-
-      LocalTime result = MaskDecorator.parseTime(input, mask, locale);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 }
