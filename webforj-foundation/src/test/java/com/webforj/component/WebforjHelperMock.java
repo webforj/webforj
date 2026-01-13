@@ -60,9 +60,4 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   public Double parseTime(String time, String mask, Locale locale) {
     throw new UnsupportedOperationException("Unimplemented method 'parseTime'");
   }
-
-  @Override
-  public Integer parseDate(String date, String mask, Locale locale) {
-    throw new UnsupportedOperationException("Unimplemented method 'parseDate'");
-  }
 }

@@ -83,22 +83,14 @@ class MaskDecoratorTest {
 
   @Test
   void shouldParseDate() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
+    String input = "12-06-2023";
+    String mask = "%Dz-%Mz-%Yl";
+    Locale locale = Locale.US;
+    LocalDate expected = LocalDate.of(2023, 6, 12);
 
-      String input = "12";
-      String mask = "%Dz-%Mz-%Yz";
-      Locale locale = Locale.US;
-      LocalDate expected = LocalDate.of(2023, 6, 12);
-      int julian = new JulianLocaleDateTransformer().transformToComponent(expected);
+    LocalDate result = MaskDecorator.parseDate(input, mask, locale);
 
-      when(bridge.parseDate(input, mask, locale)).thenReturn(julian);
-
-      LocalDate result = MaskDecorator.parseDate(input, mask, locale);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 
   @Test

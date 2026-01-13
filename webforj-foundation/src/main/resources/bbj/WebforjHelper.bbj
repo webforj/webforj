@@ -62,13 +62,6 @@ class public WebforjHelper implements WebforjBBjBridge
         wait(seconds!)
     methodend
 
-    method public Integer parseDate(String date!, String mask!, Locale locale!)
-      methodret JUL(date!, mask!, locale!.toString(), err=failed_parse_date)
-
-      failed_parse_date:
-      methodret null()
-    methodend
-
     method public Double parseTime(String time!, String mask!, Locale locale!)
       methodret TIME(time!, mask!, locale!.toString(), err=failed_parse_time)
       failed_parse_time:

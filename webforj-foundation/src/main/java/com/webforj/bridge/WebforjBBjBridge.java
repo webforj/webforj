@@ -53,19 +53,6 @@ public interface WebforjBBjBridge {
   void sleep(int seconds);
 
   /**
-   * Returns the Julian day number for a given date string.
-   *
-   * @param date the date string formatted according to the BBj date masks.
-   * @param mask the date mask which was used to format the date string
-   * @param locale the locale to use for parsing the date. The locale is only relevant when passing
-   *        a date string containing a week number reference
-   *
-   * @return the Julian day number
-   * @since 24.10
-   */
-  Integer parseDate(String date, String mask, Locale locale);
-
-  /**
    * Returns the time value for a given time string.
    *
    * @param time the time string formatted according to the BBj time masks.

@@ -517,11 +517,14 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    int julian = env.getBridge().parseDate(input, mask, locale == null ? App.getLocale() : locale);
-    JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
-
-    return transformer.transformToModel(julian);
+    try {
+      Locale effectiveLocale = locale == null ? App.getLocale() : locale;
+      int julian = BasisDate.parse(input, mask, effectiveLocale, true, 50);
+      JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
+      return transformer.transformToModel(julian);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
