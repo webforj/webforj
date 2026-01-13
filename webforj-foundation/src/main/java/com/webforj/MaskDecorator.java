@@ -1,5 +1,6 @@
 package com.webforj;
 
+import com.basis.util.BasisFunctions;
 import com.webforj.data.transformation.transformer.HoursLocalTimeTransformer;
 import com.webforj.data.transformation.transformer.JulianLocaleDateTransformer;
 import java.time.LocalDate;
@@ -73,8 +74,11 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    return env.getBridge().maskString(input, mask);
+    try {
+      return BasisFunctions.str(input, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**

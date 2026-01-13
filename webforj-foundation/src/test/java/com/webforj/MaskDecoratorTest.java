@@ -28,20 +28,13 @@ class MaskDecoratorTest {
 
   @Test
   void shouldMaskString() {
-    try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-      mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-      when(env.getBridge()).thenReturn(bridge);
+    String input = "qw12";
+    String mask = "AA-00";
+    String expected = "QW-12";
 
-      String input = "qw12";
-      String mask = "AA-00";
-      String expected = "QW-12";
+    String result = MaskDecorator.forString(input, mask);
 
-      when(bridge.maskString(input, mask)).thenReturn(expected);
-
-      String result = MaskDecorator.forString(input, mask);
-
-      assertEquals(expected, result);
-    }
+    assertEquals(expected, result);
   }
 
   @Test

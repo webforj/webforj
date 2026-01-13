@@ -5,11 +5,6 @@ import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.CustomObject;
 import com.webforj.bbj.BBjVar;
 import com.webforj.bridge.WebforjBBjBridge;
-import com.webforj.component.optiondialog.ConfirmDialog;
-import com.webforj.component.optiondialog.FileChooserDialog;
-import com.webforj.component.optiondialog.FileSaveDialog;
-import com.webforj.component.optiondialog.FileUploadDialog;
-import com.webforj.component.optiondialog.InputDialog;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -59,11 +54,6 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   @Override
   public void sleep(int seconds) {
     // no-op
-  }
-
-  @Override
-  public String maskString(String value, String mask) {
-    throw new UnsupportedOperationException("Unimplemented method 'maskString'");
   }
 
   @Override
