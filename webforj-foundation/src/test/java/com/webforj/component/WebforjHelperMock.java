@@ -41,11 +41,6 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   }
 
   @Override
-  public String getWorkingDirectory() {
-    return "";
-  }
-
-  @Override
   public String getQueryParam(String key) {
     return "";
   }

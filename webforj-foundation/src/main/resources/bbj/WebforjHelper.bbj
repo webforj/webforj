@@ -142,10 +142,6 @@ class public WebforjHelper implements WebforjBBjBridge
         methodret ret!
     methodend
 
-    method public String getWorkingDirectory()
-        methodret DIR("")
-    methodend
-
     method public String getQueryParam(String key!)
         methodret clientenv(key!,err=no_data)
         no_data:
