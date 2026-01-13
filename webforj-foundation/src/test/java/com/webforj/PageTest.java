@@ -253,13 +253,13 @@ class PageTest {
       assertNotNull(registration);
 
       verify(webManager, times(1)).setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(),
-          eq("onEvent"));
+          eq("handleEvent"));
     }
 
     @Test
     void addUnloadListenerShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(webManager)
-          .setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(), eq("onEvent"));
+          .setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(), eq("handleEvent"));
       EventListener<PageUnloadEvent> listener = mock(EventListener.class);
 
       assertThrows(WebforjWebManagerException.class, () -> page.onUnload(listener));

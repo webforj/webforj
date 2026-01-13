@@ -6,7 +6,6 @@ import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.annotation.Experimental;
 import com.webforj.component.element.annotation.EventOptions;
 import com.webforj.component.element.annotation.EventOptionsAnnotationProcessor;
@@ -1103,9 +1102,8 @@ public final class Page implements HasJsExecution {
 
       try {
         BBjWebManager webManager = getEnvironment().getBBjAPI().getWebManager();
-        CustomObject handler = getEnvironment().getBridge()
-            .getEventProxy(new PageUnloadEventHandler(this, getEventDispatcher()), "handleEvent");
-        webManager.setCallback(SysGuiEventConstants.ON_BROWSER_CLOSE, handler, "onEvent");
+        PageUnloadEventHandler handler = new PageUnloadEventHandler(this, getEventDispatcher());
+        webManager.setCallback(SysGuiEventConstants.ON_BROWSER_CLOSE, handler, "handleEvent");
       } catch (BBjException e) {
         throw new WebforjWebManagerException("Failed to register browser close event.", e);
       }
