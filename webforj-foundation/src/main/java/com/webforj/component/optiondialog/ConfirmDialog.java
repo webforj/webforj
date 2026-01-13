@@ -1,9 +1,12 @@
 package com.webforj.component.optiondialog;
 
+import com.basis.bbj.proxies.BBjMsgBox;
 import com.basis.bbj.proxies.SysGuiProxyConstants;
+import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
 import com.webforj.Environment;
 import com.webforj.component.button.ButtonTheme;
+import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
  * Represents a confirm dialog.
@@ -424,8 +427,56 @@ public final class ConfirmDialog extends DwcMsgBox<ConfirmDialog> {
    * @return the result of the confirm dialog
    */
   public Result show() {
-    int result = Environment.getCurrent().getBridge().msgbox(this);
-    return mapResult(result);
+    try {
+      BBjMsgBox msgbox = Environment.getCurrent().getBBjAPI().msgbox();
+
+      // Set message and title
+      msgbox.message(String.valueOf(getMessage()));
+      msgbox.title(String.valueOf(getTitle()));
+
+      // Build options value (button type + icon + default button + raw text flag)
+      int options = getOptionType().getValue();
+      options += getMessageType().getValue();
+      options += getDefaultButton().getValue();
+      if (isRawText()) {
+        options += BBjMsgBox.MSGBOX_RAW_TEXT;
+      }
+      msgbox.options(options);
+
+      // Set modes if any attributes are configured
+      String modes = getAttributesAsString();
+      if (modes != null && !modes.isEmpty()) {
+        msgbox.modes(modes);
+      }
+
+      // Set timeout if specified
+      int timeout = getTimeout();
+      if (timeout > 0) {
+        msgbox.timeout(timeout);
+      }
+
+      // Set custom button texts if using custom buttons
+      if (getOptionType() == OptionType.CUSTOM) {
+        String button1 = getFirstButtonText();
+        String button2 = getSecondButtonText();
+        String button3 = getThirdButtonText();
+
+        if (button1 != null && !button1.isEmpty()) {
+          msgbox.button1(button1);
+        }
+        if (button2 != null && !button2.isEmpty()) {
+          msgbox.button2(button2);
+        }
+        if (button3 != null && !button3.isEmpty()) {
+          msgbox.button3(button3);
+        }
+      }
+
+      int result = msgbox.show();
+      return mapResult(result);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to show confirm dialog.", e);
+    }
   }
 
   /**

@@ -1,5 +1,7 @@
 package com.webforj;
 
+import com.basis.util.BasisDate;
+import com.basis.util.BasisFunctions;
 import com.webforj.data.transformation.transformer.HoursLocalTimeTransformer;
 import com.webforj.data.transformation.transformer.JulianLocaleDateTransformer;
 import java.time.LocalDate;
@@ -73,8 +75,11 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    return env.getBridge().maskString(input, mask);
+    try {
+      return BasisFunctions.str(input, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
@@ -170,8 +175,11 @@ public final class MaskDecorator {
   public static String forNumber(double input, String mask) {
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    return env.getBridge().maskNumber(input, mask);
+    try {
+      return BasisFunctions.str(input, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
@@ -243,11 +251,13 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
-    int julian = transformer.transformToComponent(input);
-
-    return env.getBridge().maskDateTime(julian, null, mask);
+    try {
+      JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
+      int julian = transformer.transformToComponent(input);
+      return BasisDate.date(julian, 0.0, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
@@ -327,11 +337,13 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
-    double hms = transformer.transformToComponent(input);
-
-    return env.getBridge().maskDateTime(0, hms, mask);
+    try {
+      HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
+      double hms = transformer.transformToComponent(input);
+      return BasisDate.date(0, hms, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
@@ -423,13 +435,15 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    JulianLocaleDateTransformer dateTransformer = new JulianLocaleDateTransformer();
-    HoursLocalTimeTransformer timeTransformer = new HoursLocalTimeTransformer();
-    int julian = dateTransformer.transformToComponent(input.toLocalDate());
-    double hms = timeTransformer.transformToComponent(input.toLocalTime());
-
-    return env.getBridge().maskDateTime(julian, hms, mask);
+    try {
+      JulianLocaleDateTransformer dateTransformer = new JulianLocaleDateTransformer();
+      HoursLocalTimeTransformer timeTransformer = new HoursLocalTimeTransformer();
+      int julian = dateTransformer.transformToComponent(input.toLocalDate());
+      double hms = timeTransformer.transformToComponent(input.toLocalTime());
+      return BasisDate.date(julian, hms, mask);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
@@ -503,11 +517,14 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    int julian = env.getBridge().parseDate(input, mask, locale == null ? App.getLocale() : locale);
-    JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
-
-    return transformer.transformToModel(julian);
+    try {
+      Locale effectiveLocale = locale == null ? App.getLocale() : locale;
+      int julian = BasisDate.parse(input, mask, effectiveLocale, true, 50);
+      JulianLocaleDateTransformer transformer = new JulianLocaleDateTransformer();
+      return transformer.transformToModel(julian);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**
@@ -659,11 +676,14 @@ public final class MaskDecorator {
     Objects.requireNonNull(input, INPUT_CANNOT_BE_NULL);
     Objects.requireNonNull(mask, MASK_CANNOT_BE_NULL);
 
-    Environment env = Environment.getCurrent();
-    double hms = env.getBridge().parseTime(input, mask, locale == null ? App.getLocale() : locale);
-    HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
-
-    return transformer.transformToModel(hms);
+    try {
+      Locale effectiveLocale = locale == null ? App.getLocale() : locale;
+      double hms = BasisDate.parse(input, mask, effectiveLocale);
+      HoursLocalTimeTransformer transformer = new HoursLocalTimeTransformer();
+      return transformer.transformToModel(hms);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**

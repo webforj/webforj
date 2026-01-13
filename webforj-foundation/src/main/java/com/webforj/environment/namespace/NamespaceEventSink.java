@@ -3,9 +3,7 @@ package com.webforj.environment.namespace;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.bbj.proxies.event.BBjNamespaceEvent;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.event.sink.DwcEventSink;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.environment.namespace.event.NamespaceEvent;
@@ -42,9 +40,7 @@ public abstract class NamespaceEventSink implements DwcEventSink<Namespace> {
   public final String setCallback(Object options) {
     if (isConnected()) {
       try {
-        WebforjBBjBridge bridge = getEnvironment().getBridge();
-        CustomObject handler = bridge.getEventProxy(this, "handleEvent");
-        doSetCallback(namespace.getBbjNamespace(), handler, "onEvent");
+        doSetCallback(namespace.getBbjNamespace(), this, "handleEvent");
       } catch (BBjException e) {
         throw new WebforjRuntimeException("Failed to set BBjNamespace callback.", e);
       }
@@ -111,14 +107,14 @@ public abstract class NamespaceEventSink implements DwcEventSink<Namespace> {
   /**
    * Do set a callback on the underlying BBj namespace.
    *
-   * @param BBjNamespace The BBj namespace
-   * @param handler The BBj CustomObject instance
+   * @param namespace The BBj namespace
+   * @param handler The handler object instance
    * @param callback The callback method name as defined in the handler
    *
    * @throws BBjException if the callback cannot be set.
    */
-  protected abstract void doSetCallback(BBjNamespace namespace, CustomObject handler,
-      String callback) throws BBjException;
+  protected abstract void doSetCallback(BBjNamespace namespace, Object handler, String callback)
+      throws BBjException;
 
   /**
    * Do remove a callback from underlying BBj namespace.
@@ -139,8 +135,4 @@ public abstract class NamespaceEventSink implements DwcEventSink<Namespace> {
    * @return A new {@link NamespaceEvent} instance.
    */
   protected abstract NamespaceEvent createEvent(String key, Object oldValue, Object newValue);
-
-  Environment getEnvironment() {
-    return Environment.getCurrent();
-  }
 }

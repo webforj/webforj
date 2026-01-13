@@ -1,9 +1,7 @@
 package com.webforj;
 
 import com.basis.bbj.proxies.BBjAPI;
-import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.basis.util.common.BasisNumber;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
@@ -97,8 +95,8 @@ public final class Interval {
     BBjAPI api = getEnvironment().getBBjAPI();
 
     try {
-      CustomObject handler = getEnvironment().getBridge().getEventProxy(this, "handleEvent");
-      api.createTimer(key, BasisNumber.createBasisNumber(getDelay()), handler, "onEvent");
+      api.createTimer(key, BasisNumber.createBasisNumber(getDelay()), new IntervalHandler(this),
+          "handleEvent");
       running = true;
     } catch (NumberFormatException | BBjException e) {
       throw new WebforjRuntimeException("Failed to create the timer with the key '" + key + "'", e);
@@ -179,8 +177,10 @@ public final class Interval {
     return dispatcher.getListeners(ElapsedEvent.class);
   }
 
-  @SuppressWarnings("unused")
-  public void handleEvent(BBjEvent ev) {
+  /**
+   * Dispatches the elapsed event to listeners.
+   */
+  void dispatchElapsedEvent() {
     dispatcher.dispatchEvent(new ElapsedEvent(this));
   }
 

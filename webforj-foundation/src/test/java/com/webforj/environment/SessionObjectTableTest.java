@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +58,7 @@ class SessionObjectTableTest {
     when(mockApi.getChannelData()).thenReturn(channelData);
 
     // Initialize environment
-    Environment.init(mockApi, mock(WebforjBBjBridge.class), 0);
+    Environment.init(mockApi, 0);
   }
 
   @AfterEach

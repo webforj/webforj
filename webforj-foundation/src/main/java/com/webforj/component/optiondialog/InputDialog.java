@@ -1,10 +1,13 @@
 package com.webforj.component.optiondialog;
 
+import com.basis.bbj.proxies.BBjPrompt;
 import com.basis.bbj.proxies.SysGuiProxyConstants;
+import com.basis.startup.type.BBjException;
 import com.google.gson.Gson;
 import com.webforj.Environment;
 import com.webforj.component.Theme;
 import com.webforj.component.button.ButtonTheme;
+import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
  * Represents an input dialog that prompts the user for input.
@@ -436,12 +439,38 @@ public final class InputDialog extends DwcPromptMsgBox<InputDialog> {
    * @return the result of the input dialog
    */
   public String show() {
-    String result = Environment.getCurrent().getBridge().prompt(this);
-    if (!"::CANCEL::".equals(result)) {
-      return result;
-    }
+    try {
+      BBjPrompt prompt = Environment.getCurrent().getBBjAPI().prompt();
 
-    return null;
+      // Set message, title, and default value
+      prompt.message(String.valueOf(getMessage()));
+      prompt.title(String.valueOf(getTitle()));
+      prompt.init(String.valueOf(getDefaultValue()));
+
+      // Set icon type
+      prompt.options(getMessageType().getValue());
+
+      // Set modes if any attributes are configured
+      String modes = getAttributesAsString();
+      if (modes != null && !modes.isEmpty()) {
+        prompt.modes(modes);
+      }
+
+      // Set timeout if specified
+      int timeout = getTimeout();
+      if (timeout > 0) {
+        prompt.timeout(timeout);
+      }
+
+      String result = prompt.show();
+      if (!"::CANCEL::".equals(result)) {
+        return result;
+      }
+
+      return null;
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to show input dialog.", e);
+    }
   }
 
   /**

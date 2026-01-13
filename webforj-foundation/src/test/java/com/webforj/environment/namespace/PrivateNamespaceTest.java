@@ -13,7 +13,6 @@ import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +28,7 @@ class PrivateNamespaceTest {
   void setUp() throws BBjException {
     environment = mock(Environment.class);
     bbjNamespace = mock(BBjNamespace.class);
-    Environment.init(mock(BBjAPI.class), mock(WebforjBBjBridge.class), 0);
+    Environment.init(mock(BBjAPI.class), 0);
     environment = Environment.getCurrent();
   }
 

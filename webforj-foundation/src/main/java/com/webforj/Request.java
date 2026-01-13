@@ -4,7 +4,6 @@ import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.environment.ObjectTable;
 import com.webforj.exceptions.WebforjRuntimeException;
-import com.webforj.webstorage.CookieStorage;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -112,7 +111,11 @@ public final class Request {
    * @since 24.02
    */
   public String getQueryParameter(String key) {
-    return getEnvironment().getBridge().getQueryParam(key);
+    try {
+      return getEnvironment().getBBjAPI().getConfig().clientEnv(key, true);
+    } catch (BBjException e) {
+      return null;
+    }
   }
 
   /**

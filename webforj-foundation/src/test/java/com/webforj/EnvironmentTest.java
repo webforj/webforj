@@ -11,10 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
+import com.basis.bbj.proxies.BBjInterpreter;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
 import java.nio.file.Files;
@@ -137,11 +137,10 @@ class EnvironmentTest {
 
         // Mock the required BBj objects
         BBjAPI mockApi = mock(BBjAPI.class);
-        WebforjBBjBridge mockBridge = mock(WebforjBBjBridge.class);
         when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
 
         // Initialize environment - this will load the config
-        Environment.init(mockApi, mockBridge, 0);
+        Environment.init(mockApi, 0);
 
         Config config = Environment.getCurrent().getConfig();
 
@@ -168,11 +167,10 @@ class EnvironmentTest {
 
         // Mock the required BBj objects
         BBjAPI mockApi = mock(BBjAPI.class);
-        WebforjBBjBridge mockBridge = mock(WebforjBBjBridge.class);
         when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
 
         // Initialize environment - this will load the config
-        Environment.init(mockApi, mockBridge, 0);
+        Environment.init(mockApi, 0);
 
         Config config = Environment.getCurrent().getConfig();
 
@@ -182,5 +180,21 @@ class EnvironmentTest {
         Files.deleteIfExists(tempConfigFile);
       }
     }
+  }
+
+  @Test
+  void shouldCallWaitVerbWithCorrectSeconds() throws Exception {
+    BBjAPI mockApi = mock(BBjAPI.class);
+    BBjInterpreter mockInterpreter = mock(BBjInterpreter.class);
+
+    when(mockApi.openSysGui(anyString())).thenReturn(mock(BBjSysGui.class));
+    when(mockApi.getInterpreter()).thenReturn(mockInterpreter);
+
+    Environment.init(mockApi, 0);
+    Environment.getCurrent().sleep(5);
+
+    verify(mockInterpreter).waitVerb(5);
+
+    Environment.cleanup();
   }
 }

@@ -26,7 +26,6 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.ObjectTable;
@@ -49,7 +48,6 @@ class PageTest {
   BBjAPI api;
   BBjWebManager webManager;
   BBjSysGui sysGui;
-  WebforjBBjBridge bridge;
   BBjThinClient thinClient;
   BBjClientFileSystem clientFileSystem;
   BBjClientFile clientFile;
@@ -60,14 +58,12 @@ class PageTest {
     api = mock(BBjAPI.class);
     webManager = mock(BBjWebManager.class);
     sysGui = mock(BBjSysGui.class);
-    bridge = mock(WebforjBBjBridge.class);
     thinClient = mock(BBjThinClient.class);
     clientFileSystem = mock(BBjClientFileSystem.class);
     clientFile = mock(BBjClientFile.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(environment.getSysGui()).thenReturn(sysGui);
-    when(environment.getBridge()).thenReturn(bridge);
     when(api.getWebManager()).thenReturn(webManager);
     when(api.getThinClient()).thenReturn(thinClient);
     when(thinClient.getClientFileSystem()).thenReturn(clientFileSystem);
@@ -253,13 +249,13 @@ class PageTest {
       assertNotNull(registration);
 
       verify(webManager, times(1)).setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(),
-          eq("onEvent"));
+          eq("handleEvent"));
     }
 
     @Test
     void addUnloadListenerShouldThrowException() throws BBjException {
       doThrow(BBjException.class).when(webManager)
-          .setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(), eq("onEvent"));
+          .setCallback(eq(SysGuiEventConstants.ON_BROWSER_CLOSE), any(), eq("handleEvent"));
       EventListener<PageUnloadEvent> listener = mock(EventListener.class);
 
       assertThrows(WebforjWebManagerException.class, () -> page.onUnload(listener));

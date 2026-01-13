@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,7 @@ class StringTableTest {
   void setUp() throws BBjException {
     mockApi = mock(BBjAPI.class);
     when(mockApi.getStbl(testKey)).thenReturn(testValue);
-    Environment.init(mockApi, mock(WebforjBBjBridge.class), 0);
+    Environment.init(mockApi, 0);
   }
 
   @AfterEach

@@ -1,8 +1,6 @@
 package com.webforj.component.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,8 +9,7 @@ import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.sysgui.BBjInputT;
 import com.basis.startup.type.BBjException;
 import com.basis.util.common.BasisNumber;
-import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
+import com.webforj.MaskDecorator;
 import com.webforj.component.Expanse;
 import com.webforj.component.ReflectionUtils;
 import com.webforj.data.event.ValueChangeEvent;
@@ -20,13 +17,11 @@ import com.webforj.data.transformation.transformer.HoursLocalTimeTransformer;
 import com.webforj.dispatcher.EventListener;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.Locale;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -123,23 +118,13 @@ class MaskedTimeFieldTest {
     @Test
     void shouldGetTheValueIfNotAttached() throws IllegalAccessException {
       ReflectionUtils.nullifyControl(component);
-      Environment env = mock(Environment.class);
-      WebforjBBjBridge bridge = mock(WebforjBBjBridge.class);
 
-      try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-        mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-        when(env.getBridge()).thenReturn(bridge);
+      LocalTime value = LocalTime.of(12, 30);
+      String mask = MaskedTimeField.DEFAULT_MASK;
+      String expected = MaskDecorator.forTime(value, mask);
 
-        LocalTime value = LocalTime.of(12, 30);
-        String mask = MaskedTimeField.DEFAULT_MASK;
-        String expected = "12:30 PM";
-        double hours = new HoursLocalTimeTransformer().transformToComponent(value);
-
-        when(bridge.maskDateTime(0, hours, mask)).thenReturn(expected);
-
-        component.setValue(value);
-        assertEquals(expected, component.getText());
-      }
+      component.setValue(value);
+      assertEquals(expected, component.getText());
     }
   }
 
@@ -200,28 +185,16 @@ class MaskedTimeFieldTest {
 
     @Test
     void shouldParseTextIfValueIsNullAndNotAttached() throws IllegalAccessException {
-      String expected = "12:30 PM";
+      LocalTime expectedValue = LocalTime.of(12, 30);
+      String mask = MaskedTimeField.DEFAULT_MASK;
+      String textValue = MaskDecorator.forTime(expectedValue, mask);
 
       component = spy(component);
       when(component.isAttached()).thenReturn(false);
-      when(component.getText()).thenReturn(expected);
+      when(component.getText()).thenReturn(textValue);
       ReflectionUtils.nullifyControl(component);
 
-      Environment env = mock(Environment.class);
-      WebforjBBjBridge bridge = mock(WebforjBBjBridge.class);
-
-      try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-        mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-        when(env.getBridge()).thenReturn(bridge);
-
-        LocalTime expectedValue = LocalTime.of(12, 30);
-        String mask = MaskedTimeField.DEFAULT_MASK;
-        double hours = new HoursLocalTimeTransformer().transformToComponent(expectedValue);
-
-        when(bridge.parseTime(expected, mask, Locale.getDefault())).thenReturn(hours);
-
-        assertEquals(expectedValue, component.getValue());
-      }
+      assertEquals(expectedValue, component.getValue());
     }
 
     @Test
@@ -230,21 +203,10 @@ class MaskedTimeFieldTest {
       LocalTime expectedValue = LocalTime.of(12, 30);
       component.setValue(expectedValue);
 
-      Environment env = mock(Environment.class);
-      WebforjBBjBridge bridge = mock(WebforjBBjBridge.class);
+      String mask = MaskedTimeField.DEFAULT_MASK;
+      String expected = MaskDecorator.forTime(expectedValue, mask);
 
-      try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
-        mockedEnvironment.when(Environment::getCurrent).thenReturn(env);
-        when(env.getBridge()).thenReturn(bridge);
-
-        String mask = MaskedTimeField.DEFAULT_MASK;
-        String expected = "2020-10-01";
-        double hours = new HoursLocalTimeTransformer().transformToComponent(expectedValue);
-
-        when(bridge.maskDateTime(0, hours, mask)).thenReturn(expected);
-
-        assertEquals(expected, component.getMaskedValue());
-      }
+      assertEquals(expected, component.getMaskedValue());
     }
   }
 

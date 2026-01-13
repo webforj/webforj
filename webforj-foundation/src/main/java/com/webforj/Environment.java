@@ -3,15 +3,14 @@ package com.webforj;
 import com.basis.bbj.proxies.BBjAPI;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.basis.util.common.Util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.webforj.annotation.Experimental;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.environment.StringTable;
 import com.webforj.error.ErrorHandler;
 import com.webforj.error.GlobalErrorHandler;
+import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.servlet.WebforjServlet;
 import jakarta.servlet.http.HttpSession;
@@ -54,7 +53,6 @@ public final class Environment {
       new InheritableThreadLocal<>();
   private final BBjAPI api;
   private final BBjSysGui sysgui;
-  private final WebforjBBjBridge bridge;
   private final ConcurrentHashMap<String, EnvironmentAccessRequest> pendingRequests =
       new ConcurrentHashMap<>();
   private boolean debug = false;
@@ -64,14 +62,12 @@ public final class Environment {
    * Creates a new environment.
    *
    * @param api the BBjAPI instance.
-   * @param bridge the WebforjBBjBridge instance.
    * @param debug {@code true} if debug mode is enabled, {@code false} otherwise.
    * @throws BBjException if an error occurs while creating the environment.
    */
-  private Environment(BBjAPI api, WebforjBBjBridge bridge, boolean debug) throws BBjException {
+  private Environment(BBjAPI api, boolean debug) throws BBjException {
     this.api = api;
     this.sysgui = api.openSysGui("X0");
-    this.bridge = bridge;
     this.debug = debug;
   }
 
@@ -79,13 +75,12 @@ public final class Environment {
    * Initializes the environment for the current thread.
    *
    * @param api the BBjAPI instance.
-   * @param helper the WebforjBBjBridge instance.
    * @param debug {@code 1} if debug mode is enabled, {@code 0} otherwise.
    *
    * @throws BBjException if an error occurs while initializing the environment.
    */
-  public static void init(BBjAPI api, WebforjBBjBridge helper, int debug) throws BBjException {
-    Environment env = new Environment(api, helper, debug > 0);
+  public static void init(BBjAPI api, int debug) throws BBjException {
+    Environment env = new Environment(api, debug > 0);
     Long currentThreadId = Thread.currentThread().getId();
     Environment.instanceMap.put(currentThreadId, env);
 
@@ -337,7 +332,11 @@ public final class Environment {
    *        255. (Some systems may allow waits longer than 255 seconds.)
    */
   public void sleep(int seconds) {
-    getBridge().sleep(seconds);
+    try {
+      Environment.getCurrent().getBBjAPI().getInterpreter().waitVerb(seconds);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to sleep", e);
+    }
   }
 
   /**
@@ -414,15 +413,6 @@ public final class Environment {
     }
 
     return Optional.empty();
-  }
-
-  /**
-   * Returns the WebforjBBjBridge instance.
-   *
-   * @return the WebforjBBjBridge instance.
-   */
-  public WebforjBBjBridge getBridge() {
-    return bridge;
   }
 
   /**
@@ -547,9 +537,7 @@ public final class Environment {
     try {
       logger.log(Level.DEBUG, "Registering runLater event callback");
       EnvironmentRunLaterEventHandler eventHandler = new EnvironmentRunLaterEventHandler(this);
-      CustomObject handler = getBridge().getEventProxy(eventHandler, "handleEvent");
-
-      getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, handler, "onEvent");
+      getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, eventHandler, "handleEvent");
       logger.log(Level.DEBUG, "runLater event callback registered successfully");
     } catch (BBjException e) {
       logger.log(Level.ERROR, "Failed to register runLater event handler: {0}", e.getMessage(), e);

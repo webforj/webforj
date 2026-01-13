@@ -1,10 +1,8 @@
 package com.webforj;
 
-import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.event.BBjExecuteScriptEvent;
 import com.basis.bbj.proxyif.SysGuiEventConstants;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +30,9 @@ public final class PageExecuteJsAsyncHandler {
       return;
     }
 
-    CustomObject handler = env.getBridge().getEventProxy(this, "handleEvent");
     try {
-      env.getBBjAPI().getWebManager().setCallback(SysGuiEventConstants.ON_EXECUTE_SCRIPT, handler,
-          "onEvent");
+      env.getBBjAPI().getWebManager().setCallback(SysGuiEventConstants.ON_EXECUTE_SCRIPT, this,
+          "handleEvent");
       registered = true;
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to set Page ExecuteJsAsyncHandler.", e);
@@ -45,11 +42,9 @@ public final class PageExecuteJsAsyncHandler {
   /**
    * Handle the Page ExecuteJsAsync event.
    *
-   * @param ev The event
+   * @param event The event
    */
-  public void handleEvent(BBjEvent ev) {
-    BBjExecuteScriptEvent event = (BBjExecuteScriptEvent) ev;
-
+  public void handleEvent(BBjExecuteScriptEvent event) {
     int index = Integer.parseInt(event.getIndex() + "");
     Object result = event.getResult();
     PendingResult<Object> pending = pendingResults.remove(index);

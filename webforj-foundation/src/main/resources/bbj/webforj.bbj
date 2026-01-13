@@ -5,7 +5,6 @@ use java.io.PrintWriter
 
 use ::admin.bbj::Admin
 use ::admin.bbj::UserCredentials
-use ::!!bbj/WebforjHelper.bbj::WebforjHelper
 
 SETESC EscTrap
 SETERR ErrTrap
@@ -55,7 +54,7 @@ web!.setEndAction(noneAction!)
 web!.setEndAction(noneAction!)
 
 REM launch the app
-app! = Bootstrap.init(BBjAPI(), new WebforjHelper(), DEBUG, class$)
+app! = Bootstrap.init(BBjAPI(), DEBUG, class$)
 process_events,err=ErrTrap
 
 determineClasspathEntries:

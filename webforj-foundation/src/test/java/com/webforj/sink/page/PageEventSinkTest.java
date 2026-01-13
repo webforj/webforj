@@ -17,10 +17,8 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.event.BBjWebEvent;
 import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.Environment;
 import com.webforj.Page;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.event.page.PageEvent;
@@ -47,7 +45,6 @@ class PageEventSinkTest {
   Environment environment;
   BBjAPI api;
   BBjWebManager webManager;
-  WebforjBBjBridge bridge;
   PageEventSink sink;
 
   @BeforeEach
@@ -58,7 +55,6 @@ class PageEventSinkTest {
     webManager = mock(BBjWebManager.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
-    when(environment.getBridge()).thenReturn(mock(WebforjBBjBridge.class));
     when(api.getWebManager()).thenReturn(webManager);
 
     page = spy(Page.class);
@@ -74,7 +70,8 @@ class PageEventSinkTest {
       when(webManager.newEventOptions()).thenReturn(optionsMock);
 
       sink.setCallback(new PageEventOptions());
-      verify(sink.getBbjWebManager(), times(1)).setCallback("click", null, "onEvent", optionsMock);
+      verify(sink.getBbjWebManager(), times(1)).setCallback(eq("click"), any(), eq("handleEvent"),
+          eq(optionsMock));
     }
   }
 
@@ -92,7 +89,6 @@ class PageEventSinkTest {
   void shouldProcessPayload() throws BBjException {
     try (MockedStatic<Environment> mockedEnvironment = mockStatic(Environment.class)) {
       mockedEnvironment.when(Environment::getCurrent).thenReturn(environment);
-      when(environment.getBridge()).thenReturn(mock(WebforjBBjBridge.class));
 
       BBjWebEventOptions optionsMock = mock(BBjWebEventOptions.class);
       when(webManager.newEventOptions()).thenReturn(optionsMock);
@@ -128,8 +124,8 @@ class PageEventSinkTest {
       String code = "component.dispatchEvent(new CustomEvent('custom-event'))";
       String filter = "event.target.isSameNode(component)";
 
-      when(webManager.setCallback(anyString(), any(CustomObject.class), anyString(),
-          any(BBjWebEventOptions.class))).thenAnswer(new Answer<Integer>() {
+      when(webManager.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+          .thenAnswer(new Answer<Integer>() {
             @Override
             public Integer answer(InvocationOnMock invocation) throws Throwable {
               return new Random().nextInt();
@@ -147,13 +143,11 @@ class PageEventSinkTest {
       String eventType = "click";
 
       // add the callback
-      String firstCallbackId =
-          sink.doSetCallback(webManager, pageOptions, mock(CustomObject.class), "onEvent");
-      String secondCallbackId =
-          sink.doSetCallback(webManager, pageOptions, mock(CustomObject.class), "onEvent");
+      String firstCallbackId = sink.doSetCallback(webManager, pageOptions, sink, "handleEvent");
+      String secondCallbackId = sink.doSetCallback(webManager, pageOptions, sink, "handleEvent");
 
       assertNotEquals(firstCallbackId, secondCallbackId);
-      verify(webManager, times(2)).setCallback(eq(eventType), any(CustomObject.class), anyString(),
+      verify(webManager, times(2)).setCallback(eq(eventType), any(), anyString(),
           eq(managerOptions));
 
       verify(webManager, times(2)).newEventOptions();

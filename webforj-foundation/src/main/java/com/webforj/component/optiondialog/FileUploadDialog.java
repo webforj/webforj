@@ -1,7 +1,10 @@
 package com.webforj.component.optiondialog;
 
+import com.basis.bbj.proxies.BBjFileOpen;
+import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
 import com.webforj.UploadedFile;
+import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.List;
 
 /**
@@ -199,12 +202,44 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    * @return the result of the FileUpload dialog
    */
   public UploadedFile show() {
-    String result = Environment.getCurrent().getBridge().fileUpload(this);
-    if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
-      return null;
-    }
+    try {
+      BBjFileOpen fileOpen = Environment.getCurrent().getBBjAPI().fileopen();
 
-    return new UploadedFile(result);
+      // Set title
+      fileOpen.title(String.valueOf(getTitle()));
+
+      // Build filters string
+      List<FileChooserFilter> filterList = getFilters();
+      if (filterList != null && !filterList.isEmpty()) {
+        StringBuilder filterBuilder = new StringBuilder();
+        for (FileChooserFilter filter : filterList) {
+          filterBuilder.append(String.valueOf(filter.getDescription()));
+          filterBuilder.append("\n");
+          filterBuilder.append(String.valueOf(filter.getPattern()));
+          filterBuilder.append("\n");
+        }
+        fileOpen.filters(filterBuilder.toString());
+      }
+
+      // Build modes string with CLIENT prefix
+      StringBuilder modesBuilder = new StringBuilder("CLIENT,");
+      String attributes = getAttributesAsString();
+      if (attributes != null && !attributes.isEmpty()) {
+        modesBuilder.append(attributes);
+      }
+      modesBuilder.append(",i18n=").append(getI18n().toString());
+
+      fileOpen.modes(modesBuilder.toString());
+
+      String result = fileOpen.show();
+      if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
+        return null;
+      }
+
+      return new UploadedFile(result);
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to show file upload dialog.", e);
+    }
   }
 
   /**

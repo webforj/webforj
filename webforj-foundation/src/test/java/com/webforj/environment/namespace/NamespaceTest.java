@@ -21,7 +21,6 @@ import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
 import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.environment.namespace.event.NamespaceAccessEvent;
@@ -45,8 +44,7 @@ class NamespaceTest {
   @BeforeEach
   void setUp() throws BBjException {
     BBjAPI api = mock(BBjAPI.class);
-    WebforjBBjBridge bridge = mock(WebforjBBjBridge.class);
-    Environment.init(api, bridge, 0);
+    Environment.init(api, 0);
 
     bbjNamespace = mock(BBjNamespace.class);
     namespace = new GlobalNamespace();

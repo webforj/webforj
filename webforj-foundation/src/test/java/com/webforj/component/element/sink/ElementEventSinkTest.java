@@ -15,7 +15,6 @@ import com.basis.bbj.proxies.event.BBjWebEvent;
 import com.basis.bbj.proxies.event.BBjWebEventOptions;
 import com.basis.bbj.proxies.sysgui.BBjWebComponent;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.component.element.Element;
 import com.webforj.component.element.event.ElementEvent;
 import com.webforj.component.element.event.ElementEventOptions;
@@ -68,8 +67,8 @@ class ElementEventSinkTest {
     String filter = "event.target.isSameNode(component)";
 
     BBjWebComponent control = mock(BBjWebComponent.class);
-    when(control.setCallback(anyString(), any(CustomObject.class), anyString(),
-        any(BBjWebEventOptions.class))).thenAnswer(new Answer<Integer>() {
+    when(control.setCallback(anyString(), any(), anyString(), any(BBjWebEventOptions.class)))
+        .thenAnswer(new Answer<Integer>() {
           @Override
           public Integer answer(InvocationOnMock invocation) throws Throwable {
             return new Random().nextInt();
@@ -89,14 +88,11 @@ class ElementEventSinkTest {
     ElementEventSink sink = new ElementEventSink(component, eventType, new EventDispatcher());
 
     // add the callback
-    String firstCallbackId =
-        sink.doSetCallback(control, componentOptions, mock(CustomObject.class), "onEvent");
-    String secondCallbackId =
-        sink.doSetCallback(control, componentOptions, mock(CustomObject.class), "onEvent");
+    String firstCallbackId = sink.doSetCallback(control, componentOptions, sink, "handleEvent");
+    String secondCallbackId = sink.doSetCallback(control, componentOptions, sink, "handleEvent");
 
     assertNotEquals(firstCallbackId, secondCallbackId);
-    verify(control, times(2)).setCallback(eq(eventType), any(CustomObject.class), anyString(),
-        eq(controlOptions));
+    verify(control, times(2)).setCallback(eq(eventType), any(), anyString(), eq(controlOptions));
 
     verify(control, times(2)).newEventOptions();
 

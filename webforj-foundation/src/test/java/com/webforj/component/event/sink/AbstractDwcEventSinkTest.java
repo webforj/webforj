@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
 import com.basis.startup.type.BBjException;
-import com.basis.startup.type.CustomObject;
 import com.webforj.component.DwcComponentMock;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.exceptions.WebforjRuntimeException;
@@ -40,14 +39,13 @@ class AbstractDwcEventSinkTest {
     @Test
     void callSetCallbackOnUnderlyingControl() throws BBjException {
       sink.setCallback();
-      verify(sink.getControl(), times(1)).setCallback(anyInt(), any(CustomObject.class),
-          anyString());
+      verify(sink.getControl(), times(1)).setCallback(anyInt(), any(Object.class), anyString());
     }
 
     @Test
     void throwDwcjRuntimeExceptionWhenSetCallbackFails() throws BBjException {
       BBjControl control = sink.getControl();
-      doThrow(BBjException.class).when(control).setCallback(anyInt(), any(CustomObject.class),
+      doThrow(BBjException.class).when(control).setCallback(anyInt(), any(Object.class),
           anyString());
       assertThrows(WebforjRuntimeException.class, () -> sink.setCallback());
     }

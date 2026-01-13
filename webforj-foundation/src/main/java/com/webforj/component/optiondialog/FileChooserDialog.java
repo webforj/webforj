@@ -1,6 +1,9 @@
 package com.webforj.component.optiondialog;
 
+import com.basis.bbj.proxies.BBjFileOpen;
+import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
+import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.List;
 
 /**
@@ -371,12 +374,54 @@ public sealed class FileChooserDialog extends DwcFileOpen<FileChooserDialog>
    * @return the result of the FileChooser dialog
    */
   public String show() {
-    String result = Environment.getCurrent().getBridge().fileChooser(this);
-    if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
-      return null;
-    }
+    try {
+      BBjFileOpen fileOpen = Environment.getCurrent().getBBjAPI().fileopen();
 
-    return result;
+      // Set title and initial path
+      fileOpen.title(String.valueOf(getTitle()));
+      fileOpen.path(String.valueOf(getInitialPath()));
+
+      // Build filters string
+      List<FileChooserFilter> filterList = getFilters();
+      if (filterList != null && !filterList.isEmpty()) {
+        StringBuilder filterBuilder = new StringBuilder();
+        for (FileChooserFilter filter : filterList) {
+          filterBuilder.append(String.valueOf(filter.getDescription()));
+          filterBuilder.append("\n");
+          filterBuilder.append(String.valueOf(filter.getPattern()));
+          filterBuilder.append("\n");
+        }
+        fileOpen.filters(filterBuilder.toString());
+      }
+
+      // Set selection mode
+      fileOpen.mode(getSelectionMode().getValue());
+
+      // Build modes string
+      StringBuilder modesBuilder = new StringBuilder();
+      if (isRestricted()) {
+        modesBuilder.append("RESTRICTED,");
+      }
+      String attributes = getAttributesAsString();
+      if (attributes != null && !attributes.isEmpty()) {
+        modesBuilder.append(attributes);
+      }
+      modesBuilder.append(",i18n=").append(getI18n().toString());
+
+      String modes = modesBuilder.toString();
+      if (!modes.isEmpty()) {
+        fileOpen.modes(modes);
+      }
+
+      String result = fileOpen.show();
+      if ("::CANCEL::".equals(result) || "::BAD::".equals(result)) {
+        return null;
+      }
+
+      return result;
+    } catch (BBjException e) {
+      throw new WebforjRuntimeException("Failed to show file chooser dialog.", e);
+    }
   }
 
   /**

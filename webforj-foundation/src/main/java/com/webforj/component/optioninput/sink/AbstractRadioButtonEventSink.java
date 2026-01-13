@@ -3,8 +3,6 @@ package com.webforj.component.optioninput.sink;
 import com.basis.bbj.proxies.event.BBjEvent;
 import com.basis.bbj.proxies.sysgui.BBjRadioGroup;
 import com.basis.startup.type.BBjException;
-import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.component.Component;
 import com.webforj.component.event.sink.DwcEventSink;
 import com.webforj.component.optioninput.RadioButtonGroup;
@@ -28,7 +26,6 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink<Compo
   private EventDispatcher dispatcher;
   private final int eventType;
   private BBjRadioGroup control = null;
-  private WebforjBBjBridge webforjHelper;
 
   /**
    * Constructor for the sink class.
@@ -42,10 +39,6 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink<Compo
     this.component = component;
     this.dispatcher = dispatcher;
     this.eventType = eventType;
-
-    if (Environment.getCurrent() != null) {
-      setWebforjHelper(Environment.getCurrent().getBridge());
-    }
   }
 
   /**
@@ -55,8 +48,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink<Compo
   public String setCallback(Object options) {
     if (isConnected()) {
       try {
-        getBBjRadioGroup().setCallback(eventType,
-            getWebforjHelper().getEventProxy(this, "handleEvent"), "onEvent");
+        getBBjRadioGroup().setCallback(eventType, this, "handleEvent");
       } catch (BBjException e) {
         throw new WebforjRuntimeException("Failed to set BBjRadioGroup callback.", e);
       }
@@ -84,7 +76,7 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink<Compo
    */
   @Override
   public final boolean isConnected() {
-    return getBBjRadioGroup() != null && getWebforjHelper() != null;
+    return getBBjRadioGroup() != null;
   }
 
   /**
@@ -117,24 +109,6 @@ public abstract class AbstractRadioButtonEventSink implements DwcEventSink<Compo
   @Override
   public EventDispatcher getEventDispatcher() {
     return this.dispatcher;
-  }
-
-  /**
-   * Set the instance of the WebforjHelper.
-   *
-   * @param helper The WebforjHelper instance.
-   */
-  void setWebforjHelper(WebforjBBjBridge helper) {
-    this.webforjHelper = helper;
-  }
-
-  /**
-   * Get the instance of the WebforjHelper.
-   *
-   * @return The WebforjHelper instance.
-   */
-  WebforjBBjBridge getWebforjHelper() {
-    return this.webforjHelper;
   }
 
   /**

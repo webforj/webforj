@@ -3,8 +3,6 @@ package com.webforj.environment.namespace;
 import com.basis.bbj.proxies.BBjNamespace;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
-import com.webforj.Environment;
-import com.webforj.bridge.WebforjBBjBridge;
 import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -427,14 +425,5 @@ public abstract sealed class Namespace permits PrivateNamespace, GlobalNamespace
 
   final BBjNamespace getBbjNamespace() {
     return ns;
-  }
-
-  /**
-   * Get the bridge object.
-   *
-   * @return the bridge object
-   */
-  final WebforjBBjBridge getBridge() {
-    return Environment.getCurrent().getBridge();
   }
 }
