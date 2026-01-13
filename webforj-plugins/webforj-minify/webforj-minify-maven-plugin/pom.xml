@@ -16,7 +16,7 @@
   <description>Maven plugin for minifying webforJ assets at build time</description>
 
   <properties>
-    <maven.version>3.9.11</maven.version>
+    <maven.version>3.9.12</maven.version>
     <maven-plugin-annotations.version>3.15.2</maven-plugin-annotations.version>
   </properties>
 
