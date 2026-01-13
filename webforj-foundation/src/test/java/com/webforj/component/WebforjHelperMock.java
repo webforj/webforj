@@ -39,9 +39,4 @@ public class WebforjHelperMock implements WebforjBBjBridge {
   public ArrayList<BBjVar> call(String pgm, ArrayList<BBjVar> args) {
     throw new UnsupportedOperationException("Unimplemented method 'call'");
   }
-
-  @Override
-  public String getQueryParam(String key) {
-    return "";
-  }
 }

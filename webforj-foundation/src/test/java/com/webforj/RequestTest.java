@@ -6,6 +6,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.BBjAPI;
+import com.basis.bbj.proxies.BBjConfig;
 import com.basis.bbj.proxies.BBjSysGui;
 import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
@@ -25,6 +26,7 @@ class RequestTest {
   BBjThinClient thinClient;
   WebforjBBjBridge bridge;
   BBjWebManager webManager;
+  BBjConfig config;
 
   @BeforeEach
   void setUp() throws BBjException {
@@ -34,10 +36,12 @@ class RequestTest {
     sysGui = mock(BBjSysGui.class);
     bridge = mock(WebforjBBjBridge.class);
     webManager = mock(BBjWebManager.class);
+    config = mock(BBjConfig.class);
 
     when(environment.getBBjAPI()).thenReturn(api);
     when(api.getThinClient()).thenReturn(thinClient);
     when(api.getWebManager()).thenReturn(webManager);
+    when(api.getConfig()).thenReturn(config);
     when(environment.getSysGui()).thenReturn(sysGui);
     when(environment.getBridge()).thenReturn(bridge);
 
@@ -74,8 +78,8 @@ class RequestTest {
   }
 
   @Test
-  void shouldGetQueryParameter() {
-    when(bridge.getQueryParam("key")).thenReturn("value");
+  void shouldGetQueryParameter() throws BBjException {
+    when(config.clientEnv("key", true)).thenReturn("value");
     assertEquals("value", request.getQueryParameter("key"));
   }
 

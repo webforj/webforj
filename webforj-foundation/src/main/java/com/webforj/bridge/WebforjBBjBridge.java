@@ -64,6 +64,4 @@ public interface WebforjBBjBridge {
 
 
   ArrayList<BBjVar> call(String pgm, ArrayList<BBjVar> args);
-
-  String getQueryParam(String key);
 }
