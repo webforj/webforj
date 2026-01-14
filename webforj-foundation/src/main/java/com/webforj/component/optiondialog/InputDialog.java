@@ -147,7 +147,7 @@ public final class InputDialog extends DwcPromptMsgBox<InputDialog> {
    * @param messageType The type of dialog style.
    * @param inputType the type of input field
    */
-  public InputDialog(String message, String title, String defaultValue, MessageType messageType,
+  public InputDialog(Object message, String title, String defaultValue, MessageType messageType,
       InputType inputType) {
     this(message, title, defaultValue, messageType, inputType,
         detectDialogThemeFromMessageType(messageType));

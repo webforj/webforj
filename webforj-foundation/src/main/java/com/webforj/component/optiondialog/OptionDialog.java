@@ -161,7 +161,7 @@ public final class OptionDialog {
    * @param messageType The type of dialog style.
    * @param inputType the type of input field
    */
-  public static String showInputDialog(String message, String title, String defaultValue,
+  public static String showInputDialog(Object message, String title, String defaultValue,
       MessageType messageType, InputType inputType) {
     return new InputDialog(message, title, defaultValue, messageType, inputType).show();
   }
