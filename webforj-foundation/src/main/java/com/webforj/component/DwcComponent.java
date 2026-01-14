@@ -1097,7 +1097,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @since 24.11
    */
   protected T setPrefixComponent(Component prefix) {
-    getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    if (prefix == null) {
+      getSlotAssigner().getSlotRegistry().removeSlot(PREFIX_SLOT);
+    } else {
+      getSlotAssigner().reAssign(PREFIX_SLOT, prefix);
+    }
+
     return getSelf();
   }
 
@@ -1126,7 +1131,12 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    * @since 24.11
    */
   protected T setSuffixComponent(Component suffix) {
-    getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    if (suffix == null) {
+      getSlotAssigner().getSlotRegistry().removeSlot(SUFFIX_SLOT);
+    } else {
+      getSlotAssigner().reAssign(SUFFIX_SLOT, suffix);
+    }
+
     return getSelf();
   }
 

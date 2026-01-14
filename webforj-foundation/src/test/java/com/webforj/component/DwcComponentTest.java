@@ -756,10 +756,32 @@ class DwcComponentTest {
     }
 
     @Test
+    void shouldDestroyExistingPrefixWhenSettingNull() {
+      Component prefixComponent = mock(Component.class);
+      component.setPrefixComponent(prefixComponent);
+      assertEquals(prefixComponent, component.getPrefixComponent());
+
+      component.setPrefixComponent(null);
+      verify(prefixComponent, times(1)).destroy();
+      assertNull(component.getPrefixComponent());
+    }
+
+    @Test
     void shouldSetAndGetSuffix() {
       Component suffixComponent = mock(Component.class);
       component.setSuffixComponent(suffixComponent);
       assertEquals(suffixComponent, component.getSuffixComponent());
+    }
+
+    @Test
+    void shouldDestroyExistingSuffixWhenSettingNull() {
+      Component suffixComponent = mock(Component.class);
+      component.setSuffixComponent(suffixComponent);
+      assertEquals(suffixComponent, component.getSuffixComponent());
+
+      component.setSuffixComponent(null);
+      verify(suffixComponent, times(1)).destroy();
+      assertNull(component.getSuffixComponent());
     }
 
     @Test

@@ -26,7 +26,8 @@ public interface HasSuffix<T extends Component> {
    * with the new one.
    * </p>
    *
-   * @param suffix the suffix component to set
+   * @param suffix the suffix component to set. If suffix is null, the existing suffix component
+   *        will be destroyed.
    * @return the component itself.
    */
   public default T setSuffixComponent(Component suffix) {
