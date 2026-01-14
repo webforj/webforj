@@ -26,7 +26,8 @@ public interface HasPrefix<T extends Component> {
    * with the new one.
    * </p>
    *
-   * @param prefix the prefix component to set
+   * @param prefix the prefix component to set, If prefix is null, the existing prefix component
+   *        will be destroyed.
    * @return the component itself.
    */
   public default T setPrefixComponent(Component prefix) {
