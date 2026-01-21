@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Router class responsible for navigating to a given path.
@@ -205,18 +206,27 @@ public class Router {
     removeHistoryStateListener();
 
     Class<? extends Component> targetClass = componentClass.get();
-    RouteTransition transition = targetClass.getAnnotation(RouteTransition.class);
 
+    // Get the leaf component being exited (deepest in current hierarchy)
     Component exitingComponent = getExitingComponent();
+
+    // Find transitions (inherit from parent if not defined on component)
+    String enterType = findEnterTransition(targetClass);
+    String exitType =
+        exitingComponent != null ? findExitTransition(exitingComponent.getClass()) : null;
+
+    // If exit not found, fallback to exiting component's inherited ent
+    if (exitType == null && exitingComponent != null) {
+      String inheritedEnter = findEnterTransition(exitingComponent.getClass());
+      if (inheritedEnter != null && !ViewTransition.NONE.equals(inheritedEnter)) {
+        exitType = inheritedEnter;
+      }
+    }
 
     // Skip transition if navigating to the same view
     boolean sameView = exitingComponent != null && targetClass.isInstance(exitingComponent);
 
-    RouteTransition exitTransition =
-        exitingComponent != null ? exitingComponent.getClass().getAnnotation(RouteTransition.class)
-            : null;
-
-    boolean hasTransition = !sameView && (transition != null || exitTransition != null);
+    boolean hasTransition = !sameView && (enterType != null || exitType != null);
 
     if (!hasTransition) {
       renderer.render(targetClass, context, component -> {
@@ -229,28 +239,17 @@ public class Router {
     } else {
       ViewTransition vt = Page.getCurrent().startViewTransition();
 
-      // Determine the transition type based on target view's annotation
-      String transitionType = null;
-      if (transition != null && !ViewTransition.NONE.equals(transition.enter())) {
-        // Forward navigation: use target's enter transition
-        transitionType = transition.enter();
-      } else if (transition != null && !ViewTransition.NONE.equals(transition.exit())) {
-        // Back navigation: use target's exit transition (reverse animation)
-        transitionType = transition.exit();
+      // Apply exit transition to exiting component (may be inherited from parent)
+      if (exitingComponent != null && exitType != null) {
+        vt.exit(exitingComponent, exitType);
       }
 
-      final String activeTransitionType = transitionType;
-
-      // ViewTransition handles the exit/enter suffix internally
-      if (exitingComponent != null && activeTransitionType != null) {
-        vt.exit(exitingComponent, activeTransitionType);
-      }
-
-      vt.onUpdate(done -> {
+      final String finalEnterType = enterType;
+      vt.onUpdate(done -> { // NOSONAR
         renderer.render(targetClass, context, component -> {
-          // Apply enter transition AFTER component is created
-          if (component.isPresent() && activeTransitionType != null) {
-            vt.enter(component.get(), activeTransitionType);
+          // Apply enter transition to target (may be inherited from parent)
+          if (component.isPresent() && finalEnterType != null) {
+            vt.enter(component.get(), finalEnterType);
           }
 
           // Call lifecycle observers BEFORE done() so morph element names are set
@@ -874,5 +873,31 @@ public class Router {
     }
 
     return renderer.getRenderedComponent(path.getData()).orElse(null);
+  }
+
+  private String findEnterTransition(Class<? extends Component> componentClass) {
+    return findInheritedTransition(componentClass, RouteTransition::enter);
+  }
+
+  private String findExitTransition(Class<? extends Component> componentClass) {
+    return findInheritedTransition(componentClass, RouteTransition::exit);
+  }
+
+  private String findInheritedTransition(Class<? extends Component> componentClass,
+      Function<RouteTransition, String> extractor) {
+    Class<? extends Component> current = componentClass;
+
+    while (current != null) {
+      RouteTransition rt = current.getAnnotation(RouteTransition.class);
+      if (rt != null) {
+        String value = extractor.apply(rt);
+        if (!ViewTransition.NONE.equals(value)) {
+          return value;
+        }
+      }
+      current = registry.getOutlet(current).orElse(null);
+    }
+
+    return null;
   }
 }
