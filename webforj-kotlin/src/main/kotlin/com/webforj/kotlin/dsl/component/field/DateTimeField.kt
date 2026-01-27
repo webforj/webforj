@@ -33,14 +33,11 @@ fun @WebforjDsl HasComponents.dateTimeField(
   value: LocalDateTime? = null,
   block: @WebforjDsl DateTimeField.() -> Unit = {}
 ): DateTimeField {
-  val dateTimeField = if (label != null && value != null) {
-    DateTimeField(label, value)
-  } else if (label != null) {
-    DateTimeField(label)
-  } else if (value != null) {
-    DateTimeField(value)
-  } else {
-    DateTimeField()
+  val dateTimeField = when {
+    value != null && label != null -> DateTimeField(label, value)
+    label != null -> DateTimeField(label)
+    value != null -> DateTimeField(value)
+    else -> DateTimeField()
   }
   return init(dateTimeField, block)
 }
