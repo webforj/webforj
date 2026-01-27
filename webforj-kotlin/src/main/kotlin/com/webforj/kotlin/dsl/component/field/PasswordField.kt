@@ -36,18 +36,15 @@ fun @WebforjDsl HasComponents.passwordField(
   placeholder: String? = null,
   block: @WebforjDsl PasswordField.() -> Unit = {}
 ): PasswordField {
-  val passwordField = if (placeholder != null && label != null && value != null) {
-    PasswordField(label, value, placeholder)
-  } else if (value != null && label != null) {
-    PasswordField(label, value)
-  } else if (label != null) {
-    PasswordField(label).apply {
+  val passwordField = when {
+    placeholder != null && value != null && label != null -> PasswordField(label, value, placeholder)
+    value != null && label != null -> PasswordField(label, value)
+    label != null -> PasswordField(label).apply {
       placeholder?.let { setPlaceholder(it) }
     }
-  } else {
-    PasswordField().apply {
+    else -> PasswordField().apply {
       value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(placeholder) }
+      placeholder?.let { setPlaceholder(it) }
     }
   }
   return init(passwordField, block)
