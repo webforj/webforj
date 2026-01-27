@@ -37,6 +37,17 @@ public final class KotlinFactory {
     return new TextField(type, label, value);
   }
 
+  /**
+   * Creates a {@code TextField} using the matching constructor depending on which arguments are {@code null}
+   * or not.
+   *
+   * @param label The label of teh {@code TextField}.
+   * @param value The preset value of the {@code TextField}.
+   * @param placeholder The placeholder for an empty value of the {@code TextField}.
+   * @param type The {@link TextField.Type} of the {@code TextField}.
+   * @return The {@code TextField} with all non-null arguments set.
+   * @see TextField
+   */
   public static TextField newTextField(String label, String value, String placeholder,
       TextField.Type type) {
     if (placeholder != null && value != null && label != null) {
