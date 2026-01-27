@@ -33,14 +33,11 @@ fun @WebforjDsl HasComponents.colorField(
     value: Color? = null,
     block: @WebforjDsl ColorField.() -> Unit = {}
 ): ColorField {
-    val colorField = if (label != null && value != null) {
-        ColorField(label, value)
-    } else if (label != null) {
-        ColorField(label)
-    } else if (value != null) {
-        ColorField(value)
-    } else {
-        ColorField()
+    val colorField = when {
+      value != null && label != null -> ColorField(label, value)
+      value != null -> ColorField(value)
+      label != null -> ColorField(label)
+      else -> ColorField()
     }
     return init(colorField, block)
 }
