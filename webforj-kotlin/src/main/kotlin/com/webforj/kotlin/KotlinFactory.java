@@ -5,8 +5,8 @@ import com.webforj.exceptions.WebforjRuntimeException;
 
 /**
  * Utility class for use of <b>webforj</b> with <b>Kotlin</b>.
- * <p>
- * Provides static constructors for {@code sealed} component classes, so that they can be
+ *
+ * <p>Provides static constructors for {@code sealed} component classes, so that they can be
  * initialized in <b>Kotlin</b>.
  *
  * @see TextField
