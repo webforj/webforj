@@ -33,14 +33,11 @@ fun @WebforjDsl HasComponents.timeField(
   value: LocalTime? = null,
   block: @WebforjDsl TimeField.() -> Unit = {}
 ): TimeField {
-  val timeField = if (label != null && value != null) {
-    TimeField(label, value)
-  } else if (label != null) {
-    TimeField(label)
-  } else if (value != null) {
-    TimeField(value)
-  } else {
-    TimeField()
+  val timeField = when {
+    value != null && label != null -> TimeField(label, value)
+    label != null -> TimeField(label)
+    value != null -> TimeField(value)
+    else -> TimeField()
   }
   return init(timeField, block)
 }
