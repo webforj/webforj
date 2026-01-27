@@ -1,5 +1,6 @@
 package com.webforj.kotlin.dsl.component.field
 
+import com.webforj.component.field.ColorField
 import com.webforj.component.field.DateField
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
@@ -33,14 +34,11 @@ fun @WebforjDsl HasComponents.dateField(
   value: LocalDate? = null,
   block: @WebforjDsl DateField.() -> Unit = {}
 ): DateField {
-  val dateField = if (label != null && value != null) {
-    DateField(label, value)
-  } else if (label != null) {
-    DateField(label)
-  } else if (value != null) {
-    DateField(value)
-  } else {
-    DateField()
+  val dateField = when {
+    value != null && label != null -> DateField(label, value)
+    label != null -> DateField(label)
+    value != null -> DateField(value)
+    else -> DateField()
   }
   return init(dateField, block)
 }
