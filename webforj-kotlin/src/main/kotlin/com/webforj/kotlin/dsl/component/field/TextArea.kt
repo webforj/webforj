@@ -36,18 +36,15 @@ fun @WebforjDsl HasComponents.textArea(
   placeholder: String? = null,
   block: @WebforjDsl TextArea.() -> Unit = {}
 ): TextArea {
-  val textArea = if (placeholder != null && label != null && value != null) {
-    TextArea(label, value, placeholder)
-  } else if (value != null && label != null) {
-    TextArea(label, value)
-  } else if (label != null) {
-    TextArea(label).apply {
+  val textArea = when {
+    placeholder != null && value != null && label != null -> TextArea(label, value, placeholder)
+    value != null && label != null -> TextArea(label, value)
+    label != null -> TextArea(label).apply {
       placeholder?.let { setPlaceholder(it) }
     }
-  } else {
-    TextArea().apply {
+    else -> TextArea().apply {
       value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(placeholder) }
+      placeholder?.let { setPlaceholder(it) }
     }
   }
   return init(textArea, block)
