@@ -34,23 +34,16 @@ fun @WebforjDsl HasComponents.anchor(
     target: String? = null,
     block: @WebforjDsl Anchor.() -> Unit = {}
 ): Anchor {
-    val anchor = if (target != null && href != null && text != null) {
-        Anchor(href, text, target)
-    } else if(href != null && text != null) {
-        Anchor(href, text)
-        // We do not need to check for target here because this branch is
-        // only executed if it is null
-    } else if(text != null) {
-        Anchor(text).apply {
-            target?.let { this.target = target }
-            // We only need to check target because this branch is only
-            // executed if href is null
-        }
-    } else {
-        Anchor().apply {
-            href?.let { this.href = href }
-            target?.let { this.target = target }
-        }
+    val anchor = when {
+      target != null && href != null && text != null -> Anchor(href, text, target)
+      href != null && text != null -> Anchor(href, text)
+      text != null -> Anchor(text).apply {
+        target?.let { setTarget(it) }
+      }
+      else -> Anchor().apply {
+        href?.let { setHref(it) }
+        target?.let { setTarget(it) }
+      }
     }
     return init(anchor, block)
 }
