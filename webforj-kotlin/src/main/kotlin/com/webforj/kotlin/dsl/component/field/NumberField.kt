@@ -37,18 +37,15 @@ fun @WebforjDsl HasComponents.numberField(
   placeholder: String? = null,
   block: @WebforjDsl NumberField.() -> Unit = {}
 ): NumberField {
-  val numberField = if (placeholder != null && label != null && value != null) {
-    NumberField(label, value, placeholder)
-  } else if (value != null && label != null) {
-    NumberField(label, value)
-  } else if (label != null) {
-    NumberField(label).apply {
+  val numberField = when {
+    placeholder != null && value != null && label != null -> NumberField(label, value, placeholder)
+    value != null && label != null -> NumberField(label, value)
+    label != null -> NumberField(label).apply {
       placeholder?.let { setPlaceholder(it) }
     }
-  } else {
-    NumberField().apply {
+    else -> NumberField().apply {
       value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(placeholder) }
+      placeholder?.let { setPlaceholder(it) }
     }
   }
   return init(numberField, block)
