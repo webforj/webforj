@@ -1,6 +1,5 @@
 package com.webforj.kotlin.dsl.component.layout.applayout
 
-import com.webforj.component.Component
 import com.webforj.component.layout.applayout.AppLayout
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.HasComponentsProxy
