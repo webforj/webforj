@@ -59,18 +59,21 @@ public final class KotlinFactory {
       return new TextField(label, value);
     } else if (label != null) {
       var tf = new TextField(label);
-      if (placeholder != null)
+      if (placeholder != null) {
         tf.setPlaceholder(placeholder);
+      }
       return type != null ? tf.setType(type) : tf;
     } else if (type != null) {
       var tf = new TextField(type);
-      if (value != null)
+      if (value != null) {
         tf.setValue(value);
+      }
       return placeholder != null ? tf.setPlaceholder(placeholder) : tf;
     } else {
       var tf = new TextField();
-      if (value != null)
+      if (value != null) {
         tf.setValue(value);
+      }
       return placeholder != null ? tf.setPlaceholder(placeholder) : tf;
     }
   }
