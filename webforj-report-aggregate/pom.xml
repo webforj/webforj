@@ -62,6 +62,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj-kotlin -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-kotlin</artifactId>
+      <version>25.11</version>
+    </dependency>
+
     <!-- webforj-plugins -->
     <dependency>
       <groupId>com.webforj</groupId>
