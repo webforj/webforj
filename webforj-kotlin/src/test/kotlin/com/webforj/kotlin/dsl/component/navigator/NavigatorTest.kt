@@ -26,19 +26,6 @@ class NavigatorTest {
     }
 
     @JvmStatic
-    fun provideNavigatorsWithTextLayoutAndPageSize(): List<Array<Any?>> {
-      val list = arrayListOf<Array<Any?>>()
-      for (text in listOf("text", null)) {
-        for (layout in listOf(Navigator.Layout.PAGES, null)) {
-          for (pageSize in listOf(5, null)) {
-            list.add(arrayOf(text, layout, pageSize))
-          }
-        }
-      }
-      return list
-    }
-
-    @JvmStatic
     fun provideNavigatorsWithTextLayoutPageSizeAndRepository(): List<Array<Any?>> {
       val list = arrayListOf<Array<Any?>>()
       for (text in listOf("text", null)) {
@@ -64,53 +51,12 @@ class NavigatorTest {
       return list
     }
 
-    @JvmStatic
-    fun provideNavigatorsWithTextLayoutPageSizeTotalItemsAndRepository(): List<Array<Any?>> {
-      val list = arrayListOf<Array<Any?>>()
-      for (text in listOf("text", null)) {
-        for (layout in listOf(Navigator.Layout.PAGES, null)) {
-          for (pageSize in listOf(5, null)) {
-            list.add(arrayOf(text, layout, pageSize, 10, repository))
-          }
-        }
-      }
-      return list
-    }
-
-  }
-
-  @ParameterizedTest(name = "Create Navigator with text = {0}, layout = {1} and pageSize = {2}")
-  @MethodSource("provideNavigatorsWithTextLayoutAndPageSize")
-  fun shouldCreateNavigatorWithTextLayoutAndPageSize(text: String?, layout: Navigator.Layout?, pageSize: Int?) {
-    val navigator = root.navigator(text, layout, pageSize)
-      Assertions.assertTrue { root.hasComponent(navigator) }
-      Assertions.assertEquals(text ?: "", navigator.text)
-      Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
-      Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, navigator.paginator.size)
-      Assertions.assertEquals(0, navigator.paginator.totalItems)
-      Assertions.assertDoesNotThrow { navigator.paginator.totalItems = 0 }
-  }
-
-  @ParameterizedTest(name = "Create Navigator with text = {0}, layout = {1}, pageSize = {2} and block")
-  @MethodSource("provideNavigatorsWithTextLayoutAndPageSize")
-  fun shouldCreateNavigatorWithTextLayoutPageSizeAndBlock(text: String?, layout: Navigator.Layout?, pageSize: Int?) {
-    val expected = "Navigator"
-    val navigator = root.navigator(text, layout, pageSize) {
-      name = expected
-    }
-      Assertions.assertTrue { root.hasComponent(navigator) }
-      Assertions.assertEquals(text ?: "", navigator.text)
-      Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
-      Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, navigator.paginator.size)
-      Assertions.assertEquals(0, navigator.paginator.totalItems)
-      Assertions.assertDoesNotThrow { navigator.paginator.totalItems = 0 }
-      Assertions.assertEquals(expected, navigator.name)
   }
 
   @ParameterizedTest(name = "Create Navigator with repository, text = {0}, layout = {1} and pageSize = {2}")
   @MethodSource("provideNavigatorsWithTextLayoutPageSizeAndRepository")
   fun shouldCreateNavigatorWithRepositoryTextLayoutAndPageSize(text: String?, layout: Navigator.Layout?, pageSize: Int?, repository: Repository<*>) {
-    val navigator = root.navigator(text, layout, pageSize, repository)
+    val navigator = root.navigator(repository, text, layout, pageSize)
       Assertions.assertTrue { root.hasComponent(navigator) }
       Assertions.assertEquals(text ?: "", navigator.text)
       Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
@@ -123,7 +69,7 @@ class NavigatorTest {
   @MethodSource("provideNavigatorsWithTextLayoutPageSizeAndRepository")
   fun shouldCreateNavigatorWithRepositoryTextLayoutPageSizeAndBlock(text: String?, layout: Navigator.Layout?, pageSize: Int?, repository: Repository<*>) {
     val expected = "Navigator"
-    val navigator = root.navigator(text, layout, pageSize, repository) {
+    val navigator = root.navigator(repository, text, layout, pageSize) {
       name = expected
     }
       Assertions.assertTrue { root.hasComponent(navigator) }
@@ -138,7 +84,7 @@ class NavigatorTest {
   @ParameterizedTest(name = "Create Navigator with totalItems, text = {0}, layout = {1} and pageSize = {2}")
   @MethodSource("provideNavigatorsWithTextLayoutPageSizeAndTotalItems")
   fun shouldCreateNavigatorWithTotalItemsTextLayoutAndPageSize(text: String?, layout: Navigator.Layout?, pageSize: Int?, totalItems: Int) {
-    val navigator = root.navigator(text, layout, pageSize, totalItems = totalItems)
+    val navigator = root.navigator(text, layout, pageSize, totalItems)
       Assertions.assertTrue { root.hasComponent(navigator) }
       Assertions.assertEquals(text ?: "", navigator.text)
       Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
@@ -151,7 +97,7 @@ class NavigatorTest {
   @MethodSource("provideNavigatorsWithTextLayoutPageSizeAndTotalItems")
   fun shouldCreateNavigatorWithTotalItesmTextLayoutPageSizeAndBlock(text: String?, layout: Navigator.Layout?, pageSize: Int?, totalItems: Int) {
     val expected = "Navigator"
-    val navigator = root.navigator(text, layout, pageSize, totalItems = totalItems) {
+    val navigator = root.navigator(text, layout, pageSize, totalItems) {
       name = expected
     }
       Assertions.assertTrue { root.hasComponent(navigator) }
@@ -161,50 +107,6 @@ class NavigatorTest {
       Assertions.assertEquals(totalItems, navigator.paginator.totalItems)
       Assertions.assertDoesNotThrow { navigator.paginator.totalItems = 0 }
       Assertions.assertEquals(expected, navigator.name)
-  }
-
-  @ParameterizedTest(name = "Create Navigator with repository, totalItems, text = {0}, layout = {1} and pageSize = {2}")
-  @MethodSource("provideNavigatorsWithTextLayoutPageSizeTotalItemsAndRepository")
-  fun shouldCreateNavigatorWithRepositoryTotalItemsTextLayoutAndPageSize(text: String?, layout: Navigator.Layout?, pageSize: Int?, totalItems: Int, repository: Repository<*>) {
-    val navigator = root.navigator(text, layout, pageSize, repository, totalItems)
-      Assertions.assertTrue { root.hasComponent(navigator) }
-      Assertions.assertEquals(text ?: "", navigator.text)
-      Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
-      Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, navigator.paginator.size)
-      Assertions.assertEquals(repository.size(), navigator.paginator.totalItems)
-      Assertions.assertNotEquals(totalItems, navigator.paginator.totalItems)
-      assertThrows<UnsupportedOperationException> { navigator.paginator.totalItems = 0 }
-  }
-
-  @ParameterizedTest(name = "Create Navigator with repository, totalItems, text = {0}, layout = {1} and pageSize = {2}")
-  @MethodSource("provideNavigatorsWithTextLayoutPageSizeTotalItemsAndRepository")
-  fun shouldCreateNavigatorWithRepositoryTotalItemsTextLayoutPageSizeAndBlock(text: String?, layout: Navigator.Layout?, pageSize: Int?, totalItems: Int, repository: Repository<*>) {
-    val expected = "Navigator"
-    val navigator = root.navigator(text, layout, pageSize, repository, totalItems) {
-      name = expected
-    }
-      Assertions.assertTrue { root.hasComponent(navigator) }
-      Assertions.assertEquals(text ?: "", navigator.text)
-      Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
-      Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, navigator.paginator.size)
-      Assertions.assertEquals(repository.size(), navigator.paginator.totalItems)
-      Assertions.assertNotEquals(totalItems, navigator.paginator.totalItems)
-      assertThrows<UnsupportedOperationException> { navigator.paginator.totalItems = 0 }
-      Assertions.assertEquals(expected, navigator.name)
-  }
-
-  @ParameterizedTest(name = "Create Paginator with pageSize = {2}")
-  @MethodSource("provideNavigatorsWithTextLayoutAndPageSize")
-  fun shouldCreatePaginatorWithPageSize(text: String?, layout: Navigator.Layout?, pageSize: Int?) {
-    val navigator = root.navigator(text, layout)
-    val paginator = navigator.paginator(pageSize = pageSize)
-      Assertions.assertTrue { root.hasComponent(navigator) }
-      Assertions.assertEquals(paginator, navigator.paginator)
-      Assertions.assertEquals(text ?: "", navigator.text)
-      Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
-      Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, paginator.size)
-      Assertions.assertEquals(0, paginator.totalItems)
-      Assertions.assertDoesNotThrow { paginator.totalItems = 0 }
   }
 
   @ParameterizedTest(name = "Create Navigator with repository and pageSize = {2}")
@@ -233,21 +135,6 @@ class NavigatorTest {
       Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, paginator.size)
       Assertions.assertEquals(totalItems, paginator.totalItems)
       Assertions.assertDoesNotThrow { paginator.totalItems = 0 }
-  }
-
-  @ParameterizedTest(name = "Create Navigator with repository, totalItems and pageSize = {2}")
-  @MethodSource("provideNavigatorsWithTextLayoutPageSizeTotalItemsAndRepository")
-  fun shouldCreatePaginatorWithRepositoryTotalItemsAndPageSize(text: String?, layout: Navigator.Layout?, pageSize: Int?, totalItems: Int, repository: Repository<*>) {
-    val navigator = root.navigator(text, layout)
-    val paginator = navigator.paginator(repository, pageSize, totalItems)
-      Assertions.assertTrue { root.hasComponent(navigator) }
-      Assertions.assertEquals(paginator, navigator.paginator)
-      Assertions.assertEquals(text ?: "", navigator.text)
-      Assertions.assertEquals(layout ?: Navigator.Layout.PREVIEW, navigator.layout)
-      Assertions.assertEquals(pageSize ?: Paginator.DEFAULT_PAGE_SIZE, paginator.size)
-      Assertions.assertEquals(repository.size(), paginator.totalItems)
-      Assertions.assertNotEquals(totalItems, paginator.totalItems)
-      assertThrows<UnsupportedOperationException> { paginator.totalItems = 0 }
   }
 
 }
