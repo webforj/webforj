@@ -111,18 +111,17 @@ fun @WebforjDsl HasComponents.navigator(
 }
 
 /**
- * Creates the `Paginator` for a [Navigator] with an optional [repository], [pageSize] and / or [totalItems].
+ * Creates the `Paginator` for a [Navigator] with an optional [pageSize] and / or [totalItems].
  * ```
  * navigator {
  *   paginator() // Empty Paginator component
- *   paginator(repository, 5) // Paginator with repository
- *   paginator(pageSize = 5, totalItems = 10) // Paginator with totalSize
+ *   paginator(5) // Paginator with pageSize
+ *   paginator(5, 10) // Paginator with totalSize
  * }
  * ```
  *
- * @param repository The items to display in the `Navigator`, used to calculate pagination, takes precedence over [totalItems].
  * @param pageSize The number of items per page of the `Navigator`.
- * @param totalItems The total items to display in the `Navigator, ignored if [repository] is set.
+ * @param totalItems The total items to display in the `Navigator.
  * @param block The initialization steps of the `Paginator`.
  * @return The configured `Paginator` instance.
  * @see Paginator
@@ -130,24 +129,45 @@ fun @WebforjDsl HasComponents.navigator(
  * @see [navigator]
  */
 fun @WebforjDsl Navigator.paginator(
-  repository: Repository<*>? = null,
   pageSize: Int? = null,
   totalItems: Int? = null,
   block: @WebforjDsl Paginator.() -> Unit = {}
 ): Paginator {
-  val paginator = if (repository != null) {
-    if (pageSize != null) {
-      Paginator(repository, pageSize)
-    } else {
-      Paginator(repository)
-    }
-  } else if (totalItems != null) {
-    pageSize?.let { Paginator(totalItems, pageSize) } ?: Paginator(totalItems)
-  } else {
-    paginator.apply {
-      size = pageSize ?: size
+  val paginator = when {
+    pageSize != null && totalItems != null -> Paginator(totalItems, pageSize)
+    totalItems != null -> Paginator(totalItems)
+    else -> paginator.apply {
+      pageSize?.let { size = it }
     }
   }
+  paginator.block()
+  setPaginator(paginator)
+  return paginator
+}
+
+/**
+ * Creates the `Paginator` for a [Navigator] with a [repository] and an optional [pageSize].
+ * ```
+ * navigator {
+ *   paginator() // Empty Paginator component
+ *   paginator(repository, 5) // Paginator with repository
+ * }
+ * ```
+ *
+ * @param repository The items to display in the `Navigator`, used to calculate pagination.
+ * @param pageSize The number of items per page of the `Navigator`.
+ * @param block The initialization steps of the `Paginator`.
+ * @return The configured `Paginator` instance.
+ * @see Paginator
+ * @see Repository
+ * @see [navigator]
+ */
+fun @WebforjDsl Navigator.paginator(
+  repository: Repository<*>,
+  pageSize: Int? = null,
+  block: @WebforjDsl Paginator.() -> Unit = {}
+): Paginator {
+  val paginator = pageSize?.let { Paginator(repository, pageSize) } ?: Paginator(repository)
   paginator.block()
   setPaginator(paginator)
   return paginator
