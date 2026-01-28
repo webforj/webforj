@@ -33,10 +33,6 @@ fun @WebforjDsl HasComponents.navigator(
   block: @WebforjDsl Navigator.() -> Unit = {}
 ): Navigator {
   val navigator = when {
-    text != null -> Navigator(text).apply {
-      pageSize?.let { paginator.size = it }
-      layout?.let { setLayout(it) }
-    }
     layout != null && pageSize != null && totalItems != null ->
       Navigator(totalItems, pageSize, layout).apply {
       text?.let { setText(it) }
@@ -53,6 +49,7 @@ fun @WebforjDsl HasComponents.navigator(
     else -> Navigator().apply {
       pageSize?.let { paginator.size = it }
       layout?.let { setLayout(it) }
+      text?.let { setText(it) }
     }
   }
   return init(navigator, block)
@@ -97,6 +94,7 @@ fun @WebforjDsl HasComponents.navigator(
     else -> Navigator(repository).apply {
       pageSize?.let { paginator.size = it }
       layout?.let { setLayout(it) }
+      text?.let { setText(it) }
     }
   }
   return init(navigator, block)
