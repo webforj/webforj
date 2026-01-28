@@ -36,35 +36,34 @@ fun @WebforjDsl HasComponents.progressBar(
   text: String? = null,
   block: @WebforjDsl ProgressBar.() -> Unit = {}
 ): ProgressBar {
-  val progressBar = if (text != null && value != null) {
-    ProgressBar(value, text).apply {
-      min?.let { setMin(it) }
-      max?.let { setMax(it) }
-      orientation?.let { setOrientation(it) }
-    }
-  } else if (value != null) {
-    when {
-      orientation != null && min != null && max != null -> ProgressBar(value, min, max, orientation)
-      min != null && max != null -> ProgressBar(value, min, max)
-      orientation != null && max != null -> ProgressBar(value, max, orientation)
-      max != null -> ProgressBar(value, max)
-      else -> ProgressBar(value).apply {
+  val progressBar = when {
+    text != null && value != null -> ProgressBar(value, text).apply {
         min?.let { setMin(it) }
+        max?.let { setMax(it) }
         orientation?.let { setOrientation(it) }
       }
-    }
-  } else if (text != null) {
-    ProgressBar(text).apply {
-      min?.let { setMin(it) }
-      max?.let { setMax(it) }
-      orientation?.let { setOrientation(it) }
-    }
-  } else {
-    ProgressBar().apply {
-      min?.let { setMin(it) }
-      max?.let { setMax(it) }
-      orientation?.let { setOrientation(it) }
-    }
+    value != null ->
+      when {
+        orientation != null && min != null && max != null ->
+          ProgressBar(value, min, max, orientation)
+        min != null && max != null -> ProgressBar(value, min, max)
+        orientation != null && max != null -> ProgressBar(value, max, orientation)
+        max != null -> ProgressBar(value, max)
+        else -> ProgressBar(value).apply {
+          min?.let { setMin(it) }
+          orientation?.let { setOrientation(it) }
+        }
+      }
+    text != null -> ProgressBar(text).apply {
+        min?.let { setMin(it) }
+        max?.let { setMax(it) }
+        orientation?.let { setOrientation(it) }
+      }
+    else -> ProgressBar().apply {
+        min?.let { setMin(it) }
+        max?.let { setMax(it) }
+        orientation?.let { setOrientation(it) }
+      }
   }
   return init(progressBar, block)
 }
