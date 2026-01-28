@@ -1,9 +1,11 @@
 package com.webforj.minify.gradle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.util.Map;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,5 +86,60 @@ class MinifyPluginTest {
     // Verify the task provider exists (but don't realize it)
     assertTrue(project.getTasks().getNames().contains("minify"),
         "minify task should be registered");
+  }
+
+  @Test
+  void extensionHasMinifierConfigurationsProperty() {
+    project.getPlugins().apply("com.webforj.minify");
+
+    MinifyExtension extension = project.getExtensions().findByType(MinifyExtension.class);
+    assertNotNull(extension, "Extension should be available");
+    assertNotNull(extension.getMinifierConfigurations(),
+        "Extension should have minifierConfigurations property");
+  }
+
+  @Test
+  void minifierConfigurationsDefaultsToEmpty() {
+    project.getPlugins().apply("com.webforj.minify");
+
+    MinifyExtension extension = project.getExtensions().findByType(MinifyExtension.class);
+    assertNotNull(extension);
+    assertTrue(extension.getMinifierConfigurations().getOrElse(Map.of()).isEmpty(),
+        "Default minifier configurations should be empty");
+  }
+
+  @Test
+  void minifierConfigurationsAcceptsValues() {
+    project.getPlugins().apply("com.webforj.minify");
+
+    MinifyExtension extension = project.getExtensions().findByType(MinifyExtension.class);
+    assertNotNull(extension);
+
+    Map<String, String> closureOptions = Map.of("compilationLevel", "SIMPLE_OPTIMIZATIONS",
+        "languageIn", "ECMASCRIPT_NEXT", "languageOut", "ECMASCRIPT5");
+    extension.getMinifierConfigurations().put("closureJs", closureOptions);
+
+    Map<String, Map<String, String>> result = extension.getMinifierConfigurations().get();
+    assertEquals(1, result.size(), "Should have one configuration entry");
+    assertTrue(result.containsKey("closureJs"), "Should contain closureJs key");
+    assertEquals("SIMPLE_OPTIMIZATIONS", result.get("closureJs").get("compilationLevel"));
+  }
+
+  @Test
+  void taskReceivesMinifierConfigurationsFromExtension() {
+    project.getPlugins().apply("com.webforj.minify");
+
+    MinifyExtension extension = project.getExtensions().findByType(MinifyExtension.class);
+    assertNotNull(extension);
+
+    Map<String, String> options = Map.of("compilationLevel", "ADVANCED_OPTIMIZATIONS");
+    extension.getMinifierConfigurations().put("closureJs", options);
+
+    // Realize the task and verify config was wired
+    MinifyTask task = (MinifyTask) project.getTasks().getByName("minify");
+    Map<String, Map<String, String>> taskConfig = task.getMinifierConfigurations().get();
+    assertTrue(taskConfig.containsKey("closureJs"),
+        "Task should receive closureJs config from extension");
+    assertEquals("ADVANCED_OPTIMIZATIONS", taskConfig.get("closureJs").get("compilationLevel"));
   }
 }
