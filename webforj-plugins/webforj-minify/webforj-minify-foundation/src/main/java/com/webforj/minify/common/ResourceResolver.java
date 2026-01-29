@@ -73,7 +73,7 @@ public class ResourceResolver {
       String path = matcher.group(2);
 
       resolved = switch (protocol) {
-        case "ws" -> resourcesRoot.resolve("static").resolve(path);
+        case "ws", "webserver" -> resourcesRoot.resolve("static").resolve(path);
         case "context" -> resourcesRoot.resolve(path);
         default -> throw new IllegalArgumentException("Unknown protocol: " + protocol);
       };

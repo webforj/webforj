@@ -82,6 +82,40 @@ class ResourceResolverTest {
   }
 
   @Test
+  void testWebserverProtocol() throws IOException {
+    Path staticDir = tempDir.resolve("static");
+    Files.createDirectories(staticDir);
+    Path cssDir = staticDir.resolve("css");
+    Files.createDirectories(cssDir);
+
+    Path resolved = resolver.resolve("webserver://css/app.css");
+
+    assertEquals(cssDir.resolve("app.css").toAbsolutePath().normalize(), resolved);
+  }
+
+  @Test
+  void testWebserverAndWsResolveIdentically() throws IOException {
+    Path staticDir = tempDir.resolve("static");
+    Files.createDirectories(staticDir);
+    Path jsDir = staticDir.resolve("js");
+    Files.createDirectories(jsDir);
+
+    Path wsResolved = resolver.resolve("ws://js/app.js");
+    Path webserverResolved = resolver.resolve("webserver://js/app.js");
+
+    assertEquals(wsResolved, webserverResolved);
+  }
+
+  @Test
+  void testDirectoryTraversalWithWebserver() {
+    SecurityException exception = assertThrows(SecurityException.class, () -> {
+      resolver.resolve("webserver://../../../etc/passwd");
+    });
+
+    assertTrue(exception.getMessage().contains("Path traversal detected"));
+  }
+
+  @Test
   void testUnknownProtocol() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
       resolver.resolve("unknown://test.css");
