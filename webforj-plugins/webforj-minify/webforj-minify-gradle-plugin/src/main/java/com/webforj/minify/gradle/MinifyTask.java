@@ -12,13 +12,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
@@ -68,6 +71,20 @@ public abstract class MinifyTask extends DefaultTask {
   public abstract ConfigurableFileCollection getMinifierClasspath();
 
   /**
+   * Gets the minifier-specific configuration options.
+   *
+   * <p>
+   * Each entry maps a minifier configuration key (e.g., "closureJs") to a map of key-value option
+   * pairs. This mirrors the Maven plugin's {@code <minifierConfigurations>} parameter.
+   * </p>
+   *
+   * @return the minifier configurations map property
+   */
+  @Input
+  @Optional
+  public abstract MapProperty<String, Map<String, String>> getMinifierConfigurations();
+
+  /**
    * Executes the minification task.
    */
   @TaskAction
@@ -98,6 +115,18 @@ public abstract class MinifyTask extends DefaultTask {
 
     getLogger().info("Discovered {} minifier implementation(s) via SPI",
         processor.getRegistry().getMinifierCount());
+
+    // Set build logger on registry for configuration logging
+    processor.getRegistry().setBuildLogger(logger);
+
+    // Configure minifiers with provided configuration
+    Map<String, Map<String, String>> configs = getMinifierConfigurations().getOrElse(Map.of());
+    if (!configs.isEmpty()) {
+      Map<String, Object> config = new HashMap<>(configs);
+      getLogger().debug("Applying configuration to minifiers: {}", config.keySet());
+      processor.getRegistry().configureMinifiers(config);
+      getLogger().info("Applied configuration to minifiers");
+    }
 
     // Collect files to process
     Set<Path> filesToProcess = new HashSet<>();
