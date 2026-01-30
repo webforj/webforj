@@ -148,7 +148,7 @@ public final class ChoiceBox extends DwcSelectDropdown<ChoiceBox>
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(panel);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addListButton("", flags));
+      setControl(w.addListButton(resolveControlId(w), "", flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjListButton Control", e);
     }

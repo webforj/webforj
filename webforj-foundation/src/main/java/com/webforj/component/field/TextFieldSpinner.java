@@ -199,7 +199,7 @@ public final class TextFieldSpinner extends TextField
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addEditBoxSpinner(getText(), flags));
+      setControl(w.addEditBoxSpinner(resolveControlId(w), getText(), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjEditBoxSpinner", e);
     }

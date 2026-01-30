@@ -403,7 +403,7 @@ public final class ListBox extends DwcList<ListBox, List<Object>>
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addListBox("", flags));
+      setControl(w.addListBox(resolveControlId(w), "", flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjListBox Control", e);
     }

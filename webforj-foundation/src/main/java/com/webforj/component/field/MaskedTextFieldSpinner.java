@@ -197,7 +197,7 @@ public final class MaskedTextFieldSpinner extends MaskedTextField
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addInputESpinner(flags));
+      setControl(w.addInputESpinner(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjInputESpinner", e);
     }

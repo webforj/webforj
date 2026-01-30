@@ -1253,7 +1253,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      BBjTree tree = w.addTree(flags);
+      BBjTree tree = w.addTree(resolveControlId(w), flags);
       tree.setRootVisible(false);
       tree.setRoot(root.getUniqueId(), "");
       setControl(tree);

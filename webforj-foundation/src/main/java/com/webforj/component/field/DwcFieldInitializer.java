@@ -127,7 +127,7 @@ abstract class DwcFieldInitializer<T extends DwcValidatableComponent<T, V> & Has
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addEditBox(getText(), flags));
+      setControl(w.addEditBox(resolveControlId(w), getText(), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjEditBox", e);
     }
