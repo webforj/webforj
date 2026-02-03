@@ -459,7 +459,7 @@ public final class ProgressBar extends DwcComponent<ProgressBar>
   protected void onCreate(Window window) {
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
-      setControl(w.addProgressBar());
+      setControl(w.addProgressBar(resolveControlId(w)));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjProgressBar Control", e);
     }

@@ -417,7 +417,7 @@ public sealed class MaskedNumberField extends DwcMaskedField<MaskedNumberField, 
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addInputN(flags));
+      setControl(w.addInputN(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjInputN", e);
     }

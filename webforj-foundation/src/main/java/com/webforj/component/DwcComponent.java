@@ -1,6 +1,7 @@
 package com.webforj.component;
 
 import com.basis.bbj.proxies.sysgui.BBjControl;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.bbj.proxies.sysgui.Editable;
 import com.basis.bbj.proxies.sysgui.TextAlignable;
 import com.basis.bbj.proxies.sysgui.TextControl;
@@ -30,6 +31,8 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRestrictedAccessException;
 import com.webforj.exceptions.WebforjRuntimeException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +67,7 @@ import java.util.stream.Collectors;
 public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     implements HasText<T>, HasHtml<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>,
     HasStyle<T>, HasVisibility<T>, HasTooltip<T>, HasSize<T> {
+  private static final Logger logger = System.getLogger(DwcComponent.class.getName());
   private static final String PREFIX_SLOT = "prefix";
   private static final String SUFFIX_SLOT = "suffix";
   private final SlotAssigner slotAssigner = new SlotAssigner(this);
@@ -85,6 +89,7 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
           RightMouseDownEvent.class);
 
   private BBjControl control;
+  private int bbjId = -1;
   private boolean readOnly = false;
   private boolean visible = true;
   private String text = "";
@@ -136,6 +141,70 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   BBjControl getControl() {
     return control;
+  }
+
+  /**
+   * Sets the BBj control ID for this component.
+   *
+   * <p>
+   * The ID must be set before the component is added to a window. Once the component is attached,
+   * the ID cannot be changed.
+   * </p>
+   *
+   * @param bbjId the BBj control ID to set, must be non-negative
+   * @return the component itself
+   * @throws IllegalStateException if the component is already attached
+   * @throws IllegalArgumentException if the ID is negative
+   */
+  public T setBBjId(int bbjId) {
+    if (isAttached()) {
+      throw new IllegalStateException("Cannot set BBj ID after the component is attached");
+    }
+
+    if (bbjId < 0) {
+      throw new IllegalArgumentException("BBj ID must be non-negative, got: " + bbjId);
+    }
+
+    this.bbjId = bbjId;
+    return getSelf();
+  }
+
+  /**
+   * Gets the BBj control ID for this component.
+   *
+   * @return the BBj control ID, or {@code -1} if not set
+   */
+  public int getBBjId() {
+    return bbjId;
+  }
+
+  /**
+   * Resolves the control ID to use when creating the underlying BBj control.
+   *
+   * <p>
+   * If a BBj ID has been explicitly set via {@link #setBBjId(int)}, that ID is returned. Otherwise,
+   * the next available control ID is obtained from the given window.
+   * </p>
+   *
+   * @param w the BBj window to get an available control ID from
+   * @return the control ID to use
+   * @throws BBjException if an error occurs while getting the available control ID
+   */
+  protected int resolveControlId(BBjWindow w) throws BBjException {
+    if (bbjId >= 0) {
+      if (logger.isLoggable(Level.TRACE)) {
+        logger.log(Level.TRACE, "Using explicit BBj ID {0} for {1}", bbjId, getClass().getName());
+      }
+
+      return bbjId;
+    }
+
+    int id = w.getAvailableControlID();
+    if (logger.isLoggable(Level.TRACE)) {
+      logger.log(Level.TRACE, "Using auto-generated BBj ID {0} for {1}", id, getClass().getName());
+    }
+
+    return id;
   }
 
   /**

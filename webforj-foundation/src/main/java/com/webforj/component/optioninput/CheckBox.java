@@ -141,7 +141,7 @@ public final class CheckBox extends DwcOptionInput<CheckBox> {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addCheckBox("", flags));
+      setControl(w.addCheckBox(resolveControlId(w), "", flags));
     } catch (IllegalAccessException | BBjException e) {
       throw new WebforjRuntimeException("Failed to create the BBjCheckBox Control", e);
     }

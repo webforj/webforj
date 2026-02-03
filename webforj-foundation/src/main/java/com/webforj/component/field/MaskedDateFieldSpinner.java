@@ -228,7 +228,7 @@ public final class MaskedDateFieldSpinner extends MaskedDateField
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addInputDSpinner(flags));
+      setControl(w.addInputDSpinner(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjInputDSpinner", e);
     }

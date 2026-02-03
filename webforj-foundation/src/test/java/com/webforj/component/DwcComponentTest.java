@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.basis.bbj.proxies.sysgui.BBjEditBox;
+import com.basis.bbj.proxies.sysgui.BBjWindow;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.event.MouseEnterEvent;
 import com.webforj.component.event.MouseExitEvent;
@@ -799,6 +800,73 @@ class DwcComponentTest {
 
       verify(slotAssigner, times(1)).attach();
       verify(slotAssigner, times(1)).attach();
+    }
+  }
+
+  @Nested
+  @DisplayName("BbjId API")
+  class BbjIdApi {
+
+    @Test
+    @DisplayName("Default Bbj ID is -1")
+    void defaultBbjIdIsNegativeOne() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      assertEquals(-1, component.getBBjId());
+    }
+
+    @Test
+    @DisplayName("Setting and getting Bbj ID before attachment")
+    void settingAndGettingBbjId() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setBBjId(100);
+      assertEquals(100, component.getBBjId());
+    }
+
+    @Test
+    @DisplayName("setBBjId throws IllegalStateException when already attached")
+    void setBbjIdThrowsWhenAttached() {
+      DwcComponentMock spied = spy(component);
+      doReturn(true).when(spied).isAttached();
+      assertThrows(IllegalStateException.class, () -> spied.setBBjId(100));
+    }
+
+    @Test
+    @DisplayName("setBBjId throws IllegalArgumentException for negative ID")
+    void setBbjIdThrowsForNegativeId() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      assertThrows(IllegalArgumentException.class, () -> component.setBBjId(-1));
+      assertThrows(IllegalArgumentException.class, () -> component.setBBjId(-100));
+    }
+
+    @Test
+    @DisplayName("setBBjId accepts zero")
+    void setBbjIdAcceptsZero() throws IllegalAccessException {
+      ReflectionUtils.nullifyControl(component);
+      component.setBBjId(0);
+      assertEquals(0, component.getBBjId());
+    }
+
+    @Test
+    @DisplayName("resolveControlId returns explicit ID when set")
+    void resolveControlIdReturnsExplicitId() throws Exception {
+      ReflectionUtils.nullifyControl(component);
+      component.setBBjId(200);
+
+      BBjWindow window = mock(BBjWindow.class);
+      assertEquals(200, component.resolveControlId(window));
+      verify(window, times(0)).getAvailableControlID();
+    }
+
+    @Test
+    @DisplayName("resolveControlId falls back to window ID when not set")
+    void resolveControlIdFallsBackToWindowId() throws Exception {
+      ReflectionUtils.nullifyControl(component);
+
+      BBjWindow window = mock(BBjWindow.class);
+      when(window.getAvailableControlID()).thenReturn(999);
+
+      assertEquals(999, component.resolveControlId(window));
+      verify(window, times(1)).getAvailableControlID();
     }
   }
 

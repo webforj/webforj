@@ -629,7 +629,7 @@ public final class Element extends DwcContainer<Element>
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addWebComponent(getNodeName(), flags));
+      setControl(w.addWebComponent(resolveControlId(w), getNodeName(), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjWebComponent Control", e);
     }

@@ -169,7 +169,7 @@ public final class MaskedNumberFieldSpinner extends MaskedNumberField
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addInputNSpinner(flags));
+      setControl(w.addInputNSpinner(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjInputNSpinner", e);
     }

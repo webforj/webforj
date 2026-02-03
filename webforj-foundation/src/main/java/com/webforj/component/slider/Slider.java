@@ -827,7 +827,7 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addHorizontalSlider(flags));
+      setControl(w.addHorizontalSlider(resolveControlId(w), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjSlider Control", e);
     }

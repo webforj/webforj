@@ -685,7 +685,7 @@ public final class Navigator extends DwcFocusableComponent<Navigator>
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addNavigator(getText(), flags));
+      setControl(w.addNavigator(resolveControlId(w), getText(), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjNavigator Control", e);
     }
