@@ -1,6 +1,5 @@
 package com.webforj.kotlin.dsl.component.field
 
-import com.webforj.component.field.ColorField
 import com.webforj.component.field.DateField
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
