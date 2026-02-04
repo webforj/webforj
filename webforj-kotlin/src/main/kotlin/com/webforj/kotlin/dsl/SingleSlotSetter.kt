@@ -10,11 +10,30 @@ class SingleSlotSetter(block: HasComponents.() -> Component): HasComponents {
     instance.setter(component)
   }
 
-  override fun add(vararg components: Component?) {}
+  override fun add(vararg components: Component?) {
+    /*
+     * Intentionally empty - SingleSlotSetter wraps a single component
+     * created by the lambda and does not support adding multiple components.
+     * This maintains the HasComponents interface contract while preventing
+     * unintended modification of the wrapped component.
+     */
+  }
 
-  override fun remove(vararg components: Component?) {}
+  override fun remove(vararg components: Component?) {
+    /*
+     * Intentionally empty - SingleSlotSetter does not manage a removable
+     * collection of components. The single component is managed through
+     * the constructor lambda and accessed via getter methods.
+     */
+  }
 
-  override fun removeAll() {}
+  override fun removeAll() {
+    /*
+     * Intentionally empty - SingleSlotSetter cannot remove its single
+     * component as it's the core purpose of this wrapper class.
+     * The component lifecycle is managed by the creator, not this setter.
+     */
+  }
 
   override fun getComponentCount() = 1
 
