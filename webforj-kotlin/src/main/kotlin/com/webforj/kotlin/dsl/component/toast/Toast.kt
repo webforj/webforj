@@ -3,7 +3,7 @@ package com.webforj.kotlin.dsl.component.toast
 import com.webforj.component.Theme
 import com.webforj.component.toast.Toast
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.MultiSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -77,7 +77,5 @@ fun @WebforjDsl HasComponents.toast(
  * @param block The initialization steps of the message components.
  */
 fun @WebforjDsl Toast.message(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToMessage(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Toast::addToMessage)
 }

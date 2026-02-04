@@ -9,8 +9,8 @@ import com.webforj.kotlin.dsl.init
  * Creates a `Footer` with an optional [text] value.
  * ```
  * ... {
- *  Footer() // Empty footer element
- *  Footer("text") // footer element with text
+ *  nativeFooter() // Empty footer element
+ *  nativeFooter("text") // footer element with text
  * }
  * ```
  * @param text Optional text to add to the `Footer`.
@@ -18,7 +18,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Footer` instance.
  * @see Footer
  */
-fun  @WebforjDsl HasComponents.footer(text: String? = null, block:  @WebforjDsl Footer.() -> Unit = {}): Footer {
+fun  @WebforjDsl HasComponents.nativeFooter(text: String? = null, block:  @WebforjDsl Footer.() -> Unit = {}): Footer {
   val footer = text?.let { Footer(it) } ?: Footer()
   return init(footer, block)
 }

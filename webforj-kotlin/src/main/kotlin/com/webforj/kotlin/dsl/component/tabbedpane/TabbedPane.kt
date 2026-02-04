@@ -4,7 +4,7 @@ import com.webforj.component.Component
 import com.webforj.component.tabbedpane.Tab
 import com.webforj.component.tabbedpane.TabbedPane
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -88,9 +88,8 @@ fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit =
  * @see prefix
  * @see suffix
  */
-fun @WebforjDsl Tab.content(block: @WebforjDsl HasComponents.() -> Unit) {
-  val proxy = HasComponentsProxy(block)
-  tabContentMap[this] = proxy.components.first()
+fun @WebforjDsl Tab.content(block: @WebforjDsl HasComponents.() -> Component) {
+  tabContentMap[this] = SingleSlotSetter(block).component
 }
 
 /**
@@ -108,9 +107,8 @@ fun @WebforjDsl Tab.content(block: @WebforjDsl HasComponents.() -> Unit) {
  * @see content
  * @see suffix
  */
-fun @WebforjDsl Tab.prefix(block: @WebforjDsl HasComponents.() -> Unit) {
-  val proxy = HasComponentsProxy(block)
-  prefixComponent = proxy.components.first()
+fun @WebforjDsl Tab.prefix(block: @WebforjDsl HasComponents.() -> Component) {
+  SingleSlotSetter(block).setSlot(this, Tab::setPrefixComponent)
 }
 
 /**
@@ -128,7 +126,6 @@ fun @WebforjDsl Tab.prefix(block: @WebforjDsl HasComponents.() -> Unit) {
  * @see content
  * @see prefix
  */
-fun @WebforjDsl Tab.suffix(block: @WebforjDsl HasComponents.() -> Unit) {
-  val proxy = HasComponentsProxy(block)
-  suffixComponent = proxy.components.first()
+fun @WebforjDsl Tab.suffix(block: @WebforjDsl HasComponents.() -> Component) {
+  SingleSlotSetter(block).setSlot(this, Tab::setSuffixComponent)
 }

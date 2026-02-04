@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertTrue
 
-internal class HasComponentsProxyTest {
-  lateinit var proxy: HasComponentsProxy
+internal class MultiSlotSetterTest {
+  lateinit var proxy: MultiSlotSetter
 
   @BeforeEach
   fun setup() {
-    proxy = HasComponentsProxy { }
+    proxy = MultiSlotSetter { }
   }
 
   @Test
@@ -95,7 +95,7 @@ internal class HasComponentsProxyTest {
   @DisplayName("setSlot does not add components if backing list is empty")
   fun shouldNotAddComponentsThenEmpty() {
     val div = Div()
-    proxy.setSlot(div) { div.add(*it.toTypedArray()) }
+    proxy.setSlot(div) { div.add(*it) }
     assertTrue { div.components.isEmpty() }
   }
 
@@ -106,42 +106,9 @@ internal class HasComponentsProxyTest {
     val a = Div()
     val b = Div()
     proxy.add(a, b)
-    proxy.setSlot(div) { div.add(*it.toTypedArray()) }
+    proxy.setSlot(div) { div.add(*it) }
     assertTrue { div.hasComponent(a) }
     assertTrue { div.hasComponent(b) }
-  }
-
-  @Test
-  @DisplayName("setSlotSingle does not add a component if backing list is empty")
-  fun shouldNotAddComponentIfEmpty() {
-    val btn = Button()
-    proxy.setSlotSingle(btn, Button::setPrefixComponent)
-    assertNull(btn.prefixComponent)
-  }
-
-  @Test
-  @DisplayName("setSlotSingle does set component")
-  fun shouldSetComponent() {
-    val a = Div()
-    proxy.add(a)
-    val btn = Button()
-    proxy.setSlotSingle(btn, Button::setPrefixComponent)
-    val pref = btn.prefixComponent
-    assertNotNull(pref)
-    assertEquals(a, pref)
-  }
-
-  @Test
-  @DisplayName("setSlotSingle does only add the first component of the backing list")
-  fun shouldSetOnlyTheFirstComponent() {
-    val first = Div()
-    val second = Div()
-    proxy.add(first, second)
-    val btn = Button()
-    proxy.setSlotSingle(btn, Button::setPrefixComponent)
-    val pref = btn.prefixComponent
-    assertNotNull(pref)
-    assertEquals(first, pref)
   }
 
 }

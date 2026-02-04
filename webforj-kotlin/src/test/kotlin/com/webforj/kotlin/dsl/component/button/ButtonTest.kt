@@ -6,9 +6,9 @@ import com.webforj.component.html.elements.Strong
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.button.button
 import com.webforj.kotlin.dsl.component.button.icon
-import com.webforj.kotlin.dsl.component.button.prefix
-import com.webforj.kotlin.dsl.component.button.suffix
 import com.webforj.kotlin.dsl.component.html.elements.strong
+import com.webforj.kotlin.extension.prefix
+import com.webforj.kotlin.extension.suffix
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach

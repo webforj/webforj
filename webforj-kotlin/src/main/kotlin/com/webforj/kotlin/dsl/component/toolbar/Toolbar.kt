@@ -2,7 +2,7 @@ package com.webforj.kotlin.dsl.component.toolbar
 
 import com.webforj.component.layout.toolbar.Toolbar
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.MultiSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -51,9 +51,7 @@ fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}
  * @param block The initialization steps of the start components.
  */
 fun @WebforjDsl Toolbar.start(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToStart(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Toolbar::addToStart)
 }
 
 /**
@@ -69,9 +67,7 @@ fun @WebforjDsl Toolbar.start(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the title components.
  */
 fun @WebforjDsl Toolbar.title(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToTitle(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Toolbar::addToTitle)
 }
 
 /**
@@ -88,7 +84,5 @@ fun @WebforjDsl Toolbar.title(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the end components.
  */
 fun @WebforjDsl Toolbar.end(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToEnd(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Toolbar::addToEnd)
 }

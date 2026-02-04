@@ -47,7 +47,7 @@ class DrawerTest {
         paragraph("Configure your application preferences")
       }
     }
-    
+
     assertNotNull(drawer)
     assertTrue { root.hasComponent(drawer) }
     assertEquals("Settings Drawer", drawer.label)
@@ -56,14 +56,14 @@ class DrawerTest {
   @Test
   fun shouldCreateHeader() {
     val drawer = root.drawer("Menu Drawer") {
-      header {
+      headerActions {
         div {
           button("Close")
           button("Menu", theme = ButtonTheme.GRAY)
         }
       }
     }
-    
+
     assertNotNull(drawer)
     assertTrue { root.hasComponent(drawer) }
     assertEquals("Menu Drawer", drawer.label)
@@ -80,7 +80,7 @@ class DrawerTest {
         }
       }
     }
-    
+
     assertNotNull(drawer)
     assertTrue { root.hasComponent(drawer) }
     assertEquals("Info Drawer", drawer.label)
@@ -95,23 +95,23 @@ class DrawerTest {
           paragraph("Navigate through the application")
         }
       }
-      
-      header {
+
+      headerActions {
         div {
           button("Close")
           button("Settings", theme = ButtonTheme.GRAY)
         }
       }
-      
+
       // Main content (directly in drawer)
       div {
         textField("Search", placeholder = "Search menu items...")
-        
+
         div {
           checkBox("Show hidden items", checked = false)
           checkBox("Enable tooltips", checked = true)
         }
-        
+
         div {
           label("Quick Actions")
           button("New Document", theme = ButtonTheme.PRIMARY)
@@ -119,7 +119,7 @@ class DrawerTest {
           button("Save", theme = ButtonTheme.SUCCESS)
         }
       }
-      
+
       footer {
         div {
           paragraph("Version 1.0.0")
@@ -128,7 +128,7 @@ class DrawerTest {
         }
       }
     }
-    
+
     assertNotNull(drawer)
     assertTrue { root.hasComponent(drawer) }
     assertEquals("Navigation Drawer", drawer.label)

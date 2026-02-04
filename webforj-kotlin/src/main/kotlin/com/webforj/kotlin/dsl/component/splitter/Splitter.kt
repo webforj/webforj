@@ -1,8 +1,10 @@
 package com.webforj.kotlin.dsl.component.splitter
 
+import com.webforj.component.Component
 import com.webforj.component.layout.splitter.Splitter
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.MultiSlotSetter
+import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -59,8 +61,8 @@ fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Sp
  *
  * @param block The initialization steps of the master component.
  */
-fun @WebforjDsl Splitter.master(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlotSingle(this, Splitter::setMaster)
+fun @WebforjDsl Splitter.master(block: @WebforjDsl HasComponents.() -> Component) {
+  SingleSlotSetter(block).setSlot(this, Splitter::setMaster)
 }
 
 /**
@@ -80,6 +82,6 @@ fun @WebforjDsl Splitter.master(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of the detail component.
  */
-fun @WebforjDsl Splitter.detail(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlotSingle(this, Splitter::setDetail)
+fun @WebforjDsl Splitter.detail(block: @WebforjDsl HasComponents.() -> Component) {
+  SingleSlotSetter(block).setSlot(this, Splitter::setDetail)
 }

@@ -1,9 +1,10 @@
 package com.webforj.kotlin.dsl.component.button
 
+import com.webforj.component.Component
 import com.webforj.component.button.Button
 import com.webforj.component.button.ButtonTheme
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -46,34 +47,6 @@ fun @WebforjDsl HasComponents.button(
 }
 
 /**
- * Configures the `Component` to add to the prefix slot of a `Button`.
- * ```
- * button {
- *   prefix { }
- * }
- * ```
- *
- * @param block The initialization steps of the prefix `Component`.
- */
-fun @WebforjDsl Button.prefix(block: @WebforjDsl HasComponents.() -> Unit) {
-    HasComponentsProxy(block).setSlotSingle(this, Button::setPrefixComponent)
-}
-
-/**
- * Configures the `Component` to add to the suffix slot of a `Button`.
- * ```
- * button {
- *   suffix { }
- * }
- * ```
- *
- * @param block The initialization steps of the suffix `Component`.
- */
-fun @WebforjDsl Button.suffix(block: @WebforjDsl HasComponents.() -> Unit) {
-    HasComponentsProxy(block).setSlotSingle(this, Button::setSuffixComponent)
-}
-
-/**
  * Configures the `Component` to set as the icon of a `Button`.
  * ```
  * button {
@@ -83,6 +56,6 @@ fun @WebforjDsl Button.suffix(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of the icon `Component`.
  */
-fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Unit) {
-    HasComponentsProxy(block).setSlotSingle(this, Button::setIcon)
+fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Component) {
+  SingleSlotSetter(block).setSlot(this, Button::setIcon)
 }

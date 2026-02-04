@@ -2,7 +2,7 @@ package com.webforj.kotlin.dsl.component.dialog
 
 import com.webforj.component.dialog.Dialog
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.MultiSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -14,7 +14,7 @@ import com.webforj.kotlin.dsl.init
  *     label("User Registration")
  *     paragraph("Please fill in the form below")
  *   }
- *   
+ *
  *   div {
  *     textField("Name", placeholder = "Enter your full name")
  *     textField("Email", placeholder = "Enter your email address", type = TextField.Type.EMAIL)
@@ -63,9 +63,7 @@ fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}):
  * @param block The initialization steps of the header components.
  */
 fun @WebforjDsl Dialog.header(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToHeader(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Dialog::addToHeader)
 }
 
 /**
@@ -84,8 +82,6 @@ fun @WebforjDsl Dialog.header(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the footer components.
  */
 fun @WebforjDsl Dialog.footer(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToFooter(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Dialog::addToFooter)
 }
 

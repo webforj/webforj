@@ -5,6 +5,8 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.html.elements.Strong
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.html.elements.strong
+import com.webforj.kotlin.extension.prefix
+import com.webforj.kotlin.extension.suffix
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.awt.Color
@@ -48,6 +50,15 @@ class FieldsTest {
         createTestValue("TextArea") { textArea() },
         createTestValue("TextField") { textField() },
         createTestValue("TimeField") { timeField() },
+        createTestValue("MaskedDateField") { maskedDateField() },
+        createTestValue("MaskedNumberField") { maskedNumberField() },
+        createTestValue("MaskedTextField") { maskedTextField() },
+        createTestValue("MaskedTimeField") { maskedTimeField() },
+        createTestValue("MaskedDateFieldSpinner") { maskedDateFieldSpinner() },
+        createTestValue("MaskedNumberFieldSpinner") { maskedNumberFieldSpinner() },
+        createTestValue("MaskedTextFieldSpinner") { maskedTextFieldSpinner() },
+        createTestValue("MaskedTimeFieldSpinner") { maskedTimeFieldSpinner() },
+        createTestValue("TextFieldSpinner") { textFieldSpinner() },
       )
     }
 
@@ -62,6 +73,15 @@ class FieldsTest {
         createTestValue("TextArea") { textArea(it) },
         createTestValue("TextField") { textField(it) },
         createTestValue("TimeField") { timeField(it) },
+        createTestValue("MaskedDateField") { maskedDateField(it) },
+        createTestValue("MaskedNumberField") { maskedNumberField(it) },
+        createTestValue("MaskedTextField") { maskedTextField(it) },
+        createTestValue("MaskedTimeField") { maskedTimeField(it) },
+        createTestValue("MaskedDateFieldSpinner") { maskedDateFieldSpinner(it) },
+        createTestValue("MaskedNumberFieldSpinner") { maskedNumberFieldSpinner(it) },
+        createTestValue("MaskedTextFieldSpinner") { maskedTextFieldSpinner(it) },
+        createTestValue("MaskedTimeFieldSpinner") { maskedTimeFieldSpinner(it) },
+        createTestValue("TextFieldSpinner") { textFieldSpinner(it) },
       )
     }
 
@@ -70,12 +90,25 @@ class FieldsTest {
       return listOf(
         createTestValue("ColorField", Color.WHITE) { _, v -> colorField(value = v) },
         createTestValue("DateField", LocalDate.EPOCH) { _, v -> dateField(value = v) },
-        createTestValue("DateTimeField", LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIDNIGHT)) { _, v -> dateTimeField(value = v) },
+        createTestValue("DateTimeField", LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIDNIGHT)) { _, v ->
+          dateTimeField(
+            value = v
+          )
+        },
         createTestValue("NumberField", 0.0) { _, v -> numberField(value = v) },
         createTestValue("PasswordField", "value") { _, v -> passwordField(value = v) },
         createTestValue("TextArea", "value") { _, v -> textArea(value = v) },
         createTestValue("TextField", "value") { _, v -> textField(value = v) },
         createTestValue("TimeField", LocalTime.MIDNIGHT) { _, v -> timeField(value = v) },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { _, v -> maskedDateField(value = v) },
+        createTestValue("MaskedNumberField", 0.0) { _, v -> maskedNumberField(value = v) },
+        createTestValue("MaskedTextField", "value") { _, v -> maskedTextField(value = v) },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { _, v -> maskedTimeField(value = v) },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { _, v -> maskedDateFieldSpinner(value = v) },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { _, v -> maskedNumberFieldSpinner(value = v) },
+        createTestValue("MaskedTextFieldSpinner", "value") { _, v -> maskedTextFieldSpinner(value = v) },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { _, v -> maskedTimeFieldSpinner(value = v) },
+        createTestValue("TextFieldSpinner", "value") { _, v -> textFieldSpinner(value = v) },
       )
     }
 
@@ -84,12 +117,26 @@ class FieldsTest {
       return listOf(
         createTestValue("ColorField", Color.WHITE) { l, v -> colorField(l, v) },
         createTestValue("DateField", LocalDate.EPOCH) { l, v -> dateField(l, v) },
-        createTestValue("DateTimeField", LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIDNIGHT)) { l, v -> dateTimeField(l, v) },
+        createTestValue("DateTimeField", LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIDNIGHT)) { l, v ->
+          dateTimeField(
+            l,
+            v
+          )
+        },
         createTestValue("NumberField", 0.0) { l, v -> numberField(l, v) },
         createTestValue("PasswordField", "value") { l, v -> passwordField(l, v) },
-        createTestValue("TextArea", "value") { l, v -> textArea(l,v) },
+        createTestValue("TextArea", "value") { l, v -> textArea(l, v) },
         createTestValue("TextField", "value") { l, v -> textField(l, v) },
-        createTestValue("TimeField", LocalTime.MIDNIGHT) { l, v -> timeField(l,v) },
+        createTestValue("TimeField", LocalTime.MIDNIGHT) { l, v -> timeField(l, v) },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { l, v -> maskedDateField(l, v) },
+        createTestValue("MaskedNumberField", 0.0) { l, v -> maskedNumberField(l, v) },
+        createTestValue("MaskedTextField", "value") { l, v -> maskedTextField(l, v) },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { l, v -> maskedTimeField(l, v) },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { l, v -> maskedDateFieldSpinner(l, v) },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { l, v -> maskedNumberFieldSpinner(l, v) },
+        createTestValue("MaskedTextFieldSpinner", "value") { l, v -> maskedTextFieldSpinner(l, v) },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { l, v -> maskedTimeFieldSpinner(l, v) },
+        createTestValue("TextFieldSpinner", "value") { l, v -> textFieldSpinner(l, v) },
       )
     }
 
@@ -104,6 +151,15 @@ class FieldsTest {
         createTestValue("TextArea") { textArea { name = it } },
         createTestValue("TextField") { textField { name = it } },
         createTestValue("TimeField") { timeField { name = it } },
+        createTestValue("MaskedDateField") { maskedDateField { name = it } },
+        createTestValue("MaskedNumberField") { maskedNumberField { name = it } },
+        createTestValue("MaskedTextField") { maskedTextField { name = it } },
+        createTestValue("MaskedTimeField") { maskedTimeField { name = it } },
+        createTestValue("MaskedDateFieldSpinner") { maskedDateFieldSpinner { name = it } },
+        createTestValue("MaskedNumberFieldSpinner") { maskedNumberFieldSpinner { name = it } },
+        createTestValue("MaskedTextFieldSpinner") { maskedTextFieldSpinner { name = it } },
+        createTestValue("MaskedTimeFieldSpinner") { maskedTimeFieldSpinner { name = it } },
+        createTestValue("TextFieldSpinner") { textFieldSpinner { name = it } },
       )
     }
 
@@ -112,52 +168,151 @@ class FieldsTest {
       return listOf(
         createTestValue("ColorField", Color.WHITE) { l, v -> colorField(l, v) { name = l } },
         createTestValue("DateField", LocalDate.EPOCH) { l, v -> dateField(l, v) { name = l } },
-        createTestValue("DateTimeField", LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIDNIGHT)) { l, v -> dateTimeField(l, v) { name = l } },
+        createTestValue("DateTimeField", LocalDateTime.of(LocalDate.EPOCH, LocalTime.MIDNIGHT)) { l, v ->
+          dateTimeField(
+            l,
+            v
+          ) { name = l }
+        },
         createTestValue("NumberField", 0.0) { l, v -> numberField(l, v) { name = l } },
         createTestValue("PasswordField", "value") { l, v -> passwordField(l, v) { name = l } },
-        createTestValue("TextArea", "value") { l, v -> textArea(l,v) { name = l } },
+        createTestValue("TextArea", "value") { l, v -> textArea(l, v) { name = l } },
         createTestValue("TextField", "value") { l, v -> textField(l, v) { name = l } },
-        createTestValue("TimeField", LocalTime.MIDNIGHT) { l, v -> timeField(l,v) { name = l } },
+        createTestValue("TimeField", LocalTime.MIDNIGHT) { l, v -> timeField(l, v) { name = l } },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { l, v -> maskedDateField(l, v) { name = l } },
+        createTestValue("MaskedNumberField", 0.0) { l, v -> maskedNumberField(l, v) { name = l } },
+        createTestValue("MaskedTextField", "value") { l, v -> maskedTextField(l, v) { name = l } },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { l, v -> maskedTimeField(l, v) { name = l } },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { l, v ->
+          maskedDateFieldSpinner(l, v) {
+            name = l
+          }
+        },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { l, v -> maskedNumberFieldSpinner(l, v) { name = l } },
+        createTestValue("MaskedTextFieldSpinner", "value") { l, v -> maskedTextFieldSpinner(l, v) { name = l } },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { l, v ->
+          maskedTimeFieldSpinner(l, v) {
+            name = l
+          }
+        },
+        createTestValue("TextFieldSpinner", "value") { l, v -> textFieldSpinner(l, v) { name = l } },
       )
     }
 
     @JvmStatic
     fun provideFieldsWithPlaceholder(): List<Array<Any>> {
       return listOf(
-        createTestValue("NumberField", 0.0) { _, _, p -> numberField(placeholder = p)  },
+        createTestValue("NumberField", 0.0) { _, _, p -> numberField(placeholder = p) },
         createTestValue("PasswordField", "value") { _, _, p -> passwordField(placeholder = p) },
         createTestValue("TextArea", "value") { _, _, p -> textArea(placeholder = p) },
         createTestValue("TextField", "value") { _, _, p -> textField(placeholder = p) },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { _, _, p -> maskedDateField(placeholder = p) },
+        createTestValue("MaskedNumberField", 0.0) { _, _, p -> maskedNumberField(placeholder = p) },
+        createTestValue("MaskedTextField", "value") { _, _, p -> maskedTextField(placeholder = p) },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { _, _, p -> maskedTimeField(placeholder = p) },
+        createTestValue(
+          "MaskedDateFieldSpinner",
+          LocalDate.EPOCH
+        ) { _, _, p -> maskedDateFieldSpinner(placeholder = p) },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { _, _, p -> maskedNumberFieldSpinner(placeholder = p) },
+        createTestValue("MaskedTextFieldSpinner", "value") { _, _, p -> maskedTextFieldSpinner(placeholder = p) },
+        createTestValue(
+          "MaskedTimeFieldSpinner",
+          LocalTime.MIDNIGHT
+        ) { _, _, p -> maskedTimeFieldSpinner(placeholder = p) },
+        createTestValue("TextFieldSpinner", "value") { _, _, p -> textFieldSpinner(placeholder = p) },
       )
     }
 
     @JvmStatic
     fun provideFieldsWithLabelAndPlaceholder(): List<Array<Any>> {
       return listOf(
-        createTestValue("NumberField", 0.0) { l, _, p -> numberField(l, placeholder = p)  },
+        createTestValue("NumberField", 0.0) { l, _, p -> numberField(l, placeholder = p) },
         createTestValue("PasswordField", "value") { l, _, p -> passwordField(l, placeholder = p) },
         createTestValue("TextArea", "value") { l, _, p -> textArea(l, placeholder = p) },
         createTestValue("TextField", "value") { l, _, p -> textField(l, placeholder = p) },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { l, _, p -> maskedDateField(l, placeholder = p) },
+        createTestValue("MaskedNumberField", 0.0) { l, _, p -> maskedNumberField(l, placeholder = p) },
+        createTestValue("MaskedTextField", "value") { l, _, p -> maskedTextField(l, placeholder = p) },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { l, _, p -> maskedTimeField(l, placeholder = p) },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { l, _, p ->
+          maskedDateFieldSpinner(
+            l,
+            placeholder = p
+          )
+        },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { l, _, p -> maskedNumberFieldSpinner(l, placeholder = p) },
+        createTestValue("MaskedTextFieldSpinner", "value") { l, _, p -> maskedTextFieldSpinner(l, placeholder = p) },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { l, _, p ->
+          maskedTimeFieldSpinner(
+            l,
+            placeholder = p
+          )
+        },
+        createTestValue("TextFieldSpinner", "value") { l, _, p -> textFieldSpinner(l, placeholder = p) },
       )
     }
 
     @JvmStatic
     fun provideFieldsWithValueAndPlaceholder(): List<Array<Any>> {
       return listOf(
-        createTestValue("NumberField", 0.0) { _, v, p -> numberField(value = v, placeholder = p)  },
+        createTestValue("NumberField", 0.0) { _, v, p -> numberField(value = v, placeholder = p) },
         createTestValue("PasswordField", "value") { _, v, p -> passwordField(value = v, placeholder = p) },
         createTestValue("TextArea", "value") { _, v, p -> textArea(value = v, placeholder = p) },
         createTestValue("TextField", "value") { _, v, p -> textField(value = v, placeholder = p) },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { _, v, p -> maskedDateField(value = v, placeholder = p) },
+        createTestValue("MaskedNumberField", 0.0) { _, v, p -> maskedNumberField(value = v, placeholder = p) },
+        createTestValue("MaskedTextField", "value") { _, v, p -> maskedTextField(value = v, placeholder = p) },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { _, v, p ->
+          maskedTimeField(
+            value = v,
+            placeholder = p
+          )
+        },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { _, v, p ->
+          maskedDateFieldSpinner(
+            value = v,
+            placeholder = p
+          )
+        },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { _, v, p ->
+          maskedNumberFieldSpinner(
+            value = v,
+            placeholder = p
+          )
+        },
+        createTestValue("MaskedTextFieldSpinner", "value") { _, v, p ->
+          maskedTextFieldSpinner(
+            value = v,
+            placeholder = p
+          )
+        },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { _, v, p ->
+          maskedTimeFieldSpinner(
+            value = v,
+            placeholder = p
+          )
+        },
+        createTestValue("TextFieldSpinner", "value") { _, v, p -> textFieldSpinner(value = v, placeholder = p) },
       )
     }
 
     @JvmStatic
     fun provideFieldsWithLabelValueAndPlaceholder(): List<Array<Any>> {
       return listOf(
-        createTestValue("NumberField", 0.0) { l, v, p -> numberField(l, v, p)  },
+        createTestValue("NumberField", 0.0) { l, v, p -> numberField(l, v, p) },
         createTestValue("PasswordField", "value") { l, v, p -> passwordField(l, v, p) },
         createTestValue("TextArea", "value") { l, v, p -> textArea(l, v, p) },
         createTestValue("TextField", "value") { l, v, p -> textField(l, v, p) },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { l, v, p -> maskedDateField(l, v, p) },
+        createTestValue("MaskedNumberField", 0.0) { l, v, p -> maskedNumberField(l, v, p) },
+        createTestValue("MaskedTextField", "value") { l, v, p -> maskedTextField(l, v, p) },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { l, v, p -> maskedTimeField(l, v, p) },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { l, v, p -> maskedDateFieldSpinner(l, v, p) },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { l, v, p -> maskedNumberFieldSpinner(l, v, p) },
+        createTestValue("MaskedTextFieldSpinner", "value") { l, v, p -> maskedTextFieldSpinner(l, v, p) },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { l, v, p -> maskedTimeFieldSpinner(l, v, p) },
+        createTestValue("TextFieldSpinner", "value") { l, v, p -> textFieldSpinner(l, v, p) },
       )
     }
 
@@ -165,9 +320,28 @@ class FieldsTest {
     fun provideFieldsWithLabelValuePlaceholderAndBlock(): List<Array<Any>> {
       return listOf(
         createTestValue("NumberField", 0.0) { l, v, p -> numberField(l, v, p) { name = l } },
-        createTestValue("PasswordField", "value") { l, v, p -> passwordField(l, v, p) { name = l }  },
-        createTestValue("TextArea", "value") { l, v, p -> textArea(l, v, p) { name = l }  },
-        createTestValue("TextField", "value") { l, v, p -> textField(l, v, p) { name = l }  },
+        createTestValue("PasswordField", "value") { l, v, p -> passwordField(l, v, p) { name = l } },
+        createTestValue("TextArea", "value") { l, v, p -> textArea(l, v, p) { name = l } },
+        createTestValue("TextField", "value") { l, v, p -> textField(l, v, p) { name = l } },
+        createTestValue("MaskedDateField", LocalDate.EPOCH) { l, v, p -> maskedDateField(l, v, p) { name = l } },
+        createTestValue("MaskedNumberField", 0.0) { l, v, p -> maskedNumberField(l, v, p) { name = l } },
+        createTestValue("MaskedTextField", "value") { l, v, p -> maskedTextField(l, v, p) { name = l } },
+        createTestValue("MaskedTimeField", LocalTime.MIDNIGHT) { l, v, p -> maskedTimeField(l, v, p) { name = l } },
+        createTestValue("MaskedDateFieldSpinner", LocalDate.EPOCH) { l, v, p ->
+          maskedDateFieldSpinner(l, v, p) {
+            name = l
+          }
+        },
+        createTestValue("MaskedNumberFieldSpinner", 0.0) { l, v, p -> maskedNumberFieldSpinner(l, v, p) { name = l } },
+        createTestValue("MaskedTextFieldSpinner", "value") { l, v, p -> maskedTextFieldSpinner(l, v, p) { name = l } },
+        createTestValue("MaskedTimeFieldSpinner", LocalTime.MIDNIGHT) { l, v, p ->
+          maskedTimeFieldSpinner(
+            l,
+            v,
+            p
+          ) { name = l }
+        },
+        createTestValue("TextFieldSpinner", "value") { l, v, p -> textFieldSpinner(l, v, p) { name = l } },
       )
     }
 
@@ -258,7 +432,12 @@ class FieldsTest {
 
   @ParameterizedTest(name = "Create {0} component with placeholder.")
   @MethodSource("provideFieldsWithLabelValueAndPlaceholder")
-  fun shouldCreateFieldWithLabelValueAndPlaceholder(name: String, value: Any, root: HasComponents, field: DwcField<*, *>) {
+  fun shouldCreateFieldWithLabelValueAndPlaceholder(
+    name: String,
+    value: Any,
+    root: HasComponents,
+    field: DwcField<*, *>
+  ) {
     assertNotNull(field)
     assertEquals(name, field.label)
     assertEquals(name, field.placeholder)
@@ -268,7 +447,12 @@ class FieldsTest {
 
   @ParameterizedTest(name = "Create {0} component with placeholder.")
   @MethodSource("provideFieldsWithLabelValuePlaceholderAndBlock")
-  fun shouldCreateFieldWithLabelValuePlaceholderAndBlock(name: String, value: Any, root: HasComponents, field: DwcField<*, *>) {
+  fun shouldCreateFieldWithLabelValuePlaceholderAndBlock(
+    name: String,
+    value: Any,
+    root: HasComponents,
+    field: DwcField<*, *>
+  ) {
     assertNotNull(field)
     assertEquals(name, field.label)
     assertEquals(name, field.placeholder)

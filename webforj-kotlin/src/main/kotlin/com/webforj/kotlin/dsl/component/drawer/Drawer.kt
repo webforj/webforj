@@ -2,7 +2,7 @@ package com.webforj.kotlin.dsl.component.drawer
 
 import com.webforj.component.drawer.Drawer
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.MultiSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -16,22 +16,22 @@ import com.webforj.kotlin.dsl.init
  *       paragraph("Navigate through the application")
  *     }
  *   }
- *   
- *   header {
+ *
+ *   headerActions {
  *     div {
  *       button("Close")
  *       button("Settings", theme = ButtonTheme.GRAY)
  *     }
  *   }
- *   
+ *
  *   div {
  *     textField("Search", placeholder = "Search menu items...")
- *     
+ *
  *     div {
  *       checkBox("Show hidden items", checked = false)
  *       checkBox("Enable tooltips", checked = true)
  *     }
- *     
+ *
  *     div {
  *       label("Quick Actions")
  *       button("New Document", theme = ButtonTheme.PRIMARY)
@@ -39,7 +39,7 @@ import com.webforj.kotlin.dsl.init
  *       button("Save", theme = ButtonTheme.SUCCESS)
  *     }
  *   }
- *   
+ *
  *   footer {
  *     div {
  *       paragraph("Version 1.0.0")
@@ -82,16 +82,14 @@ fun @WebforjDsl HasComponents.drawer(
  * @param block The initialization steps of the title components.
  */
 fun @WebforjDsl Drawer.title(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToTitle(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Drawer::addToTitle)
 }
 
 /**
  * Configures the components to add to the header actions section of a `Drawer`.
  * ```
  * drawer("Menu Drawer") {
- *   header {
+ *   headerActions {
  *     div {
  *       button("Close")
  *       button("Menu", theme = ButtonTheme.GRAY)
@@ -102,10 +100,8 @@ fun @WebforjDsl Drawer.title(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of header action components.
  */
-fun @WebforjDsl Drawer.header(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToHeaderActions(*it.toTypedArray())
-  }
+fun @WebforjDsl Drawer.headerActions(block: @WebforjDsl HasComponents.() -> Unit) {
+  MultiSlotSetter(block).setSlot(this, Drawer::addToHeaderActions)
 }
 
 /**
@@ -125,7 +121,5 @@ fun @WebforjDsl Drawer.header(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the footer components.
  */
 fun @WebforjDsl Drawer.footer(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToFooter(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Drawer::addToFooter)
 }

@@ -4,7 +4,6 @@ import com.webforj.component.Component
 import com.webforj.component.layout.appnav.AppNav
 import com.webforj.component.layout.appnav.AppNavItem
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 import com.webforj.router.history.ParametersBag
@@ -81,36 +80,4 @@ fun @WebforjDsl AppNav.appNavItem(
   }.apply(block)
   addItem(item)
   return item
-}
-
-/**
- * Configures the component to add to the prefix slot of an `AppNavItem`.
- * ```
- * appNavItem("Settings") {
- *   prefix {
- *     icon("settings")
- *   }
- * }
- * ```
- *
- * @param block The initialization steps of the prefix component.
- */
-fun @WebforjDsl AppNavItem.prefix(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlotSingle(this, AppNavItem::setPrefixComponent)
-}
-
-/**
- * Configures the component to add to the suffix slot of an `AppNavItem`.
- * ```
- * appNavItem("Notifications") {
- *   suffix {
- *     badge("5")
- *   }
- * }
- * ```
- *
- * @param block The initialization steps of the suffix component.
- */
-fun @WebforjDsl AppNavItem.suffix(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlotSingle(this, AppNavItem::setSuffixComponent)
 }

@@ -8,7 +8,7 @@ import com.webforj.concern.HasComponents
  *
  * Implements the methods in [HasComponents] to use a backing [MutableList].
  */
-internal class HasComponentsProxy(block: HasComponents.() -> Unit): HasComponents {
+class MultiSlotSetter(block: HasComponents.() -> Unit): HasComponents {
   internal val backingList: MutableList<Component> = arrayListOf()
 
   init {
@@ -22,21 +22,8 @@ internal class HasComponentsProxy(block: HasComponents.() -> Unit): HasComponent
    * @param component The [Component] whose slot is going to be set.
    * @param setter The steps to set the `Components`.
    */
-  fun <T: Component> setSlot(component: T, setter: T.(List<Component?>) -> Unit) {
-    component.setter(backingList)
-  }
-
-  /**
-   * Set the `Component` to the given [component] by invoking the [setter]
-   * with first [Component] of the backing list.
-   *
-   * @param component The [Component] whose slot is going to be set.
-   * @param setter The steps to set the `Components`.
-   */
-  fun <T: Component> setSlotSingle(component: T, setter: T.(Component) -> Unit) {
-    backingList.firstOrNull()?.let { nonNullComponent ->
-      component.setter(nonNullComponent)
-    }
+  fun <T: Component> setSlot(component: T, setter: T.(Array<Component?>) -> Unit) {
+    component.setter(backingList.toTypedArray())
   }
 
   override fun add(vararg components: Component) {

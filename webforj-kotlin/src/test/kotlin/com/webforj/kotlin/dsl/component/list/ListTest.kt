@@ -5,6 +5,8 @@ import com.webforj.component.list.DwcList
 import com.webforj.component.list.DwcSelectDropdown
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.html.elements.strong
+import com.webforj.kotlin.extension.prefix
+import com.webforj.kotlin.extension.suffix
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertEquals
@@ -24,8 +26,8 @@ class ListTest {
     fun provideEmptyLists(): List<Array<Any>> {
       return listOf(
         createTestCase("ChoiceBox") { choiceBox() },
-        createTestCase("ChoiceBox") { comboBox() },
-        createTestCase("ChoiceBox") { listBox() },
+        createTestCase("ComboBox") { comboBox() },
+        createTestCase("ListBox") { listBox() },
       )
     }
 
@@ -33,8 +35,8 @@ class ListTest {
     fun provideListWithLabel(): List<Array<Any>> {
       return listOf(
         createTestCase("ChoiceBox") { choiceBox(it) },
-        createTestCase("ChoiceBox") { comboBox(it) },
-        createTestCase("ChoiceBox") { listBox(it) },
+        createTestCase("ComboBox") { comboBox(it) },
+        createTestCase("ListBox") { listBox(it) },
       )
     }
 
@@ -42,8 +44,8 @@ class ListTest {
     fun provideListWithBlock(): List<Array<Any>> {
       return listOf(
         createTestCase("ChoiceBox") { choiceBox { name = it } },
-        createTestCase("ChoiceBox") { comboBox { name = it } },
-        createTestCase("ChoiceBox") { listBox { name = it } },
+        createTestCase("ComboBox") { comboBox { name = it } },
+        createTestCase("ListBox") { listBox { name = it } },
       )
     }
 
@@ -51,8 +53,8 @@ class ListTest {
     fun provideListWithLabelAndBlock(): List<Array<Any>> {
       return listOf(
         createTestCase("ChoiceBox") { choiceBox(it) { name = it } },
-        createTestCase("ChoiceBox") { comboBox(it) { name = it } },
-        createTestCase("ChoiceBox") { listBox(it) { name = it } },
+        createTestCase("ComboBox") { comboBox(it) { name = it } },
+        createTestCase("ListBox") { listBox(it) { name = it } },
       )
     }
 
@@ -64,7 +66,7 @@ class ListTest {
             prefix { strong { name = it } }
           }
         },
-        createTestCase("ChoiceBox") {
+        createTestCase("ComboBox") {
           comboBox {
             prefix { strong { name = it } }
           }
@@ -80,7 +82,7 @@ class ListTest {
             suffix { strong { name = it } }
           }
         },
-        createTestCase("ChoiceBox") {
+        createTestCase("ComboBox") {
           comboBox {
             suffix { strong { name = it } }
           }
@@ -96,18 +98,73 @@ class ListTest {
             listItem(it, "$it-key")
           }
         },
-        createTestCase("ChoiceBox") {
+        createTestCase("ComboBox") {
           comboBox {
             listItem(it, "$it-key")
           }
         },
-        createTestCase("ChoiceBox") {
+        createTestCase("ListBox") {
           listBox {
             listItem(it, "$it-key")
           }
         },
       )
     }
+
+    @JvmStatic
+    fun provideListWithItemsPair(): List<Array<Any>> {
+      return listOf(
+        createTestCase("ChoiceBox") {
+          choiceBox {
+            items(
+              "key1" to "Item 1",
+              "key2" to "Item 2",
+              "key3" to "Item 3"
+            )
+          }
+        },
+        createTestCase("ComboBox") {
+          comboBox {
+            items(
+              "key1" to "Item 1",
+              "key2" to "Item 2",
+              "key3" to "Item 3"
+            )
+          }
+        },
+        createTestCase("ListBox") {
+          listBox {
+            items(
+              "key1" to "Item 1",
+              "key2" to "Item 2",
+              "key3" to "Item 3"
+            )
+          }
+        },
+      )
+    }
+
+    @JvmStatic
+    fun provideListWithItemsString(): List<Array<Any>> {
+      return listOf(
+        createTestCase("ChoiceBox") {
+          choiceBox {
+            items("Item 1", "Item 2", "Item 3")
+          }
+        },
+        createTestCase("ComboBox") {
+          comboBox {
+            items("Item 1", "Item 2", "Item 3")
+          }
+        },
+        createTestCase("ListBox") {
+          listBox {
+            items("Item 1", "Item 2", "Item 3")
+          }
+        },
+      )
+    }
+
   }
 
   @ParameterizedTest(name = "Create empty {0}.")
@@ -165,6 +222,36 @@ class ListTest {
     val listItem = list.items.first()
     assertEquals(name, listItem.text)
     assertEquals("$name-key", listItem.key)
+  }
+
+  @ParameterizedTest(name = "Create {0} with items using pairs.")
+  @MethodSource("provideListWithItemsPair")
+  fun shouldCreateListWithItemsPair(name: String, root: HasComponents, list: DwcList<*, *>) {
+    assertTrue { root.hasComponent(list) }
+    assertEquals(3, list.items.size)
+    assertEquals("Item 1", list.getByKey("key1").text)
+    assertEquals("Item 2", list.getByKey("key2").text)
+    assertEquals("Item 3", list.getByKey("key3").text)
+  }
+
+  @ParameterizedTest(name = "Create {0} with items using strings.")
+  @MethodSource("provideListWithItemsString")
+  fun shouldCreateListWithItemsString(name: String, root: HasComponents, list: DwcList<*, *>) {
+    assertTrue { root.hasComponent(list) }
+    assertEquals(3, list.items.size)
+    assertEquals("Item 1", list.getByIndex(0).text)
+    assertEquals("Item 2", list.getByIndex(1).text)
+    assertEquals("Item 3", list.getByIndex(2).text)
+  }
+
+  @ParameterizedTest(name = "Get operator by key should return correct item for {0}.")
+  @MethodSource("provideListWithItemsPair")
+  fun shouldGetItemByKey(name: String, root: HasComponents, list: DwcList<*, *>) {
+    assertTrue { root.hasComponent(list) }
+    val item = list["key2"]
+    assertNotNull(item)
+    assertEquals("Item 2", item.text)
+    assertEquals("key2", item.key)
   }
 
 }

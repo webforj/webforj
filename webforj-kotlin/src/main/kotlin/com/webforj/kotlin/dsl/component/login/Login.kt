@@ -4,7 +4,7 @@ import com.webforj.component.login.Login
 import com.webforj.component.login.LoginErrorI18n
 import com.webforj.component.login.LoginI18n
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.HasComponentsProxy
+import com.webforj.kotlin.dsl.MultiSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -57,9 +57,7 @@ fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): L
  * @param block The initialization steps of the before header components.
  */
 fun @WebforjDsl Login.beforeHeader(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToBeforeHeader(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToBeforeHeader)
 }
 
 /**
@@ -76,9 +74,7 @@ fun @WebforjDsl Login.beforeHeader(block: @WebforjDsl HasComponents.() -> Unit) 
  * @param block The initialization steps of the after header components.
  */
 fun @WebforjDsl Login.afterHeader(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToAfterHeader(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToAfterHeader)
 }
 
 /**
@@ -95,9 +91,7 @@ fun @WebforjDsl Login.afterHeader(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the before content components.
  */
 fun @WebforjDsl Login.beforeContent(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToBeforeContent(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToBeforeContent)
 }
 
 /**
@@ -114,9 +108,7 @@ fun @WebforjDsl Login.beforeContent(block: @WebforjDsl HasComponents.() -> Unit)
  * @param block The initialization steps of the after content components.
  */
 fun @WebforjDsl Login.afterContent(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToAfterContent(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToAfterContent)
 }
 
 /**
@@ -133,9 +125,7 @@ fun @WebforjDsl Login.afterContent(block: @WebforjDsl HasComponents.() -> Unit) 
  * @param block The initialization steps of the before form components.
  */
 fun @WebforjDsl Login.beforeForm(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToBeforeForm(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToBeforeForm)
 }
 
 /**
@@ -152,9 +142,7 @@ fun @WebforjDsl Login.beforeForm(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the after form components.
  */
 fun @WebforjDsl Login.afterForm(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToAfterForm(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToAfterForm)
 }
 
 /**
@@ -171,9 +159,7 @@ fun @WebforjDsl Login.afterForm(block: @WebforjDsl HasComponents.() -> Unit) {
  * @param block The initialization steps of the before footer components.
  */
 fun @WebforjDsl Login.beforeFooter(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToBeforeFooter(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToBeforeFooter)
 }
 
 /**
@@ -190,9 +176,7 @@ fun @WebforjDsl Login.beforeFooter(block: @WebforjDsl HasComponents.() -> Unit) 
  * @param block The initialization steps of the after footer components.
  */
 fun @WebforjDsl Login.afterFooter(block: @WebforjDsl HasComponents.() -> Unit) {
-  HasComponentsProxy(block).setSlot(this) {
-    addToAfterFooter(*it.toTypedArray())
-  }
+  MultiSlotSetter(block).setSlot(this, Login::addToAfterFooter)
 }
 
 /**
