@@ -58,7 +58,7 @@ public final class KotlinFactory {
   }
 
   public static MaskedDateField newMaskedDateField(
-    String label, LocalDate value, String placeholder) {
+      String label, LocalDate value, String placeholder) {
     return new MaskedDateField(label, value, placeholder);
   }
 
@@ -75,7 +75,7 @@ public final class KotlinFactory {
   }
 
   public static MaskedTimeField newMaskedTimeField(
-    String label, LocalTime value, String placeholder) {
+      String label, LocalTime value, String placeholder) {
     return new MaskedTimeField(label, value, placeholder);
   }
 
@@ -92,7 +92,7 @@ public final class KotlinFactory {
   }
 
   public static MaskedNumberField newMaskedNumberField(
-    String label, Double value, String placeholder) {
+      String label, Double value, String placeholder) {
     return new MaskedNumberField(label, value, placeholder);
   }
 
