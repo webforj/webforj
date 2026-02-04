@@ -3,7 +3,6 @@ package com.webforj.kotlin.dsl.component.splitter
 import com.webforj.component.Component
 import com.webforj.component.layout.splitter.Splitter
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.MultiSlotSetter
 import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
