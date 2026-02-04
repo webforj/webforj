@@ -12,8 +12,8 @@ import java.time.LocalTime;
 
 /**
  * Utility class for use of <b>webforj</b> with <b>Kotlin</b>.
- * <p>
- * Provides static constructors for {@code sealed} component classes, so that they can
+ *
+ * <p>Provides static constructors for {@code sealed} component classes, so that they can
  * be initialized in <b>Kotlin</b>.
  *
  * @see TextField
@@ -57,7 +57,8 @@ public final class KotlinFactory {
     return new MaskedDateField(label, value);
   }
 
-  public static MaskedDateField newMaskedDateField(String label, LocalDate value, String placeholder) {
+  public static MaskedDateField newMaskedDateField(
+    String label, LocalDate value, String placeholder) {
     return new MaskedDateField(label, value, placeholder);
   }
 
@@ -73,7 +74,8 @@ public final class KotlinFactory {
     return new MaskedTimeField(label, value);
   }
 
-  public static MaskedTimeField newMaskedTimeField(String label, LocalTime value, String placeholder) {
+  public static MaskedTimeField newMaskedTimeField(
+    String label, LocalTime value, String placeholder) {
     return new MaskedTimeField(label, value, placeholder);
   }
 
@@ -89,7 +91,8 @@ public final class KotlinFactory {
     return new MaskedNumberField(label, value);
   }
 
-  public static MaskedNumberField newMaskedNumberField(String label, Double value, String placeholder) {
+  public static MaskedNumberField newMaskedNumberField(
+    String label, Double value, String placeholder) {
     return new MaskedNumberField(label, value, placeholder);
   }
 
