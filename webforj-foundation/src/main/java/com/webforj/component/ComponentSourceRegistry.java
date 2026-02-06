@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public final class ComponentSourceRegistry {
 
-  private static final String STORAGE_KEY = "webforj.component.sources";
+  private static final String STORAGE_KEY = ComponentSourceRegistry.class.getName();
 
   /**
    * Represents where a component was instantiated.
