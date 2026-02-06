@@ -44,6 +44,13 @@ public abstract class Component {
   }
 
   /**
+   * Creates a new component instance.
+   */
+  protected Component() {
+    ComponentSourceRegistry.register(this);
+  }
+
+  /**
    * Retrieves a unique component ID generated on the server.
    *
    * <p>
