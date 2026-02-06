@@ -1,5 +1,6 @@
 package com.webforj.component;
 
+import com.webforj.Environment;
 import com.webforj.PendingResult;
 import com.webforj.bridge.ComponentAccessor;
 import com.webforj.component.ComponentLifecycleObserver.LifecycleEvent;
@@ -47,7 +48,10 @@ public abstract class Component {
    * Creates a new component instance.
    */
   protected Component() {
-    ComponentSourceRegistry.register(this);
+    Environment env = Environment.getCurrent();
+    if (env != null && env.isDebug()) {
+      ComponentSourceRegistry.register(this);
+    }
   }
 
   /**
