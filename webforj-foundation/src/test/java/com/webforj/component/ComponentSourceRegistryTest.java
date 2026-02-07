@@ -63,7 +63,7 @@ class ComponentSourceRegistryTest {
       Object component = new Object();
       ComponentSourceRegistry.register(component);
 
-      mocked.verify(() -> ObjectTable.put(eq("webforj.component.sources"), any()));
+      mocked.verify(() -> ObjectTable.put(eq(ComponentSourceRegistry.class.getName()), any()));
     }
   }
 }
