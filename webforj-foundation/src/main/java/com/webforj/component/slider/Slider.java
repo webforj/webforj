@@ -779,12 +779,6 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
   protected void attachControlCallbacks() {
     super.attachControlCallbacks();
     slideEventSinkListenerRegistry.attach();
-
-    addSlideEvent(ev -> {
-      if (!ev.isAdjusting()) {
-        this.value = ev.getValue();
-      }
-    });
   }
 
   @Override
