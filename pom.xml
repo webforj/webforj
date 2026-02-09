@@ -5,7 +5,7 @@
 
   <groupId>com.webforj</groupId>
   <artifactId>webforj-parent</artifactId>
-  <version>25.11</version>
+  <version>25.12-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>webforj</name>
   <description>
@@ -178,7 +178,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.1</version>
+          <version>3.15.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

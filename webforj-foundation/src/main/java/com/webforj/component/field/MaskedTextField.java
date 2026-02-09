@@ -242,7 +242,7 @@ public sealed class MaskedTextField extends DwcMaskedField<MaskedTextField, Stri
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addInputE(flags));
+      setControl(w.addInputE(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjInputE", e);
     }

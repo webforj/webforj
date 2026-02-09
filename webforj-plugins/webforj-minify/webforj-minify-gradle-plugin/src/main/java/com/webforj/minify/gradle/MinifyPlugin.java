@@ -94,6 +94,7 @@ public class MinifyPlugin implements Plugin<Project> {
     task.getResourcesDirectory().set(mainSourceSet.getOutput().getResourcesDir());
 
     task.getSkip().set(extension.getSkip());
+    task.getMinifierConfigurations().set(extension.getMinifierConfigurations());
     task.getMinifierClasspath().from(minifierConfig);
 
     // Run after classes task (which includes processResources)

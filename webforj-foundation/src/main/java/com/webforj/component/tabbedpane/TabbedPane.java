@@ -1136,7 +1136,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addTabCtrl(flags));
+      setControl(w.addTabCtrl(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create the BBjTabCtrl Control", e);
     }

@@ -116,7 +116,7 @@ public final class Button extends DwcButton<Button> {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addButton(getText(), flags));
+      setControl(w.addButton(resolveControlId(w), getText(), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException("Failed to create the BBjButton Control", e);
     }

@@ -113,7 +113,7 @@ public final class Label extends DwcComponent<Label> implements HasHorizontalAli
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), true);
-      setControl(w.addStaticText(getText(), flags));
+      setControl(w.addStaticText(resolveControlId(w), getText(), flags));
     } catch (Exception e) {
       throw new WebforjRuntimeException(e);
     }

@@ -430,7 +430,7 @@ public final class RadioButton extends DwcOptionInput<RadioButton> {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(p);
       byte[] flags =
           BBjFunctionalityHelper.buildStandardCreationFlags(this.isVisible(), this.isEnabled());
-      setControl(w.addRadioButton("", flags));
+      setControl(w.addRadioButton(resolveControlId(w), "", flags));
     } catch (IllegalAccessException | BBjException e) {
       throw new WebforjRuntimeException("Failed to create the BBjRadioButton Control", e);
     }

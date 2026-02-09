@@ -370,7 +370,7 @@ public sealed class MaskedTimeField extends DwcDateTimeMaskedField<MaskedTimeFie
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addInputT(flags));
+      setControl(w.addInputT(resolveControlId(w), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjInputT", e);
     }

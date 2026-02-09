@@ -761,7 +761,7 @@ public final class TextArea extends DwcField<TextArea, String> implements HasTyp
     try {
       BBjWindow w = WindowAccessor.getDefault().getBBjWindow(window);
       byte[] flags = BBjFunctionalityHelper.buildStandardCreationFlags(isVisible(), isEnabled());
-      setControl(w.addCEdit(getText(), flags));
+      setControl(w.addCEdit(resolveControlId(w), getText(), flags));
     } catch (BBjException | IllegalAccessException e) {
       throw new WebforjRuntimeException("Failed to create BBjCEdit", e);
     }
