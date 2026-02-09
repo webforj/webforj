@@ -632,11 +632,17 @@ public final class Environment {
           ConfigFactory.parseFile(configPath.toFile()).withFallback(getInitialDefaultConfig());
     }
 
-    // Merge with config from WebforjServlet if available (e.g., from Spring Boot)
+    // Merge with config from WebforjServlet if available
     // The servlet config takes precedence over file-based config
-    Config servletConfig = WebforjServlet.getInitConfig();
-    if (servletConfig != null) {
-      theConfig = servletConfig.withFallback(theConfig);
+    try {
+      Config servletConfig = WebforjServlet.getInitConfig();
+      if (servletConfig != null) {
+        theConfig = servletConfig.withFallback(theConfig);
+      }
+    } catch (NoClassDefFoundError e) {
+      // WebforjServlet is not available in this environment (no servlet container)
+      logger.log(Level.DEBUG, "WebforjServlet not available, skipping servlet config: {0}",
+          e.getMessage());
     }
 
     return theConfig;
