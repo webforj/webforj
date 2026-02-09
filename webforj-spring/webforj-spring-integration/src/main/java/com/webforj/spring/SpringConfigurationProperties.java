@@ -231,6 +231,13 @@ public class SpringConfigurationProperties {
   private Mime mime = new Mime();
 
   /**
+   * Internationalization (i18n) configuration.
+   *
+   * @since 25.12
+   */
+  private I18n i18n = new I18n();
+
+  /**
    * Sets the URL mapping for the Webforj servlet.
    *
    * @param servletMapping the URL mapping for the Webforj servlet
@@ -593,6 +600,26 @@ public class SpringConfigurationProperties {
   }
 
   /**
+   * Gets the i18n configuration.
+   *
+   * @return the i18n configuration
+   * @since 25.12
+   */
+  public I18n getI18n() {
+    return i18n;
+  }
+
+  /**
+   * Sets the i18n configuration.
+   *
+   * @param i18n the i18n configuration
+   * @since 25.12
+   */
+  public void setI18n(I18n i18n) {
+    this.i18n = i18n;
+  }
+
+  /**
    * File upload configuration properties.
    */
   public static class FileUpload {
@@ -829,6 +856,74 @@ public class SpringConfigurationProperties {
      */
     public void setExtensions(Map<String, String> extensions) {
       this.extensions = extensions;
+    }
+  }
+
+  /**
+   * Internationalization (i18n) configuration properties.
+   *
+   * @since 25.12
+   */
+  public static class I18n {
+
+    /**
+     * List of supported locales as BCP 47 language tags.
+     *
+     * <p>
+     * When {@link #autoDetect} is enabled, the browser's preferred locales are matched against this
+     * list to determine the application locale. The first match wins.
+     * </p>
+     *
+     * <p>
+     * Example: {@code en, en-US, fr, de-DE}
+     * </p>
+     */
+    private List<String> supportedLocales = new ArrayList<>();
+
+    /**
+     * Whether to auto-detect locale from browser's Accept-Language header.
+     *
+     * <p>
+     * When enabled, the application locale is automatically set on startup by matching the
+     * browser's preferred locales against the {@link #supportedLocales} list.
+     * </p>
+     */
+    private boolean autoDetect = false;
+
+    /**
+     * Gets the list of supported locale tags.
+     *
+     * @return the list of supported locale tags
+     */
+    public List<String> getSupportedLocales() {
+      return supportedLocales;
+    }
+
+    /**
+     * Sets the list of supported locale tags.
+     *
+     * @param supportedLocales the list of supported locale tags
+     */
+    public void setSupportedLocales(List<String> supportedLocales) {
+      this.supportedLocales = supportedLocales;
+    }
+
+    /**
+     * Checks if locale auto-detection is enabled.
+     *
+     * @return true if auto-detection is enabled
+     */
+    public boolean isAutoDetect() {
+      return autoDetect;
+    }
+
+    /**
+     * Sets whether to auto-detect locale from browser.
+     *
+     * @param autoDetect true to enable auto-detection
+     */
+    public void setAutoDetect(boolean autoDetect) {
+      this.autoDetect = autoDetect;
     }
   }
 }

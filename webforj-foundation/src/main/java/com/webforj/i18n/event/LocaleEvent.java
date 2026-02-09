@@ -1,5 +1,6 @@
 package com.webforj.i18n.event;
 
+import com.webforj.i18n.LocaleObserver;
 import java.util.EventObject;
 import java.util.Locale;
 
@@ -8,7 +9,7 @@ import java.util.Locale;
  *
  * <p>
  * This event is fired when the application locale changes and is dispatched to all observers
- * implementing {@link com.webforj.i18n.LocaleObserver}.
+ * implementing {@link LocaleObserver}.
  * </p>
  *
  * @author Hyyan Abo Fakher

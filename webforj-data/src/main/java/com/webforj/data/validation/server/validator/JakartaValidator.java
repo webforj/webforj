@@ -1,6 +1,7 @@
 package com.webforj.data.validation.server.validator;
 
 import com.webforj.data.BeanAware;
+import com.webforj.data.LocaleAware;
 import com.webforj.data.PropertyNameAware;
 import com.webforj.data.validation.server.ValidationResult;
 import jakarta.validation.ConstraintViolation;
@@ -20,7 +21,8 @@ import java.util.Set;
  * @author Hyyan Abo Fakher
  * @since 24.01
  */
-public class JakartaValidator<B, V> implements Validator<V>, BeanAware<B>, PropertyNameAware {
+public class JakartaValidator<B, V>
+    implements Validator<V>, BeanAware<B>, PropertyNameAware, LocaleAware<JakartaValidator<B, V>> {
   private Class<B> beanClass;
   private String propertyName;
   private ValidatorFactory validatorFactory;
@@ -40,6 +42,28 @@ public class JakartaValidator<B, V> implements Validator<V>, BeanAware<B>, Prope
    */
   public JakartaValidator() {
     this(Locale.getDefault());
+  }
+
+  /**
+   * Sets the locale used for message interpolation.
+   *
+   * @param locale the locale to use
+   * @return this instance
+   * @since 25.12
+   */
+  public JakartaValidator<B, V> setLocale(Locale locale) {
+    this.locale = locale;
+    return this;
+  }
+
+  /**
+   * Gets the locale used for message interpolation.
+   *
+   * @return the locale
+   * @since 25.12
+   */
+  public Locale getLocale() {
+    return locale;
   }
 
   /**

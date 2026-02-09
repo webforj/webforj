@@ -154,8 +154,14 @@ public final class Request {
    */
   public Locale getLocale() {
     try {
-      String jsLocale = getEnvironment().getBBjAPI().getThinClient().getClientLocale();
-      return Locale.forLanguageTag(jsLocale);
+      String tag = getEnvironment().getBBjAPI().getThinClient().getClientLocale();
+      if (tag != null) {
+        // BBj returns Java-style locale strings (e.g., "de_DE") but
+        // Locale.forLanguageTag expects BCP 47 format (e.g., "de-DE")
+        tag = tag.replace('_', '-');
+      }
+
+      return Locale.forLanguageTag(tag != null ? tag : "");
     } catch (BBjException e) {
       throw new WebforjRuntimeException("Failed to get client locale", e);
     }
@@ -172,8 +178,23 @@ public final class Request {
       BBjVector locales = getEnvironment().getBBjAPI().getThinClient().getClientLocales();
       List<Locale> preferredLocales = new ArrayList<>();
       for (int i = 0; i < locales.size(); i++) {
-        String jsLocale = locales.get(i).toString();
-        preferredLocales.add(Locale.forLanguageTag(jsLocale));
+        Object item = locales.get(i);
+        if (item == null) {
+          continue;
+        }
+
+        String tag = item.toString().trim();
+        if (tag.isEmpty()) {
+          continue;
+        }
+
+        // BBj returns Java-style locale strings (e.g., "de_DE") but
+        // Locale.forLanguageTag expects BCP 47 format (e.g., "de-DE")
+        tag = tag.replace('_', '-');
+        Locale locale = Locale.forLanguageTag(tag);
+        if (!locale.getLanguage().isEmpty()) {
+          preferredLocales.add(locale);
+        }
       }
 
       return preferredLocales;

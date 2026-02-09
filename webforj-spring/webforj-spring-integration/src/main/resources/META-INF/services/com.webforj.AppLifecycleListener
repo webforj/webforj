@@ -2,3 +2,4 @@ com.webforj.spring.SpringConfigMerger
 com.webforj.spring.scope.SpringScopeCleanup
 com.webforj.spring.devtools.livereload.LiveReloadScriptInjector
 com.webforj.spring.security.RouteSecurityObserverRegistrar
+com.webforj.spring.i18n.SpringTranslationResolverInjector

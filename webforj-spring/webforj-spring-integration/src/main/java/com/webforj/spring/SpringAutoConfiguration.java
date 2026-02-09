@@ -2,21 +2,26 @@ package com.webforj.spring;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
+import com.webforj.i18n.BundleTranslationResolver;
+import com.webforj.i18n.LocaleUtils;
+import com.webforj.i18n.TranslationResolver;
 import com.webforj.servlet.WebforjServlet;
 import com.webforj.spring.scope.SpringScopeCleanup;
 import com.webforj.spring.scope.processor.EnvironmentScopeProcessor;
 import com.webforj.spring.scope.processor.RouteScopeProcessor;
 import com.webforj.spring.scope.processor.SessionScopeProcessor;
 import java.lang.System.Logger;
+import java.util.List;
+import java.util.Locale;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -177,5 +182,36 @@ public class SpringAutoConfiguration {
   @Bean
   SpringScopeCleanup webforjSpringScopeCleanup() {
     return new SpringScopeCleanup();
+  }
+
+  /**
+   * Creates a default {@link TranslationResolver} bean if no other resolver is defined.
+   *
+   * <p>
+   * Provides a default {@link BundleTranslationResolver} configured with the supported locales from
+   * the application properties. Users can provide their own {@link TranslationResolver} bean (e.g.,
+   * a database-backed resolver) to override this default.
+   * </p>
+   *
+   * @param properties the Spring configuration properties
+   * @return the default translation resolver
+   */
+  @Bean
+  @ConditionalOnMissingBean(TranslationResolver.class)
+  TranslationResolver translationResolver(SpringConfigurationProperties properties) {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+    List<String> tags = null;
+    if (properties.getI18n() != null) {
+      tags = properties.getI18n().getSupportedLocales();
+    }
+
+    List<Locale> supportedLocales = LocaleUtils.parseLocaleTags(tags);
+
+    logger.log(Logger.Level.DEBUG,
+        "Creating default BundleTranslationResolver with {0} supported locales",
+        supportedLocales.size());
+
+    return new BundleTranslationResolver(supportedLocales, classLoader);
   }
 }

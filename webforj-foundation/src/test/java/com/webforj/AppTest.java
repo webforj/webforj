@@ -1,5 +1,6 @@
 package com.webforj;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -14,8 +15,13 @@ import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.bbj.proxies.sysgui.BBjTopLevelWindow;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import com.typesafe.config.Config;
 import com.webforj.component.window.Frame;
+import com.webforj.environment.ObjectTable;
+import com.webforj.i18n.TranslationResolver;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -165,6 +171,70 @@ class AppTest {
 
       assertTrue(frames.contains(f1));
       assertTrue(frames.contains(f2));
+    }
+  }
+
+  @Nested
+  class TranslationResolverTests {
+
+    Config mockConfig;
+
+    @BeforeEach
+    void setUp() {
+      mockConfig = mock(Config.class);
+      when(environment.getConfig()).thenReturn(mockConfig);
+    }
+
+    @Test
+    void shouldCreateResolverWithLocalesFromConfig() {
+      when(mockConfig.hasPath("webforj.i18n.supported-locales")).thenReturn(true);
+      when(mockConfig.getIsNull("webforj.i18n.supported-locales")).thenReturn(false);
+      when(mockConfig.getStringList("webforj.i18n.supported-locales"))
+          .thenReturn(Arrays.asList("en", "fr"));
+
+      try (MockedStatic<Environment> envMock = mockStatic(Environment.class);
+          MockedStatic<ObjectTable> tableMock = mockStatic(ObjectTable.class)) {
+
+        envMock.when(Environment::getCurrent).thenReturn(environment);
+        tableMock.when(() -> ObjectTable.contains(TranslationResolver.class.getName()))
+            .thenReturn(false);
+
+        TranslationResolver resolver = App.getTranslationResolver();
+
+        assertEquals(Arrays.asList(Locale.ENGLISH, Locale.FRENCH), resolver.getSupportedLocales());
+      }
+    }
+
+    @Test
+    void shouldReturnEmptyLocalesWhenConfigMissing() {
+      when(mockConfig.hasPath("webforj.i18n.supported-locales")).thenReturn(false);
+
+      try (MockedStatic<Environment> envMock = mockStatic(Environment.class);
+          MockedStatic<ObjectTable> tableMock = mockStatic(ObjectTable.class)) {
+
+        envMock.when(Environment::getCurrent).thenReturn(environment);
+        tableMock.when(() -> ObjectTable.contains(TranslationResolver.class.getName()))
+            .thenReturn(false);
+
+        TranslationResolver resolver = App.getTranslationResolver();
+
+        assertTrue(resolver.getSupportedLocales().isEmpty());
+      }
+    }
+
+    @Test
+    void shouldReturnEmptyLocalesWhenEnvironmentIsNull() {
+      try (MockedStatic<Environment> envMock = mockStatic(Environment.class);
+          MockedStatic<ObjectTable> tableMock = mockStatic(ObjectTable.class)) {
+
+        envMock.when(Environment::getCurrent).thenReturn(null);
+        tableMock.when(() -> ObjectTable.contains(TranslationResolver.class.getName()))
+            .thenReturn(false);
+
+        TranslationResolver resolver = App.getTranslationResolver();
+
+        assertTrue(resolver.getSupportedLocales().isEmpty());
+      }
     }
   }
 }
