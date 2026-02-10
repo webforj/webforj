@@ -50,7 +50,10 @@ public class WebswingOptions {
    *
    * @param autoReconnect the number of milliseconds to wait until re-connection attempt
    * @return the options object
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public WebswingOptions setAutoReconnect(Integer autoReconnect) {
     this.autoReconnect = autoReconnect;
     return this;
@@ -61,7 +64,10 @@ public class WebswingOptions {
    * server is terminated.
    *
    * @return the number of milliseconds to wait until re-connection attempt
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public Integer getAutoReconnect() {
     return autoReconnect;
   }
@@ -71,7 +77,10 @@ public class WebswingOptions {
    *
    * @param disableLogout whether the Logout button is removed
    * @return the options object
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public WebswingOptions setDisableLogout(boolean disableLogout) {
     this.disableLogout = disableLogout;
     return this;
@@ -81,7 +90,10 @@ public class WebswingOptions {
    * Gets whether the Logout button is removed from all dialogs.
    *
    * @return whether the Logout button is removed
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public boolean isDisableLogout() {
     return disableLogout;
   }
@@ -91,7 +103,10 @@ public class WebswingOptions {
    *
    * @param disableLogin whether the login process is disabled
    * @return the options object
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public WebswingOptions setDisableLogin(boolean disableLogin) {
     this.disableLogin = disableLogin;
     return this;
@@ -101,7 +116,9 @@ public class WebswingOptions {
    * Gets whether the login process is completely disabled.
    *
    * @return whether the login process is disabled
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public boolean isDisableLogin() {
     return disableLogin;
   }
@@ -112,7 +129,10 @@ public class WebswingOptions {
    *
    * @param syncClipboard whether clipboard synchronization is enabled
    * @return the options object
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public WebswingOptions setSyncClipboard(boolean syncClipboard) {
     this.syncClipboard = syncClipboard;
     return this;
@@ -123,7 +143,9 @@ public class WebswingOptions {
    * supported in Firefox).
    *
    * @return whether clipboard synchronization is enabled
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public boolean isSyncClipboard() {
     return syncClipboard;
   }
@@ -258,7 +280,10 @@ public class WebswingOptions {
    *
    * @param javaCallTimeout the Java method invocation timeout
    * @return the options object
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public WebswingOptions setJavaCallTimeout(int javaCallTimeout) {
     this.javaCallTimeout = javaCallTimeout;
     return this;
@@ -269,7 +294,9 @@ public class WebswingOptions {
    * an error is logged to the browser console.
    *
    * @return the Java method invocation timeout
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public int getJavaCallTimeout() {
     return javaCallTimeout;
   }
@@ -279,7 +306,10 @@ public class WebswingOptions {
    *
    * @param pingParams the ping parameters
    * @return the options object
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public WebswingOptions setPingParams(PingParams pingParams) {
     this.pingParams = pingParams;
     return this;
@@ -289,14 +319,19 @@ public class WebswingOptions {
    * Gets the setup parameters for checking connection stability.
    *
    * @return the ping parameters
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public PingParams getPingParams() {
     return pingParams;
   }
 
   /**
    * Setup parameters for checking connection stability.
+   *
+   * @deprecated since 25.12, for removal in a future release. This option is no longer supported.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public static class PingParams {
     private int count = 6;
     private int interval = 5;
