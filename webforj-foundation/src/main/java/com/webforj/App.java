@@ -327,10 +327,10 @@ public abstract class App {
    *
    * <pre>
    * // Simple translation
-   * String welcome = App.t("welcome.message");
+   * String welcome = App.getTranslation("welcome.message");
    *
    * // Translation with parameters
-   * String greeting = App.t("greeting", userName, messageCount);
+   * String greeting = App.getTranslation("greeting", userName, messageCount);
    * </pre>
    *
    * @param key the translation key to look up
@@ -342,8 +342,8 @@ public abstract class App {
    * @see #setTranslationResolver(TranslationResolver)
    * @see TranslationResolver#resolve(String, Locale, Object...)
    */
-  public static String t(String key, Object... args) {
-    return t(getLocale(), key, args);
+  public static String getTranslation(String key, Object... args) {
+    return getTranslation(getLocale(), key, args);
   }
 
   /**
@@ -361,7 +361,7 @@ public abstract class App {
    * @return the resolved text, or the key itself if not found
    * @since 25.12
    */
-  public static String t(Locale locale, String key, Object... args) {
+  public static String getTranslation(Locale locale, String key, Object... args) {
     if (key == null || key.isEmpty()) {
       return "";
     }

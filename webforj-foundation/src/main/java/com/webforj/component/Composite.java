@@ -2,7 +2,6 @@ package com.webforj.component;
 
 import com.webforj.PendingResult;
 import com.webforj.component.window.Window;
-import com.webforj.concern.HasTranslation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -33,7 +32,7 @@ import java.lang.reflect.Type;
  * @author Hyyan Abo Fakher
  * @since 23.06
  */
-public abstract class Composite<T extends Component> extends Component implements HasTranslation {
+public abstract class Composite<T extends Component> extends Component {
   private final T component;
 
   /**

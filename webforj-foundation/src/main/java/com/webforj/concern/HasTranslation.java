@@ -15,7 +15,7 @@ import java.util.Locale;
  * @author Hyyan Abo Fakher
  * @since 25.12
  *
- * @see App#t(String, Object...)
+ * @see App#getTranslation(String, Object...)
  * @see TranslationResolver
  */
 public interface HasTranslation {
@@ -25,7 +25,7 @@ public interface HasTranslation {
    *
    * <p>
    * This is a convenience method for translating text keys. It delegates to
-   * {@link App#t(String, Object...)} using the application's current locale.
+   * {@link App#getTranslation(String, Object...)} using the application's current locale.
    * </p>
    *
    * @param key the translation key to look up
@@ -34,7 +34,7 @@ public interface HasTranslation {
    * @return the resolved text, or the key itself if not found
    */
   default String t(String key, Object... args) {
-    return App.t(key, args);
+    return App.getTranslation(key, args);
   }
 
   /**
@@ -47,6 +47,6 @@ public interface HasTranslation {
    * @return the resolved text, or the key itself if not found
    */
   default String t(Locale locale, String key, Object... args) {
-    return App.t(locale, key, args);
+    return App.getTranslation(locale, key, args);
   }
 }
