@@ -13,7 +13,10 @@ import com.webforj.data.binding.annotation.UseProperty;
 import com.webforj.data.binding.annotation.UseTransformer;
 import com.webforj.data.binding.annotation.UseValidator;
 import com.webforj.data.validation.server.ValidationResult;
+import com.webforj.data.validation.server.validator.JakartaValidator;
 import com.webforj.data.validation.server.validator.Validator;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -410,6 +413,44 @@ class BindingContextTest {
       assertTrue(container.name.isRequired());
       assertTrue(context.getBinding("name").isRequired());
     }
+  }
+
+  @Test
+  void shouldUseValidatorWithMessageSupplier() {
+    AtomicReference<String> message = new AtomicReference<>("Message A");
+    NameComponentMock nameComponent = new NameComponentMock();
+    BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+
+    context.bind(nameComponent, "name").useValidator(value -> value.length() >= 5, message::get)
+        .add();
+
+    nameComponent.setValue("Foo");
+    ValidationResult result1 = context.validate();
+    assertFalse(result1.isValid());
+    assertEquals("Message A", result1.getMessages().get(0));
+
+    message.set("Message B");
+    ValidationResult result2 = context.validate();
+    assertFalse(result2.isValid());
+    assertEquals("Message B", result2.getMessages().get(0));
+  }
+
+  @Test
+  void shouldPropagateLocaleToJakartaValidators() {
+    NameComponentMock nameComponent = new NameComponentMock();
+    BindingContext<PersonBean> context = new BindingContext<>(PersonBean.class);
+
+    context.bind(nameComponent, "name").useJakartaValidator(Locale.ENGLISH).add();
+
+    Binding<?, ?, PersonBean, ?> binding = context.getBinding("name");
+    JakartaValidator<?, ?> validator =
+        binding.getValidators().stream().filter(JakartaValidator.class::isInstance)
+            .map(JakartaValidator.class::cast).findFirst().orElseThrow();
+
+    assertEquals(Locale.ENGLISH, validator.getLocale());
+
+    context.setLocale(Locale.GERMAN);
+    assertEquals(Locale.GERMAN, validator.getLocale());
   }
 
   @Nested

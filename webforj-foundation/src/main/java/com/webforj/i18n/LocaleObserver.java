@@ -1,5 +1,7 @@
 package com.webforj.i18n;
 
+import com.webforj.App;
+import com.webforj.concern.HasLocale;
 import com.webforj.i18n.event.LocaleEvent;
 import java.io.Serializable;
 
@@ -13,10 +15,9 @@ import java.io.Serializable;
  * </p>
  *
  * <p>
- * This interface is separate from {@link com.webforj.concern.HasLocale}. HasLocale provides
- * per-component locale storage, while LocaleObserver provides a reactive pattern for responding to
- * application-wide locale changes. Components can implement one, both, or neither depending on
- * their needs.
+ * This interface is separate from {@link HasLocale}. HasLocale provides per-component locale
+ * storage, while LocaleObserver provides a reactive pattern for responding to application-wide
+ * locale changes. Components can implement one, both, or neither depending on their needs.
  * </p>
  *
  * @author Hyyan Abo Fakher
@@ -29,8 +30,8 @@ public interface LocaleObserver extends Serializable {
    * Called when the application locale changes.
    *
    * <p>
-   * This method is invoked for all registered observers whenever {@link com.webforj.App#setLocale}
-   * is called with a new locale value.
+   * This method is invoked for all registered observers whenever {@link App#setLocale} is called
+   * with a new locale value.
    * </p>
    *
    * @param event the locale change event containing the new locale and the component

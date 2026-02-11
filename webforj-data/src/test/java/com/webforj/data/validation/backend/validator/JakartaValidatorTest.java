@@ -65,6 +65,35 @@ class JakartaValidatorTest {
   }
 
   @Test
+  void shouldUseUpdatedLocaleAfterSetLocale() {
+    Set<ConstraintViolation<PersonBean>> violations = new HashSet<>();
+    ConstraintViolation<PersonBean> mockViolation = mock(ConstraintViolation.class);
+    violations.add(mockViolation);
+
+    when(mockViolation.getMessageTemplate()).thenReturn("{validation.message}");
+    when(mockInterpolator.interpolate(anyString(), any(), any(Locale.class)))
+        .thenAnswer(invocation -> {
+          Locale locale = invocation.getArgument(2);
+          return locale.equals(Locale.GERMAN) ? "Ungültige Daten" : "Invalid data";
+        });
+    when(mockValidator.validateValue(PersonBean.class, "name", "bad")).thenReturn(violations);
+
+    ValidationResult resultEn = jakartaValidator.validate("bad");
+    assertEquals("Invalid data", resultEn.getMessages().get(0));
+
+    jakartaValidator.setLocale(Locale.GERMAN);
+    ValidationResult resultDe = jakartaValidator.validate("bad");
+    assertEquals("Ungültige Daten", resultDe.getMessages().get(0));
+  }
+
+  @Test
+  void shouldGetLocale() {
+    assertEquals(Locale.ENGLISH, jakartaValidator.getLocale());
+    jakartaValidator.setLocale(Locale.FRENCH);
+    assertEquals(Locale.FRENCH, jakartaValidator.getLocale());
+  }
+
+  @Test
   void shouldReturnInvalid() {
     Set<ConstraintViolation<PersonBean>> violations = new HashSet<>();
     ConstraintViolation<PersonBean> mockViolation = mock(ConstraintViolation.class);

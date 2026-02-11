@@ -64,6 +64,12 @@ class WebforjConfigBuilder {
           license::getStartupTimeout);
     });
 
+    // i18n configuration
+    builder.addNested(properties::getI18n, i18n -> {
+      builder.addList("webforj.i18n.supported-locales", i18n::getSupportedLocales)
+          .add("webforj.i18n.auto-detect", i18n::isAutoDetect, false);
+    });
+
     // Servlet configurations
     builder.add("webforj.servlets", () -> {
       if (properties.getServlets() == null || properties.getServlets().isEmpty()) {

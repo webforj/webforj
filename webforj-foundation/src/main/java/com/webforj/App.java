@@ -15,8 +15,11 @@ import com.webforj.exceptions.WebforjAppInitializeException;
 import com.webforj.exceptions.WebforjException;
 import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
+import com.webforj.i18n.BundleTranslationResolver;
 import com.webforj.i18n.LocaleObserver;
 import com.webforj.i18n.LocaleObserverRegistry;
+import com.webforj.i18n.LocaleUtils;
+import com.webforj.i18n.TranslationResolver;
 import com.webforj.router.NavigationOptions;
 import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
@@ -244,6 +247,129 @@ public abstract class App {
     } catch (Exception e) {
       return Locale.getDefault();
     }
+  }
+
+  /**
+   * Sets the translation resolver used by the application.
+   *
+   * <p>
+   * The translation resolver is responsible for resolving keys to localized strings. If no resolver
+   * has been explicitly configured, a default {@link BundleTranslationResolver} will be lazily
+   * created and used by the application.
+   * </p>
+   *
+   * <p>
+   * Passing {@code null} clears any explicitly configured resolver. On the next translation lookup,
+   * the default {@link BundleTranslationResolver} will again be used.
+   * </p>
+   *
+   * @param resolver the translation resolver to use, or {@code null} to clear any explicit resolver
+   * @since 25.12
+   *
+   * @see TranslationResolver
+   * @see BundleTranslationResolver
+   */
+  public static void setTranslationResolver(TranslationResolver resolver) {
+    String key = TranslationResolver.class.getName();
+    if (resolver == null) {
+      ObjectTable.clear(key);
+    } else {
+      ObjectTable.put(key, resolver);
+    }
+  }
+
+  /**
+   * Gets the translation resolver used by the application.
+   *
+   * <p>
+   * If no resolver has been explicitly set, a default {@link BundleTranslationResolver} is created.
+   * </p>
+   *
+   * @return the current translation resolver
+   * @since 25.12
+   */
+  public static TranslationResolver getTranslationResolver() {
+    String key = TranslationResolver.class.getName();
+    if (ObjectTable.contains(key)) {
+      return (TranslationResolver) ObjectTable.get(key);
+    }
+
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    List<Locale> supportedLocales = List.of();
+
+    Environment env = Environment.getCurrent();
+    if (env != null) {
+      Config config = env.getConfig();
+      String path = "webforj.i18n.supported-locales";
+      if (config != null && config.hasPath(path) && !config.getIsNull(path)) {
+        supportedLocales = LocaleUtils.parseLocaleTags(config.getStringList(path));
+      }
+    }
+
+    TranslationResolver resolver = new BundleTranslationResolver(supportedLocales, classLoader);
+    ObjectTable.put(key, resolver);
+
+    return resolver;
+  }
+
+  /**
+   * Resolves a translation key to its localized string value.
+   *
+   * <p>
+   * This is a convenience method for translating keys throughout the application. It uses the
+   * current application locale and the configured translation resolver. If no resolver has been
+   * explicitly set, a default {@link BundleTranslationResolver} is used.
+   * </p>
+   *
+   * <p>
+   * Example usage:
+   * </p>
+   *
+   * <pre>
+   * // Simple translation
+   * String welcome = App.getTranslation("welcome.message");
+   *
+   * // Translation with parameters
+   * String greeting = App.getTranslation("greeting", userName, messageCount);
+   * </pre>
+   *
+   * @param key the translation key to look up
+   * @param args optional arguments for placeholder substitution (MessageFormat style)
+   *
+   * @return the resolved text, or the key itself if not found
+   * @since 25.12
+   *
+   * @see #setTranslationResolver(TranslationResolver)
+   * @see TranslationResolver#resolve(String, Locale, Object...)
+   */
+  public static String getTranslation(String key, Object... args) {
+    return getTranslation(getLocale(), key, args);
+  }
+
+  /**
+   * Resolves a translation key to its localized string value for a specific locale.
+   *
+   * <p>
+   * This variant allows specifying a locale different from the application's current locale. If no
+   * resolver has been explicitly set, a default {@link BundleTranslationResolver} is used.
+   * </p>
+   *
+   * @param locale the locale to use for translation
+   * @param key the translation key to look up
+   * @param args optional arguments for placeholder substitution
+   *
+   * @return the resolved text, or the key itself if not found
+   * @since 25.12
+   */
+  public static String getTranslation(Locale locale, String key, Object... args) {
+    if (key == null || key.isEmpty()) {
+      return "";
+    }
+
+    Locale resolvedLocale = locale != null ? locale : getLocale();
+    Object[] resolvedArgs = args != null ? args : new Object[0];
+
+    return getTranslationResolver().resolve(key, resolvedLocale, resolvedArgs);
   }
 
   /**

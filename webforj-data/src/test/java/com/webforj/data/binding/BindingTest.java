@@ -15,6 +15,7 @@ import com.webforj.data.transformation.TransformationException;
 import com.webforj.data.transformation.transformer.Transformer;
 import com.webforj.data.validation.server.ValidationResult;
 import com.webforj.data.validation.server.validator.Validator;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.junit.jupiter.api.BeforeEach;
@@ -210,6 +211,47 @@ class BindingTest {
 
       mockComponent.setValue("Foo");
     }
+
+    @Test
+    void shouldResolveMessageFromSupplierOnEachValidation() {
+      AtomicReference<String> message = new AtomicReference<>("First message");
+      Binding<NameComponentMock, String, PersonBean, String> binding =
+          new Binding<>(new NameComponentMock(), PersonBean.class, "name");
+      binding.setGetter(PersonBean::getName);
+      binding.setSetter(PersonBean::setName);
+      binding.addValidator(Validator.of(value -> value.length() >= 5, message::get));
+
+      NameComponentMock comp = binding.getComponent();
+      comp.setValue("Foo");
+      ValidationResult result1 = binding.validate(false);
+      assertFalse(result1.isValid());
+      assertEquals("First message", result1.getMessages().get(0));
+
+      message.set("Updated message");
+      ValidationResult result2 = binding.validate(false);
+      assertFalse(result2.isValid());
+      assertEquals("Updated message", result2.getMessages().get(0));
+    }
+
+    @Test
+    void shouldResolveMessageFromSupplierWithValidatorFrom() {
+      AtomicReference<String> message = new AtomicReference<>("Override A");
+      Validator<String> base = value -> value.length() >= 5 ? ValidationResult.valid()
+          : ValidationResult.invalid("base message");
+      Validator<String> wrapped = Validator.from(base, message::get);
+
+      Binding<NameComponentMock, String, PersonBean, String> binding =
+          new Binding<>(new NameComponentMock(), PersonBean.class, "name");
+      binding.setGetter(PersonBean::getName);
+      binding.setSetter(PersonBean::setName);
+      binding.addValidator(wrapped);
+
+      binding.getComponent().setValue("Foo");
+      assertEquals("Override A", binding.validate(false).getMessages().get(0));
+
+      message.set("Override B");
+      assertEquals("Override B", binding.validate(false).getMessages().get(0));
+    }
   }
 
   @Nested
@@ -258,6 +300,38 @@ class BindingTest {
     void shouldThrowTransformationExceptionWhenReading() {
       fieldBinding.setTransformer(new FailTransformer());
       assertThrows(TransformationException.class, () -> fieldBinding.read(bean));
+    }
+
+    @Test
+    void shouldResolveTransformerMessageFromSupplier() {
+      AtomicReference<String> message = new AtomicReference<>("Error A");
+      fieldBinding.setTransformer(new FailTransformer(), message::get);
+
+      mockComponent.setValue("Foo");
+      ValidationResult result1 = fieldBinding.validate(false);
+      assertFalse(result1.isValid());
+      assertEquals("Error A", result1.getMessages().get(0));
+
+      message.set("Error B");
+      ValidationResult result2 = fieldBinding.validate(false);
+      assertFalse(result2.isValid());
+      assertEquals("Error B", result2.getMessages().get(0));
+    }
+
+    @Test
+    void shouldResolveTransformerMessageFromSupplierOnWrite() {
+      AtomicReference<String> message = new AtomicReference<>("Write error A");
+      fieldBinding.setTransformer(new FailTransformer(), message::get);
+
+      mockComponent.setValue("Foo");
+      ValidationResult result1 = fieldBinding.write(bean, false);
+      assertFalse(result1.isValid());
+      assertEquals("Write error A", result1.getMessages().get(0));
+
+      message.set("Write error B");
+      ValidationResult result2 = fieldBinding.write(bean, false);
+      assertFalse(result2.isValid());
+      assertEquals("Write error B", result2.getMessages().get(0));
     }
 
     private final class FailTransformer implements Transformer<String, String> {

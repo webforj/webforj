@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * A builder for creating bindings.
@@ -64,6 +65,21 @@ public interface BindingBuilder<C extends ValueAware<C, CV>, CV, B, BV> {
       String message);
 
   /**
+   * Sets the transformer to use for transforming the value between the component and the bean with
+   * a message supplier. The supplier is invoked each time transformation fails, allowing the
+   * message to be resolved dynamically.
+   *
+   * @param transformer the transformer.
+   * @param messageSupplier the supplier providing the failure message.
+   *
+   * @return this binding builder.
+   *
+   * @since 25.12
+   */
+  public BindingBuilder<C, CV, B, BV> useTransformer(Transformer<CV, BV> transformer,
+      Supplier<String> messageSupplier);
+
+  /**
    * Sets the transformer to use for transforming the value between the component and the bean.
    *
    * @param transformer the transformer.
@@ -71,7 +87,7 @@ public interface BindingBuilder<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return this binding builder.
    */
   public default BindingBuilder<C, CV, B, BV> useTransformer(Transformer<CV, BV> transformer) {
-    return useTransformer(transformer, null);
+    return useTransformer(transformer, (String) null);
   }
 
   /**
@@ -155,6 +171,20 @@ public interface BindingBuilder<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return this binding builder.
    */
   public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator, String message);
+
+  /**
+   * Adds a simple boolean validator with a message supplier. The supplier is invoked each time
+   * validation fails, allowing the message to be resolved dynamically.
+   *
+   * @param validator A function that takes a value of type V and returns a Boolean indicating
+   *        validity.
+   * @param messageSupplier the supplier providing the failure message.
+   * @return this binding builder.
+   *
+   * @since 25.12
+   */
+  public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator,
+      Supplier<String> messageSupplier);
 
   /**
    * Adds a list of validators to the binding.

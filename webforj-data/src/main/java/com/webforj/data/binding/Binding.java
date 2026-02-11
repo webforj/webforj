@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a binding between a UI component and a property of a Java Bean.
@@ -64,7 +65,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
   private BiConsumer<B, BV> setter;
   private String property;
   private Transformer<CV, BV> transformer;
-  private String transformerMessage;
+  private Supplier<String> transformerMessageSupplier;
   private final List<Validator<BV>> validators = new ArrayList<>();
   private BindingReporter<C, CV, B, BV> validateReporter;
   private boolean autoValidate = false;
@@ -194,7 +195,31 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    */
   public Binding<C, CV, B, BV> setTransformer(Transformer<CV, BV> transformer, String message) {
     this.transformer = transformer;
-    this.transformerMessage = message;
+    this.transformerMessageSupplier = message != null ? () -> message : null;
+    return this;
+  }
+
+  /**
+   * Sets the transformer to the binding with a message supplier. The supplier is invoked each time
+   * transformation fails, allowing the message to be resolved dynamically.
+   *
+   * <p>
+   * The transformer is used to transform the value between the component and the bean. The
+   * transformer is useful when the component value and the bean value are of different types and
+   * require conversion.
+   * </p>
+   *
+   * @param transformer The transformer to set.
+   * @param messageSupplier the supplier providing the failure message.
+   *
+   * @return this binding itself.
+   *
+   * @since 25.12
+   */
+  public Binding<C, CV, B, BV> setTransformer(Transformer<CV, BV> transformer,
+      Supplier<String> messageSupplier) {
+    this.transformer = transformer;
+    this.transformerMessageSupplier = messageSupplier;
     return this;
   }
 
@@ -212,7 +237,9 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
    * @return this binding itself.
    */
   public Binding<C, CV, B, BV> setTransformer(Transformer<CV, BV> transformer) {
-    return setTransformer(transformer, null);
+    this.transformer = transformer;
+    this.transformerMessageSupplier = null;
+    return this;
   }
 
   /**
@@ -385,9 +412,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
       }
 
     } catch (TransformationException e) {
-      result = ValidationResult
-          .invalid(transformerMessage == null || transformerMessage.isEmpty() ? e.getMessage()
-              : transformerMessage);
+      result = ValidationResult.invalid(resolveTransformerMessage(e));
     }
 
     if (validateReporter != null && report) {
@@ -579,9 +604,7 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
           s.accept(bean, transformedValue);
         }
       } catch (TransformationException e) {
-        result[0] = ValidationResult
-            .invalid(transformerMessage == null || transformerMessage.isEmpty() ? e.getMessage()
-                : transformerMessage);
+        result[0] = ValidationResult.invalid(resolveTransformerMessage(e));
       }
 
       isValueCached = false;
@@ -621,6 +644,17 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     if (result != null) {
       dispatcher.dispatchEvent(new BindingValidateEvent<>(this, result, value));
     }
+  }
+
+  private String resolveTransformerMessage(TransformationException e) {
+    if (transformerMessageSupplier != null) {
+      String message = transformerMessageSupplier.get();
+      if (message != null && !message.isEmpty()) {
+        return message;
+      }
+    }
+
+    return e.getMessage();
   }
 
   private Optional<Function<B, BV>> doGetGetter(B bean) {

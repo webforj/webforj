@@ -1,5 +1,6 @@
 package com.webforj.data.binding;
 
+import com.webforj.data.LocaleAware;
 import com.webforj.data.binding.annotation.BindingExclude;
 import com.webforj.data.binding.annotation.BindingReadOnly;
 import com.webforj.data.binding.annotation.BindingRequired;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Represents a context for managing a collection of {@link Binding} instances.
@@ -57,7 +59,7 @@ import java.util.function.Predicate;
  * @since 24.01
  * @author Hyyan Abo Fakher
  */
-public class BindingContext<B> {
+public class BindingContext<B> implements LocaleAware<BindingContext<B>> {
   private final EventDispatcher dispatcher = new EventDispatcher();
   private final Class<B> beanClass;
   private final Map<String, Binding<?, ?, B, ?>> bindings = new LinkedHashMap<>();
@@ -581,6 +583,18 @@ public class BindingContext<B> {
    */
   public BindingContext<B> setLocale(Locale locale) {
     this.locale = locale;
+
+    for (Binding<?, ?, B, ?> binding : bindings.values()) {
+      binding.getTransformer().filter(LocaleAware.class::isInstance).map(LocaleAware.class::cast)
+          .ifPresent(t -> t.setLocale(locale));
+
+      for (Validator<?> validator : binding.getValidators()) {
+        if (validator instanceof LocaleAware<?> localeAware) {
+          localeAware.setLocale(locale);
+        }
+      }
+    }
+
     return this;
   }
 
@@ -712,6 +726,13 @@ public class BindingContext<B> {
     }
 
     @Override
+    public BindingBuilder<C, CV, B, BV> useTransformer(Transformer<CV, BV> transformer,
+        Supplier<String> messageSupplier) {
+      fieldBinding.setTransformer(transformer, messageSupplier);
+      return this;
+    }
+
+    @Override
     public BindingBuilder<C, CV, B, BV> readOnly(boolean readOnly) {
       fieldBinding.setReadOnly(readOnly);
       return this;
@@ -732,6 +753,13 @@ public class BindingContext<B> {
     @Override
     public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator, String message) {
       fieldBinding.addValidator(Validator.of(validator, message));
+      return this;
+    }
+
+    @Override
+    public BindingBuilder<C, CV, B, BV> useValidator(Predicate<BV> validator,
+        Supplier<String> messageSupplier) {
+      fieldBinding.addValidator(Validator.of(validator, messageSupplier));
       return this;
     }
 

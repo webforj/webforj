@@ -2,6 +2,7 @@ package com.webforj.concern;
 
 import com.webforj.component.Component;
 import com.webforj.component.ComponentUtil;
+import com.webforj.data.LocaleAware;
 import java.util.Locale;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Locale;
  * @author Hyyan Abo Fakher
  * @since 24.10
  */
-public interface HasLocale<T extends Component> {
+public interface HasLocale<T extends Component> extends LocaleAware<T> {
 
   /**
    * Gets the locale associated with the component.

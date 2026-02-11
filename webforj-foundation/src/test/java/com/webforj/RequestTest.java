@@ -12,6 +12,7 @@ import com.basis.bbj.proxies.BBjThinClient;
 import com.basis.bbj.proxies.BBjWebManager;
 import com.basis.startup.type.BBjException;
 import com.basis.startup.type.BBjVector;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,6 +99,12 @@ class RequestTest {
   }
 
   @Test
+  void shouldGetLocaleWithUnderscores() throws BBjException {
+    when(thinClient.getClientLocale()).thenReturn("de_DE");
+    assertEquals(Locale.forLanguageTag("de-DE"), request.getLocale());
+  }
+
+  @Test
   void shouldGetPreferredLocales() throws BBjException {
     BBjVector locales = new BBjVector();
     locales.add("zh-Hans-CN");
@@ -105,6 +112,38 @@ class RequestTest {
     when(thinClient.getClientLocales()).thenReturn(locales);
     assertEquals(Locale.forLanguageTag("zh-Hans-CN"), request.getPreferredLocales().get(0));
     assertEquals(Locale.forLanguageTag("en-US"), request.getPreferredLocales().get(1));
+  }
+
+  @Test
+  void shouldGetPreferredLocalesWithUnderscores() throws BBjException {
+    BBjVector locales = new BBjVector();
+    locales.add("de_DE");
+    locales.add("en");
+    locales.add("en_US");
+    locales.add("ar");
+    locales.add("de");
+    when(thinClient.getClientLocales()).thenReturn(locales);
+
+    List<Locale> result = request.getPreferredLocales();
+    assertEquals(5, result.size());
+    assertEquals(Locale.forLanguageTag("de-DE"), result.get(0));
+    assertEquals(Locale.forLanguageTag("en"), result.get(1));
+    assertEquals(Locale.forLanguageTag("en-US"), result.get(2));
+    assertEquals(Locale.forLanguageTag("ar"), result.get(3));
+    assertEquals(Locale.forLanguageTag("de"), result.get(4));
+  }
+
+  @Test
+  void shouldFilterEmptyPreferredLocales() throws BBjException {
+    BBjVector locales = new BBjVector();
+    locales.add("");
+    locales.add("en");
+    locales.add("  ");
+    when(thinClient.getClientLocales()).thenReturn(locales);
+
+    List<Locale> result = request.getPreferredLocales();
+    assertEquals(1, result.size());
+    assertEquals(Locale.forLanguageTag("en"), result.get(0));
   }
 
   @Test
