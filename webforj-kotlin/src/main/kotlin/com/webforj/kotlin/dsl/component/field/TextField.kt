@@ -38,29 +38,6 @@ fun @WebforjDsl HasComponents.textField(
   type: TextField.Type? = null,
   block: @WebforjDsl TextField.() -> Unit = {}
 ): TextField {
-  val textField = when {
-    type != null && placeholder != null && value != null && label != null ->
-      newTextField(label, value, placeholder).setType(type)
-    type != null && placeholder != null && label != null -> newTextField(label)
-      .setPlaceholder(placeholder)
-      .setType(type)
-    type != null && value != null && label != null ->
-      newTextField(label, value, type)
-    type != null && label != null -> newTextField(label).setType(type)
-    type != null -> newTextField(type).apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-    placeholder != null && value != null && label != null ->
-      newTextField(label, value, placeholder)
-    value != null && label != null -> newTextField(label, value)
-    label != null -> newTextField(label).apply {
-      placeholder?.let { setPlaceholder(it) }
-    }
-    else -> newTextField().apply {
-      value?.let { setValue(it) }
-      placeholder?.let { setPlaceholder(it) }
-    }
-  }
+  val textField = newTextField(label, value, placeholder, type)
   return init(textField, block)
 }

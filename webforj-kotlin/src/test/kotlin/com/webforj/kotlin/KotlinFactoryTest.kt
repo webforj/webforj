@@ -70,6 +70,19 @@ internal class KotlinFactoryTest {
     assertEquals(null, tf.type)
   }
 
+  @Test
+  @DisplayName("Create TextField with label, value and placeholder")
+  fun shouldCreateTextFieldWithLabelValuePlaceholderAndType() {
+    val label = "label"
+    val value = "value"
+    val placeholder = "placeholder"
+    val type = TextField.Type.SEARCH
+    val tf = KotlinFactory.newTextField(label, value, placeholder, type)
+    assertEquals(label, tf.label)
+    assertEquals(value, tf.value)
+    assertEquals(placeholder, tf.placeholder)
+    assertEquals(TextField.Type.SEARCH, tf.type)
+  }
 
   // MaskedDateField tests
   @Test

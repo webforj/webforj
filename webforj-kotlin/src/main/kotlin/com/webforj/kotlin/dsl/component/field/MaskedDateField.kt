@@ -1,6 +1,7 @@
 package com.webforj.kotlin.dsl.component.field
 
 import com.webforj.component.field.MaskedDateField
+import com.webforj.component.field.MaskedDateField.DatePicker
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
@@ -46,3 +47,20 @@ fun @WebforjDsl HasComponents.maskedDateField(
   }
   return init(maskedDateField, block)
 }
+
+/**
+ * Configures the [DatePicker] of this `MaskedDateField`.
+ * ```
+ * maskedDateField {
+ *   picker {
+ *     isIconVisible = false
+ *   }
+ * }
+ * ```
+ *
+ * @param block The configuration steps for the `DatePicker`.
+ * @return The configured `DatePicker` instance.
+ * @see DatePicker
+ */
+fun @WebforjDsl MaskedDateField.picker(block: @WebforjDsl DatePicker.() -> Unit = {}): DatePicker =
+  picker.apply(block)

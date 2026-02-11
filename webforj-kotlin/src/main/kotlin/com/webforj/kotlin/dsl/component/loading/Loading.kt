@@ -1,6 +1,8 @@
 package com.webforj.kotlin.dsl.component.loading
 
 import com.webforj.component.loading.Loading
+import com.webforj.component.loading.Loading.LoadingSpinner
+import com.webforj.component.spinner.DwcSpinner
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
@@ -26,3 +28,21 @@ fun @WebforjDsl HasComponents.loading(text: String? = null, block: @WebforjDsl L
   val loading = text?.let { Loading(it) } ?: Loading()
   return init(loading, block)
 }
+
+/**
+ * Configures the [LoadingSpinner] of this `Loading` component.
+ * ```
+ * loading {
+ *   spinner {
+ *     theme = Theme.PRIMARY
+ *   }
+ * }
+ * ```
+ *
+ * @param block The configuration steps for the `LoadingSpinner`.
+ * @return The configured `LoadingSpinner` instance.
+ * @see LoadingSpinner
+ * @see DwcSpinner
+ */
+fun @WebforjDsl Loading.spinner(block: @WebforjDsl DwcSpinner<LoadingSpinner>.() -> Unit): LoadingSpinner =
+  spinner.apply(block) as LoadingSpinner

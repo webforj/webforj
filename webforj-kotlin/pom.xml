@@ -79,6 +79,9 @@
         </executions>
         <configuration>
           <jvmTarget>${maven.compiler.release}</jvmTarget>
+          <args>
+            <arg>-Xcontext-parameters</arg>
+          </args>
         </configuration>
       </plugin>
       <plugin>

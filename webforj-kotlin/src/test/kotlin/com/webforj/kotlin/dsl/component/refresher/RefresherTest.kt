@@ -12,40 +12,50 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class RefresherTest {
-    lateinit var root: HasComponents
+  lateinit var root: HasComponents
 
-    @BeforeEach
-    fun setUp() {
-        root = Div()
+  @BeforeEach
+  fun setUp() {
+    root = Div()
+  }
+
+  @AfterEach
+  fun tearDown() {
+    root.removeAll()
+  }
+
+  @Test
+  @DisplayName("Create empty Refresher")
+  fun shouldCreateEmptyRefresher() {
+    val refresher = root.refresher()
+    assertNotNull(refresher)
+    assertTrue(root.hasComponent(refresher))
+  }
+
+  @Test
+  @DisplayName("Create Refresher with configuration block")
+  fun shouldCreateRefresherWithBlock() {
+    val blockExecuted = AtomicBoolean(false)
+    val customThreshold = 75
+
+    val refresher = root.refresher {
+      blockExecuted.set(true)
+      threshold = customThreshold
     }
 
-    @AfterEach
-    fun tearDown() {
-        root.removeAll()
-    }
+    assertNotNull(refresher)
+    assertTrue(root.hasComponent(refresher))
+    assertTrue(blockExecuted.get())
+    assertEquals(customThreshold, refresher.threshold)
+  }
 
-    @Test
-    @DisplayName("Create empty Refresher")
-    fun shouldCreateEmptyRefresher() {
-        val refresher = root.refresher()
-        assertNotNull(refresher)
-        assertTrue(root.hasComponent(refresher))
+  @Test
+  fun shouldModifyRefresherI18n() {
+    val refresher = root.refresher {
+      i18n {
+        pull = "pull"
+      }
     }
-
-    @Test
-    @DisplayName("Create Refresher with configuration block")
-    fun shouldCreateRefresherWithBlock() {
-        val blockExecuted = AtomicBoolean(false)
-        val customThreshold = 75
-        
-        val refresher = root.refresher {
-            blockExecuted.set(true)
-            threshold = customThreshold
-        }
-        
-        assertNotNull(refresher)
-        assertTrue(root.hasComponent(refresher))
-        assertTrue(blockExecuted.get())
-        assertEquals(customThreshold, refresher.threshold)
-    }
+    assertEquals("pull", refresher.i18n.pull)
+  }
 }

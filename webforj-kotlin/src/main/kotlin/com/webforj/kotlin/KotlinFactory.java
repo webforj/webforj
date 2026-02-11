@@ -44,6 +44,32 @@ public final class KotlinFactory {
     return new TextField(type, label, value);
   }
 
+  public static TextField newTextField(String label, String value, String placeholder,
+      TextField.Type type) {
+    if (placeholder != null && value != null && label != null) {
+      var tf = new TextField(label, value, placeholder);
+      return type != null ? tf.setType(type) : tf;
+    } else if (type != null && value != null && label != null) {
+      return new TextField(type, label, value);
+    } else if (value != null && label != null) {
+      return new TextField(label, value);
+    } else if (label != null) {
+      var tf = new TextField(label);
+      if (placeholder != null)
+        tf.setPlaceholder(placeholder);
+      return type != null ? tf.setType(type) : tf;
+    } else if (type != null) {
+      var tf = new TextField(type);
+      if (value != null)
+        tf.setValue(value);
+      return placeholder != null ? tf.setPlaceholder(placeholder) : tf;
+    } else {
+      var tf = new TextField();
+      if (value != null)
+        tf.setValue(value);
+      return placeholder != null ? tf.setPlaceholder(placeholder) : tf;
+    }
+  }
 
   public static MaskedDateField newMaskedDateField() {
     return new MaskedDateField();

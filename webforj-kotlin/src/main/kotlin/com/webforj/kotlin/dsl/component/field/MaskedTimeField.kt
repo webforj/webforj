@@ -1,6 +1,7 @@
 package com.webforj.kotlin.dsl.component.field
 
 import com.webforj.component.field.MaskedTimeField
+import com.webforj.component.field.MaskedTimeField.TimePicker
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
@@ -46,3 +47,20 @@ fun @WebforjDsl HasComponents.maskedTimeField(
   }
   return init(maskedTimeField, block)
 }
+
+/**
+ * Configures the [TimePicker] of this `MaskedTimeField`.
+ * ```
+ * maskedTimeField {
+ *   picker {
+ *     isIconVisible = false
+ *   }
+ * }
+ * ```
+ *
+ * @param block The configuration steps for the `TimePicker`.
+ * @return The configured `TimePicker` instance.
+ * @see TimePicker
+ */
+fun @WebforjDsl MaskedTimeField.picker(block: @WebforjDsl TimePicker.() -> Unit = {}): TimePicker =
+  picker.apply(block)
