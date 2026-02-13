@@ -155,7 +155,7 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
    * Constructs a slider with the default values.
    */
   public Slider() {
-    this(0);
+    this(50);
   }
 
   /**
@@ -205,6 +205,14 @@ public final class Slider extends DwcFocusableComponent<Slider> implements HasMi
    */
   @Override
   public Integer getValue() {
+    BBjSlider slider = inferSlider();
+    if (slider != null) {
+      try {
+        return slider.getValue();
+      } catch (BBjException e) {
+        throw new WebforjRuntimeException(e);
+      }
+    }
     return value;
   }
 

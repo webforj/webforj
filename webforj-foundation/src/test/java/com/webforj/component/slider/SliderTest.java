@@ -3,7 +3,7 @@ package com.webforj.component.slider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
-
+import static org.mockito.Mockito.when;
 import com.basis.bbj.proxies.sysgui.BBjSlider;
 import com.basis.startup.type.BBjException;
 import com.webforj.component.ReflectionUtils;
@@ -113,7 +113,7 @@ class SliderTest {
     void shouldConstructWithDefaultValues() {
       Slider slider = new Slider();
 
-      assertEquals(0, slider.getValue());
+      assertEquals(50, slider.getValue());
       assertEquals(0, slider.getMin());
       assertEquals(100, slider.getMax());
       assertEquals(Slider.Orientation.HORIZONTAL, slider.getOrientation());
@@ -190,6 +190,8 @@ class SliderTest {
     @Test
     void shouldSetValueWhenControlIsNotNull() throws BBjException {
       int value = 5;
+      when(control.getValue()).thenReturn(value);
+
       component.setValue(value);
       assertEquals(value, component.getValue());
 
