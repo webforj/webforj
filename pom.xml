@@ -61,6 +61,7 @@
     <module>webforj-dispatcher</module>
     <module>webforj-foundation</module>
     <module>webforj-jbang</module>
+    <module>webforj-kotlin</module>
     <module>webforj-plugins</module>
     <module>webforj-report-aggregate</module>
     <module>webforj-spring</module>

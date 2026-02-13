@@ -57,6 +57,14 @@
       </dependency>
       <!-- Webswing -->
 
+      <!-- webforj-kotlin -->
+      <dependency>
+        <groupId>com.webforj</groupId>
+        <artifactId>webforj-kotlin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- webforj-kotlin -->
+
       <!-- Extensions -->
       <dependency>
         <groupId>com.webforj</groupId>
