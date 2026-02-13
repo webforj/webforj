@@ -45,7 +45,7 @@ class SliderTest {
     val root = Div()
     val slider = root.slider(value, min, max, orientation)
     assertTrue { root.hasComponent(slider) }
-    assertEquals(value ?: 0, slider.value)
+    assertEquals(value ?: 50, slider.value)
     assertEquals(min ?: 0, slider.min)
     assertEquals(max ?: 100, slider.max)
     assertEquals(orientation ?: Orientation.HORIZONTAL, slider.orientation)
@@ -64,7 +64,7 @@ class SliderTest {
       name = "Slider"
     }
     assertTrue { root.hasComponent(slider) }
-    assertEquals(value ?: 0, slider.value)
+    assertEquals(value ?: 50, slider.value)
     assertEquals(min ?: 0, slider.min)
     assertEquals(max ?: 100, slider.max)
     assertEquals(orientation ?: Orientation.HORIZONTAL, slider.orientation)
