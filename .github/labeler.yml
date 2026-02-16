@@ -38,6 +38,10 @@
 - changed-files:
   - any-glob-to-any-file: 'webforj-jbang/**'
 
+"module: kotlin":
+  - changed-files:
+      - any-glob-to-any-file: 'webforj-kotlin/**'
+
 documentation:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'
