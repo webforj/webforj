@@ -9,6 +9,7 @@ use ::admin.bbj::UserCredentials
 SETESC EscTrap
 SETERR ErrTrap
 
+? STBL("!MSGBOX_SPLIT",str(Integer.MAX_VALUE))
 BBJAPI().getConfig().releaseOnLostConnection(0)
 BBjAPI().setCustomEventCallback("webforjTerminateSignal","terminate")
 
