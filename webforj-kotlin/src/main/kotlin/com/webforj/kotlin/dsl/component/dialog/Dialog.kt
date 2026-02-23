@@ -7,7 +7,7 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `Dialog` with optional [header], [content], and [footer] sections.
+ * Creates a `Dialog` with optional [header] and [footer] sections.
  * ```
  * dialog {
  *   header {
@@ -37,7 +37,6 @@ import com.webforj.kotlin.dsl.init
  *
  * To configure the sections of the `Dialog` see:
  * - [header],
- * - [content], and
  * - [footer]
  *
  * @param block The initialization steps of the `Dialog`.
