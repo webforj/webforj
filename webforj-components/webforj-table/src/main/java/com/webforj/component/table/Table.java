@@ -191,7 +191,7 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   private final PropertyDescriptor<Double> headerHeight =
       PropertyDescriptor.property("headerHeight", 48d);
   private final PropertyDescriptor<Double> groupHeaderHeight =
-      PropertyDescriptor.property("groupHeaderHeight", null);
+      PropertyDescriptor.property("groupHeaderHeight", 48d);
   private final PropertyDescriptor<Double> rowHeight =
       PropertyDescriptor.property("rowHeight", 35d);
   private final PropertyDescriptor<Double> overscan = PropertyDescriptor.property("overscan", 35d);
