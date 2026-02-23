@@ -204,6 +204,15 @@ public class Iframe extends HtmlComponent<Iframe> {
   }
 
   /**
+   * Gets the sandbox attribute values for the iframe.
+   *
+   * @return the list of sandbox attribute values
+   */
+  public List<Sandbox> getSandbox() {
+    return Collections.unmodifiableList(sandboxValues);
+  }
+
+  /**
    * Removes a specific sandbox attribute value from the iframe.
    *
    * @param sandboxValue the sandbox attribute value to remove
@@ -219,9 +228,11 @@ public class Iframe extends HtmlComponent<Iframe> {
    * Gets the sandbox attribute values for the iframe.
    *
    * @return the list of sandbox attribute values
+   * @deprecated Use {@link #getSandbox()} instead.
    */
+  @Deprecated(since = "25.12", forRemoval = true)
   public List<Sandbox> getSandboxValues() {
-    return Collections.unmodifiableList(sandboxValues);
+    return getSandbox();
   }
 
   /**

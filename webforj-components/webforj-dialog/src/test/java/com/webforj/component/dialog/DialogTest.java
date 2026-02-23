@@ -1,6 +1,7 @@
 package com.webforj.component.dialog;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
@@ -67,6 +68,25 @@ class DialogTest {
 
       verify(spy, times(1)).setCancelOnOutsideClick(closeable);
       verify(spy, times(1)).setCancelOnEscKey(closeable);
+    }
+
+    @Test
+    void shouldReturnCloseableTrue() {
+      component.setCloseable(true);
+      assertTrue(component.isCloseable());
+    }
+
+    @Test
+    void shouldReturnCloseableFalse() {
+      component.setCloseable(false);
+      assertFalse(component.isCloseable());
+    }
+
+    @Test
+    void shouldReturnCloseableFalseWhenPartial() {
+      component.setCancelOnOutsideClick(true);
+      component.setCancelOnEscKey(false);
+      assertFalse(component.isCloseable());
     }
   }
 
