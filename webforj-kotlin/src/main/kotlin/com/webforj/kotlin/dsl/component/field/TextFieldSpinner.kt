@@ -8,7 +8,7 @@ import com.webforj.kotlin.extension.prefix
 import com.webforj.kotlin.extension.suffix
 
 /**
- * Creates a `TextFieldSpinner` with an optional [label], [value], [placeholder] and/or [type].
+ * Creates a `TextFieldSpinner` with an optional [label], [value] and [placeholder].
  * ```
  * ... {
  *   textField() // Empty TextFieldSpinner component
