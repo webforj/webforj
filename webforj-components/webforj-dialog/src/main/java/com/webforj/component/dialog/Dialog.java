@@ -327,6 +327,17 @@ public class Dialog extends ElementCompositeContainer
   }
 
   /**
+   * Gets whether closing the dialog by clicking outside or pressing the esc key is enabled.
+   *
+   * @return {@code true} if the dialog is closeable, {@code false} otherwise
+   * @see #isCancelOnOutsideClick()
+   * @see #isCancelOnEscKey()
+   */
+  public boolean isCloseable() {
+    return isCancelOnOutsideClick() && isCancelOnEscKey();
+  }
+
+  /**
    * Sets the dialog to be fullscreen.
    *
    * <p>
