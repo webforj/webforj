@@ -7,7 +7,7 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `Drawer` with an optional [label] and configurable [title], [header], and [footer] sections.
+ * Creates a `Drawer` with an optional [label] and configurable [title], [headerActions], and [footer] sections.
  * ```
  * drawer("Navigation Drawer") {
  *   title {
@@ -52,7 +52,7 @@ import com.webforj.kotlin.dsl.init
  *
  * To configure the sections of the `Drawer` see:
  * - [title],
- * - [header], and
+ * - [headerActions], and
  * - [footer]
  *
  * @param label The label for the `Drawer`.
