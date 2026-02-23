@@ -165,6 +165,7 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   private BiFunction<T, Column<T, ?>, List<String>> cellPartProvider =
       (item, column) -> Collections.emptyList();
   private Set<Border> visibleBorders = EnumSet.of(Border.ROWS, Border.AROUND);
+  private List<ColumnGroup> columnGroups = null;
 
   // Internal properties
   private final PropertyDescriptor<List<Column<T, ?>>> columnDefinitionsProp =
@@ -189,6 +190,8 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
       PropertyDescriptor.property("multiSelectWithClick", false);
   private final PropertyDescriptor<Double> headerHeight =
       PropertyDescriptor.property("headerHeight", 48d);
+  private final PropertyDescriptor<Double> groupHeaderHeight =
+      PropertyDescriptor.property("groupHeaderHeight", null);
   private final PropertyDescriptor<Double> rowHeight =
       PropertyDescriptor.property("rowHeight", 35d);
   private final PropertyDescriptor<Double> overscan = PropertyDescriptor.property("overscan", 35d);
@@ -211,6 +214,8 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   private final PropertyDescriptor<Boolean> rowsBorder =
       PropertyDescriptor.property("rowsBorder", true);
   private final PropertyDescriptor<Boolean> striped = PropertyDescriptor.property("striped", false);
+  private final PropertyDescriptor<List<ColumnGroup>> columnGroupsProp =
+      PropertyDescriptor.property("columnGroups", null);
 
   /**
    * Construct a new Table.
@@ -753,6 +758,32 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   }
 
   /**
+   * Set the height of group header rows in pixels. When not set, defaults to headerHeight.
+   *
+   * @param value the height of group header rows in pixels
+   * @return the component itself
+   *
+   * @since 25.12
+   * @see #setHeaderHeight(double)
+   */
+  public Table<T> setGroupHeaderHeight(double value) {
+    set(groupHeaderHeight, value);
+    return this;
+  }
+
+  /**
+   * Get the height of group header rows in pixels.
+   *
+   * @return the group header height, or null if not explicitly set
+   *
+   * @since 25.12
+   * @see #getHeaderHeight()
+   */
+  public Double getGroupHeaderHeight() {
+    return get(groupHeaderHeight);
+  }
+
+  /**
    * Sets the height of each row in the table, in pixels.
    *
    * <p>
@@ -1104,6 +1135,38 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
   }
 
   /**
+   * Sets the column groups for this table.
+   *
+   * <p>
+   * Column groups allow columns to be visually grouped under shared multi-row headers. Groups can
+   * be nested to create multi-level header hierarchies. Set to {@code null} to remove all groups.
+   * </p>
+   *
+   * @param groups the list of column groups, or {@code null} to clear
+   * @return the component itself
+   *
+   * @see ColumnGroup
+   * @since 25.12
+   */
+  public Table<T> setColumnGroups(List<ColumnGroup> groups) {
+    this.columnGroups = groups;
+    set(columnGroupsProp, groups != null ? groups : Collections.emptyList());
+    return this;
+  }
+
+  /**
+   * Gets the column groups for this table.
+   *
+   * @return the list of column groups, or {@code null} if no groups are set
+   *
+   * @see ColumnGroup
+   * @since 25.12
+   */
+  public List<ColumnGroup> getColumnGroups() {
+    return columnGroups;
+  }
+
+  /**
    * Sets all columns to automatically size based on their content width.
    *
    * <p>
@@ -1316,7 +1379,6 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     return refreshColumns();
   }
 
-
   /**
    * Moves a column to a new position within the table.
    *
@@ -1390,12 +1452,31 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
       throw new IndexOutOfBoundsException("Column index out of visible columns bounds: " + index);
     }
 
+    // Group boundary validation is delegated to the client which is the single source of truth.
+    // We use executeJsAsync directly instead of callJsFunctionAsync because the latter swallows
+    // client errors (the generated JS try/catch returns null on error, and since the PendingResult
+    // is Void, there is no way to distinguish success from failure). By using executeJsAsync with
+    // our own try/catch, the error message is returned as the result value which allows us to
+    // complete the PendingResult exceptionally.
     var result = new PendingResult<Void>();
-    el().callJsFunctionAsync("moveColumn", id, index).thenAccept(ignored -> {
-      result.complete(null);
-    }).exceptionally(ex -> {
-      result.completeExceptionally(ex);
-      return null;
+    String script = String.format("""
+        (async () => {
+          try {
+            await customElements.whenDefined('dwc-table');
+            await component.moveColumn('%s', %d);
+            return '';
+          } catch(e) {
+            return e.message;
+          }
+        })()""", id.replace("'", "\\'"), index);
+
+    el().executeJsAsync(script).thenAccept(value -> {
+      String msg = value != null ? value.toString() : "";
+      if (!msg.isEmpty()) {
+        result.completeExceptionally(new IllegalArgumentException(msg));
+      } else {
+        result.complete(null);
+      }
     });
 
     return result;
@@ -1680,13 +1761,19 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
     ElementEventOptions options = new ElementEventOptions();
     options.addData("columns", "JSON.stringify(event.detail.columns)");
     options.addData("source", "event.detail.source");
+    options.addData("columnGroups",
+        "event.detail.columnGroups ? JSON.stringify(event.detail.columnGroups) : null");
     el.addEventListener("dwc-state-changed", e -> {
       Map<String, Object> data = e.getData();
       List<ColumnState> columnStates = gson.fromJson((String) data.get("columns"),
           new TypeToken<List<ColumnState>>() {}.getType());
       String source = (String) data.get("source");
+      String columnGroupsJson = (String) data.get("columnGroups");
+      List<ColumnGroup> groups = columnGroupsJson != null
+          ? gson.fromJson(columnGroupsJson, new TypeToken<List<ColumnGroup>>() {}.getType())
+          : null;
 
-      handleStateChanged(new StateChangedDetail(source, columnStates));
+      handleStateChanged(new StateChangedDetail(source, columnStates, groups));
     }, options);
   }
 
@@ -1897,6 +1984,12 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
           columns.add(column);
         }
       }
+    }
+
+    // sync column groups if present
+    List<ColumnGroup> groups = detail.getColumnGroups();
+    if (groups != null) {
+      this.columnGroups = ColumnGroup.reconcile(this.columnGroups, groups);
     }
   }
 

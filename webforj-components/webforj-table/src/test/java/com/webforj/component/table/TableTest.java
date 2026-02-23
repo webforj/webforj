@@ -63,7 +63,7 @@ class TableTest {
     void shouldSetGetProperties() {
       try {
         PropertyDescriptorTester.run(Table.class, component, descriptor -> {
-          return !Arrays.asList("columnDefinitions", "data", "getRowId", "selected")
+          return !Arrays.asList("columnDefinitions", "data", "getRowId", "selected", "columnGroups")
               .contains(descriptor.getName());
         });
       } catch (Exception e) {
@@ -206,7 +206,7 @@ class TableTest {
       Table<String> table = spy(new Table<>());
       Element elMock = mock(Element.class);
       when(table.el()).thenReturn(elMock);
-      when(elMock.callJsFunctionAsync("moveColumn", "col1", 1))
+      when(elMock.executeJsAsync(org.mockito.ArgumentMatchers.anyString()))
           .thenReturn(PendingResult.completedWith(null));
 
       table.addColumn("col1", Function.identity());
@@ -214,8 +214,41 @@ class TableTest {
 
       PendingResult<Void> result = table.moveColumn("col1", 1);
 
-      verify(elMock).callJsFunctionAsync("moveColumn", "col1", 1);
+      verify(elMock).executeJsAsync(org.mockito.ArgumentMatchers.anyString());
       assertNotNull(result);
+    }
+
+  }
+
+  @Nested
+  class ColumnGroupsApi {
+
+    @Test
+    void shouldSetAndGetColumnGroups() {
+      Column<String, String> col1 = component.addColumn("col1", Function.identity());
+      Column<String, String> col2 = component.addColumn("col2", Function.identity());
+
+      List<ColumnGroup> groups =
+          List.of(ColumnGroup.of("personal").setLabel("Personal").add(col1).add(col2));
+
+      component.setColumnGroups(groups);
+
+      List<ColumnGroup> result = component.getColumnGroups();
+      assertNotNull(result);
+      assertEquals(1, result.size());
+      assertEquals("personal", result.get(0).getId());
+      assertEquals("Personal", result.get(0).getLabel());
+      assertEquals(2, result.get(0).getChildren().size());
+    }
+
+    @Test
+    void shouldClearColumnGroups() {
+      component.addColumn("col1", Function.identity());
+      component.setColumnGroups(List.of(ColumnGroup.of("g1").add("col1")));
+
+      component.setColumnGroups(null);
+
+      assertNull(component.getColumnGroups());
     }
   }
 
@@ -590,6 +623,48 @@ class TableTest {
 
       assertEquals(250.0f, column.getWidth());
       assertEquals(5, column.getFlex());
+    }
+
+    @Test
+    void shouldSyncColumnGroupsFromStateChange() {
+      component.addColumn("col1", Function.identity());
+      component.addColumn("col2", Function.identity());
+
+      ColumnState state1 = new ColumnState();
+      state1.setId("col1");
+      state1.setIndex(0);
+      ColumnState state2 = new ColumnState();
+      state2.setId("col2");
+      state2.setIndex(1);
+
+      List<ColumnGroup> groups =
+          List.of(ColumnGroup.of("g1").setLabel("Group 1").add("col1").add("col2"));
+
+      StateChangedDetail detail = new StateChangedDetail("user", List.of(state1, state2), groups);
+      component.handleStateChanged(detail);
+
+      assertNotNull(component.getColumnGroups());
+      assertEquals(1, component.getColumnGroups().size());
+      assertEquals("g1", component.getColumnGroups().get(0).getId());
+      assertEquals("Group 1", component.getColumnGroups().get(0).getLabel());
+    }
+
+    @Test
+    void shouldNotOverwriteGroupsWhenStateHasNullGroups() {
+      component.addColumn("col1", Function.identity());
+
+      List<ColumnGroup> groups = List.of(ColumnGroup.of("g1").setLabel("Group 1").add("col1"));
+      component.setColumnGroups(groups);
+
+      ColumnState state1 = new ColumnState();
+      state1.setId("col1");
+      state1.setIndex(0);
+
+      StateChangedDetail detail = new StateChangedDetail("user", List.of(state1));
+      component.handleStateChanged(detail);
+
+      assertNotNull(component.getColumnGroups());
+      assertEquals(1, component.getColumnGroups().size());
     }
   }
 
