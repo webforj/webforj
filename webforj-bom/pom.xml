@@ -68,6 +68,11 @@
       <!-- Extensions -->
       <dependency>
         <groupId>com.webforj</groupId>
+        <artifactId>webforj-accordion</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.webforj</groupId>
         <artifactId>webforj-alert</artifactId>
         <version>${project.version}</version>
       </dependency>
