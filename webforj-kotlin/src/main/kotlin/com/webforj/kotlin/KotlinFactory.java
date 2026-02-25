@@ -6,7 +6,6 @@ import com.webforj.component.field.MaskedTextField;
 import com.webforj.component.field.MaskedTimeField;
 import com.webforj.component.field.TextField;
 import com.webforj.exceptions.WebforjRuntimeException;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -16,6 +15,7 @@ import java.time.LocalTime;
  * <p>
  * Provides static constructors for {@code sealed} component classes, so that they can be
  * initialized in <b>Kotlin</b>.
+ * </p>
  *
  * @see TextField
  */
