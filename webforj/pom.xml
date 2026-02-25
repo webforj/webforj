@@ -36,6 +36,10 @@
     <!-- Extensions -->
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-accordion</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-alert</artifactId>
     </dependency>
     <dependency>
