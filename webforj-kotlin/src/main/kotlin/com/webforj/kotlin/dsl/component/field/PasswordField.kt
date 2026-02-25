@@ -4,6 +4,8 @@ import com.webforj.component.field.PasswordField
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
+import com.webforj.kotlin.extension.prefix
+import com.webforj.kotlin.extension.suffix
 
 /**
  * Creates a `PasswordField` with an optional [label], [value] and/or [placeholder].

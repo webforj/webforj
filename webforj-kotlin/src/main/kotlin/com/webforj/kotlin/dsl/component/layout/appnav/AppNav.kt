@@ -6,6 +6,8 @@ import com.webforj.component.layout.appnav.AppNavItem
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
+import com.webforj.kotlin.extension.prefix
+import com.webforj.kotlin.extension.suffix
 import com.webforj.router.history.ParametersBag
 import kotlin.reflect.KClass
 
