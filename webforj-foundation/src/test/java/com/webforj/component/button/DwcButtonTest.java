@@ -129,5 +129,20 @@ class DwcButtonTest {
       component.setIcon(iconComponent);
       assertEquals(iconComponent, component.getIcon());
     }
+
+    @Test
+    void shouldSetAndGetBadge() {
+      Component badgeComponent = mock(Component.class);
+      component.setBadge(badgeComponent);
+      assertEquals(badgeComponent, component.getBadge());
+    }
+
+    @Test
+    void shouldRemoveBadge() {
+      Component badgeComponent = mock(Component.class);
+      component.setBadge(badgeComponent);
+      component.setBadge(null);
+      assertEquals(null, component.getBadge());
+    }
   }
 }
