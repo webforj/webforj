@@ -42,6 +42,7 @@ import java.util.List;
 public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcFocusableComponent<T>
     implements HasExpanse<T, Expanse>, HasTheme<T, ButtonTheme>, HasHorizontalAlignment<T>,
     HasFocusStatus, HasPrefixAndSuffix<T> {
+  private static final String BADGE_SLOT = "badge";
   private boolean disableOnClick = false;
 
   private final ComponentEventSinkRegistry<ButtonClickEvent> clickEventSinkListenerRegistry =
@@ -219,6 +220,40 @@ public abstract class DwcButton<T extends DwcFocusableComponent<T>> extends DwcF
   @Override
   public Component getSuffixComponent() {
     return super.getSuffixComponent();
+  }
+
+  /**
+   * Sets the badge component for the button.
+   *
+   * <p>
+   * The badge is rendered in the "badge" slot and is automatically positioned at the top-right
+   * corner of the button.
+   * </p>
+   *
+   * @param badge the badge component, or {@code null} to remove
+   * @return the component itself
+   *
+   * @since 25.12
+   */
+  public T setBadge(Component badge) {
+    if (badge == null) {
+      getSlotAssigner().getSlotRegistry().removeSlot(BADGE_SLOT);
+    } else {
+      getSlotAssigner().reAssign(BADGE_SLOT, badge);
+    }
+
+    return getSelf();
+  }
+
+  /**
+   * Returns the badge component of the button.
+   *
+   * @return the badge component, or {@code null} if not set
+   *
+   * @since 25.12
+   */
+  public Component getBadge() {
+    return getSlotAssigner().getSlotComponent(BADGE_SLOT);
   }
 
   /**

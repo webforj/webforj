@@ -1,6 +1,7 @@
 package com.webforj.component.button;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -35,7 +36,7 @@ class DwcButtonTest {
   DwcButtonMock component;
 
   @Test
-  void testSetGetName() throws BBjException, IllegalAccessException {
+  void testSetGetName() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
     assertEquals("", component.getName());
 
@@ -128,6 +129,21 @@ class DwcButtonTest {
       Component iconComponent = mock(Component.class);
       component.setIcon(iconComponent);
       assertEquals(iconComponent, component.getIcon());
+    }
+
+    @Test
+    void shouldSetAndGetBadge() {
+      Component badgeComponent = mock(Component.class);
+      component.setBadge(badgeComponent);
+      assertEquals(badgeComponent, component.getBadge());
+    }
+
+    @Test
+    void shouldRemoveBadge() {
+      Component badgeComponent = mock(Component.class);
+      component.setBadge(badgeComponent);
+      component.setBadge(null);
+      assertNull(component.getBadge());
     }
   }
 }

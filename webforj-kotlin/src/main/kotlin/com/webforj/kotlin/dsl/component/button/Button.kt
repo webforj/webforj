@@ -3,6 +3,7 @@ package com.webforj.kotlin.dsl.component.button
 import com.webforj.component.Component
 import com.webforj.component.button.Button
 import com.webforj.component.button.ButtonTheme
+import com.webforj.component.button.DwcButton
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
@@ -60,4 +61,22 @@ fun @WebforjDsl HasComponents.button(
  */
 fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Button::setIcon)
+}
+
+/**
+ * Configures the `Component` to set as the badge of a `Button`.
+ * ```
+ * button("Notifications") {
+ *   badge {
+ *     badge("5", BadgeTheme.DANGER)
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps of the badge `Component`.
+ */
+fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badge(
+  block: @WebforjDsl HasComponents.() -> Component
+) {
+  SingleSlotSetter(block).setSlot(this, DwcButton<T>::setBadge)
 }

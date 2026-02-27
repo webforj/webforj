@@ -56,6 +56,10 @@
     </dependency>
     <dependency>
       <groupId>com.webforj</groupId>
+      <artifactId>webforj-badge</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
       <artifactId>webforj-columnslayout</artifactId>
     </dependency>
     <dependency>
