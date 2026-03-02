@@ -78,6 +78,15 @@ public class TextRenderer<T> extends AbstractElementRenderer<T> {
   }
 
   /**
+   * Creates a new text renderer with the given theme.
+   *
+   * @param theme the theme
+   */
+  public TextRenderer(Theme theme) {
+    this(null, theme);
+  }
+
+  /**
    * Creates a new text renderer with the given content.
    *
    * @param content the content to display
@@ -90,7 +99,7 @@ public class TextRenderer<T> extends AbstractElementRenderer<T> {
    * Creates a new text renderer.
    */
   public TextRenderer() {
-    this(null);
+    this((String) null);
   }
 
   /**

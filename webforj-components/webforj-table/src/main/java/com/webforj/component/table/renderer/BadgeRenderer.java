@@ -43,6 +43,15 @@ public class BadgeRenderer<T> extends AbstractElementRenderer<T> {
   }
 
   /**
+   * Creates a new badge renderer with the given theme.
+   *
+   * @param theme the theme to set
+   */
+  public BadgeRenderer(BadgeTheme theme) {
+    this(null, theme);
+  }
+
+  /**
    * Creates a new badge renderer with the given content.
    *
    * @param content the content of the badge
@@ -55,7 +64,7 @@ public class BadgeRenderer<T> extends AbstractElementRenderer<T> {
    * Creates a new badge renderer.
    */
   public BadgeRenderer() {
-    this(null);
+    this((String) null);
   }
 
   /**

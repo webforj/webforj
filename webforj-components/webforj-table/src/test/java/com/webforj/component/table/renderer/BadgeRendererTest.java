@@ -29,6 +29,14 @@ class BadgeRendererTest {
   }
 
   @Test
+  void shouldBuildWithThemeOnly() {
+    BadgeRenderer<String> r = new BadgeRenderer<>(BadgeTheme.PRIMARY);
+    String html = r.build();
+    assertTrue(html.contains("theme='primary'"));
+    assertTrue(html.contains("<%= cell.value %>"));
+  }
+
+  @Test
   void shouldBuildWithColor() {
     BadgeRenderer<String> r = new BadgeRenderer<>();
     r.setColor(new Color(255, 87, 51));

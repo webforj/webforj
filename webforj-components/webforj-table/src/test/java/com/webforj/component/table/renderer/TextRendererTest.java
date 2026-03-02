@@ -35,6 +35,14 @@ class TextRendererTest {
   }
 
   @Test
+  void shouldBuildWithThemeOnly() {
+    TextRenderer<String> r = new TextRenderer<>(Theme.SUCCESS);
+    String html = r.build();
+    assertTrue(html.contains("color:var(--dwc-color-success)"));
+    assertTrue(html.contains("<%= cell.value %>"));
+  }
+
+  @Test
   void shouldBuildWithThemeAndShade() {
     TextRenderer<String> r = new TextRenderer<>();
     r.setTheme(Theme.SUCCESS);
