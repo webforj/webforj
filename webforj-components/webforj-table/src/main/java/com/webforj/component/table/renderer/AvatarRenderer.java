@@ -213,6 +213,7 @@ public class AvatarRenderer<T> extends AbstractVoidElementRenderer<T> {
    */
   public AvatarRenderer<T> setIcon(IconDefinition<?> icon) {
     this.icon = icon;
+    fireChangeEvent();
     return this;
   }
 

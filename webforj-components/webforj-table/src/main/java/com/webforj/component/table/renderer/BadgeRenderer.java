@@ -142,6 +142,7 @@ public class BadgeRenderer<T> extends AbstractElementRenderer<T> {
    */
   public BadgeRenderer<T> setIcon(IconDefinition<?> icon) {
     this.icon = icon;
+    fireChangeEvent();
     return this;
   }
 
