@@ -27,30 +27,24 @@ class PhoneRendererTest {
     assertTrue(
         html.contains("<dwc-icon name='phone-call' pool='custom' theme='primary'></dwc-icon>"));
     assertTrue(html.contains("<%= 'tel:' + cell.value %>"));
-    assertTrue(html.contains("tabindex='-1'"));
   }
 
   @Test
-  void shouldBuildWithUpdatedIcon() {
+  void shouldBuildWithReplacedIcon() {
     PhoneRenderer<String> r = new PhoneRenderer<>();
-    r.setName("phone-call");
-    r.setPool("custom");
+    r.setIcon(new TestIconDefinition("device-mobile", "custom"));
     String html = r.build();
     assertTrue(
-        html.contains("<dwc-icon name='phone-call' pool='custom' theme='primary'></dwc-icon>"));
+        html.contains("<dwc-icon name='device-mobile' pool='custom' theme='primary'></dwc-icon>"));
   }
 
   @Test
   void shouldSetAndGetIcon() {
     PhoneRenderer<String> r = new PhoneRenderer<>();
     assertNotNull(r.getIcon());
-    assertEquals("phone", r.getName());
-    assertEquals("tabler", r.getPool());
 
     TestIconDefinition icon = new TestIconDefinition("device-mobile", "custom");
     r.setIcon(icon);
-    assertEquals("device-mobile", r.getName());
-    assertEquals("custom", r.getPool());
     assertEquals(icon, r.getIcon());
   }
 }

@@ -68,54 +68,6 @@ public class PhoneRenderer<T> extends AbstractElementRenderer<T> {
     return icon;
   }
 
-  /**
-   * Sets the name of the icon.
-   *
-   * @param name the icon name
-   * @return this renderer
-   */
-  public PhoneRenderer<T> setName(String name) {
-    if (icon != null) {
-      icon.setName(name);
-      fireChangeEvent();
-    }
-
-    return this;
-  }
-
-  /**
-   * Returns the name of the icon.
-   *
-   * @return the icon name, or {@code null} if no icon is set
-   */
-  public String getName() {
-    return icon != null ? icon.getName() : null;
-  }
-
-  /**
-   * Sets the pool of the icon.
-   *
-   * @param pool the icon pool
-   * @return this renderer
-   */
-  public PhoneRenderer<T> setPool(String pool) {
-    if (icon != null) {
-      icon.setPool(pool);
-      fireChangeEvent();
-    }
-
-    return this;
-  }
-
-  /**
-   * Returns the pool of the icon.
-   *
-   * @return the icon pool, or {@code null} if no icon is set
-   */
-  public String getPool() {
-    return icon != null ? icon.getPool() : null;
-  }
-
   /** {@inheritDoc} */
   @Override
   public String build() {

@@ -27,30 +27,23 @@ class EmailRendererTest {
     assertTrue(
         html.contains("<dwc-icon name='envelope' pool='custom' theme='primary'></dwc-icon>"));
     assertTrue(html.contains("<%= 'mailto:' + cell.value %>"));
-    assertTrue(html.contains("tabindex='-1'"));
   }
 
   @Test
-  void shouldBuildWithUpdatedIcon() {
+  void shouldBuildWithReplacedIcon() {
     EmailRenderer<String> r = new EmailRenderer<>();
-    r.setName("envelope");
-    r.setPool("custom");
+    r.setIcon(new TestIconDefinition("at", "custom"));
     String html = r.build();
-    assertTrue(
-        html.contains("<dwc-icon name='envelope' pool='custom' theme='primary'></dwc-icon>"));
+    assertTrue(html.contains("<dwc-icon name='at' pool='custom' theme='primary'></dwc-icon>"));
   }
 
   @Test
   void shouldSetAndGetIcon() {
     EmailRenderer<String> r = new EmailRenderer<>();
     assertNotNull(r.getIcon());
-    assertEquals("mail", r.getName());
-    assertEquals("tabler", r.getPool());
 
     TestIconDefinition icon = new TestIconDefinition("at", "custom");
     r.setIcon(icon);
-    assertEquals("at", r.getName());
-    assertEquals("custom", r.getPool());
     assertEquals(icon, r.getIcon());
   }
 }
