@@ -51,6 +51,9 @@ public class ConditionalRenderer<T> extends Renderer<T> {
   public ConditionalRenderer<T> when(Condition condition, Renderer<T> renderer) {
     entries.add(new ConditionEntry<>(condition, renderer));
     renderer.addChangeListener(e -> fireChangeEvent());
+    if (getTable() != null && renderer.getTable() == null) {
+      renderer.setTable(getTable());
+    }
     fireChangeEvent();
     return this;
   }
@@ -75,6 +78,11 @@ public class ConditionalRenderer<T> extends Renderer<T> {
   public ConditionalRenderer<T> otherwise(Renderer<T> renderer) {
     this.fallback = renderer;
     renderer.addChangeListener(e -> fireChangeEvent());
+
+    if (getTable() != null && renderer.getTable() == null) {
+      renderer.setTable(getTable());
+    }
+
     fireChangeEvent();
     return this;
   }

@@ -55,6 +55,11 @@ public class CompositeRenderer<T> extends Renderer<T> {
   public CompositeRenderer<T> add(Renderer<T> renderer) {
     renderers.add(renderer);
     renderer.addChangeListener(e -> fireChangeEvent());
+
+    if (getTable() != null && renderer.getTable() == null) {
+      renderer.setTable(getTable());
+    }
+
     fireChangeEvent();
     return this;
   }
