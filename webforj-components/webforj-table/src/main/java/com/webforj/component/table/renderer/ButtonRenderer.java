@@ -6,9 +6,16 @@ import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.dispatcher.EventListener;
 
 /**
- * Represents a renderer for a button.
+ * A renderer that displays a {@code dwc-button} in a table cell.
  *
- * @param <T> the type of the row data
+ * <pre>{@code
+ * ButtonRenderer<MusicRecord> renderer = new ButtonRenderer<>("Edit");
+ * renderer.setTheme(ButtonTheme.PRIMARY);
+ *
+ * table.addColumn("edit", r -> "Edit").setRenderer(renderer);
+ * }</pre>
+ *
+ * @param <T> the row data type
  *
  * @author Hyyan Abo Fakher
  * @since 24.00
@@ -18,7 +25,7 @@ public class ButtonRenderer<T> extends NativeButtonRenderer<T> {
   private ButtonTheme theme;
 
   /**
-   * Creates a new tag button.
+   * Creates a new button renderer with the given content and click listener.
    *
    * @param content the content of the button
    * @param listener the click listener
@@ -28,7 +35,7 @@ public class ButtonRenderer<T> extends NativeButtonRenderer<T> {
   }
 
   /**
-   * Creates a new tag button.
+   * Creates a new button renderer with the given content.
    *
    * @param content the content of the button
    */
@@ -37,7 +44,7 @@ public class ButtonRenderer<T> extends NativeButtonRenderer<T> {
   }
 
   /**
-   * Creates a new tag button.
+   * Creates a new button renderer.
    */
   public ButtonRenderer() {
     this(null);
@@ -46,8 +53,8 @@ public class ButtonRenderer<T> extends NativeButtonRenderer<T> {
   /**
    * Sets the theme of the button.
    *
-   * @param theme the theme to set for the renderer.
-   * @return the renderer itself.
+   * @param theme the theme to set
+   * @return this renderer
    */
   public ButtonRenderer<T> setTheme(ButtonTheme theme) {
     this.theme = theme;
@@ -56,17 +63,15 @@ public class ButtonRenderer<T> extends NativeButtonRenderer<T> {
   }
 
   /**
-   * Retrieves the theme of the button.
+   * Returns the theme of the button.
    *
-   * @return the theme of the button.
+   * @return the theme
    */
   public ButtonTheme getTheme() {
     return theme;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String build() {
     setAttribute("expanse", "", false);

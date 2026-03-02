@@ -1,41 +1,42 @@
 package com.webforj.component.table.renderer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.webforj.component.table.event.renderer.RendererClickEvent;
-import com.webforj.dispatcher.EventListener;
 import org.junit.jupiter.api.Test;
 
 class NativeButtonRendererTest {
 
   @Test
-  void shouldCreateRendererWithContentAndListener() {
-    EventListener<RendererClickEvent<String>> listener = event -> {
-    };
-    NativeButtonRenderer<String> renderer = new NativeButtonRenderer<>("testContent", listener);
-    assertEquals("testContent", renderer.getContent());
+  void shouldBuildDefault() {
+    NativeButtonRenderer<String> r = new NativeButtonRenderer<>();
+    String html = r.build();
+    assertTrue(html.contains("<button"));
+    assertTrue(html.contains("</button>"));
+    assertTrue(html.contains("<%= cell.value %>"));
+    assertTrue(html.contains("tabindex='-1'"));
   }
 
   @Test
-  void shouldCreateRendererWithContent() {
-    NativeButtonRenderer<String> renderer = new NativeButtonRenderer<>("testContent");
-    assertEquals("testContent", renderer.getContent());
+  void shouldBuildWithContent() {
+    NativeButtonRenderer<String> r = new NativeButtonRenderer<>("Click me");
+    assertTrue(r.build().contains("Click me"));
   }
 
   @Test
-  void shouldCreateRendererWithoutContent() {
-    NativeButtonRenderer<String> renderer = new NativeButtonRenderer<>();
-    assertEquals(null, renderer.getContent());
+  void shouldBuildDisabled() {
+    NativeButtonRenderer<String> r = new NativeButtonRenderer<>();
+    r.setEnabled(false);
+    assertFalse(r.isEnabled());
+    assertTrue(r.build().contains("disabled='true'"));
   }
 
   @Test
-  void shouldSetAndCheckEnabled() {
-    NativeButtonRenderer<String> renderer = new NativeButtonRenderer<>();
-    renderer.setEnabled(true);
-    assertFalse(renderer.isEnabled());
-    renderer.setEnabled(false);
-    assertTrue(renderer.isEnabled());
+  void shouldBuildEnabled() {
+    NativeButtonRenderer<String> r = new NativeButtonRenderer<>();
+    r.setEnabled(false);
+    r.setEnabled(true);
+    assertTrue(r.isEnabled());
+    assertFalse(r.build().contains("disabled="));
   }
 }

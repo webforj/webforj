@@ -5,9 +5,19 @@ import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.dispatcher.EventListener;
 
 /**
- * Represents a renderer for a native html button.
+ * A renderer that displays a native HTML button in a table cell. The click event provides access to
+ * the row item via {@code e.getItem()}.
  *
- * @param <T> the type of the row data
+ * <pre>{@code
+ * NativeButtonRenderer<MusicRecord> renderer = new NativeButtonRenderer<>("Delete", e -> {
+ *   MusicRecord record = e.getItem();
+ *   // handle delete
+ * });
+ *
+ * table.addColumn("delete", r -> "").setRenderer(renderer);
+ * }</pre>
+ *
+ * @param <T> the row data type
  *
  * @author Hyyan Abo Fakher
  * @since 24.00
@@ -16,7 +26,7 @@ import com.webforj.dispatcher.EventListener;
 public class NativeButtonRenderer<T> extends AbstractElementRenderer<T> {
 
   /**
-   * Creates a new tag button.
+   * Creates a new native button renderer with the given content and click listener.
    *
    * @param content the content of the button
    * @param listener the click listener
@@ -26,7 +36,7 @@ public class NativeButtonRenderer<T> extends AbstractElementRenderer<T> {
   }
 
   /**
-   * Creates a new tag button.
+   * Creates a new native button renderer with the given content.
    *
    * @param content the content of the button
    */
@@ -35,7 +45,7 @@ public class NativeButtonRenderer<T> extends AbstractElementRenderer<T> {
   }
 
   /**
-   * Creates a new tag button.
+   * Creates a new native button renderer.
    */
   public NativeButtonRenderer() {
     this(null);
@@ -46,9 +56,9 @@ public class NativeButtonRenderer<T> extends AbstractElementRenderer<T> {
    *
    * @param enabled true to enable, false to disable
    *
-   * @return the renderer
+   * @return this renderer
    */
-  public AbstractVoidElementRenderer<T> setEnabled(boolean enabled) {
+  public NativeButtonRenderer<T> setEnabled(boolean enabled) {
     String key = "disabled";
 
     if (enabled) {
@@ -61,20 +71,18 @@ public class NativeButtonRenderer<T> extends AbstractElementRenderer<T> {
   }
 
   /**
-   * Checks if the renderer is enabled.
+   * Returns whether the renderer is enabled.
    *
    * @return true if the renderer is enabled, false otherwise
    */
   public boolean isEnabled() {
-    return getAttribute("disabled") != null;
+    return getAttribute("disabled") == null;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String build() {
-    setAttribute("tab-traversable", "-1", false);
+    setAttribute("tabindex", "-1", false);
     return super.build();
   }
 }
