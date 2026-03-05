@@ -16,7 +16,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -48,6 +47,7 @@ class ColumnTest {
     oldValues.put("width", column.getWidth() == 0 ? null : column.getWidth());
     oldValues.put("flex", column.getFlex());
     oldValues.put("resizable", column.isResizable());
+    oldValues.put("lazyRender", column.isLazyRender());
 
     newValues.put("hidden", true);
     newValues.put("label", "New Label");
@@ -62,6 +62,7 @@ class ColumnTest {
     newValues.put("width", 250.0f);
     newValues.put("flex", 3.0f);
     newValues.put("resizable", false);
+    newValues.put("lazyRender", true);
   }
 
   @Test
@@ -89,6 +90,7 @@ class ColumnTest {
     column.setWidth((float) newValues.get("width"));
     column.setFlex((float) newValues.get("flex"));
     column.setResizable((boolean) newValues.get("resizable"));
+    column.setLazyRender((boolean) newValues.get("lazyRender"));
   }
 
   @Test
@@ -105,6 +107,7 @@ class ColumnTest {
     assertEquals(column.getSortDirection(), deserializedColumn.getSortDirection());
     assertEquals(column.isSuppressNavigable(), deserializedColumn.isSuppressNavigable());
     assertEquals(column.getAlignment(), deserializedColumn.getAlignment());
+    assertEquals(column.isLazyRender(), deserializedColumn.isLazyRender());
     assertEquals(0, column.getMinWidth(), 0.01);
 
   }
