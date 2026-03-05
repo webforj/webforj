@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The base class for all renderers which render a tag without any content.
+ * Base class for renderers that produce a self-closing or void HTML element.
  *
- * @param <T> the type of the row data
+ * @param <T> the row data type
  *
  * @see AbstractElementRenderer
  *
@@ -23,9 +23,7 @@ import java.util.Map;
 public abstract class AbstractVoidElementRenderer<T> extends Renderer<T> {
   private String content = null;
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String build() {
     String theContent = content == null ? "<%= cell.value %>" : content;
@@ -42,9 +40,9 @@ public abstract class AbstractVoidElementRenderer<T> extends Renderer<T> {
   }
 
   /**
-   * Gets the name of html tag.
+   * Returns the HTML tag name for this renderer.
    *
-   * @return the name of the tag
+   * @return the tag name
    */
   public String getNodeName() {
     @SuppressWarnings("rawtypes")
@@ -81,11 +79,10 @@ public abstract class AbstractVoidElementRenderer<T> extends Renderer<T> {
   }
 
   /**
-   * Sets the content of the tag renderer.
+   * Sets the content of the rendered element.
    *
    * @param content the content
-   *
-   * @return the renderer itself.
+   * @return this renderer
    */
   AbstractVoidElementRenderer<T> setContent(String content) {
     this.content = content;
@@ -95,7 +92,7 @@ public abstract class AbstractVoidElementRenderer<T> extends Renderer<T> {
   }
 
   /**
-   * Gets the content of the tag renderer.
+   * Returns the content of the rendered element.
    *
    * @return the content
    */
@@ -103,9 +100,7 @@ public abstract class AbstractVoidElementRenderer<T> extends Renderer<T> {
     return content;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected void onAttach() {
     super.onAttach();

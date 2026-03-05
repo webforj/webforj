@@ -4,9 +4,9 @@ import com.webforj.component.table.event.renderer.RendererClickEvent;
 import com.webforj.dispatcher.EventListener;
 
 /**
- * The base class for all renderers which render a tag with content.
+ * Base class for renderers that produce an HTML element with content.
  *
- * @param <T> the type of the row data
+ * @param <T> the row data type
  *
  * @see AbstractVoidElementRenderer
  *
@@ -16,10 +16,10 @@ import com.webforj.dispatcher.EventListener;
 public abstract class AbstractElementRenderer<T> extends AbstractVoidElementRenderer<T> {
 
   /**
-   * Creates a new tag renderer.
+   * Creates a new element renderer.
    *
-   * @param content the content of the tag
-   * @param listener the click listener
+   * @param content the text content
+   * @param listener the click listener, or {@code null}
    */
   protected AbstractElementRenderer(String content, EventListener<RendererClickEvent<T>> listener) {
     setContent(content);

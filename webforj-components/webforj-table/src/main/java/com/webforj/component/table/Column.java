@@ -135,6 +135,7 @@ public final class Column<T, V> implements Serializable {
   private float flex = 0;
   private boolean resizable = true;
   private boolean movable = true;
+  private boolean lazyRender = false;
   @SuppressWarnings("unused")
   private String cellRenderer = null;
   private Alignment align = Alignment.LEFT;
@@ -731,6 +732,41 @@ public final class Column<T, V> implements Serializable {
    */
   public boolean isMovable() {
     return movable;
+  }
+
+  /**
+   * Sets whether this column defers rendering during scroll, showing a placeholder instead.
+   *
+   * <p>
+   * When enabled, the column displays a lightweight animated placeholder while the user is
+   * scrolling. The actual cell content renders once scrolling stops. This improves scroll
+   * performance for columns with expensive web component renderers (e.g. badges, progress bars,
+   * icons,...).
+   * </p>
+   *
+   * @param lazyRender {@code true} to defer rendering during scroll, {@code false} to always render
+   *        content immediately
+   * @return the column itself
+   *
+   * @since 25.12
+   */
+  public Column<T, V> setLazyRender(boolean lazyRender) {
+    boolean oldLazyRender = this.lazyRender;
+    this.lazyRender = lazyRender;
+    changeSupport.firePropertyChange("lazyRender", oldLazyRender, lazyRender);
+    return this;
+  }
+
+  /**
+   * Returns whether this column defers rendering during scroll.
+   *
+   * @return {@code true} if rendering is deferred during scroll, {@code false} otherwise
+   *
+   * @see #setLazyRender(boolean)
+   * @since 25.12
+   */
+  public boolean isLazyRender() {
+    return lazyRender;
   }
 
   /**

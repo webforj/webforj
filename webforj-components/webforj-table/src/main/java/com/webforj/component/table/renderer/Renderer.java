@@ -219,7 +219,7 @@ import java.util.stream.Collectors;
  * </tr>
  * </table>
  *
- * @param <T> the type of the row data
+ * @param <T> the row data type
  *
  * @author Hyyan Abo Fakher
  * @since 24.00
@@ -231,16 +231,15 @@ public abstract class Renderer<T> {
   private Table<T> table;
 
   /**
-   * Set an attribute.
+   * Sets an attribute on the rendered element.
    *
-   * @param name the name of the attribute
-   * @param value the value of the attribute
-   *
-   * @return the renderer itself.
+   * @param name the attribute name
+   * @param value the attribute value
+   * @param fireChangeEvent whether to notify listeners of the change
+   * @return this renderer
    */
   public Renderer<T> setAttribute(String name, Object value, boolean fireChangeEvent) {
-    Gson gson = new Gson();
-    attributes.put(name, gson.fromJson(gson.toJson(value), String.class));
+    attributes.put(name, toAttributeValue(value));
     if (fireChangeEvent) {
       fireChangeEvent();
     }
@@ -249,33 +248,31 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Set an attribute.
+   * Sets an attribute on the rendered element.
    *
-   * @param name the name of the attribute
-   * @param value the value of the attribute
-   *
-   * @return the renderer itself.
+   * @param name the attribute name
+   * @param value the attribute value
+   * @return this renderer
    */
   public Renderer<T> setAttribute(String name, Object value) {
     return setAttribute(name, value, true);
   }
 
   /**
-   * Get the value of an attribute.
+   * Returns the value of an attribute.
    *
-   * @param name the name of the attribute
-   * @return the value of the attribute
+   * @param name the attribute name
+   * @return the attribute value
    */
   public String getAttribute(String name) {
     return attributes.get(name);
   }
 
   /**
-   * Remove an attribute.
+   * Removes an attribute from the rendered element.
    *
-   * @param name the name of the attribute
-   *
-   * @return the renderer itself.
+   * @param name the attribute name
+   * @return this renderer
    */
   public Renderer<T> removeAttribute(String name) {
     attributes.remove(name);
@@ -285,10 +282,10 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Add part names to the 'part' attribute.
+   * Adds part names to the {@code part} attribute.
    *
-   * @param partNames the class names to add
-   * @return the renderer itself
+   * @param partNames the part names to add
+   * @return this renderer
    */
   public Renderer<T> addPart(String... partNames) {
     String parts = getAttribute("part"); // NOSONAR
@@ -303,10 +300,10 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Remove class names from the 'class' attribute.
+   * Removes part names from the {@code part} attribute.
    *
-   * @param partNames the class names to remove
-   * @return the renderer itself
+   * @param partNames the part names to remove
+   * @return this renderer
    */
   public Renderer<T> removePart(String... partNames) {
     String parts = getAttribute("part");
@@ -325,30 +322,25 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Get the render key.
+   * Returns the unique key identifying this renderer instance.
    *
-   * @return the render key
+   * @return the renderer key
    */
   public final String getKey() {
     return key;
   }
 
   /**
-   * Get the table.
+   * Returns the table this renderer is attached to.
    *
-   * @return the table
+   * @return the table, or {@code null} if not yet attached
    */
   public final Table<T> getTable() {
     return table;
   }
 
   /**
-   * Set the table.
-   *
-   * <p>
-   * Note that the table can be set only once. Any attempt to set the table more than once will
-   * result in an {@link IllegalStateException}.
-   * </p>
+   * Sets the table this renderer is attached to. Can only be called once.
    *
    * @param table the table
    * @throws IllegalStateException if the table is already set
@@ -365,7 +357,7 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Add a change listener to the renderer.
+   * Adds a change listener to the renderer.
    *
    * @param listener the change listener
    * @return the listener registration
@@ -387,19 +379,19 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Build the renderer expression to be executed in the client.
+   * Builds the client-side template for rendering cells.
    *
-   * @return the expression to be executed in the client
+   * @return the template string
    */
   public abstract String build();
 
   /**
-   * Called when the renderer is attached to the table.
+   * Called when the renderer is attached to a table.
    */
   protected void onAttach() {}
 
   /**
-   * Get the event dispatcher.
+   * Returns the event dispatcher.
    *
    * @return the event dispatcher
    */
@@ -408,16 +400,28 @@ public abstract class Renderer<T> {
   }
 
   /**
-   * Fires the change event.
+   * Fires a change event to notify listeners that the renderer configuration has changed.
    */
   protected void fireChangeEvent() {
     getEventDispatcher().dispatchEvent(new RendererChangeEvent(this));
   }
 
   /**
-   * Get the attributes as key/value pairs.
+   * Converts a value to its string representation for use in HTML attributes. Handles enums,
+   * strings, and other objects via JSON serialization.
    *
-   * @return the attributes as a string
+   * @param value the value to convert
+   * @return the string representation
+   */
+  protected static String toAttributeValue(Object value) {
+    Gson gson = new Gson();
+    return gson.fromJson(gson.toJson(value), String.class);
+  }
+
+  /**
+   * Returns all attributes formatted as an HTML attribute string.
+   *
+   * @return the attributes string (e.g., {@code "name='value' theme='primary'"})
    */
   protected String getAttributesAsString() {
     return attributes.entrySet().stream()

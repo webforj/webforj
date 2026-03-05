@@ -24,6 +24,26 @@
       <artifactId>webforj-html-elements</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-badge</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-avatar</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-icons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-flexlayout</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
