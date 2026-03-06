@@ -68,20 +68,67 @@ fun @WebforjDsl AppNav.appNavItem(
   routeParameters: ParametersBag? = null,
   block: @WebforjDsl AppNavItem.() -> Unit = {}
 ): AppNavItem {
-  val item = when {
-    routeParameters != null && view != null -> AppNavItem(text, view.java, routeParameters).apply {
-      path?.let { setPath(it) }
-    }
-    view != null -> AppNavItem(text, view.java).apply {
-      path?.let { setPath(it) }
-    }
-    path != null -> AppNavItem(text, path).apply {
-      routeParameters?.let { queryParameters = it }
-    }
-    else -> AppNavItem(text).apply {
-      routeParameters?.let { queryParameters = it }
-    }
-  }.apply(block)
+  val item = createAppNavItem(text, path, view, routeParameters, block)
   addItem(item)
   return item
 }
+
+/**
+ * Adds an `AppNavItem` to the `AppNavItem` with optional [path], [view], and/or [routeParameters].
+ * ```
+ * appNav {
+ *   appNavItem("Profile", "/profile", ProfileView::class) {// Item with text, path, and view
+ *     appNavItem("Profile Settings") { // Item with only text
+ *         prefixSlot { iconSlot("settings") }
+ *         suffixSlot { badgeSlot("new") }
+ *       }
+ *   }
+ * }
+ * ```
+ *
+ * To configure the slots of the `AppNavItem` see:
+ * - [prefixSlot], and
+ * - [suffixSlot]
+ *
+ * @param text The display text of the navigation item.
+ * @param path The navigation path for the item.
+ * @param view The view class to navigate to when the item is clicked.
+ * @param routeParameters Additional route parameters for navigation.
+ * @param block The initialization steps of the `AppNavItem`.
+ * @return The configured `AppNavItem`.
+ * @see AppNavItem
+ */
+@WebforjDsl
+fun @WebforjDsl AppNavItem.appNavItem(
+  text: String,
+  path: String? = null,
+  view: KClass<out Component>? = null,
+  routeParameters: ParametersBag? = null,
+  block: @WebforjDsl AppNavItem.() -> Unit = {}
+): AppNavItem {
+  val item = createAppNavItem(text, path, view, routeParameters, block)
+  addItem(item)
+  return item
+}
+
+@WebforjDsl
+private fun createAppNavItem(
+  text: String,
+  path: String? = null,
+  view: KClass<out Component>? = null,
+  routeParameters: ParametersBag? = null,
+  block: @WebforjDsl AppNavItem.() -> Unit = {}
+) = when {
+  routeParameters != null && view != null -> AppNavItem(text, view.java, routeParameters).apply {
+    path?.let { setPath(it) }
+  }
+  view != null -> AppNavItem(text, view.java).apply {
+    path?.let { setPath(it) }
+  }
+  path != null -> AppNavItem(text, path).apply {
+    routeParameters?.let { queryParameters = it }
+  }
+  else -> AppNavItem(text).apply {
+    routeParameters?.let { queryParameters = it }
+  }
+}.apply(block)
