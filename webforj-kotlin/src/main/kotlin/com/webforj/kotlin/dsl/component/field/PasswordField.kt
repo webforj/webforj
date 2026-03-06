@@ -32,6 +32,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `PasswordField` instance.
  * @see PasswordField
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.passwordField(
   label: String? = null,
   value: String? = null,

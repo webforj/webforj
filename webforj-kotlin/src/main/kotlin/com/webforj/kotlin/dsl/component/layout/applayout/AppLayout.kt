@@ -11,25 +11,25 @@ import com.webforj.kotlin.dsl.init
  * ```
  * ... {
  *   appLayout {
- *     drawerTitle {
+ *     drawerTitleSlot {
  *       label("My App")
  *     }
- *     drawerHeaderActions {
+ *     drawerHeaderActionsSlot {
  *       button("Close")
  *     }
- *     drawer {
+ *     drawerSlot {
  *       button("Dashboard")
  *       button("Settings")
  *       button("Profile")
  *     }
- *     drawerFooter {
+ *     drawerFooterSlot {
  *       label("Version 1.0.0")
  *     }
- *     header {
+ *     headerSlot {
  *       label("Welcome to My Application")
  *       button("Menu")
  *     }
- *     footer {
+ *     footerSlot {
  *       label("© 2026 My Company")
  *       button("Help")
  *     }
@@ -38,12 +38,12 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the slots of the `AppLayout` see:
- * - [header],
- * - [footer],
- * - [drawer],
- * - [drawerTitle],
- * - [drawerHeaderActions], and
- * - [drawerFooter]
+ * - [headerSlot],
+ * - [footerSlot],
+ * - [drawerSlot],
+ * - [drawerTitleSlot],
+ * - [drawerHeaderActionsSlot], and
+ * - [drawerFooterSlot]
  *
  * @param block The initialization steps of the `AppLayout`.
  * @return The configured `AppLayout`.
@@ -56,46 +56,46 @@ fun @WebforjDsl HasComponents.appLayout(block: @WebforjDsl AppLayout.() -> Unit 
 }
 
 /**
- * Configures the components to add to the header slot of an `AppLayout`.
+ * Configures the components to add to the headerSlot slot of an `AppLayout`.
  * ```
  * appLayout {
- *   header {
+ *   headerSlot {
  *     label("Application Header")
  *     button("Menu")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the header components.
+ * @param block The initialization steps of the headerSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl AppLayout.header(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToHeader)
 }
 
 /**
- * Configures the components to add to the footer slot of an `AppLayout`.
+ * Configures the components to add to the footerSlot slot of an `AppLayout`.
  * ```
  * appLayout {
- *   footer {
+ *   footerSlot {
  *     label("© 2026 My Application")
  *     button("Help")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the footer components.
+ * @param block The initialization steps of the footerSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl AppLayout.footer(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToFooter)
 }
 
 /**
- * Configures the components to add to the drawer slot of an `AppLayout`.
+ * Configures the components to add to the drawerSlot slot of an `AppLayout`.
  * ```
  * appLayout {
- *   drawer {
+ *   drawerSlot {
  *     label("Navigation Menu")
  *     button("Home")
  *     button("Settings")
@@ -103,62 +103,62 @@ fun @WebforjDsl AppLayout.footer(block: @WebforjDsl HasComponents.() -> Unit) {
  * }
  * ```
  *
- * @param block The initialization steps of the drawer components.
+ * @param block The initialization steps of the drawerSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl AppLayout.drawer(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawer)
 }
 
 /**
- * Configures the components to add to the drawer title slot of an `AppLayout`.
+ * Configures the components to add to the drawerSlot titleSlot slot of an `AppLayout`.
  * ```
  * appLayout {
- *   drawerTitle {
+ *   drawerTitleSlot {
  *     label("Application Menu")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the drawer title components.
+ * @param block The initialization steps of the drawerSlot titleSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl AppLayout.drawerTitle(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawerTitle)
 }
 
 /**
- * Configures the components to add to the drawer header actions slot of an `AppLayout`.
+ * Configures the components to add to the drawerSlot headerSlot actions slot of an `AppLayout`.
  * ```
  * appLayout {
- *   drawerHeaderActions {
+ *   drawerHeaderActionsSlot {
  *     button("Close")
  *     button("Settings")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the drawer header actions components.
+ * @param block The initialization steps of the drawerSlot headerSlot actions components.
  */
 @WebforjDsl
-fun @WebforjDsl AppLayout.drawerHeaderActions(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawerHeaderActions)
 }
 
 /**
- * Configures the components to add to the drawer footer slot of an `AppLayout`.
+ * Configures the components to add to the drawerSlot footerSlot slot of an `AppLayout`.
  * ```
  * appLayout {
- *   drawerFooter {
+ *   drawerFooterSlot {
  *     label("Version 1.0.0")
  *     button("Logout")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the drawer footer components.
+ * @param block The initialization steps of the drawerSlot footerSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl AppLayout.drawerFooter(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AppLayout.drawerFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawerFooter)
 }

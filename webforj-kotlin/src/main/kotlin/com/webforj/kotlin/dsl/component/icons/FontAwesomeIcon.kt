@@ -10,22 +10,23 @@ import com.webforj.kotlin.dsl.init
  * Creates a FontAwesome `Icon` with the given [name] and optional [variate].
  * ```
  * ... {
- *   fontAwesomeIcon("user") // Basic FontAwesome icon
+ *   fontAwesomeIcon("user") // Basic FontAwesome iconSlot
  *   fontAwesomeIcon("user", FontAwesomeIcon.Variate.SOLID) // Solid variant
  *   fontAwesomeIcon("user", FontAwesomeIcon.Variate.REGULAR) // Regular variant
  * }
  * ```
  *
  * FontAwesome icons provide a comprehensive set of icons in multiple variants (solid, regular, light, brands, etc.).
- * The variant controls the visual style and weight of the icon.
+ * The variant controls the visual style and weight of the iconSlot.
  *
- * @param name The name of the FontAwesome icon.
- * @param variate The variant of the icon (e.g., SOLID, REGULAR, LIGHT, BRANDS). If null, the default is used.
+ * @param name The name of the FontAwesome iconSlot.
+ * @param variate The variant of the iconSlot (e.g., SOLID, REGULAR, LIGHT, BRANDS). If null, the default is used.
  * @param block The initialization steps for the `Icon`.
  * @return The configured `Icon` instance.
  * @see FontAwesomeIcon
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.fontAwesomeIcon(
   name: String,
   variate: FontAwesomeIcon.Variate? = null,

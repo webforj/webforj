@@ -2,7 +2,6 @@ package com.webforj.kotlin.dsl.component.accordion
 
 import com.webforj.component.html.elements.Div
 import com.webforj.concern.HasComponents
-import com.webforj.kotlin.dsl.component.accordion.header
 import com.webforj.kotlin.dsl.component.html.elements.paragraph
 import com.webforj.kotlin.dsl.component.text.label
 import org.junit.jupiter.api.BeforeEach
@@ -50,7 +49,7 @@ class AccordionPanelTest {
   @Test
   fun shouldCreatePanelWithIcon() {
     val panel = root.accordionPanel("With Icon") {
-      icon {
+      iconSlot {
         Div()
       }
     }

@@ -1,7 +1,6 @@
 package com.webforj.kotlin.dsl.component.drawer
 
 import com.webforj.component.html.elements.Div
-import com.webforj.component.drawer.Drawer
 import com.webforj.component.button.ButtonTheme
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.button.button
@@ -42,7 +41,7 @@ class DrawerTest {
   @Test
   fun shouldCreateTitle() {
     val drawer = root.drawer("Settings Drawer") {
-      title {
+      titleSlot {
         label("Settings")
         paragraph("Configure your application preferences")
       }
@@ -56,7 +55,7 @@ class DrawerTest {
   @Test
   fun shouldCreateHeader() {
     val drawer = root.drawer("Menu Drawer") {
-      headerActions {
+      headerActionsSlot {
         div {
           button("Close")
           button("Menu", theme = ButtonTheme.GRAY)
@@ -72,7 +71,7 @@ class DrawerTest {
   @Test
   fun shouldCreateFooter() {
     val drawer = root.drawer("Info Drawer") {
-      footer {
+      footerSlot {
         div {
           paragraph("© 2026 Application")
           button("Help")
@@ -89,21 +88,21 @@ class DrawerTest {
   @Test
   fun shouldCreateExample() {
     val drawer = root.drawer("Navigation Drawer") {
-      title {
+      titleSlot {
         div {
           label("App Menu")
           paragraph("Navigate through the application")
         }
       }
 
-      headerActions {
+      headerActionsSlot {
         div {
           button("Close")
           button("Settings", theme = ButtonTheme.GRAY)
         }
       }
 
-      // Main content (directly in drawer)
+      // Main contentSlot (directly in drawerSlot)
       div {
         textField("Search", placeholder = "Search menu items...")
 
@@ -120,7 +119,7 @@ class DrawerTest {
         }
       }
 
-      footer {
+      footerSlot {
         div {
           paragraph("Version 1.0.0")
           button("Help")

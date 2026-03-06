@@ -7,16 +7,17 @@ import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 
 /**
- * The currently set prefix [Component] or `null` if none is set yet.
+ * The currently set prefixSlot [Component] or `null` if none is set yet.
  */
 val HasPrefix<*>.prefix: Component?
   get() = prefixComponent
 
 /**
- * Sets the prefix to the [Component] configure inside [block].
+ * Sets the prefixSlot to the [Component] configure inside [block].
  *
  * @param block The initialization of the [Component].
  */
+@WebforjDsl
 fun @WebforjDsl HasPrefix<*>.prefix(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this) {
     prefixComponent = it

@@ -30,6 +30,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `MaskedTextFieldSpinner` instance.
  * @see MaskedTextFieldSpinner
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.maskedTextFieldSpinner(
   label: String? = null,
   value: String? = null,

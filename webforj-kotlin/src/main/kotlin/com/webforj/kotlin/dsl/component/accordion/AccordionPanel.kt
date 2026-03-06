@@ -13,18 +13,19 @@ import com.webforj.kotlin.dsl.init
  * ```
  * ... {
  *   accordionPanel("Panel Title") {
- *     paragraph("Panel body content")
+ *     paragraph("Panel body contentSlot")
  *   }
  * }
  * ```
  *
- * @param label The header label text.
+ * @param label The headerSlot label text.
  * @param block The initialization steps of the `AccordionPanel`.
  * @return The configured `AccordionPanel`.
  *
  * @see AccordionPanel
  * @see accordion
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.accordionPanel(
   label: String? = null,
   block: @WebforjDsl AccordionPanel.() -> Unit = {}
@@ -34,35 +35,37 @@ fun @WebforjDsl HasComponents.accordionPanel(
 }
 
 /**
- * Configures the components to add to the header slot of an `AccordionPanel`,
+ * Configures the components to add to the headerSlot slot of an `AccordionPanel`,
  * replacing the label text.
  * ```
  * accordionPanel {
- *   header {
+ *   headerSlot {
  *     label("Custom Header")
- *     icon(FeatherIcon.SETTINGS.create())
+ *     iconSlot(FeatherIcon.SETTINGS.create())
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the header components.
+ * @param block The initialization steps of the headerSlot components.
  */
+@WebforjDsl
 fun @WebforjDsl AccordionPanel.header(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AccordionPanel::addToHeader)
 }
 
 /**
- * Sets the icon component in the icon slot, replacing the default chevron.
+ * Sets the iconSlot component in the iconSlot slot, replacing the default chevron.
  * ```
  * accordionPanel("Title") {
- *   icon {
+ *   iconSlot {
  *     FeatherIcon.PLUS.create()
  *   }
  * }
  * ```
  *
- * @param block The initialization of the icon [Component].
+ * @param block The initialization of the iconSlot [Component].
  */
-fun @WebforjDsl AccordionPanel.icon(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl AccordionPanel.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, AccordionPanel::setIcon)
 }

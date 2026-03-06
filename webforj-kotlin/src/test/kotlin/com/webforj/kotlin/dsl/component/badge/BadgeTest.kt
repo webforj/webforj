@@ -33,7 +33,7 @@ class BadgeTest {
     }
   }
 
-  @ParameterizedTest(name = "Create badge with text={0} and theme={1}.")
+  @ParameterizedTest(name = "Create badgeSlot with text={0} and theme={1}.")
   @MethodSource("provideBadges")
   fun shouldCreateBadgeWithoutBlock(
     text: String?,
@@ -45,7 +45,7 @@ class BadgeTest {
     assertEquals(theme ?: BadgeTheme.DEFAULT, badge.theme)
   }
 
-  @ParameterizedTest(name = "Create badge with text={0}, theme={1} and a block.")
+  @ParameterizedTest(name = "Create badgeSlot with text={0}, theme={1} and a block.")
   @MethodSource("provideBadges")
   fun shouldCreateBadgeWithBlock(
     text: String?,

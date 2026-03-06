@@ -19,6 +19,7 @@ import com.webforj.kotlin.dsl.init
  * @see Span
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span">HTML span Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.span(text: String? = null, block: @WebforjDsl Span.() -> Unit = {}): Span {
     val span = text?.let { Span(text) } ?: Span()
     return init(span, block)

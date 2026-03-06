@@ -30,14 +30,15 @@ import com.webforj.kotlin.dsl.init
  * @see TabbedPane
  * @see tab
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.tabbedPane(name: String? = null, block: @WebforjDsl TabbedPane.() -> Unit = {}): TabbedPane {
   val tabbedPane = name?.let { TabbedPane(it) } ?: TabbedPane()
   return init(tabbedPane, block)
 }
 
 /**
- * The backing [Map] to allow the content of a [Tab] to be configured.
- * @see content
+ * The backing [Map] to allow the contentSlot of a [Tab] to be configured.
+ * @see contentSlot
  */
 private val tabContentMap: MutableMap<Tab, Component?> = hashMapOf()
 
@@ -55,10 +56,11 @@ private val tabContentMap: MutableMap<Tab, Component?> = hashMapOf()
  * @receiver The configured `Tab`.
  * @see Tab
  * @see tabbedPane
- * @see content
- * @see prefix
- * @see suffix
+ * @see contentSlot
+ * @see prefixSlot
+ * @see suffixSlot
  */
+@WebforjDsl
 fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit = {}): Tab {
   val tab = Tab(text)
   tab.block()
@@ -72,60 +74,63 @@ fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit =
 }
 
 /**
- * Sets a [Component] as the content of a [Tab].
+ * Sets a [Component] as the contentSlot of a [Tab].
  * ```
  * tab {
- *  content {
+ *  contentSlot {
  *    div {
- *      // tab content configuration
+ *      // tab contentSlot configuration
  *    }
  *  }
  * }
  * ```
  *
- * @param block The initialization steps of the content [Component].
+ * @param block The initialization steps of the contentSlot [Component].
  * @see tab
- * @see prefix
- * @see suffix
+ * @see prefixSlot
+ * @see suffixSlot
  */
-fun @WebforjDsl Tab.content(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Tab.contentSlot(block: @WebforjDsl HasComponents.() -> Component) {
   tabContentMap[this] = SingleSlotSetter(block).component
 }
 
 /**
- * Sets a [Component] as the prefix of a [Tab].
+ * Sets a [Component] as the prefixSlot of a [Tab].
  * ```
  * tab {
- *  prefix {
- *    // tab prefix configuration
+ *  prefixSlot {
+ *    // tab prefixSlot configuration
  *  }
  * }
  * ```
  *
- * @param block The initialization steps of the prefix [Component].
+ * @param block The initialization steps of the prefixSlot [Component].
  * @see tab
- * @see content
- * @see suffix
+ * @see contentSlot
+ * @see suffixSlot
  */
-fun @WebforjDsl Tab.prefix(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Tab.prefixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Tab::setPrefixComponent)
 }
 
 /**
- * Sets a [Component] as the suffix of a [Tab].
+ * Sets a [Component] as the suffixSlot of a [Tab].
  * ```
  * tab {
- *  suffix {
- *    // tab suffix configuration
+ *  suffixSlot {
+ *    // tab suffixSlot configuration
  *  }
  * }
  * ```
  *
- * @param block The initialization steps of the suffix [Component].
+ * @param block The initialization steps of the suffixSlot [Component].
  * @see tab
- * @see content
- * @see prefix
+ * @see contentSlot
+ * @see prefixSlot
  */
-fun @WebforjDsl Tab.suffix(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Tab.suffixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Tab::setSuffixComponent)
 }

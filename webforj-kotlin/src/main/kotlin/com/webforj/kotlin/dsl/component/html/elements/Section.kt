@@ -18,6 +18,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Section` instance.
  * @see Section
  */
+@WebforjDsl
 fun  @WebforjDsl HasComponents.section(text: String? = null, block:  @WebforjDsl Section.() -> Unit = {}): Section {
   val section = text?.let { Section(it) } ?: Section()
   return init(section, block)

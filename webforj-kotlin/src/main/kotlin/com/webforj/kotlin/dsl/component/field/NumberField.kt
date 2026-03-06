@@ -33,6 +33,7 @@ import com.webforj.kotlin.extension.suffix
  * @see NumberField
  * @see Double
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.numberField(
   label: String? = null,
   value: Double? = null,

@@ -66,7 +66,7 @@ class SplitterTest {
   @Test
   @DisplayName("Create Splitter with ID and configuration block")
   fun shouldCreateSplitterWithIdAndBlock() {
-    val id = "content-splitter"
+    val id = "contentSlot-splitter"
     val blockExecuted = AtomicBoolean(false)
 
     val splitter = root.splitter(id) {
@@ -79,10 +79,10 @@ class SplitterTest {
   }
 
   @Test
-  @DisplayName("Create Splitter with master slot components")
+  @DisplayName("Create Splitter with masterSlot slot components")
   fun shouldCreateSplitterWithMasterComponents() {
     val splitter = root.splitter {
-      master {
+      masterSlot {
         label("Navigation")
       }
       val navigation = master as Label
@@ -95,10 +95,10 @@ class SplitterTest {
   }
 
   @Test
-  @DisplayName("Create Splitter with detail slot components")
+  @DisplayName("Create Splitter with detailSlot slot components")
   fun shouldCreateSplitterWithDetailComponents() {
     val splitter = root.splitter {
-      detail {
+      detailSlot {
         label("Content Area")
       }
       val label = detail as Label
@@ -111,15 +111,15 @@ class SplitterTest {
   }
 
   @Test
-  @DisplayName("Create Splitter with both master and detail slots")
+  @DisplayName("Create Splitter with both masterSlot and detailSlot slots")
   fun shouldCreateSplitterWithBothSlots() {
     val splitter = root.splitter {
-      master {
+      masterSlot {
         label("Master Panel")
       }
       val label1 = master as Label
       assertEquals("Master Panel", label1.text)
-      detail {
+      detailSlot {
         label("Detail Panel")
       }
       val label2 = detail as Label

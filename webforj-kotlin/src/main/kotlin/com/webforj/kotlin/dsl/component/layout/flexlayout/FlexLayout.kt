@@ -26,7 +26,7 @@ import com.webforj.kotlin.dsl.init
  *     // Content row
  *     flexLayout(FlexDirection.ROW) {
  *       div {
- *         paragraph("Main content area")
+ *         paragraph("Main contentSlot area")
  *         textField("Search", placeholder = "Search...")
  *       }
  *
@@ -49,6 +49,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `FlexLayout` instance.
  * @see FlexLayout
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.flexLayout(
   direction: FlexDirection? = null,
   block: @WebforjDsl FlexLayout.() -> Unit = {}
@@ -63,7 +64,7 @@ fun @WebforjDsl HasComponents.flexLayout(
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
-fun FlexLayout.horizontal(inline: Boolean = false) = apply {
+fun @WebforjDsl FlexLayout.horizontal(inline: Boolean = false) = apply {
   direction = FlexDirection.ROW
   isInline = inline
 }
@@ -74,7 +75,7 @@ fun FlexLayout.horizontal(inline: Boolean = false) = apply {
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
-fun FlexLayout.horizontalReverse(inline: Boolean = false) = apply {
+fun @WebforjDsl FlexLayout.horizontalReverse(inline: Boolean = false) = apply {
   direction = FlexDirection.ROW_REVERSE
   isInline = inline
 }
@@ -85,7 +86,7 @@ fun FlexLayout.horizontalReverse(inline: Boolean = false) = apply {
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
-fun FlexLayout.vertical(inline: Boolean = false) = apply {
+fun @WebforjDsl FlexLayout.vertical(inline: Boolean = false) = apply {
   direction = FlexDirection.COLUMN
   isInline = inline
 }
@@ -96,7 +97,7 @@ fun FlexLayout.vertical(inline: Boolean = false) = apply {
  *
  * @param inline The value to which [FlexLayout.isInline] should be set, default `false`.
  */
-fun FlexLayout.verticalReverse(inline: Boolean = false) = apply {
+fun @WebforjDsl FlexLayout.verticalReverse(inline: Boolean = false) = apply {
   direction = FlexDirection.COLUMN_REVERSE
   isInline = inline
 }

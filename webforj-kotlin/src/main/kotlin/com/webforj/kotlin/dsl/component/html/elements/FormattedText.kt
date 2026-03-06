@@ -19,6 +19,7 @@ import com.webforj.kotlin.dsl.init
  * @see FormattedText
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre">HTML pre Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.formattedText(text: String? = null, block: @WebforjDsl FormattedText.() -> Unit = {}): FormattedText {
     val formattedText = text?.let { FormattedText(text) } ?: FormattedText()
     return init(formattedText, block)

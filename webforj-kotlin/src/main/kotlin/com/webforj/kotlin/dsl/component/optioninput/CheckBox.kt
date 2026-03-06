@@ -22,6 +22,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `CheckBox`.
  * @see CheckBox
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.checkBox(
   text: String? = null,
   checked: Boolean? = null,

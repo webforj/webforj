@@ -7,9 +7,6 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.html.elements.Strong
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.badge.badge
-import com.webforj.kotlin.dsl.component.button.badge
-import com.webforj.kotlin.dsl.component.button.button
-import com.webforj.kotlin.dsl.component.button.icon
 import com.webforj.kotlin.dsl.component.html.elements.strong
 import com.webforj.kotlin.extension.prefix
 import com.webforj.kotlin.extension.suffix
@@ -103,7 +100,7 @@ class ButtonTest {
     fun shouldCreateButtonWithIcon() {
         val expected = "Icon"
         val button = root.button {
-            icon { strong(expected) }
+            iconSlot { strong(expected) }
         }
         Assertions.assertTrue(root.hasComponent(button))
         val icon = button.icon as Strong
@@ -115,7 +112,7 @@ class ButtonTest {
     @DisplayName("Create Button with Badge")
     fun shouldCreateButtonWithBadge() {
         val button = root.button("Notifications") {
-            badge { badge("5", BadgeTheme.DANGER) }
+            badgeSlot { badge("5", BadgeTheme.DANGER) }
         }
         Assertions.assertTrue(root.hasComponent(button))
         val badgeComponent = button.badge as Badge

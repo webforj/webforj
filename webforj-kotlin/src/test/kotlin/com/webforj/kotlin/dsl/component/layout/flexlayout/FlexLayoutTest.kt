@@ -107,7 +107,7 @@ class FlexLayoutTest {
       // Content row
       flexLayout(FlexDirection.ROW) {
         div {
-          paragraph("Main content area")
+          paragraph("Main contentSlot area")
           textField("Search", placeholder = "Search...")
         }
 

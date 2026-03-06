@@ -20,7 +20,7 @@ import com.webforj.kotlin.dsl.WebforjDsl
 annotation class ExperimentalTextDsl
 
 /**
- * Extension function that enables setting text content using the unary plus operator.
+ * Extension function that enables setting text contentSlot using the unary plus operator.
  *
  * This function provides a convenient DSL syntax for setting the text property
  * of any component that implements [HasText]. When used within a Webforj DSL

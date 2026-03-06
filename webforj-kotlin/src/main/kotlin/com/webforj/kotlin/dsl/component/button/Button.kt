@@ -24,7 +24,7 @@ import com.webforj.kotlin.extension.suffix
  * To configure the slots of the `Button` see:
  * - [prefix],
  * - [suffix], and
- * - [icon]
+ * - [iconSlot]
  *
  * @param text The text to add to the `Button`.
  * @param theme The theme of the `Button`.
@@ -32,6 +32,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `Button`.
  * @see Button
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.button(
     text: String? = null,
     theme: ButtonTheme? = null,
@@ -50,32 +51,34 @@ fun @WebforjDsl HasComponents.button(
 }
 
 /**
- * Configures the `Component` to set as the icon of a `Button`.
+ * Configures the `Component` to set as the iconSlot of a `Button`.
  * ```
  * button {
- *   icon { }
+ *   iconSlot { }
  * }
  * ```
  *
- * @param block The initialization steps of the icon `Component`.
+ * @param block The initialization steps of the iconSlot `Component`.
  */
-fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Button::setIcon)
 }
 
 /**
- * Configures the `Component` to set as the badge of a `Button`.
+ * Configures the `Component` to set as the badgeSlot of a `Button`.
  * ```
  * button("Notifications") {
- *   badge {
- *     badge("5", BadgeTheme.DANGER)
+ *   badgeSlot {
+ *     badgeSlot("5", BadgeTheme.DANGER)
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the badge `Component`.
+ * @param block The initialization steps of the badgeSlot `Component`.
  */
-fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badge(
+@WebforjDsl
+fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badgeSlot(
   block: @WebforjDsl HasComponents.() -> Component
 ) {
   SingleSlotSetter(block).setSlot(this, DwcButton<T>::setBadge)

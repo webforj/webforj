@@ -21,6 +21,7 @@ import com.webforj.kotlin.dsl.init
  * @see radioButton
  * @see switch
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.radioButtonGroup(name: String? = null, block: @WebforjDsl RadioButtonGroup.() -> Unit): RadioButtonGroup {
   val group = name?.let { RadioButtonGroup(it) } ?: RadioButtonGroup()
   return init(group, block)
@@ -44,6 +45,7 @@ fun @WebforjDsl HasComponents.radioButtonGroup(name: String? = null, block: @Web
  * @see switch
  * @see radioButtonGroup
  */
+@WebforjDsl
 fun @WebforjDsl RadioButtonGroup.radioButton(
   text: String? = null,
   checked: Boolean? = null,
@@ -75,6 +77,7 @@ fun @WebforjDsl RadioButtonGroup.radioButton(
  * @see radioButton
  * @see radioButtonGroup
  */
+@WebforjDsl
 fun @WebforjDsl RadioButtonGroup.switch(
   text: String? = null,
   checked: Boolean? = null,

@@ -23,6 +23,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Avatar`.
  * @see Avatar
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.avatar(
   label: String? = null,
   initials: String? = null,

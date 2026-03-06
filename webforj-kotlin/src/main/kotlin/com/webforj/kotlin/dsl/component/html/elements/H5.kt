@@ -13,6 +13,7 @@ import com.webforj.kotlin.dsl.init
  *   H5("text") // h5 element with text
  * }
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.h5(text: String? = null, block: @WebforjDsl H5.() -> Unit = {}): H5 {
     val h5 = text?.let { H5(text) } ?: H5()
     return init(h5, block)

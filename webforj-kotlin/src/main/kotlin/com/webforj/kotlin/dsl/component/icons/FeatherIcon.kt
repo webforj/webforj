@@ -3,6 +3,7 @@ package com.webforj.kotlin.dsl.component.icons
 import com.webforj.component.icons.FeatherIcon
 import com.webforj.component.icons.Icon
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
@@ -21,4 +22,5 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Icon`.
  * @see FeatherIcon
  */
-fun HasComponents.featherIcon(icon: FeatherIcon, block: Icon.() -> Unit = {}): Icon = init(icon.create(), block)
+@WebforjDsl
+fun @WebforjDsl HasComponents.featherIcon(icon: FeatherIcon, block: @WebforjDsl Icon.() -> Unit = {}): Icon = init(icon.create(), block)

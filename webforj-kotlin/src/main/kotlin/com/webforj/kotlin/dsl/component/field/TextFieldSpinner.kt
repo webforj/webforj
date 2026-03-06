@@ -32,6 +32,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `TextFieldSpinner` instance.
  * @see TextFieldSpinner
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.textFieldSpinner(
   label: String? = null,
   value: String? = null,

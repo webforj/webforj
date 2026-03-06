@@ -30,6 +30,7 @@ import java.awt.Color
  * @see ColorField
  * @see Color
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.colorField(
     label: String? = null,
     value: Color? = null,

@@ -2,6 +2,7 @@ package com.webforj.kotlin.dsl.component.list
 
 import com.webforj.component.list.DwcList
 import com.webforj.component.list.ListItem
+import com.webforj.kotlin.dsl.WebforjDsl
 
 /**
  * Adds multiple items to the list as key-value pairs.
@@ -15,9 +16,10 @@ import com.webforj.component.list.ListItem
  * ```
  *
  * @param items Variable number of pairs where the first element is the key and the second is the display text
- * @param index Optional position to insert the items. If null, items are appended to the end
+ * @param index Optional position to insert the items. If null, items are appended to the endSlot
  */
-fun DwcList<*, *>.items(vararg items: Pair<Any, String>, index: Int? = null) {
+@WebforjDsl
+fun @WebforjDsl DwcList<*, *>.items(vararg items: Pair<Any, String>, index: Int? = null) {
   val list = items.map { ListItem(it.first, it.second) }
   if (index != null) {
     insert(index, list)
@@ -35,8 +37,9 @@ fun DwcList<*, *>.items(vararg items: Pair<Any, String>, index: Int? = null) {
  * ```
  *
  * @param items Variable number of strings to add as list items
- * @param index Optional position to insert the items. If null, items are appended to the end
+ * @param index Optional position to insert the items. If null, items are appended to the endSlot
  */
-fun DwcList<*, *>.items(vararg items: String, index: Int? = null) {
+@WebforjDsl
+fun @WebforjDsl DwcList<*, *>.items(vararg items: String, index: Int? = null) {
   index?.let { insert(it, *items) } ?: insert(*items)
 }

@@ -13,14 +13,14 @@ import com.webforj.kotlin.dsl.init
  * ```
  * ... {
  *   login {
- *     beforeHeader { label("Welcome Back") }
- *     afterHeader { button("Help") }
- *     beforeContent { alert("Please enter your credentials") }
- *     afterContent { label("New user? Sign up") }
- *     beforeForm { tablerIcon("user") }
- *     afterForm { button("Forgot Password") }
- *     beforeFooter { label("© 2026 My Company") }
- *     afterFooter { anchor("privacy-poliy-link", "Privacy Policy") }
+ *     beforeHeaderSlot { label("Welcome Back") }
+ *     afterHeaderSlot { button("Help") }
+ *     beforeContentSlot { alert("Please enter your credentials") }
+ *     afterContentSlot { label("New user? Sign up") }
+ *     beforeFormSlot { tablerIcon("user") }
+ *     afterFormSlot { button("Forgot Password") }
+ *     beforeFooterSlot { label("© 2026 My Company") }
+ *     afterFooterSlot { anchor("privacy-poliy-link", "Privacy Policy") }
  *     loginI18n {
  *       loginErrorI18n {
  *         invalidCredentials = "Invalid username or password"
@@ -31,83 +31,88 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the slots of the `Login` see:
- * - [beforeHeader], and [afterHeader]
- * - [beforeContent], and [afterContent]
- * - [beforeForm], and [afterForm]
- * - [beforeFooter], and [afterFooter]
+ * - [beforeHeaderSlot], and [afterHeaderSlot]
+ * - [beforeContentSlot], and [afterContentSlot]
+ * - [beforeFormSlot], and [afterFormSlot]
+ * - [beforeFooterSlot], and [afterFooterSlot]
  * - [loginI18n] for internationalization
  *
  * @param block The initialization steps of the `Login`.
  * @return The configured `Login`.
  * @see Login
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): Login = init(Login(), block)
 
 /**
- * Configures the components to add to the before header slot of a `Login` component.
+ * Configures the components to add to the before headerSlot slot of a `Login` component.
  * ```
  * login {
- *   beforeHeader {
+ *   beforeHeaderSlot {
  *     label("Welcome Back")
  *     image("logo")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the before header components.
+ * @param block The initialization steps of the before headerSlot components.
  */
-fun @WebforjDsl Login.beforeHeader(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeHeader)
 }
 
 /**
- * Configures the components to add to the after header slot of a `Login` component.
+ * Configures the components to add to the after headerSlot slot of a `Login` component.
  * ```
  * login {
- *   afterHeader {
+ *   afterHeaderSlot {
  *     button("Help")
  *     anchor("pasword-recovery-link", "Forgot Password")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the after header components.
+ * @param block The initialization steps of the after headerSlot components.
  */
-fun @WebforjDsl Login.afterHeader(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterHeader)
 }
 
 /**
- * Configures the components to add to the before content slot of a `Login` component.
+ * Configures the components to add to the before contentSlot slot of a `Login` component.
  * ```
  * login {
- *   beforeContent {
+ *   beforeContentSlot {
  *     alert("Please enter your credentials")
  *     label("Login to your account")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the before content components.
+ * @param block The initialization steps of the before contentSlot components.
  */
-fun @WebforjDsl Login.beforeContent(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeContent)
 }
 
 /**
- * Configures the components to add to the after content slot of a `Login` component.
+ * Configures the components to add to the after contentSlot slot of a `Login` component.
  * ```
  * login {
- *   afterContent {
+ *   afterContentSlot {
  *     label("New user? Sign up")
  *     anchor("new-account-like", "Create account")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the after content components.
+ * @param block The initialization steps of the after contentSlot components.
  */
-fun @WebforjDsl Login.afterContent(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.afterContentSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterContent)
 }
 
@@ -115,7 +120,7 @@ fun @WebforjDsl Login.afterContent(block: @WebforjDsl HasComponents.() -> Unit) 
  * Configures the components to add to the before form slot of a `Login` component.
  * ```
  * login {
- *   beforeForm {
+ *   beforeFormSlot {
  *     tablerIcon("user")
  *     label("Enter your details below")
  *   }
@@ -124,7 +129,8 @@ fun @WebforjDsl Login.afterContent(block: @WebforjDsl HasComponents.() -> Unit) 
  *
  * @param block The initialization steps of the before form components.
  */
-fun @WebforjDsl Login.beforeForm(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.beforeFormSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeForm)
 }
 
@@ -132,7 +138,7 @@ fun @WebforjDsl Login.beforeForm(block: @WebforjDsl HasComponents.() -> Unit) {
  * Configures the components to add to the after form slot of a `Login` component.
  * ```
  * login {
- *   afterForm {
+ *   afterFormSlot {
  *     button("Forgot Password")
  *     anchor("reset-password-link", "Reset password")
  *   }
@@ -141,41 +147,44 @@ fun @WebforjDsl Login.beforeForm(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of the after form components.
  */
-fun @WebforjDsl Login.afterForm(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.afterFormSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterForm)
 }
 
 /**
- * Configures the components to add to the before footer slot of a `Login` component.
+ * Configures the components to add to the before footerSlot slot of a `Login` component.
  * ```
  * login {
- *   beforeFooter {
+ *   beforeFooterSlot {
  *     label("© 2026 My Company")
  *     anchor("terms-of-service-link", "Terms of Service")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the before footer components.
+ * @param block The initialization steps of the before footerSlot components.
  */
-fun @WebforjDsl Login.beforeFooter(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeFooter)
 }
 
 /**
- * Configures the components to add to the after footer slot of a `Login` component.
+ * Configures the components to add to the after footerSlot slot of a `Login` component.
  * ```
  * login {
- *   afterFooter {
+ *   afterFooterSlot {
  *     anchor("privaty-polciy-link", "Privacy Policy")
  *     anchor("contact-support-link", "Contact Support")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the after footer components.
+ * @param block The initialization steps of the after footerSlot components.
  */
-fun @WebforjDsl Login.afterFooter(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Login.afterFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterFooter)
 }
 
@@ -184,7 +193,7 @@ fun @WebforjDsl Login.afterFooter(block: @WebforjDsl HasComponents.() -> Unit) {
  * ```
  * login {
  *   loginI18n {
- *     title = "Sign In"
+ *     titleSlot = "Sign In"
  *     usernameLabel = "Email Address"
  *     passwordLabel = "Password"
  *     submitButton = "Log In"
@@ -200,6 +209,7 @@ fun @WebforjDsl Login.afterFooter(block: @WebforjDsl HasComponents.() -> Unit) {
  * @return The configured `LoginI18n`.
  * @see LoginI18n
  */
+@WebforjDsl
 fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI18n {
   val loginI18n = LoginI18n().apply(block)
   i18n = loginI18n
@@ -207,7 +217,7 @@ fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI
 }
 
 /**
- * Configures error message internationalization for the `Login` component.
+ * Configures error messageSlot internationalization for the `Login` component.
  * ```
  * loginI18n {
  *   loginErrorI18n {
@@ -223,4 +233,5 @@ fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI
  * @return The configured `LoginErrorI18n`.
  * @see LoginErrorI18n
  */
+@WebforjDsl
 fun @WebforjDsl LoginI18n.loginErrorI18n(block: @WebforjDsl LoginErrorI18n.() -> Unit): LoginErrorI18n = error.apply(block)

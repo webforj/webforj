@@ -18,6 +18,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Article` instance.
  * @see Article
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.article(text: String? = null, block: @WebforjDsl Article.() -> Unit = {}): Article  {
   val article = text?.let { Article(it) } ?: Article()
   return init(article, block)

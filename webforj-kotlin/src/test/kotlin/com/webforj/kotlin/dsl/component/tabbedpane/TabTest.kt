@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class TabTest {
   lateinit var pane: TabbedPane
@@ -19,11 +18,11 @@ class TabTest {
   }
 
   @Test
-  @DisplayName("Create Tab with prefix component")
+  @DisplayName("Create Tab with prefixSlot component")
   fun shouldCreateTabWithPrefix() {
     val text = "PrefixButton"
     val tab = pane.tab("With Prefix") {
-      prefix {
+      prefixSlot {
         button(text)
       }
     }
@@ -34,11 +33,11 @@ class TabTest {
   }
 
   @Test
-  @DisplayName("Create Tab with suffix component")
+  @DisplayName("Create Tab with suffixSlot component")
   fun shouldCreateTabWithSuffix() {
     val text = "SuffixButton"
     val tab = pane.tab("With Suffix") {
-      suffix {
+      suffixSlot {
         button(text)
       }
     }
@@ -49,11 +48,11 @@ class TabTest {
   }
 
   @Test
-  @DisplayName("Create Tab with content component")
+  @DisplayName("Create Tab with contentSlot component")
   fun shouldCreateTabWithContent() {
     val text = "ContentButton"
     val tab = pane.tab("With Content") {
-      content {
+      contentSlot {
         button(text)
       }
     }

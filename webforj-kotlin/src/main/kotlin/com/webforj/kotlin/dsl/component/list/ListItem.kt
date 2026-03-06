@@ -22,6 +22,7 @@ import com.webforj.kotlin.dsl.WebforjDsl
  * @see comboBox
  * @see listBox
  */
+@WebforjDsl
 fun @WebforjDsl DwcList<*, *>.listItem(text: String, key: Any? = null, block: @WebforjDsl ListItem.() -> Unit = {}): ListItem {
   val listItem = key?.let { ListItem(key, text) } ?: ListItem(text)
   listItem.block()

@@ -28,6 +28,7 @@ import com.webforj.kotlin.dsl.init
  * @see Anchor
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a">Html a Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.anchor(
     href: String? = null,
     text: String? = null,

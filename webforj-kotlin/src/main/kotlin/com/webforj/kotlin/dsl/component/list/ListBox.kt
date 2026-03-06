@@ -20,6 +20,7 @@ import com.webforj.kotlin.dsl.init
  * @see ListBox
  * @see listItem
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.listBox(label: String? = null, block: @WebforjDsl ListBox.() -> Unit = {}): ListBox {
   val listBox = label?.let { ListBox(it) } ?: ListBox()
   return init(listBox, block)

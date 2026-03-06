@@ -10,8 +10,8 @@ import com.webforj.kotlin.dsl.init
 /**
  * Creates a `Splitter` component for creating resizable split-pane layouts with optional [id].
  * ```
- * splitter("content-splitter") {
- *   master {
+ * splitter("contentSlot-splitter") {
+ *   masterSlot {
  *     // Single component per slot - use a container for multiple components
  *     flexLayout {
  *       label("Navigation")
@@ -19,7 +19,7 @@ import com.webforj.kotlin.dsl.init
  *       button("Menu Item 2")
  *     }
  *   }
- *   detail {
+ *   detailSlot {
  *     flexLayout {
  *       label("Content Area")
  *       paragraph("Detailed information appears here")
@@ -29,26 +29,27 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the slots of the `Splitter` see:
- * - [master], and
- * - [detail]
+ * - [masterSlot], and
+ * - [detailSlot]
  *
  * @param id The unique identifier for the `Splitter` component.
  * @param block The initialization steps of the `Splitter`.
  * @return The configured `Splitter`.
  * @see Splitter
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Splitter.() -> Unit = {}): Splitter {
   val splitter = id?.let { Splitter(id) } ?: Splitter()
   return init(splitter, block)
 }
 
 /**
- * Configures the component to add to the master slot of a `Splitter` component.
+ * Configures the component to add to the masterSlot slot of a `Splitter` component.
  *
  * **Note:** Only a single component is accepted. Use a container for multiple components.
  * ```
  * splitter {
- *   master {
+ *   masterSlot {
  *     flexLayout {
  *       label("Navigation")
  *       button("Menu Item 1")
@@ -58,19 +59,20 @@ fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Sp
  * }
  * ```
  *
- * @param block The initialization steps of the master component.
+ * @param block The initialization steps of the masterSlot component.
  */
-fun @WebforjDsl Splitter.master(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Splitter::setMaster)
 }
 
 /**
- * Configures the component to add to the detail slot of a `Splitter` component.
+ * Configures the component to add to the detailSlot slot of a `Splitter` component.
  *
  * **Note:** Only a single component is accepted. Use a container for multiple components.
  * ```
  * splitter {
- *   detail {
+ *   detailSlot {
  *     flexLayout {
  *       label("Content Area")
  *       paragraph("Detailed information appears here")
@@ -79,8 +81,9 @@ fun @WebforjDsl Splitter.master(block: @WebforjDsl HasComponents.() -> Component
  * }
  * ```
  *
- * @param block The initialization steps of the detail component.
+ * @param block The initialization steps of the detailSlot component.
  */
-fun @WebforjDsl Splitter.detail(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Splitter.detailSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Splitter::setDetail)
 }

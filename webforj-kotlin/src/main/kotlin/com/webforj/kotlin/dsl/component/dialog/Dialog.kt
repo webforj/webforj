@@ -7,10 +7,10 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `Dialog` with optional [header] and [footer] sections.
+ * Creates a `Dialog` with optional [headerSlot] and [footerSlot] sections.
  * ```
  * dialog {
- *   header {
+ *   headerSlot {
  *     label("User Registration")
  *     paragraph("Please fill in the form below")
  *   }
@@ -26,7 +26,7 @@ import com.webforj.kotlin.dsl.init
  *     checkBox("Send me promotional emails", checked = false)
  *   }
  *
- *   footer {
+ *   footerSlot {
  *     div {
  *       button("Cancel", theme = ButtonTheme.DANGER)
  *       button("Register", theme = ButtonTheme.PRIMARY)
@@ -36,40 +36,42 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the sections of the `Dialog` see:
- * - [header],
- * - [footer]
+ * - [headerSlot],
+ * - [footerSlot]
  *
  * @param block The initialization steps of the `Dialog`.
  * @return The configured `Dialog`.
  * @see Dialog
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}): Dialog {
   val dialog = Dialog()
   return init(dialog, block)
 }
 
 /**
- * Configures the components to add to the header section of a `Dialog`.
+ * Configures the components to add to the headerSlot section of a `Dialog`.
  * ```
  * dialog {
- *   header {
+ *   headerSlot {
  *     label("Dialog Title")
  *     paragraph("Dialog description")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the header components.
+ * @param block The initialization steps of the headerSlot components.
  */
-fun @WebforjDsl Dialog.header(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Dialog::addToHeader)
 }
 
 /**
- * Configures the components to add to the footer section of a `Dialog`.
+ * Configures the components to add to the footerSlot section of a `Dialog`.
  * ```
  * dialog {
- *   footer {
+ *   footerSlot {
  *     div {
  *       button("Cancel")
  *       button("Save", theme = ButtonTheme.PRIMARY)
@@ -78,9 +80,10 @@ fun @WebforjDsl Dialog.header(block: @WebforjDsl HasComponents.() -> Unit) {
  * }
  * ```
  *
- * @param block The initialization steps of the footer components.
+ * @param block The initialization steps of the footerSlot components.
  */
-fun @WebforjDsl Dialog.footer(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Dialog.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Dialog::addToFooter)
 }
 

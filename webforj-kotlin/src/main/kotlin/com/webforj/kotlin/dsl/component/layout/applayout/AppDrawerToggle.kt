@@ -7,11 +7,11 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates an `AppDrawerToggle` component for toggling application drawer visibility with optional [icon].
+ * Creates an `AppDrawerToggle` component for toggling application drawerSlot visibility with optional [icon].
  * ```
  * ... {
  *   appDrawerToggle() // Empty AppDrawerToggle component
- *   appDrawerToggle("menu" to "tabler") // AppDrawerToggle with icon
+ *   appDrawerToggle("menu" to "tabler") // AppDrawerToggle with iconSlot
  * }
  * ```
  *
@@ -21,6 +21,7 @@ import com.webforj.kotlin.dsl.init
  * @see AppDrawerToggle
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.appDrawerToggle(
   icon: Pair<String, String>? = null,
   block: @WebforjDsl AppDrawerToggle.() -> Unit = {}
@@ -30,11 +31,11 @@ fun @WebforjDsl HasComponents.appDrawerToggle(
 }
 
 /**
- * Creates an `AppDrawerToggle` component for toggling application drawer visibility with optional [icon].
+ * Creates an `AppDrawerToggle` component for toggling application drawerSlot visibility with optional [icon].
  * ```
  * ... {
  *   appDrawerToggle() // Empty AppDrawerToggle component
- *   appDrawerToggle(TablerIcon.create("menu")) // AppDrawerToggle with icon
+ *   appDrawerToggle(TablerIcon.create("menu")) // AppDrawerToggle with iconSlot
  * }
  * ```
  *
@@ -44,7 +45,8 @@ fun @WebforjDsl HasComponents.appDrawerToggle(
  * @see AppDrawerToggle
  * @see Icon
  */
-fun HasComponents.appDrawerToggle(
+@WebforjDsl
+fun @WebforjDsl HasComponents.appDrawerToggle(
   icon: Icon,
   block: @WebforjDsl AppDrawerToggle.() -> Unit = {}
 ): AppDrawerToggle {

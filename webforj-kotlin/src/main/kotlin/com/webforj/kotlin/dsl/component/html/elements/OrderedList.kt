@@ -20,6 +20,7 @@ import com.webforj.kotlin.dsl.init
  * @see OrderedList
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ol">HTML ol Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.orderedList(text: String? = null, block: @WebforjDsl OrderedList.() -> Unit = {}): OrderedList {
     val ul = text?.let { OrderedList(text) } ?: OrderedList()
     return init(ul, block)
@@ -40,6 +41,7 @@ fun @WebforjDsl HasComponents.orderedList(text: String? = null, block: @WebforjD
  * @see ListEntry
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li">HTML li Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl OrderedList.listEntry(text: String? = null, block: @WebforjDsl ListEntry.() -> Unit = {}): ListEntry {
     val li = text?.let { ListEntry(text) } ?: ListEntry()
     return init(li, block)

@@ -12,13 +12,13 @@ import com.webforj.kotlin.dsl.init
  * ... {
  *   toolbar() // Empty Toolbar component
  *   toolbar {
- *    title {
+ *    titleSlot {
  *      h3("Application")
  *    }
- *    start {
+ *    startSlot {
  *      button("Menu")
  *    }
- *    end {
+ *    endSlot {
  *      button("Settings")
  *      button("User")
  *    }
@@ -28,9 +28,9 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the slots of the `Toolbar` see:
- * - [start],
- * - [title], and
- * - [end]
+ * - [startSlot],
+ * - [titleSlot], and
+ * - [endSlot]
  *
  * @param block The initialization steps of the `Toolbar`.
  * @return The configured `Toolbar`.
@@ -40,53 +40,53 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}): Toolbar = init(Toolbar(), block)
 
 /**
- * Configures the components to add to the start slot of a `Toolbar` component.
+ * Configures the components to add to the startSlot slot of a `Toolbar` component.
  * ```
  * toolbar {
- *   start {
+ *   startSlot {
  *     button("Menu")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the start components.
+ * @param block The initialization steps of the startSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl Toolbar.start(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl Toolbar.startSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toolbar::addToStart)
 }
 
 /**
- * Configures the components to add to the title slot of a `Toolbar` component.
+ * Configures the components to add to the titleSlot slot of a `Toolbar` component.
  * ```
  * toolbar {
- *   title {
+ *   titleSlot {
  *     h3("Application")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the title components.
+ * @param block The initialization steps of the titleSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl Toolbar.title(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl Toolbar.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toolbar::addToTitle)
 }
 
 /**
- * Configures the components to add to the end slot of a `Toolbar` component.
+ * Configures the components to add to the endSlot slot of a `Toolbar` component.
  * ```
  * toolbar {
- *   end {
+ *   endSlot {
  *     button("Settings")
  *     button("User")
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the end components.
+ * @param block The initialization steps of the endSlot components.
  */
 @WebforjDsl
-fun @WebforjDsl Toolbar.end(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl Toolbar.endSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toolbar::addToEnd)
 }

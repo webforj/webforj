@@ -19,6 +19,7 @@ import com.webforj.kotlin.dsl.init
  * @param block The initialization steps of the `Label`.
  * @return The configured `Label`.
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.label(text: String? = null, wrap: Boolean? = null, block: @WebforjDsl Label.() -> Unit = {}): Label {
   val label = when {
     wrap != null && text != null -> Label(text, wrap)

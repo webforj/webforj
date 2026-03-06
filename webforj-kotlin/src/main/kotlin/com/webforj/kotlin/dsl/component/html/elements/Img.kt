@@ -22,6 +22,7 @@ import com.webforj.kotlin.dsl.init
  * @see Img
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img">HTML img Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.img(src: String? = null, alt: String? = null, block: @WebforjDsl Img.() -> Unit = {}): Img {
     val img = if (alt != null && src != null) {
         Img(src, alt)

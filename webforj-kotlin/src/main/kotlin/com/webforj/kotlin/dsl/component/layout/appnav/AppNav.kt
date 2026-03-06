@@ -19,8 +19,8 @@ import kotlin.reflect.KClass
  *     appNavItem("Home", "/home")
  *     appNavItem("Dashboard", DashboardView::class)
  *     appNavItem("Settings", "/settings") {
- *       prefix { icon("settings") }
- *       suffix { badge("new") }
+ *       prefixSlot { iconSlot("settings") }
+ *       suffixSlot { badgeSlot("new") }
  *     }
  *   }
  * }
@@ -30,6 +30,7 @@ import kotlin.reflect.KClass
  * @return The configured `AppNav`.
  * @see AppNav
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}): AppNav = init(AppNav(), block)
 
 /**
@@ -41,8 +42,8 @@ fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}):
  *   appNavItem("Profile", "/profile", ProfileView::class) // Item with text, path, and view
  *   appNavItem("Search", view = SearchView::class, routeParameters = ParametersBag.of("query", "test")) // Item with view and parameters
  *   appNavItem("Settings") { // Item with only text
- *     prefix { icon("settings") }
- *     suffix { badge("new") }
+ *     prefixSlot { iconSlot("settings") }
+ *     suffixSlot { badgeSlot("new") }
  *   }
  * }
  * ```
@@ -59,6 +60,7 @@ fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}):
  * @return The configured `AppNavItem`.
  * @see AppNavItem
  */
+@WebforjDsl
 fun @WebforjDsl AppNav.appNavItem(
   text: String,
   path: String? = null,

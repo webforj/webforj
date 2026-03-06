@@ -32,6 +32,7 @@ import java.time.LocalDate
  * @see MaskedDateFieldSpinner
  * @see LocalDate
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.maskedDateFieldSpinner(
   label: String? = null,
   value: LocalDate? = null,

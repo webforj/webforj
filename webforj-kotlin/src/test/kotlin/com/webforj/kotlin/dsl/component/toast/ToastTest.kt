@@ -83,7 +83,7 @@ class Toast {
   @DisplayName("Create example from KDocs")
   fun shouldCreateExample() {
     val toast = root.toast("File uploaded", 5000, Theme.SUCCESS) {
-      message {
+      messageSlot {
         label("Upload successful")
       }
     }
@@ -96,19 +96,19 @@ class Toast {
   }
 
   @Test
-  @DisplayName("Create Toast with message configuration")
+  @DisplayName("Create Toast with messageSlot configuration")
   fun shouldCreateToastWithMessageConfiguration() {
     val blockExecuted = AtomicBoolean(false)
     
-    val toast = root.toast("Test message") {
-      message {
+    val toast = root.toast("Test messageSlot") {
+      messageSlot {
         blockExecuted.set(true)
-        label("Message content")
+        label("Message contentSlot")
       }
     }
 
     assertTrue { root.hasComponent(toast) }
-    assertEquals("Test message", toast.text)
+    assertEquals("Test messageSlot", toast.text)
     assertTrue(blockExecuted.get())
   }
 

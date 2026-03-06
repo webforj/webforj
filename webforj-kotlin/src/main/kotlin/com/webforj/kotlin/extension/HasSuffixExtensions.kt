@@ -7,16 +7,17 @@ import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 
 /**
- * The currently set suffix [Component] or `null` if none is set yet.
+ * The currently set suffixSlot [Component] or `null` if none is set yet.
  */
 val HasSuffix<*>.suffix: Component?
   get() = suffixComponent
 
 /**
- * Sets the suffix to the [Component] configure inside [block].
+ * Sets the suffixSlot to the [Component] configure inside [block].
  *
  * @param block The initialization of the [Component].
  */
+@WebforjDsl
 fun @WebforjDsl HasSuffix<*>.suffix(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this) {
     suffixComponent = it

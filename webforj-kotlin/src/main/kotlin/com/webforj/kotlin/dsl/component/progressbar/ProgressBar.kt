@@ -28,6 +28,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `ProgressBar`.
  * @see ProgressBar
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.progressBar(
   value: Int? = null,
   min: Int? = null,

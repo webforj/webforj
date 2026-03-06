@@ -19,6 +19,7 @@ import com.webforj.kotlin.dsl.init
  * @see Paragraph
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p">HTML p Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.paragraph(text: String? = null, block: @WebforjDsl Paragraph.() -> Unit = {}): Paragraph {
     val paragraph = text?.let { Paragraph(text) } ?: Paragraph()
     return init(paragraph, block)

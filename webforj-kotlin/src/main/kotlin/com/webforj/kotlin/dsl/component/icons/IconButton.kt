@@ -15,12 +15,13 @@ import com.webforj.kotlin.dsl.init
  * }
  * ```
  *
- * @param name The icon name (ignored if icon is provided).
- * @param pool The icon pool (ignored if icon is provided).
+ * @param name The iconSlot name (ignored if iconSlot is provided).
+ * @param pool The iconSlot pool (ignored if iconSlot is provided).
  * @param block The initialization steps for the `IconButton`.
  * @return The configured `IconButton` instance.
  * @see IconButton
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.iconButton(
   name: String,
   pool: String,
@@ -31,8 +32,8 @@ fun @WebforjDsl HasComponents.iconButton(
  * Creates an `IconButton` with an [icon].
  * ```
  * ... {
- *   // Create with existing icon
- *   val bellIcon = icon("bell", "tabler")
+ *   // Create with existing iconSlot
+ *   val bellIcon = iconSlot("bell", "tabler")
  *   iconButton(bellIcon)
  * }
  * ```
@@ -43,6 +44,7 @@ fun @WebforjDsl HasComponents.iconButton(
  * @see IconButton
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.iconButton(
   icon: Icon,
   block: @WebforjDsl IconButton.() -> Unit = {}

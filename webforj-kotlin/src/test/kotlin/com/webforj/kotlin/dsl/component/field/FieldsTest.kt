@@ -461,7 +461,7 @@ class FieldsTest {
     assertTrue { root.hasComponent(field) }
   }
 
-  @ParameterizedTest(name = "Create {0} component with prefix component")
+  @ParameterizedTest(name = "Create {0} component with prefixSlot component")
   @MethodSource("provideEmptyFields")
   fun shouldCreateFieldWithPrefix(name: String, root: HasComponents, field: DwcField<*, *>) {
     val expected = "Prefix"
@@ -471,7 +471,7 @@ class FieldsTest {
     assertEquals(expected, prefix.text)
   }
 
-  @ParameterizedTest(name = "Create {0} component with suffix component")
+  @ParameterizedTest(name = "Create {0} component with suffixSlot component")
   @MethodSource("provideEmptyFields")
   fun shouldCreateFieldWithSuffix(name: String, root: HasComponents, field: DwcField<*, *>) {
     val expected = "Suffix"

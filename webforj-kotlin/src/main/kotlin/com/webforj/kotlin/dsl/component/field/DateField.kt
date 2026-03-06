@@ -30,6 +30,7 @@ import java.time.LocalDate
  * @see DateField
  * @see LocalDate
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.dateField(
   label: String? = null,
   value: LocalDate? = null,
