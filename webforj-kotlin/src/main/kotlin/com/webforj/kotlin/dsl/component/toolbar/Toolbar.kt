@@ -36,6 +36,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Toolbar`.
  * @see Toolbar
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}): Toolbar = init(Toolbar(), block)
 
 /**
@@ -50,6 +51,7 @@ fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}
  *
  * @param block The initialization steps of the start components.
  */
+@WebforjDsl
 fun @WebforjDsl Toolbar.start(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toolbar::addToStart)
 }
@@ -66,6 +68,7 @@ fun @WebforjDsl Toolbar.start(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of the title components.
  */
+@WebforjDsl
 fun @WebforjDsl Toolbar.title(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toolbar::addToTitle)
 }
@@ -83,6 +86,7 @@ fun @WebforjDsl Toolbar.title(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of the end components.
  */
+@WebforjDsl
 fun @WebforjDsl Toolbar.end(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toolbar::addToEnd)
 }
