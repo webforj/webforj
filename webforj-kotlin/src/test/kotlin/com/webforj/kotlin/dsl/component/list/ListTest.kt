@@ -5,8 +5,8 @@ import com.webforj.component.list.DwcList
 import com.webforj.component.list.DwcSelectDropdown
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.html.elements.strong
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertEquals
@@ -63,12 +63,12 @@ class ListTest {
       return listOf(
         createTestCase("ChoiceBox") {
           choiceBox {
-            prefix { strong { name = it } }
+            prefixSlot { strong { name = it } }
           }
         },
         createTestCase("ComboBox") {
           comboBox {
-            prefix { strong { name = it } }
+            prefixSlot { strong { name = it } }
           }
         },
       )
@@ -79,12 +79,12 @@ class ListTest {
       return listOf(
         createTestCase("ChoiceBox") {
           choiceBox {
-            suffix { strong { name = it } }
+            suffixSlot { strong { name = it } }
           }
         },
         createTestCase("ComboBox") {
           comboBox {
-            suffix { strong { name = it } }
+            suffixSlot { strong { name = it } }
           }
         },
       )

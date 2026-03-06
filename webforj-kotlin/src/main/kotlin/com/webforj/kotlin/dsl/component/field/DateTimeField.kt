@@ -4,8 +4,8 @@ import com.webforj.component.field.DateTimeField
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import java.time.LocalDateTime
 
 /**
@@ -20,8 +20,8 @@ import java.time.LocalDateTime
  * ```
  *
  * To configure the slots of the `DateTimeField` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param label The label of the `DateTimeField`.
  * @param value The initial [LocalDateTime] of the `DateTimeField`.

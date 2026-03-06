@@ -8,8 +8,8 @@ import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `Button` component with an optional [text] and [theme].
@@ -22,8 +22,8 @@ import com.webforj.kotlin.extension.suffix
  * ```
  *
  * To configure the slots of the `Button` see:
- * - [prefix],
- * - [suffix], and
+ * - [prefixSlot],
+ * - [suffixSlot], and
  * - [iconSlot]
  *
  * @param text The text to add to the `Button`.

@@ -4,8 +4,8 @@ import com.webforj.component.field.TimeField
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import java.time.LocalTime
 
 /**
@@ -20,8 +20,8 @@ import java.time.LocalTime
  * ```
  *
  * To configure the slots of the `TimeField` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param label The label of the `TimeField`.
  * @param value The initial [LocalTime] of the `TimeField`.

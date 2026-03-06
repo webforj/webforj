@@ -6,8 +6,8 @@ import com.webforj.component.layout.appnav.AppNavItem
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import com.webforj.router.history.ParametersBag
 import kotlin.reflect.KClass
 
@@ -49,8 +49,8 @@ fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}):
  * ```
  *
  * To configure the slots of the `AppNavItem` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param text The display text of the navigation item.
  * @param path The navigation path for the item.
