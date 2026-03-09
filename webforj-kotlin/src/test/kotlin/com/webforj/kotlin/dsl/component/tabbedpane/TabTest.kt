@@ -48,7 +48,7 @@ class TabTest {
   }
 
   @Test
-  @DisplayName("Create Tab with contentSlot component")
+  @DisplayName("Create Tab with content component")
   fun shouldCreateTabWithContent() {
     val text = "ContentButton"
     val tab = pane.tab("With Content") {

@@ -19,8 +19,8 @@ import kotlin.reflect.KClass
  *     appNavItem("Home", "/home")
  *     appNavItem("Dashboard", DashboardView::class)
  *     appNavItem("Settings", "/settings") {
- *       prefixSlot { iconSlot("settings") }
- *       suffixSlot { badgeSlot("new") }
+ *       prefixSlot { icon("settings") }
+ *       suffixSlot { badge("new") }
  *     }
  *   }
  * }
@@ -42,8 +42,8 @@ fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}):
  *   appNavItem("Profile", "/profile", ProfileView::class) // Item with text, path, and view
  *   appNavItem("Search", view = SearchView::class, routeParameters = ParametersBag.of("query", "test")) // Item with view and parameters
  *   appNavItem("Settings") { // Item with only text
- *     prefixSlot { iconSlot("settings") }
- *     suffixSlot { badgeSlot("new") }
+ *     prefixSlot { icon("settings") }
+ *     suffixSlot { badge("new") }
  *   }
  * }
  * ```
@@ -79,8 +79,8 @@ fun @WebforjDsl AppNav.appNavItem(
  * appNav {
  *   appNavItem("Profile", "/profile", ProfileView::class) {// Item with text, path, and view
  *     appNavItem("Profile Settings") { // Item with only text
- *         prefixSlot { iconSlot("settings") }
- *         suffixSlot { badgeSlot("new") }
+ *         prefixSlot { icon("settings") }
+ *         suffixSlot { badge("new") }
  *       }
  *   }
  * }

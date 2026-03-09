@@ -34,7 +34,7 @@ class MarkdownViewerTest {
     }
 
     @Test
-    @DisplayName("Create MarkdownViewer with simple contentSlot")
+    @DisplayName("Create MarkdownViewer with simple content")
     fun shouldCreateMarkdownViewerWithSimpleContent() {
         val content = "# Hello World"
         val markdownViewer = root.markdownViewer(content)
@@ -59,7 +59,7 @@ class MarkdownViewerTest {
     }
 
     @Test
-    @DisplayName("Create MarkdownViewer with contentSlot and configuration block")
+    @DisplayName("Create MarkdownViewer with content and configuration block")
     fun shouldCreateMarkdownViewerWithContentAndBlock() {
         val content = "## Sample Content"
         val blockExecuted = AtomicBoolean(false)

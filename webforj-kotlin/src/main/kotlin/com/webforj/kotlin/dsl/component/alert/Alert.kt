@@ -30,7 +30,7 @@ fun @WebforjDsl HasComponents.alert(
   text: String? = null,
   theme: Theme? = null,
   closable: Boolean? = null,
-  block: Alert.() -> Unit = {}
+  block: @WebforjDsl Alert.() -> Unit = {}
 ): Alert {
   val alert = when {
     closable != null && theme != null && text != null -> Alert(text, theme, closable)

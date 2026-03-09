@@ -103,7 +103,7 @@ class Toast {
     val toast = root.toast("Test messageSlot") {
       messageSlot {
         blockExecuted.set(true)
-        label("Message contentSlot")
+        label("Message content")
       }
     }
 

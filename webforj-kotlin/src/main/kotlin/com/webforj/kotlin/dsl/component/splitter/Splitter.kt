@@ -10,7 +10,7 @@ import com.webforj.kotlin.dsl.init
 /**
  * Creates a `Splitter` component for creating resizable split-pane layouts with optional [id].
  * ```
- * splitter("contentSlot-splitter") {
+ * splitter("content-splitter") {
  *   masterSlot {
  *     // Single component per slot - use a container for multiple components
  *     flexLayout {
@@ -44,7 +44,7 @@ fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Sp
 }
 
 /**
- * Configures the component to add to the masterSlot slot of a `Splitter` component.
+ * Configures the component to add to the master slot of a `Splitter` component.
  *
  * **Note:** Only a single component is accepted. Use a container for multiple components.
  * ```
@@ -59,7 +59,7 @@ fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Sp
  * }
  * ```
  *
- * @param block The initialization steps of the masterSlot component.
+ * @param block The initialization steps of the master component.
  */
 @WebforjDsl
 fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Component) {
@@ -67,7 +67,7 @@ fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Compo
 }
 
 /**
- * Configures the component to add to the detailSlot slot of a `Splitter` component.
+ * Configures the component to add to the detail slot of a `Splitter` component.
  *
  * **Note:** Only a single component is accepted. Use a container for multiple components.
  * ```
@@ -81,7 +81,7 @@ fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Compo
  * }
  * ```
  *
- * @param block The initialization steps of the detailSlot component.
+ * @param block The initialization steps of the detail component.
  */
 @WebforjDsl
 fun @WebforjDsl Splitter.detailSlot(block: @WebforjDsl HasComponents.() -> Component) {

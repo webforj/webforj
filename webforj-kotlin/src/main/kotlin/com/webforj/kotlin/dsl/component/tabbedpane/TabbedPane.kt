@@ -37,7 +37,7 @@ fun @WebforjDsl HasComponents.tabbedPane(name: String? = null, block: @WebforjDs
 }
 
 /**
- * The backing [Map] to allow the contentSlot of a [Tab] to be configured.
+ * The backing [Map] to allow the content of a [Tab] to be configured.
  * @see contentSlot
  */
 private val tabContentMap: MutableMap<Tab, Component?> = hashMapOf()
@@ -74,18 +74,18 @@ fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit =
 }
 
 /**
- * Sets a [Component] as the contentSlot of a [Tab].
+ * Sets a [Component] as the content of a [Tab].
  * ```
  * tab {
  *  contentSlot {
  *    div {
- *      // tab contentSlot configuration
+ *      // tab content configuration
  *    }
  *  }
  * }
  * ```
  *
- * @param block The initialization steps of the contentSlot [Component].
+ * @param block The initialization steps of the content [Component].
  * @see tab
  * @see prefixSlot
  * @see suffixSlot
@@ -96,16 +96,16 @@ fun @WebforjDsl Tab.contentSlot(block: @WebforjDsl HasComponents.() -> Component
 }
 
 /**
- * Sets a [Component] as the prefixSlot of a [Tab].
+ * Sets a [Component] as the prefix of a [Tab].
  * ```
  * tab {
  *  prefixSlot {
- *    // tab prefixSlot configuration
+ *    // tab prefix configuration
  *  }
  * }
  * ```
  *
- * @param block The initialization steps of the prefixSlot [Component].
+ * @param block The initialization steps of the prefix [Component].
  * @see tab
  * @see contentSlot
  * @see suffixSlot
@@ -116,16 +116,16 @@ fun @WebforjDsl Tab.prefixSlot(block: @WebforjDsl HasComponents.() -> Component)
 }
 
 /**
- * Sets a [Component] as the suffixSlot of a [Tab].
+ * Sets a [Component] as the suffix of a [Tab].
  * ```
  * tab {
  *  suffixSlot {
- *    // tab suffixSlot configuration
+ *    // tab suffix configuration
  *  }
  * }
  * ```
  *
- * @param block The initialization steps of the suffixSlot [Component].
+ * @param block The initialization steps of the suffix [Component].
  * @see tab
  * @see contentSlot
  * @see prefixSlot

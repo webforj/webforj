@@ -56,7 +56,7 @@ fun @WebforjDsl HasComponents.appLayout(block: @WebforjDsl AppLayout.() -> Unit 
 }
 
 /**
- * Configures the components to add to the headerSlot slot of an `AppLayout`.
+ * Configures the components to add to the header slot of an `AppLayout`.
  * ```
  * appLayout {
  *   headerSlot {
@@ -66,7 +66,7 @@ fun @WebforjDsl HasComponents.appLayout(block: @WebforjDsl AppLayout.() -> Unit 
  * }
  * ```
  *
- * @param block The initialization steps of the headerSlot components.
+ * @param block The initialization steps of the header components.
  */
 @WebforjDsl
 fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -74,7 +74,7 @@ fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit
 }
 
 /**
- * Configures the components to add to the footerSlot slot of an `AppLayout`.
+ * Configures the components to add to the footer slot of an `AppLayout`.
  * ```
  * appLayout {
  *   footerSlot {
@@ -84,7 +84,7 @@ fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit
  * }
  * ```
  *
- * @param block The initialization steps of the footerSlot components.
+ * @param block The initialization steps of the footer components.
  */
 @WebforjDsl
 fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -92,7 +92,7 @@ fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit
 }
 
 /**
- * Configures the components to add to the drawerSlot slot of an `AppLayout`.
+ * Configures the components to add to the drawer slot of an `AppLayout`.
  * ```
  * appLayout {
  *   drawerSlot {
@@ -103,7 +103,7 @@ fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit
  * }
  * ```
  *
- * @param block The initialization steps of the drawerSlot components.
+ * @param block The initialization steps of the drawer components.
  */
 @WebforjDsl
 fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -111,7 +111,7 @@ fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit
 }
 
 /**
- * Configures the components to add to the drawerSlot titleSlot slot of an `AppLayout`.
+ * Configures the components to add to the drawer title slot of an `AppLayout`.
  * ```
  * appLayout {
  *   drawerTitleSlot {
@@ -120,7 +120,7 @@ fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit
  * }
  * ```
  *
- * @param block The initialization steps of the drawerSlot titleSlot components.
+ * @param block The initialization steps of the drawer title components.
  */
 @WebforjDsl
 fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -128,7 +128,7 @@ fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() ->
 }
 
 /**
- * Configures the components to add to the drawerSlot headerSlot actions slot of an `AppLayout`.
+ * Configures the components to add to the drawer header actions slot of an `AppLayout`.
  * ```
  * appLayout {
  *   drawerHeaderActionsSlot {
@@ -138,7 +138,7 @@ fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() ->
  * }
  * ```
  *
- * @param block The initialization steps of the drawerSlot headerSlot actions components.
+ * @param block The initialization steps of the drawer header actions components.
  */
 @WebforjDsl
 fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -146,7 +146,7 @@ fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponen
 }
 
 /**
- * Configures the components to add to the drawerSlot footerSlot slot of an `AppLayout`.
+ * Configures the components to add to the drawer footer slot of an `AppLayout`.
  * ```
  * appLayout {
  *   drawerFooterSlot {
@@ -156,7 +156,7 @@ fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponen
  * }
  * ```
  *
- * @param block The initialization steps of the drawerSlot footerSlot components.
+ * @param block The initialization steps of the drawer footer components.
  */
 @WebforjDsl
 fun @WebforjDsl AppLayout.drawerFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {

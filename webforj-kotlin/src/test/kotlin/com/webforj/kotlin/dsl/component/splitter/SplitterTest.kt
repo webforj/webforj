@@ -66,7 +66,7 @@ class SplitterTest {
   @Test
   @DisplayName("Create Splitter with ID and configuration block")
   fun shouldCreateSplitterWithIdAndBlock() {
-    val id = "contentSlot-splitter"
+    val id = "content-splitter"
     val blockExecuted = AtomicBoolean(false)
 
     val splitter = root.splitter(id) {

@@ -102,7 +102,7 @@ class DrawerTest {
         }
       }
 
-      // Main contentSlot (directly in drawerSlot)
+      // Main content (directly in drawer)
       div {
         textField("Search", placeholder = "Search menu items...")
 

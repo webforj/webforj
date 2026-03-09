@@ -10,7 +10,7 @@ import com.webforj.kotlin.dsl.init
  * ```
  * ... {
  *   markdownViewer() // Empty MarkdownViewer component
- *   markdownViewer("# Hello World") // MarkdownViewer with initial contentSlot
+ *   markdownViewer("# Hello World") // MarkdownViewer with initial content
  *   markdownViewer("""
  *     ## Features
  *     - **Bold text**
@@ -22,7 +22,7 @@ import com.webforj.kotlin.dsl.init
  * }
  * ```
  *
- * @param content The Markdown contentSlot to display and render.
+ * @param content The Markdown content to display and render.
  * @param block The initialization steps of the `MarkdownViewer`.
  * @return The configured `MarkdownViewer`.
  * @see MarkdownViewer

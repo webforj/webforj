@@ -10,17 +10,17 @@ import com.webforj.kotlin.dsl.init
  * Creates a Tabler `Icon` with the given [name] and optional [variate].
  * ```
  * ... {
- *   tablerIcon("bell") // Basic Tabler iconSlot
+ *   tablerIcon("bell") // Basic Tabler icon
  *   tablerIcon("bell", TablerIcon.Variate.FILLED) // Filled variant
  *   tablerIcon("bell", TablerIcon.Variate.OUTLINE) // Outline variant
  * }
  * ```
  *
  * Tabler icons provide a clean, consistent set of icons with different variants for various states and styles.
- * The variant controls the visual style (outline, filled, etc.) of the iconSlot.
+ * The variant controls the visual style (outline, filled, etc.) of the icon.
  *
- * @param name The name of the Tabler iconSlot.
- * @param variate The variant of the iconSlot (e.g., FILLED, OUTLINE). If null, the default is used.
+ * @param name The name of the Tabler icon.
+ * @param variate The variant of the icon (e.g., FILLED, OUTLINE). If null, the default is used.
  * @param block The initialization steps for the `Icon`.
  * @return The configured `Icon` instance.
  * @see TablerIcon

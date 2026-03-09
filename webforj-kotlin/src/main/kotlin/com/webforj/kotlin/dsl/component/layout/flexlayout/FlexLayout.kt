@@ -26,7 +26,7 @@ import com.webforj.kotlin.dsl.init
  *     // Content row
  *     flexLayout(FlexDirection.ROW) {
  *       div {
- *         paragraph("Main contentSlot area")
+ *         paragraph("Main content area")
  *         textField("Search", placeholder = "Search...")
  *       }
  *

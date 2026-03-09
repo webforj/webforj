@@ -61,7 +61,7 @@ class LoginTest {
     }
 
     @Test
-    @DisplayName("Create Login with before contentSlot components")
+    @DisplayName("Create Login with before content components")
     fun shouldCreateLoginWithBeforeContentComponents() {
         val login = root.login {
             beforeContentSlot {
@@ -76,7 +76,7 @@ class LoginTest {
     }
 
     @Test
-    @DisplayName("Create Login with after contentSlot components")
+    @DisplayName("Create Login with after content components")
     fun shouldCreateLoginWithAfterContentComponents() {
         val login = root.login {
             afterContentSlot {

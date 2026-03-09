@@ -9,8 +9,8 @@ import com.webforj.kotlin.dsl.init
  * Creates a `Header` with an optional [text] value.
  * ```
  * ... {
- *  nativeHeader() // Empty Header element
- *  nativeHeader("text") // Header element with text
+ *  header() // Empty Header element
+ *  header("text") // Header element with text
  * }
  * ```
  * @param text The optional text to add to `Header`.

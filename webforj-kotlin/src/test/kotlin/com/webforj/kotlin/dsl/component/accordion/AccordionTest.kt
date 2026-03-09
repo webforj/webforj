@@ -47,21 +47,21 @@ class AccordionTest {
 
       accordionPanel("Section 1") {
         open()
-        paragraph("First section contentSlot")
+        paragraph("First section content")
       }
 
       accordionPanel("Section 2") {
-        paragraph("Second section contentSlot")
+        paragraph("Second section content")
       }
 
       accordionPanel {
-        header {
+        headerSlot {
           label("Custom Header")
         }
         iconSlot {
           Div()
         }
-        paragraph("Third section contentSlot")
+        paragraph("Third section content")
       }
     }
 

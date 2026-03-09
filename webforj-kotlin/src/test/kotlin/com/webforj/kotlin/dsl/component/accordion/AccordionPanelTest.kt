@@ -36,7 +36,7 @@ class AccordionPanelTest {
   @Test
   fun shouldCreatePanelWithHeader() {
     val panel = root.accordionPanel {
-      header {
+      headerSlot {
         label("Custom Header")
         paragraph("Subtitle")
       }

@@ -7,7 +7,7 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `Dialog` with optional [headerSlot] and [footerSlot] sections.
+ * Creates a `Dialog` with optional [headerSlot] and [footerSlot] slot sections.
  * ```
  * dialog {
  *   headerSlot {
@@ -50,7 +50,7 @@ fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}):
 }
 
 /**
- * Configures the components to add to the headerSlot section of a `Dialog`.
+ * Configures the components to add to the header section of a `Dialog`.
  * ```
  * dialog {
  *   headerSlot {
@@ -60,7 +60,7 @@ fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}):
  * }
  * ```
  *
- * @param block The initialization steps of the headerSlot components.
+ * @param block The initialization steps of the header components.
  */
 @WebforjDsl
 fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -68,7 +68,7 @@ fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 }
 
 /**
- * Configures the components to add to the footerSlot section of a `Dialog`.
+ * Configures the components to add to the footer section of a `Dialog`.
  * ```
  * dialog {
  *   footerSlot {
@@ -80,7 +80,7 @@ fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * }
  * ```
  *
- * @param block The initialization steps of the footerSlot components.
+ * @param block The initialization steps of the footer components.
  */
 @WebforjDsl
 fun @WebforjDsl Dialog.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {

@@ -9,16 +9,16 @@ import com.webforj.kotlin.dsl.init
  * Creates an `Icon` with the given [name] and [pool].
  * ```
  * ... {
- *   iconSlot("bell", "tabler") // Icon from tabler pool
- *   iconSlot("settings", "feather") // Icon from feather pool
+ *   icon("bell", "tabler") // Icon from tabler pool
+ *   icon("settings", "feather") // Icon from feather pool
  * }
  * ```
  *
  * The `Icon` component allows you to include icons from various pools in your user interface.
  * Icons are loaded on demand from the specified pool (e.g., "tabler", "feather", "dwc").
  *
- * @param name The name of the iconSlot.
- * @param pool The iconSlot pool to load the iconSlot from.
+ * @param name The name of the icon.
+ * @param pool The icon pool to load the icon from.
  * @return The configured `Icon` instance.
  * @see Icon
  */
@@ -26,5 +26,5 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.icon(
   name: String,
   pool: String,
-  block: Icon.() -> Unit = {}
+  block: @WebforjDsl Icon.() -> Unit = {}
 ): Icon = init(Icon(name, pool), block)

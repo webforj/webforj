@@ -9,8 +9,8 @@ import com.webforj.kotlin.dsl.init
  * Creates a `Footer` with an optional [text] value.
  * ```
  * ... {
- *  nativeFooter() // Empty footerSlot element
- *  nativeFooter("text") // footerSlot element with text
+ *  footer() // Empty Footer element
+ *  footer("text") // Footer element with text
  * }
  * ```
  * @param text Optional text to add to the `Footer`.

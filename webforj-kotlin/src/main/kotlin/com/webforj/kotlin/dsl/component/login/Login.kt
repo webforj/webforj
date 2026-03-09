@@ -45,7 +45,7 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): Login = init(Login(), block)
 
 /**
- * Configures the components to add to the before headerSlot slot of a `Login` component.
+ * Configures the components to add to the before header slot of a `Login` component.
  * ```
  * login {
  *   beforeHeaderSlot {
@@ -55,7 +55,7 @@ fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): L
  * }
  * ```
  *
- * @param block The initialization steps of the before headerSlot components.
+ * @param block The initialization steps of the before header components.
  */
 @WebforjDsl
 fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -63,7 +63,7 @@ fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Un
 }
 
 /**
- * Configures the components to add to the after headerSlot slot of a `Login` component.
+ * Configures the components to add to the after header slot of a `Login` component.
  * ```
  * login {
  *   afterHeaderSlot {
@@ -73,7 +73,7 @@ fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Un
  * }
  * ```
  *
- * @param block The initialization steps of the after headerSlot components.
+ * @param block The initialization steps of the after header components.
  */
 @WebforjDsl
 fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -81,7 +81,7 @@ fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Uni
 }
 
 /**
- * Configures the components to add to the before contentSlot slot of a `Login` component.
+ * Configures the components to add to the before content slot of a `Login` component.
  * ```
  * login {
  *   beforeContentSlot {
@@ -91,7 +91,7 @@ fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Uni
  * }
  * ```
  *
- * @param block The initialization steps of the before contentSlot components.
+ * @param block The initialization steps of the before content components.
  */
 @WebforjDsl
 fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -99,7 +99,7 @@ fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> U
 }
 
 /**
- * Configures the components to add to the after contentSlot slot of a `Login` component.
+ * Configures the components to add to the after content slot of a `Login` component.
  * ```
  * login {
  *   afterContentSlot {
@@ -109,7 +109,7 @@ fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> U
  * }
  * ```
  *
- * @param block The initialization steps of the after contentSlot components.
+ * @param block The initialization steps of the after content components.
  */
 @WebforjDsl
 fun @WebforjDsl Login.afterContentSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -153,7 +153,7 @@ fun @WebforjDsl Login.afterFormSlot(block: @WebforjDsl HasComponents.() -> Unit)
 }
 
 /**
- * Configures the components to add to the before footerSlot slot of a `Login` component.
+ * Configures the components to add to the before footer slot of a `Login` component.
  * ```
  * login {
  *   beforeFooterSlot {
@@ -163,7 +163,7 @@ fun @WebforjDsl Login.afterFormSlot(block: @WebforjDsl HasComponents.() -> Unit)
  * }
  * ```
  *
- * @param block The initialization steps of the before footerSlot components.
+ * @param block The initialization steps of the before footer components.
  */
 @WebforjDsl
 fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -171,7 +171,7 @@ fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Un
 }
 
 /**
- * Configures the components to add to the after footerSlot slot of a `Login` component.
+ * Configures the components to add to the after footer slot of a `Login` component.
  * ```
  * login {
  *   afterFooterSlot {
@@ -181,7 +181,7 @@ fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Un
  * }
  * ```
  *
- * @param block The initialization steps of the after footerSlot components.
+ * @param block The initialization steps of the after footer components.
  */
 @WebforjDsl
 fun @WebforjDsl Login.afterFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -193,7 +193,7 @@ fun @WebforjDsl Login.afterFooterSlot(block: @WebforjDsl HasComponents.() -> Uni
  * ```
  * login {
  *   loginI18n {
- *     titleSlot = "Sign In"
+ *     title = "Sign In"
  *     usernameLabel = "Email Address"
  *     passwordLabel = "Password"
  *     submitButton = "Log In"
@@ -217,7 +217,7 @@ fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI
 }
 
 /**
- * Configures error messageSlot internationalization for the `Login` component.
+ * Configures error message internationalization for the `Login` component.
  * ```
  * loginI18n {
  *   loginErrorI18n {

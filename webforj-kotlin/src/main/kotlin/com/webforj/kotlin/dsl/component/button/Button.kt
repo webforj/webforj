@@ -51,14 +51,14 @@ fun @WebforjDsl HasComponents.button(
 }
 
 /**
- * Configures the `Component` to set as the iconSlot of a `Button`.
+ * Configures the `Component` to set as the icon of a `Button`.
  * ```
  * button {
  *   iconSlot { }
  * }
  * ```
  *
- * @param block The initialization steps of the iconSlot `Component`.
+ * @param block The initialization steps of the icon `Component`.
  */
 @WebforjDsl
 fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
@@ -66,16 +66,16 @@ fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component
 }
 
 /**
- * Configures the `Component` to set as the badgeSlot of a `Button`.
+ * Configures the `Component` to set as the badge of a `Button`.
  * ```
  * button("Notifications") {
  *   badgeSlot {
- *     badgeSlot("5", BadgeTheme.DANGER)
+ *     badge("5", BadgeTheme.DANGER)
  *   }
  * }
  * ```
  *
- * @param block The initialization steps of the badgeSlot `Component`.
+ * @param block The initialization steps of the badge `Component`.
  */
 @WebforjDsl
 fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badgeSlot(

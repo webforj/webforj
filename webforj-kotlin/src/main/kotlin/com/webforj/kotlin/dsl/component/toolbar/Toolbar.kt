@@ -40,7 +40,7 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}): Toolbar = init(Toolbar(), block)
 
 /**
- * Configures the components to add to the startSlot slot of a `Toolbar` component.
+ * Configures the components to add to the start slot of a `Toolbar` component.
  * ```
  * toolbar {
  *   startSlot {
@@ -49,7 +49,7 @@ fun @WebforjDsl HasComponents.toolbar(block: @WebforjDsl Toolbar.() -> Unit = {}
  * }
  * ```
  *
- * @param block The initialization steps of the startSlot components.
+ * @param block The initialization steps of the start components.
  */
 @WebforjDsl
 fun @WebforjDsl Toolbar.startSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -57,7 +57,7 @@ fun @WebforjDsl Toolbar.startSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 }
 
 /**
- * Configures the components to add to the titleSlot slot of a `Toolbar` component.
+ * Configures the components to add to the title slot of a `Toolbar` component.
  * ```
  * toolbar {
  *   titleSlot {
@@ -66,7 +66,7 @@ fun @WebforjDsl Toolbar.startSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * }
  * ```
  *
- * @param block The initialization steps of the titleSlot components.
+ * @param block The initialization steps of the title components.
  */
 @WebforjDsl
 fun @WebforjDsl Toolbar.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
@@ -74,7 +74,7 @@ fun @WebforjDsl Toolbar.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
 }
 
 /**
- * Configures the components to add to the endSlot slot of a `Toolbar` component.
+ * Configures the components to add to the end slot of a `Toolbar` component.
  * ```
  * toolbar {
  *   endSlot {
@@ -84,7 +84,7 @@ fun @WebforjDsl Toolbar.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  * }
  * ```
  *
- * @param block The initialization steps of the endSlot components.
+ * @param block The initialization steps of the end components.
  */
 @WebforjDsl
 fun @WebforjDsl Toolbar.endSlot(block: @WebforjDsl HasComponents.() -> Unit) {

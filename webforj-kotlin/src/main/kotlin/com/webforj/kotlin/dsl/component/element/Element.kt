@@ -6,13 +6,13 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates an `Element` component with optional [node] and/or [html] contentSlot.
+ * Creates an `Element` component with optional [node] and/or [html] content.
  * ```
  * ... {
  *   element() // Empty Element component
  *   element("div") // Element with HTML node name
- *   element(html = "<span>Content</span>") // Element with HTML contentSlot
- *   element("div", "<span>Content</span>") // Element with node name and HTML contentSlot
+ *   element(html = "<span>Content</span>") // Element with HTML content
+ *   element("div", "<span>Content</span>") // Element with node name and HTML content
  *   element("div") {
  *      classNames += "container"
  *   }
@@ -20,7 +20,7 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * @param node The HTML node name (e.g., "div", "span", "p").
- * @param html The HTML contentSlot to set in the element.
+ * @param html The HTML content to set in the element.
  * @param block The initialization steps for the `Element`.
  * @return The configured `Element` instance.
  * @see Element

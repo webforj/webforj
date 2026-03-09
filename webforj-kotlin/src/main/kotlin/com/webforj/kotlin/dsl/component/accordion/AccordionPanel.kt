@@ -13,12 +13,12 @@ import com.webforj.kotlin.dsl.init
  * ```
  * ... {
  *   accordionPanel("Panel Title") {
- *     paragraph("Panel body contentSlot")
+ *     paragraph("Panel body content")
  *   }
  * }
  * ```
  *
- * @param label The headerSlot label text.
+ * @param label The header label text.
  * @param block The initialization steps of the `AccordionPanel`.
  * @return The configured `AccordionPanel`.
  *
@@ -35,7 +35,7 @@ fun @WebforjDsl HasComponents.accordionPanel(
 }
 
 /**
- * Configures the components to add to the headerSlot slot of an `AccordionPanel`,
+ * Configures the components to add to the header slot of an `AccordionPanel`,
  * replacing the label text.
  * ```
  * accordionPanel {
@@ -46,15 +46,15 @@ fun @WebforjDsl HasComponents.accordionPanel(
  * }
  * ```
  *
- * @param block The initialization steps of the headerSlot components.
+ * @param block The initialization steps of the header components.
  */
 @WebforjDsl
-fun @WebforjDsl AccordionPanel.header(block: @WebforjDsl HasComponents.() -> Unit) {
+fun @WebforjDsl AccordionPanel.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AccordionPanel::addToHeader)
 }
 
 /**
- * Sets the iconSlot component in the iconSlot slot, replacing the default chevron.
+ * Sets the icon component in the icon slot, replacing the default chevron.
  * ```
  * accordionPanel("Title") {
  *   iconSlot {
@@ -63,7 +63,7 @@ fun @WebforjDsl AccordionPanel.header(block: @WebforjDsl HasComponents.() -> Uni
  * }
  * ```
  *
- * @param block The initialization of the iconSlot [Component].
+ * @param block The initialization of the icon [Component].
  */
 @WebforjDsl
 fun @WebforjDsl AccordionPanel.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
