@@ -55,10 +55,10 @@ class AccordionTest {
       }
 
       accordionPanel {
-        header {
+        headerSlot {
           label("Custom Header")
         }
-        icon {
+        iconSlot {
           Div()
         }
         paragraph("Third section content")

@@ -17,7 +17,7 @@ import com.webforj.kotlin.dsl.init
  *   toast("Loading...", theme = Theme.INFO) // Toast with text and theme
  *   toast("Complete!", Theme.SUCCESS, 2000, Toast.Placement.TOP_RIGHT) // Toast with all parameters
  *   toast("File uploaded", Theme.SUCCESS, 5000) {
- *     message {
+ *     messageSlot {
  *       icon("check")
  *       text("Upload successful")
  *     }
@@ -26,7 +26,7 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the message content of the `Toast` see:
- * - [message]
+ * - [messageSlot]
  *
  * @param text The text to display in the `Toast`.
  * @param duration The display duration in milliseconds.
@@ -36,6 +36,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Toast`.
  * @see Toast
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.toast(
   text: String? = null,
   duration: Int? = null,
@@ -66,7 +67,7 @@ fun @WebforjDsl HasComponents.toast(
  * Configures the components to add to the message slot of a `Toast` component.
  * ```
  * toast("Success!") {
- *   message {
+ *   messageSlot {
  *     icon("check-circle")
  *     text("Operation completed successfully")
  *     button("Close")
@@ -76,6 +77,7 @@ fun @WebforjDsl HasComponents.toast(
  *
  * @param block The initialization steps of the message components.
  */
-fun @WebforjDsl Toast.message(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Toast.messageSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toast::addToMessage)
 }

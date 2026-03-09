@@ -34,7 +34,7 @@ class DialogTest {
   @Test
   fun shouldCreateHeader() {
     val dialog = root.dialog {
-      header {
+      headerSlot {
         label("Dialog Title")
         paragraph("Dialog description")
       }
@@ -48,7 +48,7 @@ class DialogTest {
   @Test
   fun shouldCreateFooter() {
     val dialog = root.dialog {
-      footer {
+      footerSlot {
         div {
           button("Cancel")
           button("Save", theme = ButtonTheme.PRIMARY)
@@ -64,7 +64,7 @@ class DialogTest {
   @Test
   fun shouldCreateExample() {
     val dialog = root.dialog {
-      header {
+      headerSlot {
         div {
           label("User Registration")
           paragraph("Please fill in the form below to create your account")
@@ -82,7 +82,7 @@ class DialogTest {
         checkBox("Send me promotional emails", checked = false)
       }
       
-      footer {
+      footerSlot {
         div {
           button("Cancel", theme = ButtonTheme.DANGER)
           button("Register", theme = ButtonTheme.PRIMARY)

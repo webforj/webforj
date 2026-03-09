@@ -25,6 +25,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `InfiniteScroll`.
  * @see InfiniteScroll
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.infiniteScroll(text: String? = null, block: @WebforjDsl InfiniteScroll.() -> Unit = {}): InfiniteScroll {
   val scroll = text?.let { InfiniteScroll(it) } ?: InfiniteScroll()
   return init(scroll, block)

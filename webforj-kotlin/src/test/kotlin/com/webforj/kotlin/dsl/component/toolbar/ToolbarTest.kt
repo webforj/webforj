@@ -44,13 +44,13 @@ class ToolbarTest {
         lateinit var userButton: Button
         lateinit var content: H3
         val toolbar = root.toolbar {
-            title {
+            titleSlot {
                 title = h3("Application")
             }
-            start {
+            startSlot {
                 startButton = button("Menu")
             }
-            end {
+            endSlot {
                 settingsButton = button("Settings")
                 userButton = button("User")
             }

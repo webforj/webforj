@@ -7,12 +7,9 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.html.elements.Strong
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.badge.badge
-import com.webforj.kotlin.dsl.component.button.badge
-import com.webforj.kotlin.dsl.component.button.button
-import com.webforj.kotlin.dsl.component.button.icon
 import com.webforj.kotlin.dsl.component.html.elements.strong
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -77,7 +74,7 @@ class ButtonTest {
     fun shouldCreateButtonWithPrefix() {
         val expected = "Prefix"
         val button = root.button {
-            prefix { strong(expected) }
+            prefixSlot { strong(expected) }
         }
         Assertions.assertTrue(root.hasComponent(button))
         val prefix = button.prefixComponent as Strong
@@ -90,7 +87,7 @@ class ButtonTest {
     fun shouldCreateButtonWithSuffix() {
         val expected = "Suffix"
         val button = root.button {
-            suffix { strong(expected) }
+            suffixSlot { strong(expected) }
         }
         Assertions.assertTrue(root.hasComponent(button))
         val suffix = button.suffixComponent as Strong
@@ -103,7 +100,7 @@ class ButtonTest {
     fun shouldCreateButtonWithIcon() {
         val expected = "Icon"
         val button = root.button {
-            icon { strong(expected) }
+            iconSlot { strong(expected) }
         }
         Assertions.assertTrue(root.hasComponent(button))
         val icon = button.icon as Strong
@@ -115,7 +112,7 @@ class ButtonTest {
     @DisplayName("Create Button with Badge")
     fun shouldCreateButtonWithBadge() {
         val button = root.button("Notifications") {
-            badge { badge("5", BadgeTheme.DANGER) }
+            badgeSlot { badge("5", BadgeTheme.DANGER) }
         }
         Assertions.assertTrue(root.hasComponent(button))
         val badgeComponent = button.badge as Badge

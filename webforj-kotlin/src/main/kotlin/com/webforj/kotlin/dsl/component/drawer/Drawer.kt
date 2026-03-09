@@ -7,17 +7,17 @@ import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
- * Creates a `Drawer` with an optional [label] and configurable [title], [headerActions], and [footer] sections.
+ * Creates a `Drawer` with an optional [label] and configurable [titleSlot], [headerActionsSlot], and [footerSlot] sections.
  * ```
  * drawer("Navigation Drawer") {
- *   title {
+ *   titleSlot {
  *     div {
  *       label("App Menu")
  *       paragraph("Navigate through the application")
  *     }
  *   }
  *
- *   headerActions {
+ *   headerActionsSlot {
  *     div {
  *       button("Close")
  *       button("Settings", theme = ButtonTheme.GRAY)
@@ -40,7 +40,7 @@ import com.webforj.kotlin.dsl.init
  *     }
  *   }
  *
- *   footer {
+ *   footerSlot {
  *     div {
  *       paragraph("Version 1.0.0")
  *       button("Help")
@@ -51,15 +51,16 @@ import com.webforj.kotlin.dsl.init
  * ```
  *
  * To configure the sections of the `Drawer` see:
- * - [title],
- * - [headerActions], and
- * - [footer]
+ * - [titleSlot],
+ * - [headerActionsSlot], and
+ * - [footerSlot]
  *
  * @param label The label for the `Drawer`.
  * @param block The initialization steps of the `Drawer`.
  * @return The configured `Drawer`.
  * @see Drawer
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.drawer(
   label: String? = null,
   block: @WebforjDsl Drawer.() -> Unit = {}
@@ -72,7 +73,7 @@ fun @WebforjDsl HasComponents.drawer(
  * Configures the components to add to the title section of a `Drawer`.
  * ```
  * drawer("Settings Drawer") {
- *   title {
+ *   titleSlot {
  *     label("Settings")
  *     paragraph("Configure your application preferences")
  *   }
@@ -81,7 +82,8 @@ fun @WebforjDsl HasComponents.drawer(
  *
  * @param block The initialization steps of the title components.
  */
-fun @WebforjDsl Drawer.title(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Drawer.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Drawer::addToTitle)
 }
 
@@ -89,7 +91,7 @@ fun @WebforjDsl Drawer.title(block: @WebforjDsl HasComponents.() -> Unit) {
  * Configures the components to add to the header actions section of a `Drawer`.
  * ```
  * drawer("Menu Drawer") {
- *   headerActions {
+ *   headerActionsSlot {
  *     div {
  *       button("Close")
  *       button("Menu", theme = ButtonTheme.GRAY)
@@ -100,7 +102,8 @@ fun @WebforjDsl Drawer.title(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of header action components.
  */
-fun @WebforjDsl Drawer.headerActions(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Drawer.headerActionsSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Drawer::addToHeaderActions)
 }
 
@@ -108,7 +111,7 @@ fun @WebforjDsl Drawer.headerActions(block: @WebforjDsl HasComponents.() -> Unit
  * Configures the components to add to the footer section of a `Drawer`.
  * ```
  * drawer("Info Drawer") {
- *   footer {
+ *   footerSlot {
  *     div {
  *       paragraph("© 2026 Application")
  *       button("Help")
@@ -120,6 +123,7 @@ fun @WebforjDsl Drawer.headerActions(block: @WebforjDsl HasComponents.() -> Unit
  *
  * @param block The initialization steps of the footer components.
  */
-fun @WebforjDsl Drawer.footer(block: @WebforjDsl HasComponents.() -> Unit) {
+@WebforjDsl
+fun @WebforjDsl Drawer.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Drawer::addToFooter)
 }

@@ -3,10 +3,12 @@ package com.webforj.kotlin.dsl
 import com.webforj.component.Component
 import com.webforj.concern.HasComponents
 
-class SingleSlotSetter(block: HasComponents.() -> Component): HasComponents {
+@WebforjDsl
+class SingleSlotSetter(block: @WebforjDsl HasComponents.() -> Component): HasComponents {
   val component: Component = block()
 
-  fun <T> setSlot(instance: T, setter: T.(Component) -> Unit) {
+  @WebforjDsl
+  fun <T> setSlot(instance: T, setter: @WebforjDsl T.(Component) -> Unit) {
     instance.setter(component)
   }
 

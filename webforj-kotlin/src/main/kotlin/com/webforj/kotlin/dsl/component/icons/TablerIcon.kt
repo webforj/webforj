@@ -26,6 +26,7 @@ import com.webforj.kotlin.dsl.init
  * @see TablerIcon
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.tablerIcon(
   name: String,
   variate: TablerIcon.Variate? = null,

@@ -5,8 +5,8 @@ import com.webforj.component.html.elements.Div
 import com.webforj.component.html.elements.Strong
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.html.elements.strong
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.awt.Color
@@ -461,21 +461,21 @@ class FieldsTest {
     assertTrue { root.hasComponent(field) }
   }
 
-  @ParameterizedTest(name = "Create {0} component with prefix component")
+  @ParameterizedTest(name = "Create {0} component with prefixSlot component")
   @MethodSource("provideEmptyFields")
   fun shouldCreateFieldWithPrefix(name: String, root: HasComponents, field: DwcField<*, *>) {
     val expected = "Prefix"
-    field.prefix { strong(expected) }
+    field.prefixSlot { strong(expected) }
     val prefix = field.prefixComponent as Strong
     assertNotNull(prefix)
     assertEquals(expected, prefix.text)
   }
 
-  @ParameterizedTest(name = "Create {0} component with suffix component")
+  @ParameterizedTest(name = "Create {0} component with suffixSlot component")
   @MethodSource("provideEmptyFields")
   fun shouldCreateFieldWithSuffix(name: String, root: HasComponents, field: DwcField<*, *>) {
     val expected = "Suffix"
-    field.suffix { strong(expected) }
+    field.suffixSlot { strong(expected) }
     val suffix = field.suffixComponent as Strong
     assertNotNull(suffix)
     assertEquals(expected, suffix.text)

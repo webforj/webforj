@@ -31,10 +31,10 @@ class LoginTest {
     }
 
     @Test
-    @DisplayName("Create Login with before header components")
+    @DisplayName("Create Login with before headerSlot components")
     fun shouldCreateLoginWithBeforeHeaderComponents() {
         val login = root.login {
-            beforeHeader {
+            beforeHeaderSlot {
                 val welcomeLabel = label("Welcome Back")
                 val helpButton = button("Help")
                 assertEquals("Welcome Back", welcomeLabel.text)
@@ -46,10 +46,10 @@ class LoginTest {
     }
 
     @Test
-    @DisplayName("Create Login with after header components")
+    @DisplayName("Create Login with after headerSlot components")
     fun shouldCreateLoginWithAfterHeaderComponents() {
         val login = root.login {
-            afterHeader {
+            afterHeaderSlot {
                 val assistanceLabel = label("Need assistance?")
                 val supportButton = button("Contact Support")
                 assertEquals("Need assistance?", assistanceLabel.text)
@@ -64,7 +64,7 @@ class LoginTest {
     @DisplayName("Create Login with before content components")
     fun shouldCreateLoginWithBeforeContentComponents() {
         val login = root.login {
-            beforeContent {
+            beforeContentSlot {
                 val credentialsLabel = label("Please enter your credentials")
                 val tourButton = button("Tour")
                 assertEquals("Please enter your credentials", credentialsLabel.text)
@@ -79,7 +79,7 @@ class LoginTest {
     @DisplayName("Create Login with after content components")
     fun shouldCreateLoginWithAfterContentComponents() {
         val login = root.login {
-            afterContent {
+            afterContentSlot {
                 val signUpLabel = label("New user? Sign up")
                 val createButton = button("Create Account")
                 assertEquals("New user? Sign up", signUpLabel.text)
@@ -94,7 +94,7 @@ class LoginTest {
     @DisplayName("Create Login with before form components")
     fun shouldCreateLoginWithBeforeFormComponents() {
         val login = root.login {
-            beforeForm {
+            beforeFormSlot {
                 val detailsLabel = label("Enter your details below")
                 val infoButton = button("Info")
                 assertEquals("Enter your details below", detailsLabel.text)
@@ -109,7 +109,7 @@ class LoginTest {
     @DisplayName("Create Login with after form components")
     fun shouldCreateLoginWithAfterFormComponents() {
         val login = root.login {
-            afterForm {
+            afterFormSlot {
                 val forgotLabel = label("Forgot your password?")
                 val resetButton = button("Reset")
                 assertEquals("Forgot your password?", forgotLabel.text)
@@ -121,10 +121,10 @@ class LoginTest {
     }
 
     @Test
-    @DisplayName("Create Login with before footer components")
+    @DisplayName("Create Login with before footerSlot components")
     fun shouldCreateLoginWithBeforeFooterComponents() {
         val login = root.login {
-            beforeFooter {
+            beforeFooterSlot {
                 val copyrightLabel = label("© 2026 My Company")
                 val termsButton = button("Terms")
                 assertEquals("© 2026 My Company", copyrightLabel.text)
@@ -136,10 +136,10 @@ class LoginTest {
     }
 
     @Test
-    @DisplayName("Create Login with after footer components")
+    @DisplayName("Create Login with after footerSlot components")
     fun shouldCreateLoginWithAfterFooterComponents() {
         val login = root.login {
-            afterFooter {
+            afterFooterSlot {
                 val privacyLabel = label("Privacy Policy")
                 val contactButton = button("Contact")
                 assertEquals("Privacy Policy", privacyLabel.text)
@@ -196,35 +196,35 @@ class LoginTest {
     @DisplayName("Create comprehensive Login with all slots configured")
     fun shouldCreateComprehensiveLogin() {
         val login = root.login {
-            beforeHeader {
+            beforeHeaderSlot {
                 val welcomeLabel = label("Welcome Back")
                 assertEquals("Welcome Back", welcomeLabel.text)
             }
-            afterHeader {
+            afterHeaderSlot {
                 val helpButton = button("Help")
                 assertEquals("Help", helpButton.text)
             }
-            beforeContent {
+            beforeContentSlot {
                 val credentialsLabel = label("Please enter your credentials")
                 assertEquals("Please enter your credentials", credentialsLabel.text)
             }
-            afterContent {
+            afterContentSlot {
                 val signUpLabel = label("New user? Sign up")
                 assertEquals("New user? Sign up", signUpLabel.text)
             }
-            beforeForm {
+            beforeFormSlot {
                 val detailsLabel = label("Enter your details below")
                 assertEquals("Enter your details below", detailsLabel.text)
             }
-            afterForm {
+            afterFormSlot {
                 val forgotButton = button("Forgot Password")
                 assertEquals("Forgot Password", forgotButton.text)
             }
-            beforeFooter {
+            beforeFooterSlot {
                 val copyrightLabel = label("© 2026 My Company")
                 assertEquals("© 2026 My Company", copyrightLabel.text)
             }
-            afterFooter {
+            afterFooterSlot {
                 val privacyButton = button("Privacy Policy")
                 assertEquals("Privacy Policy", privacyButton.text)
             }

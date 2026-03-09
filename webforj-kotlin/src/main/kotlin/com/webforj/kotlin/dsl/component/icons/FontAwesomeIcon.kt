@@ -26,6 +26,7 @@ import com.webforj.kotlin.dsl.init
  * @see FontAwesomeIcon
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.fontAwesomeIcon(
   name: String,
   variate: FontAwesomeIcon.Variate? = null,

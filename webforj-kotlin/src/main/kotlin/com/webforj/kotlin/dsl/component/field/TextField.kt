@@ -5,8 +5,8 @@ import com.webforj.concern.HasComponents
 import com.webforj.kotlin.KotlinFactory.newTextField
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `TextField` with an optional [label], [value], [placeholder] and/or [type].
@@ -24,8 +24,8 @@ import com.webforj.kotlin.extension.suffix
  * ```
  *
  * To configure the slots of the `TextField` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param label The label of the `TextField`.
  * @param value The initial text of the `TextField`.
@@ -33,6 +33,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `TextField` instance.
  * @see TextField
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.textField(
   label: String? = null,
   value: String? = null,

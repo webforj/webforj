@@ -48,7 +48,7 @@ class InfiniteScrollTest {
     @DisplayName("Create InfiniteScroll with configuration block")
     fun shouldCreateInfiniteScrollWithBlock() {
         val blockExecuted = AtomicBoolean(false)
-        val customText = "Custom loading message"
+        val customText = "Custom loading messageSlot"
         
         val infiniteScroll = root.infiniteScroll {
             blockExecuted.set(true)

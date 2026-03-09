@@ -21,6 +21,7 @@ import com.webforj.kotlin.dsl.init
  * @see AppDrawerToggle
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.appDrawerToggle(
   icon: Pair<String, String>? = null,
   block: @WebforjDsl AppDrawerToggle.() -> Unit = {}
@@ -44,7 +45,8 @@ fun @WebforjDsl HasComponents.appDrawerToggle(
  * @see AppDrawerToggle
  * @see Icon
  */
-fun HasComponents.appDrawerToggle(
+@WebforjDsl
+fun @WebforjDsl HasComponents.appDrawerToggle(
   icon: Icon,
   block: @WebforjDsl AppDrawerToggle.() -> Unit = {}
 ): AppDrawerToggle {

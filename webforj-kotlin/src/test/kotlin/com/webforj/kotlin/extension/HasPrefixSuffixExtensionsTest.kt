@@ -40,7 +40,7 @@ class HasPrefixSuffixExtensionsTest {
 
   @Test
   fun shouldSetPrefix() {
-    button.prefix { component }
+    button.prefixSlot { component }
     assertEquals(component, button.prefixComponent)
   }
 
@@ -57,7 +57,7 @@ class HasPrefixSuffixExtensionsTest {
 
   @Test
   fun shouldSetSuffix() {
-    button.suffix { component }
+    button.suffixSlot { component }
     assertEquals(component, button.suffixComponent)
   }
 

@@ -4,8 +4,8 @@ import com.webforj.component.field.ColorField
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 import java.awt.Color
 
 /**
@@ -20,8 +20,8 @@ import java.awt.Color
  * ```
  *
  * To configure the slots of the `ColorField` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param label The label of the `ColorField`.
  * @param value The initial [Color] of the `ColorField`.
@@ -30,6 +30,7 @@ import java.awt.Color
  * @see ColorField
  * @see Color
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.colorField(
     label: String? = null,
     value: Color? = null,

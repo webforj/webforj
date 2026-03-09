@@ -22,6 +22,7 @@ import com.webforj.kotlin.dsl.init
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset">Html fieldset
  *       Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.fieldset(text: String? = null, block: @WebforjDsl Fieldset.() -> Unit = {}): Fieldset {
     val fieldSet = text?.let { Fieldset(text) } ?: Fieldset()
     return init(fieldSet, block)
@@ -43,6 +44,7 @@ fun @WebforjDsl HasComponents.fieldset(text: String? = null, block: @WebforjDsl 
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend">HTML legend
  *      Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl Fieldset.legend(text: String? = null, block: @WebforjDsl Legend.() -> Unit = {}): Legend {
     val legend = text?.let { Legend(text) } ?: Legend()
     return init(legend, block)

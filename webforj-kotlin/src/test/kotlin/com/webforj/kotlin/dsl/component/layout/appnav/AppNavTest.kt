@@ -5,7 +5,9 @@ import com.webforj.component.text.Label
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.component.text.label
 import com.webforj.kotlin.extension.prefix
+import com.webforj.kotlin.extension.prefixSlot
 import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.suffixSlot
 import com.webforj.router.history.ParametersBag
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -77,7 +79,7 @@ class AppNavTest {
   fun shouldCreateAppNavItemWithPrefix() {
     val appNav = root.appNav {
       val item = appNavItem("Settings") {
-        prefix {
+        prefixSlot {
           label("⚙️")
         }
         val prefixComponent = prefix as Label
@@ -93,7 +95,7 @@ class AppNavTest {
   fun shouldCreateAppNavItemWithSuffix() {
     val appNav = root.appNav {
       val item = appNavItem("Notifications") {
-        suffix {
+        suffixSlot {
           label("5")
         }
         val suffixComponent = suffix as Label
@@ -112,12 +114,12 @@ class AppNavTest {
       val profileItem = appNavItem("Profile", "/profile")
       val searchItem = appNavItem("Search")
       val settingsItem = appNavItem("Settings", "/settings") {
-        prefix {
+        prefixSlot {
           label("⚙️")
         }
         val prefixComponent = prefix as Label
         assertEquals("⚙️", prefixComponent.text)
-        suffix {
+        suffixSlot {
           label("new")
         }
         val suffixComponent = suffix as Label
@@ -146,5 +148,14 @@ class AppNavTest {
     }
 
     assertTrue(root.hasComponent(appNav))
+  }
+
+  fun shouldCreateAppNavItemWithNestedAppNavItem() {
+    root.appNav {
+      appNavItem("Profile") {
+        val nested = appNavItem("Profile Settings")
+        assertEquals("Profile Settings", nested.text)
+      }
+    }
   }
 }

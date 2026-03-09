@@ -23,6 +23,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Badge`.
  * @see Badge
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.badge(
   text: String? = null,
   theme: BadgeTheme? = null,

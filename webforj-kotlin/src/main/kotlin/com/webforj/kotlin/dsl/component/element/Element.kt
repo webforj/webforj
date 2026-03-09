@@ -2,6 +2,7 @@ package com.webforj.kotlin.dsl.component.element
 
 import com.webforj.component.element.Element
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
@@ -24,7 +25,8 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Element` instance.
  * @see Element
  */
-fun HasComponents.element(node: String? = null, html: String? = null, block: Element.() -> Unit = {}): Element {
+@WebforjDsl
+fun @WebforjDsl HasComponents.element(node: String? = null, html: String? = null, block: @WebforjDsl Element.() -> Unit = {}): Element {
   val element = when {
     node != null && html != null -> Element(node, html)
     node != null -> Element(node)

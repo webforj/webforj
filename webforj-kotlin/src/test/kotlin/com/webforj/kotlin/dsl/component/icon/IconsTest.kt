@@ -30,47 +30,47 @@ class IconsTest {
 
   @Test
   fun shouldCreateIconWithNameAndPool() {
-    val icon = root.icon("icon", "pool")
+    val icon = root.icon("iconSlot", "pool")
     assertTrue { root.hasComponent(icon) }
-    assertEquals("icon", icon.name)
+    assertEquals("iconSlot", icon.name)
     assertEquals("pool", icon.pool)
   }
 
   @Test
   fun shouldCreateIconWithNamePoolAndBlock() {
-    val icon = root.icon("icon", "pool") {
+    val icon = root.icon("iconSlot", "pool") {
       isVisible = false
     }
     assertTrue { root.hasComponent(icon) }
-    assertEquals("icon", icon.name)
+    assertEquals("iconSlot", icon.name)
     assertEquals("pool", icon.pool)
     assertFalse { icon.isVisible }
   }
 
   @Test
   fun shouldCreateIconButtonWithNameAndPool() {
-    val icon = root.iconButton("icon-button", "pool")
+    val icon = root.iconButton("iconSlot-button", "pool")
     assertTrue { root.hasComponent(icon) }
-    assertEquals("icon-button", icon.name)
+    assertEquals("iconSlot-button", icon.name)
     assertEquals("pool", icon.pool)
   }
 
   @Test
   fun shouldCreateIconButtonWithNamePoolAndBlock() {
-    val icon = root.iconButton("icon", "pool") {
+    val icon = root.iconButton("iconSlot", "pool") {
       isVisible = false
     }
     assertTrue { root.hasComponent(icon) }
-    assertEquals("icon", icon.name)
+    assertEquals("iconSlot", icon.name)
     assertEquals("pool", icon.pool)
     assertFalse { icon.isVisible }
   }
 
   @Test
   fun shouldCreateIconButtonWithIcon() {
-    val icon = root.iconButton(Icon("icon", "pool"))
+    val icon = root.iconButton(Icon("iconSlot", "pool"))
     assertTrue { root.hasComponent(icon) }
-    assertEquals("icon", icon.name)
+    assertEquals("iconSlot", icon.name)
     assertEquals("pool", icon.pool)
   }
 

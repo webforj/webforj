@@ -20,6 +20,7 @@ import com.webforj.kotlin.dsl.init
  * @see UnorderedList
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul">HTML ul Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.unorderedList(text: String? = null, block: @WebforjDsl UnorderedList.() -> Unit = {}): UnorderedList {
     val ul = text?.let { UnorderedList(text) } ?: UnorderedList()
     return init(ul, block)
@@ -40,6 +41,7 @@ fun @WebforjDsl HasComponents.unorderedList(text: String? = null, block: @Webfor
  * @see ListEntry
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/li">HTML li Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl UnorderedList.listEntry(text: String? = null, block: @WebforjDsl ListEntry.() -> Unit = {}): ListEntry {
     val li = text?.let { ListEntry(text) } ?: ListEntry()
     return init(li, block)

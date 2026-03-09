@@ -20,6 +20,7 @@ import com.webforj.kotlin.dsl.init
  * @see Nav
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav">HTML nav Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.nav(text: String? = null, block: @WebforjDsl Nav.() -> Unit = {}): Nav {
     val nav = text?.let { Nav(it) } ?: Nav()
     return init(nav, block)

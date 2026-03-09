@@ -60,6 +60,7 @@ import com.webforj.kotlin.dsl.init
  * @see Table
  * @see column
  */
+@WebforjDsl
 fun <T> @WebforjDsl HasComponents.table(block: @WebforjDsl Table<T>.() -> Unit = {}): Table<T> = init(Table<T>(), block)
 
 /**
@@ -79,7 +80,8 @@ fun <T> @WebforjDsl HasComponents.table(block: @WebforjDsl Table<T>.() -> Unit =
  * @see Column
  * @see Table.getColumnById
  */
-fun <T> Table<T>.column(id: String, block: Column<T, *>.() -> Unit = {}): Column<T, *>? {
+@WebforjDsl
+fun <T> @WebforjDsl Table<T>.column(id: String, block: @WebforjDsl Column<T, *>.() -> Unit = {}): Column<T, *>? {
   val column = getColumnById(id)
   column?.let(block)
   return column

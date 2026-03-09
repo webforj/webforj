@@ -18,6 +18,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Div` instance.
  * @see Div
  */
+@WebforjDsl
 fun  @WebforjDsl HasComponents.div(text: String? = null, block:  @WebforjDsl Div.() -> Unit = {}): Div {
   val div = text?.let { Div(it) } ?: Div()
   return init(div, block)

@@ -33,7 +33,7 @@ class AppLayoutTest {
     @Test
     fun shouldCreateAppLayoutWithHeaderComponents() {
         val appLayout = root.appLayout {
-            header {
+            headerSlot {
                 val headerLabel = label("Application Header")
                 assertEquals("Application Header", headerLabel.text)
             }
@@ -45,7 +45,7 @@ class AppLayoutTest {
     @Test
     fun shouldCreateAppLayoutWithFooterComponents() {
         val appLayout = root.appLayout {
-            footer {
+            footerSlot {
                 val footerLabel = label("© 2026 My Application")
                 assertEquals("© 2026 My Application", footerLabel.text)
             }
@@ -57,7 +57,7 @@ class AppLayoutTest {
     @Test
     fun shouldCreateAppLayoutWithDrawerComponents() {
         val appLayout = root.appLayout {
-            drawer {
+            drawerSlot {
                 val drawerLabel = label("Navigation Menu")
                 assertEquals("Navigation Menu", drawerLabel.text)
             }
@@ -69,7 +69,7 @@ class AppLayoutTest {
     @Test
     fun shouldCreateAppLayoutWithDrawerTitleComponents() {
         val appLayout = root.appLayout {
-            drawerTitle {
+            drawerTitleSlot {
                 val titleLabel = label("Application Menu")
                 assertEquals("Application Menu", titleLabel.text)
             }
@@ -81,7 +81,7 @@ class AppLayoutTest {
     @Test
     fun shouldCreateAppLayoutWithDrawerHeaderActionsComponents() {
         val appLayout = root.appLayout {
-            drawerHeaderActions {
+            drawerHeaderActionsSlot {
                 val closeButton = button("Close")
                 assertEquals("Close", closeButton.text)
             }
@@ -93,7 +93,7 @@ class AppLayoutTest {
     @Test
     fun shouldCreateAppLayoutWithDrawerFooterComponents() {
         val appLayout = root.appLayout {
-            drawerFooter {
+            drawerFooterSlot {
                 val versionLabel = label("Version 1.0.0")
                 assertEquals("Version 1.0.0", versionLabel.text)
             }
@@ -105,15 +105,15 @@ class AppLayoutTest {
     @Test
     fun shouldCreateExample() {
         val appLayout = root.appLayout {
-            drawerTitle {
+            drawerTitleSlot {
                 val titleLabel = label("My App")
                 assertEquals("My App", titleLabel.text)
             }
-            drawerHeaderActions {
+            drawerHeaderActionsSlot {
                 val closeButton = button("Close")
                 assertEquals("Close", closeButton.text)
             }
-            drawer {
+            drawerSlot {
                 val dashboardButton = button("Dashboard")
                 val settingsButton = button("Settings")
                 val profileButton = button("Profile")
@@ -121,17 +121,17 @@ class AppLayoutTest {
                 assertEquals("Settings", settingsButton.text)
                 assertEquals("Profile", profileButton.text)
             }
-            drawerFooter {
+            drawerFooterSlot {
                 val versionLabel = label("Version 1.0.0")
                 assertEquals("Version 1.0.0", versionLabel.text)
             }
-            header {
+            headerSlot {
                 val headerLabel = label("Welcome to My Application")
                 val menuButton = button("Menu")
                 assertEquals("Welcome to My Application", headerLabel.text)
                 assertEquals("Menu", menuButton.text)
             }
-            footer {
+            footerSlot {
                 val footerLabel = label("© 2026 My Company")
                 assertEquals("© 2026 My Company", footerLabel.text)
                 val helpButton = button("Help")

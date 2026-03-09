@@ -19,6 +19,7 @@ import com.webforj.kotlin.dsl.init
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe">HTML iframe
  *      Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.iframe(block: @WebforjDsl Iframe.() -> Unit = {}): Iframe {
     return init(Iframe(), block)
 }

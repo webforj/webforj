@@ -8,8 +8,8 @@ import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `Button` component with an optional [text] and [theme].
@@ -22,9 +22,9 @@ import com.webforj.kotlin.extension.suffix
  * ```
  *
  * To configure the slots of the `Button` see:
- * - [prefix],
- * - [suffix], and
- * - [icon]
+ * - [prefixSlot],
+ * - [suffixSlot], and
+ * - [iconSlot]
  *
  * @param text The text to add to the `Button`.
  * @param theme The theme of the `Button`.
@@ -32,6 +32,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `Button`.
  * @see Button
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.button(
     text: String? = null,
     theme: ButtonTheme? = null,
@@ -53,13 +54,14 @@ fun @WebforjDsl HasComponents.button(
  * Configures the `Component` to set as the icon of a `Button`.
  * ```
  * button {
- *   icon { }
+ *   iconSlot { }
  * }
  * ```
  *
  * @param block The initialization steps of the icon `Component`.
  */
-fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Button::setIcon)
 }
 
@@ -67,7 +69,7 @@ fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Component) {
  * Configures the `Component` to set as the badge of a `Button`.
  * ```
  * button("Notifications") {
- *   badge {
+ *   badgeSlot {
  *     badge("5", BadgeTheme.DANGER)
  *   }
  * }
@@ -75,7 +77,8 @@ fun @WebforjDsl Button.icon(block: @WebforjDsl HasComponents.() -> Component) {
  *
  * @param block The initialization steps of the badge `Component`.
  */
-fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badge(
+@WebforjDsl
+fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badgeSlot(
   block: @WebforjDsl HasComponents.() -> Component
 ) {
   SingleSlotSetter(block).setSlot(this, DwcButton<T>::setBadge)

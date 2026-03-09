@@ -48,6 +48,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `GoogleChart`.
  * @see GoogleChart
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.googleChart(type: GoogleChart.Type? = null, block: @WebforjDsl GoogleChart.() -> Unit = {}): GoogleChart {
   val chart = type?.let { GoogleChart(it) } ?: GoogleChart()
   return init(chart, block)

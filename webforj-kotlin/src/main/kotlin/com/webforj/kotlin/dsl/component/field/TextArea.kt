@@ -4,8 +4,8 @@ import com.webforj.component.field.TextArea
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `TextArea` with an optional [label], [value] and/or [placeholder].
@@ -23,8 +23,8 @@ import com.webforj.kotlin.extension.suffix
  * ```
  *
  * To configure the slots of the `TextArea` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param label The label of the `TextArea`.
  * @param value The initial text of the `TextArea`.
@@ -32,6 +32,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `TextArea` instance.
  * @see TextArea
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.textArea(
   label: String? = null,
   value: String? = null,

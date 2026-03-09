@@ -19,6 +19,7 @@ import com.webforj.kotlin.dsl.init
  * @see Emphasis
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em">HTML em Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.emphasis(text: String? = null, block: @WebforjDsl Emphasis.() -> Unit = {}): Emphasis {
     val emphasis = text?.let { Emphasis(text) } ?: Emphasis()
     return init(emphasis, block)

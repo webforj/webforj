@@ -13,11 +13,12 @@ val HasPrefix<*>.prefix: Component?
   get() = prefixComponent
 
 /**
- * Sets the prefix to the [Component] configure inside [block].
+ * Sets the prefix to the [Component] configured inside [block].
  *
  * @param block The initialization of the [Component].
  */
-fun @WebforjDsl HasPrefix<*>.prefix(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl HasPrefix<*>.prefixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this) {
     prefixComponent = it
   }

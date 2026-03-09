@@ -20,6 +20,7 @@ import com.webforj.kotlin.dsl.init
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong">Html strong
  *      Tag</a>
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.strong(text: String? = null, block: @WebforjDsl Strong.() -> Unit = {}): Strong {
     val strong = text?.let { Strong(text) } ?: Strong()
     return init(strong, block)

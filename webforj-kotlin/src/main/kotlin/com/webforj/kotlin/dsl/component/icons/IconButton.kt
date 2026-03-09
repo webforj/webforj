@@ -21,6 +21,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `IconButton` instance.
  * @see IconButton
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.iconButton(
   name: String,
   pool: String,
@@ -43,6 +44,7 @@ fun @WebforjDsl HasComponents.iconButton(
  * @see IconButton
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.iconButton(
   icon: Icon,
   block: @WebforjDsl IconButton.() -> Unit = {}

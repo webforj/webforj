@@ -24,6 +24,7 @@ import com.webforj.kotlin.dsl.init
  * @see RadioButton
  * @see switch
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.radioButton(
   text: String? = null,
   checked: Boolean? = null,
@@ -52,6 +53,7 @@ fun @WebforjDsl HasComponents.radioButton(
  * @see RadioButton
  * @see radioButton
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.switch(
   text: String? = null,
   checked: Boolean? = null,

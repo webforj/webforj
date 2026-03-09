@@ -18,6 +18,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Main` instance.
  * @see Main
  */
+@WebforjDsl
 fun  @WebforjDsl HasComponents.main(text: String? = null, block:  @WebforjDsl Main.() -> Unit = {}): Main {
   val main = text?.let { Main(it) } ?: Main()
   return init(main, block)

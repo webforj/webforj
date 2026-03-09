@@ -42,6 +42,7 @@ import com.webforj.kotlin.dsl.init
  * @see Tree
  * @see treeNode
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.tree(block: @WebforjDsl Tree.() -> Unit = {}): Tree {
   val tree = Tree()
   return init(tree, block)
@@ -65,6 +66,7 @@ fun @WebforjDsl HasComponents.tree(block: @WebforjDsl Tree.() -> Unit = {}): Tre
  * @see tree
  * @see treeNode
  */
+@WebforjDsl
 fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl TreeNode.() -> Unit = {}): TreeNode {
   val node = key?.let { TreeNode(key, text) } ?: TreeNode(text)
   node.block()
@@ -90,6 +92,7 @@ fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl
  * @see tree
  * @see treeNode
  */
+@WebforjDsl
 fun @WebforjDsl TreeNode.treeNode(text: String, key: Any? = null, block: @WebforjDsl TreeNode.() -> Unit = {}): TreeNode {
   val node = key?.let { TreeNode(key, text) } ?: TreeNode(text)
   node.block()

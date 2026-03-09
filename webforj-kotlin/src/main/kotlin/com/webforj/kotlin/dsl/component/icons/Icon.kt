@@ -22,8 +22,9 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Icon` instance.
  * @see Icon
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.icon(
   name: String,
   pool: String,
-  block: Icon.() -> Unit = {}
+  block: @WebforjDsl Icon.() -> Unit = {}
 ): Icon = init(Icon(name, pool), block)

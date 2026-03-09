@@ -4,8 +4,8 @@ import com.webforj.component.field.MaskedTextFieldSpinner
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
-import com.webforj.kotlin.extension.prefix
-import com.webforj.kotlin.extension.suffix
+import com.webforj.kotlin.extension.prefixSlot
+import com.webforj.kotlin.extension.suffixSlot
 
 /**
  * Creates a `MaskedTextFieldSpinner` with an optional [label], [value] and/or [placeholder].
@@ -20,8 +20,8 @@ import com.webforj.kotlin.extension.suffix
  * ```
  *
  * To configure the slots of the `MaskedTextFieldSpinner` see:
- * - [prefix], and
- * - [suffix]
+ * - [prefixSlot], and
+ * - [suffixSlot]
  *
  * @param label The label of the `MaskedTextFieldSpinner`.
  * @param value The initial value of the `MaskedTextFieldSpinner`.
@@ -30,6 +30,7 @@ import com.webforj.kotlin.extension.suffix
  * @return The configured `MaskedTextFieldSpinner` instance.
  * @see MaskedTextFieldSpinner
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.maskedTextFieldSpinner(
   label: String? = null,
   value: String? = null,

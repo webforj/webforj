@@ -13,11 +13,12 @@ val HasSuffix<*>.suffix: Component?
   get() = suffixComponent
 
 /**
- * Sets the suffix to the [Component] configure inside [block].
+ * Sets the suffix to the [Component] configured inside [block].
  *
  * @param block The initialization of the [Component].
  */
-fun @WebforjDsl HasSuffix<*>.suffix(block: @WebforjDsl HasComponents.() -> Component) {
+@WebforjDsl
+fun @WebforjDsl HasSuffix<*>.suffixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this) {
     suffixComponent = it
   }

@@ -24,6 +24,7 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Loading`.
  * @see Loading
  */
+@WebforjDsl
 fun @WebforjDsl HasComponents.loading(text: String? = null, block: @WebforjDsl Loading.() -> Unit = {}): Loading {
   val loading = text?.let { Loading(it) } ?: Loading()
   return init(loading, block)
@@ -44,5 +45,6 @@ fun @WebforjDsl HasComponents.loading(text: String? = null, block: @WebforjDsl L
  * @see LoadingSpinner
  * @see DwcSpinner
  */
+@WebforjDsl
 fun @WebforjDsl Loading.spinner(block: @WebforjDsl DwcSpinner<LoadingSpinner>.() -> Unit): LoadingSpinner =
   spinner.apply(block) as LoadingSpinner
