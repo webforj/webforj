@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>webforj-kotlin</artifactId>
+  <name>${project.artifactId}</name>
 
   <properties>
     <kotlin.version>2.2.21</kotlin.version>
