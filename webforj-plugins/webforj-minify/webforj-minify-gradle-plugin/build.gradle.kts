@@ -6,19 +6,22 @@ plugins {
     id("com.gradle.plugin-publish") version "1.3.0" apply false
 }
 
-// Read version from parent pom.xml dynamically
-val parentPomFile = file("../pom.xml")
-val parentVersion = if (parentPomFile.exists()) {
-    val docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-    val doc = docBuilder.parse(parentPomFile)
-    val versionNodes = doc.getElementsByTagName("version")
-    if (versionNodes.length > 0) {
-        versionNodes.item(0).textContent
-    } else {
-        throw GradleException("Could not find version in parent POM")
-    }
-} else {
-    throw GradleException("Parent POM not found at ${parentPomFile.absolutePath}")
+// Read version and Java release from root pom.xml dynamically
+val rootPomFile = file("../../../pom.xml")
+if (!rootPomFile.exists()) {
+  throw GradleException("Root POM not found at ${rootPomFile.absolutePath}")
+}
+
+val rootDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(rootPomFile)
+
+val parentVersion = rootDoc.getElementsByTagName("version").let { nodes ->
+  if (nodes.length > 0) nodes.item(0).textContent
+  else throw GradleException("Could not find version in root POM")
+}
+
+val javaRelease = rootDoc.getElementsByTagName("maven.compiler.release").let { nodes ->
+  if (nodes.length > 0) nodes.item(0).textContent.toInt()
+  else throw GradleException("Could not find maven.compiler.release in root POM")
 }
 
 group = "com.webforj"
@@ -26,7 +29,7 @@ version = parentVersion
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(javaRelease))
     }
     withSourcesJar()
     withJavadocJar()
@@ -63,7 +66,7 @@ tasks.test {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-    options.release.set(17)
+    options.release.set(javaRelease)
 }
 
 tasks.withType<Javadoc> {
