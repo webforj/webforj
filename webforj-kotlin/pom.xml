@@ -38,7 +38,7 @@
     <dependency>
       <groupId>org.mockito.kotlin</groupId>
       <artifactId>mockito-kotlin</artifactId>
-      <version>6.2.3</version>
+      <version>6.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
