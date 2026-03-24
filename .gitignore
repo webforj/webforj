@@ -42,4 +42,5 @@ bbj/.project
 
 .DS_Store
 *.versionsBackup
+.flattened-pom.xml
 
