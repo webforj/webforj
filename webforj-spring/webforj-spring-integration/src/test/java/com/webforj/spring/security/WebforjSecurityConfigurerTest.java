@@ -85,7 +85,7 @@ class WebforjSecurityConfigurerTest {
   static class TestSecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) {
       return http.with(WebforjSecurityConfigurer.webforj(), configurer -> {
         configurer.loginPage("/signin", "/authenticate");
         configurer.logout("/signout", "/goodbye");

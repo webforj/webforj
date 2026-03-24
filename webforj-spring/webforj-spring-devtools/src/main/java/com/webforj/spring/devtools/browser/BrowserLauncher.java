@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
