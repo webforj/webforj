@@ -342,7 +342,8 @@ public class SpringDataRepository<T, K> extends AbstractQueryableRepository<T, S
       if (pagingRepository != null) {
         result = pagingRepository.findAll(pageRequest);
       } else if (specificationExecutor != null) {
-        result = specificationExecutor.findAll(null, pageRequest);
+        Specification<T> matchAll = (root, cq, cb) -> null;
+        result = specificationExecutor.findAll(matchAll, pageRequest);
       } else {
         throw new UnsupportedOperationException(
             "Repository must implement PagingAndSortingRepository or JpaSpecificationExecutor "
@@ -394,7 +395,8 @@ public class SpringDataRepository<T, K> extends AbstractQueryableRepository<T, S
           "Repository must implement JpaSpecificationExecutor for specification queries");
     }
 
-    return (int) specificationExecutor.count(spec);
+    Specification<T> effectiveSpec = spec != null ? spec : (root, cq, cb) -> null;
+    return (int) specificationExecutor.count(effectiveSpec);
   }
 
   /**

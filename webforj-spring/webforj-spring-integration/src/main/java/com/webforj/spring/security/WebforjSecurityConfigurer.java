@@ -155,7 +155,7 @@ public class WebforjSecurityConfigurer
    * {@inheritDoc}
    */
   @Override
-  public void init(HttpSecurity http) throws Exception {
+  public void init(HttpSecurity http) {
     ApplicationContext context = http.getSharedObject(ApplicationContext.class);
 
     // Get the properties bean
@@ -214,11 +214,11 @@ public class WebforjSecurityConfigurer
    * {@inheritDoc}
    */
   @Override
-  public void configure(HttpSecurity http) throws Exception {
+  public void configure(HttpSecurity http) {
     // All configuration is done in init() method
   }
 
-  private void configureCsrf(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureCsrf(HttpSecurity http, ApplicationContext context) {
     WebforjFrameworkRequestMatcher frameworkMatcher =
         context.getBean(WebforjFrameworkRequestMatcher.class);
 
@@ -238,8 +238,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private void configureAuthorization(HttpSecurity http, ApplicationContext context)
-      throws Exception {
+  private void configureAuthorization(HttpSecurity http, ApplicationContext context) {
     WebforjFrameworkRequestMatcher frameworkMatcher =
         context.getBean(WebforjFrameworkRequestMatcher.class);
 
@@ -265,7 +264,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private void configureFormLogin(HttpSecurity http, ApplicationContext context) throws Exception {
+  private void configureFormLogin(HttpSecurity http, ApplicationContext context) {
     http.formLogin(form -> {
       form.loginPage(loginPage);
 
@@ -286,7 +285,7 @@ public class WebforjSecurityConfigurer
     });
   }
 
-  private void configureLogout(HttpSecurity http) throws Exception {
+  private void configureLogout(HttpSecurity http) {
     http.logout(logout -> {
       logout.logoutUrl(logoutUrl);
 
