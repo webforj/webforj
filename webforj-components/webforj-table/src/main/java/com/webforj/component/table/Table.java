@@ -1463,18 +1463,24 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
         (async () => {
           try {
             await customElements.whenDefined('dwc-table');
-            await component.moveColumn('%s', %d);
-            return '';
+            const state = await component.moveColumn('%s', %d);
+            return JSON.stringify({ state: state });
           } catch(e) {
-            return e.message;
+            return JSON.stringify({ error: e.message });
           }
         })()""", id.replace("'", "\\'"), index);
 
     el().executeJsAsync(script).thenAccept(value -> {
-      String msg = value != null ? value.toString() : "";
-      if (!msg.isEmpty()) {
-        result.completeExceptionally(new IllegalArgumentException(msg));
+      String json = value != null ? value.toString() : "{}";
+      JsonObject obj = gson.fromJson(json, JsonObject.class);
+      if (obj.has("error")) {
+        result.completeExceptionally(new IllegalArgumentException(obj.get("error").getAsString()));
       } else {
+        List<ColumnState> states =
+            gson.fromJson(obj.get("state"), new TypeToken<List<ColumnState>>() {}.getType());
+        if (states != null && !states.isEmpty()) {
+          handleStateChanged(new StateChangedDetail("move", states));
+        }
         result.complete(null);
       }
     });
