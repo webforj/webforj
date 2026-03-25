@@ -822,10 +822,11 @@ public class Router {
     willNavigateOptions.ifPresent(options -> {
 
       Location newLocation = attachRoot(context.getLocation());
-      if (options.isUpdateHistory() && !isSameLocation(newLocation)) {
+      boolean sameLocation = isSameLocation(newLocation);
+      lastResolvedLocation = newLocation;
+      if (options.isUpdateHistory() && !sameLocation) {
         NavigationOptions.NavigationType type = options.getNavigationType();
         Object state = options.getState();
-        lastResolvedLocation = newLocation;
 
         switch (type) {
           case PUSH:

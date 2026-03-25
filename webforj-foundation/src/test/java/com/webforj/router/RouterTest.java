@@ -10,6 +10,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -441,6 +442,25 @@ class RouterTest {
       router.navigate(new Location("/main"), options);
 
       assertEquals("/about", history.getLocation().orElseThrow().getFullURI());
+    }
+
+    // https://github.com/webforj/webforj/issues/1282
+    @Test
+    void shouldUpdateResolvedLocationAfterBackNavigation() {
+      // Navigate to list
+      router.navigate(new Location("/main"));
+      assertEquals("/main", router.getResolvedLocation().orElseThrow().getFullURI());
+
+      // Navigate to details
+      router.navigate(new Location("/main/1"));
+      assertEquals("/main/1", router.getResolvedLocation().orElseThrow().getFullURI());
+
+      // Simulate history.back(), router re-navigates with updateHistory=false
+      NavigationOptions backOptions = new NavigationOptions().setUpdateHistory(false);
+      router.navigate(new Location("/main"), backOptions);
+
+      // Resolved location must be updated even though history was not written
+      assertEquals("/main", router.getResolvedLocation().orElseThrow().getFullURI());
     }
 
     @Test
