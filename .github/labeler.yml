@@ -42,6 +42,10 @@
   - changed-files:
       - any-glob-to-any-file: 'webforj-kotlin/**'
 
+"module: rewrite":
+- changed-files:
+  - any-glob-to-any-file: 'webforj-rewrite/**'
+
 documentation:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'
