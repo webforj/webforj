@@ -25,7 +25,7 @@ public class SelectEventMock<T extends Component & HasRepository<V>, V>
     }
 
     HasRepository<V> component = (HasRepository<V>) getComponent();
-    return component.getRepository().findByIndex(index).orElse(null);
+    return component.getRepository().findAll().skip(index).findFirst().orElse(null);
   }
 
   /**
@@ -40,7 +40,8 @@ public class SelectEventMock<T extends Component & HasRepository<V>, V>
     }
 
     HasRepository<V> component = (HasRepository<V>) getComponent();
-    return indices.stream().map(index -> component.getRepository().findByIndex(index).orElse(null))
+    return indices.stream()
+        .map(index -> component.getRepository().findAll().skip(index).findFirst().orElse(null))
         .toList();
   }
 }

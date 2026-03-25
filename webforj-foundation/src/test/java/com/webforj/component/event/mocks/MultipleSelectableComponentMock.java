@@ -32,7 +32,6 @@ public class MultipleSelectableComponentMock extends Component implements HasRep
     return this;
   }
 
-  @Override
   public MultipleSelectableComponentMock selectIndex(int... index) {
     for (int i : index) {
       if (i >= 0 && i < items.size()) {
@@ -43,7 +42,6 @@ public class MultipleSelectableComponentMock extends Component implements HasRep
     return this;
   }
 
-  @Override
   public int getSelectedIndex() {
     return selectedIndices.isEmpty() ? -1 : selectedIndices.get(0);
   }
@@ -84,7 +82,6 @@ public class MultipleSelectableComponentMock extends Component implements HasRep
     return this;
   }
 
-  @Override
   public MultipleSelectableComponentMock deselectIndex(int... index) {
     for (int i : index) {
       if (i >= 0 && i < items.size()) {
@@ -101,7 +98,6 @@ public class MultipleSelectableComponentMock extends Component implements HasRep
     return this;
   }
 
-  @Override
   public List<Integer> getSelectedIndices() {
     return new ArrayList<>(selectedIndices);
   }

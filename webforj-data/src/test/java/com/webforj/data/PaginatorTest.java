@@ -105,12 +105,12 @@ class PaginatorTest {
 
   @Test
   void shouldListenToRepositoryChanges() {
-    Repository<String> repo = new CollectionRepository<>(List.of("one", "two", "three"));
+    CollectionRepository<String> repo = new CollectionRepository<>(List.of("one", "two", "three"));
     paginator = new Paginator(repo);
 
     assertEquals(3, paginator.getTotalItems());
 
-    repo.setFilter(s -> s.equals("one"));
+    repo.setBaseFilter(s -> s.equals("one"));
     repo.commit();
 
     assertEquals(1, paginator.getTotalItems());

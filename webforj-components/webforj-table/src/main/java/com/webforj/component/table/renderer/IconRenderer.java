@@ -55,58 +55,6 @@ public class IconRenderer<T> extends AbstractVoidElementRenderer<T> {
   }
 
   /**
-   * Creates a new instance of the icon renderer.
-   *
-   * @param name the name of the icon
-   * @param pool the pool of the icon
-   * @param listener A click listener for the icon
-   *
-   * @deprecated Use {@link #IconRenderer(IconDefinition, EventListener)} instead.
-   */
-  @Deprecated(since = "25.12", forRemoval = true)
-  public IconRenderer(String name, String pool, EventListener<RendererClickEvent<T>> listener) {
-    this(new Icon(name, pool), listener);
-  }
-
-  /**
-   * Creates a new instance of the icon renderer.
-   *
-   * @param name the name of the icon
-   * @param pool the pool of the icon
-   *
-   * @deprecated Use {@link #IconRenderer(IconDefinition)} instead.
-   */
-  @Deprecated(since = "25.12", forRemoval = true)
-  public IconRenderer(String name, String pool) {
-    this(new Icon(name, pool));
-  }
-
-  /**
-   * Creates a new instance of the icon renderer.
-   *
-   * @param name the name of the icon
-   * @param listener A click listener for the icon
-   *
-   * @deprecated Use {@link #IconRenderer(IconDefinition, EventListener)} instead.
-   */
-  @Deprecated(since = "25.12", forRemoval = true)
-  public IconRenderer(String name, EventListener<RendererClickEvent<T>> listener) {
-    this(new Icon(name, "tabler"), listener);
-  }
-
-  /**
-   * Creates a new instance of the icon renderer.
-   *
-   * @param name the name of the icon
-   *
-   * @deprecated Use {@link #IconRenderer(IconDefinition)} instead.
-   */
-  @Deprecated(since = "25.12", forRemoval = true)
-  public IconRenderer(String name) {
-    this(new Icon(name, "tabler"));
-  }
-
-  /**
    * Sets the icon from an {@link IconDefinition}.
    *
    * @param icon the icon definition

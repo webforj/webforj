@@ -40,24 +40,11 @@ public class CollectionRepository<T> extends AbstractRepository<T>
 
   /**
    * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #setBaseFilter(Predicate)} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public CollectionRepository<T> setFilter(Predicate<T> filter) {
-    super.setFilter(filter);
-    this.baseFilter = filter;
-
-    return this;
-  }
-
-  /**
-   * {@inheritDoc}
    */
   @Override
   public CollectionRepository<T> setBaseFilter(Predicate<T> filter) {
-    return setFilter(filter);
+    this.baseFilter = filter;
+    return this;
   }
 
   /**
@@ -70,64 +57,12 @@ public class CollectionRepository<T> extends AbstractRepository<T>
 
   /**
    * {@inheritDoc}
-   *
-   * @deprecated since 25.02.
    */
   @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public int getIndex(T entity) {
-    return new ArrayList<>(items).indexOf(entity);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @deprecated since 25.02.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public Optional<T> findByIndex(int index) {
-    List<T> list = new ArrayList<>(items);
-
-    if (index >= 0 && index < list.size()) {
-      return Optional.ofNullable(list.get(index));
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @deprecated since 25.02. Use {@link #findBy(RepositoryCriteria)} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public Stream<T> findBy(RetrievalCriteria<T> criteria) {
-    if (criteria == null) {
-      return items.stream();
-    }
-
-    Predicate<T> filter = criteria.getFilter();
-    Comparator<T> orderBy = criteria.getOrderBy();
-    int limit = criteria.getLimit();
-    int offset = criteria.getOffset();
-
-    Stream<T> stream = items.stream().filter(entity -> filter == null || filter.test(entity));
-
-    if (orderBy != null) {
-      stream = stream.sorted(orderBy);
-    }
-
-    if (offset > 0) {
-      stream = stream.skip(offset);
-    }
-
-    if (limit > 0) {
-      stream = stream.limit(limit);
-    }
-
-    return stream;
+  public Stream<T> findAll() {
+    RepositoryCriteria<T, Predicate<T>> query =
+        new RepositoryCriteria<>(getOffset(), getLimit(), getOrderCriteriaList(), getBaseFilter());
+    return findBy(query);
   }
 
   /**

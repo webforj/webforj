@@ -33,7 +33,7 @@ class TableItemSelectionChangeTest {
     Map<String, Object> eventMap = new HashMap<>();
     EntityKeysRegistry registry = table.getItemKeysRegistry();
 
-    String firstItem = table.getRepository().findByIndex(0).orElse(null);
+    String firstItem = table.getRepository().findAll().findFirst().orElse(null);
     eventMap.put("keys", Arrays.asList(registry.getKey(firstItem)));
 
     TableItemSelectionChange<String> event = new TableItemSelectionChange<String>(table, eventMap);
@@ -42,8 +42,5 @@ class TableItemSelectionChangeTest {
 
     assertIterableEquals(List.of(firstItem), event.getSelectedItems());
     assertEquals(firstItem, event.getSelectedItem());
-
-    assertIterableEquals(List.of(0), event.getSelectedIndices());
-    assertEquals(0, event.getSelectedIndex());
   }
 }

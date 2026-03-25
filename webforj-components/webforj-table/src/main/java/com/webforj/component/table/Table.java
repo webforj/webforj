@@ -595,25 +595,6 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
 
   /**
    * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #selectKey(Object...)} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public Table<T> selectIndex(int... indices) {
-    Object[] keys = new Object[indices.length];
-    for (int i = 0; i < indices.length; i++) {
-      T entity = getRepository().findByIndex(indices[i]).orElse(null);
-      if (entity != null) {
-        keys[i] = getRepository().getKey(entity);
-      }
-    }
-
-    return selectKey(keys);
-  }
-
-  /**
-   * {@inheritDoc}
    */
   @Override
   public Table<T> deselectAll() {
@@ -647,53 +628,11 @@ public class Table<T> extends HtmlComponent<Table<T>> implements HasRepository<T
 
   /**
    * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #deselectKey(Object...)} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public Table<T> deselectIndex(int... index) {
-    Object[] keys = new Object[index.length];
-    for (int i = 0; i < index.length; i++) {
-      T entity = getRepository().findByIndex(index[i]).orElse(null);
-      if (entity != null) {
-        keys[i] = getRepository().getKey(entity);
-      }
-    }
-
-    return deselectKey(keys);
-  }
-
-  /**
-   * {@inheritDoc}
    */
   @Override
   public List<T> getSelectedItems() {
     return getSelectedKeys().stream().map(key -> getRepository().find(key).orElse(null))
         .filter(Objects::nonNull).toList();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public List<Integer> getSelectedIndices() {
-    List<T> items = getSelectedItems();
-    return items.stream().map(item -> getRepository().getIndex(item)).toList();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #getSelectedKeys()} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public int getSelectedIndex() {
-    return getSelectedIndices().stream().findFirst().orElse(-1);
   }
 
   /**

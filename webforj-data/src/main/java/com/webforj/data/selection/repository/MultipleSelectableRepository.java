@@ -1,8 +1,8 @@
 package com.webforj.data.selection.repository;
 
 import com.webforj.data.repository.HasRepository;
-import com.webforj.data.selection.MultipleSelectable;
-import com.webforj.data.selection.SingleSelectable;
+import com.webforj.data.selection.ItemMultiSelectable;
+import com.webforj.data.selection.KeyMultiSelectable;
 import java.util.List;
 
 /**
@@ -17,14 +17,12 @@ import java.util.List;
  * @param <V> the type of the selected item
  *
  * @see SingleSelectableRepository
- * @see SingleSelectable
- * @see MultipleSelectable
  *
  * @author Hyyan Abo Fakher
  * @since 24.00
  */
 public interface MultipleSelectableRepository<T extends HasRepository<V>, V>
-    extends SelectableRepository<T, V>, MultipleSelectable<T, V> {
+    extends SelectableRepository<T, V>, KeyMultiSelectable<T>, ItemMultiSelectable<T, V> {
 
   /**
    * {@inheritDoc}
@@ -89,5 +87,4 @@ public interface MultipleSelectableRepository<T extends HasRepository<V>, V>
     return items.stream().map(self.getRepository()::getKey).toList();
   }
 
-  List<Integer> getSelectedIndices();
 }
