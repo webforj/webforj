@@ -102,6 +102,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- webforj-rewrite -->
+    <dependency>
+      <groupId>com.webforj</groupId>
+      <artifactId>webforj-rewrite</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- webforj-components -->
     <dependency>
       <groupId>com.webforj</groupId>

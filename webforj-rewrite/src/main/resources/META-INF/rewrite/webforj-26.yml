@@ -1,0 +1,226 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforj
+displayName: Upgrade to webforJ 26
+description: Upgrades webforJ projects to version 26.
+tags:
+  - webforj
+recipeList:
+  - org.openrewrite.maven.ChangePropertyValue:
+      key: webforj.version
+      newValue: ${project.version}
+  - org.openrewrite.java.migrate.UpgradeJavaVersion:
+      version: 21
+  - com.webforj.rewrite.v26.UpgradeWebforjData
+  - com.webforj.rewrite.v26.UpgradeWebforjTable
+  - com.webforj.rewrite.v26.UpgradeWebforjWebswing
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforjData
+displayName: Upgrade webforJ Data APIs to 26
+description: Upgrades deprecated webforJ Data repository APIs to version 26.
+tags:
+  - webforj
+recipeList:
+  # Renames
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.webforj.data.repository.QueryableRepository setFilter(..)
+      newMethodName: setBaseFilter
+      matchOverrides: true
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.webforj.data.repository.RetrievalCriteria getFilter()
+      newMethodName: getBaseFilter
+      matchOverrides: true
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.webforj.data.repository.RetrievalCriteria getOrderBy()
+      newMethodName: getOrderCriteriaList
+      matchOverrides: true
+  - org.openrewrite.java.ChangeMethodInvocationReturnType:
+      methodPattern: com.webforj.data.repository.AbstractRepository getOrderCriteriaList()
+      newReturnType: com.webforj.data.repository.OrderCriteriaList
+  - org.openrewrite.java.ChangeMethodInvocationReturnType:
+      methodPattern: com.webforj.data.repository.CollectionRepository getOrderCriteriaList()
+      newReturnType: com.webforj.data.repository.OrderCriteriaList
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.webforj.data.repository.Repository findOneBy(..)
+      newMethodName: findBy
+      matchOverrides: true
+
+  # Type migrations
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.webforj.data.repository.RetrievalCriteria
+      newFullyQualifiedTypeName: com.webforj.data.repository.RepositoryCriteria
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.webforj.data.repository.RetrievalBuilder
+      newFullyQualifiedTypeName: com.webforj.data.repository.RepositoryCriteria
+
+  # Removed APIs that need manual migration
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.data.repository.RetrievalCriteria setOrderBy(..)
+      matchOverrides: true
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.RetrievalCriteria setOrderBy(..)
+      comment: "TODO webforJ 26: Removed. Replace with getOrderCriteriaList().add(new OrderCriteria<>(keyExtractor, direction))."
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.AbstractRepository setOrderBy(..)
+      comment: "TODO webforJ 26: Removed. Replace with getOrderCriteriaList().add(new OrderCriteria<>(keyExtractor, direction))."
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.CollectionRepository setOrderBy(..)
+      comment: "TODO webforJ 26: Removed. Replace with getOrderCriteriaList().add(new OrderCriteria<>(keyExtractor, direction))."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.data.repository.Repository getIndex(..)
+      matchOverrides: true
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.Repository getIndex(..)
+      comment: "TODO webforJ 26: Removed. Use find(key) or findBy(criteria) to look up entities."
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.AbstractRepository getIndex(..)
+      comment: "TODO webforJ 26: Removed. Use find(key) or findBy(criteria) to look up entities."
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.CollectionRepository getIndex(..)
+      comment: "TODO webforJ 26: Removed. Use find(key) or findBy(criteria) to look up entities."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.data.repository.Repository findByIndex(..)
+      matchOverrides: true
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.Repository findByIndex(..)
+      comment: "TODO webforJ 26: Removed. Use find(key) or findBy(criteria) to look up entities."
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.AbstractRepository findByIndex(..)
+      comment: "TODO webforJ 26: Removed. Use find(key) or findBy(criteria) to look up entities."
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.data.repository.CollectionRepository findByIndex(..)
+      comment: "TODO webforJ 26: Removed. Use find(key) or findBy(criteria) to look up entities."
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforjTable
+displayName: Upgrade webforJ Table APIs to 26
+description: Upgrades deprecated webforJ Table APIs to version 26.
+tags:
+  - webforj
+recipeList:
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.Table selectIndex(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.Table selectIndex(..)
+      comment: "TODO webforJ 26: Removed. Use select(items) or selectKey(keys) instead."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.Table deselectIndex(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.Table deselectIndex(..)
+      comment: "TODO webforJ 26: Removed. Use deselect(items), deselectKey(keys) or deselectAll() instead."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.Table getSelectedIndex()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.Table getSelectedIndex()
+      comment: "TODO webforJ 26: Removed. Use getSelected() or getSelectedItem() instead."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.Table getSelectedIndices()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.Table getSelectedIndices()
+      comment: "TODO webforJ 26: Removed. Use getSelectedItems() instead."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.event.selection.TableItemSelectionChange getSelectedIndex()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.event.selection.TableItemSelectionChange getSelectedIndex()
+      comment: "TODO webforJ 26: Removed. Use getSelectedItem() instead."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.event.selection.TableItemSelectionChange getSelectedIndices()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.event.selection.TableItemSelectionChange getSelectedIndices()
+      comment: "TODO webforJ 26: Removed. Use getSelectedItems() instead."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.table.renderer.IconRenderer <constructor>(String, ..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.table.renderer.IconRenderer <constructor>(String, ..)
+      comment: "TODO webforJ 26: Removed. Use new IconRenderer(new Icon(name, pool)) instead."
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforjWebswing
+displayName: Upgrade webforJ Webswing APIs to 26
+description: Upgrades deprecated webforJ Webswing APIs to version 26.
+tags:
+  - webforj
+recipeList:
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setAutoReconnect(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setAutoReconnect(..)
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions getAutoReconnect()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions getAutoReconnect()
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setDisableLogout(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setDisableLogout(..)
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions isDisableLogout()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions isDisableLogout()
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setDisableLogin(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setDisableLogin(..)
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions isDisableLogin()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions isDisableLogin()
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setSyncClipboard(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setSyncClipboard(..)
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions isSyncClipboard()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions isSyncClipboard()
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setJavaCallTimeout(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setJavaCallTimeout(..)
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions getJavaCallTimeout()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions getJavaCallTimeout()
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setPingParams(..)
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions setPingParams(..)
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindMethods:
+      methodPattern: com.webforj.component.webswing.WebswingOptions getPingParams()
+  - org.openrewrite.java.AddCommentToMethodInvocations:
+      methodPattern: com.webforj.component.webswing.WebswingOptions getPingParams()
+      comment: "TODO webforJ 26: Removed. Configure directly in the Admin Console."
+  - org.openrewrite.java.search.FindTypes:
+      fullyQualifiedTypeName: com.webforj.component.webswing.WebswingOptions.PingParams
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.webforj.rewrite.v26.UpgradeWebforjSpring
+displayName: Upgrade to webforJ Spring 26
+description: Upgrades webforJ Spring Boot projects to version 26.
+tags:
+  - webforj
+  - spring
+recipeList:
+  - com.webforj.rewrite.v26.UpgradeWebforj
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0
+  - org.openrewrite.maven.RemoveProperty:
+      propertyName: tomcat.version
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: com.webforj
+      artifactId: webforj
