@@ -8,9 +8,9 @@ import com.webforj.component.Theme;
  * @param <T> the type of the dialog
  *
  * @author Hyyan Abo Fakher
- * @since 24.02
+ * @since 26.00
  */
-class ThemedDialog<T> extends Dialog<T> {
+public class DwcThemedOptionDialog<T> extends DwcOptionDialog<T> {
 
   private Theme theme = Theme.DEFAULT;
 

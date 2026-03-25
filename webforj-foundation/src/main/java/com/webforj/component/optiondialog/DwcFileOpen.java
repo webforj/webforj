@@ -7,8 +7,10 @@ import java.util.List;
  * The base class for DWC {@code fileopen} dialog.
  *
  * @param <T> the type of the dialog
+ *
+ * @since 26.00
  */
-class DwcFileOpen<T extends Dialog<T>> extends Dialog<T> {
+public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T> {
 
   private String title = "";
   private List<FileChooserFilter> filters = new ArrayList<>();

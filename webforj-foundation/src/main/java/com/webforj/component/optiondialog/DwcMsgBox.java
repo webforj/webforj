@@ -6,9 +6,9 @@ package com.webforj.component.optiondialog;
  * @param <T> the type of the dialog
  *
  * @author Hyyan Abo Fakher
- * @since 24.02
+ * @since 26.00
  */
-class DwcMsgBox<T extends DwcPromptMsgBox<T>> extends DwcPromptMsgBox<T> {
+public class DwcMsgBox<T extends DwcPromptMsgBox<T>> extends DwcPromptMsgBox<T> {
 
   private boolean rawText = false;
 
