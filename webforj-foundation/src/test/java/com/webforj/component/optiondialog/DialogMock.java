@@ -1,5 +1,5 @@
 package com.webforj.component.optiondialog;
 
-class DialogMock extends Dialog<DialogMock> {
+class DialogMock extends DwcOptionDialog<DialogMock> {
 
 }

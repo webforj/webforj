@@ -10,9 +10,9 @@ import com.webforj.component.button.ButtonTheme;
  * @param <T> the type of the dialog
  *
  * @author Hyyan Abo Fakher
- * @since 24.02
+ * @since 26.00
  */
-class DwcPromptMsgBox<T extends ThemedDialog<T>> extends ThemedDialog<T> {
+public class DwcPromptMsgBox<T extends DwcThemedOptionDialog<T>> extends DwcThemedOptionDialog<T> {
 
   /**
    * Defines the style of the dialog message.

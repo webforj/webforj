@@ -11,9 +11,9 @@ import java.util.StringJoiner;
  * @param <T> the type of the dialog
  *
  * @author Hyyan Abo Fakher
- * @since 24.02
+ * @since 26.00
  */
-class Dialog<T> {
+public class DwcOptionDialog<T> {
   /**
    * The dialog alignments.
    */
