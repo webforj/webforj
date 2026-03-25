@@ -1,6 +1,7 @@
 package com.webforj.data.selection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,39 +16,33 @@ class SelectableTest {
   }
 
   @Test
-  void shouldDeselectItem() {
-    component.selectIndex(1);
-    component.deselect();
-    assertEquals(-1, component.getSelectedIndex());
-  }
-
-  @Test
   void shouldSelectItem() {
     component.select("item2");
-    assertEquals(1, component.getSelectedIndex());
+    assertEquals("item2", component.getSelected());
   }
 
   @Test
   void shouldSelectKey() {
     component.selectKey("item2");
-    assertEquals(1, component.getSelectedIndex());
+    assertEquals("item2", component.getSelectedKey());
   }
 
   @Test
-  void shouldSelectItemByIndex() {
-    component.selectIndex(1);
-    assertEquals(1, component.getSelectedIndex());
+  void shouldDeselectItem() {
+    component.select("item2");
+    component.deselect();
+    assertNull(component.getSelected());
   }
 
   @Test
   void shouldReturnSelectedItem() {
-    component.selectIndex(1);
+    component.select("item2");
     assertEquals("item2", component.getSelected());
   }
 
   @Test
   void shouldReturnSelectedKey() {
-    component.selectIndex(1);
+    component.select("item2");
     assertEquals("item2", component.getSelectedKey());
   }
 }

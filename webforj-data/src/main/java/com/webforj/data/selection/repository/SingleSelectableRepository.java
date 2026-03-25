@@ -1,7 +1,8 @@
 package com.webforj.data.selection.repository;
 
 import com.webforj.data.repository.HasRepository;
-import com.webforj.data.selection.SingleSelectable;
+import com.webforj.data.selection.ItemSingleSelectable;
+import com.webforj.data.selection.KeySingleSelectable;
 
 /**
  * An interface for components that support single item selection and they provide a repository.
@@ -21,7 +22,7 @@ import com.webforj.data.selection.SingleSelectable;
  * @since 24.00
  */
 public interface SingleSelectableRepository<T extends HasRepository<V>, V>
-    extends SelectableRepository<T, V>, SingleSelectable<T, V> {
+    extends SelectableRepository<T, V>, KeySingleSelectable<T>, ItemSingleSelectable<T, V> {
 
   /**
    * {@inheritDoc}

@@ -88,8 +88,7 @@ class WebswingConnectorTest {
 
     @Test
     void shouldSetAndGetOptions() {
-      WebswingOptions options =
-          new WebswingOptions().setAutoStart(false).setAutoReconnect(5000).setDisableLogout(true);
+      WebswingOptions options = new WebswingOptions().setAutoStart(false);
 
       connector.setOptions(options);
       assertSame(options, connector.getOptions());

@@ -30,7 +30,7 @@ class TableItemEventTest {
   void shouldReturnClickedRow() {
     Map<String, Object> eventMap = new HashMap<>();
     EntityKeysRegistry registry = table.getItemKeysRegistry();
-    String firstItem = table.getRepository().findByIndex(0).orElse(null);
+    String firstItem = table.getRepository().findAll().findFirst().orElse(null);
 
     eventMap.put("key", registry.getKey(firstItem));
     eventMap.put("index", 0);

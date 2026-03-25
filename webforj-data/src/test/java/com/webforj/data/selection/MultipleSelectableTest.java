@@ -1,6 +1,7 @@
 package com.webforj.data.selection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,64 +17,40 @@ class MultipleSelectableTest {
   }
 
   @Test
+  void shouldSelectItems() {
+    component.select("item1", "item2");
+    assertEquals(List.of("item1", "item2"), component.getSelectedItems());
+  }
+
+  @Test
+  void shouldSelectKeys() {
+    component.selectKey("item2", "item3");
+    assertEquals(List.of("item2", "item3"), component.getSelectedKeys());
+  }
+
+  @Test
   void shouldDeselectItem() {
     component.select("item2");
     component.deselect("item2");
-
-    assertEquals(-1, component.getSelectedIndex());
+    assertTrue(component.getSelectedItems().isEmpty());
   }
 
   @Test
   void shouldDeselectKey() {
     component.select("item2");
     component.deselectKey("item2");
-
-    assertEquals(-1, component.getSelectedIndex());
-  }
-
-  @Test
-  void shouldSelectItems() {
-    component.select("item1");
-    component.select("item2");
-
-    List<Integer> indices = component.getSelectedIndices();
-
-    assertEquals(2, indices.size());
-    assertEquals(0, indices.get(0));
-    assertEquals(1, indices.get(1));
-  }
-
-  @Test
-  void shouldSelectKeys() {
-    component.selectKey("item2", "item3");
-
-    List<Integer> indices = component.getSelectedIndices();
-
-    assertEquals(2, indices.size());
-    assertEquals(1, indices.get(0));
-    assertEquals(2, indices.get(1));
+    assertTrue(component.getSelectedKeys().isEmpty());
   }
 
   @Test
   void shouldReturnSelectedItems() {
     component.select("item2", "item3");
-
-    List<String> items = component.getSelectedItems();
-
-    assertEquals(2, items.size());
-    assertEquals("item2", items.get(0));
-    assertEquals("item3", items.get(1));
+    assertEquals(List.of("item2", "item3"), component.getSelectedItems());
   }
 
   @Test
   void shouldReturnSelectedKeys() {
-    component.select("item2");
-    component.select("item3");
-
-    List<Object> keys = component.getSelectedKeys();
-
-    assertEquals(2, keys.size());
-    assertEquals("item2", keys.get(0));
-    assertEquals("item3", keys.get(1));
+    component.select("item2", "item3");
+    assertEquals(List.of("item2", "item3"), component.getSelectedKeys());
   }
 }

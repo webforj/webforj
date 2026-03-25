@@ -5,7 +5,6 @@ import com.webforj.component.element.annotation.EventOptions;
 import com.webforj.component.element.annotation.EventOptions.EventData;
 import com.webforj.component.table.Table;
 import com.webforj.component.table.event.TableEvent;
-import com.webforj.data.selection.event.SelectEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ import java.util.Map;
  */
 @EventName("dwc-selection-changed")
 @EventOptions(data = {@EventData(key = "keys", exp = "event.target.selected")})
-public class TableItemSelectionChange<T> extends TableEvent<T> implements SelectEvent<T> {
+public class TableItemSelectionChange<T> extends TableEvent<T> {
   private List<String> keys;
 
   /**
@@ -48,40 +47,10 @@ public class TableItemSelectionChange<T> extends TableEvent<T> implements Select
 
   /**
    * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
    */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public int getSelectedIndex() {
-    T item = getSelectedItem();
-
-    return getComponent().getRepository().getIndex(item);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public T getSelectedItem() {
     List<T> items = getSelectedItems();
     return items.isEmpty() ? null : items.get(0);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @deprecated since 25.02, use {@link #getSelectedItems()} instead.
-   */
-  @Override
-  @Deprecated(since = "25.02", forRemoval = true)
-  public List<Integer> getSelectedIndices() {
-    List<Integer> indices = new ArrayList<>();
-    for (T item : getSelectedItems()) {
-      indices.add(getComponent().getRepository().getIndex(item));
-    }
-
-    return indices;
   }
 
   /**
