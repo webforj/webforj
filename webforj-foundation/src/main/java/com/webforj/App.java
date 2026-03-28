@@ -25,7 +25,7 @@ import com.webforj.router.RouteRegistry;
 import com.webforj.router.Router;
 import com.webforj.router.RouterDevUtils;
 import com.webforj.router.event.NavigateEvent;
-import java.lang.System.Logger;
+import com.webforj.logging.WebforjLogger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,7 +131,7 @@ import java.util.function.Consumer;
  * @since 0.001
  */
 public abstract class App {
-  private static final Logger logger = System.getLogger(App.class.getName());
+  private static final WebforjLogger logger = WebforjLogger.getLogger(App.class.getName());
 
   /**
    * A default app action is to clear the browser and display a localized message of "Click to
@@ -179,7 +179,7 @@ public abstract class App {
       throw new WebforjAppInitializeException("App is already initialized.");
     }
 
-    logger.log(Logger.Level.INFO, String.format("Starting %s", appId));
+    logger.log(WebforjLogger.Level.INFO, String.format("Starting %s", appId));
 
     try {
       String key = "PARSE_REQUEST_THEME";
@@ -594,7 +594,7 @@ public abstract class App {
    * Terminate the application.
    */
   public final void terminate() {
-    logger.log(Logger.Level.INFO, String.format("Terminating %s", appId));
+    logger.log(WebforjLogger.Level.INFO, String.format("Terminating %s", appId));
 
     // Invoke onWillTerminate hook
     onWillTerminate();

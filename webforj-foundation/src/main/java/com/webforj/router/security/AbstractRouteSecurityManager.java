@@ -5,8 +5,7 @@ import com.webforj.router.NavigationContext;
 import com.webforj.router.NavigationOptions;
 import com.webforj.router.Router;
 import com.webforj.router.history.Location;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,8 +30,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
    * HTTP session attribute key for storing the requested location before authentication.
    */
   public static final String PRE_AUTH_LOCATION_KEY = "webforj-requested-location";
-  private static final Logger logger =
-      System.getLogger(AbstractRouteSecurityManager.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(AbstractRouteSecurityManager.class.getName());
 
   private final List<PrioritizedEvaluator> evaluators = new ArrayList<>();
 
@@ -48,7 +47,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
       evaluators.sort(Comparator.comparingInt(e -> e.priority));
     }
 
-    logger.log(Level.DEBUG, "Registered evaluator: {0} with priority {1}",
+    logger.log(WebforjLogger.Level.DEBUG, "Registered evaluator: {0} with priority {1}",
         evaluator.getClass().getName(), priority);
   }
 
@@ -61,7 +60,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
       evaluators.removeIf(pe -> pe.evaluator.equals(evaluator));
     }
 
-    logger.log(Level.DEBUG, "Unregistered evaluator: {0}", evaluator.getClass().getName());
+    logger.log(WebforjLogger.Level.DEBUG, "Unregistered evaluator: {0}",
+        evaluator.getClass().getName());
   }
 
   /**
@@ -108,8 +108,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
    */
   @Override
   public void onAccessDenied(RouteAccessDecision decision, NavigationContext context) {
-    logger.log(Level.DEBUG, "Access denied: type={0}, reason={1}", decision.getDenialType(),
-        decision.getReason());
+    logger.log(WebforjLogger.Level.DEBUG, "Access denied: type={0}, reason={1}",
+        decision.getDenialType(), decision.getReason());
 
     // Store the requested location for post-login redirect
     Router router = Router.getCurrent();
@@ -119,7 +119,7 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
         env.getSessionAccessor().ifPresent(accessor -> {
           accessor.access(session -> {
             session.setAttribute(PRE_AUTH_LOCATION_KEY, context.getLocation().getFullURI());
-            logger.log(Level.DEBUG,
+            logger.log(WebforjLogger.Level.DEBUG,
                 "Stored requested location in HTTP session: " + context.getLocation().getFullURI());
           });
         });
@@ -163,7 +163,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
       env.getSessionAccessor().ifPresent(accessor -> {
         accessor.access(session -> {
           session.removeAttribute(PRE_AUTH_LOCATION_KEY);
-          logger.log(Level.DEBUG, "Cleared pre-authentication location from HTTP session");
+          logger.log(WebforjLogger.Level.DEBUG,
+              "Cleared pre-authentication location from HTTP session");
         });
       });
     });
@@ -259,12 +260,13 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
             RouteAccessDecision decision =
                 evaluator.evaluate(routeClass, context, securityContext, nextChain);
 
-            logger.log(Level.DEBUG, "Evaluator {0} returned decision: granted={1}",
+            logger.log(WebforjLogger.Level.DEBUG, "Evaluator {0} returned decision: granted={1}",
                 evaluator.getClass().getName(), decision.isGranted());
 
             return decision;
           } catch (Exception e) {
-            logger.log(Level.ERROR, "Error in evaluator {0}", evaluator.getClass().getName(), e);
+            logger.log(WebforjLogger.Level.ERROR, "Error in evaluator {0}",
+                evaluator.getClass().getName(), e);
             // On error, deny access for safety
             return RouteAccessDecision.deny("Security evaluation error");
           }
@@ -273,7 +275,8 @@ public abstract class AbstractRouteSecurityManager implements RouteSecurityManag
 
       // No more evaluators - apply default behavior
       if (configuration.isSecureByDefault() && !securityContext.isAuthenticated()) {
-        logger.log(Level.DEBUG, "No evaluator handled route, applying secure-by-default");
+        logger.log(WebforjLogger.Level.DEBUG,
+            "No evaluator handled route, applying secure-by-default");
         return RouteAccessDecision.denyAuthentication();
       }
 

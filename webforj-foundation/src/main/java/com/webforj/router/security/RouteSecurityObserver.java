@@ -3,8 +3,7 @@ package com.webforj.router.security;
 import com.webforj.component.Component;
 import com.webforj.router.NavigationContext;
 import com.webforj.router.observer.RouteRendererObserver;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.util.function.Consumer;
 
 /**
@@ -19,7 +18,8 @@ import java.util.function.Consumer;
  * @since 25.10
  */
 public class RouteSecurityObserver implements RouteRendererObserver {
-  private static final Logger logger = System.getLogger(RouteSecurityObserver.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(RouteSecurityObserver.class.getName());
   private final RouteSecurityManager securityManager;
 
   /**
@@ -45,22 +45,22 @@ public class RouteSecurityObserver implements RouteRendererObserver {
     }
 
     Class<?> routeClass = component.getClass();
-    logger.log(Level.DEBUG, "Security check for route: {0}", routeClass.getName());
+    logger.log(WebforjLogger.Level.DEBUG, "Security check for route: {0}", routeClass.getName());
 
     try {
       RouteAccessDecision decision = securityManager.evaluate(routeClass, context);
 
       if (decision.isGranted()) {
-        logger.log(Level.DEBUG, "Access granted to route: {0}", routeClass.getName());
+        logger.log(WebforjLogger.Level.DEBUG, "Access granted to route: {0}", routeClass.getName());
         continueCallback.accept(true);
       } else {
-        logger.log(Level.DEBUG, "Access denied to route: {0}, reason: {1}", routeClass.getName(),
-            decision.getReason());
+        logger.log(WebforjLogger.Level.DEBUG, "Access denied to route: {0}, reason: {1}",
+            routeClass.getName(), decision.getReason());
         continueCallback.accept(false);
         securityManager.onAccessDenied(decision, context);
       }
     } catch (Exception e) {
-      logger.log(Level.ERROR, "Error during security evaluation for route: {0}",
+      logger.log(WebforjLogger.Level.ERROR, "Error during security evaluation for route: {0}",
           routeClass.getName(), e);
       // On error, deny access for safety
       continueCallback.accept(false);

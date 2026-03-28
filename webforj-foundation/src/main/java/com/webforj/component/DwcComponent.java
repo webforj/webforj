@@ -31,8 +31,7 @@ import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import com.webforj.exceptions.WebforjRestrictedAccessException;
 import com.webforj.exceptions.WebforjRuntimeException;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,7 +66,7 @@ import java.util.stream.Collectors;
 public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
     implements HasText<T>, HasHtml<T>, HasAttribute<T>, HasProperty<T>, HasClassName<T>,
     HasStyle<T>, HasVisibility<T>, HasTooltip<T>, HasSize<T> {
-  private static final Logger logger = System.getLogger(DwcComponent.class.getName());
+  private static final WebforjLogger logger = WebforjLogger.getLogger(DwcComponent.class.getName());
   private static final String PREFIX_SLOT = "prefix";
   private static final String SUFFIX_SLOT = "suffix";
   private final SlotAssigner slotAssigner = new SlotAssigner(this);
@@ -192,16 +191,18 @@ public abstract class DwcComponent<T extends DwcComponent<T>> extends Component
    */
   protected int resolveControlId(BBjWindow w) throws BBjException {
     if (bbjId >= 0) {
-      if (logger.isLoggable(Level.TRACE)) {
-        logger.log(Level.TRACE, "Using explicit BBj ID {0} for {1}", bbjId, getClass().getName());
+      if (logger.isLoggable(WebforjLogger.Level.TRACE)) {
+        logger.log(WebforjLogger.Level.TRACE, "Using explicit BBj ID {0} for {1}", bbjId,
+            getClass().getName());
       }
 
       return bbjId;
     }
 
     int id = w.getAvailableControlID();
-    if (logger.isLoggable(Level.TRACE)) {
-      logger.log(Level.TRACE, "Using auto-generated BBj ID {0} for {1}", id, getClass().getName());
+    if (logger.isLoggable(WebforjLogger.Level.TRACE)) {
+      logger.log(WebforjLogger.Level.TRACE, "Using auto-generated BBj ID {0} for {1}", id,
+          getClass().getName());
     }
 
     return id;

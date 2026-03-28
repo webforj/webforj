@@ -6,7 +6,7 @@ import com.webforj.AppLifecycleListener;
 import com.webforj.Environment;
 import com.webforj.Request;
 import com.webforj.annotation.AppListenerPriority;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.Set;
 // Must run after config is available (priority 0 listeners like SpringConfigMerger)
 @AppListenerPriority(5)
 public class LocaleAutoDetectListener implements AppLifecycleListener {
-  private static final System.Logger logger =
-      System.getLogger(LocaleAutoDetectListener.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(LocaleAutoDetectListener.class.getName());
 
   /**
    * {@inheritDoc}
@@ -53,7 +53,7 @@ public class LocaleAutoDetectListener implements AppLifecycleListener {
     Locale resolved = resolveLocale(preferredLocales, supportedLocales);
     App.setLocale(resolved);
 
-    logger.log(Level.DEBUG, "Auto-detected locale: {0}", resolved);
+    logger.log(WebforjLogger.Level.DEBUG, "Auto-detected locale: {0}", resolved);
   }
 
   /**

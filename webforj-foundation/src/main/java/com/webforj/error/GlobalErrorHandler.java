@@ -2,7 +2,7 @@ package com.webforj.error;
 
 import static com.webforj.App.console;
 
-import java.lang.System.Logger;
+import com.webforj.logging.WebforjLogger;
 
 /**
  * The {@code GlobalErrorHandler} class is used to handle errors that occur during the execution of
@@ -18,14 +18,15 @@ import java.lang.System.Logger;
  * @since 24.12
  */
 public class GlobalErrorHandler implements ErrorHandler {
-  private static final Logger logger = System.getLogger(GlobalErrorHandler.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(GlobalErrorHandler.class.getName());
 
   /**
    * {@inheritDoc}
    */
   @Override
   public void onError(Throwable throwable, boolean debug) {
-    logger.log(Logger.Level.ERROR, throwable.getMessage(), throwable);
+    logger.log(WebforjLogger.Level.ERROR, throwable.getMessage(), throwable);
 
     // log to the browser console (debug only)
     console().error(throwable);

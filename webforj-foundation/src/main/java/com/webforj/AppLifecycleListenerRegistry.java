@@ -1,8 +1,7 @@
 package com.webforj;
 
 import com.webforj.annotation.AppListenerPriority;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,8 +34,8 @@ import java.util.function.Consumer;
  * @since 25.02
  */
 final class AppLifecycleListenerRegistry {
-  private static final Logger logger =
-      System.getLogger(AppLifecycleListenerRegistry.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(AppLifecycleListenerRegistry.class.getName());
 
   // Track which App instances have which listeners
   private static final Map<App, List<AppLifecycleListener>> appListeners =
@@ -58,7 +57,7 @@ final class AppLifecycleListenerRegistry {
     }
 
     appListeners.put(app, new ArrayList<>(listeners));
-    logger.log(Level.INFO,
+    logger.log(WebforjLogger.Level.INFO,
         String.format("Registered %d lifecycle listeners for %s", listeners.size(), app.getId()));
   }
 
@@ -88,7 +87,7 @@ final class AppLifecycleListenerRegistry {
   static void unregisterListeners(App app) {
     List<AppLifecycleListener> removed = appListeners.remove(app);
     if (removed != null && !removed.isEmpty()) {
-      logger.log(Level.INFO,
+      logger.log(WebforjLogger.Level.INFO,
           String.format("Unregistered %d lifecycle listeners for %s", removed.size(), app.getId()));
     }
   }
@@ -115,8 +114,9 @@ final class AppLifecycleListenerRegistry {
       }
 
       entries.add(new ListenerEntry(listener, priority));
-      logger.log(Level.DEBUG, String.format("Discovered lifecycle listener: %s [Priority: %d]",
-          listener.getClass().getName(), priority));
+      logger.log(WebforjLogger.Level.DEBUG,
+          String.format("Discovered lifecycle listener: %s [Priority: %d]",
+              listener.getClass().getName(), priority));
     }
 
     // Sort by priority (lower values first)
@@ -128,7 +128,7 @@ final class AppLifecycleListenerRegistry {
       sortedListeners.add(entry.listener);
     }
 
-    logger.log(Level.DEBUG,
+    logger.log(WebforjLogger.Level.DEBUG,
         String.format("Discovered %d lifecycle listeners", sortedListeners.size()));
 
     return Collections.unmodifiableList(sortedListeners);
@@ -149,7 +149,7 @@ final class AppLifecycleListenerRegistry {
       try {
         action.accept(listener);
       } catch (Exception e) {
-        logger.log(Level.ERROR,
+        logger.log(WebforjLogger.Level.ERROR,
             "Error in listener " + listener.getClass().getName() + " during " + phase, e);
       }
     }

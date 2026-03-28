@@ -14,8 +14,7 @@ import com.webforj.exceptions.WebforjRuntimeException;
 import com.webforj.exceptions.WebforjWebManagerException;
 import com.webforj.servlet.WebforjServlet;
 import jakarta.servlet.http.HttpSession;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +44,7 @@ import java.util.function.Supplier;
  */
 public final class Environment {
   static final String RUN_LATER_EVENT = "webforj-runLater-event";
-  private static final Logger logger = System.getLogger(Environment.class.getName());
+  private static final WebforjLogger logger = WebforjLogger.getLogger(Environment.class.getName());
   private static final String RESOURCE_PREFIX = "!!";
   private static final HashMap<Object, Environment> instanceMap = new HashMap<>();
   private static final AtomicInteger runLaterCounter = new AtomicInteger(0);
@@ -107,7 +106,8 @@ public final class Environment {
       // Clear the inheritable thread local
       inheritableEnvironment.remove();
     } else {
-      logger.log(Level.WARNING, "No Environment found for thread {0} to cleanup", currentThreadId);
+      logger.log(WebforjLogger.Level.WARNING, "No Environment found for thread {0} to cleanup",
+          currentThreadId);
     }
   }
 
@@ -247,7 +247,8 @@ public final class Environment {
     // Check if we're already in the Environment's thread
     Environment current = getCurrent();
     if (current == env) {
-      logger.log(Level.DEBUG, "runLater Called from UI thread, executing immediately");
+      logger.log(WebforjLogger.Level.DEBUG,
+          "runLater Called from UI thread, executing immediately");
       try {
         T result = supplier.get();
         return PendingResult.completedWith(result);
@@ -257,7 +258,7 @@ public final class Environment {
     }
 
     // We're in a background thread, delegate.
-    logger.log(Level.DEBUG, "runLater Called from background thread {0}",
+    logger.log(WebforjLogger.Level.DEBUG, "runLater Called from background thread {0}",
         Thread.currentThread().getName());
     return env.doRunLater(supplier, env);
   }
@@ -409,7 +410,7 @@ public final class Environment {
         }
       }
     } catch (BBjException e) {
-      logger.log(Level.DEBUG, "Failed to get channel data: {0}", e.getMessage());
+      logger.log(WebforjLogger.Level.DEBUG, "Failed to get channel data: {0}", e.getMessage());
     }
 
     return Optional.empty();
@@ -509,7 +510,7 @@ public final class Environment {
     EnvironmentAccessRequest request = new EnvironmentAccessRequest(requestId, supplier, result);
     pendingRequests.put(requestId, request);
 
-    logger.log(Level.DEBUG, "Posting runLater request {0} from thread {1}", requestId,
+    logger.log(WebforjLogger.Level.DEBUG, "Posting runLater request {0} from thread {1}", requestId,
         Thread.currentThread().getName());
 
     // Post custom event with the request ID
@@ -517,8 +518,8 @@ public final class Environment {
       targetEnv.getBBjAPI().postCustomEvent(RUN_LATER_EVENT, requestId);
     } catch (Exception e) {
       pendingRequests.remove(requestId);
-      logger.log(Level.ERROR, "Failed to post custom event for request {0}: {1}", requestId,
-          e.getMessage(), e);
+      logger.log(WebforjLogger.Level.ERROR, "Failed to post custom event for request {0}: {1}",
+          requestId, e.getMessage(), e);
       result.completeExceptionally(e);
     }
 
@@ -535,12 +536,13 @@ public final class Environment {
    */
   private void registerRunLaterCallback() {
     try {
-      logger.log(Level.DEBUG, "Registering runLater event callback");
+      logger.log(WebforjLogger.Level.DEBUG, "Registering runLater event callback");
       EnvironmentRunLaterEventHandler eventHandler = new EnvironmentRunLaterEventHandler(this);
       getBBjAPI().setCustomEventCallback(RUN_LATER_EVENT, eventHandler, "handleEvent");
-      logger.log(Level.DEBUG, "runLater event callback registered successfully");
+      logger.log(WebforjLogger.Level.DEBUG, "runLater event callback registered successfully");
     } catch (BBjException e) {
-      logger.log(Level.ERROR, "Failed to register runLater event handler: {0}", e.getMessage(), e);
+      logger.log(WebforjLogger.Level.ERROR, "Failed to register runLater event handler: {0}",
+          e.getMessage(), e);
       throw new WebforjWebManagerException("Failed to register runLater event handler.", e);
     }
   }
@@ -566,7 +568,7 @@ public final class Environment {
     try {
       env.getBBjAPI().clearCustomEventCallback(RUN_LATER_EVENT);
     } catch (BBjException e) {
-      logger.log(Level.INFO, "Failed to clear runLater event callback", e);
+      logger.log(WebforjLogger.Level.INFO, "Failed to clear runLater event callback", e);
     }
   }
 
@@ -581,26 +583,29 @@ public final class Environment {
    * @see EnvironmentRunLaterEventHandler
    */
   void processRunLaterRequest(String requestId) {
-    logger.log(Level.DEBUG, "Processing runLater request {0}", requestId);
+    logger.log(WebforjLogger.Level.DEBUG, "Processing runLater request {0}", requestId);
 
     EnvironmentAccessRequest request = pendingRequests.remove(requestId);
     if (request == null) {
-      logger.log(Level.DEBUG, "Request {0} not found or already processed", requestId);
+      logger.log(WebforjLogger.Level.DEBUG, "Request {0} not found or already processed",
+          requestId);
       return;
     }
 
     // Check if the PendingResult has been cancelled
     if (request.getPendingResult().isCancelled()) {
-      logger.log(Level.DEBUG, "runLater Skipping cancelled request {0}", requestId);
+      logger.log(WebforjLogger.Level.DEBUG, "runLater Skipping cancelled request {0}", requestId);
       return;
     }
 
     try {
       Object result = request.getSupplier().get();
       request.getPendingResult().complete(result);
-      logger.log(Level.DEBUG, "runLater Request {0} completed successfully", requestId);
+      logger.log(WebforjLogger.Level.DEBUG, "runLater Request {0} completed successfully",
+          requestId);
     } catch (Exception e) {
-      logger.log(Level.ERROR, "runLater Request {0} failed: {1}", requestId, e.getMessage());
+      logger.log(WebforjLogger.Level.ERROR, "runLater Request {0} failed: {1}", requestId,
+          e.getMessage());
       request.getPendingResult().completeExceptionally(e);
     }
   }
@@ -641,8 +646,8 @@ public final class Environment {
       }
     } catch (NoClassDefFoundError e) {
       // WebforjServlet is not available in this environment (no servlet container)
-      logger.log(Level.DEBUG, "WebforjServlet not available, skipping servlet config: {0}",
-          e.getMessage());
+      logger.log(WebforjLogger.Level.DEBUG,
+          "WebforjServlet not available, skipping servlet config: {0}", e.getMessage());
     }
 
     return theConfig;

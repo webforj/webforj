@@ -25,7 +25,7 @@ import com.webforj.utilities.Assets;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.System.Logger;
+import com.webforj.logging.WebforjLogger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * @since 23.00
  */
 public final class Page implements HasJsExecution {
-  private static Logger logger = System.getLogger(Page.class.getName());
+  private static WebforjLogger logger = WebforjLogger.getLogger(Page.class.getName());
   public static final String DEFAULT_TITLE_FORMAT =
       "{WindowTitle ?? ''} {BrowserTitle ? ((WindowTitle ? '- ' : '') + BrowserTitle) : ''}";
   private static final String FAILED_TO_DOWNLOAD_FILE = "Failed to download file.";
@@ -1135,7 +1135,7 @@ public final class Page implements HasJsExecution {
       try {
         Files.delete(tempFilePath);
       } catch (IOException e) {
-        logger.log(Logger.Level.WARNING, "Failed to delete temp file: " + tempFilePath, e);
+        logger.log(WebforjLogger.Level.WARNING, "Failed to delete temp file: " + tempFilePath, e);
       }
     }
   }

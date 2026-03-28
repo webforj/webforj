@@ -6,7 +6,7 @@ import com.webforj.router.annotation.Route;
 import com.webforj.router.annotation.RouteAlias;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import java.lang.System.Logger;
+import com.webforj.logging.WebforjLogger;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +31,8 @@ import java.util.stream.StreamSupport;
  * @since 24.12
  */
 public class RouteRegistry {
-  private static final Logger logger = System.getLogger(RouteRegistry.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(RouteRegistry.class.getName());
   private final Set<RouteEntry> routeConfigs =
       new TreeSet<>(Comparator.comparingInt(RouteEntry::getPriority)
           .thenComparing(RouteEntry::getPath, Comparator.reverseOrder()));
@@ -59,14 +60,14 @@ public class RouteRegistry {
         StreamSupport.stream(loader.spliterator(), false).findFirst();
 
     if (provider.isPresent()) {
-      logger.log(Logger.Level.INFO,
+      logger.log(WebforjLogger.Level.INFO,
           "Using RouteRegistryProvider: " + provider.get().getClass().getName());
       provider.get().registerRoutes(packages, registry);
       return registry;
     }
 
     // Fallback to default scanning
-    logger.log(Logger.Level.INFO, "Using default scanning for route discovery");
+    logger.log(WebforjLogger.Level.INFO, "Using default scanning for route discovery");
     try (ScanResult scanResult =
         new ClassGraph().enableClassInfo().enableAnnotationInfo().acceptPackages(packages).scan()) {
 

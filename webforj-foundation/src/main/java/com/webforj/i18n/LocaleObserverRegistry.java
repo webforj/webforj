@@ -2,8 +2,7 @@ package com.webforj.i18n;
 
 import com.webforj.environment.ObjectTable;
 import com.webforj.i18n.event.LocaleEvent;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
@@ -27,7 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 25.10
  */
 public final class LocaleObserverRegistry {
-  private static final Logger logger = System.getLogger(LocaleObserverRegistry.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(LocaleObserverRegistry.class.getName());
   private final Set<LocaleObserver> observers = ConcurrentHashMap.newKeySet();
 
   /**
@@ -66,8 +66,8 @@ public final class LocaleObserverRegistry {
     Objects.requireNonNull(observer, "Observer cannot be null");
 
     boolean added = observers.add(observer);
-    if (added && logger.isLoggable(Level.TRACE)) {
-      logger.log(Level.TRACE,
+    if (added && logger.isLoggable(WebforjLogger.Level.TRACE)) {
+      logger.log(WebforjLogger.Level.TRACE,
           String.format("Registered locale observer: %s", observer.getClass().getName()));
     }
   }
@@ -88,8 +88,8 @@ public final class LocaleObserverRegistry {
     }
 
     boolean removed = observers.remove(observer);
-    if (removed && logger.isLoggable(Level.TRACE)) {
-      logger.log(Level.TRACE,
+    if (removed && logger.isLoggable(WebforjLogger.Level.TRACE)) {
+      logger.log(WebforjLogger.Level.TRACE,
           String.format("Unregistered locale observer: %s", observer.getClass().getName()));
     }
   }
@@ -108,8 +108,8 @@ public final class LocaleObserverRegistry {
   public void fireLocaleChange(Locale locale) {
     Objects.requireNonNull(locale, "Locale cannot be null");
 
-    if (logger.isLoggable(Level.DEBUG)) {
-      logger.log(Level.DEBUG,
+    if (logger.isLoggable(WebforjLogger.Level.DEBUG)) {
+      logger.log(WebforjLogger.Level.DEBUG,
           String.format("Firing locale change to %d observers: %s", observers.size(), locale));
     }
 
@@ -118,7 +118,7 @@ public final class LocaleObserverRegistry {
         LocaleEvent event = new LocaleEvent(observer, locale);
         observer.onLocaleChange(event);
       } catch (Exception e) {
-        logger.log(Level.ERROR,
+        logger.log(WebforjLogger.Level.ERROR,
             String.format("Error notifying locale observer: %s", observer.getClass().getName()), e);
       }
     }
@@ -145,8 +145,8 @@ public final class LocaleObserverRegistry {
    * </p>
    */
   public void clear() {
-    if (logger.isLoggable(Level.DEBUG)) {
-      logger.log(Level.DEBUG, "Clearing all locale observers");
+    if (logger.isLoggable(WebforjLogger.Level.DEBUG)) {
+      logger.log(WebforjLogger.Level.DEBUG, "Clearing all locale observers");
     }
 
     observers.clear();

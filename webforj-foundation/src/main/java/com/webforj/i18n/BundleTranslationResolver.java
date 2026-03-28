@@ -1,7 +1,6 @@
 package com.webforj.i18n;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
+import com.webforj.logging.WebforjLogger;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +49,8 @@ public class BundleTranslationResolver implements TranslationResolver {
   private final String bundleName;
   private final List<Locale> supportedLocales;
   private transient ClassLoader classLoader;
-  private static final Logger logger = System.getLogger(BundleTranslationResolver.class.getName());
+  private static final WebforjLogger logger =
+      WebforjLogger.getLogger(BundleTranslationResolver.class.getName());
 
   /**
    * Creates a new resolver with the default bundle name "messages".
@@ -120,9 +120,9 @@ public class BundleTranslationResolver implements TranslationResolver {
       try {
         value = bundle.getString(key);
       } catch (MissingResourceException e) {
-        if (logger.isLoggable(Level.WARNING)) {
-          logger.log(Level.WARNING, "Missing translation key ''{0}'' for locale ''{1}''", key,
-              resolvedLocale);
+        if (logger.isLoggable(WebforjLogger.Level.WARNING)) {
+          logger.log(WebforjLogger.Level.WARNING,
+              "Missing translation key ''{0}'' for locale ''{1}''", key, resolvedLocale);
         }
       }
     }
@@ -131,8 +131,8 @@ public class BundleTranslationResolver implements TranslationResolver {
       try {
         value = new MessageFormat(value, resolvedLocale).format(resolvedArgs);
       } catch (IllegalArgumentException e) {
-        if (logger.isLoggable(Level.WARNING)) {
-          logger.log(Level.WARNING,
+        if (logger.isLoggable(WebforjLogger.Level.WARNING)) {
+          logger.log(WebforjLogger.Level.WARNING,
               "Failed to format translation value ''{0}'' for key ''{1}'': {2}", value, key,
               e.getMessage());
         }
