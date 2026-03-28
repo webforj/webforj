@@ -142,7 +142,7 @@ public class Assets {
     String fullUrl = getWebServerFilesUrl() + "/"
         + url.replaceAll("(?i)webserver://", "").replaceAll("(?i)ws://", "").trim();
 
-    return fullUrl.replaceAll("(?<!\\w+:/?)//+", "/");
+    return fullUrl.replaceAll("(?<!\\w{1,10}:/?)//+", "/");
   }
 
   /**
