@@ -34,6 +34,20 @@ fun @WebforjDsl HasComponents.infiniteScroll(text: String? = null, block: @Webfo
   return init(scroll, block)
 }
 
+/**
+ * Sets the icon to display for the infinite scroll loading indicator.
+ * ```
+ * ... {
+ *   infiniteScroll {
+ *     iconSlot {
+ *       featherIcon(FeatherIcon.LOADER)
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
 fun <T> @WebforjDsl InfiniteScroll.iconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
