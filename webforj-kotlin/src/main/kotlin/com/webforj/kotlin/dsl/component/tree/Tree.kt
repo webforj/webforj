@@ -1,8 +1,11 @@
 package com.webforj.kotlin.dsl.component.tree
 
+import com.webforj.component.Component
+import com.webforj.component.icons.IconDefinition
 import com.webforj.component.tree.Tree
 import com.webforj.component.tree.TreeNode
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -74,6 +77,34 @@ fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl
   return node
 }
 
+@WebforjDsl
+fun <T> @WebforjDsl Tree.collapseIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setCollapsedIcon(it as IconDefinition<*>)
+  }
+}
+
+@WebforjDsl
+fun <T> @WebforjDsl Tree.expandedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setExpandedIcon(it as IconDefinition<*>)
+  }
+}
+
+@WebforjDsl
+fun <T> @WebforjDsl Tree.leafIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setLeafIcon(it as IconDefinition<*>)
+  }
+}
+
+@WebforjDsl
+fun <T> @WebforjDsl Tree.leafSelectedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setLeafSelectedIcon(it as IconDefinition<*>)
+  }
+}
+
 /**
  * Creates a `TreeNode` with a [text] and/or an optional [key], adding it to a parent.
  * ```
@@ -98,4 +129,18 @@ fun @WebforjDsl TreeNode.treeNode(text: String, key: Any? = null, block: @Webfor
   node.block()
   add(node)
   return node
+}
+
+@WebforjDsl
+fun <T> @WebforjDsl TreeNode.iconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setIcon(it as IconDefinition<*>)
+  }
+}
+
+@WebforjDsl
+fun <T> @WebforjDsl TreeNode.selectedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setSelectedIcon(it as IconDefinition<*>)
+  }
 }
