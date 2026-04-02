@@ -5,9 +5,12 @@ import com.webforj.component.field.MaskedNumberField;
 import com.webforj.component.field.MaskedTextField;
 import com.webforj.component.field.MaskedTimeField;
 import com.webforj.component.field.TextField;
+import com.webforj.component.optiondialog.FileChooserDialog;
+import com.webforj.component.optiondialog.FileChooserFilter;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 /**
  * Utility class for use of <b>webforj</b> with <b>Kotlin</b>.
@@ -140,6 +143,56 @@ public final class KotlinFactory {
 
   public static MaskedTextField newMaskedTextField(String label, String value, String placeholder) {
     return new MaskedTextField(label, value, placeholder);
+  }
+
+  public static FileChooserDialog newFileChooserDialog() {
+    return new FileChooserDialog();
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title) {
+    return new FileChooserDialog(title);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath) {
+    return new FileChooserDialog(title, initialPath);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters) {
+    return new FileChooserDialog(title, initialPath, filters);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, String activeFilter) {
+    return new FileChooserDialog(title, initialPath, filters, activeFilter);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, boolean restricted) {
+    return new FileChooserDialog(title, initialPath, filters, restricted);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      boolean restricted) {
+    return new FileChooserDialog(title, initialPath, restricted);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, boolean restricted,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileChooserDialog(title, initialPath, filters, restricted, selectionMode);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileChooserDialog(title, initialPath, selectionMode);
+  }
+
+  public static FileChooserDialog newFileChooserDialog(String title, String initialPath,
+      List<FileChooserFilter> filters, String activeFilter, boolean restricted,
+      FileChooserDialog.SelectionMode selectionMode) {
+    return new FileChooserDialog(title, initialPath, filters, activeFilter, restricted,
+        selectionMode);
   }
 
   private KotlinFactory() {
