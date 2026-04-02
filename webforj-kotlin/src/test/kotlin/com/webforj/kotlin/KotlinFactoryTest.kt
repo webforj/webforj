@@ -1,15 +1,16 @@
 package com.webforj.kotlin
 
-import com.webforj.component.field.MaskedDateField
-import com.webforj.component.field.MaskedNumberField
-import com.webforj.component.field.MaskedTextField
-import com.webforj.component.field.MaskedTimeField
 import com.webforj.component.field.TextField
+import com.webforj.component.optiondialog.FileChooserDialog
+import com.webforj.component.optiondialog.FileChooserFilter
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class KotlinFactoryTest {
 
@@ -242,6 +243,116 @@ internal class KotlinFactoryTest {
     assertEquals(label, field.label)
     assertEquals(value, field.value)
     assertEquals(placeholder, field.placeholder)
+  }
+
+  // FileChooserDialog tests
+  @Test
+  @DisplayName("Create default FileChooserDialog")
+  fun shouldCreateDefaultFileChooserDialog() {
+    val dialog = KotlinFactory.newFileChooserDialog()
+    assertEquals("Select a file", dialog.title)
+    assertEquals("", dialog.initialPath)
+    assertFalse { dialog.isRestricted }
+    assertEquals(FileChooserDialog.SelectionMode.FILES, dialog.selectionMode)
+    assertTrue { dialog.isCustomFilters }
+    assertTrue { dialog.isCacheCustomFilters }
+    assertFalse { dialog.isGridView }
+    assertNull(dialog.id)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title")
+  fun shouldCreateFileChooserDialogWithTitle() {
+    val title = "Choose a file"
+    val dialog = KotlinFactory.newFileChooserDialog(title)
+    assertEquals(title, dialog.title)
+    assertEquals("", dialog.initialPath)
+    assertFalse { dialog.isRestricted }
+    assertEquals(FileChooserDialog.SelectionMode.FILES, dialog.selectionMode)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title and initialPath")
+  fun shouldCreateFileChooserDialogWithTitleAndInitialPath() {
+    val title = "Choose a file"
+    val initialPath = "/home/user"
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath)
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertFalse { dialog.isRestricted }
+    assertEquals(FileChooserDialog.SelectionMode.FILES, dialog.selectionMode)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title, initialPath and selectionMode")
+  fun shouldCreateFileChooserDialogWithTitleInitialPathAndSelectionMode() {
+    val title = "Choose a directory"
+    val initialPath = "/home/user"
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath, FileChooserDialog.SelectionMode.DIRECTORIES)
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertEquals(FileChooserDialog.SelectionMode.DIRECTORIES, dialog.selectionMode)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title, initialPath and filters")
+  fun shouldCreateFileChooserDialogWithTitleInitialPathAndFilters() {
+    val title = "Choose a file"
+    val initialPath = "/home/user"
+    val filters = arrayListOf(FileChooserFilter("Text files", "*.txt"))
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath, filters)
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertEquals(1, dialog.filters?.size)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title, initialPath, filters and activeFilter")
+  fun shouldCreateFileChooserDialogWithTitleInitialPathFiltersAndActiveFilter() {
+    val title = "Choose a file"
+    val initialPath = "/home/user"
+    val filters = arrayListOf(FileChooserFilter("Text files", "*.txt"), FileChooserFilter("All files", "*.*"))
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath, filters, "Text files")
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertEquals("Text files", dialog.activeFilter?.description)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title, initialPath, filters and restricted")
+  fun shouldCreateFileChooserDialogWithTitleInitialPathFiltersAndRestricted() {
+    val title = "Choose a file"
+    val initialPath = "/home/user"
+    val filters = arrayListOf(FileChooserFilter("Text files", "*.txt"))
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath, filters, true)
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertTrue { dialog.isRestricted }
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title, initialPath and restricted")
+  fun shouldCreateFileChooserDialogWithTitleInitialPathAndRestricted() {
+    val title = "Choose a file"
+    val initialPath = "/home/user"
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath, true)
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertTrue { dialog.isRestricted }
+    assertEquals(FileChooserDialog.SelectionMode.FILES, dialog.selectionMode)
+  }
+
+  @Test
+  @DisplayName("Create FileChooserDialog with title, initialPath, filters, restricted and selectionMode")
+  fun shouldCreateFileChooserDialogWithAllParams() {
+    val title = "Choose a file or directory"
+    val initialPath = "/home/user"
+    val filters = arrayListOf(FileChooserFilter("Text files", "*.txt"))
+    val dialog = KotlinFactory.newFileChooserDialog(title, initialPath, filters, true, FileChooserDialog.SelectionMode.FILES_AND_DIRECTORIES)
+    assertEquals(title, dialog.title)
+    assertEquals(initialPath, dialog.initialPath)
+    assertTrue { dialog.isRestricted }
+    assertEquals(FileChooserDialog.SelectionMode.FILES_AND_DIRECTORIES, dialog.selectionMode)
   }
 
 }
