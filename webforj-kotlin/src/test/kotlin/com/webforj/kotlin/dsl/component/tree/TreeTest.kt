@@ -1,8 +1,9 @@
 package com.webforj.kotlin.dsl.component.tree
 
-import com.basis.bbj.comm.al
 import com.webforj.component.html.elements.Div
+import com.webforj.component.icons.FeatherIcon
 import com.webforj.component.tree.TreeNode
+import com.webforj.kotlin.dsl.component.icons.featherIcon
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -162,6 +163,76 @@ class TreeTest {
     val resourcesNode = departmentsNode.children[2]
     assertNotNull(resourcesNode)
     assertEquals("Human Resources", resourcesNode.key)
+  }
+
+  @Test
+  @DisplayName("Set collapse icon slot with FeatherIcon")
+  fun shouldSetCollapseIconSlot() {
+    val tree = root.tree {
+      collapsedIconSlot {
+        featherIcon(FeatherIcon.CHEVRON_RIGHT)
+      }
+    }
+    assertEquals("feather:chevron-right", tree.collapsedIcon)
+  }
+
+  @Test
+  @DisplayName("Set expanded icon slot with FeatherIcon")
+  fun shouldSetExpandedIconSlot() {
+    val tree = root.tree {
+      expandedIconSlot {
+        featherIcon(FeatherIcon.CHEVRON_DOWN)
+      }
+    }
+    assertEquals("feather:chevron-down", tree.expandedIcon)
+  }
+
+  @Test
+  @DisplayName("Set leaf icon slot with FeatherIcon")
+  fun shouldSetLeafIconSlot() {
+    val tree = root.tree {
+      leafIconSlot {
+        featherIcon(FeatherIcon.FILE)
+      }
+    }
+    assertEquals("feather:file", tree.leafIcon)
+  }
+
+  @Test
+  @DisplayName("Set leaf selected icon slot with FeatherIcon")
+  fun shouldSetLeafSelectedIconSlot() {
+    val tree = root.tree {
+      leafSelectedIconSlot {
+        featherIcon(FeatherIcon.FILE_PLUS)
+      }
+    }
+    assertEquals("feather:file-plus", tree.leafSelectedIcon)
+  }
+
+  @Test
+  @DisplayName("Set TreeNode icon slot with FeatherIcon")
+  fun shouldSetTreeNodeIconSlot() {
+    root.tree {
+      val node = treeNode("Folder") {
+        iconSlot {
+          featherIcon(FeatherIcon.FOLDER)
+        }
+      }
+      assertEquals("feather:folder", node.icon)
+    }
+  }
+
+  @Test
+  @DisplayName("Set TreeNode selected icon slot with FeatherIcon")
+  fun shouldSetTreeNodeSelectedIconSlot() {
+    root.tree {
+      val node = treeNode("Folder") {
+        selectedIconSlot {
+          featherIcon(FeatherIcon.FOLDER_PLUS)
+        }
+      }
+      assertEquals("feather:folder-plus", node.selectedIcon)
+    }
   }
 
 }
