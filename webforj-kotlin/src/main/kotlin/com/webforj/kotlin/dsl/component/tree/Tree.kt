@@ -77,13 +77,41 @@ fun @WebforjDsl Tree.treeNode(text: String, key: Any? = null, block: @WebforjDsl
   return node
 }
 
+/**
+ * Sets the icon to display for collapsed tree nodes.
+ * ```
+ * ... {
+ *   tree {
+ *     collapsedIconSlot {
+ *       featherIcon(FeatherIcon.CHEVRON_RIGHT)
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
-fun <T> @WebforjDsl Tree.collapseIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+fun <T> @WebforjDsl Tree.collapsedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
     setCollapsedIcon(it as IconDefinition<*>)
   }
 }
 
+/**
+ * Sets the icon to display for expanded tree nodes.
+ * ```
+ * ... {
+ *   tree {
+ *     expandedIconSlot {
+ *       featherIcon(FeatherIcon.CHEVRON_DOWN)
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
 fun <T> @WebforjDsl Tree.expandedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
@@ -91,6 +119,20 @@ fun <T> @WebforjDsl Tree.expandedIconSlot(block: @WebforjDsl HasComponents.() ->
   }
 }
 
+/**
+ * Sets the icon to display for leaf tree nodes.
+ * ```
+ * ... {
+ *   tree {
+ *     leafIconSlot {
+ *       featherIcon(FeatherIcon.FILE)
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
 fun <T> @WebforjDsl Tree.leafIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
@@ -98,6 +140,20 @@ fun <T> @WebforjDsl Tree.leafIconSlot(block: @WebforjDsl HasComponents.() -> T) 
   }
 }
 
+/**
+ * Sets the icon to display for selected leaf tree nodes.
+ * ```
+ * ... {
+ *   tree {
+ *     leafSelectedIconSlot {
+ *       featherIcon(FeatherIcon.FILE_PLUS)
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
 fun <T> @WebforjDsl Tree.leafSelectedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
@@ -131,6 +187,22 @@ fun @WebforjDsl TreeNode.treeNode(text: String, key: Any? = null, block: @Webfor
   return node
 }
 
+/**
+ * Sets the icon to display for this tree node.
+ * ```
+ * ... {
+ *   tree {
+ *     treeNode("Folder") {
+ *       iconSlot {
+ *         featherIcon(FeatherIcon.FOLDER)
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
 fun <T> @WebforjDsl TreeNode.iconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
@@ -138,6 +210,22 @@ fun <T> @WebforjDsl TreeNode.iconSlot(block: @WebforjDsl HasComponents.() -> T) 
   }
 }
 
+/**
+ * Sets the icon to display for this tree node when selected.
+ * ```
+ * ... {
+ *   tree {
+ *     treeNode("Folder") {
+ *       selectedIconSlot {
+ *         featherIcon(FeatherIcon.FOLDER_PLUS)
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
 @WebforjDsl
 fun <T> @WebforjDsl TreeNode.selectedIconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
   SingleSlotSetter(block).setSlot(this) {
