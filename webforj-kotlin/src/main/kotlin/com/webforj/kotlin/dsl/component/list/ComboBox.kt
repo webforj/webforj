@@ -20,7 +20,6 @@ import com.webforj.kotlin.dsl.init
  * @see ComboBox
  * @see listItem
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.comboBox(label: String? = null, block: @WebforjDsl ComboBox.() -> Unit = {}): ComboBox {
   val comboBox = label?.let { ComboBox(it) } ?: ComboBox()
   return init(comboBox, block)

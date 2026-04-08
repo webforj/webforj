@@ -37,7 +37,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Splitter`.
  * @see Splitter
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Splitter.() -> Unit = {}): Splitter {
   val splitter = id?.let { Splitter(id) } ?: Splitter()
   return init(splitter, block)
@@ -61,7 +60,6 @@ fun @WebforjDsl HasComponents.splitter(id: String? = null, block: @WebforjDsl Sp
  *
  * @param block The initialization steps of the master component.
  */
-@WebforjDsl
 fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Splitter::setMaster)
 }
@@ -83,7 +81,6 @@ fun @WebforjDsl Splitter.masterSlot(block: @WebforjDsl HasComponents.() -> Compo
  *
  * @param block The initialization steps of the detail component.
  */
-@WebforjDsl
 fun @WebforjDsl Splitter.detailSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Splitter::setDetail)
 }

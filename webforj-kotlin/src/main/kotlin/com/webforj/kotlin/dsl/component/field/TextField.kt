@@ -33,7 +33,6 @@ import com.webforj.kotlin.extension.suffixSlot
  * @return The configured `TextField` instance.
  * @see TextField
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.textField(
   label: String? = null,
   value: String? = null,

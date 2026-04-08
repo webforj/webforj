@@ -26,7 +26,6 @@ import com.webforj.kotlin.dsl.init
  * @see Accordion
  * @see accordionPanel
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.accordion(
   block: @WebforjDsl Accordion.() -> Unit = {}
 ): Accordion {

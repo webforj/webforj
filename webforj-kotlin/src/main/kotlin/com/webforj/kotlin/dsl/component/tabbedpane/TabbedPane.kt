@@ -30,7 +30,6 @@ import com.webforj.kotlin.dsl.init
  * @see TabbedPane
  * @see tab
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.tabbedPane(name: String? = null, block: @WebforjDsl TabbedPane.() -> Unit = {}): TabbedPane {
   val tabbedPane = name?.let { TabbedPane(it) } ?: TabbedPane()
   return init(tabbedPane, block)
@@ -60,7 +59,6 @@ private val tabContentMap: MutableMap<Tab, Component?> = hashMapOf()
  * @see prefixSlot
  * @see suffixSlot
  */
-@WebforjDsl
 fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit = {}): Tab {
   val tab = Tab(text)
   tab.block()
@@ -90,7 +88,6 @@ fun @WebforjDsl TabbedPane.tab(text: String, block: @WebforjDsl Tab.() -> Unit =
  * @see prefixSlot
  * @see suffixSlot
  */
-@WebforjDsl
 fun @WebforjDsl Tab.contentSlot(block: @WebforjDsl HasComponents.() -> Component) {
   tabContentMap[this] = SingleSlotSetter(block).component
 }
@@ -110,7 +107,6 @@ fun @WebforjDsl Tab.contentSlot(block: @WebforjDsl HasComponents.() -> Component
  * @see contentSlot
  * @see suffixSlot
  */
-@WebforjDsl
 fun @WebforjDsl Tab.prefixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Tab::setPrefixComponent)
 }
@@ -130,7 +126,6 @@ fun @WebforjDsl Tab.prefixSlot(block: @WebforjDsl HasComponents.() -> Component)
  * @see contentSlot
  * @see prefixSlot
  */
-@WebforjDsl
 fun @WebforjDsl Tab.suffixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Tab::setSuffixComponent)
 }

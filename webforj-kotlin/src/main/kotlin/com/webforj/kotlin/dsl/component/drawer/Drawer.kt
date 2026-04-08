@@ -60,7 +60,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Drawer`.
  * @see Drawer
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.drawer(
   label: String? = null,
   block: @WebforjDsl Drawer.() -> Unit = {}
@@ -82,7 +81,6 @@ fun @WebforjDsl HasComponents.drawer(
  *
  * @param block The initialization steps of the title components.
  */
-@WebforjDsl
 fun @WebforjDsl Drawer.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Drawer::addToTitle)
 }
@@ -102,7 +100,6 @@ fun @WebforjDsl Drawer.titleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of header action components.
  */
-@WebforjDsl
 fun @WebforjDsl Drawer.headerActionsSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Drawer::addToHeaderActions)
 }
@@ -123,7 +120,6 @@ fun @WebforjDsl Drawer.headerActionsSlot(block: @WebforjDsl HasComponents.() -> 
  *
  * @param block The initialization steps of the footer components.
  */
-@WebforjDsl
 fun @WebforjDsl Drawer.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Drawer::addToFooter)
 }

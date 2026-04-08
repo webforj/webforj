@@ -43,7 +43,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Dialog`.
  * @see Dialog
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}): Dialog {
   val dialog = Dialog()
   return init(dialog, block)
@@ -62,7 +61,6 @@ fun @WebforjDsl HasComponents.dialog(block: @WebforjDsl Dialog.() -> Unit = {}):
  *
  * @param block The initialization steps of the header components.
  */
-@WebforjDsl
 fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Dialog::addToHeader)
 }
@@ -82,7 +80,6 @@ fun @WebforjDsl Dialog.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
  *
  * @param block The initialization steps of the footer components.
  */
-@WebforjDsl
 fun @WebforjDsl Dialog.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Dialog::addToFooter)
 }

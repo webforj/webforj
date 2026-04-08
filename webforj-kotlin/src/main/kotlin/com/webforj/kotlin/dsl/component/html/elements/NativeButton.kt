@@ -21,7 +21,6 @@ import com.webforj.kotlin.dsl.init
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">HTML button
  *       Tag</a>
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.nativeButton(text: String? = null, block: @WebforjDsl NativeButton.() -> Unit = {}): NativeButton {
     val button = text?.let { NativeButton(text) } ?: NativeButton()
     return init(button, block)

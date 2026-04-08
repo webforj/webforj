@@ -30,7 +30,6 @@ import com.webforj.kotlin.extension.suffixSlot
  * @return The configured `MaskedNumberFieldSpinner` instance.
  * @see MaskedNumberFieldSpinner
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.maskedNumberFieldSpinner(
   label: String? = null,
   value: Double? = null,

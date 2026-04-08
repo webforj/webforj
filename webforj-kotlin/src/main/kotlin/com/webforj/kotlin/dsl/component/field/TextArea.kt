@@ -32,7 +32,6 @@ import com.webforj.kotlin.extension.suffixSlot
  * @return The configured `TextArea` instance.
  * @see TextArea
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.textArea(
   label: String? = null,
   value: String? = null,

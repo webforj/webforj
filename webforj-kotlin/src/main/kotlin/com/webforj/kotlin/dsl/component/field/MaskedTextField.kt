@@ -25,7 +25,6 @@ import com.webforj.kotlin.KotlinFactory.newMaskedTextField
  * @return The configured `MaskedTextField` instance.
  * @see MaskedTextField
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.maskedTextField(
   label: String? = null,
   value: String? = null,

@@ -25,7 +25,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Element` instance.
  * @see Element
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.element(node: String? = null, html: String? = null, block: @WebforjDsl Element.() -> Unit = {}): Element {
   val element = when {
     node != null && html != null -> Element(node, html)

@@ -25,7 +25,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Refresher`.
  * @see Refresher
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.refresher(block: @WebforjDsl Refresher.() -> Unit = {}): Refresher = init(Refresher(), block)
 
 /**
@@ -43,6 +42,5 @@ fun @WebforjDsl HasComponents.refresher(block: @WebforjDsl Refresher.() -> Unit 
  * @return The configured `RefresherI18n` instance.
  * @see RefresherI18n
  */
-@WebforjDsl
 fun @WebforjDsl Refresher.i18n(block: @WebforjDsl RefresherI18n.() -> Unit): RefresherI18n =
   i18n.apply(block)

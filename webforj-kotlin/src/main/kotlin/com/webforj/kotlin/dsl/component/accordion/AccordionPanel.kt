@@ -25,7 +25,6 @@ import com.webforj.kotlin.dsl.init
  * @see AccordionPanel
  * @see accordion
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.accordionPanel(
   label: String? = null,
   block: @WebforjDsl AccordionPanel.() -> Unit = {}
@@ -48,7 +47,6 @@ fun @WebforjDsl HasComponents.accordionPanel(
  *
  * @param block The initialization steps of the header components.
  */
-@WebforjDsl
 fun @WebforjDsl AccordionPanel.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AccordionPanel::addToHeader)
 }
@@ -65,7 +63,6 @@ fun @WebforjDsl AccordionPanel.headerSlot(block: @WebforjDsl HasComponents.() ->
  *
  * @param block The initialization of the icon [Component].
  */
-@WebforjDsl
 fun @WebforjDsl AccordionPanel.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, AccordionPanel::setIcon)
 }

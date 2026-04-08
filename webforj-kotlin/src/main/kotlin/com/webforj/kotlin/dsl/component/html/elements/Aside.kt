@@ -19,7 +19,6 @@ import com.webforj.kotlin.dsl.init
  * @see Aside
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside">HTML aside Tag</a>
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.aside(text: String? = null, block: @WebforjDsl Aside.() -> Unit = {}): Aside {
     val aside = text?.let { Aside(text) } ?: Aside()
     return init(aside, block)

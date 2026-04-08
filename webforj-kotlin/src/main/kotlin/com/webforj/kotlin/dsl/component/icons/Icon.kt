@@ -22,7 +22,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Icon` instance.
  * @see Icon
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.icon(
   name: String,
   pool: String,

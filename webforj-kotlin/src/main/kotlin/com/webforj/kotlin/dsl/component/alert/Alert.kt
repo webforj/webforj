@@ -25,7 +25,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Alert`.
  * @see Alert
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.alert(
   text: String? = null,
   theme: Theme? = null,

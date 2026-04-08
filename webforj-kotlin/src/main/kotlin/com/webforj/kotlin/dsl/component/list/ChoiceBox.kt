@@ -20,7 +20,6 @@ import com.webforj.kotlin.dsl.init
  * @see ChoiceBox
  * @see listItem
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.choiceBox(label: String? = null, block: @WebforjDsl ChoiceBox.() -> Unit = {}): ChoiceBox {
   val choiceBox = label?.let { ChoiceBox(it) } ?: ChoiceBox()
   return init(choiceBox, block)
