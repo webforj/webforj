@@ -8,7 +8,8 @@ import com.webforj.concern.HasComponents
  * called inside the wrong scope.
  * It prevents an implicit receiver from an outer scope unless explicitly specified with `this@`.
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.TYPEALIAS, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
 @DslMarker
 annotation class WebforjDsl
 
