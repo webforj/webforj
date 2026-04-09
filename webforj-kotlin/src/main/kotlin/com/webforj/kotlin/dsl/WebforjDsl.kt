@@ -8,7 +8,7 @@ import com.webforj.concern.HasComponents
  * called inside the wrong scope.
  * It prevents an implicit receiver from an outer scope unless explicitly specified with `this@`.
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.TYPEALIAS)
 @Retention(AnnotationRetention.BINARY)
 @DslMarker
 annotation class WebforjDsl
@@ -28,3 +28,14 @@ fun <T: Component> (@WebforjDsl HasComponents).init(component: T, block: (@Webfo
   return component
 }
 
+/**
+ * Builds the component by executing the initialization [block].
+ *
+ * This is a convenience function that allows for a fluent initialization pattern
+ * where the component is configured within its own scope.
+ *
+ * @param block The initialization block for the component.
+ */
+fun <T: Component> @WebforjDsl T.build(block: @WebforjDsl T.() -> Unit) {
+  block()
+}
