@@ -1152,7 +1152,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
     List<String> properties = super.getRestrictedProperties();
     properties.addAll(Arrays.asList("activation", "alignment", "borderless", "disabled", "expanse",
         "hideActiveIndicator", "label", "nobody", "placement", "removal", "segment", "selected",
-        "swipePreventScroll", "swipeWithMouse", "swipeWithTouch", "swipeable", "swiping", "theme"));
+        "swipePreventScroll", "swipeWithMouse", "swipeWithTouch", "swipeable", "swiping", "theme", "segment"));
 
     return properties;
   }
