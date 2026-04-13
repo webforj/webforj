@@ -24,7 +24,6 @@ class MultiSlotSetter(block: @WebforjDsl HasComponents.() -> Unit): HasComponent
    * @param component The [Component] whose slot is going to be set.
    * @param setter The steps to set the `Components`.
    */
-  @WebforjDsl
   fun <T: Component> setSlot(component: T, setter: @WebforjDsl T.(Array<Component?>) -> Unit) {
     component.setter(backingList.toTypedArray())
   }

@@ -18,7 +18,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Header` instance.
  * @see Header
  */
-@WebforjDsl
 fun  @WebforjDsl HasComponents.header(text: String? = null, block:  @WebforjDsl Header.() -> Unit = {}): Header {
   val header = text?.let { Header(it) } ?: Header()
   return init(header, block)

@@ -28,7 +28,6 @@ import java.time.LocalDate
  * @see MaskedDateField
  * @see LocalDate
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.maskedDateField(
   label: String? = null,
   value: LocalDate? = null,
@@ -63,6 +62,5 @@ fun @WebforjDsl HasComponents.maskedDateField(
  * @return The configured `DatePicker` instance.
  * @see DatePicker
  */
-@WebforjDsl
 fun @WebforjDsl MaskedDateField.picker(block: @WebforjDsl DatePicker.() -> Unit = {}): DatePicker =
   picker.apply(block)

@@ -25,7 +25,6 @@ import com.webforj.kotlin.KotlinFactory.newMaskedNumberField
  * @return The configured `MaskedNumberField` instance.
  * @see MaskedNumberField
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.maskedNumberField(
   label: String? = null,
   value: Double? = null,

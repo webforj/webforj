@@ -49,7 +49,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `FlexLayout` instance.
  * @see FlexLayout
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.flexLayout(
   direction: FlexDirection? = null,
   block: @WebforjDsl FlexLayout.() -> Unit = {}

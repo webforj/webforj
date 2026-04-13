@@ -22,5 +22,4 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Icon`.
  * @see DwcIcon
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.dwcIcon(icon: DwcIcon, block: @WebforjDsl Icon.() -> Unit = {}): Icon = init(icon.create(), block)

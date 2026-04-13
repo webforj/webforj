@@ -27,7 +27,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `MarkdownViewer`.
  * @see MarkdownViewer
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.markdownViewer(content: String? = null, block: @WebforjDsl MarkdownViewer.() -> Unit = {}): MarkdownViewer {
   val viewer = content?.let { MarkdownViewer(it) } ?: MarkdownViewer()
   return init(viewer, block)

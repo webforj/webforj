@@ -49,7 +49,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `AppLayout`.
  * @see AppLayout
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.appLayout(block: @WebforjDsl AppLayout.() -> Unit = {}): AppLayout {
   val layout = AppLayout()
   return init(layout, block)
@@ -68,7 +67,6 @@ fun @WebforjDsl HasComponents.appLayout(block: @WebforjDsl AppLayout.() -> Unit 
  *
  * @param block The initialization steps of the header components.
  */
-@WebforjDsl
 fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToHeader)
 }
@@ -86,7 +84,6 @@ fun @WebforjDsl AppLayout.headerSlot(block: @WebforjDsl HasComponents.() -> Unit
  *
  * @param block The initialization steps of the footer components.
  */
-@WebforjDsl
 fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToFooter)
 }
@@ -105,7 +102,6 @@ fun @WebforjDsl AppLayout.footerSlot(block: @WebforjDsl HasComponents.() -> Unit
  *
  * @param block The initialization steps of the drawer components.
  */
-@WebforjDsl
 fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawer)
 }
@@ -122,7 +118,6 @@ fun @WebforjDsl AppLayout.drawerSlot(block: @WebforjDsl HasComponents.() -> Unit
  *
  * @param block The initialization steps of the drawer title components.
  */
-@WebforjDsl
 fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawerTitle)
 }
@@ -140,7 +135,6 @@ fun @WebforjDsl AppLayout.drawerTitleSlot(block: @WebforjDsl HasComponents.() ->
  *
  * @param block The initialization steps of the drawer header actions components.
  */
-@WebforjDsl
 fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawerHeaderActions)
 }
@@ -158,7 +152,6 @@ fun @WebforjDsl AppLayout.drawerHeaderActionsSlot(block: @WebforjDsl HasComponen
  *
  * @param block The initialization steps of the drawer footer components.
  */
-@WebforjDsl
 fun @WebforjDsl AppLayout.drawerFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, AppLayout::addToDrawerFooter)
 }

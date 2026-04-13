@@ -7,7 +7,6 @@ import com.webforj.concern.HasComponents
 class SingleSlotSetter(block: @WebforjDsl HasComponents.() -> Component): HasComponents {
   val component: Component = block()
 
-  @WebforjDsl
   fun <T> setSlot(instance: T, setter: @WebforjDsl T.(Component) -> Unit) {
     instance.setter(component)
   }

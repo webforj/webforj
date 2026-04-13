@@ -17,7 +17,6 @@ val HasSuffix<*>.suffix: Component?
  *
  * @param block The initialization of the [Component].
  */
-@WebforjDsl
 fun @WebforjDsl HasSuffix<*>.suffixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this) {
     suffixComponent = it

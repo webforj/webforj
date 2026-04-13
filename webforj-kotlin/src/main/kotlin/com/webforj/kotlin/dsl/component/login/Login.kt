@@ -41,7 +41,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Login`.
  * @see Login
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): Login = init(Login(), block)
 
 /**
@@ -57,7 +56,6 @@ fun @WebforjDsl HasComponents.login(block: @WebforjDsl Login.() -> Unit = {}): L
  *
  * @param block The initialization steps of the before header components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeHeader)
 }
@@ -75,7 +73,6 @@ fun @WebforjDsl Login.beforeHeaderSlot(block: @WebforjDsl HasComponents.() -> Un
  *
  * @param block The initialization steps of the after header components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterHeader)
 }
@@ -93,7 +90,6 @@ fun @WebforjDsl Login.afterHeaderSlot(block: @WebforjDsl HasComponents.() -> Uni
  *
  * @param block The initialization steps of the before content components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeContent)
 }
@@ -111,7 +107,6 @@ fun @WebforjDsl Login.beforeContentSlot(block: @WebforjDsl HasComponents.() -> U
  *
  * @param block The initialization steps of the after content components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.afterContentSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterContent)
 }
@@ -129,7 +124,6 @@ fun @WebforjDsl Login.afterContentSlot(block: @WebforjDsl HasComponents.() -> Un
  *
  * @param block The initialization steps of the before form components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.beforeFormSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeForm)
 }
@@ -147,7 +141,6 @@ fun @WebforjDsl Login.beforeFormSlot(block: @WebforjDsl HasComponents.() -> Unit
  *
  * @param block The initialization steps of the after form components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.afterFormSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterForm)
 }
@@ -165,7 +158,6 @@ fun @WebforjDsl Login.afterFormSlot(block: @WebforjDsl HasComponents.() -> Unit)
  *
  * @param block The initialization steps of the before footer components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToBeforeFooter)
 }
@@ -183,7 +175,6 @@ fun @WebforjDsl Login.beforeFooterSlot(block: @WebforjDsl HasComponents.() -> Un
  *
  * @param block The initialization steps of the after footer components.
  */
-@WebforjDsl
 fun @WebforjDsl Login.afterFooterSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Login::addToAfterFooter)
 }
@@ -209,7 +200,6 @@ fun @WebforjDsl Login.afterFooterSlot(block: @WebforjDsl HasComponents.() -> Uni
  * @return The configured `LoginI18n`.
  * @see LoginI18n
  */
-@WebforjDsl
 fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI18n {
   val loginI18n = LoginI18n().apply(block)
   i18n = loginI18n
@@ -233,5 +223,4 @@ fun @WebforjDsl Login.loginI18n(block: @WebforjDsl LoginI18n.() -> Unit): LoginI
  * @return The configured `LoginErrorI18n`.
  * @see LoginErrorI18n
  */
-@WebforjDsl
 fun @WebforjDsl LoginI18n.loginErrorI18n(block: @WebforjDsl LoginErrorI18n.() -> Unit): LoginErrorI18n = error.apply(block)

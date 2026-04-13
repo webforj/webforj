@@ -18,7 +18,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Footer` instance.
  * @see Footer
  */
-@WebforjDsl
 fun  @WebforjDsl HasComponents.footer(text: String? = null, block:  @WebforjDsl Footer.() -> Unit = {}): Footer {
   val footer = text?.let { Footer(it) } ?: Footer()
   return init(footer, block)

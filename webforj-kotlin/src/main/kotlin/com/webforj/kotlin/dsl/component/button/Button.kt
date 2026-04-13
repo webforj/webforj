@@ -32,7 +32,6 @@ import com.webforj.kotlin.extension.suffixSlot
  * @return The configured `Button`.
  * @see Button
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.button(
     text: String? = null,
     theme: ButtonTheme? = null,
@@ -60,7 +59,6 @@ fun @WebforjDsl HasComponents.button(
  *
  * @param block The initialization steps of the icon `Component`.
  */
-@WebforjDsl
 fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this, Button::setIcon)
 }
@@ -77,7 +75,6 @@ fun @WebforjDsl Button.iconSlot(block: @WebforjDsl HasComponents.() -> Component
  *
  * @param block The initialization steps of the badge `Component`.
  */
-@WebforjDsl
 fun <T : DwcButton<T>> @WebforjDsl DwcButton<T>.badgeSlot(
   block: @WebforjDsl HasComponents.() -> Component
 ) {

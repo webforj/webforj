@@ -25,7 +25,6 @@ import com.webforj.kotlin.dsl.init
  * @see Navigator
  * @see [paginator]
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.navigator(
   text: String? = null,
   layout: Navigator.Layout? = null,
@@ -75,7 +74,6 @@ fun @WebforjDsl HasComponents.navigator(
  * @see Repository
  * @see [paginator]
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.navigator(
   repository: Repository<*>,
   text: String? = null,
@@ -120,7 +118,6 @@ fun @WebforjDsl HasComponents.navigator(
  * @see Repository
  * @see [navigator]
  */
-@WebforjDsl
 fun @WebforjDsl Navigator.paginator(
   pageSize: Int? = null,
   totalItems: Int? = null,
@@ -155,7 +152,6 @@ fun @WebforjDsl Navigator.paginator(
  * @see Repository
  * @see [navigator]
  */
-@WebforjDsl
 fun @WebforjDsl Navigator.paginator(
   repository: Repository<*>,
   pageSize: Int? = null,

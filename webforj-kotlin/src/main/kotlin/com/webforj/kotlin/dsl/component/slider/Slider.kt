@@ -49,7 +49,6 @@ import com.webforj.kotlin.dsl.init
  * @see Slider
  * @see Slider.Orientation
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.slider(
   value: Int? = null,
   min: Int? = null,

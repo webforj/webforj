@@ -37,7 +37,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `ColumnsLayout` instance.
  * @see ColumnsLayout
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.columnsLayout(
   vararg breakpoints: ColumnsLayout.Breakpoint = emptyArray(),
   block: @WebforjDsl ColumnsLayout.() -> Unit = {}

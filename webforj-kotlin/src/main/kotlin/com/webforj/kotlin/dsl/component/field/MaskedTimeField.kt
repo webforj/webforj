@@ -28,7 +28,6 @@ import java.time.LocalTime
  * @see MaskedTimeField
  * @see LocalTime
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.maskedTimeField(
   label: String? = null,
   value: LocalTime? = null,
@@ -63,6 +62,5 @@ fun @WebforjDsl HasComponents.maskedTimeField(
  * @return The configured `TimePicker` instance.
  * @see TimePicker
  */
-@WebforjDsl
 fun @WebforjDsl MaskedTimeField.picker(block: @WebforjDsl TimePicker.() -> Unit = {}): TimePicker =
   picker.apply(block)

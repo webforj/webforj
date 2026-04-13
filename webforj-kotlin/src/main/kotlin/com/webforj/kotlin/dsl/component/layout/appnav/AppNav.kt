@@ -30,7 +30,6 @@ import kotlin.reflect.KClass
  * @return The configured `AppNav`.
  * @see AppNav
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}): AppNav = init(AppNav(), block)
 
 /**
@@ -60,7 +59,6 @@ fun @WebforjDsl HasComponents.appNav(block: @WebforjDsl AppNav.() -> Unit = {}):
  * @return The configured `AppNavItem`.
  * @see AppNavItem
  */
-@WebforjDsl
 fun @WebforjDsl AppNav.appNavItem(
   text: String,
   path: String? = null,
@@ -98,7 +96,6 @@ fun @WebforjDsl AppNav.appNavItem(
  * @return The configured `AppNavItem`.
  * @see AppNavItem
  */
-@WebforjDsl
 fun @WebforjDsl AppNavItem.appNavItem(
   text: String,
   path: String? = null,
@@ -111,7 +108,6 @@ fun @WebforjDsl AppNavItem.appNavItem(
   return item
 }
 
-@WebforjDsl
 private fun createAppNavItem(
   text: String,
   path: String? = null,

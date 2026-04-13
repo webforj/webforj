@@ -36,7 +36,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Toast`.
  * @see Toast
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.toast(
   text: String? = null,
   duration: Int? = null,
@@ -77,7 +76,6 @@ fun @WebforjDsl HasComponents.toast(
  *
  * @param block The initialization steps of the message components.
  */
-@WebforjDsl
 fun @WebforjDsl Toast.messageSlot(block: @WebforjDsl HasComponents.() -> Unit) {
   MultiSlotSetter(block).setSlot(this, Toast::addToMessage)
 }

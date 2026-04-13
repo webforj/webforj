@@ -30,7 +30,6 @@ import java.time.LocalTime
  * @see TimeField
  * @see LocalTime
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.timeField(
   label: String? = null,
   value: LocalTime? = null,

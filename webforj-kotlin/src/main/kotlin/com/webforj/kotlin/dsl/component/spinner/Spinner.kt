@@ -28,7 +28,6 @@ import com.webforj.kotlin.dsl.init
  * @return The configured `Spinner`.
  * @see Spinner
  */
-@WebforjDsl
 fun @WebforjDsl HasComponents.spinner(
   theme: Theme? = null,
   spinnerExpanse: SpinnerExpanse? = null,

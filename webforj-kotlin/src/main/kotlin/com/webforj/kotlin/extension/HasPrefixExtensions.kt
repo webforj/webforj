@@ -17,7 +17,6 @@ val HasPrefix<*>.prefix: Component?
  *
  * @param block The initialization of the [Component].
  */
-@WebforjDsl
 fun @WebforjDsl HasPrefix<*>.prefixSlot(block: @WebforjDsl HasComponents.() -> Component) {
   SingleSlotSetter(block).setSlot(this) {
     prefixComponent = it
