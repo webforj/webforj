@@ -182,6 +182,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
   private boolean borderless = false;
   private boolean hideActiveIndicator = false;
   private boolean nobody = false;
+  private boolean segment = false;
   private boolean swipeable = false;
   private boolean swipeWithMouse = false;
   private String label = "";
@@ -931,6 +932,35 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
   }
 
   /**
+   * Sets whether the tabs are rendered as a segment control with a sliding pill indicator.
+   *
+   * <p>
+   * When true, the tabbed pane transforms into a segment control where the active tab is
+   * highlighted with a pill-shaped indicator.
+   * </p>
+   *
+   * @param segment {@code true} to render the tabs as a segment control.
+   *
+   * @return The component itself.
+   * @since 26.00
+   */
+  public TabbedPane setSegment(boolean segment) {
+    this.segment = segment;
+    setUnrestrictedProperty("segment", this.segment);
+    return this;
+  }
+
+  /**
+   * Returns whether the tabs are rendered as a segment control.
+   *
+   * @return {@code true} if the tabbed pane is rendered as a segment control.
+   * @since 26.00
+   */
+  public boolean isSegment() {
+    return segment;
+  }
+
+  /**
    * Sets whether the tabs should be swipeable.
    *
    * @param swipeable When {@code true}, active tab can be changed by swiping the tabbed pane.
@@ -1121,7 +1151,7 @@ public final class TabbedPane extends DwcFocusableComponent<TabbedPane> implemen
   public List<String> getRestrictedProperties() {
     List<String> properties = super.getRestrictedProperties();
     properties.addAll(Arrays.asList("activation", "alignment", "borderless", "disabled", "expanse",
-        "hideActiveIndicator", "label", "nobody", "placement", "removal", "selected",
+        "hideActiveIndicator", "label", "nobody", "placement", "removal", "segment", "selected",
         "swipePreventScroll", "swipeWithMouse", "swipeWithTouch", "swipeable", "swiping", "theme"));
 
     return properties;

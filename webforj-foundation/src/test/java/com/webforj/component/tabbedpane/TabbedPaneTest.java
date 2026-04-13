@@ -628,6 +628,14 @@ class TabbedPaneTest {
   }
 
   @Test
+  void shouldSetSegment() throws IllegalAccessException {
+    ReflectionUtils.nullifyControl(component);
+    component.setSegment(true);
+    assertTrue(component.isSegment());
+    assertEquals(true, component.getProperty("segment"));
+  }
+
+  @Test
   void shouldSetSwipeable() throws IllegalAccessException {
     ReflectionUtils.nullifyControl(component);
     component.setSwipeable(true);
