@@ -25,4 +25,4 @@ import com.webforj.kotlin.dsl.init
  *
  * @see Terminal
  */
-fun @WebforjDsl HasComponents.terminal(block: @WebforjDsl Terminal.() -> Unit = {}) = init(Terminal(), block)
+fun @WebforjDsl HasComponents.terminal(block: @WebforjDsl Terminal.() -> Unit = {}): Terminal = init(Terminal(), block)
