@@ -42,11 +42,10 @@
       </dependency>
 
       <!-- JavaScript minification (optional, for default implementation) -->
-      <!-- Note: Using v20230802 - last version compatible with Java 17 -->
       <dependency>
         <groupId>com.google.javascript</groupId>
         <artifactId>closure-compiler</artifactId>
-        <version>v20230802</version>
+        <version>v20260407</version>
         <optional>true</optional>
       </dependency>
     </dependencies>
