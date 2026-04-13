@@ -51,6 +51,8 @@ public class Dialog extends ElementCompositeContainer
   // Properties
   private final PropertyDescriptor<Alignment> alignmentProp =
       PropertyDescriptor.property("alignment", Alignment.CENTER);
+  private final PropertyDescriptor<Boolean> autoWidthProp =
+      PropertyDescriptor.property("autoWidth", false);
   @PropertyMethods(setter = "setAutoFocus", getter = "isAutoFocus")
   private final PropertyDescriptor<Boolean> autoFocusProp =
       PropertyDescriptor.property("autofocus", false);
@@ -162,6 +164,33 @@ public class Dialog extends ElementCompositeContainer
    */
   public Alignment getAlignment() {
     return get(alignmentProp);
+  }
+
+  /**
+   * Sets whether the dialog width should fit its content instead of filling the available space.
+   *
+   * <p>
+   * When true, the dialog will size itself based on its content width rather than stretching to
+   * fill the available space.
+   * </p>
+   *
+   * @param autoWidth whether the dialog should auto-size its width
+   * @return the component itself
+   * @since 26.00
+   */
+  public Dialog setAutoWidth(boolean autoWidth) {
+    set(autoWidthProp, autoWidth);
+    return this;
+  }
+
+  /**
+   * Gets whether the dialog width fits its content.
+   *
+   * @return {@code true} if auto width is enabled, {@code false} otherwise
+   * @since 26.00
+   */
+  public boolean isAutoWidth() {
+    return get(autoWidthProp);
   }
 
   /**
