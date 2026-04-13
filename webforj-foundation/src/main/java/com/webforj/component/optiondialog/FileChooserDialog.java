@@ -22,8 +22,7 @@ import java.util.List;
  * @since 24.02
  */
 // @formatter:off
-public sealed class FileChooserDialog extends DwcFileOpen<FileChooserDialog>
-    permits FileSaveDialog {
+public class FileChooserDialog extends DwcFileOpen<FileChooserDialog> {
 // @formatter:on
   static final String DEFAULT_TITLE = "Select a file";
 
