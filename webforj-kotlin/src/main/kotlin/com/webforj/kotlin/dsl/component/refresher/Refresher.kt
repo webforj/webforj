@@ -42,5 +42,7 @@ fun @WebforjDsl HasComponents.refresher(block: @WebforjDsl Refresher.() -> Unit 
  * @return The configured `RefresherI18n` instance.
  * @see RefresherI18n
  */
-fun @WebforjDsl Refresher.i18n(block: @WebforjDsl RefresherI18n.() -> Unit): RefresherI18n =
-  i18n.apply(block)
+fun @WebforjDsl Refresher.i18n(block: @WebforjDsl RefresherI18n.() -> Unit): RefresherI18n {
+  i18n = RefresherI18n().apply(block)
+  return i18n
+}
