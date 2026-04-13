@@ -24,6 +24,18 @@ class DialogTest {
   }
 
   @Test
+  void shouldToggleAutoWidthState() {
+    assertFalse(component.isAutoWidth());
+    component.setAutoWidth(true);
+    assertTrue(component.isAutoWidth());
+    assertTrue(component.getAttributes().containsKey("auto-width"));
+
+    component.setAutoWidth(false);
+    assertFalse(component.isAutoWidth());
+    assertFalse(component.getAttributes().containsKey("auto-width"));
+  }
+
+  @Test
   void shouldToggleBlurredState() {
     component.setBlurred(true);
     assertTrue(component.isBlurred());

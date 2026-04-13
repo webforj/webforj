@@ -29,6 +29,7 @@ public class DwcOptionDialog<T> {
   }
 
   private Alignment alignment = Alignment.CENTER;
+  private boolean autoWidth = false;
   private boolean blurred = false;
   private String breakpoint = "";
   private boolean fullscreen = false;
@@ -57,6 +58,34 @@ public class DwcOptionDialog<T> {
    */
   public Alignment getAlignment() {
     return alignment;
+  }
+
+  /**
+   * Sets whether the dialog width should fit its content instead of filling the available space.
+   *
+   * <p>
+   * When true, the dialog will size itself based on its content width rather than stretching to
+   * fill the available space.
+   * </p>
+   *
+   * @param autoWidth whether the dialog should auto-size its width
+   * @return the dialog
+   * @since 26.00
+   */
+  public T setAutoWidth(boolean autoWidth) {
+    this.autoWidth = autoWidth;
+    toggleAttribute("auto-width", "", autoWidth);
+    return getSelf();
+  }
+
+  /**
+   * Gets whether the dialog width fits its content.
+   *
+   * @return {@code true} if auto width is enabled, {@code false} otherwise
+   * @since 26.00
+   */
+  public boolean isAutoWidth() {
+    return autoWidth;
   }
 
   /**
