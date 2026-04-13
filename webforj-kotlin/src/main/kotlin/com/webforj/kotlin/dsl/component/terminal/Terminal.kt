@@ -2,6 +2,7 @@ package com.webforj.kotlin.dsl.component.terminal
 
 import com.webforj.component.terminal.Terminal
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
 /**
@@ -24,4 +25,4 @@ import com.webforj.kotlin.dsl.init
  *
  * @see Terminal
  */
-fun HasComponents.terminal(block: Terminal.() -> Unit) = init(Terminal(), block)
+fun @WebforjDsl HasComponents.terminal(block: @WebforjDsl Terminal.() -> Unit = {}) = init(Terminal(), block)
