@@ -1,6 +1,7 @@
 package com.webforj.kotlin.dsl.component.icons
 
 import com.webforj.component.icons.Icon
+import com.webforj.component.icons.IconDefinition
 import com.webforj.concern.HasComponents
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
@@ -28,3 +29,10 @@ fun @WebforjDsl HasComponents.icon(
   pool: String,
   block: @WebforjDsl Icon.() -> Unit = {}
 ): Icon = init(Icon(name, pool), block)
+
+/**
+ * Returns the `String` representation of an [IconDefinition].
+ *
+ * @return The Icon pool and name in the format "pool:name".
+ */
+fun IconDefinition<*>.asString() = "$pool:$name"
