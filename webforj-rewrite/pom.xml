@@ -32,7 +32,7 @@
       <dependency>
         <groupId>org.openrewrite</groupId>
         <artifactId>rewrite-bom</artifactId>
-        <version>8.79.3</version>
+        <version>8.79.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
