@@ -104,7 +104,8 @@ public class PercentageRenderer<T> extends Renderer<T> {
 
     return "<span style='display:flex;align-items:center;gap:8px;width:100%'>"
         + "<dwc-progressbar value='<%= cell.value %>' min='0' max='100'" + " text-visible='false'"
-        + themeAttr + " style='flex:1;--dwc-progressbar-height:6px'></dwc-progressbar>"
+        + themeAttr + " style='flex:1;--dwc-progressbar-height:6px;"
+        + "--dwc-progressbar-inset:0;--dwc-space-2xs:0'></dwc-progressbar>"
         + "<span style='font-variant-numeric:tabular-nums;min-width:3.5em;text-align:right'>"
         + "<%= cell.value %>%</span></span>";
   }
