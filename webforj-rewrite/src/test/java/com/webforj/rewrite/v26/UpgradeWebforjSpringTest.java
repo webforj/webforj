@@ -9,6 +9,9 @@ import org.openrewrite.test.RewriteTest;
 @SuppressWarnings("java:S2699")
 class UpgradeWebforjSpringTest implements RewriteTest {
 
+  private static final String CURRENT_VERSION =
+      System.getProperty("webforj.rewrite.test.projectVersion");
+
   @Override
   public void defaults(RecipeSpec spec) {
     spec.recipeFromResources("com.webforj.rewrite.v26.UpgradeWebforjSpring");
@@ -42,7 +45,7 @@ class UpgradeWebforjSpringTest implements RewriteTest {
 
   @Test
   void removesWebforjDependency() {
-    rewriteRun(pomXml("""
+    String before = """
         <project>
             <modelVersion>4.0.0</modelVersion>
             <groupId>com.example</groupId>
@@ -64,7 +67,8 @@ class UpgradeWebforjSpringTest implements RewriteTest {
                 </dependency>
             </dependencies>
         </project>
-        """, """
+        """;
+    String after = String.format("""
         <project>
             <modelVersion>4.0.0</modelVersion>
             <groupId>com.example</groupId>
@@ -72,7 +76,7 @@ class UpgradeWebforjSpringTest implements RewriteTest {
             <version>1.0-SNAPSHOT</version>
             <properties>
                 <maven.compiler.release>21</maven.compiler.release>
-                <webforj.version>26.00-SNAPSHOT</webforj.version>
+                <webforj.version>%s</webforj.version>
             </properties>
             <dependencies>
                 <dependency>
@@ -82,6 +86,7 @@ class UpgradeWebforjSpringTest implements RewriteTest {
                 </dependency>
             </dependencies>
         </project>
-        """));
+        """, CURRENT_VERSION);
+    rewriteRun(pomXml(before, after));
   }
 }
