@@ -1,7 +1,9 @@
 package com.webforj.kotlin.dsl.component.infiniitescroll
 
 import com.webforj.component.html.elements.Div
+import com.webforj.component.icons.FeatherIcon
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.dsl.component.icons.featherIcon
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -59,6 +61,17 @@ class InfiniteScrollTest {
         assertTrue(root.hasComponent(infiniteScroll))
         assertTrue(blockExecuted.get())
         assertEquals(customText, infiniteScroll.text)
+    }
+
+    @Test
+    @DisplayName("Create InfiniteScroll with icon slot")
+    fun shouldSetIconSlot() {
+        val infiniteScroll = root.infiniteScroll {
+            iconSlot {
+                featherIcon(FeatherIcon.LOADER)
+            }
+        }
+        assertEquals("feather:loader", infiniteScroll.icon)
     }
 
 }

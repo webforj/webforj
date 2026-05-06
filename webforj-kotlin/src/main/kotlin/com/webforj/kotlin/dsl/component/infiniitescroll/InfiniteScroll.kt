@@ -1,7 +1,10 @@
 package com.webforj.kotlin.dsl.component.infiniitescroll
 
+import com.webforj.component.Component
+import com.webforj.component.icons.IconDefinition
 import com.webforj.component.infinitescroll.InfiniteScroll
 import com.webforj.concern.HasComponents
+import com.webforj.kotlin.dsl.SingleSlotSetter
 import com.webforj.kotlin.dsl.WebforjDsl
 import com.webforj.kotlin.dsl.init
 
@@ -28,4 +31,25 @@ import com.webforj.kotlin.dsl.init
 fun @WebforjDsl HasComponents.infiniteScroll(text: String? = null, block: @WebforjDsl InfiniteScroll.() -> Unit = {}): InfiniteScroll {
   val scroll = text?.let { InfiniteScroll(it) } ?: InfiniteScroll()
   return init(scroll, block)
+}
+
+/**
+ * Sets the icon to display for the infinite scroll loading indicator.
+ * ```
+ * ... {
+ *   infiniteScroll {
+ *     iconSlot {
+ *       featherIcon(FeatherIcon.LOADER)
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * @param block The initialization steps for the icon.
+ */
+@WebforjDsl
+fun <T> @WebforjDsl InfiniteScroll.iconSlot(block: @WebforjDsl HasComponents.() -> T) where T: Component, T: IconDefinition<*> {
+  SingleSlotSetter(block).setSlot(this) {
+    setIcon(it as IconDefinition<*>)
+  }
 }
