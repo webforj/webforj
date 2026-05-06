@@ -1,8 +1,9 @@
 package com.webforj.kotlin.dsl.component.tree
 
-import com.basis.bbj.comm.al
 import com.webforj.component.html.elements.Div
+import com.webforj.component.icons.FeatherIcon
 import com.webforj.component.tree.TreeNode
+import com.webforj.kotlin.dsl.component.icons.featherIcon
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -163,5 +164,4 @@ class TreeTest {
     assertNotNull(resourcesNode)
     assertEquals("Human Resources", resourcesNode.key)
   }
-
 }
