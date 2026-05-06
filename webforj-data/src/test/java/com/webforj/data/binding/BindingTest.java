@@ -2,6 +2,9 @@ package com.webforj.data.binding;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,6 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.webforj.data.AddressBean;
+import com.webforj.data.CompanyBean;
 import com.webforj.data.PersonBean;
 import com.webforj.data.transformation.TransformationException;
 import com.webforj.data.transformation.transformer.Transformer;
@@ -393,6 +398,130 @@ class BindingTest {
 
       mockComponent.setValue("Foo");
       assertEquals("Foo bar", localBean.getName());
+    }
+  }
+
+  @Nested
+  class PathAware {
+
+    @Test
+    void shouldThrowAtConstructionForTypoOnTopLevelPropertyName() {
+      NameComponentMock c = new NameComponentMock();
+      var ex = assertThrows(IllegalArgumentException.class,
+          () -> new Binding<>(c, CompanyBean.class, "naem"));
+      assertTrue(ex.getMessage().contains("naem"));
+      assertTrue(ex.getMessage().contains(CompanyBean.class.getName()));
+    }
+
+    @Test
+    void shouldThrowAtConstructionForTypoOnLeafSegmentOfDottedPath() {
+      NameComponentMock c = new NameComponentMock();
+      assertThrows(IllegalArgumentException.class,
+          () -> new Binding<>(c, CompanyBean.class, "address.naem"));
+    }
+
+    @Test
+    void shouldBindToComputedPropertyWithoutBackingField() {
+      NameComponentMock c = new NameComponentMock();
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "displayName");
+
+      CompanyBean cb = new CompanyBean("Acme", null, null);
+      b.read(cb);
+      assertEquals("[Acme]", c.getValue());
+    }
+
+    @Test
+    void shouldReadDottedPathLeafValue() {
+      NameComponentMock c = new NameComponentMock();
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "address.street");
+
+      CompanyBean cb =
+          new CompanyBean("Acme", new AddressBean("Main", "Springfield", "12345"), null);
+      b.read(cb);
+      assertEquals("Main", c.getValue());
+    }
+
+    @Test
+    void shouldReadDottedPathYieldNullWhenIntermediateIsNull() {
+      NameComponentMock c = new NameComponentMock();
+      c.setValue("stale");
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "address.street");
+
+      CompanyBean cb = new CompanyBean("Acme", null, null);
+      b.read(cb);
+      assertNull(c.getValue());
+      assertNull(cb.getAddress());
+    }
+
+    @Test
+    void shouldWriteDottedPathLeafValueIntoExistingIntermediate() {
+      NameComponentMock c = new NameComponentMock();
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "address.street");
+
+      AddressBean addr = new AddressBean("Old", "Springfield", "12345");
+      CompanyBean cb = new CompanyBean("Acme", addr, null);
+
+      c.setValue("New");
+      b.write(cb);
+
+      assertEquals("New", cb.getAddress().getStreet());
+      assertSame(addr, cb.getAddress());
+    }
+
+    @Test
+    void shouldInstantiateNullIntermediateOnDottedWrite() {
+      NameComponentMock c = new NameComponentMock();
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "address.street");
+
+      CompanyBean cb = new CompanyBean("Acme", null, null);
+      assertNull(cb.getAddress(), "precondition");
+
+      c.setValue("Main");
+      b.write(cb);
+
+      assertNotNull(cb.getAddress());
+      assertEquals("Main", cb.getAddress().getStreet());
+    }
+
+    @Test
+    void shouldAutoMarkRequiredFromJakartaAnnotationOnLeafOfDottedPath() {
+      NameComponentMock c = new NameComponentMock();
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "address.street");
+      assertTrue(b.isRequired());
+      assertTrue(c.isRequired());
+    }
+
+    @Test
+    void shouldNotAutoMarkRequiredWhenLeafHasNoValidationAnnotations() {
+      NameComponentMock c = new NameComponentMock();
+      Binding<NameComponentMock, String, CompanyBean, String> b =
+          new Binding<>(c, CompanyBean.class, "address.zip");
+      assertFalse(b.isRequired());
+      assertFalse(c.isRequired());
+    }
+
+    @Test
+    void shouldRegisterBindingByDottedPathThroughBindingContext() {
+      BindingContext<CompanyBean> ctx = new BindingContext<>(CompanyBean.class);
+      NameComponentMock c = new NameComponentMock();
+
+      ctx.bind(c, "address.street").add();
+      assertNotNull(ctx.getBinding("address.street"));
+
+      CompanyBean cb =
+          new CompanyBean("Acme", new AddressBean("Main", "Springfield", "12345"), null);
+      ctx.read(cb);
+      assertEquals("Main", c.getValue());
+
+      c.setValue("Other");
+      ctx.write(cb);
+      assertEquals("Other", cb.getAddress().getStreet());
     }
   }
 }

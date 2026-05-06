@@ -1,7 +1,7 @@
 package com.webforj.data.binding;
 
 import com.webforj.data.BeanAware;
-import com.webforj.data.BeanUtils;
+import com.webforj.data.BeanIntrospection;
 import com.webforj.data.MutatorException;
 import com.webforj.data.PropertyNameAware;
 import com.webforj.data.binding.event.BindingValidateEvent;
@@ -19,10 +19,7 @@ import com.webforj.dispatcher.EventDispatcher;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
 import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -674,19 +671,14 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
   @SuppressWarnings("unchecked")
   private Function<B, BV> resolveGetter(Class<?> beanClass) {
     try {
-      PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(property, beanClass);
-      return b -> {
-        try {
-          return (BV) pd.getReadMethod().invoke(b);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-          throw new MutatorException(
-              "Failed to invoke getter for property '" + property + "' on bean class '" // NOSONAR
-                  + beanClass.getName()
-                  + "'. Ensure the property name is correct and the getter method is accessible.",
-              e);
+      BeanIntrospection.Property prop = BeanIntrospection.of(beanClass).getProperty(property);
+      if (prop == null) {
+        throw new MutatorException(
+            "Property '" + property + "' not found on bean class '" + beanClass.getName() + "'.");
+      }
 
-        }
-      };
+      return b -> (BV) prop.read(b);
+
     } catch (IntrospectionException e) {
       throw new MutatorException("Failed to resolve getter for property '" + property
           + "' on bean class '" + beanClass.getName()
@@ -710,18 +702,13 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
 
   private BiConsumer<B, BV> resolveSetter(Class<?> beanClass) {
     try {
-      PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(property, beanClass);
-      return (b, v) -> {
-        try {
-          pd.getWriteMethod().invoke(b, v);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-          throw new MutatorException(
-              "Failed to invoke setter for property '" + property + "' on bean class '"
-                  + beanClass.getName()
-                  + "'. Ensure the property name is correct and the setter method is accessible.",
-              e);
-        }
-      };
+      BeanIntrospection.Property prop = BeanIntrospection.of(beanClass).getProperty(property);
+      if (prop == null) {
+        throw new MutatorException(
+            "Property '" + property + "' not found on bean class '" + beanClass.getName() + "'.");
+      }
+
+      return prop::write;
     } catch (IntrospectionException e) {
       throw new MutatorException("Failed to resolve setter for property '" + property
           + "' on bean class '" + beanClass.getName()
@@ -761,42 +748,59 @@ public class Binding<C extends ValueAware<C, CV>, CV, B, BV> {
     }
   }
 
-
   private void autoDetectedRequired() {
     if (property == null || property.isEmpty()) {
       return;
     }
 
+    BeanIntrospection.Property prop;
     try {
-      Field field = beanClass.getDeclaredField(property);
-      if (hasValidationAnnotations(field)) {
-        setRequired(true);
-      }
-    } catch (NoSuchFieldException e) {
+      prop = BeanIntrospection.of(beanClass).getProperty(property);
+    } catch (IntrospectionException e) {
+      return;
+    }
+
+    if (prop == null) {
       throw new IllegalArgumentException("Property '" + property + "' not found in bean class '"
-          + beanClass.getName() + "'. Ensure the property name is correct.");
-    } catch (SecurityException e) {
-      throw new IllegalArgumentException("Failed to access property '" + property
-          + "' in bean class '" + beanClass.getName() + "'. Ensure the property is accessible.");
+          + beanClass.getName() + "'. Verify the property name and any sub bean path.");
+    }
+
+    if (hasValidationAnnotations(prop.annotations())) {
+      setRequired(true);
     }
   }
 
-  private static boolean hasValidationAnnotations(Field field) {
-    String[] validationAnnotations =
-        {"jakarta.validation.constraints.NotNull", "jakarta.validation.constraints.NotEmpty",
-            "jakarta.validation.constraints.NotBlank", "jakarta.validation.constraints.Size"};
+  private static boolean hasValidationAnnotations(List<Annotation> annotations) {
+    if (REQUIRED_INDICATOR_ANNOTATIONS.length == 0) {
+      return false;
+    }
 
-    for (String annotationClassName : validationAnnotations) {
-      try {
-        Class<?> annotationClass = Class.forName(annotationClassName);
-        if (field.isAnnotationPresent((Class<Annotation>) annotationClass)) {
+    for (Annotation a : annotations) {
+      for (Class<?> indicator : REQUIRED_INDICATOR_ANNOTATIONS) {
+        if (indicator.isInstance(a)) {
           return true;
         }
-      } catch (ClassNotFoundException e) {
-        // Annotation class not found, continue
       }
     }
 
     return false;
+  }
+
+  private static final Class<?>[] REQUIRED_INDICATOR_ANNOTATIONS = resolveRequiredIndicators();
+
+  private static Class<?>[] resolveRequiredIndicators() {
+    String[] names =
+        {"jakarta.validation.constraints.NotNull", "jakarta.validation.constraints.NotEmpty",
+            "jakarta.validation.constraints.NotBlank", "jakarta.validation.constraints.Size"};
+    List<Class<?>> resolved = new ArrayList<>(names.length);
+    for (String name : names) {
+      try {
+        resolved.add(Class.forName(name));
+      } catch (ClassNotFoundException ignored) {
+        // Jakarta validation absent on the classpath. Skip silently.
+      }
+    }
+
+    return resolved.toArray(new Class<?>[0]);
   }
 }
