@@ -1,5 +1,6 @@
 package com.webforj.component.optiondialog;
 
+import com.webforj.concern.HasFileChooserFilters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,8 @@ import java.util.List;
  *
  * @since 26.00
  */
-public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T> {
+public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T>
+    implements HasFileChooserFilters<T> {
 
   private String title = "";
   private List<FileChooserFilter> filters = new ArrayList<>();
@@ -42,8 +44,15 @@ public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T
    * @param filters the supported filters
    * @return the dialog instance
    */
+  @Override
   public T setFilters(List<FileChooserFilter> filters) {
-    this.filters = (filters == null) ? new ArrayList<>() : new ArrayList<>(filters);
+    this.filters.clear();
+    this.activeFilter = null;
+
+    if (filters != null) {
+      this.filters.addAll(filters);
+    }
+
     return getSelf();
   }
 
@@ -52,6 +61,7 @@ public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T
    *
    * @return the supported filters
    */
+  @Override
   public List<FileChooserFilter> getFilters() {
     return filters;
   }
@@ -62,21 +72,10 @@ public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T
    * @param filter the filter
    * @return the dialog instance
    */
+  @Override
   public T addFilter(FileChooserFilter filter) {
     filters.add(filter);
     return getSelf();
-  }
-
-  /**
-   * Adds a filter.
-   *
-   * @param description the description of the filter
-   * @param filter the filter pattern
-   *
-   * @return the dialog instance
-   */
-  public T addFilter(String description, String filter) {
-    return addFilter(new FileChooserFilter(description, filter));
   }
 
   /**
@@ -85,19 +84,12 @@ public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T
    * @param filter the filter
    * @return the dialog instance
    */
+  @Override
   public T removeFilter(FileChooserFilter filter) {
-    filters.remove(filter);
-    return getSelf();
-  }
+    if (filters.remove(filter) && activeFilter == filter) {
+      activeFilter = null;
+    }
 
-  /**
-   * Removes a filter.
-   *
-   * @param name the name of the filter
-   * @return the dialog instance
-   */
-  public T removeFilter(String name) {
-    filters.removeIf(f -> f.getDescription().equals(name));
     return getSelf();
   }
 
@@ -107,6 +99,7 @@ public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T
    * @param filter the active filter
    * @return the dialog instance
    */
+  @Override
   public T setActiveFilter(FileChooserFilter filter) {
     this.activeFilter = filter;
     if (filters.contains(filter) && filter.getDescription() != null) {
@@ -119,25 +112,11 @@ public class DwcFileOpen<T extends DwcOptionDialog<T>> extends DwcOptionDialog<T
   }
 
   /**
-   * Sets the active filter.
-   *
-   * @param name the name of the active filter
-   * @return the dialog instance
-   */
-  public T setActiveFilter(String name) {
-    FileChooserFilter filter = filters.stream().filter(f -> {
-      String description = f.getDescription();
-      return description != null && description.equals(name);
-    }).findFirst().orElse(null);
-
-    return setActiveFilter(filter);
-  }
-
-  /**
    * Gets the active filter of the dialog.
    *
    * @return the active filter of the dialog
    */
+  @Override
   public FileChooserFilter getActiveFilter() {
     return activeFilter;
   }

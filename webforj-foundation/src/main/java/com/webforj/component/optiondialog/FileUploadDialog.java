@@ -4,6 +4,12 @@ import com.basis.bbj.proxies.BBjFileOpen;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
 import com.webforj.UploadedFile;
+import com.webforj.concern.HasFileChooserFiltersVisible;
+import com.webforj.concern.HasFileChooserMultiFilterSelection;
+import com.webforj.concern.HasFileDrop;
+import com.webforj.concern.HasFileSystemAccess;
+import com.webforj.concern.HasI18n;
+import com.webforj.concern.HasMaxFileSize;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.List;
 
@@ -19,7 +25,11 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 24.02
  */
-public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
+public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog>
+    implements HasI18n<FileUploadDialog, FileUploadI18n>, HasFileDrop<FileUploadDialog>,
+    HasFileChooserFiltersVisible<FileUploadDialog>,
+    HasFileChooserMultiFilterSelection<FileUploadDialog>, HasMaxFileSize<FileUploadDialog>,
+    HasFileSystemAccess<FileUploadDialog> {
   static final String DEFAULT_TITLE = "Upload File";
 
   private boolean drop = true;
@@ -74,6 +84,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @param drop {@code true} to enable files drop, {@code false} to disable it
    */
+  @Override
   public FileUploadDialog setDrop(boolean drop) {
     this.drop = drop;
     setAttribute("drop", String.valueOf(drop));
@@ -85,6 +96,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @return {@code true} if files drop is enabled, {@code false} otherwise
    */
+  @Override
   public boolean isDrop() {
     return drop;
   }
@@ -94,6 +106,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @param filtersVisible {@code true} to show the filters, {@code false} to hide them
    */
+  @Override
   public FileUploadDialog setFiltersVisible(boolean filtersVisible) {
     this.filtersVisible = filtersVisible;
     setAttribute("filters-visible", String.valueOf(filtersVisible));
@@ -105,6 +118,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @return {@code true} if the filters are visible, {@code false} otherwise
    */
+  @Override
   public boolean isFiltersVisible() {
     return filtersVisible;
   }
@@ -115,6 +129,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    * @param multiFilterSelection {@code true} to enable multiple filter selection, {@code false} to
    *        disable it
    */
+  @Override
   public FileUploadDialog setMultiFilterSelection(boolean multiFilterSelection) {
     this.multiFilterSelection = multiFilterSelection;
     setAttribute("multi-filter-selection", String.valueOf(multiFilterSelection));
@@ -126,6 +141,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @return {@code true} if multiple filter selection is enabled, {@code false} otherwise
    */
+  @Override
   public boolean isMultiFilterSelection() {
     return multiFilterSelection;
   }
@@ -135,6 +151,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @param maxFileSize the maximum file size in bytes
    */
+  @Override
   public FileUploadDialog setMaxFileSize(Number maxFileSize) {
     this.maxFileSize = maxFileSize;
     if (maxFileSize == null) {
@@ -150,26 +167,24 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @return the maximum file size
    */
+  @Override
   public Number getMaxFileSize() {
     return maxFileSize;
   }
 
   /**
-   * Sets the i18n object of the file upload dialog.
-   *
-   * @param i18n the i18n object of the file upload dialog
-   * @return the dialog instance
+   * {@inheritDoc}
    */
+  @Override
   public FileUploadDialog setI18n(FileUploadI18n i18n) {
     this.i18n = i18n;
     return getSelf();
   }
 
   /**
-   * Gets the i18n object of the file upload dialog.
-   *
-   * @return the i18n object of the file upload dialog
+   * {@inheritDoc}
    */
+  @Override
   public FileUploadI18n getI18n() {
     return i18n;
   }
@@ -181,6 +196,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @param fileSystemAccess {@code true} to enable file system access, {@code false} to disable it
    */
+  @Override
   public FileUploadDialog setFileSystemAccess(boolean fileSystemAccess) {
     this.fileSystemAccess = fileSystemAccess;
     setAttribute("fs", String.valueOf(fileSystemAccess));
@@ -192,6 +208,7 @@ public final class FileUploadDialog extends DwcFileOpen<FileUploadDialog> {
    *
    * @return {@code true} if the file system access is enabled, {@code false} otherwise
    */
+  @Override
   public boolean isFileSystemAccess() {
     return fileSystemAccess;
   }
