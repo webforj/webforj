@@ -12,6 +12,7 @@ import com.webforj.component.refresher.event.RefresherRefreshEvent;
 import com.webforj.concern.HasAttribute;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasEnablement;
+import com.webforj.concern.HasI18n;
 import com.webforj.concern.HasStyle;
 import com.webforj.concern.HasTheme;
 import com.webforj.dispatcher.EventListener;
@@ -28,7 +29,7 @@ import com.webforj.utilities.Assets;
 @NodeName("dwc-refresher")
 public class Refresher extends ElementCompositeContainer
     implements HasClassName<Refresher>, HasStyle<Refresher>, HasAttribute<Refresher>,
-    HasEnablement<Refresher>, HasTheme<Refresher, Theme> {
+    HasEnablement<Refresher>, HasTheme<Refresher, Theme>, HasI18n<Refresher, RefresherI18n> {
 
   private RefresherI18n i18n = new RefresherI18n();
 
@@ -146,22 +147,22 @@ public class Refresher extends ElementCompositeContainer
   }
 
   /**
-   * Sets the refresher i18n object.
-   *
-   * @param i18n the refresher i18n object
+   * {@inheritDoc}
    */
-  public void setI18n(RefresherI18n i18n) {
+  @Override
+  public Refresher setI18n(RefresherI18n i18n) {
     this.i18n = i18n;
     set(textPullProp, i18n.getPull());
     set(textReleaseProp, i18n.getRelease());
     set(textRefreshProp, i18n.getRefresh());
+
+    return this;
   }
 
   /**
-   * Gets the refresher i18n object.
-   *
-   * @return the refresher i18n object
+   * {@inheritDoc}
    */
+  @Override
   public RefresherI18n getI18n() {
     return i18n;
   }
