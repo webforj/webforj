@@ -26,6 +26,7 @@ import com.webforj.component.tree.sink.TreeDoubleClickEventSink;
 import com.webforj.component.tree.sink.TreeExpandEventSink;
 import com.webforj.component.tree.sink.TreeSelectEventSink;
 import com.webforj.component.window.Window;
+import com.webforj.data.concern.HasSelectionMode;
 import com.webforj.data.selection.ItemMultiSelectable;
 import com.webforj.data.selection.ItemSingleSelectable;
 import com.webforj.data.selection.KeyMultiSelectable;
@@ -61,7 +62,8 @@ import java.util.UUID;
  */
 public final class Tree extends DwcFocusableComponent<Tree>
     implements TreeNodeDelegate, ItemSingleSelectable<Tree, TreeNode>, KeySingleSelectable<Tree>,
-    ItemMultiSelectable<Tree, TreeNode>, KeyMultiSelectable<Tree> {
+    ItemMultiSelectable<Tree, TreeNode>, KeyMultiSelectable<Tree>,
+    HasSelectionMode<Tree, Tree.SelectionMode> {
   static final String PROP_CONNECT = "connect";
   private static final String NULL_KEY_MESSAGE = "Key cannot be null";
   private static final String NULL_TEXT_MESSAGE = "Text cannot be null";
@@ -299,6 +301,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    * @return the component itself
    * @throws NullPointerException if {@code mode} is null
    */
+  @Override
   public Tree setSelectionMode(SelectionMode mode) {
     Objects.requireNonNull(mode, NULL_MODE_MESSAGE);
 
@@ -322,6 +325,7 @@ public final class Tree extends DwcFocusableComponent<Tree>
    *
    * @return the current selection mode
    */
+  @Override
   public SelectionMode getSelectionMode() {
     return selectionMode;
   }

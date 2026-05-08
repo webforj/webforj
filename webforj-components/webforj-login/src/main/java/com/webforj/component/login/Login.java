@@ -10,6 +10,7 @@ import com.webforj.component.login.event.LoginCancelEvent;
 import com.webforj.component.login.event.LoginSubmitEvent;
 import com.webforj.concern.HasClassName;
 import com.webforj.concern.HasEnablement;
+import com.webforj.concern.HasI18n;
 import com.webforj.concern.HasStyle;
 import com.webforj.dispatcher.EventListener;
 import com.webforj.dispatcher.ListenerRegistration;
@@ -22,8 +23,8 @@ import com.webforj.dispatcher.ListenerRegistration;
  * @since 24.01
  */
 @NodeName("dwc-login")
-public class Login extends ElementCompositeContainer
-    implements HasClassName<Login>, HasStyle<Login>, HasEnablement<Login> {
+public class Login extends ElementCompositeContainer implements HasClassName<Login>,
+    HasStyle<Login>, HasEnablement<Login>, HasI18n<Login, LoginI18n> {
 
   /**
    * An enum for indicating whether the user will be required to login for every visit to a client
@@ -313,21 +314,18 @@ public class Login extends ElementCompositeContainer
   }
 
   /**
-   * Sets the i18n object.
-   *
-   * @param i18n the i18n object
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public Login setI18n(LoginI18n i18n) {
     set(this.i18n, i18n);
     return this;
   }
 
   /**
-   * Gets the used i18n object.
-   *
-   * @return the i18n object
+   * {@inheritDoc}
    */
+  @Override
   public LoginI18n getI18n() {
     return get(i18n);
   }

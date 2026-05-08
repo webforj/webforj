@@ -1,6 +1,7 @@
 package com.webforj.component.list;
 
 import com.webforj.component.Component;
+import com.webforj.data.concern.HasSelectionMode;
 import com.webforj.data.selection.MultipleSelectable;
 
 /**
@@ -19,7 +20,8 @@ import com.webforj.data.selection.MultipleSelectable;
  * @since 23.05
  */
 public interface MultipleSelectableList<T extends Component>
-    extends MultipleSelectable<T, ListItem>, SelectableList<T> {
+    extends MultipleSelectable<T, ListItem>, SelectableList<T>,
+    HasSelectionMode<T, MultipleSelectableList.SelectionMode> {
 
   /**
    * The selection mode of the list box.
@@ -36,18 +38,15 @@ public interface MultipleSelectableList<T extends Component>
   }
 
   /**
-   * Sets the selection mode of the list box.
-   *
-   * @param mode the selection mode
-   * @return the component itself
+   * {@inheritDoc}
    */
+  @Override
   public T setSelectionMode(SelectionMode mode);
 
   /**
-   * Returns the selection mode of the list box.
-   *
-   * @return the selection mode
+   * {@inheritDoc}
    */
+  @Override
   public SelectionMode getSelectionMode();
 }
 
