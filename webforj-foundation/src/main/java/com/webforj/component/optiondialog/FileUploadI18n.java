@@ -33,6 +33,7 @@ public class FileUploadI18n {
   private String errorUnavailable = "Server Unavailable";
   private String errorUnexpected = "Unexpected Server Error";
   private String errorForbidden = "Forbidden";
+  private String selectionSummary = "%d files";
 
   /**
    * Gets the approve message.
@@ -374,6 +375,26 @@ public class FileUploadI18n {
    */
   public void setErrorForbidden(String errorForbidden) {
     this.errorForbidden = errorForbidden;
+  }
+
+  /**
+   * Gets the selection summary template. Used as a {@link String#format} pattern with the file
+   * count as the single {@code %d} argument.
+   *
+   * @return the selection summary template.
+   */
+  public String getSelectionSummary() {
+    return selectionSummary;
+  }
+
+  /**
+   * Sets the selection summary template. The value is used as a {@link String#format} pattern with
+   * the file count as the single {@code %d} argument.
+   *
+   * @param selectionSummary the selection summary template.
+   */
+  public void setSelectionSummary(String selectionSummary) {
+    this.selectionSummary = selectionSummary;
   }
 
   /**

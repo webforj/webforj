@@ -3,6 +3,8 @@ package com.webforj.component.optiondialog;
 import com.basis.bbj.proxies.BBjFileOpen;
 import com.basis.startup.type.BBjException;
 import com.webforj.Environment;
+import com.webforj.concern.HasI18n;
+import com.webforj.data.concern.HasSelectionMode;
 import com.webforj.exceptions.WebforjRuntimeException;
 import java.util.List;
 
@@ -21,9 +23,9 @@ import java.util.List;
  * @author Hyyan Abo Fakher
  * @since 24.02
  */
-// @formatter:off
-public class FileChooserDialog extends DwcFileOpen<FileChooserDialog> {
-// @formatter:on
+public class FileChooserDialog extends DwcFileOpen<FileChooserDialog>
+    implements HasI18n<FileChooserDialog, FileChooserI18n>,
+    HasSelectionMode<FileChooserDialog, FileChooserDialog.SelectionMode> {
   static final String DEFAULT_TITLE = "Select a file";
 
   /**
@@ -348,21 +350,18 @@ public class FileChooserDialog extends DwcFileOpen<FileChooserDialog> {
   }
 
   /**
-   * Sets the i18n object of the file chooser dialog.
-   *
-   * @param i18n the i18n object of the file chooser dialog
-   * @return the dialog instance
+   * {@inheritDoc}
    */
+  @Override
   public FileChooserDialog setI18n(FileChooserI18n i18n) {
     this.i18n = i18n;
     return getSelf();
   }
 
   /**
-   * Gets the i18n object of the file chooser dialog.
-   *
-   * @return the i18n object of the file chooser dialog
+   * {@inheritDoc}
    */
+  @Override
   public FileChooserI18n getI18n() {
     return i18n;
   }
